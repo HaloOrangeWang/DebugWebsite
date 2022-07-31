@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>Debug工具</title>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.4.1-dist/css/bootstrap.css'%}" />
+    <script src="{% static 'bootstrap-3.4.1-dist/js/bootstrap.js'%}"></script>
+    <script src="{% static 'jquery-3.6.0.js'%}"></script>
+</head>
+
+<body>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="input-group" style="margin-left: 5%; width: 90%; margin-top: 16px">
+            <span class="input-group-addon" style="width: 100px">错误信息</span>
+            <input type="text" value="{{form.err_msg.value}}" class="form-control" name="err_msg" placeholder="{{err_msg_placeholder}}" required>
+        </div>
+        <div class="input-group" style="margin-left: 5%; width: 90%; margin-top: 16px">
+            <span class="input-group-addon" style="width: 100px">场景</span>
+            <input type="text" value="{{form.scene.value}}" class="form-control" name="scene" placeholder="{{scene_placeholder}}">
+        </div>
+        <div style="margin-top: 16px; width: 100%; text-align:center">
+            <input type="submit" class="btn btn-primary" value="搜索">
+        </div>
+    </form>
+
+    {% if has_cluster %}
+    <h2>可能的解决方法</h2>
+    <br>
+    {% for solve in cluster %}
+    <div>
+        <label>{{solve.text}} （根据{{solve.num}}篇文章的分析）</label>
+        <br>
+        {% for aid in solve.article %}
+        <a href="{{aid.link}}">{{aid.title}}</a>
+        <br>
+        {% endfor %}
+    </div>
+    <br>
+    <br>
+    <br>
+    {% endfor %}
+    {% endif %}
+
+    {% if has_article %}
+    <h2>{{article_num_msg}}条搜索结果</h2>
+    <br>
+    {% for aid in all_articles %}
+    <div>
+        <a href="{{aid.link}}">{{aid.title}}</a>
+        <br>
+        <label>{{aid.solve_msg}}</label>
+        <br>
+        <br>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+</body>
+
+</html>
