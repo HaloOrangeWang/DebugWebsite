@@ -1,4 +1,5 @@
 from settings import *
+from whoosh.analysis import StemmingAnalyzer
 import json
 import os
 
@@ -16,6 +17,7 @@ class MarkData:
 
     def __init__(self):
         self.err_msg = ""
+        self.err_lines = []
         self.scenes = []
         self.scene_lines = []
         self.scene_weight = []
@@ -52,8 +54,8 @@ def load_mark_data():
         return str2.replace('\n\n\n', '\n').replace('\n\n', '\n').split('\n')
 
     all_marked_data = dict()
-    for site in ['cnblogs']:  # , 'jianshu', 'oschina']:
-        input_path = '../TrainInput/%s' % site
+    for site in ['cnblogs', 'jianshu', 'oschina']:
+        input_path = '../TrainData/Input/%s' % site
         for filename in os.listdir(input_path):
             aid = int(filename[:filename.find('.json')]) + AID_BASE[site]
             f = open(os.path.join(input_path, filename), 'r', encoding='utf8')
@@ -63,6 +65,7 @@ def load_mark_data():
             all_marked_data[aid] = MarkData()
             if 'err_msg' in doc and 'text' in doc['err_msg']:
                 all_marked_data[aid].err_msg = doc['err_msg']['text']
+                all_marked_data[aid].err_lines = doc['err_msg']['lines']
                 # 获取标注好的场景信息
                 if 'scene' in doc and doc['scene']:
                     # 只在有报错信息的情况下，场景信息和解决方案的信息才会有意义
@@ -91,3 +94,14 @@ def load_mark_data():
                 else:
                     raise ValueError
     return all_marked_data
+
+
+def load_stopwords():
+    """读取停用词列表"""
+    f = open("../SpiderData/baidu_stopwords.txt", 'r', encoding="utf8")
+    words = f.readlines()
+    f.close()
+    stopwords = set()
+    for word in words:
+        stopwords.add(word.replace('\n', ''))
+    return stopwords

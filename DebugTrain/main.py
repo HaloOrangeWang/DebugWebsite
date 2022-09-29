@@ -1,8 +1,11 @@
 from settings import *
-from data_io.load_data import load_mark_data, load_articles
+from data_io.load_data import load_mark_data, load_articles, load_stopwords
 from data_io.train_store import db_connect, insert_data
-from train_simple import get_err_msg, get_scene_msg, get_solve_msg
-from validations.basic import valid_err_msg, valid_scene, valid_solve
+from train_simple import get_err_msg, get_solve_msg
+from train_ml.word_vec import add_words, WvNormal, WvCode
+from train_ml.funcs import get_all_line_no
+from train_ml.err_msg import ErrMsgPipe
+from validations.basic import ErrMsgValidation, SolveValidation, valid_scene
 
 
 def train_no_ml():
@@ -19,15 +22,18 @@ def train_no_ml():
             err_msg = get_err_msg(article_dict[aid].title, article_dict[aid].text)
             all_err_msgs[aid] = err_msg
             if mark_data[aid].err_msg != str():
-                all_scenes[aid] = get_scene_msg(article_dict[aid].title, article_dict[aid].text, mark_data[aid].err_msg)
+                # all_scenes[aid] = get_scene_msg(article_dict[aid].title, article_dict[aid].text, mark_data[aid].err_msg)
                 all_solve_lines[aid], all_solve_msgs[aid] = get_solve_msg(article_dict[aid].text)
     # 根据已标注好的60条数据，评价错误信息判定的准确性
-    err_msg_score = valid_err_msg(all_err_msgs, mark_data)
-    scene_score, total_scene_score = valid_scene(all_scenes, mark_data)
-    solve_line_score, solve_msg_score, total_solve_score = valid_solve(all_solve_lines, all_solve_msgs, mark_data)
-    print('error_msg_score = %.2f / 60' % err_msg_score)
-    print('scene_score = %.2f / %d' % (scene_score, total_scene_score))
-    print('solve_line_score = %.2f / %d, solve_msg_score = %.2f / %d' % (solve_line_score, total_solve_score, solve_msg_score, total_solve_score))
+    err_msg_score = ErrMsgValidation.whole_sentence(all_err_msgs, mark_data)
+    # scene_score, total_scene_score = valid_scene(all_scenes, mark_data)
+    solve_line_score, total_solve_score = SolveValidation.line_ratio(all_solve_lines, mark_data)
+    solve_msg_score, total_solve_msg_score = SolveValidation.sentence_ratio(all_solve_msgs, mark_data)
+    # solve_line_score, solve_msg_score, total_solve_score = valid_solve(all_solve_lines, all_solve_msgs, mark_data)
+    print('error_msg_score = %.2f / 300' % err_msg_score)
+    # print('scene_score = %.2f / %d' % (scene_score, total_scene_score))
+    print('solve_line_score = %.2f / %d' % (solve_line_score, total_solve_score))
+    print('solve_msg_score = %.2f / %d' % (solve_msg_score, total_solve_msg_score))
 
 
 def generate_no_ml():
@@ -37,7 +43,7 @@ def generate_no_ml():
     article_dict = load_articles()
     # 从文件中获取到错误、场景和解决方法的信息
     all_err_msgs = dict()
-    all_scenes = dict()
+    # all_scenes = dict()
     all_solve_lines = dict()
     all_solve_msgs = dict()
     for aid in article_dict:
@@ -45,14 +51,89 @@ def generate_no_ml():
             err_msg = get_err_msg(article_dict[aid].title, article_dict[aid].text)
             all_err_msgs[aid] = err_msg
             if all_err_msgs[aid] != str():
-                all_scenes[aid] = get_scene_msg(article_dict[aid].title, article_dict[aid].text, all_err_msgs[aid])
+                # all_scenes[aid] = get_scene_msg(article_dict[aid].title, article_dict[aid].text, all_err_msgs[aid])
                 all_solve_lines[aid], all_solve_msgs[aid] = get_solve_msg(article_dict[aid].text)
             __cnt += 1
             if __cnt % 100 == 0:
                 print('__cnt = %d, aid = %d' % (__cnt, aid))
     # 将生成好的数据存放进数据库中
     db_col = db_connect()
-    insert_data(db_col, all_err_msgs, all_scenes, all_solve_msgs)
+    insert_data(db_col, all_err_msgs, all_solve_msgs)
+
+
+def train_ml():
+    # 从文件中读取标题列表，文章正文以及标注好的数据，以及停用词列表
+    article_dict_all = load_articles()
+    mark_data = load_mark_data()
+    stopwords = load_stopwords()
+    add_words()
+
+    article_dict_marked = dict()
+    for aid in mark_data:
+        article_dict_marked[aid] = article_dict_all[aid]
+    # 获取每篇文章的正文中，每个段落对应的行标
+    line_no_by_para = get_all_line_no(article_dict_marked)
+    # 训练词向量（英文正常编码的方式）。并根据训练好的词向量，获取每篇标注好的文章的词向量列表，以及词向量embedding的矩阵
+    wv_n = WvNormal()
+    wv_n.word_to_vec(article_dict_all, stopwords)
+    wv_n.get_word_vec_marked(article_dict_marked, mark_data, stopwords)
+    wv_n.construct_wv()
+    # 训练词向量（英文编码为<code>的方式）。并根据训练好的词向量，获取每篇标注好的文章的词向量列表，以及词向量embedding的矩阵
+    wv_c = WvCode()
+    wv_c.word_to_vec(article_dict_all, stopwords)
+    wv_c.get_word_vec_marked(article_dict_marked, mark_data, stopwords)
+    wv_c.construct_wv()
+    # 错误信息的模型构建和训练
+    pipe = ErrMsgPipe(wv_n, wv_c)
+    pipe.setup(article_dict_marked, mark_data, line_no_by_para, [])
+    pipe.train()
+    # 测试错误信息的训练结果
+    pipe.test(article_dict_marked, mark_data)
+
+
+def generate_ml():
+    # 从文件中读取标题列表，文章正文以及标注好的数据，以及停用词列表
+    article_dict_all = load_articles()
+    mark_data = load_mark_data()
+    stopwords = load_stopwords()
+    add_words()
+
+    article_dict_marked = dict()
+    for aid in mark_data:
+        article_dict_marked[aid] = article_dict_all[aid]
+    # 获取每篇文章的正文中，每个段落对应的行标
+    line_no_by_para = get_all_line_no(article_dict_all)
+    # 训练词向量（英文正常编码的方式）。并根据训练好的词向量，获取每篇标注好的文章的词向量列表，以及词向量embedding的矩阵
+    wv_n = WvNormal()
+    wv_n.word_to_vec(article_dict_all, stopwords)
+    wv_n.get_word_vec_marked(article_dict_all, mark_data, stopwords)
+    wv_n.construct_wv()
+    # 训练词向量（英文编码为<code>的方式）。并根据训练好的词向量，获取每篇标注好的文章的词向量列表，以及词向量embedding的矩阵
+    wv_c = WvCode()
+    wv_c.word_to_vec(article_dict_all, stopwords)
+    wv_c.get_word_vec_marked(article_dict_all, mark_data, stopwords)
+    wv_c.construct_wv()
+    err_aid_set = wv_n.err_aid_set | wv_c.err_aid_set
+    # 错误信息的模型构建和训练
+    pipe = ErrMsgPipe(wv_n, wv_c)
+    pipe.setup(article_dict_marked, mark_data, line_no_by_para, [])
+    pipe.train()
+    # 测试错误信息的训练结果
+    all_err_msgs = pipe.generate(article_dict_all, err_aid_set)
+    # 先使用非ML的方法生成解决问题的信息
+    __cnt = 0
+    all_solve_lines = dict()
+    all_solve_msgs = dict()
+    for aid in article_dict_all:
+        if all_err_msgs[aid] != str() and aid not in err_aid_set:
+            # all_scenes[aid] = get_scene_msg(article_dict[aid].title, article_dict[aid].text, all_err_msgs[aid])
+            all_solve_lines[aid], all_solve_msgs[aid] = get_solve_msg(article_dict_all[aid].text)
+        __cnt += 1
+        if __cnt % 100 == 0:
+            print('__cnt = %d, aid = %d' % (__cnt, aid))
+    # 将生成好的数据存放进数据库中
+    db_col = db_connect()
+    insert_data(db_col, all_err_msgs, all_solve_msgs)
 
 
 def main():
@@ -60,6 +141,10 @@ def main():
         train_no_ml()
     elif MODE == 'Generate' and (not ML):
         generate_no_ml()
+    elif MODE == 'Train' and ML:
+        train_ml()
+    elif MODE == 'Generate' and ML:
+        generate_ml()
 
 
 if __name__ == '__main__':

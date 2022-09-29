@@ -26,8 +26,8 @@ class OschinaParser(HTMLParser):
             if p.name == 'code':
                 if p.parent.name != 'pre':
                     break
-                if p_text.count('\n') >= 3:
-                    break
+                # if p_text.count('\n') >= 3:
+                #     break
             p_text_output[text_it] = p_text
         return p_text_output
 
@@ -77,7 +77,7 @@ class OschinaParser(HTMLParser):
 
 def main():
     parser_obj = OschinaParser()
-    # parser_obj.parse_all_data()
+    parser_obj.parse_all_data()
     parser_obj.parse_all_title()
 
 

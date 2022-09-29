@@ -27,7 +27,7 @@ def load_base_data():
         aid = raw_data['_id']
         data = Data1Article()
         data.err_msg = raw_data['err_msg']
-        data.scenes = raw_data['scene']
+        # data.scenes = raw_data['scene']
         data.solves = raw_data['solve']
         base_data[aid] = data
     # 3.返回数据

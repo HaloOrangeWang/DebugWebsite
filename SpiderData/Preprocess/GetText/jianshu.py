@@ -13,7 +13,7 @@ class JianshuParser(HTMLParser):
         """
         判断一个html标签是否可以输出。判断标准为：
         1. 内容不能为空
-        2. 如果是div标签，行数必须在3行以内
+        2. 如果是code标签，行数必须在5行以内
         3. 如果有两个空行，则分别输出
         如果可以输出的话，就返回修剪好的字符串
         """
@@ -26,8 +26,8 @@ class JianshuParser(HTMLParser):
             if p.name == 'code':
                 if p.parent.name != 'pre':
                     break
-                if p_text.count('\n') >= 3:
-                    break
+                # if p_text.count('\n') >= 5:
+                #     break
             p_text_output[text_it] = p_text
         return p_text_output
 
