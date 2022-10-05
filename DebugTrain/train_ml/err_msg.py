@@ -371,10 +371,14 @@ class ErrMsgPipe:
         self.model_n.eval()
         self.model_c.eval()
         with torch.no_grad():
+            __cnt = 0
             for aid in articles:
                 if aid not in err_aid_set:
                     err_msg = self.test_1article(aid, articles[aid])
                     all_err_msgs[aid] = err_msg
                 else:
                     all_err_msgs[aid] = str()
+                __cnt += 1
+                if __cnt % 100 == 0:
+                    print('__cnt = %d, aid = %d' % (__cnt, aid))
         return all_err_msgs

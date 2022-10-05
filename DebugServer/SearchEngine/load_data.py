@@ -37,7 +37,7 @@ def load_base_data():
 
 def load_articles(base_data):
     """读取文章的标题和正文"""
-    for site in ['cnblogs', 'jianshu', 'oschina']:
+    for site in AID_BASE:
         input_path = '../SpiderData/%s/Clean' % site
         f = open(os.path.join(input_path, 'titles.txt'), 'r', encoding='utf8')
         for line in f.readlines():
@@ -57,7 +57,7 @@ def load_articles(base_data):
 
 def load_link(base_data):
     """获取每篇文章aid对应的链接"""
-    for site in ['cnblogs', 'jianshu', 'oschina']:
+    for site in AID_BASE:
         filename = '../SpiderData/%s/file_list.xlsx' % site
         article_df = pd.read_excel(filename, index_col=0)
         for index in article_df.index:

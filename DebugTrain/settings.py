@@ -9,7 +9,7 @@ DB_NAME = "DebugWebsite"
 DB_COLLECTION = "PyArticle"
 
 # ArticleID的设置规则
-AID_BASE = {'cnblogs': 0, 'jianshu': 100000, 'oschina': 200000}
+AID_BASE = {'cnblogs': 0, 'jianshu': 100000, 'oschina': 200000, '51cto': 300000, 'jb51': 400000, 'csdn': 500000}
 
 # 字符编码的一些常量
 BOS_IDX = 0  # 表示一行开始

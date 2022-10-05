@@ -29,7 +29,7 @@ class MarkData:
 def load_articles():
     """读取文章的标题和正文"""
     articles = dict()
-    for site in ['cnblogs', 'jianshu', 'oschina']:
+    for site in AID_BASE:
         input_path = '../SpiderData/%s/Clean' % site
         f = open(os.path.join(input_path, 'titles.txt'), 'r', encoding='utf8')
         for line in f.readlines():
