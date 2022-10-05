@@ -1,0 +1,27 @@
+python 3.5.2安装mysql驱动时出现如下异常：
+
+[root@localhost www]# pip install mysql-connector-python
+
+Collecting mysql-connector-python
+
+Could not find a version that satisfies the requirement mysql-connector-python (from versions: )
+
+No matching distribution found for mysql-connector-python
+
+这是由于官方驱动暂时只支持到python3.4所致。改用pymysql
+
+
+安装pymysql
+
+pip install PyMySQL
+
+
+然后在项目根目录的init.py里添加
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+意思是将pymysql安装位mysql的默认数据库驱动
+
+参考: http://www.cnblogs.com/rwxwsblog/p/5765338.html
+

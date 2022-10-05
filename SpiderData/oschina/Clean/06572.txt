@@ -1,0 +1,81 @@
+最近公司开发人员频繁jack的问题，我这边总结一下：
+
+一、 第一种情况是服务器多人编译而产生的jack端口冲突的原因！报错提示如下：
+
+No Jack server running. Try ‘jack-admin start-server’ 
+No Jack server running. Try ‘jack-admin start-server
+
+解决方法，首先第一步：
+
+执行命令：cat ~/.jack-server/config.properties|grep -i port && cat ~/.jack|grep -i port|grep -v LOG &&cat ~/.jack-settings|grep -i port  检查你个人的端口是否一致！
+
+以上保持server.port和port.admin是同一个端口！只有保持3个9033和9044，才能正常启动jack
+
+如果不是怎么办呢？
+
+第二步、执行以下的脚本 bash  -x jack.sh   (注意，此脚本必须放在要编译的工程根目录内，运行时间有一点长哈)
+
+jack.sh内容如下：
+
+#!/bin/bash
+#cd root 
+p_service=12$(echo $RANDOM|cut -c  1-3)
+p_admin=`echo $[p_service-1]`
+pwd=${PWD}
+#clean
+rm -rf $HOME/.jack-server/config.properties
+if [ -f $HOME/.jack ];then
+        sed -i "s/SERVER_PORT_SERVICE=.*/SERVER_PORT_SERVICE=${p_service}/g"  $HOME/.jack
+        sed -i "s/SERVER_PORT_ADMIN=.*/SERVER_PORT_ADMIN=${p_admin}/g"  $HOME/.jack
+else
+        continue
+fi
+#
+sed -i "s/SERVER_PORT_SERVICE=.*/SERVER_PORT_SERVICE=${p_service}/g"  $HOME/.jack-settings
+sed -i "s/SERVER_PORT_ADMIN=.*/SERVER_PORT_ADMIN=${p_admin}/g"  $HOME/.jack-settings
+
+if [ -f $pwd/prebuilts/sdk/tools/jack-admin ];then
+        $pwd/prebuilts/sdk/tools/jack-admin kill-server
+        $pwd/prebuilts/sdk/tools/jack-admin start-server
+        sleep 5
+        if [ -f $HOME/.jack-server/config.properties ];then
+                $pwd/prebuilts/sdk/tools/jack-admin kill-server
+                sed -i "s/jack.server.service.port.*/jack.server.service.port=$p_service/g"   $HOME/.jack-server/config.properties
+                sed -i "s/jack.server.admin.port.*/jack.server.admin.port=${p_admin}/g"  $HOME/.jack-server/config.properties
+                echo "jack-server reset peer!!!"
+        else
+                echo "创建不成功！"
+        fi
+else
+        echo "wrong path,please check!"
+fi
+exit
+
+执行完了之后，再执行第一步，查看端口是不是一样的!
+
+ps:复制脚本内容后，最好在vim里面设置一下格式, 命令 :set ff=unix
+
+第二种情况是:你会发现端口是一样的，但是工程编译的时候，还是会报jack的问题，报错原因如下：
+
+ERROR: Communication error with Jack server (52) make: *** [out/target/common/obj/JAVA_LIBRARIES/libutil_intermediates/classes.jack] Error
+
+其实这种情况多半属于jack-admin缺少变量JACK_JAR而导致的。
+
+解决方法：第一步： lsof  -i: 9033    （之前的端口），看是否仍然被占用。如果占用的话，通知管理员把这个端口进程杀掉。
+
+第二步：
+
+工程根目录内执行以下三句
+
+export JACK_JAR=./out/host/linux-x86/framework/jack.jar
+
+./out/host/linux-x86/bin/jack-admin stop-server
+
+./out/host/linux-x86/bin/jack-admin start-server
+
+然后再进行编译，就可以解决jack编译报错的问题了
+
+第三步：记得在同一个窗口中，进行编译，原因是因为，第二步执行的语句是临时生成一个可以编译的环境，换到另外窗口的话，就生效了！
+
+哈，希望能帮到大家！
+

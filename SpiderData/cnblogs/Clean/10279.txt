@@ -1,0 +1,62 @@
+目录1.报错信息2.错误原因分析3.解决方案4.检验修改结果
+
+目录
+
+1.报错信息
+
+2.错误原因分析
+
+3.解决方案
+
+4.检验修改结果
+
+
+1.报错信息
+
+本文所述错误为博主在查新建项目Django子应用时时候报的错，
+
+创建子应用的语法如下：
+
+python manage.py startapp 子应用名称
+
+例如：python manage.py startapp book
+
+错误提示信息如下：
+
+TypeError: unsupported operand type(s) for /: ‘str’ and ‘str’，
+
+错误情况如下图所示：
+
+
+2.错误原因分析
+
+这是创建Django工程时，自动生成的代码中存在语法错误
+
+（在settings.py中的错误代码为 'DIRS': [BASE_DIR / 'templates']）
+
+“类型错误：不支持操作类型为字符串和字符串”
+
+直接把两个字符串
+
+（BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(file)))在前面定以为基础路径，也就是整个项目的路径）在列表中连接起来是不合适的，这里系统将 “/” 理解为了除号，系统理解为“字符串/字符串”。实际上这里想表达的意思将BASE_DIR 和’templates’连在一起形成一个完整路径，而“/”是路径分隔符。
+
+
+3.解决方案
+
+方法1：
+
+定位到该出错的语句，将其修改为
+
+'DIRS': [str.format(BASE_DIR, '/templates')]
+
+方法2：
+
+定位到该出错的语句，将斜杠改为逗号即可
+
+
+4.检验修改结果
+
+在终端中运行以下命令，如果能够运行成功，则会出现如下图所示的情况
+
+python manage.py runserver
+

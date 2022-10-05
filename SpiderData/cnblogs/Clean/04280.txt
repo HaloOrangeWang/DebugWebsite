@@ -1,0 +1,22 @@
+今天在ubuntu上升级了pip，之后执行pip命令的时候就报错了：
+
+Traceback (most recent call last):   File "/usr/bin/pip", line 11, in <module>     sys.exit(__main__.main())
+
+解决方法：
+
+sudo vi /usr/bin/pip
+
+将这三行替换为下面三行：
+
+1 from pip import main
+2 if __name__ == '__main__':
+3     sys.exit(main())
+
+替换为：
+
+1 from pip import __main__
+2 if __name__ == '__main__':
+3     sys.exit(__main__._main())
+
+这是由于python版本和pip版本不匹配造成的。
+

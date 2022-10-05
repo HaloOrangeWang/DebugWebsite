@@ -1,0 +1,29 @@
+
+问题背景
+
+在使用mybatis-generator自动生成的映射xml文件，启动时报错：
+
+Error creating bean with name 'sqlSessionFactory' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception; nested exception is org.springframework.core.NestedIOException: Failed to parse mapping resource: 'class path resource [mapper/mysql/TransformRecordMapper.xml]'; nested exception is org.apache.ibatis.builder.BuilderException: Error parsing Mapper XML. The XML location is 'class path resource [mapper/mysql/TransformRecordMapper.xml]'. Cause: java.lang.IllegalArgumentException: Result Maps collection already contains value for TransformRecordMapper.BaseResultMap
+        at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:643)
+        at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:130)
+        at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399)
+
+
+解决方案
+
+因为我更改了数据库的字段，重新生成了xml文件，但是之前的xml文件没有删除，报错Result Maps collection already contains value BaseResultMap已经包含BaseResultMap，我以为默认是覆盖的，结果不是覆盖的方式，所以需要删除之前的xml文件，全部重新生成，解决问题
+
+删除这样的xml文件
+
+重新生成xml
+
+
+心得
+
+我好像遇到几次这样的问题了，这次记下来别忘了
+
+作为程序员第 61 篇文章，每次写一句歌词记录一下，看看人生有几首歌的时间，wahahaha ...
+
+
+Lyric：千山万水
+

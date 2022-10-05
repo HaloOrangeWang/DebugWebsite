@@ -1,0 +1,31 @@
+在制作工具时使用到了中文字符，结果出现了错误。网上搜索了各种方法仍然无效，最后通过多次的debug和尝试才解决。为此写下来做为参考。
+
+系统为Ubuntu1404,安装了Python 2.7.6和Python 3.4.3。具体的代码如下：
+
+name = "签名文件.png"
+print(name)
+
+把该代码保存到code.py文件中，然后运行，出错的信息如下：
+
+$ python code.py
+  File "code.py", line 2
+SyntaxError: Non-ASCII character '\xe7' in file code.py on line 23,
+but no encoding declared; see http://www.python.org/peps/pep-0263.html for details
+
+解决方法就是在文件开关加入以下声明：
+
+#coding=utf8
+
+该声明告诉编译器源代码文件使用utf-8格式进行编码。
+
+该方法的原理在于python2默认使用ASCII编码格式，而ASCII编码中不包括中文字符，只有Unicode或者utf-8编码才支持中文等字符。通过这种声明，就是告诉编译器使用utf-8格式进行编码，这样就能识别中文字符。
+
+当然还有另外一种解决方法，那就是使用python3进行编译，因为python3默认使用Unicode编码格式.
+
+具体的操作如下：
+
+$python3 code.py
+签名文件.png
+
+其实问题比较简单，只要说清楚问题发生的背景和解决的原理就可以。
+

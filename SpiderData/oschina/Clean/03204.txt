@@ -1,0 +1,24 @@
+再用爬虫爬取数据的时候报错：[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:661)
+
+好多博客我看都说是：网站证书的问题，取消证书验证就没问题了
+
+找了三种解决办法：
+
+1、在request请求的时候取消验证verify=False
+
+requests.post(url=next_url, data=data, headers=self.headers, cookies=self.cookies, verify=False).content
+
+2、在python 3中增加了一个新的ssl认证检查系统，避免认证不通过错误的一个方法是取消这种机制（爬虫采用python2，这种方式不可用）：
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
+3、关闭SSl警告（在导入request模块之后，关闭ssl警告）
+
+import request
+
+#disable ssl warning
+requests.packages.urllib3.disable_warnings()
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+context.verify_mode = ssl.CERT_NONE
+

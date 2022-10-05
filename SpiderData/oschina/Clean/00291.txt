@@ -1,0 +1,13 @@
+安装MYSQL-PYTHON包报错EnvironmentError: mysql_config not found问题要如何来解决呢，今天我们就一起来看看这个问题的解决办法，具体操作如下所示。
+
+使用pip install MySQL-python的方式安装，遇到以下几个问题：
+ 1.提示错误EnvironmentError: mysql_config not found
+ 这是因为本机是Mac OSX系统，并且装的MySQL是MAMP集成环境中的，实际上mysql_config这个文件是存在的，但是默认包里面的路径有问题，可以重新装一个MySQL到系统默认位置，不过既然已经有了MySQL不想重复装。
+
+解决办法是从pypi官网下载一个MySQL-python包，然后修改其中的setup_posix.py文件，找到定义mysql_config路径的地方，如修改为：/Applications/MAMP/Library/bin/mysql_config，具体路径根据情况而定。可以搜索mysql_config，如果找到了就以那个路径为准，这是MAMP下Mysql_config文件的位置。
+ 然后进入到包目录，使用python setup.py install命令开始安装。
+ 2.上面的错误解决了，又提示错误fatal error: ‘my_config.h’ file not found
+ 这是因为MAMP自带的MySQL不包含dev headers，使用brew install mysql-connector-c安装。
+ brew install mysql-connector-c
+ 安装完成后，再回到Python重新安装MySQL-python包就可以了。
+

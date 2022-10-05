@@ -1,0 +1,62 @@
+
+python -m playwright install 安装 失败
+
+直接 python -m playwright install 安装 chromium firefox webkit时，每次下载完chromium就报错解决方式
+
+直接 python -m playwright install 安装 chromium firefox webkit时，每次下载完chromium就报错
+
+解决方式
+
+
+直接 python -m playwright install 安装 chromium firefox webkit时，每次下载完chromium就报错
+
+Playwright-python 安装及简单介绍参考
+ GitHub链接
+ playwright使用参考
+
+
+解决方式
+
+按照源码中的 local-requirements.txt 安装python库文件，安装必需库之后python -m playwright install安装成功。
+ 
+ local-requirements.txt
+
+autobahn==20.7.1
+pytest==6.1.0
+pytest-asyncio==0.14.0
+pytest-cov==2.10.1
+pytest-sugar==0.9.4
+pytest-xdist==2.1.0
+pytest-timeout==1.4.2
+flaky==3.7.0
+pixelmatch==0.2.1
+Pillow==8.0.0
+mypy==0.782
+setuptools==50.3.0
+# TODO: use PyPi version after >20.3.0 is released
+git+https://github.com/twisted/twisted.git@4ff22287cab3b54f51cee41ea2619e72d1bff2e4
+wheel==0.35.1
+black==20.8b1
+pre-commit==2.7.1
+flake8==3.8.3
+twine==3.2.0
+pyOpenSSL==19.1.0
+service_identity==18.1.0
+pdoc3==0.9.1
+
+import os
+
+local_requirements=['playwright',' autobahn', 'pytest',' pytest-asyncio', 'pytest-cov', 'pytest-sugar',' pytest-xdist',
+                    'pytest-timeout', 'flaky', 'pixelmatch', 'Pillow', 'mypy', 'setuptools',' wheel','black',
+                    'pre-commit', 'flake8', 'twine', 'pyOpenSSL', 'service_identity', 'pdoc3 ']
+
+for module in local_requirements:
+    try:
+        import  module  #引入需要的模块
+        print (module+'模块已安装')
+        break
+    except:
+        print (module+'模块未安装,现在准备开始安装')
+        os.system('pip install -i https://pypi.douban.com/simple/ '+module)
+        continue
+

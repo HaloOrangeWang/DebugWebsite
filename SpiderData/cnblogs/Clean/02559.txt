@@ -1,0 +1,20 @@
+最近项目不忙了~~有开始专研的python大业,上来想用pip安装一个第三方的库,就一直报错: Could not fetch URL https://pypi.org/simple/xrld/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='pypi.org', port=443): Max retries exceeded with url: /simple/xrld/ (Caused by SSLError(SSLError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:833)'),)) - skipping
+
+研究了好久只知道是证书的错误~按照度娘的指导尝试了如下方案:
+
+1.第一种尝试方式:直接下载get-pip.py文件,执行命令python get-pip.py 结果是:失败
+
+2.第二种尝试方式:加上--trusted-host 执行 pip install xrld -i https://pypi.org/simple --trusted-host pypi.org 结果是:失败
+
+3.第三种尝试:发现是url的来源的问题,换成了国内的pip源就可以正常安装了,我使用的是:pip install xlrd -i http://pypi.douban.com/simple --trusted-host pypi.douban.com,结果:Duang!Duang!Duang~成功
+
+1)http://mirrors.aliyun.com/pypi/simple/ 阿里云
+
+2)https://pypi.mirrors.ustc.edu.cn/simple/  中国科技大学
+
+3) http://pypi.douban.com/simple/  豆瓣
+
+4) https://pypi.tuna.tsinghua.edu.cn/simple/ 清华大学
+
+5)  http://pypi.mirrors.ustc.edu.cn/simple/ 中国科学技术大学
+

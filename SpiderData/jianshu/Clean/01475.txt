@@ -1,0 +1,12 @@
+在使用python做接口自动化测试，运行写好的用例却出现  SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:661)'),) 这样的错误。其实很简单，应该是你运行的时候同时也开着fiddler，只要你把fiddler关掉就不会出现这样的错误了。
+
+当然，如果你想既开着fiddler，又能成功运行测试用例的话，可以将Requests请求的默认参数verify改为False，再运行就可以了。
+
+我们会发现，更改之后运行不会报错了，但是却会发出警告。如果连这个警告都不想看见要怎么处理呢？
+
+很简单，首先来看python 2.X的处理方式：
+
+接着来看看python 3.X的处理方式：
+
+注意，前提是，都得将将Requests请求的默认参数verify改为False
+

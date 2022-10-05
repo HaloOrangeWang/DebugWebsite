@@ -1,0 +1,38 @@
+大家在安装spider（在终端输入pip install spider命令）做爬虫的时候，可能会遇到和我一样的问题（windows平台），故此总结，以供鉴别
+
+
+错误一：pycur未安装或者版本不匹配,可能报错如下：
+
+ERROR: Command errored out with exit status 10:
+     command: 'c:\users\pries\appdata\local\programs\python\python37-32\python.exe' -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'C:\\Users\\pries\\AppData\\Local\\Temp\\pip-install-cyn7gnar\\pycurl\\setup.py'"'"'; __file__='"'"'C:\\Users\\pries\\AppData\\Local\\Temp\\pip-install-cyn7gnar\\pycurl\\setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base pip-egg-info
+         cwd: C:\Users\pries\AppData\Local\Temp\pip-install-cyn7gnar\pycurl\
+    Complete output (1 lines):
+    Please specify --curl-dir=/path/to/built/libcurl
+    ----------------------------------------
+ERROR: Command errored out with exit status 10: python setup.py egg_info Check the logs for full command output.
+
+解决办法：
+
+事实上如果你发现报错的信息中有pycur的时候，你就需要考虑安装正确的pycurl库了。什么是正确的版本呢？根据你的操作系统位数和python版本决定。比如windows64位，python37，你就选择
+
+
+错误二：如果我们的python3版本为3.7及以上，即使正确安装了pycurl，也暂时不能正常工作，因为有个命运一般的必然。pyspider的作者在参数中用了async关键字（3.7以后被列为关键字）。因此会报类似以下错误
+
+File “D:\software\python\Lib\site-packages\pyspider\run.py”, line 231
+async=True, get_object=False, no_input=False):
+SyntaxError: invalid syntax
+
+解决办法
+
+分别打开python安装目录下的 yourpythonhome\Lib\site-packages\pyspider\run.py 、 yourpythonhome\Lib\site-packages\pyspider\fetcher\tornado_fetcher.py和 yourpythonhome\Lib\site-packages\pyspider\webui\app.py三个文件，将文件中参数为async的替换为别的任何非关键字以外的参数，保存下。别急，还没完，还有个文件yourpathonhome\Lib\site-packages\pyspider\webui\webdav.py，第209行，把原来的
+
+'domaincontroller': NeedAuthController(app)
+
+改为
+
+'http_authenticator': {
+        'HTTPAuthenticator': NeedAuthController(app),
+    },
+
+，就说明你成功了。
+

@@ -1,0 +1,50 @@
+问题源自
+
+exPath= './access_pvuv.xlsx'
+
+excel_pvuv= pd.read_excel( exPath )
+
+print(excel_pvuv)
+
+在终端读取代码的时候报错 提示xlrd>=1.0.0版本，可是终端就是2.1.0的版本呢了呀！！！
+
+后来发现PyCharm直接运行和终端效果不一样，按照下文的配置就可以解决问题了！！！
+
+路径：file-project interpreter-选择与Conda一样的环境即可。别忘了xlrd版本改为1.2.0哦
+
+最近我在用Macbook Pro练习PyTorch的时候，发现明明在终端已经用pip安装了PyTorch,但在pycharm运行时总是报错：No module named torch. 但是我把同样的代码用Spyder跑就没有问题，感动很费解，找了很多资料，终于弄明白了。原来Pycharm、Spyder和终端用的不是同一个环境，在终端安装的地方没有用在pycharm里面。
+
+　　下面记录一下解决办法：
+
+1、安装Anaconda3之后，有一个Anaconda Navigator应用程序，打开它，可以在其中的左侧边栏看到Environments这一个Tab，点击Environments 会列出由Anaconda管理的环境列表（把鼠标悬停在任意一个环境名称上，将会显示出该环境所在的目录路径，如/anaconda3/envs/my_workspace，这个目录可用于后续配置pycharm的运行环境），环境列表右侧是每个环境包含的python包列表【每个环境就类似一个独立的运行空间（与docker, virtualenv等概念类似），我们可以在一个环境中安装我们需要的其他第三方python包，如pandas,scikit-learn等】，我们写的项目代码需要选择一个环境作为依托。
+
+2、安装完Anaconda之后，打开Mac端，命令行的前缀会变成（base）Mac主机名：~当前用户名$，其中的base就是Anaconda的其中一个Environment, 就是当前被选中的Python运行环境，也是Anaconda Navigator的环境列表中的第一项。
+
+3、管理Conda环境的方法有两种：
+
+（1）通过Anaconda Navigator的图形界面，创建、删除环境
+
+（2）通过Mac的命令行终端程序(terminal)输入conda命令来创建、激活、删除环境（conda命令的使用方法可参考:使用conda管理python环境）我推荐使用conda命令，因为速度快。
+
+4、选定一个环境之后，怎么在其中安装、卸载python包，如pandas、tensorflow？有三种途径：
+
+（1）在终端利用conda命令:conda install 包名，或conda install 包名==包的版本号，如安装tensorflow2.0.0，可使用conda install tensorflow==2.0.0
+
+具体方法可参考：https://zhuanlan.zhihu.com/p/22678445，如果conda install时提示找不到指定的包，则需要添加Python包的源，国内可使用清华的源，前面的链接也有添加源的方法。
+
+（2）在终端适用pip，如pip install 包名==版本号，pip uninstall 包名。
+
+（3）在Anaconda Navigator的图形界面进行安装、删除python包的操作。但其操作效率不如前两种命令行的方式快。
+
+5、决定是否需要创建额外的环境：
+
+（1）如果开发工具使用Anaconda自带的Spyder，那么你无需在Anaconda Navigator或使用conda命令额外配置环境，使用默认的环境（base）即可，如需安装第三方python包，通过conda或pip命令即可。
+
+（2）如果使用PyCharm作为开发工具，则需要在base之外，再创建一个自定义的环境（使用conda命令或Anaconda Navigator）。再在pycharm进行设置使用这个自定义的环境。
+
+使用conda命令创建自定义环境（如命名为my_workspace）之后，在pycharm Mac版中，点击电脑左上角的pycharm按钮，再Preferance-Project:我的工程名称->Project Interpreter->在右侧的Project Interpreter下拉框的右侧->Select All...->左下角的加号->选择左侧的Conda Enviroment->单选Existing Environment->设置Interpreter的路径为我们在Anaconda Navigator中看到的my_workspace环境的路径（如本文的第1部分所述）【注意：进入该目录之后，需要继续往下找，找到其中的python可执行文件，因此完整路径为/anaconda3/envs/my_workspace/bin/python3.7 】，再点击OK即可。
+
+这样，以后如果这个工程再需要安装任何python包都可以通过conda命令和Anaconda Navigator来进行安装管理。
+
+本文转载自：https://www.cnblogs.com/aaronhoo/p/11662319.html
+

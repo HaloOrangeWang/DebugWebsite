@@ -1,0 +1,25 @@
+经测试可用的发送邮件代码：
+
+　　
+
+问题解决与注意点：
+
+1.报错：Error: A secure connection is requiered(such as ssl)
+
+解决：因为邮箱SSL验证的问题，因此把smtplib.SMTP()改成smtplib.SMTP_SSL()，端口号为465
+
+2.报错：535, b'Error: authentication failed'
+
+解决：可能是由于用户名不正确，因此代码中的用户名应该填写为邮箱地址@前面部分 ，或是在邮箱设置的帐户昵称，如下图昵称Morning和马赛克部分，都可作为用户名
+
+3.SMTP服务器可根据发送的邮箱做相应的选择，如代码中使用163邮箱则设为mail_host = "smtp.163.com"
+
+可以改成"smtp.126.com"、"smtp.qq.com"等等
+
+4.代码中的密码mail_pass为授权码，并非邮箱密码，授权码用于登录第三方邮件客户端的专用密码
+
+QQ邮箱可通过设置→帐户→生成授权码；网易邮箱126/163可通过设置→客户端授权密码
+
+原文：https://blog.csdn.net/dearmorning/article/details/81069075 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

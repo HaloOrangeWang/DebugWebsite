@@ -1,0 +1,39 @@
+
+异常解读
+
+在使用 OpenCV 进行代码编写时，会出现 TypeError: integer argument expected, got float 错误。
+
+该错误为类型错误，例如下述代码就会报错。
+
+img = cv.imread('10.jpg', 1)
+rows, cols, channels = img.shape
+M = np.float32([[1, 0, 100], [0, 1, 50]])
+res = cv.warpAffine(img, M, (cols*0.5, rows*0.5))
+cv.imshow("img", res)
+cv.waitKey()
+
+该错误位置如下图所示，此处需要 int 类型的值，但是进行 cols * 0.5 操作之后，出现 float 类型。
+
+
+异常解决方案
+
+类型强制转换即可。
+
+res = cv.warpAffine(img, M, (int(cols*0.5), int(rows*0.5)))
+
+
+附录
+
+本系列文章只供记录 Python 日常开发过程中 偶遇 BUG，提供给学生作为参考数据与解决方案用，属于记录型博客，有缘分看到的读者希望可解决你的问题。
+
+错误提示样板，可以与你的错误进行比对。
+
+Traceback (most recent call last):
+  File "e:/crawl100/opencv_ppt/10day.py", line 7, in <module>
+    res = cv.warpAffine(img, M, (cols*0.5, rows*0.5))
+TypeError: integer argument expected, got float
+
+本文同步分享在 博客“梦想橡皮擦”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

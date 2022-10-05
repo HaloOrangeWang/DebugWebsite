@@ -1,0 +1,48 @@
+<div class="noData" v-if="lifeList.length==0">
+<img src="../assets/images/noData.png" alt="">
+<p>这里暂时还没有内容哦~亲</p>
+</div>
+<mt-loadmore :top-method="loadTop" ref="loadTop" v-else>
+<div v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10">
+<LifeListItem :lists="lifeList" merchantType="user"></LifeListItem>
+<div class="loading-text" v-show="{loadingTextBtn:true}">
+<span v-text="loadingText"></span>
+<mt-spinner v-if="(loadingComplete==false)" type="snake" :size="16"></mt-spinner>
+</div>
+</div>
+<div class="refreshComplete" v-if="refreshComplete==true">帖子已更新</div>
+</mt-loadmore>
+
+由于我设定的页面默认进入的时候加载一次刷新函数，刚开始刷新完之后lifeList还不能及时更新过来，且我给该组件上加了v-else等判断，所以会报错：
+
+Error in mounted hook: "TypeError: Cannot read property 'onTopLoaded' of undefined"
+
+获取当前this.$refs可以看到有这个dom元素 loadTop
+但是this.$refs.loadTop打印则为undefined
+
+解决办法：
+
+loadTop(){
+        this.$store.dispatch('refreshLifeList', {
+          city: this.city,
+          country: this.country,
+          category: this.category,
+          page: 0,
+          size: this.size
+        });
+        this.page++;
+        if(this.lifeList.length>0){ //这个判断是新加的
+          this.$refs.loadTop.onTopLoaded();
+        }
+        this.refreshComplete = true;
+        setTimeout(() => {
+          this.refreshComplete = false;
+        }, 2000)
+      },
+
+给loadTop函数里的
+
+this.$refs.loadTop.onTopLoaded(); 做一个判断即可。
+
+或者在html中不要加v-if和v-else是否展示的判断都可。
+

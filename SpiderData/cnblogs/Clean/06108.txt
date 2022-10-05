@@ -1,0 +1,50 @@
+Centos7安装pip
+
+1.执行:yum install python-pip
+
+若没有python-pip包，先执行：yum -y install epel-release，再执行yum install python-pip
+
+2.pip install --upgrade pip
+
+centos默认安装了python2.7
+
+3.安装依赖包：
+
+安装的时候可能安装不上，或者其他什么问题，可以通过更换源来解决
+Linux(CentOS7.1)修改默认yum源为国内的阿里云yum源
+下载wget
+yum install wget -y
+echo 备份当前的yum源
+mv /etc/yum.repos.d /etc/yum.repos.d.backup4comex
+echo 新建空的yum源设置目录
+mkdir /etc/yum.repos.d
+echo 下载阿里云的yum源配置
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+然后重建缓存：
+yum clean all
+yum makecache
+
+4.在/usr/local/python3目录下
+
+5.切换到/usr/bin/目录下
+
+6.防止以后用yum源安装软件时报错,修改以下两项
+
+修改 /usr/bin/yum 的第一行
+
+修改 /usr/libexec/urlgrabber-ext-down的第一行
+
+7.验证
+
+8、这里还有一个问题是在使用pip安装模块的时候经常会报错
+
+[root@localhost Python-3.6.2]# pip install ipython==1.2.1
+Collecting ipython==1.2.1
+Could not fetch URL https://pypi.python.org/simple/ipython/: There was a problem confirming the ssl certificate: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:748) - skipping
+Could not find a version that satisfies the requirement ipython==1.2.1 (from versions: )
+No matching distribution found for ipython==1.2.1
+
+这是因为ssl证书没有认证，可以使用国内的镜像
+
+其中ipython是包的名字,这样即可解决。
+

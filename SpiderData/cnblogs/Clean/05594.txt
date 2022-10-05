@@ -1,0 +1,29 @@
+　　如题，安装docker后配置仓库报错：
+
+　　
+
+　　按提示看了yum-config-manage文件：
+
+[root@centos ~]# vi /usr/bin/yum-config-manager
+
+#!/usr/bin/python -tt
+
+　　这里的python并未指定版本，看看系统的版本
+
+[root@centos ~]# python -V
+Python 2.7.10
+
+　　实际python指向了2.7版本。而yum的python版本呢？
+
+[root@centos ~]# vi /usr/bin/yum
+
+　　所以现在很清楚了，用yum执行config命令时，yum本身的python是2.6版本的，而执行的config却指向2.7，所以报错了。
+
+　　怎么办？要么改yum的python版本，要么改config的，试试修改config
+
+[root@centos ~]# vi /usr/bin/yum-config-manager
+
+#!/usr/bin/python2.6 -tt
+
+　　再次配置docker仓库，没有再报错：
+

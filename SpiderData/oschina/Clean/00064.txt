@@ -1,0 +1,24 @@
+python在安装时，默认的编码是ascii，当程序中出现非ascii编码时，python的处理常常会报这样的错，python没办法处理非ascii编码的，此时需要自己设置将python的默认编码，一般设置为utf8的编码格式。
+
+我在写一个脚本存储数据到csv时
+
+1 with open('result_data2.csv', 'w') as file_out:
+2     file_out.write(codecs.BOM_UTF8)
+3     csv_writer = csv.writer(file_out)
+4     for item in ret_list:
+5         csv_writer.writerow(item)
+
+因为数据有类似u'xb7'的unicode编码时出现了错误，不得不重新跑一遍，郁闷啊。
+
+解决如下：开头添加
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+注：Python3字符串默认编码unicode, 该语句会报错sys.setdefaultencoding，
+
+AttributeError: module 'sys' has no attribute 'setdefaultencoding'
+
+DONE。
+

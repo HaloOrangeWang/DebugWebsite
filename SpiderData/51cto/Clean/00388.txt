@@ -1,0 +1,28 @@
+首先下载及安装cx_Oracle：
+
+下载地址：http://www.lfd.uci.edu/~gohlke/pythonlibs/
+
+安装：pip3.6 install E:\Python36\Scripts\cx_Oracle-6.0.2-cp36-cp36m-win_amd64.whl
+
+编写一个简单的测试代码：
+
+运行代码，结果居然报错了！
+
+报错内容如下：
+
+conn = ora.connect('temp/admin@localhost:1521/orcl')
+
+UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 82-83: invalid continuation byte
+
+一看就是一个字符编码的问题，但无论怎么设置都不能解决问题，在网上也找了类似的错误解决方案，都不能得到解决。
+
+在百度看见一条说系统、oracle客户端、Python要同样是64位或者32位的，不然就报这个错误。
+
+我的电脑系统是64位、Python也是64位的，但是oracle客户端确是32的，这是因为我要连接plsql developer，以前的版本不支持64的客户端。
+
+这样我删除了32位的oracle客户端，重新安装了64位的客户端，结果发现还是会报同样的错误，我就郁闷了，突然灵光一闪环境变量没有配，Python是需要oci.dll文件的，我就在环境变量中做了一下配置：
+
+e:\Oracle\Instant Client\bin
+
+重启IDE，再次运行，问题解决。
+

@@ -1,0 +1,60 @@
+python check_redis.py
+
+2017-08-02 11:00:58 [INFO] check redis controller started.
+
+./include/functions.py:45: Warning: Out of range value for column 'rdb_changes_since_last_save' at row 1
+
+curs.execute(sql,param)
+
+./include/functions.py:45: Warning: Out of range value for column 'rdb_changes_since_last_save' at row 1
+
+curs.execute(sql,param)
+
+./include/functions.py:45: Warning: Out of range value for column 'rdb_changes_since_last_save' at row 1
+
+curs.execute(sql,param)
+
+./include/functions.py:45: Warning: Out of range value for column 'keyspace_hits' at row 1
+
+2017-09-12 09:54:00 [INFO] check redis controller started.
+
+se "encoding" instead
+
+'"charset" is deprecated. Use "encoding" instead'))
+
+mysql execute: (1264, "Out of range value for column 'rdb_changes_since_last_save' at row 1")
+
+mysql execute: (1264, "Out of range value for column 'rdb_changes_since_last_save' at row 1")
+
+修改lepus库的的redis表字段结构解决：
+
+mysql> alter table redis_status modify rdb_changes_since_last_save int(10);
+
+Query OK, 15 rows affected (0.01 sec)
+
+Records: 15  Duplicates: 0  Warnings: 0
+
+mysql> alter table redis_status modify keyspace_hits bigint(4);
+
+Query OK, 15 rows affected (0.02 sec)
+
+Records: 15  Duplicates: 0  Warnings: 0
+
+mysql> alter table redis_status_history modify keyspace_hits bigint(4);
+
+Query OK, 187 rows affected (0.02 sec)
+
+Records: 187  Duplicates: 0  Warnings: 0
+
+mysql> alter table redis_status_history modify rdb_changes_since_last_save int(10);
+
+Query OK, 187 rows affected (0.02 sec)
+
+Records: 187  Duplicates: 0  Warnings: 0
+
+[root@cacti lepus]# python check_redis.py
+
+2017-09-13 12:01:38 [INFO] check redis controller started.
+
+2017-09-13 12:01:39 [INFO] check redis controller finished.
+

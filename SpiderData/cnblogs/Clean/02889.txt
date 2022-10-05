@@ -1,0 +1,16 @@
+系统配置：Windows10 x64, Visual Studio 2017, Python2.7.1
+
+报错信息：error: Unable to find vcvarsall.bat
+
+报错原因：在生成的时候，编译器从%PythonInstallPath%\distutils\msvc9compiler.py里的219行find_vcvarsall(version)函数中找不到vcvarsall.bat文件。
+
+更具体的原因是，msvc9compiler.py从sys.version里提取MSVC的版本号，但是在注册表中并没有根据版本号找到vcvarsall.bat，在系统的环境变量中也没有找到版本号对应的路径。后来我根据版本号，在环境变量中添加了路径，但因为msvc9compiler.py主要是针对VS2008和VS2010所做的路径识别，因此还是不能正确地找到vcvarsall.bat。
+
+解决方法：直接在find_vcvarsall(version)函数中返回vcvarsall.bat的绝对路径。
+
+例如在我的计算机中，msvc9compiler.py的路径是D:\Program Files\Python27\Lib\distutils\msvc9compiler.py，其中find_vcvarsall在第217行，vcvarsall.ba的路径是C:\Users\user\AppData\Local\Programs\Common\Microsoft\Visual C++ for Python\9.0\vcvarsall.bat"。在def find_vcvarsall(version):下面直接添上
+
+保存即可。
+
+以下为安装jpype成功的日志
+

@@ -1,0 +1,48 @@
+(venv3) [root@vps tmp]# python3 ip2.py 
+Traceback (most recent call last):
+  File "ip2.py", line 28, in <module>
+    query_ip("61.140.126.121")
+  File "ip2.py", line 24, in query_ip
+    print(info)
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 20-25: ordinal not in range(128)
+
+Python3 执行的时候会报错，查看环境语言
+
+[dragonite@vps ~]$ locale
+LANG=C
+LC_CTYPE="C"
+LC_NUMERIC="C"
+LC_TIME="C"
+LC_COLLATE="C"
+LC_MONETARY="C"
+LC_MESSAGES="C"
+LC_PAPER="C"
+LC_NAME="C"
+LC_ADDRESS="C"
+LC_TELEPHONE="C"
+LC_MEASUREMENT="C"
+LC_IDENTIFICATION="C"
+LC_ALL=
+
+设置成UTF-8
+
+echo 'export LANG=en_US.UTF-8' >> ~/.bashrc
+
+重新登录即可
+
+[root@vps dragonite]# locale
+LANG=en_US.UTF-8
+LC_CTYPE="en_US.UTF-8"
+LC_NUMERIC="en_US.UTF-8"
+LC_TIME="en_US.UTF-8"
+LC_COLLATE="en_US.UTF-8"
+LC_MONETARY="en_US.UTF-8"
+LC_MESSAGES="en_US.UTF-8"
+LC_PAPER="en_US.UTF-8"
+LC_NAME="en_US.UTF-8"
+LC_ADDRESS="en_US.UTF-8"
+LC_TELEPHONE="en_US.UTF-8"
+LC_MEASUREMENT="en_US.UTF-8"
+LC_IDENTIFICATION="en_US.UTF-8"
+LC_ALL=
+

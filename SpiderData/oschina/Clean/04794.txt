@@ -1,0 +1,45 @@
+
+libvirt 的一些报错总结
+
+
+出现Permission denied
+
+error: internal error process exited while connecting to monitor: qemu-system-x86_64: -drive file=/home/d/shixun/vm/vdisk.img,if=none,id=drive-ide0-0-0,format=qcow2: could not open disk image /home/d/shixun/vm/vdisk.img: Permission denied
+
+解决方案：
+
+更改/etc/libvirt/qemu.conf，取消下面两行的注释
+
+user = "root"
+
+group = "root"
+
+
+libvirtd无法重启
+
+这是因为qemu.conf或者libvirtd.conf等文件配置被更改或者程序被占用
+
+查看运行进程
+
+ps aux | grep libvirtd
+
+然后尝试恢复文件配置，执行：
+
+service libvirtd restart
+
+
+libvirtd的运行日志
+
+在运行libvirtd的时候,我们需要获得lbivirtd的运行信息.所以我们需要找到他的日志文件.一般情况下,它是在/var/log/libvirt/libvirtd.log路径下.
+
+可能在这个目录下没有发现这个的日志文件.那么就要配置一些libvitd的参数了.
+
+编辑文件/etc/libvirt/libvirtd.conf
+
+修改下面两处：
+
+设置日志级别
+ 　　log_level = 1 　指定日志输出名称 　　log_outputs="1:file:/var/log/libvirt/libvirtd.log"
+
+然后查看 tail  -f  /var/log/libvirt/libvirtd.log
+

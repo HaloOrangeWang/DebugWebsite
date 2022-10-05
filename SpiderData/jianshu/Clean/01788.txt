@@ -1,0 +1,100 @@
+当我使用crontab定时执行Python脚本时报错：
+
+ImportError: No module named 'selenium'
+
+但是我在IDE或者终端运行时都没有出错啊。
+
+那么是什么原因导致的这种错误的呢，下面是我定时执行的代码：
+
+26 * * * * /usr/local/bin/python3 /Users/name/Projects/python/src/Crawl.py > /Users/name/Projects/python/xls/crawl.log 2>&1 &
+
+也没有问题啊
+
+查阅了资料才知道，是因为我的电脑中安装了不止一个Python版本，在crontab执行定时任务时我们必须要写出Python的全部路径。
+
+我在终端输入 which python3 输出是：/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
+
+但是输入 which Python时会输出：/usr/local/bin/python
+
+所以我在crontab中写的路径/usr/local/bin/python3是不存在的，所以是没办法正确执行的。知道了原因我们应该怎么修改呢？
+
+由于当时自己安装Python3 的姿势不太正确所以我打算重新卸载以后再安装
+
+1、卸载Python3：
+
+第一步：删除框架
+
+sudo rm -rf /Library/Frameworks/Python.framework/Versions/3
+
+第二步：删除应用目录
+
+sudo rm -rf "/Applications/Python 3"
+
+第三步：删除指向python的链接
+
+cd /usr/local/bin/
+
+ls -l /usr/local/bin | grep '/Library/Frameworks/Python.framework/Versions/3'                             # 查看链接
+
+brew prune                  # 清除链接和目录
+
+最关键的是一定要去目录/Library/Frameworks/Python.framework/Versions去把里面的Python3的文件全部删除，要不然会影响后面Pytho3的安装可link的。
+
+2、安装Python3
+
+第一步：下载Python3
+
+brew install python
+
+（这个时候可能会报错：
+
+Error: Another active Homebrew update process is already in progress.
+
+Please wait for it to finish or terminate it to continue.
+
+Error: python 2.7.12_2 is already installed
+
+不要慌，终端给的提示执行brew upgrade python就好了）
+
+第二步：执行link操作
+
+brew link python3
+
+（如果报错：
+
+Error: Could not symlink share/man/man1/python3.1
+
+Target /usr/local/share/man/man1/python3.1
+
+already exists. You may want to remove it:
+
+rm '/usr/local/share/man/man1/python3.1'
+
+还是安装提示执行brew link --overwrite python3，你就会link成功的）
+
+出现：Linking /usr/local/Cellar/python/3.7.1... 24 symlinks created 那就恭喜你你已经link成功了
+
+执行：which python3
+
+正确的输出是：/usr/local/bin/python3
+
+如果你的输出不是这样的，那么就看上面我说的，要清除/Library/Frameworks/Python.framework/Versions里面的Python3的文件。清除以后再执行第二步brew link python3即可。
+
+3.install Selenium
+
+按照上面的两个步骤我们已经成功的安装并且配置了Python3的path。那最后一步就是install相关库了。
+
+重点来了：一定要cd到你Python3安装位置的目录下install Selenium。
+
+第一步：
+
+cd 到/usr/local/Cellar/python/3.x/bin
+
+第二步：
+
+pip3 install -U selenium
+
+哈哈，如果又报错了，说Selenium已经存在，那就pip uninstall selenium以后再instal啦~
+
+OK，终于大功告成了~
+

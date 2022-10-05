@@ -1,0 +1,21 @@
+
+R语言install.packages("jpeg")时报错
+
+In file included from read.c:1:0:
+
+rjcommon.h:11:21: fatal error: jpeglib.h: No such file or directory
+
+rjcommon.h:11:21: 致命错误：jpeglib.h：没有那个文件或目录
+
+#include <jpeglib.h>compilation terminated.
+
+make: *** [read.o] Error 1
+
+ERROR: compilation failed for package ‘jpeg’* removing ‘/usr/local/lib64/R/library/jpeg’
+
+其实是缺少libjpeg的开发包内包含的头文件
+
+安装libjpeg-devel即可
+
+yum install libjpeg-devel
+

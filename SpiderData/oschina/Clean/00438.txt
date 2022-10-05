@@ -1,0 +1,86 @@
+
+AttributeError: module 'pip' has no attribute 'main报错
+
+找到安装目录下 helpers/packaging_tool.py文件，找到如下代码：
+ def do_install(pkgs):
+    try:
+        import pip
+    except ImportError:
+        error_no_pip()
+    return pip.main(['install'] + pkgs)
+
+def do_uninstall(pkgs):
+    try:
+        import pip
+    except ImportError:
+        error_no_pip()
+    return pip.main(['uninstall', '-y'] + pkgs)     修改为如下，保存即可。 def do_install(pkgs):
+    try:
+        # import pip
+        try:
+            from pip._internal import main
+        except Exception:
+            from pip import main
+    except ImportError:
+        error_no_pip()
+    return main(['install'] + pkgs)
+
+def do_uninstall(pkgs):
+    try:
+        # import pip
+        try:
+            from pip._internal import main
+        except Exception:
+            from pip import main
+    except ImportError:
+        error_no_pip()
+    return main(['uninstall', '-y'] + pkgs)
+
+找到安装目录下 helpers/packaging_tool.py文件，找到如下代码：
+
+def do_install(pkgs):
+    try:
+        import pip
+    except ImportError:
+        error_no_pip()
+    return pip.main(['install'] + pkgs)
+
+def do_uninstall(pkgs):
+    try:
+        import pip
+    except ImportError:
+        error_no_pip()
+    return pip.main(['uninstall', '-y'] + pkgs)
+
+修改为如下，保存即可。
+
+def do_install(pkgs):
+    try:
+        # import pip
+        try:
+            from pip._internal import main
+        except Exception:
+            from pip import main
+    except ImportError:
+        error_no_pip()
+    return main(['install'] + pkgs)
+
+def do_uninstall(pkgs):
+    try:
+        # import pip
+        try:
+            from pip._internal import main
+        except Exception:
+            from pip import main
+    except ImportError:
+        error_no_pip()
+    return main(['uninstall', '-y'] + pkgs)
+
+在下载python库的时候，由于国内网络原因，python包的下载速度非常慢，查看pip 文档，只要在 pip的时候控制超时即可, 具体参数为 --default-timeout=100， 后面的时间可以自己指定。
+
+解决方法
+
+pip --default-timeout=100 install gevent
+
+pip --default-timeout=100 install gevent
+

@@ -1,0 +1,32 @@
+在虚拟环境RAC中，测试修改scanip到与public ip不同的网段
+
+public ip：
+
+rac1:192.168.133.120
+
+rac2:192.168.133.121
+
+scan ip:192.168.133.130
+
+现将scan ip修改到192.168.13网段
+
+出现报错：
+
+PRCS-1076 : Invalid Single Client Access Name scanip. The subnet 192.168.13.0 of SCAN VIP 192.168.13.130 differs from the subnet 192.168.133.0 of network 1
+
+多次测试，scanip无法单独修改到不同网段
+
+查询官方文档：
+
+PRCS-01076: Invalid Single Client Access Name {0}. The subnet {1} of SCAN VIP {2} differs from the subnet {3} of network {4}
+
+Cause:
+
+The SCAN VIPs resolved from the specified Single Client Access Name are
+
+in a subnet that differs from the network's subnet.
+
+Action: Use the SCAN name that can be resolved to the SCAN VIPs in the same subnet of network resource.
+
+如果要修改scan ip到不同网段，public ip也需要同步修改
+

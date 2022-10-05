@@ -1,0 +1,198 @@
+
+错误1： 检查环境时，no module named docker
+
+pip install docker-compose
+
+
+错误2：环境检查时，nova任务时报错TASK [nova : Ensuring config directories exist]
+
+"The conditional check 'inventory_hostname in groups[item.value.group]' failed，The error appears to be in '/usr/share/kolla-ansible/ansible/roles/nova/tasks/config.yml': line 14
+
+尝试清除缓存，重新执行
+
+kolla-ansible destroy ./all-in-one --yes-i-really-really-mean-it
+
+错误依然，查看kolla-ansible/ansible/roles/nova/tasks/config.yml，第14行的作用：创建neutron各服务的配置文件目录，查看/etc/kolla下自动启动的组件有相应文件夹及配置文件，因此手动创建
+
+mkdir /etc/kolla/nova
+
+touch /etc/kolla/nova/nova.conf
+
+问题的根本原因是pip安装的kolla-ansible与克隆的代码的all-in-one不匹配
+
+需要手动安装kolla-ansible
+
+python kolla-ansible/setup.py install
+
+
+错误3：在dashboard上创建实例报错，但是命令行可以创建
+
+Error:Failed to perform requested operation on instance "test3", the instance has an error status: Please try again later [Error: Build of instance 5f875c14-2050-42c2-a749-09ec2162e68c aborted: Volume dfc5e50e-9034-4467-ab67-091362f18309 did not finish being created even after we waited 0 seconds or 1 attempts. And its status is error.].
+
+查看nova日志
+
+cat /var/log/kolla/nova/nova-compute.log
+​
+Instance failed block device setup: VolumeNotCreated
+
+错误为存储卷没有创建，说明可能是cinder的问题
+
+查看cinder日志
+
+tail -f /var/log/kolla/cinder/cinder-volume.log
+​
+ERROR cinder.cmd.volume [-] Configuration for cinder-volume does not specify "enabled_backends". Using DEFAULT section to configure drivers is not supported since Ocata.
+
+查看volume状态
+
+openstack volume service list
+​
+cinder-backup\cinder-volume：down
+
+发现cinder-volume服务的状态为:down，猜测问题的根本原因就在这里
+
+解决方法：创建cinder-volumes卷组
+
+1. dd if=/dev/zero of=./disk.img count=200 bs=512MB
+​
+2. losetup -f
+​
+3. losetup /dev/loop0 disk.img
+​
+4. pvcreate /dev/loop0
+​
+5. vgcreate cinder-volumes /dev/loop0
+
+创建好卷组，重新部署，查看cinder-volume的状态为up
+
+
+错误4：登录权限问题
+
+使用命令行操作时，初次登陆操作会显示如下错误
+
+Missing value auth-url required for auth plugin password
+
+执行一下凭证文件
+
+. /etc/kolla/admin-openrc.sh
+
+
+错误5：glance连接ceph后创建镜像，状态一直是：queued，查看glance日志
+
+ERROR glance.common.wsgi ObjectNotFound: [errno 2] error calling conf_read_file
+
+创建镜像一直排队，说明数据无法写入，日志信息说明glance读取配置文件时出错了
+
+修改配置文件后，日志中又出现其他错误，但是说明可以读到配置文件了：
+
+1. glance_store._drivers.rbd ObjectNotFound: [errno 2] error connecting to the cluster
+​
+2. Failed to upload image data due to internal error: BackendException
+
+错误显示glance无法连接cluster，猜测是由于ceph认证失败导致，
+
+解决方法：
+
+将/etc/ceph/ceph.client.admin.keyring拷入glance_api容器的/etc/ceph下
+
+
+错误6：连接ceph，创建虚拟机之后，实例无法启动，显示：no bootable device
+
+上传镜像的格式问题，需转为raw格式
+
+
+错误7：更改挂载盘之后的问题
+
+更改docker挂载盘之后，某些容器一直重启中，清除所有容器之后重新部署，某些容器还是一直重启中，猜测与镜像有关，执行下面命令，清除所有的镜像文件
+
+docker rmi $(docker images -q)
+
+重新载入镜像
+
+docker load -i super.tar
+
+重新执行部署
+
+
+错误8：mariadb等待VIP超时
+
+检查/etc/kolla/globals.yml文件，将kolla_internal_vip_address配置项注释掉
+
+
+错误9：no module named decorate
+
+需要升级包
+
+pip install -U decorate
+
+
+错误10： 安装openstack CLI客户端时
+
+ERROR: Cannot uninstall 'pyOpenSSL'，执行下面的命令进行安装
+
+pip install python-openstackclient --ignore-installed pyOpenSSl
+
+
+错误11： 环境检查时，gather facts卡顿很久
+
+重启机器自然解决
+
+
+错误12： 删除镜像失败，glance日志显示权限错误
+
+原因：镜像中有一个snapshot，ceph对于snapshot是保护的，需要先删除snapshot，才能删除镜
+
+
+错误13：生成密码时，报错：'module' object has no attribute '_ssl write_string'
+
+根据提示检查cryptography是否安装了两个版本，彻底卸载重装
+
+
+错误14：检查环境，check libvirt is not running
+
+需要libvirt是关闭的状态
+
+systemctl libvirtd stop
+
+
+错误15：创建实例等待超时，查看日志：Stashed volume connector host is localhost.: BuildAbortException
+
+猜测是卷组空间不足
+
+# 查看卷组空间
+vgs
+​
+1. dd if=/dev/zero of=./disk.img count=200 bs=512MB
+​
+2. losetup -f
+​
+3. losetup /dev/loop1 disk.img
+​
+4. pvcreate /dev/loop1
+​
+# 将新建pv扩展至已存在的卷组
+5. vgextend cinder-volumes /dev/loop1
+​
+# 重启容器
+docker ps -a | grep kolla | awk '{print $1}' | xargs docker restart
+
+
+错误16：环境检查时的错误
+
+ERROR! An unhandled exception occurred while templating '{{ neutron_tenant_network_types.replace(' ', '').split(',') | reject('equalto', '') | list }}'. Error was a <class 'jinja2.exceptions.TemplateRuntimeError'>, original message: no test named 'equalto'
+
+解决方法：
+
+pip install jinja2
+
+
+错误17：Error response from daemon: No such container: mariadb"
+
+　　某一个节点无法启动mariadb容器
+
+　　销毁之后，查看docker是否还有mariadb的volume
+
+docker volume ls
+
+docker volume rm [id]
+

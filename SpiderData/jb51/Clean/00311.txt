@@ -1,0 +1,132 @@
+import Exception
+# except 在捕获错误异常的时候 是要根据具体的错误类型来捕获的
+# 用一个块 可以捕获多个不同类型的异常
+# EXception 可以捕获所有异常 当对出现的问题或者错误不确定的情况下 可以使用此种
+print(dir(Exception))
+try:
+    # print(b)  #捕获逻辑的代码
+    li=[1,2,3,4]
+    print(li[10])
+    pass
+except NameError as msg:
+    # 捕获到的错误 才会在这里执行
+    print(msg)
+    pass
+except IndexError as msg:
+    print(msg)
+print('初次接触异常')
+print('HAHAHAHAHHAHAHAH')
+
+try:
+    # print(b)  #捕获逻辑的代码
+    # li=[1,2,3,4]
+    # print(li[10])
+    a=10/0
+    pass
+except NameError as msg:
+    # 捕获到的错误 才会在这里执行
+    print(msg)
+    pass
+except IndexError as msg:
+    print(msg)
+    pass
+except ZeroDivisionError as msg:
+    print(msg)
+print('初次接触异常')
+print('HAHAHAHAHHAHAHAH')
+
+异常类型
+
+try:
+    print(b)  #捕获逻辑的代码
+    # li=[1,2,3,4]
+    # print(li[10])
+    # a=10/0
+    pass
+# except NameError as msg:
+#     # 捕获到的错误 才会在这里执行
+#     print(msg)
+#     pass
+# except IndexError as msg:
+#     print(msg)
+#     pass
+# except ZeroDivisionError as msg:
+#     print(msg)
+#     pass
+except Exception as msg:
+    print(msg)
+    pass
+print('初次接触异常')
+print('HAHAHAHAHHAHAHAH')
+
+def A(s):
+    return 10/int(s)
+    pass
+def B(s):
+    return A(s)*2
+def main():
+    try:
+        B('0')
+        pass
+    except Exception as msg:
+        print(msg)
+        pass
+    pass
+main()
+# 不需要在每个可能出错的地方去捕获,只要在合适的层次去捕获错误就可以了 这样的话 就大大减少我们写try----exception的麻烦
+# 异常的抛出机制
+#如果在运行时发生异常 解释器会查找相应的异常捕获类型
+#如果在当前函数里面没有找到的话 它会将异常传递给上层的调用函数
+#如果在最外层 没有找到的话 解释器就会退出 程序down掉
+
+class ToolongmyException(Exception): #自定义异常
+    def __init__(self,leng):
+        '''
+         :param leng:长度
+        '''
+        self.len=leng
+    pass
+    def __str__(self):
+        return '您输入的数据长度是'+str(self.len)+'已经超过长度了'
+    pass
+def name_Test():
+    name=input('请输入姓名：')
+    if len(name)>5:
+        raise ToolongmyException(len(name))   #抛出异常
+    else:
+        print(name)
+        pass
+    pass
+name_Test()
+
+class ToolongmyException(Exception): #自定义异常
+    def __init__(self,leng):
+        '''
+         :param leng:长度
+        '''
+        self.len=leng
+    pass
+    def __str__(self):
+        return '您输入的数据长度是'+str(self.len)+'已经超过长度了'
+    pass
+def name_Test():
+    name=input('请输入姓名：')
+    try:
+        if len(name)>5:
+            raise ToolongmyException(len(name))   #抛出异常
+        else:
+            print(name)
+            pass
+    except ToolongmyException as result:
+        print(result)
+        pass
+    finally:
+        print('执行完毕了')
+    pass
+name_Test()
+
+
+总结
+
+本篇文章就到这里了，希望能够给你带来帮助，也希望您能够多多关注脚本之家的更多内容！
+

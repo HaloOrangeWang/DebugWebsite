@@ -1,0 +1,136 @@
+@[TOC](win10+cuda8.0+cudnn5+caffe 配置caffe(GPU)框架)
+
+
+准备工作
+
+最好就按照以下配置进行安装，可能其他版本会出现不兼容的情况
+
+python2.7 这里推荐使用anaconda2 下载链接
+
+vs2013(可以去官网下载社区版，也可以在此处链接下载) 下载链接 提取码：uawc
+
+cuda8.0下载链接
+
+cudnn5 下载链接 cudnn下载需要注册一下，在按照下面的提示完成下载
+
+caffe文件(我们使用微软版本) 下载链接
+
+或者使用打包好的链接一起下载下载链接 提取码：6j3k
+
+cudnn官网下载：
+
+
+安装环节（最好不要有中文路径）
+
+python安装跟着安装文件走就行，记得把路径添加到环境变量中
+
+vs2013 如果是在链接中下载的，请参照此处转载
+ Visual Studio Ultimate 2013 KEY（密钥）：BWG7X-J98B3-W34RT-33B3R-JVYW9
+
+cuda安装也是跟着安装文件走，直接精简安装就行
+
+cudnn压缩包解压之后，将\cudnn-8.0-windows10-x64-v5.1\cuda路径下的三个文件夹移到与cuda文件夹同一级文件夹下
+
+caffe直接解压
+
+
+caffe配置
+
+将 \windows 路径下的 CommonSettings.props.example 复制一份，在原路径中粘贴生成副本文件，改为CommonSettings.props
+
+用vs2013打开CommonSettings.props文件，进行配置修改(这里以GPU+python+matlab为例，如果不需要里面的哪一项，将那一项改成false就行)
+
+将
+
+<CpuOnlyBuild>false</CpuOnlyBuild>
+<UseCuDNN>true</UseCuDNN>
+<CudaVersion>7.5</CudaVersion>
+
+改为
+
+<CpuOnlyBuild>false</CpuOnlyBuild>
+<UseCuDNN>true</UseCuDNN>
+<CudaVersion>8.0</CudaVersion>
+
+如果使用python
+ 将
+
+<PythonSupport>false</PythonSupport>
+
+改为
+
+<PythonSupport>true</PythonSupport>
+
+将下面的
+
+<PythonDir>C:\Miniconda2\</PythonDir>
+
+路径改为自己电脑中python路径（例：
+
+<PythonDir>C:\ProgramData\Anaconda2\</PythonDir>
+
+如果使用matlab
+ 将
+
+<MatlabSupport>false</MatlabSupport>
+
+改为
+
+<MatlabSupport>true</MatlabSupport>
+
+下面的matlab路径
+
+<MatlabDir>C:\Program Files\MATLAB\R2014b</MatlabDir>
+
+改为自己电脑中matlab的路径（例：
+
+<MatlabDir>E:\matlab</MatlabDir>
+
+添加cudnn路径
+ 将
+
+<CuDnnPath></CuDnnPath>
+
+改为(例：
+
+<CuDnnPath>E:\A_Win10\下载\cudnn-8.0-windows10-x64-v5.1</CuDnnPath>
+
+至此配置文件就修改完成了
+
+
+caffe编译
+
+用vs2013 打开 caffe相关文件夹下 \windows 中的caffe.sln文件
+
+在caffe文件处右键点击，将它设置成启动程序
+
+分别在caffe libcaffe matcaffe pycaffe 处右键–属性–C/C++,将（将警告视为错误）改成否
+
+将编译模式改为 Release X64
+
+更改Nuget源（官方源下载速度很慢）国内源地址
+ 步骤：
+ vs2013–工具–NuGet包管理器–程序包管理器设置–程序包源
+ 在里面添加新的程序包源（名称随便，源就是相应的源地址），并调整优先级
+
+对项目进行编译，如果编译通过，则运行生成相应的文件。（后面会附上常见的编译错误解决方案）
+
+编译运行完成之后，在路径 \caffe-master\Build\x64\Release 下会生成一个caffe.exe文件
+
+将\caffe-master\Build\x64\Release 的完整路径（例如：E:\A_Win10\下载\caffe-master\Build\x64\Release） 添加到系统环境变量（此电脑–属性–高级系统设置–环境变量–下面的系统变量找到Path–编辑–新建–把上面的路径粘贴下来）就完成了
+
+验证caffe是否安装成功：win+R–> cmd 调出命令提示符 输入 caffe 运行，如果出现一下内容则框架就搭建好了：
+
+如果在下载NUGet包时失败，多试几遍。在搭建完框架之后重启一下电脑
+
+
+常见的编译错误以及解决方案
+
+libcaffe和test_all加载失败：
+ 可能是cuda和cudnn版本有问题，caffe只支持cudnn 4或5
+
+错误提示不能打开头文件
+ 在电脑本地找到相应头文件的完整路径，替换报错位置的头文件路径在编译
+
+其他问题可以直接浏览器搜索一下，有csdn大佬发布了各种解决方案
+

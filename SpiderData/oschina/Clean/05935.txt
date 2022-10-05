@@ -1,0 +1,165 @@
+如果我看得更远一点的话，是因为我站在巨人的肩膀上
+
+——牛顿
+
+牛顿这句话大概就是说，有了前人知识的积累，我直接学会，拿来用，不用自己重新发明创造这些知识、原理了。我在运用这些知识，加上自己的创新，创造、发现基于这些知识、理论的东西。
+
+R语言里面有大量的包，我们需要的时候，只需要一个简单的libray(package-name)即可。我们用R语言的这些包，也是这方面的顶级程序员花时间、动脑筋写出来的，封装好了供我们使用。可能，有一些简单的包的功能，我们自己可以写。
+
+但是，我们不想重复造轮子。
+
+现在在软件开发行业，要么公司内部自己开发一套，后面几乎可以一劳永逸，一直使用，不用大的修改。大部分的软件框架，都是使用别人开发好的，这些开发好的，有开源的，比如基于开源协议的linux、python等等，还有开源组织的apache基金会等等，这些框架都是由世界上有着相同兴趣爱好、顶级程序员开发出来的，其它人，拿来即用即可。
+
+啰嗦了这么多，下面进入今天的正题。
+
+package ‘airway’ is not available (for R version 3.1.0)
+
+很多人包括我自己在安装R包的时候都会遇到一些各种各样的问题，很多时候都是熟手无策，通常情况下，这些问题，还是可以尝试一些解决办法的，纯属经验之谈。
+
+结合自己的经验，也在网上找了一些过来人的经验之谈，通常有这么些做法，遇到问题时候，可以按照这个思路去尝试一下。
+
+
+如何查看你已经安装了和可以安装哪些R包？
+
+最近经常出现一个错误，类似于package ‘airway’ is not available (for R version 3.1.0)
+
+就是某些包在R的仓库里面找不到，这个错误非常普遍，stackoverflow上面非常详细的解答：
+
+http://stackoverflow.com/questions/25721884/how-should-i-deal-with-package-xxx-is-not-available-for-r-version-x-y-z-wa
+
+在阅读这个答案的时候，我发现了一个非常有用的函数！available.packages()可以查看自己的机器可以安装哪些包！
+
+R语言里面的包其实是很简单的，因为它自带了一个安装函数install.packages()基本上可以解决大部分问题！
+
+但是如果出问题也是蛮复杂的，因为要考虑的东西很多:
+
+首先你的R语言安装在什么机器什么？（linux(ubuntu?centos?),window,mac）
+
+首先你的R语言安装在什么机器什么？（linux(ubuntu?centos?),window,mac）
+
+其次你的R是什么版本:(3.1 ? 3.2 ?  http://www.bio-info-trainee.com/1307.html )
+
+其次你的R是什么版本:(3.1 ? 3.2 ?  http://www.bio-info-trainee.com/1307.html )
+
+然后你的安装器是什么版本？（主要针对于bioconductor包的安装）
+
+然后你的安装器是什么版本？（主要针对于bioconductor包的安装）
+
+然后你的联网方式是什么？https ？http ？
+
+然后你的联网方式是什么？https ？http ？
+
+最后你选择的R包镜像是什么？
+
+最后你选择的R包镜像是什么？
+
+我们首先要知道自己的R包安装到了什么地方?
+
+1> .libPaths()
+2[1] "C:/Users/jmzeng/Documents/R/win-library/3.1"
+3[2] "C:/Program Files/R/R-3.1.0/library"
+
+这样可以直接进入这些目录去看看有哪些包，每个包都会有一个文件夹！
+
+其次你可以用installed.packages()查看你已经安装了哪些包
+
+1> colnames(installed.packages())
+2 [1] "Package"               "LibPath"               "Version"              
+3 [4] "Priority"              "Depends"               "Imports"              
+4 [7] "LinkingTo"             "Suggests"              "Enhances"             
+5[10] "License"               "License_is_FOSS"       "License_restricts_use"
+6[13] "OS_type"               "MD5sum"                "NeedsCompilation"     
+7[16] "Built"
+
+最后你可以用available.packages()可以查看自己的机器可以安装哪些包！可以具体到你所安装的包的16个信息！！！
+
+####
+
+ap <- available.packages()
+> dim(ap)
+
+[1] 7662   17
+
+可以得到你现在所要能够安装的包！！
+
+得到的ap是一个矩阵[1] 7662   17 如下：
+
+我们就很容易查看自己想安装的包是否存在于正在使用的R的仓库里面！
+
+> grep('A3',rownames(ap))
+[1]    1 1685 2212
+> grep('ABCp2',rownames(ap))
+[1] 4
+> grep('airway',rownames(ap))
+integer(0)
+> 
+或者用"airway" %in% rownames(ap)
+
+可以看出，我们想安装的airway包根本不存在，当然，这肯定是不存在的。
+因为airway是bioconductor的包，不是R的包！！
+
+1> dim(available.packages(contriburl = "https://cran.rstudio.com/bin/windows/contrib/3.2/"))
+ 2[1] 8110   17
+ 3> dim(ap)
+ 4[1] 8155   17
+ 5> dim(available.packages(contriburl = "http://bioconductor.org/packages/3.1/bioc/bin/windows/contrib/3.2/"))
+ 6[1] 1000   17
+ 7> dim(available.packages(contriburl = "http://mirrors.ustc.edu.cn/bioc//packages/3.1/bioc/bin/windows/contrib/3.2/"))
+ 8[1] 1000   17
+ 9用这个参数，可以看不同仓库，甚至不同版本的R包共有哪些资源！！！
+10See also Names of R's available packages, ?available.packages.
+11Alternatively, the list of available packages can be seen in a browser for 
+12CRAN, CRAN (extras), Bioconductor, R-forge and RForge.
+
+问题：如何安装目标包呢？
+
+答：只需要输入命令install.packages("XXX"),就可以下载自己需要的包了，或者从菜单栏里选择安装包--->安装程序包来实现。
+
+问题：使用install.packages("XXX")命令提示错误，检查了若干遍引号和包名称，发现没错的时候，重启了几次R，而R仍是报错的时候，常见的如package ‘xxx’ is not available (for R version 3.0.3)。怎么安装目标包？
+
+答：这时就要选其他方法来装包了。既然R自己一直说出错，那我们自己下载好包再安装总行了吧，可以自己在CRAN上查找目标包，下载zip文件到本地，然后启动R选择本地zip安装就OK了。
+
+问题：我在CRAN上没找到目标包，是什么情况（如功能强大的Rweibo包）？
+
+答：这时候不要急，可能该包在R-forge project 上，上该站查查看吧。
+
+问题：在安装zip包的同时，报错，比如说，提示什么读取错误，文件缺失，不适用等等的问题，那怎么办呢？
+
+答：研究过R包的结构的朋友就会发现，zip文件解压之后就是R中library里的结构。那么，我们可以直接解压zip包，然后将解压后的文件放入R安装根目录的library文件夹里，然后到R命令输入界面library该包试试，是不是成功了呢？
+
+问题一：解决Rstudio中安装install.packages("mvtnorm")出现
+
+Warning in install.packages :
+
+InternetOpenUrl failed: '不能连接到吊销服务器，或者未能获得最终响应。
+
+解决方法使用下面的语句安装：
+
+install.packages("mvtnorm", repos = "http://R-Forge.R-project.org")
+
+问题二：解决Rstudio中安装install.packages("MARSS")出现版本不符合的情况，package ‘MARSS’ is not available (for R version 3.2.5)。
+
+博主使用的R3.2.5版本，原因是这个包已经从cran移除了，你想用的话，就手动下载这个包，然后安装。
+
+需要在http://cran.r-project.org/src/contrib/Archive找到所要安装的包下载。
+
+install.packages("D:\\R_package\\MARSS_3.8.tar.gz",repos=NULL,type="source")
+
+注意：是"\\"分隔，而不能用"\"分隔
+
+猜你可能喜欢
+
+Python系列之——好用的Python开发工具
+
+Python系列之——基本数据类型用法就该这么讲！！！
+
+Python系列之环境安装
+
+R语言（绘图入门）
+
+Python科学计算：numpy
+
+本文分享自微信公众号 - 数据分析挖掘与算法（ikeguang2）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

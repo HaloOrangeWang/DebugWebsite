@@ -1,0 +1,52 @@
+python初探（01D） line 2 SyntaxError: Non-ASCII character '\xe8' in file /Users/sjq/study/a-python/Day01-15/02语言元素/l01.py on line 2, but no encoding declared; see http://python.org/dev/peps/pep-02
+
+输入以代码运行
+
+print "你好吗"
+
+f = float(input('请输入华氏温度: '))
+
+c = (f - 32) / 1.8
+
+print('%.1f华氏度 = %.1f摄氏度' % (f, c))
+
+这是python编码的问题， python中默认的编码格式是ASCII格式， 所以在没修改编码格式时无法正确打印汉字。
+
+　　解决办法：  在以后的每一个需要显示汉字的python文件中， 可以采用如下方法在 #!/usr/bin/python的下一行加上一句话来定义编码格式， 我以utf-8编码为例。
+
+#!/usr/bin/python
+
+#coding:utf-8
+
+print "你好吗"
+
+f = float(input('请输入华氏温度: '))
+
+c = (f - 32) / 1.8
+
+print('%.1f华氏度 = %.1f摄氏度' % (f, c))
+
+以下三种方法：
+
+第一种：
+
+#!/usr/bin/python
+#coding:utf-8
+print "你好吗"
+
+　　第二种：
+
+#!/usr/bin/python
+#-*-coding:utf-8 -*-
+print "你好吗"
+
+　　第三种：
+
+#!/usr/bin/python
+#vim: set fileencoding:utf-8
+print "你好吗"
+
+参照链接：
+
+https://blog.csdn.net/robertsong2004/article/details/54809187
+

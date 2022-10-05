@@ -1,0 +1,69 @@
+使用supervisor守护frpc客户端进程，确保开机自启端口，记录报错过程。
+
+报错1：[centos@localhost supervisor]$ sudo supervisord
+
+/usr/lib/python2.7/site-packages/supervisor/options.py:461: UserWarning: Supervisord is running as root and it is searching for its configuration file in default locations (including its current working directory); you probably want to specify a "-c" argument specifying an absolute path to a configuration file for improved security.
+
+'Supervisord is running as root and it is searching '
+
+解决：按照上面的提示，用supervisord 直接启动supervisor 会引起报错，故第一次启动的时候要加上配置文件。
+
+[centos@localhost supervisor]$ sudo supervisord -c /etc/supervisord.conf
+
+报错2：[centos@localhost supervisor]$ sudo supervisord -c /etc/supervisord.conf
+
+Unlinking stale socket /var/run/supervisor/supervisor.sock
+
+解决：
+
+[centos@localhost supervisor]$ unlink /var/run/supervisor/supervisor.sock
+
+报错3：[centos@localhost supervisord.d]$ sudo supervisorctl status
+
+unix:///var/run/supervisor/supervisor.sock no such file
+
+解决：
+
+1.需改权限
+
+sudo chmod 777 /run
+sudo chmod 777 /var/log
+
+2.创建supervisor.sock文件
+
+[centos@localhost supervisord.d]$ sudo touch /var/run/supervisor/supervisor.sock
+
+[centos@localhost supervisord.d]$ sudo chmod 777 /var/run/supervisor/supervisor.sock
+
+3.重启
+
+[centos@localhost supervisor]$ sudo supervisord -c /etc/supervisord.conf
+
+报错4：[centos@localhost supervisor]$ sudo supervisord -c /etc/supervisord.conf
+
+Error: Another program is already listening on a port that one of our HTTP servers is configured to use.  Shut this program down first before starting supervisord.
+
+For help, use /bin/supervisord -h
+
+解决：
+
+[centos@localhost supervisor]$ ps -ef | grep supervisord    #查看supervisord进程
+
+root      13000      1  0 16:59 ?        00:00:00 /usr/bin/python /bin/supervisord
+
+centos    13347   3471  0 17:00 pts/0    00:00:00 grep --color=auto supervisord
+
+[centos@localhost supervisor]$ sudo kill -s SIGTERM 13000  #杀死进程
+
+[centos@localhost supervisor]$ ps -ef | grep supervisord   #确认进程supervisord被杀死
+
+centos    13664   3471  0 17:01 pts/0    00:00:00 grep --color=auto supervisord
+
+[centos@localhost supervisor]$ sudo supervisord -c /etc/supervisord.conf   #启动新的supervisord进程
+
+记得设置开机自启：systemctl enable supervisord
+
+验证：systemctl is-enabled supervisord
+
+结束。
+

@@ -1,0 +1,32 @@
+报错信息：
+
+/home/python/PycharmProjects/dailyfresh/apps/user/models.py:8: RemovedInDjango19Warning: Model class apps.user.models.User doesn't declare an explicit app_label and either isn't in an application in INSTALLED_APPS or else was imported before its application was loaded. This will no longer be supported in Django 1.9.
+
+报错解析：apps.user.models 没有声明
+
+原因：当时创建项目时为了简化注册app的写法，所以在setting中加入了apps的路径
+
+sys.path.insert(0, os.path.join(BASE_DIR,'apps'))
+
+然后注册app时就不用apps.
+
+但是当在user.views导入user.models时直接导入
+
+from user.models import User
+
+按这样导入pycharm会有红色波浪线提示，所以又改回原始写法
+
+from apps.user.models import User
+
+这样开启服务器后就会出现上面的报错
+
+这样就会导致Django注册时app为user,但导入使用时是apps.user，所以Django没有找到对应声明的app所以报错
+
+解决方法：
+
+方法1.忽略pycharm报错，还是直接导入
+
+from user.models import User
+
+方法2：注册app时不简化写法时用apps.注册
+

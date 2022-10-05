@@ -1,0 +1,20 @@
+zhe
+
+1、cmd输入指令 pip install matplotlib 安装matplotlib报错一大堆红色字，最后是 Check the logs for full command output.
+
+于是输入pip install --upgrade pip指令 升级pip安装包。如下：
+
+2、 升级完pip安装包以后，再用指令 pip install matplotlib安装还是报错，往上翻阅错误信息发现没有安装matplotlib的支撑模块wheel，如下：
+
+3、输入pip install wheel指令安装wheel后在安装matplotlib，又报错： Check the logs for full command output.
+
+翻阅报错信息发现没有安装14.0以上版本的Microsoft C++ Build Tools。  这个是VC++的编译器，安装后就可以顺利安装含有C/C++源码的Python包了。
+
+但是因为Microsoft Visual C++ 14.0(即Microsoft Visual C++ 2015)需要付费，且直接安装Microsoft Visual C++ 2019体积太大，所以可以直接下载编译好的Matplotlib包，参考链接：Python and Visual C++ Build Tools - 知乎 (zhihu.com)https://zhuanlan.zhihu.com/p/22803670
+
+这位博主在最后给出了直接下载编译包的捷径，非常好用。下载编译包以后，把安装包放在cmd命令所在文件夹里，我这里是放在C：/用户/XIAO里面了，然后再输入pip install +编译包名称 指令安装就可以了！
+
+4、安装sklearn包的时候发现上面网站没有对应安装包，那只能上终极大招了：直接安装Microsoft Visual C++ 2015 BuildTools，不占用内存，而且完全满足python对C/C++源码编译的需求。安装包下载链接如下，下载以后联网默认安装步骤就可以了。
+
+(8条消息) vs_BuildTools.exe-其它文档类资源-CSDN文库https://download.csdn.net/download/QtKung/40095760
+

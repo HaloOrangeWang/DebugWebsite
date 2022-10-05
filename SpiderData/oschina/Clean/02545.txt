@@ -1,0 +1,247 @@
+
+错误
+
+错误分为语法错误和逻辑错误
+
+
+语法错误
+
+>>> if
+  File "<stdin>", line 1
+    if
+     ^
+SyntaxError: invalid syntax
+
+程序执行过程中，python解释器会检测你的程序是否存在语法错误，如果程序出错python解释器会指出出错的一行，并且在最先找到的 错误的文职标记了一个小小的箭头。
+
+
+逻辑错误
+
+>>> 1/0Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ZeroDivisionError: division by zero
+
+在生活中0是不能作为被除数的，程序写的语法可能没问题，但是逻辑上不一定没有问题。这就是一种逻辑错误。
+
+
+异常
+
+即便python的程序的语法是正确的，在运行它的时候，也有可能发生错误，程序运行期检测到的错误被称为异常。
+
+异常是有错误产生的。
+
+程序出现了异常都不会被程序处理，都以错误信息的会展现出来。
+
+>>> 1/0
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ZeroDivisionError: division by zero
+>>> 4+"xi"
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+>>> li = [1,2,3,4]
+>>> li[1]
+2
+>>> li[10]
+Traceback (most recent call last):　　#Trackback，追溯到最近的错误信息
+  File "<stdin>", line 1, in <module>
+IndexError: list index out of range   #IndexError 异常类  冒号后面是异常的值
+
+异常都有不同的类型出现，这些错误类型都作为信息的一部分打印出来，例子中的类型有ZeroDivisionError，TypeError，IndexError。每一种错误类型，都有相应的异常类。
+
+
+python中的异常类
+
+在python中不同的异常可以用不同的类型(类型即类)去标识，不同的类的对象标识了不同的异常，一个异常标识一种错误。
+
+python中所有的错误都是从BaseException类派生的
+
+常见的错误类型和继承关系：点击
+
+
+异常处理
+
+程序出现了错误，肯定需要去进行异常处理。
+
+什么是异常处理：
+
+python解释器检测到错误，触发异常。
+
+程序员编写特定的代码，专门用来捕捉这个异常（这段代码与程序逻辑无关，与异常处理有关）
+
+如果捕捉成功则进入另外一个处理分支，执行你为其定制的逻辑，使程序不会崩溃，这就是异常处理
+
+为何进行异常处理：
+
+谁会用一个报错的程序，更何况使用者又不知道怎么解决，一运行就报错，谁用你的程序或则软件。
+
+所以就必须提供一种异常处理机制来完善程序的容错性。
+
+如何解决异常处理？
+
+异常是有程序的错误引起的，语法上的错误跟异常处理无关，必须在程序运行前就修正。
+
+在以前学程序的时候，经常使用if判断来做异常解决。
+
+但是：
+
+1if判断是的异常处理只能针对某一段代码，对于不同的代码段的相同类型的错误需要些重复的if来进行处理。
+
+2在程序中频繁的写与程序本身无关，与异常处理有关的if，这样代码的可读性非常的差。
+
+try   except  异常处理
+
+python为每一种异常定制一个类型，然后提供了一种特定的语法结构来用来进行异常处理
+
+
+基本语法
+
+try:
+     被检测的代码块
+except 异常类型：
+     try中一旦检测到异常，就执行这个位置的逻辑
+
+异常的类只能用来处理指定的异常情况，如果非指定异常则无法处理。
+
+while True:
+        try:
+            x = int(input("Please enter a number: "))
+            break
+        except ValueError    as err:  #这里相当于把 ValueError 改名为err
+            print("Oops!  That was no valid number.  Try again   ")
+
+一个try语句可以包含多个except字句，分别来处理不同的特定的异常，最多只有一个分支except会被执行。(相当于，if  elif  elif )
+
+处理程序只针对对应的try字句中的异常处理，而不是其他的try的处理程序中的异常。
+
+一个except字句中可以同时处理多个异常，这些异常被放在一个括号里成为一个元祖，例如：
+
+except (ValueError, TypeError, NameError):
+       pass
+
+最后一个except字句可以忽略异常的名称，它将被作为通配符使用，可以使用这种方法打印一个错误信息，然后再次把异常抛出。
+
+li = [1,2,3,4,"a"]
+ 
+try:
+    li[0]
+    int(li[-1])
+    li[12]
+except IndexError as err:
+    print(err,"该索引超出范围")
+except:
+    print("不能int")
+    raise #抛出异常， 遇到程序错误，结束这个程序，抛出程序异常的错误信息。
+
+
+万能异常
+
+li = [1,2,3,4,"a"]
+ 
+try:
+    li[0]
+    int(li[-1])
+    li[12]
+except IndexError as err:
+    print(err,"该索引超出范围")
+except  Exception:   #Exception  万能异常包含所有的异常
+    print("不能int")
+    #raise #抛出异常， 遇到程序错误，结束这个程序，抛出程序异常的错误信息。
+ 
+#跟最后一个except子句一样，都是一样的效果。
+
+如果需要查看错误类型，可以用raise抛出异常。
+
+什么时候用万能异常？
+
+对于不同的异常，我们需要定制不同处理逻辑，那就需要用多分支，对于未知的异常可以用万能异常。
+
+try except 语句还有一个可选的else子句，如果使用这个子句，那么必须放在所有的except子句之后。这个else子句将在try子句没有发生任何异常的时候执行。例如:
+
+while True:
+        try:
+            x = int(input("Please enter a number: "))
+ 
+        except ValueError    as err:  #这里相当于把 ValueError 改名为err
+            print("Oops!  That was no valid number.  Try again   ")
+        else:
+            print("hello world")
+            break
+
+try except else finally
+
+s1 = 'hello'
+try:
+    int(s1)
+except IndexError as e:
+    print(e)
+except KeyError as e:
+    print(e)
+except ValueError as e:
+    print(e)
+#except Exception as e:
+#    print(e)
+else:
+    print('try内代码块没有异常则执行我')
+finally:
+    print('无论异常与否,都会执行该finall语句,通常是进行清理工作')
+
+
+自定义异常
+
+class MyError(Exception):
+    def __init__(self, value):
+        self.value = value
+ 
+    def __str__(self):
+        return str(self.value)
+ 
+ 
+try:
+    raise MyError(2 * 2)  #抛出异常   相当于try句中有错误，交给except句
+except MyError as e:       #自定义异常触发
+    print('My exception occurred, value:', e.value)
+
+class MyError(Exception):
+    def __init__(self, value):
+        self.value = value
+ 
+    def __str__(self):
+        return str(self.value)
+ 
+ 
+try:
+    raise MyError(2 * 2)  #抛出异常   相当于try句中有错误，交给except句
+except MyError as e:       #自定义异常触发
+    print('My exception occurred, value:', e.value)
+ 
+raise MyError ("自已定义的异常")
+ 
+#错误信息
+"""
+Traceback (most recent call last):
+  File "D:/learn/week4/文件.py", line 16, in <module>
+    raise MyError ("自已定义异常")
+__main__.MyError: 自已定义异常
+"""
+
+if 和 try..except比较
+
+异常处理中为每一个异常定制了异常类型（python中统一了类与类型，类型即类），对于同一种异常，一个except就可以捕捉到，可以同时处理多段代码的异常（无需‘写多个if判断式’）减少了代码，增强了可读性
+
+
+最后总结：
+
+
+什么时候用异常处理？
+
+try...except应该尽量少用，因为它本身就是你附加给你的程序的一种异常处理的逻辑，与你的主要的工作是没有关系的
+这种东西加的多了，会导致你的代码可读性变差
+
+只有在有些异常无法预知的情况下，才应该加上try...except，其他的逻辑错误应该尽量修正
+
+Python内置的try...except...finally用来处理错误十分方便。出错时，会分析错误信息并定位错误发生的代码位置才是最关键的。
+
+程序也可以主动抛出错误，让调用者来处理相应的错误。但是，应该在文档中写清楚可能会抛出哪些错误，以及错误产生的原因。
+

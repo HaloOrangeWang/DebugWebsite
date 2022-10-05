@@ -1,0 +1,25 @@
+1，首先下载合适的tesseract-ocr的版本
+
+2，然后安装到这一步注意要勾选这一项来安装OCR识别支持的语言包，这样OCR就可以识别多国语言，然后就可以一直点击下一步完成安装。
+
+3，安装tesserocr库，如果在pycharm里面的设置选项里直接安装出错，可以使用whl安装，点击这里下载合适版本的whl文件，放在python安装目录下的\Lib\site-packages文件夹里面，然后在这里打开cmd，输入命令pip install （刚才下载的whl文件名，注意文件格式也要），就可以了。
+
+4，运行测试代码
+
+import tesserocr
+from PIL import Image
+
+image = Image.open("test.jpg")
+text = tesserocr.image_to_text(image)
+print(text)
+
+如果  这个测试代码报错 RuntimeError: Failed to init API, possibly an invalid tessdata path: C:\Users\Shawone\AppData\Local\Programs\Python\Python37\/tessdata/ ，只要把刚才安装的tesseract下面的tessdata文件夹复制到python的安装路径里（与lib文件夹同级）
+
+如果  结果为
+
+C:\Users\Shawone\AppData\Local\Programs\Python\Python37\python.exe D:/project/capcha/01.py
+
+Process finished with exit code 0
+
+没有报错，但也没有输出任何信息，说明安装成功，但是识别不了测试的图片，可以前往中国知网注册页面下载验证码图片进行测试。
+

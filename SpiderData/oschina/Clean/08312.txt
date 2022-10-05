@@ -1,0 +1,14 @@
+启动过程中出现了org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource
+
+如果启动服务类出现了上述的错误，并且你的feign接口上定义了@RequestMapping("xxxx")全局访问路径，你只需要将其中的路径移到方法的路径上
+
+例如我定义的
+
+@FeignClient(value = "service-provider", fallback = UserClientFallback.class)//声明这是一个Feign接口 @RequestMapping("/user") public interface UserClient { @GetMapping("/{id}") String getUser(@PathVariable("id") Integer id); }
+
+将其改为
+
+@FeignClient(value = "service-provider", fallback = UserClientFallback.class)//声明这是一个Feign接口 //@RequestMapping("/user") public interface UserClient { @GetMapping("/user/{id}") String getUser(@PathVariable("id") Integer id); }
+
+即可启动成功
+

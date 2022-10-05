@@ -1,0 +1,58 @@
+需求：python如何实现普通用户登录服务器后切换到root用户再执行命令
+
+解决参考：
+
+代码：
+
+def verification_ssh(host,username,password,port,root_pwd,cmd):
+    s=paramiko.SSHClient()
+    s.load_system_host_keys()
+    s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    s.connect(hostname = host,port=int(port),username=username, password=password)
+
+if username != 'root':
+        ssh = s.invoke_shell()
+        time.sleep(0.1)
+        ssh.send(' export LANG=en_US.UTF-8 \n') #解决错误的关键，编码问题
+
+ssh.send('export LANGUAGE=en \n')
+
+ssh.send('su - \n')
+
+buff = ""
+        while not buff.endswith('Password: '): #true
+            resp = ssh.recv(9999)
+            print(resp)
+            buff +=resp.decode('utf8')
+
+print('hhhhh')
+        print(buff)
+
+ssh.send(root_pwd)
+        ssh.send('\n')
+
+buff = ""
+        # n = 0
+        while not buff.endswith('# '):
+            # n += 1
+            resp = ssh.recv(9999)
+            print(resp)
+            buff +=resp.decode('utf8')
+            # print(n)
+            # if n >=3:
+            #     break
+
+遇到问题：
+
+思路：经过检查发现这个是中文字符集和英文字符集返回密码格式不同导致的，在代码中加入：ssh.send(' export LANG=en_US.UTF-8 \n')，即可解决上述问题
+
+因为中文和英文字符集转换不同，所以导致报错。
+
+补充：由于操作系统字符集中‘LANGUAGE="zh_CN.GB18030:zh_CN.GB2312:zh_CN"’的缘故，即使修改了LANG也是无用的，入下图
+
+此时还需将LANGUAGE的变量值修改:export LANGUAGE=en
+
+第二篇：ssh.invoke_shell() 切换root出现的新问题
+
+注：转载请注明出处
+

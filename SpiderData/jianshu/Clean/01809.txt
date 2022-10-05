@@ -1,0 +1,112 @@
+在用cocoapods导入第三方库的时候报了这个错，尝试了多种方法
+
+终端ping了一下github.com，
+
+ping github.com
+
+发现连接超时，打开链接 http://ping.chinaz.com 输入 github.com ,点击Ping检测
+
+找到延迟最小的ip，我的是140.82.112.3 ，复制后打开
+
+sudo vim /etc/hosts
+
+输入开机密码。然后在最后面添加
+
+140.82.112.3 github.com
+
+再ping github.com ，ping通了，然后在cd到项目目录，执行pod install，还是连接不上。继续找原因。又是一通查找...
+
+关闭代理，然后终端执行
+
+git config--global--unsethttps.proxy
+
+git config--global--unsethttp.proxy
+
+再pod install 依然没有效果！失败！
+
+又经过一番查到，最后怀疑可能是.gitconfig配置出错，打开.gitconfig
+
+open ~/.gitconfig
+
+添加这一段[url "https://hub.fastgit.org"] insteadOf = https://github.com，如果是http的就把insteadOf = https://github.com替换成insteadOf = http://github.com
+
+贴下我的.gitconfig里面的内容，作为参考
+
+[http]
+
+postBuffer = 524288000
+
+postBuffer = 524288000
+
+postBuffer = 524288000
+
+postBuffer = 524288000
+
+lowSpeedLimit = 0
+
+lowSpeedTime = 999999
+
+[core]
+
+compression = 9
+
+excludesfile = /Users/ronie/.gitignore_global
+
+[user]
+
+name =***
+
+email = **************
+
+[url "https://hub.fastgit.org"]
+
+insteadOf = http://github.com
+
+再pod install，成功了
+
+2022-03-22 更新一下
+
+修改了.gitconfig里面的内容之后，Line可以安装了，但是其他库又用不了了，提示报错：
+
+[!] Error installing XXX
+
+....
+
+....
+
+....
+
+...LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to github.com:443
+
+pod update之后提示
+
+[!] CocoaPods was not able to update themasterrepo. If this is an unexpected issue and persists you can inspect it running ’pod repo update --verbose’
+
+看到这个熟悉的报错，直接升级ruby
+
+brew install ruby
+
+升级ruby过程中又遇到报错
+
+==> Pouring python@3.9-3.9.7_1.big_sur.bottle.tar.gzError: No such file or directory @ rb_sysopen - /Users/*****/Library/Caches/Homebrew/downloads/8049a4964d208b824a1a66fcb90a9a07d6a17033b899ae8c6609bf5ec2e01771--python@3.9-3.9.7_1.big_sur.bottle.tar.gz
+
+Python包安装出错，直接单独安装该包，如遇其他包出错，同样处理
+
+brew install python
+
+更完了再执行pod install,继续报错
+
+unable to access 'https://hub.fastgit.org/CocoaPods/Specs.git/': LibreSSL SSL_connect: Connection reset by peer in connection to hub.fastgit.org:443
+
+发现是.gitconfig 里面配置的清华大学的源替换了http://github.com，只能再打开.gitconfig的配置文件
+
+open ~/.gitconfig
+
+删掉
+
+[url "https://hub.fastgit.org"]                                                                                                      insteadOf = http://github.com
+
+那之前是白改了？？？
+
+再执行pod install，成功了.....
+

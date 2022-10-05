@@ -1,0 +1,20 @@
+遇到的问题:需要import一个pyx文件，起初错误显示找不到这个模块
+
+一、上网找了一下解决方法，第一个方法:
+
+import pyximport
+
+pyximport.install()
+
+添加了以后报错 ["distutils.errors.CompileError: command 'gcc' failed with exit status 1\n"]”，方法不可行
+
+二、然后又找到了一个https://blog.csdn.net/m0_37733057/article/details/98022177
+
+python setup.py install （1）
+
+python setup.py build_ext --inplace。（2）
+
+一开始我把setup.py和infer.py没有放在一起，还是出现了问题。
+
+之后把整个jpeio都移动到infer.py同一个文件夹中，然后再安装顺序执行（1）（2）就可以了
+

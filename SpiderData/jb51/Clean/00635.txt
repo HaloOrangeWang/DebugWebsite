@@ -1,0 +1,110 @@
+
+异常
+
+异常是程序发生错误的信号，程序一旦出错就会抛出异常，程序的运行随之终止。
+
+# 异常处理的三个特征
+- 异常的追踪信息
+- 异常的类型
+- 异常的内容
+
+捕获异常的目的：为了增强程序的健壮性，即便程序运行过程中出错，也不要终止程序，而是捕获异常并处理，将出错信息记录到日志内。
+
+# 语法上错误SyntaxError
+- 处理方式1：必须在程序运行前就改正
+
+# 逻辑上的错误
+- 错误发生的条件是可以预知的 --> if判断
+- 错误发生的条件是无法预知的 --> 异常捕获 try
+
+本来程序一旦出现异常就整体结束掉了，有了异常处理以后，在被检测的代码块出现异常时，被检测的代码块中异常发生位置之后的代码将不会执行，取而代之的是执行匹配异常的except子代码块，其余代码均正常运行。
+
+
+异常捕获
+
+当被检测的代码块中有可能触发不同类型的异常时，针对不同类型的异常：
+
+如果我们想分别用不同的逻辑处理，需要用到多分支的except（类似于多分支的elif，从上到下依次匹配，匹配成功一次便不再匹配其他）
+
+try:
+  # 有可能会抛出异常的代码
+  子代码1
+  子代码2
+  子代码3
+except 异常类型1 as e:	# as语法将异常类型的值赋值给变量e，这样我们通过打印e便可以知道错误的原因
+  pass
+except 异常类型2 as e:
+  pass
+...
+else:
+  如果被检测的子代码块没有异常发生，则会执行else的子代码
+finally:
+  无论被检测的子代码块有无异常发生，都会执行finally的子代码
+
+# try不能和else单独连用
+# try 和 finally 连用，就算出了异常也先执行finally下代码块再抛出异常
+
+如果我们想多种类型的异常统一用一种逻辑处理，可以将多个异常放到一个元组内，用一个except匹配。
+
+try:
+  被检测的代码块
+except (NameError,IndexError,TypeError):
+  触发NameError或IndexError或TypeError时对应的处理逻辑
+
+如果我们想捕获所有异常并用一种逻辑处理，Python提供了一个万能异常类型 Exception
+
+try:
+  被检测的代码块
+except NameError:
+  触发NameError时对应的处理逻辑
+except IndexError:
+  触发IndexError时对应的处理逻辑
+except Exception:
+  其他类型的异常统一用此处的逻辑处理
+
+在不符合Python解释器的语法或逻辑规则时，是由Python解释器主动触发的各种类型的异常，而对于违反程序员自定制的各类规则，则需要由程序员自己来明确地触发异常，这就用到了raise语句，raise后必须是一个异常的类或者是异常的实例
+
+class Student:
+  def __init__(self,name,age):
+    if not isinstance(name,str):
+      raise TypeError('name must be str')
+    if not isinstance(age,int):
+      raise TypeError('age must be int')
+
+self.name=name
+    self.age=age
+
+stu1=Student(4573,18) # TypeError: name must be str
+stu2=Student('egon','18') # TypeError: age must be int
+
+在内置异常不够用的情况下，我们可以通过继承内置的异常类来自定义异常类
+
+class PoolEmptyError(Exception): # 可以通过继承Exception来定义一个全新的异常
+  def __init__(self,value='The proxy source is exhausted'): # 可以定制初始化方法
+    super(PoolEmptyError,self).__init__()
+    self.value=value
+
+def __str__(self): # 可以定义该方法用来定制触发异常时打印异常值的格式
+    return '< %s >' %self.value
+
+class NetworkIOError(IOError): # 也可以在特定异常的基础上扩展一个相关的异常
+  pass
+
+raise PoolEmptyError # __main__.PoolEmptyError: < The proxy source is exhausted >
+raise NetworkIOError('连接被拒绝') # __main__.NetworkIOError: 连接被拒绝
+
+最后，Python还提供了一个断言语句assert expression，断定表达式expression成立，否则触发异常AssertionError，与raise-if-not的语义相同，如下
+
+age='18'
+
+# 若表达式isinstance(age,int)返回值为False则触发异常AssertionError
+assert isinstance(age,int)
+
+# 等同于
+if not isinstance(age,int):
+  raise AssertionError
+
+在了解了异常处理机制后，本着提高程序容错性和可靠性的目的，读者可能会错误地认为应该尽可能多地为程序加上try...except...，这其是在过度消费程序的可读性，因为try...except本来就是你附加给程序的一种额外的逻辑，与你的主要工作是没有多大关系的。所以不要随便使用异常捕获，只用当当异常发生时不可预知时，或万不得已时才使用异常捕获。
+
+以上就是详解python中的异常捕获的详细内容，更多关于python 异常捕获的资料请关注脚本之家其它相关文章！
+

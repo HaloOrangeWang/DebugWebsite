@@ -1,0 +1,101 @@
+使用python会出现各种各样的错误，LZ专门设立了一个博客，在今后使用的过程中，遇到不同的问题都会把它整理到这个博客下面。
+
+1.ValueError: ‘Conv2d_1a_3×3’ is not a valid scope name
+
+这个是刚遇到的问题，在LZ自己手打Inception net的时候，想赋一个名字的时候出错，其实这就是命名错误的问题，如果仔细看“×”是我在中文下打的符号，python是不认的，解决方案是使用英文字母”x“代替，错误即可解决，而且也能看到使用的卷积核的大小。
+
+2.IndentationError:excepted an indented block
+
+遇到这个问题简直是要哭了，因为并不是语法错误的问题，而是你代码书写规范的问题。因为Python是一个对代码缩进非常敏感的语言，你的循环结构就可能是依靠缩进的形式来表示的。最常见的问题就是TAB和space键的混用，这个是很容易报错的，而且肉眼很难分辨出来，有的代码编辑器可以选择显示空格,即便是这样，也很难找到到底哪里有问题。
+
+其实，上面的报错还有一个原因经常遇到，就是无首行缩进，例如写if语句是，后面加冒号后如果直接换行，好的代码编辑器会自动首行缩进，但有些代码编辑器可能没有这个功能，这是需要你手动缩进，这是最好养成习惯，不要连续敲几次空格键，直接一下TAB就可以了，保持代码风格的一致在Python的使用中是非常重要的。
+
+3.TypeError: max_pool2d() got an unexpected keyword argument ‘atride’
+
+这个错误就是纯粹的手误问题了，你定义的函数中没有这个关键字，这时候就要自己查看定义的函数名字，我这里应该是”stride“，在卷积神经网络是定义步长的。
+
+4.NameError: global name ‘time’ is not defined
+
+这个问题是我在调用函数time.time()用来计算时间损耗时，使用的函数时报错的，具体解决方案很简单，只要在代码开头加上import time这句把time库文件加进来就好了。
+
+5.NameError: global name ‘datetime’ is not defined
+
+解决方案同上，from datetime import datetime
+
+6.NameError: global name ‘math’ is not defined
+
+解决方案同上，import math
+
+7.Python中出现类似ascii之类的报错
+
+这一类问题主要是在Python代码中有中文输入，这个解决方案是在代码开头加上：#coding:utf-8。不然凡是输入中文输入法下的字符就会报错。
+
+8.NameError: global name ‘listdir’ is not defined
+
+import os
+
+这里需要注意几个问题，如果直接使用import os的时候，那么调用是就需要写成os.listdir(),如果是使用from os import *，那么是可以直接使用listdir()，但是会出现模块之间的命名冲突问题，对代码的稳定性会有一定的影响，所以LZ建议如果对模块函数还不是很熟悉的情况下哈市使用第一种方法。
+
+9.TypeError: ‘dict_keys’ object does not support indexing
+
+这个问题是python版本的问题
+
+#如果使用的是python2
+firstStr = myTree.keys()[0]
+#LZ使用的是python3
+firstSides = list(myTree.keys())
+firstStr = firstSides[0]
+
+这是看决策树代码出现的问题，python3如果运行
+
+firstStr = myTree.keys()[0]
+
+就会报这个错误，解决办法就是先转换成list，再把需要的索引提取出来。
+
+10.NameError: name ‘reload’ is not defined
+
+这个是如果小伙伴们修改了自己写的module，在重载module时可能会出现的一个问题，解决方法还时很简单
+
+import importlib
+importlib.reload(your module)
+
+11.SyntaxError: invalid character in indentifier
+
+我这里先贴出它报错的那行代码是怎么显示的：
+
+b = 6\xao
+
+这个LZ之前讲过一般出现ascii之类的问题就是混中文输入法了，出现这个问题着实尴尬，为什么？肉眼哪能看出来是中文输入法下的空格和英文输入法下的空格/(ㄒoㄒ)/~~，这个只能看到底哪行报错吧中文的空格替换成英文的空格才行，其它也没啥办法，最好在输入代码时少切换切换输入法形式。
+
+12.NameError: name ‘xrange’ is not defined
+
+python版本问题，不兼容，python3版本的换成range()函数就行了。
+
+13.AttributeError: ‘list’ object has no attribute ‘testVec’
+
+这是说list没有这个属性，是啥问题呢？LZ手残的把’,’打成了’.’，知道python应该都知道’.’这是要在class里定义才能有的性质，自己凭空写是没用的。
+
+14.SyntaxError: Missing paraentheses in call to ‘print’
+
+老生常谈了，python的版本问题，python3.X要加（）。
+
+print ('hello world!')
+
+15.SystemError: cannot compile ‘Python.h’
+
+这个问题就是没法解析Python的头文件，解决方法还是很简单的。
+
+#先更新下源啦
+sudo apt-get update
+
+#安装python-dev
+sudo apt-get install python-dev
+
+16. no module named wx
+
+缺少模块的解决还是很好解决的，缺啥装啥就行了
+
+sudo apt-get install python-wxtools
+
+Python接触时间不是很长，暂时遇到的错误还不时很多，所以LZ就先写这么多啦！未完待续啦O(∩_∩)O
+

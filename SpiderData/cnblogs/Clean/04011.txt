@@ -1,0 +1,52 @@
+这里介绍一个在read_csv()时报错的原因为：（加工字为位置可以任意）
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xce in position 0: invalid continuation byte
+
+来吧瞅瞅：
+
+代码：
+
+df_w = pd.read_table(
+    r'C:\Users\lab\Desktop\web_list_n.txt', sep=',', header=None)
+
+当我用pandas的read_table方法读取本地文件时，爆出这个错误:
+
+　UnicodeDecodeError: 'utf-8' codec can't decode byte 0xce in position 0: invalid continuation byte
+
+查询一番，找到了原来这就是Python 编码中最常见也是最顽固的两个错误：
+
+　　UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128)
+
+　　UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-1: invalid continuation byte
+
+也就是编码解码的问题，我这个错误就是‘utf-8’不能解码位置52的那个字节（0xce），也就是这个字节超出了utf-8的表示范围了，编码解码详细请参见https://segmentfault.com/a/1190000004625718
+
+解决办法：
+
+df_w = pd.read_table(
+    r'C:\Users\lab\Desktop\web_list_n.txt', encoding='ISO-8859-1', sep=',', header=None)
+
+也就是在读取数据的时候，显式添加编码方式encoding='ISO-8859-1'，别的编码也可以试试哟
+
+但是：这种方法使用后会发现英文的内容显示正常，但是文件中的中文会乱码，所以不行
+
+继续：
+
+使用了这个人的方法：https://blog.csdn.net/kelindame/article/details/75014485
+
+结论不行！
+
+使用了这个人的方法：https://blog.csdn.net/weixin_37029453/article/details/78917066
+
+还是结论不行！
+
+====================解决方法==============================
+
+加上这些带#号的乱七八糟东西就可以了
+
+说真的国内网站，唉
+
+看了这个人的文章试了一下，可以了
+
+https://blog.csdn.net/qq_35892623/article/details/82941473
+

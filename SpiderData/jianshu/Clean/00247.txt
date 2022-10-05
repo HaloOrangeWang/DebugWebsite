@@ -1,0 +1,44 @@
+使用uniapp框架开发项目，调用createCameraContext实现录像功能，发现手机端偶尔会出现录像失败，调试查看发现录像失败时会报错operateCamera:fail operate fail。
+
+出现上述报错是createCameraContext的潜在bug，官方也没给出更好的解决方式，目前更好的解决这问题，就是当报错出现时重新启动下startRecord()，基本能处理报错operateCamera:fail operate fail。代码如下：
+
+onLoad() {
+  this.ctx = uni.createCameraContext();
+}
+methods: {
+   startRecord() {
+      let ctx = this.ctx;
+      setTimeout(() => {
+    ctx.startRecord({
+      timeoutCallback : (res) => { // 录像超30S或onHide时结束录像
+         that.videoSrc = res.tempVideoPath
+         console.log(`startRecord timeoutCallback 30s videoInfo:${JSON.stringify(res)}`)
+       },
+       success: (res) => {
+        console.log('startRecord success')
+        },
+        fail: (err) => {
+        console.log(`startRecord fail:${JSON.stringify(err)}`)
+            that.startRecord() // 启动失败，重新
+         }
+      })
+      }, 100)
+   },
+   stopRecord () {
+    var that = this
+    let ctx = this.ctx
+    setTimeout(() => {
+        ctx.stopRecord({
+        compressed: true, // 是否启动视频压缩
+        success: (res) => {
+            that.videoSrc = res.tempVideoPath
+            console.log(`stopRecord1 success videoInfo:${JSON.stringify(res)}`)
+        },
+        fail: (err) => {
+            console.log(`stopRecord fail videoInfo:${JSON.stringify(err)}`)
+        }
+        })
+        }, 200)
+    },
+}
+

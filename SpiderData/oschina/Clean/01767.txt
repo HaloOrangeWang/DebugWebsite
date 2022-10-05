@@ -1,0 +1,190 @@
+
+尝试方法一：
+
+打开hosts文件配置
+
+cat /etc/hosts
+
+添加127.0.0.1 localhost
+
+重新运行
+
+
+尝试方法二:
+
+
+1，抛开服务，直接调用phantomjs定位问题
+
+由于我是从服务的日志中看到报错的，可能是因为phantomjs这个出错了，于是我就在88服务器上直接运行如个代码：
+
+[root(songxianfeng01@58OS)@bjm6-193-88ershouservices]# python
+
+>>> from selenium import webdriver
+>>>dr=webdriver.PhantomJS('phantomjs')
+
+结果报如下错误：
+
+Traceback (most recent call last):
+File"/usr/local/python2.7/lib/python2.7/site-packages/selenium-3.6.0-py2.7.egg/selenium/webdriver/phantomjs/webdriver.py",
+line 61, in __init__self.service.start()
+File
+"/usr/local/python2.7/lib/python2.7/site-packages/selenium-3.6.0-py2.7.egg/selenium/webdriver/common/service.py",
+line 88, in start
+raise WebDriverException("Can not connect to the
+Service %s" % self.path)
+selenium.common.exceptions.WebDriverException:
+Message: Can not connect to the Service
+phantomjsdriver
+
+没有看出直接原因是什么，于是就采取常规的办法：重新安装相关软件
+
+于是就：
+
+./easy_install -m selenium
+
+将selenium重新卸载了再安装，同时也将phantomjs删除了
+
+rm -rf /usr/local/phantomjs
+
+rm -f /usr/local/bin/phantomjs
+
+而后按网上提供的方案重新安装完成！
+
+结果发现：问题依然存在，没有什么用处！
+
+
+2，查看源码，精准进行定位
+
+重新安装没有任何效果后，我就将上面的两个文件webdriver.py和service.py下载了下来。
+
+（1）先去service.py中搜索报错的代码段：
+
+count= 0
+while True:
+self.assert_process_still_running()
+if self.is_connectable():
+break
+count+= 1
+time.sleep(1)
+if count
+==30:
+raise WebDriverException("Can not connect to the Service %s"
+% self.path)
+
+直接原因是count到了30了，相当于尝试了30次self.is_connectable都失败了。
+ （2）查看函数is_connectable这个函数是什么意思？
+
+def is_connectable(self):
+return utils.is_connectable(self.port)
+
+看来直接原因是utils.is_connectable这个函数报错的，不过这个port的值是什么呢？我好像没有传这个值啊？
+
+(3)查看self.port的值
+
+在webdirver.py中，port默认值为0：
+
+def __init__(self,executable_path="phantomjs",
+port=0,
+desired_capabilities=DesiredCapabilities.PHANTOMJS,service_args=None,service_log_path=None):
+
+在调用service.py文件中的类的时候，如果port值等于0，则随机获取一个端口
+
+class Service(object):
+
+def __init__(self,executable,
+port=0,
+log_file=DEVNULL, env=None,
+start_error_message=""):
+self.path
+=executable
+self.port
+=port
+if self.port==
+0:
+self.port
+=utils.free_port()
+
+于是我们就直接验证utils相关的代码：
+
+>>> from selenium.webdriver.common
+import utils
+>>> utils.free_port()
+49439
+>>>utils.is_connectable(49439)
+False
+
+发现无论端口号是多少，都会返回false,所以self.is_connectable函数永远都是失败，尝试30次之后就会报异常。
+
+（4）查看utils.is_connectable函数源码，看能否找到原因?
+
+def is_connectable(port):  
+   """ 
+Tries to connect to the server at port to see if it is running. 
+ 
+ :Args: 
+   
+ - port: The port to connect. 
+    """  
+   try:  
+     socket_ = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
+     socket_.settimeout(1)  
+     socket_.connect(("127.0.0.1", port))  
+      socket_.close()  
+      return True  
+   except socket.error:  
+       return False
+
+看出最终的原因应该是socket连接出错了。于是就手功尝试一下：
+
+>>> import socket
+>>> socket_
+=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+>>>socket_.connect(("127.0.0.1",49439))
+Traceback (most recent call last):
+File "", line 1, inFile"/usr/local/python2.7/lib/python2.7/socket.py",
+line 228, in meth
+return
+getattr(self._sock,name)(*args)
+socket.error: [Errno 111] Connection
+refused
+>>>
+
+通过查询socket 111错误与phantomjs，webdriver相关的内容，发现可能是webdirver与phantomjs不匹配的问题。可是我不记得原来的webdirver的版本是什么了？
+
+
+3，最终尝试，解决问题
+
+通过上面的分析，最终问题定位是：可能是有人重新安装了服务器的python selenium了，造成的不兼容问题。
+
+解决方案：安装最新的selenium和phantomjs.
+
+（1）selenium更新
+
+通过访问相关的官网，发现selenium的最新版本是3.7.0，而通过easy_install安装的是3.6.0，果断更新之！
+
+https://pypi.python.org/pypi/selenium/#downloads
+
+（2）phantomjs更新
+
+因为phantomjs是刚刚安装过的，是最新的版本2.1.1，下载地址是：
+
+http://phantomjs.org/download.html
+
+（3）全部更新后再次尝试
+
+>>> from selenium import webdriver
+
+>>> dr = webdriver.PhantomJS('phantomjs')
+
+>>>
+
+>>>
+
+没有任何报错，开心一下。
+
+参考：http://blog.sina.com.cn/s/blog_68f262210102xrph.html
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

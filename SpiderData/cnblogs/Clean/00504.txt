@@ -1,0 +1,46 @@
+pip install mysql-python
+
+然后报错
+
+EnvironmentError: mysql_config not found
+
+网上搜解决方法，需要安装   mysql-devel
+
+然后
+
+yum install mysql-devel
+
+也无法安装，报错内容大概是和mysql版本相关的问题
+
+解决方法
+
+自己下载和自己mysql版本匹配的mysql-devel
+
+1.查看安装了什么版本的mysql和相关的包
+
+rpm -qa | grep mysql
+
+mysql-community-client-5.6.34-2.el7.x86_64
+mysql-community-server-5.6.34-2.el7.x86_64
+mysql-community-release-el7-5.noarch
+mysql-community-common-5.6.34-2.el7.x86_64
+mysql-community-libs-5.6.34-2.el7.x86_64
+
+发现我的是社区版的5.6，下了不少非社区版的mysql-devel，一直失败
+
+2.下载对应版本的mysql-devel
+
+mysql-community-devel
+
+可以从这个网址搜索得到    http://rpm.pbone.net/
+
+wget ftp://mirror.switch.ch/pool/4/mirror/mysql/Downloads/MySQL-5.6/mysql-community-devel-5.6.38-2.sles12.x86_64.rpm
+
+rpm -ivh mysql-community-devel-5.6.38-2.sles12.x86_64.rpm
+
+3.安装mysql-python
+
+pip install mysql-python
+
+然后就OK了
+

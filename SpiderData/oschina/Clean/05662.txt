@@ -1,0 +1,640 @@
+
+零.目录
+
+一. 文件和目录类
+
+File exist 文件已经存在
+
+No such file or directory 没有这个文件或目录(这个东西不存在)
+
+command not found 命令找不到(没有这个命令)
+
+invalid option 无效的参数(不可用的参数)
+
+overwrite 覆盖
+
+remove regular empty file 是否删除普通文件(空的)?
+
+is a directory xxx是一个目录
+
+descend into directory 是否进入目录
+
+Invalid level 无效的层数,层数必须大于0
+
+Can't open file for writing 无法打开这个文件
+
+No write since last change
+
+xx column window is too narrow 窗口只有xx列太窄了 无法完全显示
+
+xxx not a directory 不是一个目录
+
+查看压缩包的时候报错
+
+You have mail in /var/spool/mail/root
+
+permission denied
+
+Warning: Changing a readonly file
+
+'readonly' option is set (add ! to override)
+
+cp: omitting directory ‘/oldboy/’ unexpected end of file 或 Unexpected EOF in archive
+
+二. 网络连接类
+
+远程连接错误 Connection Failed 连接失败
+
+yum安装软件故障提示 Could not resolve host无法解析主机
+
+yum安装软件提示:Nothing to do (没事做)
+
+没有找到叫treea的软件包
+
+Name or service not known 域名无法识别(无法上网）
+
+三. 修改系统基础配置类
+
+重启网卡报错 device not present
+
+修改主机名过程中,命令行中主机名没有变化
+
+hostname命令修改主机名（临时 重启服务器之后失效）
+
+命令行中的主机名部分没有改变？
+
+四. 用户相关错误
+
+user 'oldboy' already exists
+
+no such user
+
+Only root can do that.
+
+Only root can specify a user name.
+
+Creating mailbox file: File exists
+
+warning: the home directory already exists.
+
+/etc/sudoers: syntax error near line 105 <<<
+
+五.脚本及定时任务
+
+
+一. 文件和目录类
+
+
+1. File exist 文件已经存在
+
+[root@oldboyedu59 ~]# mkdir   /data   /lidao  
+[root@oldboyedu59 ~]# mkdir   /data   /lidao  
+mkdir: cannot create directory ‘/data’: File exists
+mkdir: cannot create directory ‘/lidao’: File exists
+
+mkdir: cannot create directory ‘/lidao’: File exists 无法 创建 目录 因为这个目录已经存在
+
+
+2. No such file or directory 没有这个文件或目录(这个东西不存在)
+
+没有这个目录:文件或路径书写错误
+
+[root@oldboyedu59 ~]# mkdir  /oldboy
+[root@oldboyedu59 ~]# cd oldboy
+-bash: cd: oldboy: No such file or directory
+
+mkdir命令本身问题:mkdir 命令默认只能创建1层目录 创建多层报错 -p解决
+
+[root@oldboyedu59 ~]# mkdir  /data/oldboy/lidao/
+mkdir: cannot create directory ‘/data/oldboy/lidao/’: No such file or directory
+
+touch命令只能创建文件,目录不存在则会报错 解决:先创建目录,再创建文件
+
+[root@oldboyedu59 ~]# ls /oldboy/
+oldboy.txt
+[root@oldboyedu59 ~]# touch /oldboy/lidao/alex/oldboy.txt
+touch: cannot touch ‘/oldboy/lidao/alex/oldboy.txt’: No such file or directory
+
+排错思路: 1.ls命令检查对应的目录是否存在? 2.目录不存在 先创建目录在创建文件/
+
+find命令与|xargs ll 错误 |xargs后面不支持别名
+
+[root@kangxu ~]# find /oldboy  -name  "*.txt"  -type f |xargs ll
+xargs: ll: No such file or directory
+
+
+3. command not found 命令找不到(没有这个命令)
+
+[root@oldboyedu59 ~]# mkdiy
+-bash: mkdiy: command not found
+
+1.书写错误 2.没有安装
+
+
+4. invalid option 无效的参数(不可用的参数)
+
+[root@oldboyedu59 ~]# touch -p /oldboy/oldboy.txt
+touch: invalid option -- 'p'
+Try 'touch --help' for more information.
+
+
+5. overwrite 覆盖
+
+cp复制如果已经存在这个文件会提示是否覆盖
+
+[root@oldboyedu59 ~]# cp  /oldboy/oldboy.txt   /tmp/
+cp: overwrite ‘/tmp/oldboy.txt’?
+
+
+6.remove regular empty file 是否删除普通文件(空的)?
+
+[root@oldboyedu59 ~]# rm   /oldboy/oldboy.txt
+rm: remove regular empty file ‘/oldboy/oldboy.txt’?
+
+
+7. is a directory xxx是一个目录
+
+rm默认无法删除目录 解决:加上-r 或-rf
+
+[root@oldboyedu59 ~]# rm /data/
+rm: cannot remove ‘/data/’: Is a directory
+
+vi命令中 使用vi编辑目录也会报错
+
+"/oldboy"
+E502: "/oldboy" is a directory
+Press ENTER or type command to continue
+
+
+8. descend into directory 是否进入目录
+
+[root@oldboyedu59 ~]# rm -r /data/
+rm: descend into directory ‘/data/’? y
+rm: remove regular empty file ‘/data/oldboy01.txt’? n
+rm: remove regular empty file ‘/data/oldboy02.txt’? n
+rm: remove regular empty file ‘/data/oldboy03.txt’? n
+rm: remove regular empty file ‘/data/oldboy04.txt’? n
+rm: remove regular empty file ‘/data/oldboy05.txt’? n
+rm: remove regular empty file ‘/data/oldboy06.txt’? n
+rm: remove regular empty file ‘/data/oldboy07.txt’? n
+rm: remove regular empty file ‘/data/oldboy08.txt’? n
+rm: remove regular empty file ‘/data/oldboy09.txt’? n
+rm: remove regular empty file ‘/data/oldboy10.txt’? n
+rm: remove directory ‘/data/’? n
+
+
+9. Invalid level 无效的层数,层数必须大于0
+
+注意参数位置
+
+[root@oldboyedu59 ~]# tree  -L -F 2 / 
+tree: Invalid level, must be greater than 0.
+
+
+10. Can't open file for writing 无法打开这个文件
+
+vi中 如果目录不存在就会提示
+
+"/oldbyo/oldboy.txt"
+"/oldbyo/oldboy.txt" E212: Can't open file for writing
+Press ENTER or type command to continue
+
+如果你对这个文件没有权限 也会提示
+
+
+11.No write since last change
+
+E37: No write since last change (add ! to override)
+     粘包赖(你修改了内容就无法使用:q退出 需要使用:q!
+
+
+12. xx column window is too narrow 窗口只有xx列太窄了 无法完全显示
+
+这是w的坑 空间太小施展不开.
+
+[root@oldboyedu60-lnb ~]# w
+w: 39 column window is too narrow
+
+
+13. xxx not a directory 不是一个目录
+
+背景:创建文件的时候多了一个空格
+
+[root@ssdz ~]# touch /oldboy /oldboy.txt  #此处要创建/oldboy/oldboy.txt 多个个空格 创建了2个文件 /oldboy和/oldboy.txt 
+[root@ssdz ~]# ls -l /oldboy/         #系统认为oldboy是个目录 所以报错
+ls: cannot access /oldboy/: Not a directory
+[root@ssdz ~]# touch /oldboy/oldboy.txt
+touch: cannot touch ‘/oldboy/oldboy.txt’: Not a directory
+[root@ssdz ~]# ls -l /oldboy
+-rw-r--r--. 1 root root 0 Apr  9 15:23 /oldboy
+
+
+14.查看压缩包的时候报错
+
+注意是否有特殊中文符号导致的。
+
+[root@oldboy59 tmp]# tar ztf /tmp/etc.tar.gz
+tar (child): \200\202\200\202\200\202\200\202/tmp/etc.tar.gz: Cannot open: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
+
+
+15. You have mail in /var/spool/mail/root
+
+你在这个文件/var/spool/mail/root 中有一个新邮件
+
+
+16. permission denied
+
+权限拒绝
+
+
+17. W10: Warning: Changing a readonly file
+
+使用vim的时候显示的 表示：正在修改只读文件 解决:
+
+1.查看对文件是否有rw权限 2.如果是root用户可以修改后强制保存退出(:wq!)
+
+
+18.no properly formatted MD5 checksum lines found
+
+在使用md5sum -c (检查的时候） md5指纹信息文件中，格式不对 第1列是md5 信息 第2列文件名 解决:
+
+查看MD5文件内容是否正确 检查的命令是否正确 md5sum -c oldboy.md5
+
+md5sum: /oldboy/mtime/access_2019-04-01.txt: no properly formatted MD5 checksum lines found
+
+
+19. E45: 'readonly' option is set (add ! to override)
+
+通过vi/vim 编辑文件保存的时候(:wq) 提示 这个文件只读，:wq! 强制保存退出
+
+
+20. cp: omitting directory ‘/oldboy/’
+
+忽略这个目录 cp默认无法复制目录
+
+[root@oldboyedu64-lnb ~]# cp /oldboy/  /tmp/
+cp: omitting directory ‘/oldboy/’
+[root@oldboyedu64-lnb ~]# ls -l /tmp/
+total 8
+-rwx------. 1 root root 836 Jun 30 17:36 ks-script-gWLqG0
+-rw-r--r--. 1 root root 400 Jul  7 14:51 oldboy.txt
+drwx------. 2 root root   6 Jun 30 17:42 vmware-root_6749-3879179984
+-rw-------. 1 root root   0 Jun 30 17:27 yum.log
+
+
+21. Unexpected EOF in archive
+
+未知的 压缩文件结尾 主要原因是tar压缩包损坏 重新下载
+
+[root@web02 tools]# tar xf nginx-1.16.0.tar.gz
+
+gzip: stdin: unexpected end of file
+tar: Unexpected EOF in archive
+tar: Unexpected EOF in archive
+tar: Error is not recoverable: exiting now
+
+
+二. 网络连接类
+
+
+1. 远程连接错误 Connection Failed 连接失败
+
+使用Xshell远程连接失败提示,检查端口是否开启或正确
+
+[c:\~]$
+
+Connecting to 10.0.0.200:233...
+Could not connect to '10.0.0.200' (port 233): Connection failed.
+
+Type `help' to learn how to use Xshell prompt.
+
+使用telnet测试端口是否打开
+
+[c:\~]$ telnet 10.0.0.200 233
+
+Connecting to 10.0.0.200:233...
+Could not connect to '10.0.0.200' (port 233): Connection failed.   #233端口没有开启
+
+Type `help' to learn how to use Xshell prompt.
+
+端口开启
+
+[c:\~]$ telnet 10.0.0.200 22
+Connecting to 10.0.0.200:22...
+Connection established.            #端口开启
+To escape to local shell, press 'Ctrl+Alt+]'.
+SSH-2.0-OpenSSH_7.4
+
+Protocol mismatch.
+
+Connection closed by foreign host.
+
+Disconnected from remote host(10.0.0.200:22) at 12:22:54.
+
+Type `help' to learn how to use Xshell prompt.
+[c:\~]$
+
+
+2. yum安装软件故障提示 Could not resolve host无法解析主机
+
+Could not resolve host无法解析主机 主要是系统能否上网和DNS问题.
+
+http://mirrors.tuna.tsinghua.edu.cn/centos/7.6.1810/updates/x86_64/repodata/repomd.xml: [Errno 14] curl#6 - 
+"Could not resolve host: mirrors.tuna.tsinghua.edu.cn; Unknown error"
+Trying other mirror.
+
+
+3.yum安装软件提示:Nothing to do (没事做)
+
+有两种情况: 情况1:软件已经安装并且最新如下:
+
+Package tree-1.6.0-10.el7.x86_64 already installed and latest version
+tree软件包已经安装并且是最新版本
+Package 2:vim-enhanced-7.4.160-5.el7.x86_64 already installed and latest version
+Package 1:bash-completion-2.1-6.el7.noarch already installed and latest version
+Nothing to do
+
+情况2:软件名字写错或没有配置yum源导致找不到这个软件包
+
+[root@oldboyedu60-lnb ~]# yum install treea -y
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.lzu.edu.cn
+ * extras: mirrors.nwsuaf.edu.cn
+ * updates: mirrors.nwsuaf.edu.cn
+base                                                                                              | 3.6 kB  00:00:00     
+extras                                                                                            | 3.4 kB  00:00:00     
+updates                                                                                           | 3.4 kB  00:00:00     
+No package treea available. 
+#没有找到叫treea的软件包
+Error: Nothing to do
+
+情况3:你需要安装软件包而不是软件包里面的命令 通过yum provides 查看命令属于哪个软件包
+
+[root@oldboyedu59 ~]# yum install -y locate 
+Loaded plugins: fastestmirror
+Determining fastest mirrors
+ * base: mirrors.aliyun.com
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+base                                                                                              | 3.6 kB  00:00:00     
+extras                                                                                            | 3.4 kB  00:00:00     
+updates                                                                                           | 3.4 kB  00:00:00     
+(1/2): extras/7/x86_64/primary_db                                                                 | 187 kB  00:00:02     
+(2/2): updates/7/x86_64/primary_db                                                                | 3.4 MB  00:00:04     
+No package locate available.
+Error: Nothing to do
+[root@oldboyedu59 ~]# yum provides locate 
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirrors.aliyun.com
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+base/7/x86_64/filelists_db                                                                        | 7.1 MB  00:00:03     
+extras/7/x86_64/filelists_db                                                                      | 236 kB  00:00:00     
+updates/7/x86_64/filelists_db                                                                     | 2.7 MB  00:00:01     
+mlocate-0.26-8.el7.x86_64 : An utility for finding files by name
+Repo        : base
+Matched from:
+Filename    : /usr/bin/locate\
+[root@oldboyedu59 ~]# yum install -y mlocate 
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirrors.aliyun.com
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+Resolving Dependencies
+--> Running transaction check
+---> Package mlocate.x86_64 0:0.26-8.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+=========================================================================================================================
+ Package                     Arch                       Version                           Repository                Size
+=========================================================================================================================
+Installing:
+ mlocate                     x86_64                     0.26-8.el7                        base                     113 k
+
+Transaction Summary
+=========================================================================================================================
+Install  1 Package
+
+Total download size: 113 k
+Installed size: 379 k
+Downloading packages:
+mlocate-0.26-8.el7.x86_64.rpm                                                                     | 113 kB  00:00:02     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : mlocate-0.26-8.el7.x86_64                                                                             1/1 
+  Verifying  : mlocate-0.26-8.el7.x86_64                                                                             1/1
+
+Installed:
+  mlocate.x86_64 0:0.26-8.el7
+
+Complete!
+[root@oldboyedu59 ~]# rpm -qa mlocate 
+mlocate-0.26-8.el7.x86_64
+
+
+4. Name or service not known 域名无法识别(无法上网）
+
+原因1：DNS配置错误 原因2：Linux无法上网原因 https://www.jianshu.com/p/0bc0b596c1a0
+
+[root@oldboyedu59 ~]# ping baidu.com 
+ping: baidu.com: Name or service not known
+                 域名无法识别（无法将域名---->ip地址)
+
+
+三. 修改系统基础配置类
+
+
+1. 重启网卡报错 device not present
+
+[root@oldboyusd ~]# systemctl restart network 
+Job for network.service failed because the control process exited with error code.
+ See "systemctl status network.service" and "journalctl -xe" for details.
+
+查看详细错误原因 ·journalctl -xe·
+
+Apr 01 15:31:05 oldboyusd.1 network[7816]: Bringing up interface etho:  
+ERROR     : [/etc/sysconfig/network-scripts/ifup-eth] Device  does not seem to be present, delaying initialization.
+
+Apr 01 15:31:05 oldboyusd.1 /etc/sysconfig/network-scripts/ifup-eth[8019]: 
+Device  does not seem to be present, delaying initializatio
+
+
+2. 修改主机名过程中,命令行中主机名没有变化
+
+
+1# hostname命令修改主机名（临时 重启服务器之后失效）
+
+[root@oldboyedu59 ~]# hostname
+oldboyedu59
+[root@oldboyedu59 ~]# hostname oldboyedu59-lnb
+
+
+2# 修改文件内容（写合同 永久 重启服务器之后生效）
+
+vim /etc/hostname 
+ oldboyedu59-lnb
+
+
+3# 检查
+
+[root@oldboyedu59 ~]# hostname
+oldboyedu59-lnb
+[root@oldboyedu59 ~]# cat /etc/hostname 
+oldboyedu59-lnb
+
+
+命令行中的主机名部分没有改变？
+
+解决：重新登录下即可（断开连接，重新连接）
+
+[root@oldboyedu59-lnb ~]#
+
+
+3. unexpected EOF while looking for matching `"'
+
+引号不成对
+
+tail -2  /etc/profile 
+alias net="cat /etc/sysconfig/network-scripts/ifcfg-eth0
+export PS1="[\[\e[34;1m\]\u@\[\e[0m\]\[\e[32;1m\]\H\[\e[0m\] \[\e[31;1m\]\w\[\e[0m\]]\\$ "
+
+[root@ssdz ~]# source /etc/profile
+-bash: /etc/profile: line 78: unexpected EOF while looking for matching `"'
+-bash: /etc/profile: line 79: syntax error: unexpected end of file
+
+-bash: /etc/profile: line 78: unexpected EOF while looking for matching `"' /etc/profile 第78行 出乎意料的结尾 正在找 '"' 这个双引号的另一半
+
+
+四. 用户类错误
+
+
+1. user 'oldboy' already exists
+
+用户已经存在
+
+[root@oldboyedu59 ~]# useradd oldboy 
+useradd: user 'oldboy' already exists
+
+
+2. no such user
+
+没有这个用户
+
+[root@oldboyedu59 ~]# id lidao 
+id: lidao: no such user
+
+
+3.Only root can do that.
+
+只有root用户可以使用 非交互式设置密码方式
+
+[oldboy@oldboyedu59 ~]$ echo 123456|passwd --stdin oldboy
+Only root can do that.
+
+
+4.Only root can specify a user name.
+
+只有root用户 运行passwd的时候 后面能加上用户名 普通用户默认只能运行passwd 不能加用户名 修改自己的密码
+
+[oldboy@oldboyedu59 ~]$ passwd oldboy 
+passwd: Only root can specify a user name.
+
+
+5. Creating mailbox file: File exists 和warning: the home directory already exists.
+
+添加用户的时候提示:
+
+Creating mailbox file: File exists 正在创建这个用户的邮箱:邮箱已经存在 warning: the home directory already exists. 这个用户的家目录已经存在
+
+删除用户的时候，默认不删除家目录和邮箱. 再次添加就会提示家目录存在和邮箱存在
+
+[root@oldboyedu59 ~]# id stu01 
+uid=1005(stu01) gid=1006(stu01) groups=1006(stu01)
+[root@oldboyedu59 ~]# userdel stu01
+[root@oldboyedu59 ~]# useradd stu01 
+useradd: warning: the home directory already exists.
+Not copying any file from skel directory into it.
+Creating mailbox file: File exists
+
+
+6.user nginx is currently used by process 7540
+
+用户正在使用中 被pid是7540的进程使用中
+
+[root@web01 /usr/share/nginx/html/blog]#  usermod -u 2222   nginx 
+usermod: user nginx is currently used by process 7540
+
+
+五.脚本及定时任务
+
+
+1. no crontab for root
+
+root用户没有定时任务
+
+[root@oldboyedu59 ~]# crontab -l
+no crontab for root
+
+root用户没有定时任务
+
+
+2.no crontab for root - using an empty one
+
+root用户没有定时任务，给root创建了1个新的 这里实际上给root创建了定时任务文件 /var/spool/cron/root 空文件
+
+
+3.crontab: installing new crontab
+
+更新定时任务规则
+
+
+4. bad xxx, errors in crontab file,can't install
+
+错误的{分|时|日|月|周},定时任务文件中有错误，无法更新定时任务
+
+分时日月周格式错误01
+
+#mei liangfenzhong xianshi xitong shijian zhuijiadao /tmp/oldboy.txt
+* /1 * * * date  >>/tmp/oldboy.txt
+
+"/tmp/crontab.5UZIdI" 3L, 115C written
+crontab: installing new crontab
+"/tmp/crontab.5UZIdI":3: bad hour   3是第3行的意思,错误的小时 小时位置书写错误 
+errors in crontab file, can't install.
+Do you want to retry the same edit?
+
+分时日月周格式错误02 时间范围书写错误 21-00错误 改为 21-23,00 即可因为定时任务的小时为00-23
+
+crontab -e 
+#show time by liyy  at 20190101
+#*/2 * * * * date >>/tmp/time.log
+
+#
+00  21-00 * * * date >>/tmp/time.log
+00  21-00 * * * date >>/tmp/time.log
+#00  21-23,00 * * * date >>/tmp/time.log
+
+#backup /etc/ to /tmp by liyy  at 20190101
+#00 00 * * *  sh  /server/scripts/bak-etc.sh
+                                                                                                                  
+"/tmp/crontab.SpZAZH" 9L, 238C written
+crontab: installing new crontab
+"/tmp/crontab.SpZAZH":5: bad hour
+errors in crontab file, can't install.
+Do you want to retry the same edit?
+
+
+5. You have new mail in /var/spool/mail/root
+
+你有1个新邮件 在/var/spool/mail/root
+

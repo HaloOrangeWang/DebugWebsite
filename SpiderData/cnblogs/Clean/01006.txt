@@ -1,0 +1,34 @@
+今天用Python去下载图片，用到了 urllib.request，这个是python3的方法。python2 使用的是urllib2
+
+遇到了这么个问题后台报错，ImportError: No module named request
+
+查了很多资料，说是安装requests，安装完依然如此，几乎绝望。
+
+最后是发现了一个问题报错信息里面显示的gunicorn 相关内容是python2.7的
+
+我就在想是不是因为后台安装了python2.7和python3，gunicorn后台使用了python2.7，但是urllib.request又是python3的功能，所以一直找不到对应模块。
+
+分析完这个问题，那么就开始解决问题
+
+1、查看 bin下面所有的目录
+
+cd /bin
+
+2、将里面的gunicorn文件备份
+
+cp gunicorn gunicorn.bck
+
+3、创建python3下的gunicorn的软连接到bin下(python3下如果没有，则用pip3安装一个gunicorn)
+
+ln -s /usr/local/python3/bin/gunicorn /bin/gunicorn
+
+4、可以查看下是否成功
+
+ls -l
+
+这样后台运行服务就是python3的了，也就不会再报找不到模块request
+
+5、如果上述问题解决后，出现了找不到模块 ssl 的问题（反正我是出现了）
+
+请查看https://www.cnblogs.com/mqxs/p/9103031.html
+

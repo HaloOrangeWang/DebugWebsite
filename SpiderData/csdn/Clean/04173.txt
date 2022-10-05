@@ -1,0 +1,78 @@
+python的错误处理——try语句
+
+最近开始整理python的资料，博主建立了一个qq群，希望给大家提供一个交流的同平台：78486745 。
+
+当我们认为某些代码可能会出错时，就可以用try来运行这段代码，如果执行出错，则后续代码不会继续执行，而是直接跳转至错误处理代码，即except语句块，执行完except后，如果有finally语句块，则执行finally语句块，至此，执行完毕。
+
+python的try语句有两种风格
+
+处理异常（try/except/else）
+
+种是无论是否发生异常都将执行最后的代码（try/finally）
+
+
+try/except/else风格
+
+try:
+    <语句> #运行别的代码
+except <名字>： 
+    <语句> #如果在try部份引发了'name'异常
+except <名字>，<数据>:
+    <语句> #如果引发了'name'异常，获得附加的数据
+else:
+    <语句> #如果没有异常发生
+
+try的工作原理是，当开始一个try语句后，python就在当前程序的上下文中作标记，这样当异常出现时就可以回到这里，try子句先执行，接下来会发生什么依赖于执行时是否出现异常。
+ 1、如果当try后的语句执行时发生异常，python就跳回到try并执行第一个匹配该异常的except子句，异常处理完毕，控制流就通过整个try语句（除非在处理异常时又引发新的异常）。
+ 2、如果在try后的语句里发生了异常，却没有匹配的except子句，异常将被递交到上层的try，或者到程序的最上层（这样将结束程序，并打印缺省的出错信息）。
+ 3、如果在try子句执行时没有发生异常，python将执行else语句后的语句（如果有else的话），然后控制流通过整个try语句。
+
+
+try/finally风格
+
+try:
+    <语句>
+finally:
+    <语句> #退出try时总会执行finally语句
+
+python总会执行finally子句，无论try子句执行时是否发一异常。
+ 1、如果没有发生异常，python运行try子句，然后是finally子句，然后继续。
+ 2、如果在try子句发生了异常，python就会回来执行finally子句，然后把异常递交给上层try，控制流不会通过整个try语句。
+
+当你想无论是否发生异常都确保执行某些代码时，try/finally是有用的。
+
+这个在打开文件的时候有用 finally总是在最后close()文件
+
+try语句子句形式表
+ except: 捕获所有异常
+ except name: 只捕获特定的异常
+ except name,value: 捕获异常和它的附加数据（将异常的信息保存到value，）
+ except (name1,name2): 捕获任何列出的异常
+ else: 如果没有异常
+ finally: 总是执行
+
+try:
+   f = open('file.txt')
+except IOError as e:
+   print e
+else:
+   print 'wrong'
+
+[Errno 2] No such file or directory: 'file.txt'
+
+try/except/finally:
+
+#1:如果x没有异常，执行z,i
+#2:如果x有异常， 
+#一：如果except捕捉到异常则执行y,i
+#二：没捕捉到，执行i,然后返回内置异常处理
+
+try: 
+    x 
+except(name): 
+    y
+else:
+    z
+finally:
+    i
+

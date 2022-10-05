@@ -1,0 +1,211 @@
+
+pyenv是做什么的
+
+pyenv是用来更方便的管理/切换python版本的.
+github上通过homebrew安装介绍的非常简单.主要是对相关知识点不熟悉造成很多问题.
+首先必须明白的是:
+
+
+通过homebrew安装:
+
+brew install pyenv
+
+如果报错brew命令没找到，说明需要安装homebrew, 参考新Mac安装python3和虚拟环境第 2-4 节完成安装 homebrew 的安装。
+
+非Mac普通Linux使用以下命令安装pyenv
+
+curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+或者
+git clone https://github.com/yyuu/pyenv.git ~/.pyenv
+
+参考：Linux安装pyenv（python多版本）教程
+
+
+查看是否安装成功
+
+pyenv -v
+
+
+配置环境变量
+
+查看当前shell是zsh还是bash, 如果是bash选择下面的方式一，如果是zsh选择方式二
+
+dscl . -read /Users/$USER UserShell
+# 等同于
+echo $SHELL
+
+
+方式1 编辑.bash_profile文件
+
+终端执行命令：
+
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >>~/.bash_profile
+
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >>~/.bash_profile
+
+echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi'>>~/.bash_profile
+
+
+方式2 编辑~/.zshrc 文件，
+
+终端执行命令：
+
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >>~/.zshrc
+
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >>~/.zshrc
+
+echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi'>>~/.zshrc
+
+
+生效环境变量
+
+如果是bash
+
+source  ~/.bash_profile
+
+如果是zsh
+
+source  ~/.zshrc
+
+异常情况：如果碰到下面这个问题
+
+解决方案是对刚才所设置的环境变量一点小改动。打开刚才的环境变量文件 .zshrc 或者 .bash_profile
+
+"vim ~/.bash_profile"或者"vim ~/.zshrc"
+
+应该可以看到下面这段内容
+
+改成下面这样
+
+参考：https://github.com/pyenv/pyenv/issues/1906
+
+
+查看所有的python版本（pyenv管理的所有版本）
+
+$ pyenv versions
+* system (set by /Users/xxx/.pyenv/version)
+
+* 表示当前正在使用的版本，system表示用的是系统python版本
+
+
+查看可安装python版本
+
+
+选择版本进行安装
+
+$ pyenv install 3.7.3
+
+
+查看所有安装的版本
+
+$ pyenv versions
+* system (set by /Users/xxx/.pyenv/version)
+  3.7.3
+
+可以看到多了一个3.7.3版，*表示当前使用的版本
+
+
+切换版本
+
+$ pyenv global 3.5.5 # 全局切换
+
+$ python -V # 验证一下是否切换成功
+  system
+* 3.7.3 (set by /Users/admin/.pyenv/version)
+
+*表示当前使用的版本
+
+注意，此处需要重启终端对应版本才会正式生效
+
+此处用也可用local，只对当前目录生效
+
+$ pyenv local 3.5.5 # 当前目录及其目录切换
+$ python -V # 验证一下是否切换成功
+
+同样此处需要重启终端对应版本才会正式生效
+
+有时设置了pyenv local版本后，再设置global会发现没有生效，可以尝试：
+
+pyenv local --unset
+
+解除local设置。
+
+要切换回系统版本，用同样命令：
+
+$ pyevn global system
+
+
+卸载python版本
+
+$ pyenv uninstall 3.7.3
+
+pyenv 命令列表
+
+
+奇怪的问题
+
+安装完成后，使用python运行程序是可能会碰到下面这个问题，图片来源：pycharm destroy _stat destroy os cleanup[3] wiping _warning wiping _codecs，问题就是运行python程序的时候不停的输出destroy和clean信息。
+
+这个问题的原因可能是下面两种，
+
+1、python命令和pytest命令用混了，比如本来应该使用pytest -sv test_aaa.py但是输入命令的时候却使用了python -sv test_aaa.py， 这个时候会报上面这个错误。
+
+2、在未知是否安装python的情况下，重新安装了python，解决办法是卸载当前系统中已有的所有python3和pyenv, 随后重新安装pyenv, 并使用pyenv安装python3
+
+
+卸载python3的方式：
+
+
+网上很多卸载方式是这样的
+
+对于 Mac 自带的 Python，其框架目录为：
+
+System/Library/Frameworks/Python.framework
+而我们安装的 Python，其（默认）框架目录为：
+
+/Library/Frameworks/Python.framework
+接下来，我们就分别（在 Mac 终端进行）删除上面所提到的三部分。
+
+第 1 步，删除框架：
+
+sudo rm -rf /Library/Frameworks/Python.framework/Versions/x.x
+
+第 2步，删除应用目录：
+
+sudo rm -rf "/Applications/Python x.x"
+
+第 3 步，删除指向 Python 的连接：
+
+cd /usr/local/bin/
+ls -l /usr/local/bin | grep '../Library/Frameworks/Python.framework/Versions/x.x' | awk '{print $9}' | tr -d @ | xargs rm
+
+但是我的卸载过程并非如此顺利，第一步就卡主了，因为我的 /Library/Frameworks/Python.framework/Versions目录不存在。
+
+
+我的方式
+
+终端依次输入以下命令
+
+python3
+
+import os
+
+os.sys.path
+
+复制打印出来的第一个路径，退出python执行模式，删除刚才复制的路径 。
+
+删除完python3的路径后，使用下面的命令卸载pyenv
+
+brew uninstall pyenv
+
+重启电脑，重新安装pyenv, 并通过pyenv安装一个python3
+
+
+参考：
+
+Mac安装多个Python版本
+
+Mac下 Pyenv 的安装使用
+
+详述 Mac 系统下安装及卸载 Python 的方法
+

@@ -1,0 +1,69 @@
+描述
+ 在本地测试代码没问题，但是部署到服务器上时就报错。
+
+描述
+ 在本地测试代码没问题，但是部署到服务器上时就报错。
+
+错误
+
+错误
+
+> cross-env WEBPACK_TARGET=node NODE_ENV=production node ./server/app.js
+
+true
+the server is start at port 3333
+/usr/share/nginx/nav/server/node_modules/koa-mysql-session/node_modules/co/index.js:292
+    throw err;
+    ^
+
+Error: ER_INDEX_COLUMN_TOO_LONG: Index column size too large. The maximum column size is 767 bytes.
+
+原因：因为mysql的版本差异导致的，本地5.7，服务器上5.6。koa-mysql-session是4年前的包不建议使用。
+
+单列索引的长度的限制:5.6里面默认不能超过767bytes，5.7不超过3072bytes
+
+原因：因为mysql的版本差异导致的，本地5.7，服务器上5.6。koa-mysql-session是4年前的包不建议使用。
+
+单列索引的长度的限制:5.6里面默认不能超过767bytes，5.7不超过3072bytes
+
+解决：
+ 手动创建mysql_session_store CREATE TABLE `_mysql_session_store` (
+`id` varchar(255) NOT NULL,
+
+`expires` bigint(20) DEFAULT NULL,
+
+`data` text,
+
+PRIMARY KEY (`id`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+解决：
+ 手动创建mysql_session_store
+
+CREATE TABLE `_mysql_session_store` (
+`id` varchar(255) NOT NULL,
+
+`expires` bigint(20) DEFAULT NULL,
+
+`data` text,
+
+PRIMARY KEY (`id`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+参考： MySQL中索引的长度的限制
+
+参考： MySQL中索引的长度的限制
+
+推荐：
+
+如何挑选高质量的 Node.js 模块？
+优秀的npm包
+
+推荐：
+
+如何挑选高质量的 Node.js 模块？
+
+优秀的npm包
+

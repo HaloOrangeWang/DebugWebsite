@@ -1,0 +1,56 @@
+比如说我要替换version.txt文件中的version=1.1 为version=1.2，比如test.txt文件内容如下：
+
+version=1.1
+
+此时我们会使用sed来替换，如果是涉及比较多的处理，我们会采用脚本实现，比如sed_shell.sh脚本内容如下：
+
+#!/bin/bash
+
+if [ "x$1" == "x" ]; then
+    echo please input new version && exit
+else
+    old_version=`cat version.txt |grep version |awk -F "=" '{print $2}'` #获取老的版本号
+    new_version=$1
+    echo old_version=$old_version and new_version=$new_version
+    sed -i s/$old_version/$new_version/g version.txt  #替换老版本号为新版本号
+fi
+
+linux环境下：执行sh sed_shell.sh "1.2" 命令就可以把verison.txt的老版本号换成新版本号。
+
+但是mac上执行就会报错“invalid command code C”，查看mac sed 发现如下：
+
+说白了，就是需要一个中间文件来转换下，比如我们上面的sed命令在mac上可以替换成sed -i  n.tmp s/$old_version/$new_version/g version.txt  ,其实执行这条的时候会生成一个version.txt_n.tmp文件，这个不需要的文件，执行后删除即可。
+
+我们可以采用uname命令来判断当前系统是不是mac，如果"$(uname)" == "Darwin"，就表明是mac/ios系统。
+
+所以完整的同时兼容linux和mac/ios的脚本sed_shell.sh如下：
+
+#!/bin/bash
+
+if [ "x$1" == "x" ]; then #没有输入参数，报错退出
+    echo please input new version && exit
+else
+    old_version=`cat version.txt |grep version |awk -F "=" '{print $2}'`
+    new_version=$1
+    echo old_version=$old_version and new_version=$new_version
+    if [ "$(uname)" == "Darwin" ];then #ios/mac系统
+        echo "this is Mac,use diff sed"
+        sed -i n.tmp s/$old_version/$new_verison/g version.txt  #如果不备份，可以只给空，即sed -i  " " s/$old_version/$new_verison/g version.txt ，但是不能省略
+        rm *.tmp
+    else
+        sed -i s/$old_version/$new_version/g version.txt  #linux系统
+    fi
+fi
+
+另一种方法是在mac上安装gun-sed:
+
+export xsed=sed
+if [ "$(uname)" == "Darwin" ];then #mac系统
+    echo "alias sed to gsed for Mac, hint: brew install gnu-sed"
+    export xsed=gsed
+fi
+
+#后面使用xsed代替sed执行替换动作，
+
+xsed -i s/$old_version/$new_version/g version.txt
+

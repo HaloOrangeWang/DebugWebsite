@@ -1,0 +1,22 @@
+
+在linux平台安装下载好的Pillow包时出现下面的报错：
+
+pip install Pillow-5.2.0-cp35-cp35m-win_amd64.whl
+
+ERROR: Pillow-5.2.0-cp35-cp35m-win_amd64.whl is not a supported wheel on this platform.
+
+
+百度到两个原因：
+
+可能的原因1：安装的不是对应python版本的库，下载的库名中cp35代表python3.5,其它同理。
+
+可能的原因2：下载的是对应版本的库，然后仍然提示不支持当前平台，文件名格式不对
+
+
+排除原因1，定位为原因2导致；
+
+
+在python命令中输入import pip;  print(pip.pep425tags.get_supported())可以获取到pip支持的文件名还有版本：
+
+通过这里可以发现上面下载的文件名格式是不支持的，修改为：Pillow-5.2.0-cp35-none-any.whl，安装成功
+

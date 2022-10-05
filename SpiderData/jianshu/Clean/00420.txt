@@ -1,0 +1,34 @@
+
+问题背景
+
+Docker拉取了tomcat:8-jdk8，启动时报错找不到“源服务器未能找到目标资源的表示或者是不愿公开一个已经存在的资源表示”
+
+
+解决方案
+
+1 出现这个错误的原因是因为tomcat没有访问到任何JSP页面，进入tomcat容器查看webapps文件夹
+
+docker exec –it tomcat /bin/bash
+
+cd webapps
+
+进入webapps文件夹发现里面什么都没有，tomcat从这里面找JSP的
+
+2 复制webapps.dist文件夹的内容到webapps文件夹
+
+cp -r webapps.dist/* webapps
+
+查看webapps文件夹
+
+3 再次登录页面查看，浏览器输入[ip]:8080
+
+
+总结
+
+我记得以前没有这样的问题，直接可以启动
+
+作为程序员第 54 篇文章，每次写一句歌词记录一下，看看人生有几首歌的时间，wahahaha ...
+
+
+Lyric：没有了空虚
+

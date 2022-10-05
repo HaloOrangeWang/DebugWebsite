@@ -1,0 +1,332 @@
+你将读到以下内容：
+
+字典的存储：包括一维字典，二维字典，或多维字典的存储。
+
+字典的报错：KeyError，ValueError的解决方法。
+
+字典的排序：一维字典，二维字典根据key排序，根据value排序的方法。
+
+字典的合并：一维字典合并，二维字典合并。
+
+字典的输出：小技巧提高输出效率。
+
+字典的存储：包括一维字典，二维字典，或多维字典的存储。
+
+字典的报错：KeyError，ValueError的解决方法。
+
+字典的排序：一维字典，二维字典根据key排序，根据value排序的方法。
+
+字典的合并：一维字典合并，二维字典合并。
+
+字典的输出：小技巧提高输出效率。
+
+
+(---)字典存储
+
+
+(1) 一维字典，value中允许有重复项且值为列表
+
+像这样：
+dict_a = {    
+    'umi1' : ['a','b','c'],    
+    'umi2' : ['b','c','d'],}
+# 存储方法：
+dic = {}
+dic.setdefault(key, []).append(value)
+#举例:
+d1 = {}# 先定义一个空字典
+d1.setdefault('bob_hu', []).append(1)
+d1.setdefault('bob_hu', []).append(2)
+>>>print d1['bob_hu'] 
+>>>[1, 2]
+
+
+（2）一维字典，value中无重复项.值是列表。
+
+adict = {}
+if key in adict:
+    if value not in adict[key]:
+        adict.setdefault(key, []).append(value)
+else:
+    adict.setdefault(key, []).append(value)
+
+
+（3）二维字典，value中无重复项，值是字典。
+
+像这样：
+
+dict_a = {
+    'd1' : {'umi1':'a','umi8':'b'},
+    'd2' : {'umi2':'b'},
+    'd3' : {'umi3':'c'},}
+
+存储方法一：（推荐）
+
+def addtwodimdict(thedict, key_a, key_b, val):
+    ''' this is a function to add two dimetion dict '''
+    if key_a in thedict:
+        thedict[key_a].update({key_b: val})
+    else:
+        thedict.update({key_a: {key_b: val}})
+    return thedict
+
+存储方法二：
+
+dict_a = {}
+dict_a.setdefault(key_a,{})[key_b] = value
+
+例子：
+
+#如:
+d1.setdefault('bob'，{})['f'] = 1
+d1.setdefault('bob'，{})['h'] = 1
+d1.setdefault('bob'，{})['f'] = 1
+print d1['bob'] #{'h': 1， 'f': 1}
+
+
+（三）二维字典，且值为列表，
+
+举例：
+
+dict_a = {
+    sample1 : {umi1 ：['AB','CD','EF'], umi8:['DW','KI']},
+    sample2 : {umi2 : ['GB','RE','SD']},
+    sample3 : {umi3 : ['GE','WE','WE','WQ']},
+  }
+
+方法：
+
+def addtwodimdict(thedict, key_a, key_b, val):
+    ''' this is a function to add two dimetion dict '''
+    if key_a in thedict:
+        thedict[key_a].setdefault(key_b, []).append(val)
+    else:
+        thedict.update({key_a: {key_b: [val]}})
+    return thedict
+
+
+（四）一维字典，且值为数字，还要加和。
+
+hist = {}
+if word not in hist:
+    hist[word] = 1
+else:
+    hist[word] = hist[word] + 1
+
+
+（五）二维字典，值为数字，还要加和
+
+def two_dim_dict(thedict, key_a, key_b, value):
+    if key_a in thedict:
+        if key_b in thedict[key_a]:
+            value = thedict[key_a][key_b] + value
+            thedict[key_a].update({key_b: value})
+        else:
+            thedict[key_a].update({key_b: value})
+    else:
+        thedict.update({key_a: {key_b: value}})
+    return thedict
+
+
+(六) 二维字典,值的类型既有列表又有数字。
+
+like this :
+a_dict = {    umi1 : { 'cloneid' : [2,3,4], 'readCount': 2345},    umi2 : {'cloneid' : [2,5,10,100], "readCount" : 7865},}
+
+
+（七）三维字典：
+
+def threetwodimdict(thedict, key_a, key_b, key_c, value):
+    ''' this is a function to add two dimetion dict '''
+    if key_a in thedict:
+        if key_b in thedict[key_a]:
+            thedict[key_a][key_b].update({key_c: value})
+        else:
+            thedict[key_a].update({key_b: {key_c: value}})
+    else:
+        thedict.update({key_a:{key_b: {key_c: value}}})
+    return thedict
+
+a = {}
+threetwodimdict(a,"a","b","c",1)
+threetwodimdict(a,"a","b","e",2)
+threetwodimdict(a,"a","z","c",3)
+
+
+格式化输入dict
+
+import json
+print(json.dumps(a, indent=4))
+
+{
+    "a": {
+        "b": {
+            "c": 1,
+            "e": 2
+        },
+        "z": {
+            "c": 3
+        }
+    }
+}
+
+
+(---)字典的排序
+
+
+1. 按照key排序
+
+def sortedDictValues1(adict):
+    items = adict.items()
+    items.sort()
+    return [value for key, value in items]
+
+
+2. 按照key排序
+
+sorted(adict.items(), key=lambda item：item[0], reverse=False)
+
+按照从小到大的顺序排序,排序后为一个list，用for循环遍历list
+
+sorted(adict.items(), key = lambda item : item[0], reverse=True)
+
+按照从大到小的顺序排序，排序后为一个list，用for循环遍历list
+
+
+3. 按照value 排序
+
+sorted(umi_count_dict.items(), key=lambda item: item[1], reverse=True) 从大到小
+
+sorted(umi_count_dict.items(),key=lambda item : item[1], reverse=False) 从小到大
+
+注意排序后的返回值是一个list，而原字典中的键值对被转换为了list中的元组。
+
+
+(---)字典求最大值或最小值：
+
+
+求最小值：
+
+min(dict,key=dict[key].get)
+
+
+求最大值：
+
+max(dict,key=dict[key].get)
+
+
+(---)字典的value求和
+
+adict = {'a':12, 'b':13, 'c':14}>>> sum(adict.values())39
+
+
+(---)字典的合并
+
+示例：
+dict1 = {1: [1,11,111], 2: [2,22,222]}
+dict2 = {3: [3,33,333], 4: [4,44,444]}
+合并两个字典得到类似  {1:[1,11,111],2:[2,22,222],3:[3,33,333],4:[4,44,444]}
+
+方法1：
+dictMerged1=dict(dict1.items() + dict2.items())
+
+方法2：
+dictMerged2=dict(dict1, **dict2)
+方法2等同于：
+dictMerged=dict1.copy()
+dictMerged.update(dict2)
+也等同于：
+dictMerged=dict(dict1)
+dictMerged.update(dict2)
+经测试方法2比方法1快
+
+方法3：适用于python3
+dictMerged = {**dict1, **dict2}
+
+
+(---)字典中元素的打印：
+
+# method 1： # 效率低
+for k,v in dict.items():
+       print k,v
+# method 2：#效率高
+for i in dict:
+       print i ,dict[i]
+
+
+两个字典的key求交集,并集，补集：
+
+dict1 = {a:1,b:2,c:3}
+dict2 = {a:8,b:4,e:9}
+common = set(dict1.keys()) | set(dict2.keys())
+uniq = set(dict1.keys()) & set(dict2.keys())
+
+
+字典的格式化输出：
+
+import json
+json.dumps(dict, indent=1)
+
+
+(---)字典报错处理
+
+
+1.字典中 keyError：
+
+示例：
+adict = {'a':12, 'b':13, 'c': 14}
+>>> adict['d']
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+KeyError: 'd'
+
+解决方法1：
+>>> adict.get('d','No such key')
+'No such key'
+
+解决方法2：
+If key in adict:
+    print(adict[key])
+
+
+2.字典中 ValueError：
+
+示例：
+检查是不是dict.items()没写对。
+错误写法：
+for k,v in dict.items:
+    print(k,v)
+
+正确写法：
+for k,v in dict.items():
+    print(k,v)
+
+
+3.字典中不可迭代错误：
+
+In Python 2.x calling keys makes a copy of the key that you can iterate over while modifying the dict:
+
+for i in d.keys():
+
+Note that this doesn't work in Python 3.x because keys returns an iterator instead of a list.
+
+Another way is to use list to force a copy of the keys to be made. This one also works in Python 3.x:
+
+for i in list(d):
+
+
+pandas 中的dataframe 转dict：
+
+使用DataFrame.from_dict函数。
+
+具体参数可以参考官网：https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.from_dict.html
+
+
+输出部分dict方便查看：
+
+dict非常大的话，可以只输出前几个，类似于head函数。
+
+print(dict(list(my_dict.items())[:3]))
+
+持续整理中。。。有任何其他关于dict的问题可以留言，我再整理进来大家一起参考。
+

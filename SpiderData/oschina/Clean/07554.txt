@@ -1,0 +1,27 @@
+The SELECT would examine more than MAX_JOIN_SIZE rows; check your WHERE and use SET SQL_BIG_SELECTS=1 or SET MAX_JOIN_SIZE=# if the SELECT is okay
+
+
+背景
+
+项目做数据迁移，将老数据库的部分数据通过中间表导入新库中，发生报错：
+
+Error Code: 1104. The SELECT would examine more than MAX_JOIN_SIZE rows; check your WHERE and use SET SQL_BIG_SELECTS=1 or SET MAX_JOIN_SIZE=# if the SELECT is okay
+
+
+资料调查
+
+1. MySQL官网解释：超链接
+
+2. 怀疑join_size不够，查看最大join_size
+
+SELECT @@max_join_size,@@globla.max_join_size,@@local.max_join_size;
+
+
+解决办法
+
+1. 如果max_join_size不够大，可以手动设置大一些。
+
+set @@local.max_join_size=18446744073709551615, @@global.max_join_size=18446744073709551615;
+
+然后再select查询下max_join_size参数信息。
+

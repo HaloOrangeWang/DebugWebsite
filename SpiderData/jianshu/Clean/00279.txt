@@ -1,0 +1,40 @@
+
+安装homebrew
+
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+
+1
+
+Error: Checksum mismatch.
+Expected: 0cb1cc7af109437fe0e020c9f3b7b95c3c709b140bde9f991ad2c1433496dd42
+  Actual: 6d1dff6d51dcc8e13c0cb02a7efdc2a6a8537ca0ba71e48ed2bee108003fa8a4
+ Archive: /Users/你的用户名/Library/Caches/Homebrew/portable-ruby-2.6.8.yosemite.bottle.tar.gz
+To retry an incomplete download, remove the file above.
+Error: Failed to upgrade Homebrew Portable Ruby!
+^CFailed during: /usr/local/bin/brew update --force --quiet
+
+报错信息如上，删除Archive字段后那个gz文件
+
+rm /Users/你的用户名/Library/Caches/Homebrew/portable-ruby-2.6.8.yosemite.bottle.tar.gz
+
+
+2
+
+unable to access 'https://github.com/Homebrew/brew/': LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to github.com:443
+
+报错信息如上时，将Mac的dns改为8.8.8.8
+
+重新安装即可成功
+
+第2个报错参考这个解决的，google搜索结果真好使，第一个结果就解决了问题
+
+https://stackoverflow.com/questions/67378128/unable-to-access-https-github-com-homebrew-brew-libressl-ssl-connect#
+
+
+3
+
+安装很慢，切换镜像，输入1
+
+/bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
+

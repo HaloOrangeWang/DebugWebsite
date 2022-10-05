@@ -1,0 +1,20 @@
+今天打开一个Python文件时，报错提示：
+
+TypeError: __init__() got an unexpected keyword argument 'io_loop'
+
+明明是从旧电脑上拷贝到新电脑上的文件，之前运行是OK的，新电脑上运行怎么就报错了呢？
+
+错误原因：
+
+配置python环境时，默认tornado版本是最新的版本（恰好我新电脑重新配置了python环境，所以安装了最新版本），但是在4.0版本之后就废弃了io_loop参数。
+
+解决方案：
+
+1. 先卸载当前安装的tornado
+
+pip uninstall tornado
+
+2. 安装低版本的tornado
+
+pip install tornado==4.1
+

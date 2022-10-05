@@ -1,0 +1,20 @@
+在windows下安装psycopg2出现问题，如下面两个图所示：
+
+调查方案： 确认pip install psycopg2成功， pip list也显示psycopg2在列表内，结果无论在pycharm还是python console界面都显示无法找到psycopg2模块。
+
+解决方案：
+
+　　执行如下命令：  python -m pip uninstall psycopg2    #卸载已安装的psycopg2。 此处不用pip uninstall 而是在前面加上 python -m
+
+　　　　　　　　　  python -m pip install psycopg2  #重新安装
+
+验证一下无报错，成功。
+
+问题原因可能为windows上的python版本可能发生过变动。从python2到python3，或从python3.*到python3.*都有可能导致此问题。
+
+如果python console问题已解决但是pycharm还有这个问题的话，有两种可能解决方案：
+
+1、需要pycharm索引完毕新安装的module，然后再执行一下看看是否成功。这个需要等一下，毕竟pycharm的缺点就是太慢了。
+
+2、进到pycharm的解释器设置，查看python解释器地址是否正确，如果与系统默认解释器不一致的话修改成语系统默认解释器一致就可以了。
+

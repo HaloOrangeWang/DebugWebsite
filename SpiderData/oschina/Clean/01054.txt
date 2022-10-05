@@ -1,0 +1,29 @@
+当python读取文件出现_csv.Error: line contains NULL byte时，
+
+# -*- coding:utf-8 -*-
+
+import csv
+
+with open(r'E:\abc\web_test\userinfo.csv','rb') as f:
+    reader = csv.reader(f)
+    rows = [row for row in reader]
+    print rows
+
+报错：
+
+D:\Python27\python.exe E:/abc/loop_reader.py
+Traceback (most recent call last):
+  File "E:/abc/web_test/loop_reader.py", line 7, in <module>
+    rows = [row for row in reader]
+_csv.Error: line contains NULL byte
+
+Process finished with exit code 1
+
+错误提示为：_csv.Error: line contains NULL byte
+
+翻译为：CSV错误，行包含空字节
+
+原因：通常是因为保存时扩展名为xls或xlsx,而将其改为csv文件通常是重命名
+
+解决方法：把它另存为.csv文件即可
+

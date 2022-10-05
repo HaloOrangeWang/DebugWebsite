@@ -1,0 +1,26 @@
+Python3.7.2版本出现ModuleNotFoundError: No module named 'paramiko'解决办法
+
+以下都是自己遇到这种情况的解决方法总结。
+刚开始学习Python，就遇到执行Python文件报错，
+一直提示import paramiko
+ModuleNotFoundError: No module named 'paramiko'
+
+网上百度了很多方法，比如：
+1.paramiko模块依赖于pycrypto模块，然而我在安装paramiko时就一直报错；又去安装MinGW、Visual Studio最后都以失败告终；
+浪费了很多脑细胞，心力交瘁。
+最后又看到一篇文章直接pip install paramiko，但是又遇到新问题，如下：
+'pip' 不是内部或外部命令，也不是可运行的程序 或批处理文件。
+
+2.网上百度出：一般安装python时就会自动把pip安装好，所以要先明确自己是否安装了python。
+如果确定自己安装了python，那就说明是没有配置环境变量，找到自己安装python的目录，找到Scripts文件夹，并把这个Scripts文件夹的目录添加到Path环境变量即可。
+
+3.执行pip install paramiko，出现Fatal error in launcher: Unable to create process using '"d:\python\python.exe"  "D:\software\python\Scripts\pip.exe" install paramiko'
+
+具体原因：pip的环境变量更改了位置或者路径出错
+解决方案：在命令行输入任意一个
+1.python -m pip install --upgrade pip
+2.python pip.exe install
+1.python -m pip install --upgrade pip
+
+4.执行pip install paramiko，成功
+

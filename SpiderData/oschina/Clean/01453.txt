@@ -1,0 +1,57 @@
+
+一、tensorflow checkpoint报错
+
+在调用tf.train.Saver#save时，如果使用的路径是绝对路径，那么保存的checkpoint里面用的就是绝对路径；如果使用的是相对路径，那么保存的checkpoint里面用的就是相对路径。正确的方法应该是使用相对路径进行保存，这样才能保证较好的可移植性。
+
+如果使用相对路径，复制到本地之后，会报找不到文件的错误。
+
+tensorflow.python.framework.errors_impl.NotFoundError: FindFirstFile failed for: 
+一个绝对路径...... : ϵͳ\udcd5Ҳ\udcbb\udcb5\udcbdָ\udcb6\udca8\udcb5\udcc4·\udcbe\udcb6\udca1\udca3
+; No such process
+
+解决方法：手动修改checkpoint文件，checkpoint文件是一个文本文件。
+
+以上结论可以通过以下代码进行验证。
+
+import tensorflow as tf
+import os
+
+a = tf.Variable(3)
+saver = tf.train.Saver(tf.global_variables(), )
+with tf.Session()as sess:
+    sess.run(tf.global_variables_initializer())
+    saver.save(sess, os.path.abspath('gen/test/'))
+
+
+二、奇怪的six
+
+编Tensorflow编了好几个程序了，都是正常运行。 为了记录每一次调参的结果和对应的代码，我的python文件命名为one.py,two.py,three.py等。 直到six.py时，报错了。
+
+from google.protobuf import descriptor as _descriptor
+  File "C:\anaconda\lib\site-packages\google\protobuf\descriptor.py", line 37, in <module>
+    import six
+  File "C:\Users\weidiao\Desktop\python实验室\人脸识别卷积神经网络\six.py", line 24, in <module>
+    x = tf.placeholder(tf.float32, [None, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS], name='x-input')
+AttributeError: module 'tensorflow' has no attribute 'placeholder'
+
+我还以为程序运行着把tensorflow玩坏了。 其实是因为protobuf这个包中引用了six.py，而我的six.py把正确的six.py给覆盖了。
+
+看见没，这就是Python使用不规范包名的后果，在Java中写了一堆org、com并不白写，Java中包的定位更精确、更无二义性。再过几十年，Python中的全部包几乎好名字都被占了，那时人们再想给Python写个库的时候就要哭了。
+
+
+三、tensorflow报错：Unsupported feed type
+
+File "C:\anaconda\lib\site-packages\tensorflow\python\training\monitored_session.py", line 827, in run
+    return self._sess.run(*args, **kwargs)
+  File "C:\anaconda\lib\site-packages\tensorflow\python\client\session.py", line 889, in run
+    run_metadata_ptr)
+  File "C:\anaconda\lib\site-packages\tensorflow\python\client\session.py", line 1120, in _run
+    feed_dict_tensor, options, run_metadata)
+  File "C:\anaconda\lib\site-packages\tensorflow\python\client\session.py", line 1317, in _do_run
+    options, run_metadata)
+  File "C:\anaconda\lib\site-packages\tensorflow\python\client\session.py", line 1336, in _do_call
+    raise type(e)(node_def, op, message)
+tensorflow.python.framework.errors_impl.InternalError: Unsupported feed type
+
+使用tf.contrib.learn.DNNClassifier分类器进行分类时，报出如上异常。 解决方法是：尽量使用numpy中的默认类型，如np.int,np.float等，而不要使用np.int32,np.float32.
+

@@ -1,0 +1,22 @@
+最近开发过程中 碰到一个神烦问题，不知道为什么 我sql写好 在数据库执行正常，当拿到mybatis里就会报错，sql大概是这样
+
+select id ,count(case when planstarttime > now() then 1 else 0 end) as yuqi from pm_plan_tb
+
+报错> 号  最后问了下万能的度娘得到两总方法解决这个问题 特此记录 勿忘
+
+第一种方法：
+
+用了转义字符把>和<替换掉，然后就没有问题了。
+
+select id ,count(case when planstarttime  &gt; now() then 1 else 0 end) as yuqi from pm_plan_tb
+
+附：xml转义字符
+
+第二种方法：
+
+因为这个是xml格式的，所以不允许出现类似“>”这样的字符，但是都可以使用<![CDATA[ ]]>符号进行说明，将此类符号不进行解析
+
+mapper文件示例代码
+
+<![CDATA[select id ,count(case when planstarttime  > now() then 1 else 0 end) as yuqi from pm_plan_tb ]]>
+

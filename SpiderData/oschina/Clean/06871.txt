@@ -1,0 +1,10 @@
+FreeSWITCH了提供ESL接口来接受外部的控制;默认情况下，只能连接本机的FreeSWITCH。服务如果链接需要局域网或者远程FreeSWITCH服务器，在需要conf/autoload_configs/event_socket.conf.xml中修改配置。
+
+将需要<param name="listen-ip" value="127.0.0.1"/>修改为<param name="listen-ip" value="0.0.0.0"/>或者<param name="listen-ip" value="::"/>，配置这个意思为网求允许远程ESL控制。
+
+最终参考配置，为了安全建议修改password：
+
+<configuration name="event_socket.conf" description="Socket Client"> <settings> <param name="nat-map" value="false"/> <param name="listen-ip" value="0.0.0.0"/> <param name="listen-port" value="8021"/> <param name="password" value="Om2nd1as2aj9nnpsd"/> <param name="apply-inbound-acl" value="lan"/> <!--<param name="apply-inbound-acl" value="loopback.auto"/>--> <!--<param name="stop-on-bind-error" value="true"/>--> </settings> </configuration>
+
+<param name="apply-inbound-acl" value="lan"/>
+

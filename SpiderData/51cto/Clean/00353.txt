@@ -1,0 +1,26 @@
+在使用docker容器yum安装时出现类似的错误：
+
+Transaction check error:
+file /usr/lib64/libsystemd-daemon.so.0 from install of systemd-libs-219-19.el7.x86_64 conflicts with file from package systemd-container-libs-208.20-6.el7.centos.x86_64
+file /usr/lib64/libsystemd-id128.so.0 from install of systemd-libs-219-19.el7.x86_64 conflicts with file from package systemd-container-libs-208.20-6.el7.centos.x86_64
+file /usr/lib64/libsystemd-journal.so.0 from install of systemd-libs-219-19.el7.x86_64 conflicts with file from package systemd-container-libs-208.20-6.el7.centos.x86_64
+file /usr/lib64/libsystemd-login.so.0 from install of systemd-libs-219-19.el7.x86_64 conflicts with file from package systemd-container-libs-208.20-6.el7.centos.x86_64
+file /usr/lib64/libudev.so.1 from install of systemd-libs-219-19.el7.x86_64 conflicts with file from package systemd-container-libs-208.20-6.el7.centos.x86_64
+file /usr/lib64/security/pam_systemd.so from install of systemd-libs-219-19.el7.x86_64 conflicts with file from package systemd-container-libs-208.20-6.el7.centos.x86_64
+
+这是由于从systemd-容器*包实际systemd的过渡。出于某种原因，上游包不过时或发生冲突，所以你会在安装包时出错。 解决办法是获取最新的centos镜像。或者执行命令：
+
+yum install -y   libsystemd-daemon.so.0    libsystemd-id128.so.0  libsystemd-journal.so.0 libsystemd-login.so.0 libudev.so.1  systemd-container-libs
+
+只能是祝你好运。
+
+另外就是docker容器里面启动服务时出现：
+
+Failed to get D-Bus connection: Operation not permitted
+
+首先恭喜你使用centos7镜像，然后就是不幸告诉你这个问题是个BUG 将在centos7.2解决。
+
+目前能做的就是使用其他的方式启动。或者看我的另一篇微博：http://welcomeweb.blog.51cto.com/10487763/1735251
+
+Currently, systemd in CentOS 7 has been removed and replaced with a fakesystemd package for dependency resolution. This is due to systemd requiring the CAP_SYS_ADMIN capability, as well as being able to read the host's cgroups. If you wish to replace the fakesystemd package and use systemd normally, please follow the steps below.
+

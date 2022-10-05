@@ -1,0 +1,61 @@
+在开发网站的过程中,404,500错误，是不可避免产生的。
+
+一旦产生了这种错误，很多可以通过web server 来处理。比如使用 apache 的定义
+
+或者nginx 的定义。都可以定向处理。如果单纯在django里面可以处理吗？肯定是可以的，django提供了相应的处理方式，只要在django里
+
+起步
+
+面定义了，无论你今后部署在apache下或者是nginx下，都是生效的。
+
+要想自定义错误页面，需要关闭调试模式 DEBUG = False ，因为调试模式的错误页面是开发下会显示错误信息的。
+
+有两种方法可以实现自定义的错误页面。
+
+方法一：创建特定命名的模板文件
+
+这是一种非常简单的方式。在项目模板文件夹 templates 中创建命名为 404.html 的模板文件即可。
+
+这个方式是其实是借用了 Django 的模板查找规则进行的。源码在 django.views.defaults.py 中：
+
+ERROR_404_TEMPLATE_NAME = '404.html'
+
+def page_not_found(request, exception, template_name=ERROR_404_TEMPLATE_NAME):
+ ...
+
+总的来说，方法一不需要设路由，只要新建规定名称的模板就能生效了。
+
+方法二：设置句柄
+
+如果需要更个性化的错误页面，不需要拘泥于特定的模板文件名，可以重新设置句柄，具体是在 urls.py 中设置：
+
+# urls.py
+def page_not_found(request, exception):
+ return render(request, 'your_404_filename.html')
+
+handler404 = page_not_found
+
+urlpatterns = [
+ ...
+]
+
+除了能捕获不存在路由地址，还能捕获视图中 raise Http404('message') 抛出的异常。
+
+哪些错误页面可以配置
+
+具体能自定义错误页面的有 4 中状态码：
+
+# django.views.defaults.py
+ERROR_404_TEMPLATE_NAME = '404.html'
+ERROR_403_TEMPLATE_NAME = '403.html'
+ERROR_400_TEMPLATE_NAME = '400.html'
+ERROR_500_TEMPLATE_NAME = '500.html'
+
+# django.conf.urls.__init__.py
+handler400 = defaults.bad_request
+handler403 = defaults.permission_denied
+handler404 = defaults.page_not_found
+handler500 = defaults.server_error
+
+到此这篇关于Django 自定义404 500等错误页面的实现的文章就介绍到这了,更多相关Django自定义404 500错误页面内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

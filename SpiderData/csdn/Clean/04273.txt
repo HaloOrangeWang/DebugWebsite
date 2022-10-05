@@ -1,0 +1,17 @@
+python类型错误：‘NoneType’ object is not subscriptable
+ 网上查到的原因和方案如下，但是小编给变量的命名不太像系统内置关键字。
+
+原因：变量使用了系统内置的关键字list
+ 解决：重新定义下这个变量
+
+小编需求是获取网络数据，从中获取某个key的值然后赋值给变量，代码如下
+
+targetData = monitorData['MonitorData’]
+
+既然是网络数据就有可能没有这个key，所以小编print了targetData，果然有case是none，将none赋值给变量就报标题的错误，所以小编的解决方案是先判断targetData是否是None在赋值
+
+if targetData is None:
+            处理异常情况
+        else:
+           获取值操作
+

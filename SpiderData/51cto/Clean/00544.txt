@@ -1,0 +1,30 @@
+
+问题复现：
+
+编译安装Python3.7版本，在make install的时候，出现报错
+
+
+解决方案：
+
+yum install zlib*
+
+
+问题复现2
+
+
+解决方案：
+
+编译成功 ：
+
+
+问题原因：
+
+python3中有个内置模块叫ctypes，它是python3的外部函数库模块，提供了兼容C语言的数据类型，并通过它调用Linux系统下的共享库(Shared library)，此模块需要使用centos7系统中外部函数库(Foreign function library)的开发链接库(头文件和链接库)。
+
+由于在centos7系统中没有安装外部函数库(libffi)的开发链接库软件包，所以在安装pip的时候就报了"ModuleNotFoundError: No module named ‘_ctypes’"的错误。
+
+
+总结
+
+新版本和旧版本有时候差别比较大，在安装的过程中一定要注意新旧版本的区别。多参考官方文档
+

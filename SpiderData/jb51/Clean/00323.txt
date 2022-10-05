@@ -1,0 +1,109 @@
+
+一、前言
+
+Python assert（断言）用于判断一个表达式，在表达式条件为 false 的时候触发异常。
+
+
+二、异常
+
+即便 Python 程序的语法是正确的，在运行它的时候，也有可能发生错误。运行期检测到的错误被称为异常
+
+
+三、异常处理
+
+
+3.1 try/except
+
+try:
+    # age_str = input("====>")
+    # age = int(age_str)
+ 
+    # l1 = []
+    # l1[2]
+ 
+    d1 = {}
+    d1["name"]
+ 
+except ValueError as e:
+    print(e)
+except IndexError as e:
+    print(e)
+except KeyError as e:
+    print("KeyError:", e)
+except Exception as e:
+    print("其他未知异常")
+
+
+3.2 try/except ... else
+
+# 异常的其他结构
+s = "a"
+s = 1
+try:
+    int(s)
+except ValueError as e:
+    print(e)
+except KeyError as e:
+    print(e)
+except IndexError as e:
+    print(e)
+except Exception as e:
+    print("捕获未知异常")
+else:
+    print("try 包含的代码块没有异常，执行else 里面的代码")
+finally:
+    print("执行finally 的代码，通常用于释放资源")
+
+
+3.3 try-finally
+
+s = "a"
+try:
+    int(s)
+except ValueError as e:
+    print(e)
+finally:
+    print("执行finally 的代码，通常用于释放资源")
+
+
+四、抛出异常
+
+
+4.1 raise
+
+# 主动触发异常
+try:
+    raise TypeError("这个异常是主动触发的")
+except TypeError as e:
+    print(e)
+
+
+五、用户自定义异常
+
+自定义异常需要继承自 BaseException； （Exception 也 继承自 BaseException）
+
+# 自定义异常
+class MyException(BaseException):
+    def __init__(self, msg):
+        self.msg = msg
+ 
+    def __str__(self):
+        return "<MyException:{}>".format(self.msg)
+ 
+try:
+    raise MyException("自定义异常")
+except MyException as e:
+    print(e)
+
+
+六、断言 assert
+
+程序某处判断结果，如果判断结果为 False; 抛出 AssertionError， 效果相当于 if 进行判断，再抛出异常
+
+assert 1 == 2
+ 
+if 1 != 2:
+    raise AssertionError
+
+到此这篇关于Python基础之错误和异常详解的文章就介绍到这了,更多相关Python错误和异常内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

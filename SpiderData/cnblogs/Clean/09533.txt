@@ -1,0 +1,26 @@
+
+numpy：DLL load failed while importing _multiarray_umath: 找不到指定的模块。
+
+
+1 问题描述
+
+使用conda install numpy 装包。安装过程中一切正常，但是最后使用的时候却不止一次的报错：
+
+先说一下我的环境：windows系统下使用 numpy1.20 + conda管理包环境 + python版本1.19
+
+这真的是一个困扰了我很久的问题。网上查了很多办法，无非都是重新安装或者换个版本之类治标不治本的方法。当我正在使用某一个特定版本的conda 环境，我不愿意随意的更改numpy的版本（有很多包依赖于底层的numpy版本，且这个问题我在其它的python和numpy版本中也遇到了，显然不是换个版本就可以解决的）。同时重装也是个没什么用的方法。我重装了一边conda，问题还是依旧。所以把我的方法贴在下面：
+
+
+2 解决
+
+这个问题应该是一个导入包模块时候路径的问题。读者应该把“D:\anaconda3\envs\xxxx\Library\bin”添加到环境变量中。（这里情况可能因人而异，需要把xxxx改成自己的conda环境。但是核心就是把对应环境下的Library\bin添加到环境变量中。）
+
+当然还是建议读者先试一下conda uninstall / pip uninstall numpy  因为也有可能是重复安装了numpy包导致的，或者在版本不是很敏感的情况下没准更新一次就解决了问题。
+
+（顺便一提：尽量不要混用pip和conda）
+
+
+3关于dll
+
+dll（全称dynamic link libraries，动态链接库）文件，是windows下一个用于连接函数功能供其它应用程序调用与引入的文件。由于是windows 早期架构的一部分，dll文件已经成为了很多代码构建的重要部分。有兴趣的同学可以去了解一下dll hell，这里就不展开啦
+

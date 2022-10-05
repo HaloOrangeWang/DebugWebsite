@@ -1,0 +1,69 @@
+一、二进制文件的结构
+
+1、结构：头部信息 + 数据；
+
+　头部信息：是对这个文件是结构的介绍信息，相当于书本的目录；
+
+　数据：文件各个结构的具体信息，相当于书本的内容；
+
+2、打开二进制文件
+
+　　例：f = open(path, 'rb')：以只读形式打开指定文件；
+
+3、读取文件：f.read(size)，读取的文件内容为字节；如：\x10\x00\x00\x01\x02\x0D等，一个\x10代表一个字节；
+
+4、解析读取的字节数据：struct模块下的unpack方法（更多参见：Python：struct模块的pack、unpack）
+
+#格式：struct.unpack('数据类型', f.read(size))
+
+#数据类型：如下表，struct.unpack('h', f.read(size))，表示解析成short类型；'i'，表示解析成int类型；
+
+#f.read()：表示需要被解析的字节类型的数据；
+
+#struct 类型表
+
+import struct
+
+a = 20
+b = 400
+s = struct.pack('ii', a, b)
+print(s, type(s))
+#输出：b'\x14\x00\x00\x00\x90\x01\x00\x00' <class 'bytes'>
+print('length: ', len(s))
+#输出：length:  8
+s2 = struct.unpack('ii', s)
+print(s2)
+#输出：(20, 400)
+
+s2 = struct.unpack('ii', s)
+#报错：unpack requires a buffer of 4 bytes
+#==>解压需要一个4字节的缓冲区，也就是说'ii'表示8个字节的缓冲
+
+5、直接读取文件数据（存放到数组内），而不是再返回一个字符串
+
+import array
+
+f = open('test.wav')
+#将文件指针从首端移到末尾；
+f.seek(0, 2)
+#f.tell()：返回从指针位置到文件末尾的字节数；
+n = f.tell()/2
+#创建一个数据类型为'h'，长度为n的数组；
+buf = array.array('h', (o for _ in range(n)))
+#将文件指针从末尾移到首端；
+f.seek(2, 0)
+#将文件二进制数据直接读取到buf数组内；
+f.readinto(buf)
+#查看数组内数据
+print(buf[index])
+f.close()
+
+#缩小文件大小
+for i in range(n):
+    buf[i] /= 8
+#将更改后的数据写入新文件，以写入二进制文件的形式
+f2 = open('demo.wav', 'wb')
+#将数组内数据写入文件内：采用array.tofile(file)
+buf.tofile(f2)
+f2.close()
+

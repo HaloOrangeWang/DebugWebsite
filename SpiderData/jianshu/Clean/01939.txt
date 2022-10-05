@@ -1,0 +1,93 @@
+先说几个坑：
+
+1. 从Nvidia官网下周CUDA一定看准版本，10.0千万别下成10.1这种
+
+2. 安装好cuDNN几个配置环境
+
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64"
+
+export CUDA_HOME=/usr/local/cuda/
+
+export PATH=$PATH:/usr/local/cuda/bin/
+
+3. 安装显卡驱动绝对是一个难关=-=
+
+接下来是报错处理，pip install tensorflow tensorflow-gpu的时候有以下3个报错
+
+
+1. 无法卸载老版本的wrapt
+
+ERROR: Cannot uninstall 'wrapt'. It is a distutils installed project and thus we call.
+
+
+解决方案
+
+pip install tensorflow tensorflow-gpu --ignore-installed wrapt
+
+
+2. twisted安装不上
+
+ERROR: twisted 18.7.0 requires PyHamcrest>=1.9.0, which is not installed. tensorflow
+
+
+解决方案
+
+直接去镜像站下载：18.7版本
+
+https://pypi.tuna.tsinghua.edu.cn/simple/twisted/
+
+下载tar.bz2版本的
+
+之后tar -jxf 解压
+
+pip install ./Twisted-18.7.0
+
+
+3. numpy版本问题
+
+ImportError: Something is wrong with the numpy installation. While importing we detected an older version of numpy in ['/home/bioinfo/anaconda3/lib/python3.6/site-packages/numpy']. One method of fixing this is to repeatedly uninstall numpy until none is found, then reinstall this version.
+
+
+解决方案
+
+不断得pip uninstall numpy直到报错
+
+最后pip install numpy
+
+
+最后补充一下万一cuda版本安装错了，比如先安装了cuda10.1之后怎么退回10.0
+
+先下载10.0的cuda安装包
+
+执行官网的下面2步：
+
+`sudo dpkg -i cuda-repo-ubuntu1604-10-0-local-10.0.130-410.48_1.0-1_amd64.deb`
+
+`sudo apt-key add /var/cuda-repo-10-0这里tab补充完整文件名)/7fa2af80.pub`
+
+之后查询版本：
+
+➜sudo apt-cache madison cuda
+
+cuda | 10.1.168-1 | file:/var/cuda-repo-10-1-local-10.1.168-418.67  Packages
+
+cuda | 10.0.130-1 | file:/var/cuda-repo-10-0-local-10.0.130-410.48  Packages
+
+安装正确的版本：
+
+➜ sudo apt-get install cuda=10.0.130-1
+
+
+现在github上有一些不错的解决方案，报错docker或者打包好的pip，付链接：
+
+优化后的pip轮子
+
+https://github.com/inoryy/tensorflow-optimized-wheels
+
+深度学习的docker
+
+https://github.com/floydhub/dl-docker
+
+
+希望以后官方可以让安装不这么纠结，要不我就转pyTouch了
+

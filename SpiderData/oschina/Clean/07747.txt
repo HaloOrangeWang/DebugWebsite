@@ -1,0 +1,46 @@
+大家好！我是【AI 菌】，研究僧一枚，CSDN博客专家，公众号【AI 修炼之路】作者。专注于无人驾驶（环境感知方向），热衷于分享AI、CV、DL、ML、OpenCV、Python、C++等相关技术文章。
+
+我的博客地址为：【AI 菌】
+ 我的Github项目地址是：https://github.com/Keyird
+
+温馨提醒： 以下方法，不需要重装驱动，简单快捷。适用于Ubuntu系统下，之前已经安装过驱动，但驱动失效的问题。
+ 如果此方法仍然无法解决问题，可参考Ubuntu下安装nvidia显卡驱动，重装驱动。
+
+前段时间刚装了驱动：Ubuntu下安装nvidia显卡驱动
+
+但是最近准备用GPU跑模型时，提示cuda 不存在。前段时间刚装的驱动，怎么会不存在呢？
+
+第一步，打开终端，先用nvidia-smi查看一下，发现如下报错：
+
+NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. 
+Make sure that the latest NVIDIA driver is installed and running.
+
+第二步，使用nvcc -V检查驱动和cuda。
+
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2018 NVIDIA Corporation
+Built on Sat_Aug_25_21:08:01_CDT_2018
+Cuda compilation tools, release 10.0, V10.0.130
+
+发现驱动是存在的，于是进行下一步
+
+第三步，查看已安装驱动的版本信息
+
+ls /usr/src | grep nvidia
+
+比如我的驱动版本是：nvidia-450.57
+
+第四步，依次输入以下命令
+
+sudo apt-get install dkms
+
+sudo dkms install -m nvidia -v 450.57
+
+等待安装完成后，再次输入nvidia-smi，查看GPU使用状态：
+
+最后，我们熟悉的页面又回来了！问题得以解决！
+
+本文同步分享在 博客“AI 菌”（CSDN）。
+ 如有侵权，请联系 support@oschina.cn 删除。
+ 本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

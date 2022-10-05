@@ -1,0 +1,120 @@
+
+注意其它的版本
+
+Django1.11.29
+
+django-haystack2.8.0
+
+jieba0.42.1
+
+PyMySQL0.10.1
+
+pytz2021.1
+
+Whoosh2.7.4
+
+创建ChineseAnalyzer.py文件
+
+保存在haystack的安装文件夹下，Linux路径如“/home/python/.virtualenvs/django_py2/lib/python2.7/site-packages/haystack/backends”
+
+保存在haystack的安装文件，Window路径  C:\Users\Administrator\AppData\Roaming\Python\Python35\site-packages\haystack\backends.
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+
+20
+
+21
+
+22
+
+23
+
+24
+
+import jieba
+
+from whoosh.analysis import Tokenizer, Token
+
+class ChineseTokenizer(Tokenizer):
+
+def call(self, value, positions=False, chars=False,
+
+keeporiginal=False, removestops=True,
+
+start_pos=0, start_char=0, mode='', **kwargs):
+
+t = Token(positions, chars, removestops=removestops, mode=mode,
+
+**kwargs)
+
+seglist = jieba.cut(value, cut_all=True)
+
+for w in seglist:
+
+t.original = t.text = w
+
+t.boost = 1.0
+
+if positions:
+
+t.pos = start_pos + value.find(w)
+
+if chars:
+
+t.startchar = start_char + value.find(w)
+
+t.endchar = start_char + value.find(w) + len(w)
+
+yield t
+
+def ChineseAnalyzer():
+
+return ChineseTokenizer()
+
+1
+
+1
+添加中文搜索文件
+
+image
+
+修改完成后2个文件的对比
+
+image
+

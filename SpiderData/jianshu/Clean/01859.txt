@@ -1,0 +1,36 @@
+注意：一般uwsgi是最后上线项目的时候才用。测试开发阶段，用自带的python manage.py runserver ，能报出错误信息是什么在哪里
+
+1.因为用了uwsgi后台运行后， 对文件进行修改，uwsgi都是没有反应的，
+
+
+而且不会报错出错误信息是什么在哪里
+
+原来怎么运行就怎么运行，不受影响
+
+但是，uwsgi是用于最后项目完成后的真正部署用的，可以提前设置好uwsgi,到时即可一键上线。
+
+
+2. 报出错误信息是什么在哪里：
+
+先把 uwsgi 进程全部关闭 ：
+
+ps aux|grep uwsgi
+
+kill -9
+
+然后：重启用python manage.py runserver 0.0.0.0:8000启动
+
+注意setting.py中   ： DEBUG = True
+
+最后尝试修改文件，故意让其报错：
+
+题外话：
+
+1.python manage.py runserver   能同步你修改的文件信息：
+
+当你修改好错误以后，不需要再次重启 python manage.py runserver   ，直接刷新即可！
+
+2.一般都是如此，不行就重启一下。
+
+一般改动了models.py文件，与数据库表有差别的时候，就要先生成迁移文件，迁移到数据库，再重启python manage.py runserver
+

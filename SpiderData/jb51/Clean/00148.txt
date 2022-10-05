@@ -1,0 +1,62 @@
+在使用可视化树的过程中，报错了。说是‘dot.exe'not found in path
+
+原代码：
+
+# import tools needed for visualization
+from sklearn.tree import export_graphviz
+import pydot
+ 
+#Pull out one tree from the forest
+tree = rf.estimators_[5]
+ 
+# Export the image to a dot file
+export_graphviz(tree, out_file = 'tree.dot', feature_names = features_list, rounded = True, precision = 1)
+ 
+#Use dot file to create a graph
+(graph, ) = pydot.graph_from_dot_file('tree.dot')
+ 
+# Write graph to a png file
+graph.write_png('tree.png');
+
+报错信息：
+
+解决方法：
+
+先使用安装pydot:
+
+pip install pydot
+
+然后再下载Graphviz（http://www.graphviz.org 选择msi版本）一路安装，记住默认的安装路径
+
+c:\Program Files (x86)\Graphviz2.38\。
+
+将Graphviz2.38添加到环境变量中
+
+import os
+os.environ['PATH'] = os.environ['PATH'] + (';c:\\Program Files (x86)\\Graphviz2.38\\bin\\')
+
+之后便可以正常使用了。
+
+修改后代码：
+
+# import tools needed for visualization
+from sklearn.tree import export_graphviz
+import pydot
+import os
+ 
+os.environ['PATH'] = os.environ['PATH'] + (';c:\\Program Files (x86)\\Graphviz2.38\\bin\\')
+ 
+#Pull out one tree from the forest
+tree = rf.estimators_[5]
+ 
+# Export the image to a dot file
+export_graphviz(tree, out_file = 'tree.dot', feature_names = features_list, rounded = True, precision = 1)
+ 
+#Use dot file to create a graph
+(graph, ) = pydot.graph_from_dot_file('tree.dot')
+ 
+# Write graph to a png file
+graph.write_png('tree.png');
+
+以上这篇解决使用export_graphviz可视化树报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

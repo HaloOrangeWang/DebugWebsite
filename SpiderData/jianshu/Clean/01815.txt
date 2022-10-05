@@ -1,0 +1,35 @@
+
+背景
+
+单细胞分许需要的其他软件或R包都通过conda安装好了，最后只剩CellPhoneDB了。有了iTALK的经验之后，我有了一点信心：报错不要紧，我一个一个解决。
+
+
+第一步，直接安装，报错
+
+按照老师给的命令直接进行安装：
+
+pip install cellphonedb #安装python包CellPhoneDB
+
+然后就报错了，如下：
+
+
+第二步，分析问题+试错
+
+报错信息刷屏了，看不完，一堆关于hdf5的warning，最后面这一部分还说了error：““fatal error：hdf5.h：No such file or directory”，那我就安装hdf5，先conda找一下有没有hdf5，如下：
+
+这个命令多试了几次，网络通了，找到如下：
+
+然后安装：
+
+3个done表示安装完成，然后我重新运行pip install cellphonedb，还是报错呢，如下：
+
+虽然跟上次报错不太一样了，但还是有，而且最后还是rolling back uninstall of h5py，我推断还是跟h5py有关，多半是什么乱起八糟的依赖没搞定，可惜不能conda库里没有cellphonedb包，不然conda安装绝对是最佳选项，好吧停止幻想，继续解决问题。
+
+另外，报错信息刷屏了，看不完，这不利于我检查到底哪里有错误，特别是第一次开始出现错误是在哪里啊？最后说“check logs for full command output”，那我怎么check啊，我就把结果输出到out文件里，去cat里面的error：
+
+都只跟h5py有关啊。然后上网搜索，有一篇说是没安装cython的问题：
+
+死马当活马医，反正只是多装一个cython而已。于是我就在Linux里先conda装 cython，再conda装 h5py，最后pip install cellphonedb，竟然一切正常了：
+
+cellphonedb确实可以用了：
+

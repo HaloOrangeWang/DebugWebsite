@@ -1,0 +1,218 @@
+
+Python报错总结:
+
+常见异常
+
+
+常见异常
+
+异常捕获
+
+
+异常捕获
+
+语法：
+
+try:
+  你觉得可能会发生错误的地方
+except 错误类型/所有错误:
+  重新修改默认的出错动作
+else:
+  没有异常，走这里
+finally:
+  不管出错不出错都会走这里　
+
+1，异常捕获：一般错误代码就会执行报错，不会执行后续的代码，但是设定了异常捕获可以避免某些报错发生，而且可以继续执行代码 如下：
+
+try:
+    1/0
+except  ZeroDivisionError:
+    print('此处不可以除0')
+print('=========================')
+
+运行结果：　
+
+此处不可以除0
+=========================
+
+2，
+
+def func(name,age):
+	#name: str
+	#age: int
+	print('name: %s, age: %d' % (name,age))
+try:
+	func('jack','wang') #-> 已经报错了
+	#TypeError: func() missing 1 required positional argument: 'age'
+	#TypeError: %d format: a number is required, not str
+	#NameError: name 'a' is not defined
+except TypeError:
+	print('报错：此处调用函数为两个分别是：str,int') #错误
+except NameError:
+	print('报错：出现了未定义的变量')
+print('-------------')
+
+运行结果：
+
+报错：此处调用函数为两个分别是：str,int
+-------------
+
+3，except 后面不添加错误类型，默认匹配所有错误类型（精确不行，太模糊，很少有人这样用看自己情况）
+
+def func(name,age):
+	#name: str
+	#age: int
+	print('name: %s, age: %d' % (name,age))
+
+try:
+	func('jack')
+except:
+	print('调用函数报错,请检查函数调用方式是否正确')　　
+
+运行结果：
+
+调用函数报错,请检查函数调用方式是否正确
+
+4，
+
+import os
+print(os.getcwd())
+print(os.listdir())
+try:
+	fp = open('1.txt','r',encoding='utf-8') #read 
+	#不存在就捕获，
+	#存在呢, 
+except FileNotFoundError:
+	print('文件此没有')
+else: #当你捕获的代码没有异常的时候，他会走这里
+	print('关闭文件')
+	fp.close() 
+finally: #不管报错不报错 都要走这里 #if..**else**..
+	print('结束了')
+print('------------')
+
+运行结果：
+
+E:\python学习资料\上课代码编写\代码练习py
+['1.txt', 'zhangan.py', 'zhangan1.py']
+关闭文件
+结束了
+------------　　
+
+手动抛出异常　
+
+
+手动抛出异常　
+
+1，raise TypeError('错误的描述')，直接终止代码运行。
+
+def func(name,age):
+	#name: str
+	#age: int
+	if name == 'jack':
+		raise TypeError('为啥要用jack')
+	else:
+		print('name: %s, age: %d' % (name,age))
+func('jack',16)
+print('-----------')
+
+运行结果：
+
+Traceback (most recent call last):
+File "e:/python学习资料/上课视屏/四阶段：面对对象/4-5-异常捕获/代码/5.py", line 8, in <module>
+func('jack',16)
+File "e:/python学习资料/上课视屏/四阶段：面对对象/4-5-异常捕获/代码/5.py", line 5, in func
+raise TypeError('为啥要用jack')
+TypeError: 为啥要用jack　　
+
+自定义异常
+
+
+自定义异常
+
+Exception：所有常用异常的父类
+
+IndentationError
+
+等等
+
+SystemExit：系统异常：ctrl + c 键盘信号
+
+1，
+
+class Mayerror(Exception):
+    pass
+def func(name,age):
+	#name: str
+	#age: int
+	if name == 'jack':
+		raise Mayerror('为啥要用jack')
+	else:
+		print('name: %s, age: %d' % (name,age))
+func('jack',16)
+print('-----------')
+
+运行结果：
+
+Traceback (most recent call last):
+  File "e:/python学习资料/上课代码编写/代码练习py/zhangan1.py", line 10, in <module>
+    func('jack',16)
+  File "e:/python学习资料/上课代码编写/代码练习py/zhangan1.py", line 7, in func
+    raise Mayerror('为啥要用jack')
+__main__.Mayerror: 为啥要用jack
+
+2，　　　
+
+# 面向对象：继承
+class MyError(Exception):
+	def __init__(self,*arg,**args):
+		super(MyError,self).__init__(*arg)
+		print('错误码:',args['code_'])
+def func(name,age):
+	if name == 'jack':
+		raise MyError('为啥要用jack',code_=1)
+	else:
+		print('name: %s, age: %d' % (name,age))
+func('jack',16)
+print('-----------')
+
+运行结果：　
+
+错误码: 1
+Traceback (most recent call last):
+  File "e:/python学习资料/上课视屏/四阶段：面对对象/4-5-异常捕获/代码/6.py", line 11, in <module>
+    func('jack',16)
+  File "e:/python学习资料/上课视屏/四阶段：面对对象/4-5-异常捕获/代码/6.py", line 8, in func
+    raise MyError('为啥要用jack',code_=1)
+__main__.MyError: 为啥要用jack
+
+断言
+
+
+断言
+
+判断异常：assert
+
+判断返回值为bool的语句
+
+如果Bool语句返回值为False 那么引发AssertionError 
+     
+>>> assert 1 == 0
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AssertionError
+ 　　
+
+>>> assert 1 == 0
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AssertionError
+
+　　
+
+　　
+
+　　
+
+　
+

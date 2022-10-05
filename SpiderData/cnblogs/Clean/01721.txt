@@ -1,0 +1,27 @@
+使用python3.6 中的django-admin创建项目的时候报错
+
+ImportError: dynamic module does not define module export function (PyInit__sqlite3)
+
+python3以上版本安装sqlite3的解决方案
+
+wget https://www.sqlite.org/2017/sqlite-autoconf-3170000.tar.gz --no-check-certificate
+
+tar xf  sqlite-autoconf-3170000.tar.gz
+
+cd sqlite-autoconf-3170000/
+
+./configure --prefix=/usr/local/sqlite3 --disable-static --enable-fts5 --enable-json1 CFLAGS="-g -O2 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_RTREE=1"
+
+make && make install
+
+重新编译python3.6
+
+cd Python-3.6.0a1
+LD_RUN_PATH=/usr/local/sqlite3/lib ./configure LDFLAGS="-L/usr/local/sqlite3/lib" CPPFLAGS="-I /usr/local/sqlite3/include"
+LD_RUN_PATH=/usr/local/sqlite3/lib make
+LD_RUN_PATH=/usr/local/sqlite3/lib sudo make install
+
+进入python3.6的交互环境
+
+import sqlite3没报错说明问题解决
+

@@ -1,0 +1,74 @@
+就看这篇博客吧：一篇搞定所有的异常处理，讲的很详细。
+
+异常
+
+Python中各种异常也是类，类Exception继承自类BaseException，还有其他各种异常等等，此外，通过继承BaseException或者Exception可以自定义异常。
+
+异常处理
+
+　　python解释器检测到错误，触发异常（也允许程序员自己触发异常）；程序员编写特定的代码，专门用来捕捉这个异常（这段代码与程序逻辑无关，与异常处理有关）；如果捕捉成功则进入另外一个处理分支，执行你为其定制的逻辑，使程序不会崩溃，这就是异常处理。
+
+　　异常处理帮助debug，通过更加丰富的信息，让人们更容易找到bug的所在。异常处理可以提高程序的容错性。
+
+常用语法结构：
+
+如果错误可预知，可以使用if语句进行处理，预防错误
+
+如果错误不可预知，则需要用到try..except：在错误发生之后进行处理
+
+try:
+    ...
+except exception1:
+    ...
+except exception2:
+    ...
+except:
+    ...
+else:
+    ...
+finally:
+    ...
+
+如果try中有异常发生时，将执行异常的归属，执行except。异常层层比较，看是否是exception1, exception2...，直到找到其归属，执行相应的except中的语句。如果except后面没有任何参数，那么表示所有的exception都交给这段程序处理。
+
+如果try中没有异常，那么except部分将跳过，执行else中的语句。
+
+finally是无论是否有异常，最后都要做的一些事情。
+
+流程如下，
+
+try->异常->except->finally
+
+try->无异常->else->finally
+
+如果无法将异常交给合适的对象，异常将继续向上层抛出，直到被捕捉或者造成主程序报错，如：
+
+def test_func():
+    try:
+        m = 1/0
+    except NameError:
+        print("Catch NameError in the sub-function")
+
+try:
+    test_func()
+except ZeroDivisionError:
+    print("Catch error in the main program")
+
+子程序的try...except...结构无法处理相应的除以0的错误，所以错误被抛给上层的主程序。
+
+raise语句
+
+　　主动触发异常
+
+自定义异常
+
+　　需要class类
+
+断言：aeesrt条件判断
+
+　　断言关键字aeesrt，
+
+　　　　assert 语句(块)
+
+　　当这个关键字后边的条件为假的时候，程序自动崩溃并抛出AssertionError的异常。一般来说我们可以用assert在程序中置入检查点，当需要确保程序中某个条件一定为真才能让程序正常工作的话，assert关键字就非常有用了。
+

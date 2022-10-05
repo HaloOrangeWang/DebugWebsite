@@ -1,0 +1,45 @@
+Pycharm强大的功能总是让我很是着迷，比如它的makemigrations 和 migrate。
+
+　　然而某一次，当我再次敲下这熟悉的命令时，它报错了。。。。
+
+1 Traceback (most recent call last):
+ 2   File "H:\PyCharm 2018.1.1\helpers\pycharm\django_manage.py", line 52, in <module>
+ 3     run_command()
+ 4   File "H:\PyCharm 2018.1.1\helpers\pycharm\django_manage.py", line 46, in run_command
+ 5     run_module(manage_file, None, '__main__', True)
+ 6   File "h:\python36\Lib\runpy.py", line 205, in run_module
+ 7     return _run_module_code(code, init_globals, run_name, mod_spec)
+ 8   File "h:\python36\Lib\runpy.py", line 96, in _run_module_code
+ 9     mod_name, mod_spec, pkg_name, script_name)
+10   File "h:\python36\Lib\runpy.py", line 85, in _run_code
+11     exec(code, run_globals)
+12   File "H:/PycharmProjects/untitled\manage.py", line 15, in <module>
+13     execute_from_command_line(sys.argv)
+14   File "C:\Users\Administrator\Envs\testvir1\lib\site-packages\django\core\management\__init__.py", line 371, in execute_from_command_line
+15     utility.execute()
+16   File "C:\Users\Administrator\Envs\testvir1\lib\site-packages\django\core\management\__init__.py", line 365, in execute
+17     self.fetch_command(subcommand).run_from_argv(self.argv)
+18   File "C:\Users\Administrator\Envs\testvir1\lib\site-packages\django\core\management\base.py", line 288, in run_from_argv
+19     self.execute(*args, **cmd_options)
+20   File "C:\Users\Administrator\Envs\testvir1\lib\site-packages\django\core\management\base.py", line 335, in execute
+21     output = self.handle(*args, **options)
+22   File "C:\Users\Administrator\Envs\testvir1\lib\site-packages\django\core\management\commands\migrate.py", line 82, in handle
+23     executor.loader.check_consistent_history(connection)
+24   File "C:\Users\Administrator\Envs\testvir1\lib\site-packages\django\db\migrations\loader.py", line 291, in check_consistent_history
+25     connection.alias,
+26 django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency users.0001_initial on database 'default'.
+27 
+28 Process finished with exit code 1
+
+不想看上边的朋友我还截了个大图。
+
+　　错误是：django.db.migrations.exceptions.InconsistentMigrationHistory
+
+　
+
+　　在试了一些其他方法后，我发现了一个最简单最暴力的解决方案：
+
+　　　　就是打开Navicat，把所有表删掉之后，再次输入 migrate ，回车，就OK了~~~
+
+　　
+

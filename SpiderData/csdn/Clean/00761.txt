@@ -1,0 +1,49 @@
+说明：仅供学习使用，请勿用于非法用途，若有侵权，请联系博主删除
+
+作者：zhu6201976
+
+博客：zhu6201976的博客_CSDN博客
+
+一、Python相对导包报错
+
+from ..utils import get_logger
+
+ImportError: attempted relative import with no known parent package
+
+二、报错原因解析
+
+Python导包环境未包含指定目录，类似Window找不到命令一个道理，添加环境变量即可。
+
+查看Python导包环境：
+
+import sys
+
+print(sys.path)
+
+三、快速解决
+
+添加指定目录到Python导包环境即可解决。
+
+import sys
+import os
+
+print(sys.path)
+
+# path为待添加的环境变量，即：目录路径
+path = 'C://'  # 绝对路径
+path = os.path.dirname(os.getcwd())  # 相对路径
+sys.path.insert(0, path)
+
+print(sys.path)
+
+四、实战
+
+import os
+import sys
+
+# 解决相对导包失败问题
+path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, path)
+from scrapy_project.util.gallery_dl import text
+from scrapy_project.util.utils import get_logger
+

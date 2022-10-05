@@ -1,0 +1,30 @@
+
+python读取txt文件
+
+
+1、错误一
+
+with open(path,'r') as f:
+       for line in f:
+       line = line.strip()    
+#
+
+# 报错： UnicodeDecodeError: 'gbk' codec can't decode byte 0xac in position 451428: illegal multibyte sequence
+
+
+2、错误二
+
+with open(path,encoding="UTF-8")
+
+#
+
+# 报错： UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position 278: invalid start byte
+
+
+三、最好的办法
+
+with open(path, 'rb') as f:#使用二进制读取
+    for line in f:    #line的数据类型是bytes
+        line = str(line)    #将bytes类型转换为str类型
+        line = line.strip()
+

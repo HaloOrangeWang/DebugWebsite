@@ -1,0 +1,22 @@
+注: 本篇文章基于UE4.24版本内置python2.7版本,UE4.26之后的版本已经将内置python改为3.7,所以一下内容不保证可用
+
+1. python写的窗口闪退:
+
+Pyside的函数没有赋值导致直接被GC,解决方法是直接给赋值
+
+e.g
+
+Main = UI_Main()
+
+showMain  =Main.show()
+
+2.python 打包好后出现 failed to execute script问题
+
+我自己经常出现的问题= =..不要应用绝对路径来调用文件,比如:
+
+remote_client = remote.RemoteClient(r'file:///H:/SVNHook/branches/Version1/SampleProject')
+
+这个时候打包好后就会因为没有办法直接访问而报错
+
+3.TBC
+

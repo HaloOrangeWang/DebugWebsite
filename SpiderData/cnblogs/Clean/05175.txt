@@ -1,0 +1,35 @@
+
+系统信息
+
+系统：CentOS Linux release 7.6.1810 (Core）
+
+python版本：python3.7
+
+
+报错信息
+
+from _bz2 import BZ2Compressor, BZ2Decompressor
+ModuleNotFoundError: No module named '_bz2'
+
+
+解决办法
+
+1、安装
+
+yum install bzip2-devel
+
+2、找到_bz2.cpython-37m-x86_64-linux-gnu.so文件
+
+如果在机器上没有的话，可以到这里下载：
+
+链接：https://pan.baidu.com/s/1GzUY4E0G2yVUfqxHOIzn1A
+
+提取码：oiwh
+
+3、修改文件名
+
+如果你的python版本是3.6，那就是36m，我的是python3.7，得把文件名改为37m，并拷贝到python3的安装目录
+
+mv _bz2.cpython-36m-x86_64-linux-gnu.so _bz2.cpython-37m-x86_64-linux-gnu.so
+cp _bz2.cpython-37m-x86_64-linux-gnu.so /usr/local/python3/lib/python3.7/lib-dynload/
+

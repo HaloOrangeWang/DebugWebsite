@@ -1,0 +1,30 @@
+python运行报错：
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x90 in position 28: illegal multibyte sequence
+
+原代码：
+
+def read_data(self):
+
+with open(self.file_path) as fp:
+
+data = json.load(fp)
+
+return data
+
+解决方式：
+
+需要将读取的文件编码格式改为 utf-8
+
+修改为：
+
+def read_data(self):
+
+with open(self.file_path,encoding='utf-8') as fp:
+
+data = json.load(fp)
+
+return data
+
+运行正确！
+

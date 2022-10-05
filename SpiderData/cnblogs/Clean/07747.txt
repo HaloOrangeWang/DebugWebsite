@@ -1,0 +1,28 @@
+一、当搭建好Python+appium环境时候
+
+准备运行这个程序，试验环境搭建是否准确时候。就报了一个错
+
+appium提示： INSTALL_PARSE_FAILED_NO_CERTIFICATES
+
+解决方案：
+
+网上说了很多种，搜报错信息，还说什么签名问题；可参照这个地址的方法进行修改：https://blog.csdn.net/ximi_xuexi/article/details/106773716
+
+最接近的应该就是版本兼容性问题，所有我们在新增的参数中加一行
+
+‘automationName’ = ‘UiAutomator1’
+
+就能运行成功，成功打开软件啦！
+
+二、当运行Python文件，执行click element时报错：InvalidSelectorException: Message: Locator Strategy 'css selector' is not supported for this session，
+
+报错信息如下：
+
+解决办法：
+
+在python文件夹下找到site-pankages/selenium/webdriver/remote/webdriver.py中找到def find_element和def find_elements,注释掉if self.w3c;
+
+保存后，再次运行，成功解决。
+
+持续更新哈！！
+

@@ -1,0 +1,43 @@
+事出mac系统自带的python是2.7版本的，但是我又希望使用新版的python3进行编程，于是我按照网上的教程安装了python3，但是装完之后我发现我无法使用终端直接运行.py文件。报错bad interpreter: Operation not permitted，折腾了一晚也没找到解决方案（好在今晚解决了。。。）将解决过程贴出来给大家参考一下。
+
+解决过程如下：
+
+我的python3是后来安装的，并没有安装在/usr/bin目录下所以不能通过
+
+#!/usr/bin/env python3来获取python3的运行环境。先确认是不是运行环境错误导致的报错。
+
+终端输入
+
+which python3
+
+显示
+
+/usr/local/bin/python3
+
+将shebang写成绝对路径
+
+#!/usr/local/bin/python3
+
+在终端通过./filename.py的方式运行发现还是报bad interpreter: Operation not permitted，但是这个shebang的写法是没问题的，原因可能是别的。
+
+它的默认打开方式是xcode。
+
+在终端输入指令查看这个文件的拓展属性
+
+xattr -l test.py
+
+
+解决方案
+
+将.py文件的默认打开方式改成Python Launcher 3，双击test.py文件发现运行成功。证明shebang和代码都没有问题。然后再测试通过终端./test.py运行有没有问题。结果依旧报错bad interpreter: Operation not permitted，基本确定了是文件的拓展属性导致的解释错误。
+
+使用指令删除这个文件的拓展属性
+
+xattr -d com.apple.quarantine ./test.py
+
+测试一下
+
+./test.py
+
+运行成功
+

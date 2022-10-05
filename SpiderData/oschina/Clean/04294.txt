@@ -1,0 +1,178 @@
+参考于：
+
+https://blog.csdn.net/learner198461/article/details/78036854
+
+https://liyang.pro/solve-k8s-pod-containercreating/
+
+https://blog.csdn.net/golduty2/article/details/80625485
+
+
+
+根据实际情况稍微做了修改和说明。
+
+在创建Dashborad时，查看状态总是ContainerCreating
+
+[root@MyCentos7 k8s]# kubectl get pod --namespace=kube-system
+NAME                                    READY     STATUS              RESTARTS   AGE
+kubernetes-dashboard-2094756401-kzhnx   0/1       ContainerCreating   0          10m
+
+通过kubectl describe命令查看具体信息（或查看日志/var/log/message）
+
+[root@MyCentos7 k8s]# kubectl describe pod kubernetes-dashboard-2094756401-kzhnx --namespace=kube-system
+Name:        kubernetes-dashboard-2094756401-kzhnx
+Namespace:    kube-system
+Node:        mycentos7-1/192.168.126.131
+Start Time:    Tue, 05 Jun 2018 19:28:25 +0800
+Labels:        app=kubernetes-dashboard
+        pod-template-hash=2094756401
+Status:        Pending
+IP:        
+Controllers:    ReplicaSet/kubernetes-dashboard-2094756401
+Containers:
+  kubernetes-dashboard:
+    Container ID:    
+    Image:        daocloud.io/megvii/kubernetes-dashboard-amd64:v1.8.0
+    Image ID:        
+    Port:        9090/TCP
+    Args:
+      --apiserver-host=http://192.168.126.130:8080
+    State:            Waiting
+      Reason:            ContainerCreating
+    Ready:            False
+    Restart Count:        0
+    Liveness:            http-get http://:9090/ delay=30s timeout=30s period=10s #success=1 #failure=3
+    Volume Mounts:        <none>
+    Environment Variables:    <none>
+Conditions:
+  Type        Status
+  Initialized     True 
+  Ready     False 
+  PodScheduled     True 
+No volumes.
+QoS Class:    BestEffort
+Tolerations:    <none>
+Events:
+  FirstSeen    LastSeen    Count    From            SubObjectPath    Type        Reason        Message
+  ---------    --------    -----    ----            -------------    --------    ------        -------
+  11m        11m        1    {default-scheduler }            Normal        Scheduled    Successfully assigned kubernetes-dashboard-2094756401-kzhnx to mycentos7-1
+  11m        49s        7    {kubelet mycentos7-1}            Warning        FailedSync    Error syncing pod, skipping: failed to "StartContainer" for "POD" with ErrImagePull: "image pull failede:latest, this may be because there are no credentials on this request.  details: (open /etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt: no such file or directory)"
+
+11m    11s    47    {kubelet mycentos7-1}        Warning    FailedSync    Error syncing pod, skipping: failed to "StartContainer" for "POD" with ImagePullBackOff: "Back-off pulling image \"registry.access.redh
+
+在工作节点（node）上执行
+发现此时会pull一个镜像registry.access.redhat.com/rhel7/pod-infrastructure:latest，当我手动pull时，提示如下错误：
+
+[root@MyCentos7 k8s]# docker pull registry.access.redhat.com/rhel7/pod-infrastructure:latest
+Trying to pull repository registry.access.redhat.com/rhel7/pod-infrastructure ... 
+open /etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt: no such file or directory
+
+通过提示的路径查找该文件，是个软连接，链接目标是/etc/rhsm，查看没有rhsm
+
+[root@MyCentos7 ca]# cd /etc/docker/certs.d/registry.access.redhat.com/
+[root@MyCentos7 registry.access.redhat.com]# ll
+总用量 0
+lrwxrwxrwx. 1 root root 27 5月  11 14:30 redhat-ca.crt -> /etc/rhsm/ca/redhat-uep.pem
+
+[root@MyCentos7 ca]# cd /etc/rhsm
+-bash: cd: /etc/rhsm: 没有那个文件或目录
+
+安装rhsm（node上）：
+
+yum install *rhsm*
+已加载插件：fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirror.lzu.edu.cn
+ * extras: mirror.lzu.edu.cn
+ * updates: ftp.sjtu.edu.cn
+base                                                                                                                                                                                  | 3.6 kB  00:00:00     
+extras                                                                                                                                                                                | 3.4 kB  00:00:00     
+updates                                                                                                                                                                               | 3.4 kB  00:00:00     
+软件包 python-rhsm-1.19.10-1.el7_4.x86_64 被已安装的 subscription-manager-rhsm-1.20.11-1.el7.centos.x86_64 取代
+软件包 subscription-manager-rhsm-1.20.11-1.el7.centos.x86_64 已安装并且是最新版本
+软件包 python-rhsm-certificates-1.19.10-1.el7_4.x86_64 被已安装的 subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64 取代
+软件包 subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64 已安装并且是最新版本
+
+但是在/etc/rhsm/ca/目录下依旧没有证书文件，于是反复卸载与安装都不靠谱，后来发现大家所谓yum install *rhsm*其实安装的的是python-rhsm-1.19.10-1.el7_4.x86_64和python-rhsm-certificates-1.19.10-1.el7_4.x86_64，但是在实际安装过程中会有如下提示:
+
+软件包 python-rhsm-1.19.10-1.el7_4.x86_64 被已安装的 subscription-manager-rhsm-1.20.11-1.el7.centos.x86_64 取代
+软件包 subscription-manager-rhsm-1.20.11-1.el7.centos.x86_64 已安装并且是最新版本
+软件包 python-rhsm-certificates-1.19.10-1.el7_4.x86_64 被已安装的 subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64 取代
+软件包 subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64 已安装并且是最新版本
+
+罪魁祸首在这里。原来我们想要安装的rpm包被取代了。而取代后的rpm包在安装完成后之创建了目录，并没有证书文件redhat-uep.pem。于是乎，手动下载以上两个包
+
+wget ftp://ftp.icm.edu.pl/vol/rzm6/linux-scientificlinux/7.4/x86_64/os/Packages/python-rhsm-certificates-1.19.9-1.el7.x86_64.rpm
+wget ftp://ftp.icm.edu.pl/vol/rzm6/linux-scientificlinux/7.4/x86_64/os/Packages/python-rhsm-1.19.9-1.el7.x86_64.rpm
+
+注：在此处有时会报错，提示找不到这两个rpm文件，此时需要手动登录到此FTP进行下载，文件要稍等会才会加载出来，然后下载所需的这两个rpm（可能是网络原因，有时不稳定）
+
+注意版本要匹配，卸载安装错的包
+
+yum remove *rhsm*
+
+然后执行安装命令
+
+rpm -ivh *.rpm
+
+rpm -ivh *.rpm
+警告：python-rhsm-1.19.9-1.el7.x86_64.rpm: 头V4 DSA/SHA1 Signature, 密钥 ID 192a7d7d: NOKEY
+准备中...                          ################################# [100%]
+正在升级/安装...
+   1:python-rhsm-certificates-1.19.9-1################################# [ 50%]
+   2:python-rhsm-1.19.9-1.el7         ################################# [100%]
+
+我在这一步有出错了
+
+[root@neal registry.access.redhat.com]# rpm -ivh *.rpm
+警告：python-rhsm-1.19.9-1.el7.x86_64.rpm: 头V4 DSA/SHA1 Signature, 密钥 ID 192a7d7d: NOKEY
+错误：依赖检测失败：
+        python-rhsm <= 1.20.3-1 被 (已安裝) subscription-manager-rhsm-1.20.11-1.el7.centos.x86_64 取代
+        python-rhsm-certificates <= 1.20.3-1 被 (已安裝) subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64 取代
+
+此时跳到分割线之下，用分割线下面的文章的方法remove掉已经有的包，再重新用上面的命令安装。
+
+接着验证手动pull镜像
+
+docker pull registry.access.redhat.com/rhel7/pod-infrastructure:latest
+Trying to pull repository registry.access.redhat.com/rhel7/pod-infrastructure ... 
+latest: Pulling from registry.access.redhat.com/rhel7/pod-infrastructure
+26e5ed6899db: Pull complete 
+66dbe984a319: Pull complete 
+9138e7863e08: Pull complete 
+Digest: sha256:92d43c37297da3ab187fc2b9e9ebfb243c1110d446c783ae1b989088495db931
+Status: Downloaded newer image for registry.access.redhat.com/rhel7/pod-infrastructure:latest
+
+问题解决。
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+在《kubernetes权威指南》入门的一个例子中，发现pod一直处于ContainerCreating的状态，用kubectl describe pod mysql的时候发现如下报错：
+
+问题是比较明显的，就是没有/etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt文件，用ls -l查看之后发现是一个软链接，链接到/etc/rhsm/ca/redhat-uep.pem，但是这个文件不存在，使用yum search *rhsm*命令：
+
+安装python-rhsm-certificates包：
+
+# yum install python-rhsm-certificates -y
+
+这里又出现问题了:
+
+python-rhsm-certificates <= 1.20.3-1 被 (已安裝) subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64 取代
+
+那么怎么办呢，我们直接卸载掉subscription-manager-rhsm-certificates包，使用yum remove subscription-manager-rhsm-certificates -y命令，然后下载python-rhsm-certificates包：
+
+# wget http://mirror.centos.org/centos/7/os/x86_64/Packages/python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm
+
+然后手动安装该rpm包：
+
+# rpm -ivh python-rhsm-certificates
+
+这时发现/etc/rhsm/ca/redhat-uep.pem文件已存在。
+
+使用docker pull registry.access.redhat.com/rhel7/pod-infrastructure:latest命令下载镜像，但是可能会很慢，可以到https://dashboard.daocloud.io网站上注册账号，然后点击加速器，然后复制代码执行，之后重启docker就会进行加速，如果重启docker服务的时候无法启动，使用systemctl status docker:
+
+这时将/etc/docker/seccomp.json删除，再次重启即可
+
+这时将之前创建的rc、svc和pod全部删除重新创建，过一会就会发现pod启动成功
+
+原因猜想：根据报错信息，pod启动需要registry.access.redhat.com/rhel7/pod-infrastructure:latest镜像，需要去红帽仓库里下载，但是没有证书，安装证书之后就可以了
+

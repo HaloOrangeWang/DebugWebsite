@@ -1,0 +1,47 @@
+　　　　　　　　　　　　　　　　　　HDFS集群常见报错汇总
+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　作者：尹正杰
+
+版权声明：原创作品，谢绝转载！否则将追究法律责任。
+
+一.DataXceiver error processing WRITE_BLOCK operation
+
+报错信息以及截图如下：
+
+calculation112.aggrx:50010:DataXceiver error processing WRITE_BLOCK operation  src: /10.1.1.116:36274 dst: /10.1.1.112:50010
+java.io.IOException: Premature EOF from inputStream
+    at org.apache.hadoop.io.IOUtils.readFully(IOUtils.java:203)
+    at org.apache.hadoop.hdfs.protocol.datatransfer.PacketReceiver.doReadFully(PacketReceiver.java:213)
+    at org.apache.hadoop.hdfs.protocol.datatransfer.PacketReceiver.doRead(PacketReceiver.java:134)
+    at org.apache.hadoop.hdfs.protocol.datatransfer.PacketReceiver.receiveNextPacket(PacketReceiver.java:109)
+    at org.apache.hadoop.hdfs.server.datanode.BlockReceiver.receivePacket(BlockReceiver.java:501)
+    at org.apache.hadoop.hdfs.server.datanode.BlockReceiver.receiveBlock(BlockReceiver.java:901)
+    at org.apache.hadoop.hdfs.server.datanode.DataXceiver.writeBlock(DataXceiver.java:808)
+    at org.apache.hadoop.hdfs.protocol.datatransfer.Receiver.opWriteBlock(Receiver.java:169)
+    at org.apache.hadoop.hdfs.protocol.datatransfer.Receiver.processOp(Receiver.java:106)
+    at org.apache.hadoop.hdfs.server.datanode.DataXceiver.run(DataXceiver.java:246)
+    at java.lang.Thread.run(Thread.java:748)
+　　......
+
+　　报错原因：
+
+　　　　文件操作超租期，实际上就是data stream操作过程中文件被删掉了。
+
+　　解决方案：
+
+第一步骤：（修改进程最大文件打开数）
+
+[root@calculation101 ~]# cat /etc/security/limits.conf  | grep -v ^#
+
+*        soft    nofile        1000000
+*         hard    nofile        1048576
+*        soft    nproc        65536
+*        hard    nproc        unlimited
+*        soft    memlock        unlimited
+*        hard    memlock        unlimited
+*         -      nofile          1000000
+*         -      nproc           1000000
+[root@calculation101 ~]#
+
+第二步骤：（修改数据传输线程个数）
+

@@ -1,0 +1,44 @@
+根据菜鸟教程Django教程学习，运行"python manage.py migrate" 报错，出现
+
+django.db.utils.OperationalError: (1045, “Access denied for user ‘账号'@'localhost' (using password: YES)”)
+
+错误。
+
+这种错误指的是连接数据库时账号密码错误。
+
+1.只需要修改setting.py文件里的DATABASES即可：（按照图中注释修改）
+
+DATABASES = {
+  'default': {
+    'ENGINE': 'django.db.backends.mysql', #引擎，根据使用数据库类型进行更换
+    'NAME': 'test',#这里填写你的数据库名字
+    'USER': 'test',#这里填写你的连接用户名
+    'PASSWORD': 'test123',#填写你的连接密码
+    'HOST':'localhost',#如果你的电脑没有联网，请把localhost换成127.0.0.1
+    'PORT':'3306',
+  }
+}
+
+其中上面的数据库时需要要自己创建之后，才能进行连接。
+
+2.另外大家也可用SQLite数据库。其setting.py文件配置如下：
+
+DATABASES = {
+  'default': {
+    'ENGINE': 'django.db.backends.sqlite3',#引擎
+    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+  }
+}
+
+连接SQLite数据库不需要自己先创建数据库，就可以连接
+
+补充知识：记django 查询 postgresql 的坑
+
+同样的sql，在Navicat里查询和用django查询出来的数据总是差点 ，很郁闷，刚开始没在意，之后差了太多才重视?。倒腾了半个小时，旁边那哥们猛然说了句时区问题，我就XX了个OO，把settings文件中的
+
+USE_TZ = False
+
+安排了一下，完美处理，蠢哭了？
+
+以上这篇django 连接数据库出现1045错误的解决方式就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

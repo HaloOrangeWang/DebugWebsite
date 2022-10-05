@@ -1,0 +1,35 @@
+今天下午对世界疫情详情数据库进行模糊查询。
+
+首先要明确一点：使用模糊查询就会用到WHERE语句中的LIKE语句，主要说一下在使用 % 的时候要注意的点：
+
+在Python中%是一个格式化字符，所以如果需要使用%则需要写成%%。
+将在Python中执行的sql语句改为：
+sql = "SELECT * FROM table_test WHERE value LIKE '%%%%%s%%%%'" % test_value
+
+执行成功，print出SQL语句之后为：
+SELECT * FROM table_test WHERE value LIKE '%%public%%'
+
+Python在执行sql语句的时候，同样也会有%格式化的问题，
+
+仍然需要使用%%来代替%。因此要保证在执行sql语句的时候格式化正确。
+
+而不只是在sql语句（字符串）的时候正确。
+
+在Python解析第一次之后sql语句会变成这样：
+
+SELECT * FROM world WHERE continent LIKE '%%美洲%%'
+
+这时候字符串两边的百分号是两个，原来是四个，但是在执行sql语句的时候，Python还会再解析一次%，所以原始字符串需要四个百分号
+
+来表示一个百分号。
+
+
+在sql语句里是支持对变量的插入的，比如：
+
+
+总结几个sql常用语句：
+
+我们查询的时候经常需要用到排序以及数据包含和不包含的筛选条件：
+
+按日期降序：
+

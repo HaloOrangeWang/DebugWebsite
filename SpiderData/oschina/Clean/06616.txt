@@ -1,0 +1,26 @@
+PostgreSQL SPI 用于在 C 或是其他编程语言编写的扩展函数（存储过程）中调用数据库本身的解析器、规划器和执行器的功能，以及对 SQL 语句进行执行。
+
+在最重要的一个函数 SPI_execute 的文档中，说明了发生错误时，将会返回下列负值之一：
+
+SPI_ERROR_ARGUMENT 如果command为NULL或者count小于 0
+
+SPI_ERROR_COPY 如果尝试COPY TO stdout或者COPY FROM stdin
+
+SPI_ERROR_TRANSACTION 如果尝试了一个事务操纵命令（ BEGIN、 COMMIT、 ROLLBACK、 SAVEPOINT、 PREPARE TRANSACTION、 COMMIT PREPARED、 ROLLBACK PREPARED或者其他变体）
+
+SPI_ERROR_OPUNKNOWN 如果命令类型位置（不应该会发生）
+
+SPI_ERROR_UNCONNECTED 如果调用过程未连接
+
+你一定会奇怪，为什么只有这么几个呢？还有其他的很多情况呢？比如传进去的 SQL 有语法错误，或是实际执行时报错，这些情况下会返回什么呢？
+
+然后文档中又说：注意如果一个通过 SPI 调用的命令失败，那么控制将不会返回到你的过程中。当然啦，你的过程所在的事务或者子事务将被回滚（这可能看起来令人惊讶，因为据文档所说 SPI 函数大多数都有错误返回约定。但是那些约定只适用于在 SPI 函数本身内部检测到的错误）。通过在可能失败的 SPI 调用周围建立自己的子事务可以在错误之后恢复控制。当前文档中并未记载这些，因为所需的机制仍然在变化中。
+
+原来检查 SPI_execute 的源代码可知，只有发生了上面几种情况的错误时，SPI 会返回给你错误代码；而其他更内部的地方发生的所有错误，程序都是直接调用的 ereport 方法，如果错误级别达到 ERROR 及以上时，会中断程序的执行，将事务回滚，并将错误信息：1、记到日志中；2、返回给客户端。
+
+因此，其他情况的错误，你根本就不必处理，PG 也不给你机会处理。你只有在客户端才能看到具体的报错信息。
+
+如果你是在一个很大的逻辑里，不想整个事务被回滚掉，想出错后控制还返回给程序，可以用 PG_TRY、PG_CATCH、PG_END_TRY 几个宏来通知 ereport 将控制返回给程序，同时用一个子事务把对 SPI 的调用包起来，参考 PL/Python 源代码 plpy_spi.c 中，PLy_spi_subtransaction_<begin/commit/abort> 等方法的处理。
+
+这也是因为 PostgreSQL 是用 C 语言开发的，一个不够强的地方。假如将来用 Rust 重写，
+

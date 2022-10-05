@@ -1,0 +1,53 @@
+函数内部修改可变类型的变量时不会视作局部变量（除非函数内有该变量的赋值运算符），因为如果做局部变量处理则修改语句势必报错，此处的理解不会有歧义：
+
+s = 'test'
+d = {True:1,2:'Second'}
+
+a+=x跟a=a+x执行后的结果看似相等，但实际结果是否同一个存储对象，取决于a是可变类型 or 不可变类型
+
+a=a+x的本质：python会直接去调用内置的__add__（俗称：异地修改）
+
+a+=x的本质：python会优先调用内置的__iadd__（俗称：原地修改），若a的类型无该方法定义则自动退化为调用__add__。并且，目前只有可变类型 list 才内置有__iadd__，其余的可变类型、所有的不可变类型只有__add__）：
+
+print(' 下面使用 “可变类型” 进行测试 '.center(60,'*'))
+L2=L = [1,2]
+print(id(L2),id(L))
+L2 = L2 + [3,4]                #调用__add__进行修改：修改后将L2重新指向一块新的内存区域用于保存运算后的结果
+L += [3,4]                     #调用__iadd__进行“原地修改”：修改前后L指向同一块内存区域
+print(L2,id(L2))
+print(L,id(L))
+
+print(' 下面使用 “不可变类型” 进行测试 '.center(60,'*'))
+S2=S = 'Hello '
+print(id(S2),id(S))
+S2 = S2 + 'Python'              #调用__add__进行修改：修改后将S2重新指向一块新的内存区域用于保存运算后的结果
+S += 'Python'                   #没有内置__iadd__，自动退化为调用__add__：修改后将S重新指向一块新的内存区域用于保存运算后的结果
+print(S2,id(S2))
+print(S,id(S))
+
+print(' 下面测试下6种主要数据类型是否内置有方法__iadd__ '.center(60,'*'))
+print('int有__iadd__：',hasattr(int,'__iadd__'))
+print('str有__iadd__：',hasattr(str,'__iadd__'))
+print('tuple有__iadd__：',hasattr(tuple,'__iadd__'))
+print('dict有__iadd__：',hasattr(dict,'__iadd__'))
+print('set有__iadd__：',hasattr(set,'__iadd__'))
+print('list有__iadd__：',hasattr(list,'__iadd__'))
+
+********************* 下面使用 “可变类型” 进行测试 *********************
+1969521407360 1969521407360
+[1, 2, 3, 4] 1969521390912
+[1, 2, 3, 4] 1969521407360
+******************** 下面使用 “不可变类型” 进行测试 *********************
+1969521343216 1969521343216
+Hello Python 1969524143472
+Hello Python 1969524143408
+*************** 下面测试下6种主要数据类型是否内置有方法__iadd__ ***************
+int有__iadd__： False
+str有__iadd__： False
+tuple有__iadd__： False
+dict有__iadd__： False
+set有__iadd__： False
+list有__iadd__： True
+
+Process finished with exit code 0
+

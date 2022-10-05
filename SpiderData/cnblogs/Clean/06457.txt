@@ -1,0 +1,14 @@
+初学Django时，修改models.py后，执行 python manage.py makemigrations learning_logs报错：
+
+源代码：
+
+问题原因：
+
+django 升级到2.0之后,表与表之间关联的时候,必须要写on_delete参数,否则会报异常:
+TypeError: init() missing 1 required positional argument: ‘on_delete’
+
+解决办法：
+
+定义外键的时候需要加上 on_delete=;
+即：
+

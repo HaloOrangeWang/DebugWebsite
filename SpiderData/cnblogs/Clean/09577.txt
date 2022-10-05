@@ -1,0 +1,46 @@
+
+在centos7.5中解决bash: pip:command not find 问题
+
+[root@localhost ~]# python get-pip.py
+
+Hi there!
+
+The URL you are using to fetch this script has changed, and this one will no
+longer work. Please use get-pip.py from the following URL instead:
+
+https://bootstrap.pypa.io/pip/2.7/get-pip.py
+
+Sorry if this change causes any inconvenience for you!
+
+[root@localhost ~]#which pip
+
+/usr/bin/pip
+
+[root@localhost ~]#
+
+
+参考：《Linux报错：bash: pip: command not found》
+
+
+参考：《在centos7.5中解决bash: pip:command not find 问题》
+
+对于linux平台来说，很多运行的系统软件都是建立在python的基础之上，如果python出错了，那么整个系统可能会有出现重大问题的风险。我们以CentOS 7为例，在CentOS7中，python基础版本是2.7，如下面图中所示。
+
+我们可以使用whereis python命令查看其安装路径：
+
+可以看到路径是/usr/bin/python。
+
+然后我们可以使用rpm -qf /usr/bin/python命令看看其安装包，如下：
+
+然后使用rpm -ql python-2.7.5命令，通过Python安装包查看其安装路径，如下：
+
+这里，我发现centos7.5的自带python2.7，且bin目录下并没有安装pip，因此在这里问题不是环境变量的问题，从而不能单纯从增加环境变量的角度去解决。我们应该做得是直接安装pip工具。过程如下，也比较简洁：
+
+curl -O https://bootstrap.pypa.io/get-pip.py
+ python get-pip.py
+
+这样，我们就完成了pip工具的安装。此时，通过which pip我们可以在bin目录下找到pip的环境路径。
+
+
+参考： pynmea2安装
+

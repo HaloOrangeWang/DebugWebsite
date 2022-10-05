@@ -1,0 +1,67 @@
+
+（一）python安装包时出现四次：WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None
+
+使用一些国内的pip源，如下：
+
+阿里云 http://mirrors.aliyun.com/pypi/simple/
+
+中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/
+
+豆瓣(douban) http://pypi.douban.com/simple/
+
+清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
+
+中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/
+
+
+解决办法一：
+
+
+pip install pygame -i http://pypi.douban.com/simple --trusted-host pypi.douban.com（其中的pygame是你需要下载的，根据自己需求自行更改）
+
+安装成功之后，使用 pip list 查看成功安装的包有哪些！！
+
+pip show pygame可以查看包pygame的安装路径！！
+
+结束上述过程后，需要在pycharm内部再安装pygame：
+
+方法一：在pycharm中直接安装
+
+方法二：在pycharm中安装不成功
+
+确定在系统层面的python环境里面，已经安装成功了pygame[pip install pycharm]，一般都可以安装成功
+
+找到已经安装好的 pygame的路径[pip show pygame]，得到：c:\users\listen\appdata\local\programs\python\python310\lib\site-packages (2.1.0)
+
+打开这个路径，找到pygame文件夹
+
+将pygame文件包复制，粘贴到pycharm所创建项目中的venv虚拟环境里面的lib\site-packages (2.1.0)中。
+
+最后在pycharm中打开Terminal查看安装好的包。
+
+soure path:  c:\users\listen\appdata\local\programs\python\python310\lib\site-packages (2.1.0)
+
+dst path:  你的项目路径：F:\python\pythonProject\planeDemo
+
+
+解决方法二：以psutil包为例
+
+报错内容如下：
+
+ERROR: Command errored out with exit status 1:
+ command: ‘c:\users\15870\appdata\local\programs\python\python37-32\python.exe’ -u -c ‘import sys, setuptools, tokenize; sys.argv[0] = ‘"’"‘C:\Users\15870\AppData\Local\Temp\pip-install-2wcyweho\wordcloud\setup.py’"’"’; file=’"’"‘C:\Users\15870\AppData\Local\Temp\pip-install-2wcyweho\wordcloud\setup.py’"’"’;f=getattr(tokenize, ‘"’"‘open’"’"’, open)(file);code=f.read().replace(’"’"’\r\n’"’"’, ‘"’"’\n’"’"’);f.close();exec(compile(code, file, ‘"’"‘exec’"’"’))’ install --record ‘C:\Users\15870\AppData\Local\Temp\pip-record-9qx3thr5\install-record.txt’ --single-version-externally-managed --compile
+
+1.查看自己python是什么版本的、windows系统是多少位的，我是3.10.0版本，64位。
+
+2.去https://www.lfd.uci.edu/~gohlke/pythonlibs/找到对应版本的whl文件，我的电脑对应的版本是psutil-5.8.0-cp310-cp310-win_amd64.whl，其中cp310表示3.10.0这个版本，win_amd64表示windows系统64位。
+
+3.下载对应文件后，在cmd下进入whl所在文件夹
+
+4.最后输入pip install psutil-5.8.0-cp310-cp310-win_amd64.whl进行安装即可。
+
+
+（二） 安装过程中如果出现：
+
+
+我们使用的pip版本为21.3.1，但当前可用版本是21.2.3，所以我们要在命令提示窗口中输入"python -m pip install --upgrade pip"命令让它升级到最新版本。
+

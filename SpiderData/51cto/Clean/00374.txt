@@ -1,0 +1,57 @@
+目录
+
+​​前言​​
+
+​​错误一：smtplib.SMTPDataError: 554, 5.2.0​​
+
+​​错误二：smtplib.SMTPNotSupportedError: SMTP AUTH extension not supported by server.​​
+
+​​参考文档​​
+
+
+前言
+
+记录下我在使用smtplib里踩过的坑
+
+
+错误一：smtplib.SMTPDataError: 554, 5.2.0
+
+工作中用到了使用Python自动发邮件，选择采用了python自带的smtplib模块，上菜鸟教程参考了其中python基础教程-​​Python SMTP发送邮件​​，在最后程序运行的时候，报了一个错误。
+
+简单翻一下报错给到我们的信息内容：无法处理邮件，因为邮件收件人的帐户存在异常没有被解决。必须先解析所有收件人，然后才能提交邮件。
+
+很明显，这个问题是收件人邮箱报错导致的。遂，上才艺，百度搜索，结果很尴尬，搜索半天都找不出什么有用的信息。
+
+不过，功夫不负有心人，最终还是在一篇帖子上找到了问题原因，有其他小伙伴在一年前也碰到过类似的问题，所以我记录下，
+
+问题的原因在于这段代码
+
+截图：
+
+解决方法有2中：
+
+去掉'utf-8'
+​​message['To'] =  Header("*****@qq.com", 'utf-8')​​
+
+直接赋值
+​​message['To'] =  "*****@qq.com"​​
+
+其实最后测下来，['From']和['To']都是可以直接赋值，不影响邮件发送。代码可以简化成下面这个样子：
+
+为什么可以这么简单，因为查看Python官方文档可以得知email.mime.text.MIMEText(_text, _subtype='plain', _charset=None, *, policy=compat32)
+
+_text：邮件文本内容字符创，str格式
+
+_subtype：默认参数，默认为plain（也就是邮件是文本格式，而不是html）
+
+_charset：是文本的字符集并会作为参数传递给 MIMENonMultipart 构造器；如果该字符串仅包含 ascii 码位则其默认值为 us-ascii，否则为 utf-8。
+
+policy：命名关键字参数，使用它指定的规则更新和序列化邮件消息的表示形式。(这里我理解是该字段定义了邮件内容的格式标准）
+
+所以其实MIMEText只需要传入内容就可以了。
+
+
+错误二：smtplib.SMTPNotSupportedError: SMTP AUTH extension not supported by server.
+
+期间还有另一个报错，查询到的愿意你是因为在代码中缺少了两行代码(第2、3行)：
+

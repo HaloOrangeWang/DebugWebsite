@@ -1,0 +1,48 @@
+1、zabbix-server启动失败，我是centos7.4系统，查看/var/log/zabbix/zabbix_server.log日志显示
+
+1516:20180816:195630.755 using configuration file: /etc/zabbix/zabbix_server.conf
+ 1516:20180816:195630.755 cannot set resource limit: [13] Permission denied
+ 1516:20180816:195630.755 cannot disable core dump, exiting...
+
+这是因为selinux的安全限制导致的，可以将其关闭setenforce 0
+
+如果不想关闭，可以更新策略，
+
+安装selinux相关工具 yum install policycoreutils-python
+
+server的话执行 cat /var/log/audit/audit.log | grep zabbix_server | grep denied | audit2allow -M zabbix_server_setrlimit
+
+proxy的话执行 cat /var/log/audit/audit.log | grep zabbix_proxy | grep denied | audit2allow -M zabbix_proxy_setrlimit
+
+agent的话执行 cat /var/log/audit/audit.log | grep zabbix_agentd | grep denied | audit2allow -M zabbix_agent_setrlimit
+
+这样会在当前目录生成一个zabbix_server_setrlimit.pp或者zabbix_agent_setrlimit.pp文件，
+
+然后根据生成的文件执行 semodule -i zabbix_server_setrlimit.pp 或者 semodule -i zabbix_proxy_setrlimit.pp 或者 semodule -i zabbix_agent_setrlimit.pp
+
+重启zabbix服务即可
+
+2、zabbix-server启动失败，我是centos7.4系统，查看日志显示
+
+cannot create semaphore set: [28] No space left on device
+
+报错原因：
+kernel.sem参数设置过小，
+
+共享内存：可以通过ipcs -lm命令查看目前系统共享内存的参数限制
+
+cat /proc/sys/kernel/sem
+250 32000 32 128
+
+修改文件vi /etc/sysctl.conf
+
+kernel.sem =500 64000 64  128
+
+执行sysctl -p /etc/sysctl.conf
+
+重新启动即可
+
+3、zabbix-server启动报错，One child process died (PID:3480,exitcode/signal:1). Exiting ...
+
+这个问题正要排查的时候，莫名其妙消失了，暂时还没重现，等再次重现的时候再找原因
+

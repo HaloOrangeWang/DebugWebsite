@@ -1,0 +1,38 @@
+
+1. 问题
+
+pycharm 可以执行但是命令行却无法运行。
+ 这种问题的典型情况就是出现在某个.py文件引入了其它目录下的.py文件。但是这个在pycharm 中运行是没有问题的，但是放到命令行运行就会得到错误。报错如下：
+
+(p373) gamidev@iMac MovieRecommend % python algorithms/logisticRegression.py
+Traceback (most recent call last):
+  File "algorithms/logisticRegression.py", line 13, in <module>
+    from tools import utils as ut
+ModuleNotFoundError: No module named 'tools'
+
+这个问题涉及 python导入包的顺序 。
+
+
+2. 原因
+
+当解释器遇到 import 语句，如果模块在当前的搜索路径就会被导入。搜索路径【是一个解释器会先进行搜索的所有目录的列表。】
+
+
+2.1 python 解析器对模块位置的搜索顺序
+
+1.当前目录
+ 2.如果不在当前目录，则python搜索在shell 变量PYTHONPATH下的每个目录
+ 3.如果都找不到，python 会察看默认路径。unix下，默认路径一般为 /usr/local/lib/python
+
+
+2.2 模块搜索路径存储在sys.path 变量中
+
+例如，下面就输出了我在命令行中的 搜索路径，可以发现是没有我想要的那个tools所在的路径
+ 可以在运行的代码前添加 sys.path.append(r'pathname') 就可以将当前的这个路径放到搜索路径中。如下所示：
+ 同样，可以将这个代码放到你所需要运行的这个文件中，然后就能解决这个问题。
+
+
+update on 20201108
+
+下面的注释需要注意！！
+

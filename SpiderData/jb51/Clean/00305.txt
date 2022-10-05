@@ -1,0 +1,64 @@
+1、执行环境说明
+
+python版本3.7
+
+直接使用pip进行安装pywin32、pyinstaller
+
+pip install pywin32
+
+pip install pyinstaller
+
+2、使用了第三方库的情况
+
+建议在打包之前务必找到第三方库的包，把包复制到到跟myfile.py同目录下，然后再使用以上2种方式打包，否则会打包失败或者即使打包成功，程序也会闪退。pyinstaller -p参数是添加的pyinstaller打包程序时的扫描路径，假设venv\Lib\site-packages是包存放路径，那么也可以使用以下命令打包：
+
+pyinstaller -p venv\Lib\site-packages -F xxx.py
+
+3、failed to execute script 错误
+
+首先使用
+
+pyinstaller -F -w code.py
+
+进行exe打包，得到的单个.exe文件，运行后提示failed to execute script 错误
+
+排错过程：使用pyinstaller -D code.py进行exe打包，得到一个目录文件，通过命令行执行.exe文件提示The 'six' package is required; normally this is bundled with this package错误
+
+说明pyinstaller打包后，需要six等库，最终确认需要在code.py中添加以下库：
+
+import six
+import packaging
+import packaging.version
+import packaging.specifiers
+import packaging.requirements
+
+当然，six和packaging库建议使用pip安装。加入以上库后，使用pyinstaller -D code.py打包执行不再出错。
+
+4、找不到数据文件夹
+
+有些程序包含了数据文件夹，不能直接按资源文件方式打包，需要在执行文件所在的文件夹内创建这些数据文件。一般情况下在脚本中我们可以使用os.path.split(os.path.abspath( __file__))来的到code.py的路径，然后拼接得到数据文件夹。但之后使用pyinstaller -F code.py打包成单个exe文件，在未读取数据文件夹的情况下运行正常，一旦打开数据文件，就会闪退，命令行窗口会显示打不开数据文件。因为PyInstaller会创建临时文件夹temp，程序代码在这个临时文件夹中运行，我们可以用以下几个语句来查看正式运行路径：
+
+import sys
+  import os
+  print(sys.path[0])
+  print(sys.argv[0])
+  print(os.path.dirname(os.path.realpath(sys.executable)))
+  print(os.path.dirname(os.path.realpath(sys.argv[0])))
+
+得到的结果是os.path.dirname(os.path.realpath(sys.executable))和os.path.dirname(os.path.realpath(sys.argv[0]))才是含数据文件夹的路径。因此可以按如下方式取得文件路径，然后根据需要拼接得到数据文件夹的真实路径：
+
+if hasattr(sys, '_MEIPASS'):
+  # PyInstaller会创建临时文件夹temp
+  # 并把路径存储在_MEIPASS中
+    self.appPath = os.path.dirname(os.path.realpath(sys.executable))
+  else:
+    self.appPath, filename = os.path.split(os.path.abspath( __file__))
+
+修改完成后，分别以以下三种方式打包，运行成功
+
+pyinstaller -D code.py
+pyinstaller -F code.py
+pyinstaller -w -F code.py
+
+以上这篇pyinstaller打包单个exe后无法执行错误的解决方法就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

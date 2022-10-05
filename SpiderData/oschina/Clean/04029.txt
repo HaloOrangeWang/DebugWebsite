@@ -1,0 +1,85 @@
+前言：今天也是充满bug的一天，脸上笑嘻嘻。。。。（继续，讲文明，懂礼貌）
+
+1，问题描述,models中的字段设置的是浮点型，但是输出的结果总是int（）类型
+
+models
+
+average_score = models.FloatField(verbose_name='平均分')
+
+2、查找原因，首先进入数据库
+
+1 mysql  #进入数据库
+2 
+3 show databases;    
+4 
+5 use mydata;  进入你的数据库
+6 
+7 des knowledge_knowledgebase; 查看相应字段
+
+然后就会发现，是的，现在average_acore的字段是int()没错的
+
+3、这时候你就会说同步一下数据库不就好了，然而并不是我太傻太天真。
+
+python manage.py makemigrations  报错
+
+django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency users.0001_initial on database 'default'
+
+原因：大概原因是因为admin的模型依赖了之前默认的user模型吧
+
+4、最终解决方案
+
+首先将migrations下的数据删除，然后在migrate肯定是可以的，但是测试需要我必须保留其中的数据，解决方案如下。
+
+a、首先建一个新表
+
+1、drop database mydata2;
+
+2、 create database mydata2 character set utf8 collate utf8_bin
+
+b、在setting中指向该数据库
+
+c、数据reset
+
+sh reset.sh  该文件内容（该内容就是直接删除migrations目录下的数据，重新编译）
+
+1 #!/usr/bin/env bash
+ 2 rm -rf user_center/mi*
+ 3 rm -rf alert_center/mi*
+ 4 rm -rf count_center/mi*
+ 5 rm -rf cmdb_center/mi*
+ 6 rm -rf work_center/mi*
+ 7 rm -rf knowledge/mi*
+ 8 rm -rf call_center/mi*
+ 9 rm -rf report_center/mi*
+10 python manage.py makemigrations --empty work_center
+11 python manage.py makemigrations --empty cmdb_center
+12 python manage.py makemigrations --empty call_center
+13 python manage.py makemigrations --empty report_center
+14 python manage.py makemigrations --empty user_center
+15 python manage.py makemigrations --empty count_center
+16 python manage.py makemigrations --empty alert_center
+17 python manage.py makemigrations --empty knowledge
+18 python manage.py makemigrations 
+19 python manage.py  migrate
+20 python manage.py createsuperuser
+
+d、将原数据库mydata的数据导出
+
+1  mysqldump -uroot  mydata > mcenter2.sql
+
+e、进入mysql环境
+
+1 show databases; 
+ 2 
+ 3 use mydata2;  #新表
+ 4 
+ 5 desc knowledge_knowledgebase;
+ 6 
+ 7 source /home/mcenter_backstage/mcenter_backstage/mcenter2.sql; #将原表的数据同步到新表
+ 8 
+ 9 alter table knowledge_knowledgebase modify column average_score float(5,2); #更改字段的数据类型
+10 
+11 alter table knowledge_knowledgebase modify column create_time datetime;  #更改字段的数据类型
+
+总结：当数据库中包含数据的时候，无法migrate成功，所以只能更改数据库中的相应字段，这个办法算是比较笨了。后续找到解决办法会更新。
+

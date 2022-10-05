@@ -1,0 +1,24 @@
+原因：
+
+检查数据发现数据竟然有一个表情包图片，查阅相关资料后发现utf8最多处理3个字节，而这种表情图或者其他特殊字符是4字节，所以也导致了插入失败1366错误！
+
+解决方法：
+
+
+使用utf8mb4！
+ 1、设置表的字段编码
+
+ALTER TABLE table_name CONVERT TO CHARACTER SET utf8mb4;
+
+
+2、设置python代码中的mysql配置charset为utf8mb4
+
+mysql_conf = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': '6666',
+    'port': 3306,
+    'database': 'test',
+    'charset': 'utf8mb4'
+}
+

@@ -1,0 +1,8 @@
+使用一个很久之前写的一个单元测试例子，突然报错：
+
+2015-11-24 16:53:08.974 [main] [INFO] org.springframework.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2015-11-24 16:53:09.081 [main] [INFO] org.springframework.jdbc.support.SQLErrorCodesFactory - SQLErrorCodes loaded: [DB2, Derby, H2, HSQL, Informix, MS-SQL, MySQL, Oracle, PostgreSQL, Sybase]
+java.lang.SecurityException: class "org.junit.Assume$AssumptionViolatedException"'s signer information does not match signer information of other classes in the same package
+
+初看之下以为是junit与spring的兼用性问题导致，但是其他的测试用例可以运行。发现是写的SQL有问题。所以这种错误一般是ibatis配置错误，或者执行的sql约束方面出现问题。
+

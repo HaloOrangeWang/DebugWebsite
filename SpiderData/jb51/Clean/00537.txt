@@ -1,0 +1,60 @@
+再之前同时安装 python 后 只需把环境变量PATH 里面改为
+
+PATH=C:\Python36-32\Scripts\;C:\Python36-32\;C:\Python27\;C:\Python27\Scripts
+
+然后把python3安装后的文件按照如下修改：
+
+C:\Python36-32\Scripts\pip.exe 改为 C:\Python36-32\Scripts\pip3.exe
+
+C:\Python36-32\python.exe 改为 C:\Python36-32\python3.exe
+
+C:\Python36-32\pythonw.exe 改为 C:\Python36-32\pythonw3.exe
+
+这样就可以再CMD 命令行下直接使用 python python3 pip pip3 等命令
+
+因为最近重装系统，安装了python2 和python3的最新版本 python 2.7.13 和 python 3.6.0
+
+按照上述修复该方法，python pip python3 命令工作正常，但 pip3 执行时显示下列错误：
+
+Fatal error in launcher: Unable to create process using '"'
+
+显然是建立进程时没有找到进程相关文件啊。想办法吧。
+
+发现 C:\Python36-32\Scripts 目录下有同样图标及KB数相同的文件文件名不一样，调用的功能也不一样的几个exe文件：
+
+easy_instal3l.exe
+
+easy_install-3.6.exe
+
+pip.exe
+
+根据经验猜想这几个EXE文件其实是同一个EXE文件加上不同的资源或者在调试破解领域里叫附加资源去执行不同python 脚本，顺手用7z打开证实了我的猜想
+
+先去google一会找pip 这个exe的源代码，找了一会儿没找到，我就直接用IDA PRO F5 ，此EXE大概逻辑是找EXE最后多少字节以 特殊符号 分割开头的一个字符串并建立进程附加参数并执行。
+
+用HEX编辑器打开 pip.exe  翻到最后部分
+
+看红色圈起来的部分，发现这里面是写死了路径的，应该是python安装时附加的这个字符串，OK，直接把
+
+c:\python36-32\python.exe 改为 c:\python36-32\pytho3.exe 保存。
+
+然后 复制 C:\Python36-32\python3.exe 改为 C:\Python36-32\pytho3.exe
+
+你没看错，去掉了n，因为原来字符串python.exe 有10个字符，我们通常在修改EXE时为了工作正常不产生数据偏移之类的
+
+错误要保证字符串的长度及位置，为了偷懒我直接改为 pytho3.exe  这样可以工作正常。
+
+下一步时找到这个pip.exe “壳”的代码和 安装程序什么是偶附加这个资源，看看能不能提一个bug修复下把他变成自动获取当前exe路径的上级路径的python3的位置。
+
+（显然python3是我重命名的，这个思路不好）
+
+相关资源参考：
+
+https://github.com/pypa/setuptools/blob/master/msvc-build-launcher.cmd
+
+https://github.com/pypa/setuptools/blob/master/launcher.c
+
+https://www.python.org/dev/peps/pep-0397/
+
+https://bitbucket.org/pypa/distlib/src/e4339220120d334fb9030303b8e919594acb829d/PC/?at=default
+

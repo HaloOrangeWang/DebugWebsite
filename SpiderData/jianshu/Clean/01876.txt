@@ -1,0 +1,31 @@
+  手上有比较老旧的思科防火墙PIX515，软件版本6.3，由于telnet无法从outside口登录，所以希望通过ssh进行登录，并想通过python模块paramiko进行自动化登录，最后确认无法实现。
+
+  一、PIX防火墙配置SSH
+
+  参考链接https://www.tech-recipes.com/rx/215/ssh_configuration_pix_firewall/，主要的命令如下，配置后，通过xshell是可以正常人工进行ssh登录的。
+
+hostname myfirewall 
+domain-name mydomain.mytld
+ca gen rsa key 1024
+ssh 172.18.124.114 255.255.255.255 inside
+ssh timeout 60
+passwd YourPasswordGoesHere
+ca save all
+
+  二、PARAMIKO自动登录报错
+
+  python模块paramiko是自动化ssh登录的常用工具，调试的时候发现有报错，报错内容paramiko.ssh_exception.SSHException: Incompatible version (1.5 instead of 2.0)，经过一番搜索，确认原因是PIX防火墙使用的SSH版本可能是1.5，而paramiko只支持2.0版本。（参考https://www.thinbug.com/q/48642337）。
+
+  尝试在PIX防火墙上看能否使用SSH 2.0版本，但PIX防火墙找不到将SSH配置为2.0版本的指令，而ASA防火墙则有对应的命令ssh version 2，网络上也找不到对应的方法；后来在思科官网上找到这样一句话：Note: SSHv2 is supported in PIX/ASA version 7.x and later and not supported in versions earlier to 7.x.（参考：https://www.cisco.com/c/en/us/support/docs/security/pix-500-series-security-appliances/69373-ssh-inside-out-pix7x.html）
+
+  所以基本上就确认paramiko和PIX防火墙是无法实现自动ssh登录的。
+
+  三、PIX防火墙取消SSH配置
+
+  一部分命令是可以直接删除的，如下面这两个命令
+
+no domain-name
+no ssh 172.18.124.114 255.255.255.255 inside
+
+  但RSA key的删除则有点不同，命令show ca mypubkey rsa可以查看当前设备上的RSA密钥，使用命令ca zeroize rsa可以删除所有的RSA密钥。（参考https://www.ciscopress.com/articles/article.asp?p=24664&seqNum=5）
+

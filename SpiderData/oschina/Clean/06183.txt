@@ -1,0 +1,77 @@
+问题描述：在使用CIFAR-10彩色图片训练，其中定义输入层的形状为[3072]的时候，出现卷积层输入的形状不为4维或者5维的错误。
+
+问题描述：在使用CIFAR-10彩色图片训练，其中定义输入层的形状为[3072]的时候，出现卷积层输入的形状不为4维或者5维的错误。
+
+报错信息：
+
+报错信息：
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/nets.py in img_conv_group(input, conv_num_filter, pool_size, conv_padding, conv_filter_size, conv_act, param_attr, conv_with_batchnorm, conv_batchnorm_drop_rate, pool_stride, pool_type, use_cudnn)
+    229             param_attr=param_attr[i],
+    230             act=local_conv_act,
+--> 231             use_cudnn=use_cudnn)
+    232 
+    233         if conv_with_batchnorm[i]:
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/layers/nn.py in conv2d(input, num_filters, filter_size, stride, padding, dilation, groups, param_attr, bias_attr, use_cudnn, act, name)
+   1639             'groups': groups,
+   1640             'use_cudnn': use_cudnn,
+-> 1641             'use_mkldnn': False
+   1642         })
+   1643
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/layer_helper.py in append_op(self, *args, **kwargs)
+     48 
+     49     def append_op(self, *args, **kwargs):
+---> 50         return self.main_program.current_block().append_op(*args, **kwargs)
+     51 
+     52     def multiple_input(self, input_param_name='input'):
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/framework.py in append_op(self, *args, **kwargs)
+   1205         """
+   1206         op_desc = self.desc.append_op()
+-> 1207         op = Operator(block=self, desc=op_desc, *args, **kwargs)
+   1208         self.ops.append(op)
+   1209         return op
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/framework.py in __init__(***failed resolving arguments***)
+    654         if self._has_kernel(type):
+    655             self.desc.infer_var_type(self.block.desc)
+--> 656             self.desc.infer_shape(self.block.desc)
+    657 
+    658     def _has_kernel(self, op_type):
+
+EnforceNotMet: Conv intput should be 4-D or 5-D tensor. at [/paddle/paddle/fluid/operators/conv_op.cc:47]
+PaddlePaddle Call Stacks: 
+0       0x7f8683d586b6p paddle::platform::EnforceNotMet::EnforceNotMet(std::__exception_ptr::exception_ptr, char const*, int) + 486
+1       0x7f86845cf940p paddle::operators::ConvOp::InferShape(paddle::framework::InferShapeContext*) const + 3440
+2       0x7f8683e00f86p paddle::framework::OpDesc::InferShape(paddle::framework::BlockDesc const&) const + 902
+
+问题复现：在定义网络的输入层的时候，使用fluid.layers.data接口定义输入数据的时，设置shape的值为[3072]，在启动训练的时候出错。错误代码如下：
+
+def inference_network():
+    images = fluid.layers.data(name='pixel', shape=[3072], dtype='float32')
+    predict = vgg_bn_drop(images)
+    return predict
+
+解决问题：在使用fluid.layers.data接口定义图片输入层时，设置shape应该的是[通道数, 宽, 高]，所以设置为[3, 32, 32]。正确代码如下：
+
+def inference_network():
+    images = fluid.layers.data(name='pixel', shape=[3, 32, 32], dtype='float32')
+    predict = vgg_bn_drop(images)
+    return predict
+
+问题拓展：在定义输出层的，其中参数shape的值应该是输出数据的形状，而不是大小。在V2版本的接口是设置大小，所以有些用户会误以为Fluid也是设置输入的大小，所以会导致错误。
+
+问题拓展：在定义输出层的，其中参数shape的值应该是输出数据的形状，而不是大小。在V2版本的接口是设置大小，所以有些用户会误以为Fluid也是设置输入的大小，所以会导致错误。
+
+问题分析：PaddlePaddle团队对PaddlePaddle框架的优化速度较快，很多接口也采用更加容易理解的方法进行了重新，此时就有可能会造成与此前版本不一致的情况，请移步阅读PaddlePaddle Fluid版本的文档：
+
+问题分析：PaddlePaddle团队对PaddlePaddle框架的优化速度较快，很多接口也采用更加容易理解的方法进行了重新，此时就有可能会造成与此前版本不一致的情况，请移步阅读PaddlePaddle Fluid版本的文档：
+
+http://www.paddlepaddle.org/documentation/docs/zh/1.1/beginners_guide/index.html
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

@@ -1,0 +1,44 @@
+遇到这样的报错 ValueError: All arrays must be of the same length 问题分析和解决方式，如下：
+
+import pandas as pd
+
+d = {'Num': range(3),
+
+'C': ['c1', 'c2', 'c3'],
+
+'D': ['d1', 'd2', 'd3', 'd4'],
+
+'E': ['e1', 'e2', 'e3'],
+
+'B': ['b1', 'b2', 'b3']}
+
+期望功能：把不等长的value输出，形成DataFrame。输入以下代码：
+
+df = pd.DataFrame(d)
+
+报错原因分析：
+
+使用DataFrame(dict) 来用dict构建DataFrame时，key会变成列column，(list-like)values会变为行row，每个values中的list长度不一致，就会产生这个错误。
+
+解决方式
+
+df = pd.DataFrame.from_dict(d, orient='index')
+
+print(df)
+
+最终产生结果：
+
+行数为key值，列数为最长的values的长度，而其他较短的values则用None填充。
+
+0   1   2     3
+
+Num 0 1 2 None
+
+C c1 c2 c3 None
+
+D d1 d2 d3 d4
+
+E e1 e2 e3 None
+
+B b1 b2 b3 None
+

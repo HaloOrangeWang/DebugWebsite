@@ -1,0 +1,42 @@
+
+常见问题
+
+在django + mysql中存储emoji表情报错信息为:
+
+django.db.utils.OperationalError: (1366, "Incorrect string value: '\\xE5\\xA4\\xAB\\xE4\\xBA\\xBA' f
+
+
+django中的设置
+
+在settings.py中修改代码如下
+
+DATABASES = {
+  'default':{
+    ...,//其他设置
+    'OPTIONS': {'charset': 'utf8mb4'}, #支持emoji
+  }
+}
+
+
+在mysql中的设置
+
+进入mysql中，
+
+1） 修改database的字符集：
+
+ALTER DATABASE 数据库名 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+2）指明当前需要进行字符集修改的数据库
+
+use 数据库名;
+
+3）修改table的字符集:
+
+ALTER TABLE 表名 CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+4） 修改column的字符集：
+
+ALTER TABLE 表名 CHANGE 字段名 字段名 该字段原来的数据类型 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+mysql中的修改具体可以看 mysql中解决emoji存储问题
+

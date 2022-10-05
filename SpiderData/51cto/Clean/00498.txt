@@ -1,0 +1,31 @@
+本例环境如下：
+
+python版本: 3.7
+
+etcd3版本: 0.12.0
+
+报错信息：
+
+File "/tools/apps/venv/lib/python3.7/site-packages/etcd3/client.py", line 48, in handler
+    _translate_exception(exc)
+  File "/tools/apps/venv/lib/python3.7/site-packages/etcd3/client.py", line 46, in handler
+    return f(*args, **kwargs)
+  File "/tools/apps/venv/lib/python3.7/site-packages/etcd3/client.py", line 424, in put
+    metadata=self.metadata
+  File "/tools/apps/venv/lib/python3.7/site-packages/grpc/_channel.py", line 946, in __call__
+    return _end_unary_response_blocking(state, call, False, None)
+  File "/tools/apps/venv/lib/python3.7/site-packages/grpc/_channel.py", line 849, in _end_unary_response_blocking
+    raise _InactiveRpcError(state)
+grpc._channel._InactiveRpcError: <_InactiveRpcError of RPC that terminated with:
+        status = StatusCode.UNAUTHENTICATED
+        details = "Established channel does not have a sufficient security level to transfer call credential."
+        debug_error_string = "{"created":"@1650335047.885697270","description":"Error received from peer 172.0.0.1:8030","file":"src/core/lib/surface/call.cc","file_line":906,"grpc_message":"Established channel does not have a sufficient security level to transfer call credential.","grpc_status":16}"
+
+本例连接异常是因为grpcio版本太高，grpcio==1.45.0
+
+降级后解决
+
+pip uninstall grpcio
+
+pip install grpcio==1.19.0
+

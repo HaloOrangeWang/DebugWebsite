@@ -1,0 +1,16 @@
+1.在CDH集群启动Hue服务时，出现了错误，如下图：
+
+2.上图显示得知，是调用python文件(/opt/cloudera/parcels/CDH-5.16.1-1.cdh5.16.1.p0.3/lib/hue/build/env/lib/python2.7/site-packages/Django-1.6.10-py2.7.egg/django/core/management/base.py)时出现了字符集错误。
+
+3.在master主机上修改该文件，增加py代码
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+如下图：
+
+4.重启Hue服务，问题解决。
+
+以上。
+

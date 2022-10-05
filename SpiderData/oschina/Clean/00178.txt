@@ -1,0 +1,57 @@
+
+windows下pip安装python模块时报错总结
+
+
+请给作者点赞--> 原文链接
+
+
+1 权限问题
+
+C:\Users\ljf>pip install xlwt
+
+Exception:
+Traceback (most recent call last):
+  File "c:\program files\python35\lib\site-packages\pip\basecommand.py", line 21
+1, in main
+    status = self.run(options, args)
+  File "c:\program files\python35\lib\site-packages\pip\commands\install.py", li
+ne 311, in run
+    root=options.root_path,
+  File "c:\program files\python35\lib\site-packages\pip\req\req_set.py", line 64
+6, in install
+    **kwargs
+  File "c:\program files\python35\lib\site-packages\pip\req\req_install.py", lin
+e 803, in install
+    self.move_wheel_files(self.source_dir, root=root)
+  File "c:\program files\python35\lib\site-packages\pip\req\req_install.py", lin
+e 998, in move_wheel_files
+    isolated=self.isolated,
+  File "c:\program files\python35\lib\site-packages\pip\wheel.py", line 339, in
+move_wheel_files
+    clobber(source, lib_dir, True)
+  File "c:\program files\python35\lib\site-packages\pip\wheel.py", line 310, in
+clobber
+    ensure_dir(destdir)
+  File "c:\program files\python35\lib\site-packages\pip\utils\__init__.py", line
+ 71, in ensure_dir
+    os.makedirs(path)
+  File "c:\program files\python35\lib\os.py", line 241, in makedirs
+    mkdir(name, mode)
+PermissionError: [WinError 5] 拒绝访问。: 'c:\\program files\\python35\\Lib\\site-packages\\xlwt'
+
+　　注意看我标红的那部分，提示说权限错误，拒绝访问，我们这样解决：
+
+1 首先切换到你安装python的目录下，
+
+　　2 我们鼠标右击python35这个目录，点击 属性 ，
+
+　　3 首先切换到  安全 这个大标题下面，选中当前登陆的用户，然后再点击编辑，编辑完以后不要忘记点击应用，
+
+　　
+
+　　4 点击添加的权限，我这里为了方便全部一块选了，反正根据自己的实际情况而定，最后点击应用，再点击确定就大功告成。
+
+　 　
+
+　　5 我们此时再看看自己pip，是不是能够安装模块了。
+

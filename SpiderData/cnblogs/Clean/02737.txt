@@ -1,0 +1,60 @@
+本文使用方法：control+F 搜索关键词
+
+持续更新ing
+
+目录安装Python3安装MySQLMySQL修改默认字符集安装Python的包管理工具pip安装支持Python3的MySQL驱动解决：MySQL8.x版本与低版本的mysql-connector不兼容
+
+目录
+
+安装Python3
+
+安装MySQL
+
+MySQL修改默认字符集
+
+安装Python的包管理工具pip
+
+安装支持Python3的MySQL驱动
+
+解决：MySQL8.x版本与低版本的mysql-connector不兼容
+
+
+安装Python3
+
+
+安装MySQL
+
+官网下载安装包（DMG文件）
+
+安装启动后，
+
+命令行执行
+
+原因： 由于系统默认会查找/usr/bin下的命令，如果这个命令不在这个目录下，就找不到命令，我们需要做的就是映射一个链接到/usr/bin目录下，相当于建立一个链接文件, 如下命令。
+
+执行后，报错，
+
+原因：苹果在OS X 10.11中引入的SIP特性使得即使加了sudo（也就是具有root权限）也无法修改系统级的目录，其中就包括了/usr/bin。要解决这个问题有两种做法：一种是比较不安全的就是关闭SIP，也就是rootless特性；另一种是将本要链接到/usr/bin下的改链接到/usr/local/bin下就好了。来源：（https://www.jianshu.com/p/a6f554ac090f）
+
+
+MySQL修改默认字符集
+
+解决：mac终端下修改MySQL的编码格式--找不到my-default.cnf及my.cnf
+
+
+安装Python的包管理工具pip
+
+pip---安装python2.x的包，pip3---安装Python3.x的包
+
+
+安装支持Python3的MySQL驱动
+
+
+解决：MySQL8.x版本与低版本的mysql-connector不兼容
+
+报错：（mysql.connector.errors.NotSupportedError: Authentication plugin 'caching_sha2_password' is not supported）
+
+第一种方法： 卸载当前版本，安装低版本MySQL(本人用了第二种的第二个方式)
+
+第二种方法： 认证的选项设置为“Use Legacy Authentication Method”或者初始化时候修改Use Strong Password Encryption选项为Use Legacy Password Encryption
+

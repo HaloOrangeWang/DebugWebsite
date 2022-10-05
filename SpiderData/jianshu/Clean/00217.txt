@@ -1,0 +1,416 @@
+前言
+
+在Flutter项目中开发难免会遇到使用到Flutter Plugin的场景，在Flutter Plugin有可能会使用到第三方AAR。在以上情况下Flutter Application编译Apk会报错，本篇文章将解决这个问题。
+
+工程准备
+
+首先创建四个工程分别为: Android 原生工程，Flutter application, Flutter module, Flutter plugin 为了方便管理这四个工程放在同一个目录下（FlutterProject目录）：
+
+cd  Desktop/FlutterProject/
+
+//创建 flutter application
+
+fluttercreate--org com.tmt.flutterapp flutter_app
+
+//创建 fluttermodule
+
+fluttercreate--org com.tmt --template=module  flutter_module
+
+//创建 flutterplugin插件，用来封装aar sdk
+
+fluttercreate--org com.tmt.flutter_plugin_aar --template=plugin flutter_plugin_aar
+
+使用Android Studio创建AndroidApp工程，创建完4个工程后目录结构如下:
+
+need-to-insert-img
+
+Flutter Plugin中集成AAR
+
+打开flutter_plugin_aar工程，在.android目录下创建libs，再将aar文件放入到libs下，并在build.gradle中导入aar。
+
+need-to-insert-img
+
+dependencies{
+
+implementationfileTree(dir:"libs",include: ['*.aar'])
+
+}
+
+在FlutterPluginAarPlugin中去使用aar中的api，
+
+publicvoidonMethodCall(@NonNullMethodCall call,@NonNullResult result) {
+
+if(call.method.equals("getPlatformVersion")) {
+
+result.success("Android "+ android.os.Build.VERSION.RELEASE);
+
+}elseif(call.method.equals("aarPrint")) {
+
+//调用aar中的api
+
+AarTest.print();
+
+result.success("success");
+
+}else{
+
+result.notImplemented();
+
+}
+
+}
+
+AarTest.print api的源码如下，
+
+packagecom.tmt.mylibrary;
+
+importandroid.util.Log;
+
+publicclassAarTest{
+
+publicstaticvoidprint(){
+
+Log.d("AarTest","this is aar output log");
+
+}
+
+}
+
+Android原生项目中集成flutter_module
+
+首先打开flutetr_module工程，在flutetr_module中依赖flutter_plugin_aar(原生项目引入Flutter Module工程 Flutter Add to App )。
+
+need-to-insert-img
+
+在flutter_module中依赖flutter_plugin_aar，
+
+dev_dependencies:
+
+flutter_test:
+
+sdk:flutter
+
+#依赖flutter_plugin_aar
+
+flutter_plugin_aar:
+
+path:../flutter_plugin_aar
+
+在flutter_module目录下运行flutter pub get 生成 .android 目录，
+
+打开AndroidApp工程，
+
+need-to-insert-img
+
+修改AndroidApp中settings.gradle文件，
+
+include':app'
+
+rootProject.name ="AndroidApp"
+
+// 加入下面配置
+
+setBinding(newBinding([gradle: this]))
+
+evaluate(newFile(
+
+settingsDir.parentFile,
+
+'flutter_module/.android/include_flutter.groovy'
+
+//更改成自己的项目目录
+
+))
+
+include':flutter_module'
+
+project(':flutter_module').projectDir =newFile('../flutter_module')
+
+为了方便直接把MainActivity继承FlutterActivity，
+
+packagecom.tmt.androidapp;
+
+importandroid.os.Bundle;
+
+importio.flutter.embedding.android.FlutterActivity;
+
+publicclassMainActivityextendsFlutterActivity{
+
+@Override
+
+protectedvoidonCreate(Bundle savedInstanceState){
+
+super.onCreate(savedInstanceState);
+
+}
+
+}
+
+此时在Android Studio中运行AndroidApp是正常的，但是使用./gradlew assembleRelease打包会报错，报错信息如下:
+
+> Task :flutter_plugin_aar:bundleReleaseAar FAILED
+
+FAILURE: Build failedwithan exception.
+
+* What went wrong:
+
+Execution failedfortask':flutter_plugin_aar:bundleReleaseAar'.
+
+> Direct local .aar file dependencies are not supported when building an AAR. The resulting AAR would be broken because the classes and Android resourcesfromanylocal .aar file dependencies would not be packagedinthe resulting AAR. Previous versionsofthe Android Gradle Plugin produce broken AARsinthiscasetoo (despite not throwingthiserror). The following direct local .aar file dependenciesofthe :flutter_plugin_aar project causedthiserror:/xxx/xxx/Desktop/FlutterProject/flutter_plugin_aar/android/libs/mylibrary-release.aar
+
+BUILD FAILEDin39s
+
+从上面的报错信息可以看出来是bundleReleaseAar出错了，原因是因为构建aar中不能依赖aar。（ps:虽然报错了，但是apk已经编译成功了）。
+
+Flutter Application中使用flutter_plugin_aar
+
+Android Studio中打开flutter_app工程，同样在flutter_app中依赖flutter_plugin_aar，运行flutter pub get 这个时候我们去运行项目也会出现aar的报错。项目不能运行起来也不会生成apk(flutter build apk 也不行)。
+
+解决Flutter plugin中aar编译报错问题
+
+首先看一下 Apk的构建流程，
+
+need-to-insert-img
+
+从上图可以知道编译器会把source code，jar包，aar包编译到dex文件中去，然后再生成的apk。
+
+思考：
+
+Q：为什么Flutter Plugin依赖aar编译会报错，而Android原生开发中module依赖aar不会报错？
+
+A： Flutter Application的编译流程会把每个plugin中的android相关文件编译成aar。
+
+Q：有什么办法绕过aar编译到Flutter Plugin中？
+
+A：1）把aar文件依赖到Android Application中去编译，Plugin中仅仅做compileOnly依赖(compileOnly在构建时会被忽略)；
+
+2）把aar解压成jar和资源文件放入flutter_plugin中(本篇文章不做演示了)。
+
+修改flutter_plugin_aar中build.gradle文件绕过plugin中编译aar，
+
+group'com.tmt.flutter_plugin_aar'
+
+version'1.0'
+
+buildscript {
+
+repositories {
+
+google()
+
+jcenter()
+
+}
+
+dependencies {
+
+classpath'com.android.tools.build:gradle:4.1.0'
+
+}
+
+}
+
+rootProject.allprojects {
+
+repositories {
+
+google()
+
+jcenter()
+
+}
+
+}
+
+apply plugin:'com.android.library'
+
+//1.aar_tools.gradle为拷贝aar到host工程的脚本，
+
+//放在com.android.library后面，
+
+applyfrom:'./aar_tools.gradle'
+
+android {
+
+compileSdkVersion30
+
+defaultConfig {
+
+minSdkVersion16
+
+}
+
+}
+
+dependencies {
+
+// implementation fileTree(dir: "libs", include: ['*.aar'])
+
+//2.implementation改成compileOnly表示libs目录下的文件在编译过程中会被忽略
+
+compileOnlyfileTree(dir:"libs", include: ['*.aar'])
+
+}
+
+在android目录下创建aar_tools.gradle脚本，
+
+importjava.util.zip.ZipEntry
+
+importjava.util.zip.ZipFile
+
+staticaarFileCopy(StringsrcPathStr,StringdesPathStr){
+
+System.out.println("拷贝aar源文件${srcPathStr} 到 ${desPathStr}");
+
+try{
+
+FileInputStream fis =newFileInputStream(srcPathStr)
+
+FileOutputStream fos =newFileOutputStream(desPathStr)
+
+byte[] datas =newbyte[1024*8]
+
+int len =0;
+
+while((len = fis.read(datas)) != -1)
+
+{
+
+fos.write(datas,0, len);
+
+}
+
+fis.close();
+
+fos.close();
+
+}catch(Exception e) {
+
+e.printStackTrace();
+
+}
+
+}
+
+copyAar2Host('com.tmt.flutter_plugin_aar')
+
+voidcopyAar2Host(StringpluginGroup){
+
+Project currentProject =null
+
+Project appProject =null
+
+rootProject.allprojects.each {
+
+p ->
+
+booleanisApp = p.plugins.hasPlugin("com.android.application")
+
+println("${p.name} isHost --> ${isApp}")
+
+if(p.group == pluginGroup) {
+
+currentProject = p
+
+println("Plugin project name --> $currentProject")
+
+}
+
+if(isApp) {
+
+appProject = p
+
+println("Host project name -->  ${p.name}")
+
+}
+
+}
+
+Set aarFiles =newHashSet<>()
+
+if(appProject !=null&& currentProject !=null) {
+
+File libs =newFile("${currentProject.projectDir}",'libs')
+
+if(libs.isDirectory()) {
+
+libs.listFiles().each {
+
+f ->
+
+if(f.name.endsWith('.aar')) {
+
+println("aar name --> ${f.name}")
+
+aarFiles.add(f)
+
+}
+
+}
+
+}
+
+if(!aarFiles.isEmpty()) {
+
+File applibs =newFile("${appProject.projectDir}${File.separator}libs");
+
+if(!applibs.isDirectory()) {
+
+applibs.mkdirs()
+
+}
+
+aarFiles.each {
+
+f ->
+
+File copyAar =newFile("${appProject.projectDir}${File.separator}libs", f.name)
+
+if(!copyAar.exists()) {
+
+copyAar.createNewFile()
+
+aarFileCopy(f.path, copyAar.path)
+
+}else{
+
+// 可以读取aar中的manifest处理aar包版本的问题,
+
+// 这里暂不处理了
+
+}
+
+}
+
+appProject.dependencies {
+
+implementation fileTree(dir:"${appProject.projectDir}${File.separator}libs",include: ['*.jar','*.aar'])
+
+}
+
+}
+
+}
+
+}
+
+repositories {
+
+flatDir {
+
+dirs'libs'
+
+}
+
+}
+
+至此flutter_app就可以运行起来了，也可以通过flutter build apk顺利打包成功（AndroidApp工程打包同样也不会报错了）。
+
+总结
+
+本文章主要探索了Flutter plugin中依赖aar编译报错原因，并且把Flutter plugin中aar的依赖编译转到Android Application工程中。
+
+如果对Flutter构建apk的流程有兴趣的同学可以去查看：
+
+$FlutterSDK/packages/flutter_tools/gradle/目录下相关的gradle脚本文件
+

@@ -1,0 +1,44 @@
+场景
+
+有时候我们在当前用户下直接python脚本没有问题，但是当我们配置了crontab -e以后，却报错说找不到包。
+
+原因
+
+这是因为可能存在多个版本的python，当前用户下的python和root下的python不一致，我们安装python包都是安装在当前用户下的python里，而crontab调用的是root用户下的python。
+
+解决办法
+
+查找当前用户下的python路径
+
+which python
+
+然后指定python目录来运行python脚本
+
+例子
+
+直接调用python
+
+#!/usr/bin/env bash
+python report_monitor.py
+
+报错
+
+Traceback (most recent call last):
+  File "report_monitor.py", line 7, in <module>
+    import  mysql_client
+  File "/home/work/es/real_time_monitor/mysql_client.py", line 5, in <module>
+    import MySQLdb
+ImportError: No module named MySQLdb
+
+查找当前用户下python路径
+
+which python
+~/xiaomin/bin/python
+
+指定python路径
+
+#!/usr/bin/env bash
+~/xiaomin/bin/python report_monitor.py
+
+运行成功
+

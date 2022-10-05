@@ -1,0 +1,74 @@
+
+错误描述：
+
+在启动python 多进程跑数据的时候，经常发现真正执行获取数据的子进程莫名其妙的挂掉，在挂掉之前，在记录的info日志中都有一条这样的信息
+
+the error message is  cannot concatenate 'str' and 'MaxRetryError' objects
+
+调用的源码
+
+def get(self, url, params={}, headers={}, handle_json=True):
+        """requests自动检测编码"""
+        try:
+            session = requests.Session()
+            requests.packages.urllib3.disable_warnings()
+            response = requests.get(url, params=params, headers=headers, verify=False)
+            log.info(response)
+        except Exception, e:
+            log.info("response error message :" + e.message)
+            return False
+
+
+分析原因：
+
+该问题困扰了很久，各种搜索找原因，最终发现的原因是： requests使用了urllib3库，默认的http connection是keep-alive的，http长链接一直不关闭导致的。
+
+
+解决办法：
+
+将keep_alive的值设置为False
+
+def get(self, url, params={}, headers={}, handle_json=True):
+        """requests自动检测编码"""
+        try:
+            session = requests.Session()
+            session.keep_alive = False
+            requests.packages.urllib3.disable_warnings()
+            response = requests.get(url, params=params, headers=headers, verify=False)
+            log.info(response)
+        except Exception, e:
+            log.info("response error message :" + e.message)
+            return False
+
+经过此次调优，报错MaxRetryError 变少。开启了50个进程，有4个进程抛出了这个错误。说明这么解决，还是未能彻底解决问题。根据参考资料，可以将重试次数加大，代码如下
+
+def get(self, url, params={}, headers={}, handle_json=True):
+        """requests自动检测编码"""
+        try:
+            session = requests.Session()
+            session.keep_alive = False
+            requests.adapters.DEFAULT_RETRIES = 5
+            requests.packages.urllib3.disable_warnings()
+            response = requests.get(url, params=params, headers=headers, verify=False)
+        except Exception as e:
+            log.exception(e)
+            return False
+
+try:
+            if handle_json == True:
+                "requests对于响应的json可以直接获取,并转换成字典"
+                response = response.json()
+        except Exception as e:
+            log.exception(e)
+            log.info("response data parse to json is error,the error message is " + e.message)
+            return False
+
+
+参考资料:
+
+2018-04-25 Python requests“Max retries exceeded with url” error
+
+关于python爬虫的深坑：requests抛出异常Max retries exceeded with url
+
+MaxRetryError when redirecting from http to https through PoolManager()
+

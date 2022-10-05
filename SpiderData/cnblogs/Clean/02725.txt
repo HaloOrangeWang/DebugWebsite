@@ -1,0 +1,34 @@
+使用TensorFlow训练神经网络的时候，出现以下报错信息：
+
+Traceback (most recent call last):
+
+File "gan.py", line 147, in
+
+var_list=G_PARAMS
+
+File "C:\Python35\lib\site-packages\tensorflow\python\training\optimizer.py", line 322, in minimize
+
+([str(v) for _, v in grads_and_vars], loss))
+
+ValueError: No gradients provided for any variable, check your graph for ops that do not support gradients, between variables ["", "", "", "", "", ""] and loss Tensor("Mean_2:0", shape=(), dtype=float32).
+
+报错信息的意思是，提供给minimize函数的var_list参数中的变量没有梯度，需要检查你的图的操作是否在这些变量中支持梯度。
+
+经过检查，发现优化器指定的loss参数中，与var_list参数中的变量无任何关系导致了上述错误，因此，需要检查loss和var_list两个参数的关联性，确保loss由指定的var_list中的变量来计算
+
+----------------------------------------------------
+
+实验问题暂记：
+
+使用DDPG的Actor输出action，包含两个act：
+
+act1.VM位置，是离散的，范围为[0, n]，n为网络节点数；
+
+act2：能量使用率，是连续的，范围为[0, 1]
+
+但使用DDPG没能训练出结果，个人猜测是DDPG输出的act1都是连续的，很难收敛，
+
+于是考虑用DQN来学习act1，但DDPG的critic(s,a1,a2)来指导DQN的参数(a1_loss = -q)
+
+如果DQN只传a1给critic的话会造成以上error，
+

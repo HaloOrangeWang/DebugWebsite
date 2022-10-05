@@ -1,0 +1,27 @@
+引用了别人的python代码，其中有一行是 import matplotlib.pyplot as plt
+
+结果运行时提示：
+
+File "get.py", line 14, in <module>
+    import matplotlib.pyplot as plt
+  File "/Users/admin/.pyenv/versions/3.6.2/lib/python3.6/site-packages/matplotlib/pyplot.py", line 115, in <module>
+    _backend_mod, new_figure_manager, draw_if_interactive, _show = pylab_setup()
+  File "/Users/admin/.pyenv/versions/3.6.2/lib/python3.6/site-packages/matplotlib/backends/__init__.py", line 32, in pylab_setup
+    globals(),locals(),[backend_name],0)
+  File "/Users/admin/.pyenv/versions/3.6.2/lib/python3.6/site-packages/matplotlib/backends/backend_macosx.py", line 19, in <module>
+    from matplotlib.backends import _macosx
+RuntimeError: Python is not installed as a framework. The Mac OS X backend will not be able to function correctly if Python is not installed as a framework. See the Python documentation for more information on installing Python as a framework on Mac OS X. Please either reinstall Python as a framework, or try one of the other backends. If you are using (Ana)Conda please install python.app and replace the use of 'python' with 'pythonw'. See 'Working with Matplotlib on OSX' in the Matplotlib FAQ for more information.
+
+解决方法：
+
+把import matplotlib.pyplot as plt 改成下面的：
+
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+
+
+参考
+
+macos - Anaconda Runtime Error: Python is not installed as a framework? - Stack Overflow
+

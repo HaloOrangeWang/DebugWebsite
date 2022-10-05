@@ -1,0 +1,70 @@
+今天用Python写了个简单的merge sort程序，结果就是出错，找了好久没找到问题，代码如下：
+
+A=[1,3,9,2,6,5,4,7,8,10]
+
+def merge(p,q,r):
+
+n1 = q - p + 1
+
+n2 = r - q
+
+L = []
+
+R = []
+
+for i in (0,n1):
+
+L.append(A[p+i])
+
+for j in (0,n2):
+
+R.append(A[q+j+1])
+
+print "merge:",L,R
+
+L.append(1000)
+
+R.append(1000)
+
+k = p
+
+i = 0;
+
+j = 0
+
+while k <= r:
+
+if L[i] <= R[j]:
+
+A[k] = L[i]
+
+i = i + 1
+
+else:
+
+A[k] = R[j]
+
+j = j + 1
+
+k = k + 1
+
+def merge_sort(p,r):
+
+if p < r:
+
+q = (p + r)/2
+
+merge_sort(p,q)
+
+merge_sort(q+1,r)
+
+merge(p,q,r)
+
+merge_sort(0,9)
+
+print A
+
+我在纸上算了很久，不该有错啊，但是就是不对。不知道Python怎么调试，还专门找了些Python调试的东西，例如一个简单的Python调试工具pdb, http://docs.python.org/2/library/pdb.html，还没等怎么调试的，找到问题了。
+
+原来是for i in (0,n1)，我的本意是for(i=0; i < n1; i++)，也就是要用for i in range(0,n1)，没有加range，后果就是i=0,i=n1，唉，找了很久才找到这个蛋疼的错误。
+

@@ -1,0 +1,18 @@
+今天在做查询mongo并遍历其中url做下载的工作时，报了下面的错误
+
+pymongo.errors.CursorNotFound: Cursor not found
+
+刚开始以为是逻辑处理的不正确，最后找到原因是mongo自身的问题，默认在10分钟内如果没有返回，就会报这个错，就是说如果你的查询语句查询数据量大，并且在十分钟内对这些数据没有处理完成，就会报这个错
+
+解决方法：
+
+设置no_cursor_timeout = True，永不超时，游标连接不会主动关闭，需要手动关闭
+
+demos = db.col.find({},no_cursor_timeout = True)
+ 
+for cursor in demos:
+ 
+do_something()
+
+demos.close() # 关闭游标
+

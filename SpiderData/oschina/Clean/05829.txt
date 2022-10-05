@@ -1,0 +1,19 @@
+使用HTMLTestRunner时出现了以下问题：
+
+　　　　self.stream.write(output.encode('utf8'))
+　　ValueError: write to closed file
+
+原因是写入已经被关闭的文件导致报错，因为with open是自动保存的。
+
+解决办法一：
+
+　　runner必须同样在with open下进行：
+
+　　
+
+解决办法二：
+
+　　不使用with open，直接使用open方法：(一开始就尝试的这种方法)
+
+　　
+

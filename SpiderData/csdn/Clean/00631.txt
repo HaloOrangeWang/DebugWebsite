@@ -1,0 +1,21 @@
+先上代码
+
+import math
+ import numpy as np
+ import random
+ a = np.zeros((10,3,4))
+  for i in range(10):
+    for j in range(4):
+        a[i,0,j] = random.uniform(0,1)
+        a[i,1,j] = random.uniform(0,1)
+        a[i,2,j] = random.uniform(0,1)
+ a = [((1-math.exp(-1))/2)*(math.exp(x)/(math.exp(x)+math.exp(-x))) for x in a ]
+
+报错
+ 
+ 后来在网络上找各位大神的解决方法，后来终于发现解决方法，如下：
+
+a = [((1-np.exp(-1))/2)*(np.exp(x)/(np.exp(x)+np.exp(-x))) for x in a ]
+
+就OK
+

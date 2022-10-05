@@ -1,0 +1,26 @@
+
+Python报错 AttributeError: ‘NoneType’ object has no attribute 'split
+
+源程序：
+
+raw_line = None
+dstID = []
+......
+......
+ if line == '\n':
+        pid_ls.append(ID)
+        title_ls.append(title)
+        year_ls.append(year)
+        abs_ls.append(abstract)
+        items = raw_line.split(':')
+
+报错信息：
+ 
+ 修改程序如下：
+
+if not raw_line == None:
+            items = raw_line.split(':')
+
+即增加一句：if not raw_line == None:
+ 可能原因：数据中为空，则不能分割。加上判定条件即可。
+

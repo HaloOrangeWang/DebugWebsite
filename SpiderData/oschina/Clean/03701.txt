@@ -1,0 +1,93 @@
+---------------------------------------------------------------------------
+InvalidArgumentError                      Traceback (most recent call last)
+<ipython-input-11-4c89a4180744> in <module>()
+      7   image_np_expanded = np.expand_dims(image_np, axis=0)
+      8   # Actual detection.
+----> 9   output_dict = run_inference_for_single_image(image_np, detection_graph)
+     10   # Visualization of the results of a detection.
+     11   vis_util.visualize_boxes_and_labels_on_image_array(
+
+<ipython-input-10-3f18aee9e6d8> in run_inference_for_single_image(image, graph)
+     33       # Run inference
+     34       output_dict = sess.run(tensor_dict,
+---> 35                              feed_dict={image_tensor: np.expand_dims(image, 0)})
+     36 
+     37       # all outputs are float32 numpy arrays, so convert types as appropriate
+
+/home/cc/anaconda2/lib/python2.7/site-packages/tensorflow/python/client/session.pyc in run(self, fetches, feed_dict, options, run_metadata)
+    887     try:
+    888       result = self._run(None, fetches, feed_dict, options_ptr,
+--> 889                          run_metadata_ptr)
+    890       if run_metadata:
+    891         proto_data = tf_session.TF_GetBuffer(run_metadata_ptr)
+
+/home/cc/anaconda2/lib/python2.7/site-packages/tensorflow/python/client/session.pyc in _run(self, handle, fetches, feed_dict, options, run_metadata)
+   1118     if final_fetches or final_targets or (handle and feed_dict_tensor):
+   1119       results = self._do_run(handle, final_targets, final_fetches,
+-> 1120                              feed_dict_tensor, options, run_metadata)
+   1121     else:
+   1122       results = []
+
+/home/cc/anaconda2/lib/python2.7/site-packages/tensorflow/python/client/session.pyc in _do_run(self, handle, target_list, fetch_list, feed_dict, options, run_metadata)
+   1315     if handle is None:
+   1316       return self._do_call(_run_fn, self._session, feeds, fetches, targets,
+-> 1317                            options, run_metadata)
+   1318     else:
+   1319       return self._do_call(_prun_fn, self._session, handle, feeds, fetches)
+
+/home/cc/anaconda2/lib/python2.7/site-packages/tensorflow/python/client/session.pyc in _do_call(self, fn, *args)
+   1334         except KeyError:
+   1335           pass
+-> 1336       raise type(e)(node_def, op, message)
+   1337 
+   1338   def _extend_graph(self):
+
+InvalidArgumentError: NodeDef mentions attr 'identical_element_shapes' not in Op<name=TensorArrayV3; signature=size:int32 -> handle:resource, flow:float; attr=dtype:type; attr=element_shape:shape,default=<unknown>; attr=dynamic_size:bool,default=false; attr=clear_after_read:bool,default=true; attr=tensor_array_name:string,default=""; is_stateful=true>; NodeDef: Preprocessor/map/TensorArray = TensorArrayV3[clear_after_read=true, dtype=DT_FLOAT, dynamic_size=false, element_shape=<unknown>, identical_element_shapes=true, tensor_array_name="", _device="/job:localhost/replica:0/task:0/device:GPU:0"](Preprocessor/map/TensorArrayUnstack/strided_slice). (Check whether your GraphDef-interpreting binary is up to date with your GraphDef-generating binary.).
+     [[Node: Preprocessor/map/TensorArray = TensorArrayV3[clear_after_read=true, dtype=DT_FLOAT, dynamic_size=false, element_shape=<unknown>, identical_element_shapes=true, tensor_array_name="", _device="/job:localhost/replica:0/task:0/device:GPU:0"](Preprocessor/map/TensorArrayUnstack/strided_slice)]]
+
+网上查了下:
+
+这是一种向前兼容性错误，通常在使用比用于编译服务器的代码更新的代码来训练模型时发生（并且两者之间存在前向不兼容的变化）。
+
+所以我查看下自己tensorflow的版本:
+
+import tensorflow as tf
+print tf.__version__
+
+显示是1.4.1,所以我决定要升级一下:
+
+pip install --upgrade --ignore-installed tensorflow-gpu
+
+悲剧了,安装完后运行
+
+import tensorflow as tf
+
+提示: libcublas.so.9.0: cannot open shared object file: No such file or directory   ??!!!!
+
+然后在这里看到这样的回复:
+
+For tensorflow 1.5 you must have installed the Cuda 9.0 and for tensorflow 1.4 you must use cuda 8.0. If the the tensorflow version and cuda version are compatible, then check the environment variables i.e. CUDA_HOMEand LD_LIBRARY_PATH.
+
+现在又让我把版本退回到1.4去:
+
+pip install --upgrade tensorflow-gpu==1.4WTH??!!
+
+请教了师兄后,确实是需要升级tensorflow.所以接下来就是要升级对应的cuda9.0
+
+首先从官网上下载了 cuda_9.0.176_384.81_linux.run  进行安装
+
+直接安装会报错:you appear to be running an x server pleaseexit x before installing
+所以先是ctrl+alt+F1进入命令行
+>>sudo service lightdm stop
+>>sudo init 3
+>>cd Download
+>>sudo sh cuda_9.0.176_384.81_linux.run
+
+进入安装过程,需要注意,我已经安装过显卡驱动了,所以在安装过程中,第二个问题是否安装NVIDIA DRIVER选择 N !!!!
+
+下面就是选择安装cuda toolkit
+
+结束安装后  sudo service lightdm start 重新回到窗口界面下.此时 import tensorflow as tf 依旧会报错,原因是cuda9.0的路径以及对应的cudnn7.0还没配置.
+
+检查到是因为/etc/ld.so.conf.d文件夹下,有cuda.conf和 cuda-8-0.conf两个文件中路径还是指向的cuda8.0 所以修改之后就可以了.
+

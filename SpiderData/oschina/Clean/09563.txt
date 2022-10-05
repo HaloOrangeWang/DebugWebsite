@@ -1,0 +1,102 @@
+OpenCV-MAT对象中使用plt.imshow(img[:,:,::-1])如何实现将第二轴反向？
+
+系统平台：win10 x64
+
+一、明确几个概念：
+
+1.OpenCV内部每个通道并没有固定对应某种颜色，只是在用imshow()、imread()、imwrite()等函数时，才将通道按照蓝、绿、红的顺序进行输入和输出；
+
+3.img图像的shape和strides属性：
+
+如：
+
+>>>img[:].shape
+
+(100,300,3)   #数组第0个(或第0轴)为：图像的垂直尺寸（高度）——行数，第1个(或第1轴)为：图像的水平尺寸（宽度）——列数，第2个(或第2轴)为：图像的通道数
+
+>>>img[:].strides
+
+(900,3,1)    #每个通道的数据占用1个字节，而一个像素点占用3个字节，一行数据占用：300*3=900个字节，因此，图像在内存中是连续存储的
+
+注意：
+
+Mat对象本身提供的很多属性和方法并不符合python风格，因此PyOpenCV对Mat类进行了扩展，使得它能像NumPy数组一样使用
+
+Mat对象本身并不是数组，因此它没有shape属性，所以：>>>img.shape  #会报错:AttributeError: 'Mat' object has no attribute 'shape'
+
+4.python切片操作：
+
+如：    #s[a:b:c]形式是对s在a和b之间以c为间隔取值，c可以为负，负值意味着反向取值
+
+>>>s = 'bicyle'
+
+>>>s[::3]
+
+'bye'
+
+>>>s[::-1]
+
+'elycib'
+
+>>>s[::-2]
+
+'eccb'
+
+二、说明：img[:,:,::-1]
+
+中括号中有两个逗号，四个冒号
+
+[：，：，：：-1]
+
+第一个冒号——取遍图像的所有行数
+
+第二个冒号——取遍图像的所有列数
+
+第三个和第四个冒号——取遍图像的所有通道数，-1是反向取值
+
+所以，如果一幅300*100的彩色图像，
+
+执行img[：，：，：：-1]后行列不变，通道数方向，由R、G、B更改为B、G、R，即第二轴反向
+
+若是执行img[1：4，5：10，1：3：-1]后，第1行到第3行，第5列到第9列，第1通道到第2通道上的数据反向，即——第1行到第3行，第5列到第9列由R、G、B更改为R、B、G
+
+附测试代码及其他方法：
+
+#coding=utf-8
+ 
+#OpenCV读进来的图像,通道顺序为BGR， 而matplotlib的顺序为RGB，因此需要转换
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+ 
+ 
+img = cv2.imread('./test1.jpg')
+B, G, R = cv2.split(img)
+ 
+#BGR转RGB，方法1
+img_rgb1 = cv2.merge([R, G, B])
+ 
+#BGR转RGB，方法2
+img_rgb2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+ 
+#BGR转RGB，方法3
+img_rgb3 = img[:,:,::-1]
+ 
+ 
+plt.figure('BGR_RGB')
+ 
+#显示opencv读进来的img， 通道顺序BGR
+plt.subplot(3,3,1), plt.imshow(img)
+#显示B通道
+plt.subplot(3,3,4), plt.imshow(B)
+#显示B通道
+plt.subplot(3,3,5), plt.imshow(G)
+#显示B通道
+plt.subplot(3,3,6), plt.imshow(R)
+#显示将BGR转为RGB的图像，3种方法
+plt.subplot(3,3,7), plt.imshow(img_rgb1)
+plt.subplot(3,3,8), plt.imshow(img_rgb2)
+plt.subplot(3,3,9), plt.imshow(img_rgb3)
+
+plt.show()
+

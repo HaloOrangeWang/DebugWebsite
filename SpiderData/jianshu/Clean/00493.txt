@@ -1,0 +1,15 @@
+2022年4月，TCGA数据库进行了一次更新，原来的HT-RNASeq数据被替换成了Star-RNASeq，这导致原有的TCGAbiolinks包能正常下载数据，但是不能用GDCprepare函数正常合并下载的数据集。如果用之前版本的包，在尝试这一步的时候会报错。
+
+ERROR: Can't subset columns past the end
+
+解决的办法就是升级TCGABiolinks这个包，不过由于Biocmanager上的版本比较低，建议直接从Github进行更新。
+
+BiocManager::install("BioinformaticsFMRP/TCGAbiolinksGUI.data")
+BiocManager::install("BioinformaticsFMRP/TCGAbiolinks")
+
+TCGAbiolinks的安装需要依赖于TCGAbiolinksGUI.data，装的时候记得先把原来的两个包卸掉，然后先装TCGAbiolinksGUI.data。完成之后可以看到TCGAbiolinksGUI.data的版本已经变成了1.15.1
+
+然后就可以安装TCGAbiolinks了
+
+完成之后就可以正常使用了
+

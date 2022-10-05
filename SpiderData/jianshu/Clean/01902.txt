@@ -1,0 +1,106 @@
+使用pip install 的时候提示：
+
+Traceback (most recent call last):
+
+File "/usr/bin/pip", line 9, in <module>
+
+from pip import main
+
+ImportError: cannot import name main
+
+先sudo chmod 777 /usr/bin/pip，然后
+
+修改/usr/bin/pip文件中
+
+from pip import main
+
+if __name__ == '__main__':
+
+sys.exit(main())
+
+改成
+
+from pip import __main__
+
+if __name__ == '__main__':
+
+sys.exit(__main__._main())
+
+但是为什么呢？todo
+
+在pycharm里面虚拟环境中project interpreter中搜索安装软件时如果提示from pip import main
+
+ImportError: cannot import name main
+
+则在pycharm-2017.3.3/helpers/packaging_tools.py里面
+
+将
+
+https://www.cnblogs.com/Fordestiny/p/8901100.html
+
+在pycharm里面虚拟环境中project interpreter中搜索安装软件时如果提示from pip import main
+
+ImportError: cannot import name main
+
+则在pycharm-2017.3.3/helpers/packaging_tools.py里面
+
+将
+
+https://www.cnblogs.com/Fordestiny/p/8901100.html
+
+pip3 install xxx 的时候：fatal error:python.h:没有那个文件或目录
+
+解决办法：sudo apt-get install python3.6-dev(网上有很多答案写的python3-dev，可能是我的配置文件不一样)
+
+pip3 install xxx 的时候：fatal error:python.h:没有那个文件或目录
+
+解决办法：sudo apt-get install python3.6-dev(网上有很多答案写的python3-dev，可能是我的配置文件不一样)
+
+安装openCV：https://blog.csdn.net/cyn618/article/details/64494434和https://www.cnblogs.com/wangyarui/p/8027344.html和https://blog.csdn.net/tengxing007/article/details/54380732（出现报错cmake error ：77，参考此文）
+
+安装openCV：https://blog.csdn.net/cyn618/article/details/64494434和https://www.cnblogs.com/wangyarui/p/8027344.html和https://blog.csdn.net/tengxing007/article/details/54380732（出现报错cmake error ：77，参考此文）
+
+安装cnpm的时候报错：
+
+ENOENT:no such file or directory, rename '/usr/local/lib/node_modules/.staging/abbrev-cf0db83f' -> '/usr/local/lib/node_modules/cnpm/node_modules/abbrev'
+
+解决办法：检查node版本是不是大于4.5，若不是则按下面办法改node版本：
+
+sudo nom install -g n
+
+sudo n stable
+
+安装cnpm的时候报错：
+
+ENOENT:no such file or directory, rename '/usr/local/lib/node_modules/.staging/abbrev-cf0db83f' -> '/usr/local/lib/node_modules/cnpm/node_modules/abbrev'
+
+解决办法：检查node版本是不是大于4.5，若不是则按下面办法改node版本：
+
+sudo nom install -g n
+
+sudo n stable
+
+终端消失，can't import _gi
+
+https://blog.csdn.net/jaket5219999/article/details/78465251
+
+终端消失，can't import _gi
+
+https://blog.csdn.net/jaket5219999/article/details/78465251
+
+摄像头问题No device found that satisfies all requirements
+
+解决，与usb延长线有关，脚本上有两句关于udev的运行一下。
+
+摄像头问题No device found that satisfies all requirements
+
+解决，与usb延长线有关，脚本上有两句关于udev的运行一下。
+
+pip._vendor.requests.packages.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+解决办法：pip --default-timeout=100 install xxx
+
+pip._vendor.requests.packages.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+解决办法：pip --default-timeout=100 install xxx
+

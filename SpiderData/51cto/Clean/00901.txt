@@ -1,0 +1,24 @@
+python 读取txt文件时候遇到的错误（python error about reading TXT file）
+
+在读取 txt 文件的时候，我遇到了以下错误：
+
+error1: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+
+error2: 'gbk' codec can't decode byte 0xff in position 0: illegal multibyte sequence
+
+后来我查阅了资料有人说可以用 "rb" 方式打开文件，但是最终的数被解码成二进制文件，不是我想要的格式，后来在同事的提点下，我开始找如何查阅我这个 txt 文件的编码格式，这样就让我更加明确问题的原因，然后用相应的解码方式去解析它就把问题解决了。这才意识到，不是总要想着从代码上去解决问题，有时候最好的方法还是从文件本身去了解和入手再修改相应的代码较为合适。
+
+所以，当遇到以上错误或者文件编码错误问题的时候，可以进行以下两步操作：
+
+1. 查看当前 txt 文件的编码格式。
+
+查阅方法：打开 txt 文件 —— 点击文件 —— 另存为 ，这时你看弹出的窗口下方，就可以看到它的编码方式了。如下图所示。
+
+这时候我发现我的编码方式啊 UTF-16 LE ，知道这个问题以后，就可以进行以下的步骤解决问题了。
+
+2. 当知道你的编码格式不是 utf-8 而是 utf-16 的时候，要想正确解析文件，有 以下两个方法：
+
+（1）把 txt 文件另存文件，然后编码方式（就是以上图的红框的位置）选择 utf-8, 然后用 “with open(file_path, "r", encoding="utf-8") as f: ” 这行代码就可以成功读取出文件内容了。
+
+（2）竟然你已经知道改文件的编码是 UTF-16 LE ， 那么就可以修改代码为 “with open(file_path, "r", encoding="utf-16") as f:” 这条语句就可以正确解析出 txt 文件了。
+

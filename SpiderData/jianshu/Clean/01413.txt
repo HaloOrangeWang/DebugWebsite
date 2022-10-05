@@ -1,0 +1,14 @@
+这个错误是因为Python 2.7.9 之后引入了一个新特性，当你使用urllib.urlopen一个 https 的时候会验证一次 SSL证书。当目标使用的是自签名的证书时就会报urllib.error.URLError错误。解决方法如下：
+
+import urllib.request
+
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
+
+response = urllib.request.urlopen('https://www.python.org')
+
+print(response.read().decode('utf-8'))
+
+通过导入ssl模块把证书验证改成不用验证就行了。
+

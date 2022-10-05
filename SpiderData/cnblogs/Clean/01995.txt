@@ -1,0 +1,24 @@
+问题：因为默认python版本被设置成了python3.6，而进行防火墙的指令操作频频报错。
+
+Jul 19 16:30:51 localhost.localdomain systemd[1]: Starting firewalld - dynamic firewall daemon...
+Jul 19 16:30:51 localhost.localdomain systemd[1]: firewalld.service: main process exited, code=exited, status=1/FAILURE
+Jul 19 16:30:51 localhost.localdomain systemd[1]: Failed to start firewalld - dynamic firewall daemon.
+Jul 19 16:30:51 localhost.localdomain systemd[1]: Unit firewalld.service entered failed state.
+Jul 19 16:30:51 localhost.localdomain systemd[1]: firewalld.service failed.
+
+原因：centos7 里面装了Python2.7  和 Python(其他) 两个版本，执行firewall-cmd 系列的命令的时候回运行Python文件结果Python文件的头 #!/usr/bin/python
+
+都不会再python2.7 里面运行。
+
+解决方法：文件头田间 2.7即可
+
+1.修改  vi /usr/bin/firewall-cmd  文件头添加 2.7
+
+2.  vi /usr/sbin/firewalld 添加 2.7
+
+验证：systemctl status firewalld.service
+
+参考：
+
+https://www.jianshu.com/p/a538125371d4
+

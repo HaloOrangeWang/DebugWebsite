@@ -1,0 +1,37 @@
+from compiler.ast import flatten
+
+上面这条语句好像在python3 以后就废除了，如果使用的话就会报错。
+Traceback (most recent call last):
+  File "eval_ssd_network.py", line 31, in <module>
+    from compiler.ast import flatten
+ImportError: No module named 'compiler'
+
+或者
+Traceback (most recent call last):
+  File "eval_ssd_network.py", line 31, in <module>
+    from compiler.ast import flatten
+ImportError: No module named 'compiler.ast'
+
+因此，查资料显示，需要自己写一个函数：
+import collections
+def flatten(x):
+    result = []
+    for el in x:
+        if isinstance(x, collections.Iterable) and not isinstance(el, str):
+            result.extend(flatten(el))
+        else:
+            result.append(el)
+    return result
+ 
+print(flatten(["junk",["nested stuff"],[],[[]]]))
+
+参考文献
+[1].Python 3 replacement for deprecated compiler.ast flatten function.https://stackoverflow.com/questions/16176742/python-3-replacement-for-deprecated-compiler-ast-flatten-function
+[2].Python 3 replacement for deprecated compiler.ast flatten function. https://reformatcode.com/code/python/python-3-replacement-for-deprecated-compilerast-flatten-function
+
+--------------------- 
+作者：农民小飞侠 
+来源：CSDN 
+原文：https://blog.csdn.net/w5688414/article/details/78489277 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

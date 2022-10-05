@@ -1,0 +1,17 @@
+最近一直在用python写点监控oracle的程序，一直没有用到异常处理这一块，然后日常监控中一些错误笼统的抛出数据库连接异常，导致后续处理的时候无法及时定位问题。
+
+于是早上抽点时间看了下python3关于cx_oracle的异常处理形式。
+
+其实，我只是想在python抛出oracle错误的时候，捕获到具体ora-信息。
+
+写法很简单，这里记录下，以备后用。
+
+try:
+  oracle_check(dbname)
+except cx_Oracle.DatabaseError as msg:
+  print(msg)
+
+另外，在python3中，except后面若是多项，需要添加()，这个是与python2的区别。
+
+以上这篇解决python3捕获cx_oracle抛出的异常错误问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

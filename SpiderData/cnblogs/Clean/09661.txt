@@ -1,0 +1,96 @@
+jenkins-2.150.3安装步骤详细说明，遇到问题解决办法
+
+背景：自己用python+selenium写了一个简单的web测试框架，可以进行用例执行，用例执行报告发送邮件。想着定时执行任务，可以windows建定时任务，自己也建了试了也可以。不过从更专业的角度来讲，我希望有个网页可以管理每次执行任务的情况，网上搜了，jenkins可以定时执行任务，赶紧行动起来，中间也遇到了一些奇怪的问题，特此记录一下，方便后人哈。
+
+一、安装前准备：
+
+JDK（我装的是是1.8最新的）
+
+Jdk下载地址如下：
+
+Windows  X86:  jdk-8u171-windows-i586.exe
+
+Windows  X64:  jdk-8u171-windows-x64.exe
+
+Linux X64：jdk-8u171-linux-x64.tar.gz
+
+Jenkins安装包：
+
+Jenkins for windows ：Jenkins-for-windows-installer
+
+jdk的安装过程就不写啦，网上太多了，随便参考一篇就好。
+
+二、安装jenkins
+
+2.1、windows双击下载的Jenkins安装包 Jenkins.msi ，进入安装模式，选择默认配置，安装完成之后，就会默认打开浏览器 http://localhost:8080,显示 Jenkins正在启动，请稍后
+
+安装步骤如下：
+
+点【next】
+
+选择要安装的目录，点【next】
+
+点击【finish】。
+
+2.2、在安装过程中对自动生成密码，存储在Jenkins安装位置下的一个文件里，启动完成之后会到登录界面
+
+在界面所示路径下，打开文件，复制密码，在管理员密码框输入密码，点击继续。
+
+2.3、出现自定义Jenkins界面，可以选择安装推荐的插件，括者选择需要的插件来安装，也可以不选择安装，直接点击右上角的X号关闭界面，以后可以通过插件管理器安装插件
+
+这里选择插件来安装，选择之后点击下一步，进入如下安装界面，等待安装完成。
+
+2.4、安装界面默认勾选了一些常用的，我这边主要测试，就默认这样，直接点击安装就好，如下图。
+
+2.5、插件安装完成之后，进入创建第一个管理员用户界面，输入信息，点击保存并完成，添加第一个管理员。
+
+到这边，遇到问题，点击【save and Continue】报错，然后页面关闭了，我从新打开一下，又创建了一下admin。
+
+如果再有问题，直接关闭，从新打开网页即可。
+
+2.6、我看网上好多资料没有我下面的步骤，就直接点蓝色就好。
+
+2.7、出现如下界面说明我们已经成功安装好了jenkins啦，恭喜各位，不容易。
+
+2.8、在Jenkins主界面点击系统管理，进入系统设置页面，选择全局工具配置
+
+2.9、配置本地JDK全局环境，若有Git，Gradle，Ant ，Maven环境都可以在此配置，目前只配置JDK环境和Git环境如下：我这边就安装了jdk
+
+2.10、新建自动化执行项目
+
+下方为配置说明：
+
+0 17 * *  1-5  表示每个月每天星期一到星期五下午五点执行任务。
+
+这边遇到问题，构建任务的时候报如下错误：
+
+D:\Program Files (x86)\Jenkins\workspace\python_auto_test>python D:\testing_study\python\test_projec\runtest.py
+
+'python' 不是内部或外部命令，也不是可运行的程序
+
+或批处理文件。
+
+D:\Program Files (x86)\Jenkins\workspace\python_auto_test>exit 9009
+
+Build step '执行 Windows 批处理命令' marked build as failure
+
+Finished: FAILURE
+
+解决办法：需要配置python的path
+
+返回到jenkins首页，
+
+添加环境变量如下：
+
+再去构建任务时，刚才的任务不报错了，可又有新的问题，如下：
+
+D:\Program Files (x86)\Jenkins\workspace\python_auto_test>python "D:\testing_study\python\test_projec\runtest.py"
+
+python: can't open file 'D:\testing_study\python\test_projec\runtest.py': [Errno 2] No such file or directory
+
+这个任务困扰了我。。。跟网上人家能运行的一摸一样哈，就是python 加调用脚本，后来看到网上有人说因为路径有空格导致，，可是我怎么看我这都没有空格啊，，最好没有办法了，就找到py文件，直接点击文件的属性，拷贝了那里面的路径，重新配置了下，竟然可以啦。
+
+好开心哈，成功的界面如下所示：
+
+设置的下午的五点执行任务，也成功构建了，开心：
+

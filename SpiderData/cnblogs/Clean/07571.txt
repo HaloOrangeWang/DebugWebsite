@@ -1,0 +1,53 @@
+记录第一天用robotframework遇到的大坑~~~
+
+1、robotframework 环境（pip list）：
+
+python 3.8.2
+
+robotframework 3.1.2
+
+wxpython 4.1.0
+
+ride 1.7.4.2
+
+2、python shell 运行 ride
+
+>>> from robotide import main
+
+>>> main()
+
+然后报错了：
+
+3、百度上说是系统语言的问题~eee
+
+4、在 robotide 中找到应用程序配置项
+
+Lib\site-packages\robotide\application\application.py，看到初始加载的语言环境是英文。
+
+5、加上一个局部支持的语言试试
+
+# self.locale = wx.Locale(wx.LANGUAGE_CHINESE_SIMPLIFIED)
+self.locale = wx.Locale(wx.LANGUAGE_ENGLISH)
+
+6、结果，robotframework 的集成开发环境是打开了，但是还有错误~~~~，原谅强迫患者。
+
+7、百度上找了一圈，没有找到合适的解决办法，看了一遍 ride 的版本说明，姑且认为是因为 ride 暂时不支持 python 3.8.2 吧。
+
+8、折腾了一上午，然后在 git 上逛了下，发现了一段话：
+
+（python 3.8在cmd中运行ride时出错，然后点进帖子会发现，错误日志和上面一模一样，给出 ride 1.7.4 解释是不兼容 python 3.8）
+
+github地址：https://github.com/robotframework/RIDE/issues?q=python+3.
+
+9、好吧，还是有点不甘心，最后在帖子中找到个解决办法，安装 ride 2.0 开发版本：
+
+pip install- U https://github.com/robotframework/RIDE/archive/master.zip
+
+10、但是开发版本装完的我又遇到了新的问题，提示我没有下面这个模块，这时候发现是没有 解析错误 的提示了的。
+
+好吧，毕竟非正式版本，总是有更新，耐心等待 ride2.0 版本吧。官方说2.0就修复了。老老实实重新安装 python 3.7 吧！
+
+11、最后做个总结，安装 ride 前，还是仔细看下版本说明吧，会很明确告诉你ride版本和python的支持关系。
+
+12、折腾了大半天，最终还得重新安装python才得以彻底解决，心疼自己一秒钟！！！
+

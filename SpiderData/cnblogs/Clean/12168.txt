@@ -1,0 +1,23 @@
+
+python pyside pyqt reload TypeError: super(type, obj): obj must be an instance or subtype of type
+
+一开始遇到这个问题，在网上找了不少解决方法，这里提供链接仅供参考：https://blog.csdn.net/likesubject/article/details/104472778，https://iwwxiong.com/2019/07/02/python_super_TypeError/
+
+不过都不能从根本上解决我遇到的问题，在我的模块中有一个全局变量，是一个pyqt mainWindow 对象，在reload这个模块后，这个对象会有一个野地址，然后重新reload一个新的，也就是说这个野地址的对象没有被释放，它的一些事件线程还会触发（例如event事件），不过受到这些参考加上之前pyside帮助文档里面看到的关于垃圾回收的问题：
+
+不过网上看到有大神说这个解释是针对C++的，在pyqt中，如果一个widget的parent为None，而这个widget被检测到成为野地址，会自动被回收（链接找不到了）。
+
+然后我抱着尝试的心态，在reload之前，把mainWindow对象的parent设置为None，mainWindow.setParent(None)（突然觉得setParent在python中如此好用），然后reload，果然成功了，事件线程也不再多余的运行，也不会报错，从根本上解决了问题。
+
+我也尝试了del 对象，发现没有用。
+
+以后可以放心的reload了。
+
+但是还有一个问题，如果当前对象在启动的状态下，通过其它方式去reload了当前对象所在的模块，那么也会出现以上的报错，因为所依赖的class被reload了，所以在调用的时候，不要以这种方式：
+
+super(YourClassType, self).event(event)
+
+最好以这种方式：
+
+ParentClassType.event(self,event)
+

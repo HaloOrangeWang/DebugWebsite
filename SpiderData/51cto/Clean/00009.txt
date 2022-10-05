@@ -1,0 +1,13 @@
+警告：Python26\lib\site-packages\MySQLdb\__init__.py:34: DeprecationWarning: the sets module is deprecated  from sets import ImmutableSet
+解决办法：
+找到Python26\lib\site-packages\MySQLdb下的__init__.py文件
+1) 在文件中 "__init__", 注释掉:
+from sets import ImmutableSet
+class DBAPISet(ImmutableSet):
+新增:
+class DBAPISet(frozenset):
+2) 在文件中"converters.py", 注释掉  from sets import BaseSet, Set 这一句话。
+3) 在文件中"converters.py", 修改 "Set" 成为 "set" ( 只有两个地方需要修改):
+大概 line 48: return Set([ i for i in s.split(',') if i ]) 》》 return set([ i for i in s.split(',') if i ])
+大概 line 128: Set: Set2Str, 》》 set: Set2Str
+

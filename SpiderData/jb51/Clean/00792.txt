@@ -1,0 +1,21 @@
+在django的model中建立了如下的类
+
+class UserType(models.Model):
+ name = models.CharField(max_length=40, verbose_name=u'用户类型')
+ ........
+ 
+ def __str__(self):
+ return self.name
+ 
+ 
+class UserProfile(AbstractUser):
+ usertype = models.ForeignKey(UserType, related_name='user_type', verbose_name=u'用户类型', on_delete=models.CASCADE)
+
+可是在执行makemigrations时，出现“You are trying to add a non-nullable field ”的错误，提示我ForeignKey必须有一个default值。但是django里面没有要求ForeignKey必须有一个默认值。
+
+问题的原因是原来旧的数据库文件和现在执行的操作有冲突。
+
+解决方法是：把migrations文件夹内除了__init__.py以外的文件删除，重新执行makemigrations就可以了
+
+以上这篇解决Django 在ForeignKey中出现 non-nullable field错误的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

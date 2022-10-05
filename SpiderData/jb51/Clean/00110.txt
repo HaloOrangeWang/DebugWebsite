@@ -1,0 +1,144 @@
+安装完 anaconda
+
+运行如下代码执行不了
+
+import numpy as np
+import os,sys
+
+#获取当前文件夹，并根据文件名
+def path(fileName):
+ p=sys.path[0]+'\\'+fileName
+ return p
+
+#读文件 
+def readFile(fileName):
+ f=open(path(fileName))
+ str=f.read()
+ f.close()
+ return str
+ 
+#写文件 
+def writeFile(fileName,str):
+ f=open(path(fileName),'w')
+ f.write(str)
+ f.close()
+
+def str1():
+ str=','.join('我在中国大地上骄傲地生长着！')
+ return str
+
+def str2():
+ return str(np.random.randint(-49,50,[3,3,3]))
+
+#实验1 
+def test_1():
+ fileName='中国大地.txt'
+ writeFile(fileName,str1())
+ list=readFile(fileName).split(',')
+ print(list)
+
+#实验2
+def test_2():
+ writeFile('str1',str1())
+ writeFile('str2',str2())
+ str_1=readFile('str1')
+ str_2=readFile('str2')
+ print(str_1)
+ print(str_2)
+ 
+test_2()
+
+提示如下错误
+
+Traceback (most recent call last):
+
+File "F:\python\testfile.py", line 1, in <module>
+
+import numpy as np
+
+File "d:\ProgramData\Anaconda3\lib\site-packages\numpy\__init__.py", line 140,
+
+in <module>
+
+from . import _distributor_init
+
+File "d:\ProgramData\Anaconda3\lib\site-packages\numpy\_distributor_init.py",
+
+line 34, in <module>
+
+from . import _mklinit
+
+ImportError: DLL load failed: 找不到指定的模块。
+
+或者如下错误
+
+python3.7 -u "/Users/fukai/fk-test-python/l02/main.py"
+
+控制台报错
+
+Traceback (most recent call last):
+
+File "/Users/fukai/fk-test-python/l02/main.py", line 1, in <module>
+
+import numpy as np
+
+问题
+
+1. anaconda 环境怎么解决这个问题呢
+
+答案：经过脚本之家小编的测试发现其实只要更新numpy模块就可以了，可以通过如下两种方式
+
+conda update numpy或pip install -U numpy都可以实现更新。
+
+更新以后，再执行就正常了。
+
+pip -i 和 -U 参数
+
+例子：
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -U funcat
+
+-i: 指定库的安装源
+
+-U:升级 原来已经安装的包，不带U不会装新版本，带上U才会更新到最新版本。
+
+anaconda用法：
+
+查看已经安装的包：
+
+pip list 或者 conda list
+
+安装和更新：
+
+pip install requests
+
+pip install requests --upgrade
+
+或者
+
+conda install requests
+
+conda update requests
+
+更新所有库
+
+conda update --all
+
+更新 conda 自身
+
+conda update conda
+
+更新 anaconda 自身
+
+conda update anaconda
+
+anaconda换源：
+
+制定清华的源：
+
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+
+有资源显示源地址：
+
+conda config --set show_channel_urls yes
+

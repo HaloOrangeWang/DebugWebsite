@@ -1,0 +1,41 @@
+phalcon 框架3.0更新时报错
+
+
+环境
+
+docker环境
+
+
+错误
+
+[Tue Jun 18 18:43:26 2019] 127.0.0.1:53980 [500]: /index.php - require_once(): Failed opening required '/var/www/config/config.php' (include_path='.:') in /var/www/vendor/forkiss/pharest/src/Pharest/Register/Register.php on line 10
+
+
+原因
+
+
+composer.json
+
+升级 google/protobuf, grpc/grpc 出现以上错误 .无法加/var/www/config/config.php配置文件 , 而真实config目录为: /var/www/app/config/config.php
+
+"require": {
+        "php": ">=7.0.0",
+        "ext-phalcon": ">=3.0.0",
+        "forkiss/pharest": "~0.9",
+        "ramsey/uuid": "~3.6",
+        "aliyuncs/oss-sdk-php": "~2.2",
+        "apache/thrift": "~0.10.0",
+        "overtrue/wechat": "^3.3",
+        "doctrine/cache": "1.6.*",
+        "google/protobuf": "v3.1.0-alpha-1",
+        "grpc/grpc": "^1.3"
+    },
+
+
+解决:
+
+vim /var/www/vendor/forkiss/pharest/src/Pharest/Register/Register.php
+
+//$config = new \Pharest\Config(require_once APP_ROOT . '/config/config.php');//原代码
+   $config = new \Pharest\Config(require_once APP_ROOT . '/app/config/config.php'); //修改后的代码
+

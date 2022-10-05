@@ -1,0 +1,50 @@
+
+Anaconda"无法定位程序输入点 OPENSSL_sk_new_reserve 于动态链接库Anaconda3\Library\bin\libssl-1_1-x64.dll上"的解决办法
+
+参阅：https://stackoverflow.com/a/59884311/625350
+
+
+问题描述
+
+在anaconda上来来回回装了好些个包之后、不同环境下装了不同python版本后报错，自此无法conda install，十分麻烦，参阅了CSDN上各种解决方法，主要是将DLLs里的libssl-1_1-x64.dll文件复制粘贴到bin里，完全治标不治本，要不就是打不开anaconda，要不就是还不能install，岁将问题翻成英文，去StackOverflow上寻找答案。
+
+
+解决方法
+
+次解决方法为StackOverflow上titusjan用户提出，我个人试验后可行，将谷歌翻译后版本给出：
+
+正如Anaconda维护人员在这里（https://github.com/conda/conda/issues/9003#issuecomment-553529174）提到的...
+
+那样移动libssl dll实在不可取。那些DLL是重复的，因为您的程序包中有些混乱。DLLs文件夹中不应有任何openssl DLL。它们应该在Library / bin中
+
+通过查看conda-meta目录中的JSON文件，我发现DLLs\libssl-1_1-x64.dll该python 3.7.0软件包Library\bin\libssl-1_1-x64.dll已安装且已由openssl软件包安装。经过进一步调查，我发现了Python 3.7.0并没有安装OpenSSL的作为一个单独的包，但是Python 3.7.1（或更高版本）呢。
+
+通常，升级Python会按预期进行，但是如果您最终以某种方式同时将它们python 3.7.0和openssl软件包同时安装，将会有两个libssl-1_1-x64.dll文件，并且您的Anaconda发行版将被破坏。（您可以使用conda list命令轻松地对此进行验证。）
+
+我认为解决此问题的最佳方法是：
+
+重命名Library\bin\libssl-1_1-x64.dll为Library\bin\libssl-1_1-x64.dll.org（您稍后将需要它。）
+
+重命名Library\bin\libssl-1_1-x64.dll为Library\bin\libssl-1_1-x64.dll.org（您稍后将需要它。）
+
+复制DLLs\libssl-1_1-x64.dll到Library\bin\libssl-1_1-x64.dll
+
+复制DLLs\libssl-1_1-x64.dll到Library\bin\libssl-1_1-x64.dll
+
+使用conda update python将Python版本更新。这将删除DLLs\libssl-1_1-x64.dll文件。
+
+使用conda update python将Python版本更新。这将删除DLLs\libssl-1_1-x64.dll文件。
+
+重命名Library\bin\libssl-1_1-x64.dll.org为Library\bin\libssl-1_1-x64.dll。这是必要的，因为否则下一步将出现HTTP错误。
+
+重命名Library\bin\libssl-1_1-x64.dll.org为Library\bin\libssl-1_1-x64.dll。这是必要的，因为否则下一步将出现HTTP错误。
+
+使用conda install openssl --force-reinstall重新安装OpenSSL以确保它是最新的。
+
+使用conda install openssl --force-reinstall重新安装OpenSSL以确保它是最新的。
+
+
+总结
+
+事实上，DLL文件夹里的libssl-1_1-x64.dll文件完全是不应该存在的，根据官方说法将anaconda添加到system path也是不好的，所以实在不行不如重装。（anaconda真的麻烦）
+

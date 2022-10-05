@@ -1,0 +1,46 @@
+最近在写mapreduce程序的时候会遇到了几次ipeMapRed.waitOutputThreads(): subprocess failed with code X的报错，使用python写MapReduce程序在执行过程中出现了如下报错，几乎全部是由python脚本的问题造成的。
+
+下面记录一下几次遇到错误的一个原因和解决方法：
+
+这里通过拉取MapReduce程序的执行日志，拖取日志的命令是：yarn  logs   -applicationId  +自己任务的id
+
+eg：yarn logs -applicationId application_1575254959577_5382 > excuse.log
+
+
+1、with code 1
+
+出现with code 1 的时候大多数原因都是python脚本里某句语句出现问题的。
+
+日志拉取下来以后，直接定位python脚本的错误位置，可以在vim命令模式下输入  /Traceback 直接可以定位到错误所在位置，如下图：
+
+
+2、with code 127
+
+出现这个错误的时候查看日志，是因为 #! /usr/bin/env python 头部这行出现了错误，如图
+
+shell没有用对应的python解释器去解释脚本，而是直接用shell解释了
+
+为什么会出现这个，原因是因为在windows上写的脚本在拉进linux，会出现换行符的问题，
+
+inux下的文本文件以ascii码为10的字符表示换行。而windows下则使用连续的13和10两个字符。在python和c语言里使用\r代表ascii符为13的字符，叫做回车符，而\n代表ascii码为10的字符，叫做换行符。
+
+对于#!/usr/bin/env python\r\n
+
+这样一行文本，windows下的程序会认为#!/usr/bin/env python就是一行。而linux呢，则会认为#! /usr/bin/env python\r是一行。于是，刚才的错误就出来了，因为根本没有python\r这个文件嘛。
+
+有个比较奇怪的地方，仔细想想，env如果出错的话应该是报这样的错误信息的：
+
+/usr/bin/env: python : No such file or directory   (python后面有一个回车符)
+
+那为什么现在是：
+
+: No such file or directory
+
+这主要是因为\r这个字符的缘故。在linux终端下，输出\r会什么都不显示，只是把光标移到行首。看看我用python取得env输出的出错信息：
+
+/usr/bin/env: python\r: No such file or directory
+
+于是终端虽然输出了/usr/bin/env: python，但是碰到\r后，光标会被移到行首，接着输出了:No such file or directory把前面的覆盖掉了。
+
+我把py脚本直接复制再在linux上粘贴，再运行mapreduce就不出错了。但是奇怪的是之前在Windows上直接上传文件到linux 时候运行是没有问题的（可能是因为之前是在linux上下载下来进行修改再上传回去的原因吗，思考ing）
+

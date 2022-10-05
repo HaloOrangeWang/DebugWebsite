@@ -1,0 +1,103 @@
+1.首先我目前的python版本是3.7的
+
+按照网上（http://cpc2.gao-lab.org/download.php）标准流程安装了CPC2
+
+pip install biopython   #首先需要安装这个
+剩下的按下面的步骤
+wget http://cpc2.gao-lab.org/data/CPC2-beta.tar.gz              
+gzip -dc CPC2-beta.tar.gz | tar xf -
+cd CPC2-beta
+export CPC_HOME="$PWD"
+cd libs/libsvm
+gzip -dc libsvm-3.18.tar.gz | tar xf -
+cd libsvm-3.18
+make clean && make
+
+2.尝试运行CPC2
+
+python CPC2-beta/bin/CPC2.py
+
+第一次报错
+
+(base) [jychu@localhost soft]$ python CPC2-beta/bin/CPC2.py
+Traceback (most recent call last):
+  File "CPC2-beta/bin/CPC2.py", line 8, in <module>
+    import commands
+ModuleNotFoundError: No module named 'commands'
+
+起初不知道是什么意思，思考了一下它说的是“没有commands"这个模块，在网上搜了一下，说是python3中commands模块已经被subprocess取代了，所以接下来我就试了一下在CPC2-beta/bin/CPC2.py文件中把commands替换为subprocess
+
+2.第二次运行
+
+python CPC2-beta/bin/CPC2.py
+
+结果又报错
+
+(base) [jychu@localhost soft]$ python CPC2-beta/bin/CPC2.py
+Traceback (most recent call last):
+  File "CPC2-beta/bin/CPC2.py", line 16, in <module>
+    import seqio
+  File "/public/jychu/soft/CPC2-beta/bin/seqio.py", line 165
+    print a
+          ^
+SyntaxError: Missing parentheses in call to 'print'. Did you mean print(a)?
+
+这次一定要看清楚，报错的文件是/public/jychu/soft/CPC2-beta/bin/seqio.py，进入该文件，确实有print a 这一行，百度一下发现python3 的print语法相对于python2的改变了一下，把print a 改为 print(a)就行了。
+
+3.再次运行
+
+(base) [jychu@localhost soft]$ python CPC2-beta/bin/CPC2.py
+Traceback (most recent call last):
+  File "CPC2-beta/bin/CPC2.py", line 16, in <module>
+    import seqio
+  File "/public/jychu/soft/CPC2-beta/bin/seqio.py", line 166
+    print merge_region(a)
+                     ^
+SyntaxError: invalid syntax
+
+其实这次报错和上次是一样的问题，也是在print后面加（)即可
+
+
+4.再次运行，运行成功！
+
+(base) [jychu@localhost soft]$ python CPC2-beta/bin/CPC2.py
+Usage: CPC2.py [options] -i input.fasta -o output_file
+
+Contact: Kang Yujian <kangyj@mail.cbi.pku.edu.cn>
+
+Options:
+  --version   show program's version number and exit
+  -h, --help  show this help message and exit
+
+Common Options:
+    -i FILE   input sequence in fasta format [Required]
+    -o FILE   output file [Default: cpc2output.txt]
+    -r        also check the reverse strand [Default: FALSE]
+    --ORF     output the start position of longest ORF [Default: FALSE]
+
+运行命令
+
+python /public/jychu/soft/CPC2-beta/bin/CPC2.py -i iux200LFPKM0.1.fa -o CPC.txt
+
+又报错了
+
+Traceback (most recent call last):
+  File "/public/jychu/soft/CPC2-beta/bin/CPC2.py", line 363, in <module>
+    sys.exit(__main())
+  File "/public/jychu/soft/CPC2-beta/bin/CPC2.py", line 45, in __main
+    if calculate_potential(options.fasta,strand,output_orf,options.outfile):
+  File "/public/jychu/soft/CPC2-beta/bin/CPC2.py", line 255, in calculate_potential
+    ftmp_feat = file(outfile + ".feat","w")
+NameError: name 'file' is not defined
+
+上网查说是python版本升级file函数改为open
+
+又运行了一下出现下面结果
+
+[INFO] read file 'u.fa'
+Error: Fail to IO file: u.fa
+
+看不懂了，不知有大佬可否解答
+
+当然之前我也用python2版本试了运行该软件，里面报错的是有些模块适合python3.0以上的版本，所以安装不了，因此就没往下折腾。
+

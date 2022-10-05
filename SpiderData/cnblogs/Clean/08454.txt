@@ -1,0 +1,149 @@
+在python中，str.encode("UTF-8") 意思是将str的UTF-8编码解码为unicode编码，str.decode("UTF-8")将str的unicode编码为UTF-8。python以unicode编码为基础。
+
+转自：https://www.cnblogs.com/liaohuiqiang/p/7247393.html
+
+0. 写在前面
+
+起因：之前写个数据预处理程序的时候遇到了点问题，用re模块的正则查找方法search时总是找不出来（找错了或者出乱码），于是捣鼓捣鼓。
+
+经过：查资料，做实验，发现用utf8编码的str类型的字符串在search方法中行不通，因为str是字节串，和字符之间没有固定的一一对应的关系，正则没法用字节串来进行正确匹配。
+
+结果：把正则式和目标字符串都使用unicode类型，unicode和字符之间是两个字节对应一个字符的关系，正则可以根据这个来对字符进行匹配。
+
+后续：突然觉得应该总结一下编码问题，防止再次入坑。于是有了此文。
+
+1. ascii, unicode, utf8
+
+ascii码：最早的编码，只有127个字符，包含英文字母，数字，标点符号和一些其它符号。一个字节表示一个字符。
+
+unicode（统一码）：一个字节不够放，全世界有各种语言的字符需要编码，于是unicode给所有的字符都设定了唯一编码。通常都是用两个字节表示一个字符（有些生僻的字要用四个字节）。所以，要理解一点：下文中提到到的unicode编码是双字节编码（一个字符两个字节）。
+
+uft8：对于ascii编码的那些字符，只需要1个字节，unicode给这些字符也设定2个字节，如果一篇文章全是英文（ascii字符），就浪费了很多空间（本来1个字节可以存储的，用了2个字节），所以产生了utf8。utf8是一种变长的编码方式，根据不同的符号变化字节长度，把ascii编码成1个字节，汉字通常编码成3个字节，一些生僻的字符编码成4~6个字节。
+
+在计算机内存中，统一使用Unicode编码。
+
+在python中，建议程序过程中统一使用unicode编码，保存文件和读取文件时使用utf8（在读写磁盘文件时候用utf8进行相应的decode和encode，关于decode和encode见下文第4点）。
+
+2. encoding声明
+
+python默认使用ascii编码去解释源文件。
+
+如果源文件中出现了非ASCII码字符，不在开头声明encoding会报错。
+
+可以声明为utf8，告诉解释器用utf8去读取文件代码，这个时候源文件有中文也不会报错。
+
+# encoding=utf8　如果不加这一行会报错
+print '解释器用相应的encoding去解释python代码'
+
+3. python2.7中的str和unicode
+
+debugger的时候会发现，python2.7中的字符串一般有两种类型，unicode和str。
+
+str为字节码，会根据某种编码把字符串转成一个个字节，这个时候字符和字节没有所谓固定的一一对应的关系。
+
+unicode则是用unicode编码的字符串，这个时候一个字符是对应两个字节的，一一对应。
+
+直接赋值字符串，类型为str，str为字节串，会按照开头的encoding来编码成一个个的字节。
+
+赋值的时候在字符串前面加个u，类型则为unicode，直接按照unicode来编码。
+
+来看点现实的例子，比如我们要从一个文件中找出中所有后两位是'学习'的词语，在进行判断的时候：
+
+对于经常处理中文字符串的人，统一用unicode就可以避免这个坑了。
+
+虽然有些字符串处理函数用str也可以，应该是函数里面帮你处理了编码问题。
+
+4. python2.7中的encode和decode
+
+encode的正常使用：对unicode类型进行encode，得到字节串str类型。也即是unicode -> encode（根据指定编码） -> str。
+
+decode的正常使用：对str类型进行decode，得到unicode类型。也即是str -> decode（根据指定编码） -> unicode。
+
+注意：encode和decode的时候都是需要指定编码的。
+
+因为在编码的时候要知道原来的编码是什么和按照什么新编码方式进行编码，要用到两种编码，这里默认有一个unicode，所以需要再指定一个编码方式。解码的时候也是一个道理。
+
+这两个方法就是在unicode和str之间用指定编码进行转换。
+
+s3 = u'统一码'.encode('utf8')
+print type(s3) # 输出　<type 'str'>
+
+s4 = '字节串'.decode('utf8')
+print type(s4) #输出　<type 'unicode'>
+
+encode的不正常使用：对str类型进行encode，因为encode需要的是unicode类型，这个时候python会用默认的系统编码decode成unicode类型，再用你给出编码进行encode。（注意这里的系统编码不是开头的encoding，具体例子见下文第5点）
+
+decode的不正常使用：对unicode类型进行decode，python会用默认的系统编码encode成str类型，再用你给出的编码进行decode。
+
+所以改好对应的系统默认编码，就算不正常使用，也不会报错啦。不过多拐了一下路，个人不喜欢这样。
+
+5. 修改系统默认编码
+
+系统默认使用ascii编码，需要进行相应的修改。
+
+这个编码和开头的encoding不同之处在于，开头的encoding是对于文件内容的编码。
+
+这里的编码是一些python方法中默认使用的编码，比如对str进行encode的时候默认先decode的编码，比如文件写操作write的encode的编码（关于文件读写见下文第7点）
+
+关于系统默认编码发挥作用的地方，来看看另一个例子。
+
+根据结果得知：python在用==比较时，如果第一个操作符是unicode而第二个不是的话，会自动用系统默认编码帮第二个操作符decode。
+
+PS：为什么需要reload(sys)呢。首先，reload是用于重新加载之前import的模块。
+
+这里需要重新加载sys的原因是：python在加载模块时候删除了sys中的setdefaultencoding方法（可能是出于安全起见），所以需要reload这个sys模块。
+
+这里再举个简单例子，比如我要修改keras的后端，从tensorflow改成theano，修改后需要重新加载keras的backend模块才能修改成功。
+
+6. 查看文件编码
+
+7. 文件读写
+
+首先要记住，读出和写入，这两个文件的关口都是用str类型的，就是一个个字节。
+
+python中内置的默认open在读取文件的时候以字节串str的形式，读出一个个字节。读取后要用正确的编码才能decode成正确的unicode，所以要知道原来在文件中的编码。
+
+写文件的时候也是一个道理，用str类型，以字节的形式写入，这个str是以某种编码方式编码的，要注意用正确的编码方式编码，一般是按utf8编码后写文件。
+
+如果你用unicode类型写入，python会根据系统默认编码来把unicode编码成str再写入文件。因为写入文件需要的是str，是str就写，不是我就把你转成str再写。
+
+简单原则，尽量用str写入，避免使用默认编码，这样也不用在开头修改默认编码。
+
+python中模块codecs中的open方法可以指定一个编码。它保证了读入和写出的字节都是按照这个指定编码进行编码的。
+
+这样在读文件的时候：会把读出的str按照指定编码decode成unicode。
+
+写文件的时候：如果是unicode，会根据指定编码encode成str然后写入；如果是str，会根据系统默认编码把str进行decode得到unicode，再根据指定编码encode成str进行写入。
+
+简单原则，尽量用unicode写入，避免使用默认编码，这样也不用在开头修改默认编码。
+
+注意一下，对于其它方式读写文件，需要自行debugger看看编码的问题。比如我在python中读取excel的时候读出来就直接是unicode而不是str。
+
+8. 一般的处理要点
+
+(1) 首先把源文件的默认encoding和系统默认编码改为utf8
+
+(2) 程序执行过程统一使用unicode类型
+
+(3) 对于读写文件（用python内置的默认open来说），得到的是str，对str进行相应的encode和decode就可以了。
+
+总结一下就是：
+
+设置相应的默认编码为utf8；
+
+读文件拿到str类型：str -> decode('utf8') -> unicode
+
+程序处理：用unicode
+
+写文件：unicode -> encode('utf8') -> str，用str类型写入文件
+
+当然前提是文件都是utf8格式的啦，包括源文件和读写的数据文件。
+
+另外想说一下：
+
+对于写程序的过程中统一使用unicode类型这一点只是一个建议，因为统一unicode可以在处理字符串的时候减少麻烦。
+
+觉得全部弄成unicode麻烦的，可以考虑平时统一用utf8编码的str，有些问题需要用unicode的再转为unicode，遇到编码问题时可以思考是不是没有统一用unicode的问题（本文开头就给出了一个需要统一用unicode的情况）
+
+其实弄清楚上面的思路，遇到什么编码问题也能够查错。
+

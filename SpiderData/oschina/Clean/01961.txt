@@ -1,0 +1,35 @@
+安装cloudera-manager-agent报错
+
+查看/var/log/cloudera-scm-agent.log
+
+报错
+
+Traceback (most recent call last):
+ File "/usr/lib64/cmf/agent/build/env/lib/python2.7/site-packages/cmf-5.16.1-py2.7.egg/cmf/agent.py", line 2270, in connect_to_new_superviso
+ self.get_supervisor_process_info()
+ File "/usr/lib64/cmf/agent/build/env/lib/python2.7/site-packages/cmf-5.16.1-py2.7.egg/cmf/agent.py", line 2290, in get_supervisor_process_i
+ self.identifier = self.supervisor_client.supervisor.getIdentification()
+ File "/usr/lib64/python2.7/xmlrpclib.py", line 1233, in __call__
+ return self.__send(self.__name, args)
+ File "/usr/lib64/python2.7/xmlrpclib.py", line 1587, in __request
+ verbose=self.__verbose
+ File "/usr/lib64/cmf/agent/build/env/lib/python2.7/site-packages/supervisor-3.0-py2.7.egg/supervisor/xmlrpc.py", line 470, in request
+ '' )
+ProtocolError: <ProtocolError for 127.0.0.1/RPC2: 401 Unauthorized>
+[01/Dec/2018 20:23:29 +0000] 30267 MainThread agent ERROR Failed to connect to newly launched supervisor. Agent will exit
+[01/Dec/2018 20:23:29 +0000] 30267 MainThread agent INFO Stopping agent...
+[01/Dec/2018 20:23:29 +0000] 30267 MainThread agent INFO No extant cgroups; unmounting any cgroup roots
+[01/Dec/2018 20:23:29 +0000] 30267 Dummy-1 daemonize WARNING Stopping daemon.
+
+解决办法
+
+[root@dip001 ~]# ps -ef | grep supervisord
+root 24491 1 0 11月30 ? 00:00:34 /usr/lib64/cmf/agent/build/env/bin/python /usr/lib64/cmf/agent/build/env/bin/supervisord
+root 30335 30312 0 20:27 pts/0 00:00:00 grep --color=auto supervisord
+
+[root@dip001 ~]# kill -9 24491
+[root@dip001 ~]# ps -ef | grep supervisord
+root 30338 30312 0 20:27 pts/0 00:00:00 grep --color=auto supervisord
+
+重新试，解决问题
+

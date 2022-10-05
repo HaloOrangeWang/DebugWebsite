@@ -1,0 +1,42 @@
+
+VSCode中设置Python interpreter
+
+
+Python解释器设置
+
+为了在vscode中看到package源码，需要设置好vscode中的Python解释器路径，然后就可以点击右键—>转到定义，随意的看到package源码了，这样看package黑箱内部很方便了。
+
+打开设置
+
+文件—》首选项——》设置
+
+搜索python.pythonPath
+
+可以看到现在的解释器是:默认的”python”，然后在右侧的用户设置中改为自己的解释器，覆盖默认的。
+
+这样就可以了，各种函数和关键字就可以找到库中的定义了。
+
+跳转到定义
+
+如果要看某个函数或者对象的定义的话，有三种方法：
+
+在对象上右击选择“查看定义”，会弹出一个窗口，正好包含所查看的对象。
+
+在对象上右击选择“查看定义”，会弹出一个窗口，正好包含所查看的对象。
+
+右击选择“转到定义”或者按Ctrl并单击，这样会在当前文件跳到目标文件，看完Ctrl+alt+-可以返回，如果要对比着看的话这样有些不方便。
+
+右击选择“转到定义”或者按Ctrl并单击，这样会在当前文件跳到目标文件，看完Ctrl+alt+-可以返回，如果要对比着看的话这样有些不方便。
+
+按Ctrl+Alt并单击，这样会在一个新的窗口打开目标文件，看完关闭即可。
+
+按Ctrl+Alt并单击，这样会在一个新的窗口打开目标文件，看完关闭即可。
+
+python插件中默认使用pylint的一个工具，专门用来检测python代码的书写是否有错误和是否符合良好的习惯。python官网（https://www.python.org/dev/peps/pep-0008/）专门有版块介绍推荐的python代码习惯，比如类，函数等的命名规则，遵守这些规则可以使自己的代码更加上档次。
+
+然后pylint在面对django框架时表现的有些不足，因为django使用了大量的元编程(metaprograming)思想以及鸭子模型，以至于在程序运行时会修改不少对象的属性和行为(妹的，我也不知道元编程是什么鬼)，但是这样给pylint这样的语法检测程序带来了比较大的困难。典型的就是集成了django.db.models.Model的模型层对象在编译时没有objects属性，但是运行时却有，造成我们在编写代码时pylint会报"has no objects attributes"之类的错误，虽然不影响程序运行，但是很影响心情啊。所以有人专门开发了pylint的插件pylint-django，很详细的介绍的文章在这里(https://blog.landscape.io/using-pylint-on-django-projects-with-pylint-django.html)，作者好像就是插件的开发者，像热心的程序员致敬哦。使用pip install pylint-django即可安装，命令行里可以通过 pylint --load-plugins pylint_django [other option]的方法来使用，一定要注意是pylint_django，不是pylint-django。
+
+但是，我现在说的是在vscode里面配置使用pylint-django，方法非常简单，在vscode中选择"文件"->"首选项"->"设置"打开vscode的设置文件，然后"python.linting.pylintArgs"处添加"--load-plugins", "pylint_django"即可。如图：
+
+有必须要的话重启下vscode，然后pylint就不会在报错了。
+

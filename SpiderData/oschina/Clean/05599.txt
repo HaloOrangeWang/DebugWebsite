@@ -1,0 +1,40 @@
+[root@pc3 lnmp_soft]# cd nginx-1.12.2/
+
+[root@pc3 nginx-1.12.2]# ./configure --user=nginx --group=nginx
+
+报错如下：
+
+--------------------------------------------------------------------------------------------
+checking for OS
+ + Linux 3.10.0-693.el7.x86_64 x86_64
+checking for C compiler ... not found
+
+./configure: error: C compiler cc is not found
+
+--------------------------------------------------------------------------------------------
+
+怀疑自己没有装gcc，然后就装一波...
+
+[root@pc3 nginx-1.12.2]# yum -y install gcc
+
+[root@pc3 nginx-1.12.2]# yum -y install gcc-c++.x86_64
+然后又提示我已经装了gcc
+
+--------------------------------------------------------------------------------------------
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+
+Package gcc-4.8.5-16.el7.x86_64 already installed and latest version
+
+Nothing to do
+
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+
+Package gcc-c++-4.8.5-16.el7.x86_64 already installed and latest version
+Nothing to do
+
+--------------------------------------------------------------------------------------------
+
+这是什么鬼...?
+

@@ -1,0 +1,58 @@
+
+解决windows64位系统上安装mysql-python报错
+
+
+一、 背景
+
+python项目中需要操作mysql，于是运行：
+
+报一连串的错误，前面的错误根据提示都好解决，但被下面的错误一直卡住，好一翻折腾才解决，所以在此记录以备忘。
+
+Cannot open include file: ‘config-win.h’: No such file or directory” while installing mysql-python
+
+
+二、 安装
+
+
+1. 安装64位版本的python
+
+https://www.python.org/ftp/python/2.7.14/python-2.7.14.amd64.msi
+
+
+2. 安装VCForPython
+
+去微软官网下载 
+没有安装时会报如下错误：
+
+下载相应版本的VCForPython安装，再次安装mysql-python
+
+
+3. 安装mysql-connector-python-2.1.7-py2.7-windows-x86-64bit.msi
+
+https://cdn.mysql.com//Downloads/Connector-Python/mysql-connector-python-2.1.7-py2.7-windows-x86-64bit.msi
+
+
+4. 安装mysql-connector-c-6.0.2-winx64.msi
+
+https://cdn.mysql.com//Downloads/Connector-C/mysql-connector-c-6.0.2-winx64.msi 
+没有安装【mysql-connector-python】与【mysql-connector-c-6.0.2】时，会报如下错误：
+
+
+5. MySQL-python-1.2.5.zip
+
+https://pypi.python.org/packages/a5/e9/51b544da85a36a68debe7a7091f068d802fc515a3a202652828c73453cad/MySQL-python-1.2.5.zip#md5=654f75b302db6ed8dc5a898c625e030c 
+注意：没有安装【mysql-connector-python】与【mysql-connector-c-6.0.2】时：此步骤会一直报错： 
+> Cannot open include file: ‘config-win.h’: No such file or directory” while installing mysql-python
+
+注意：即使已经安装了【mysql-connector-python】与【mysql-connector-c-6.0.2】，也可能会报上面的错误
+
+原因： pypi上提供的MySQL-python包依赖32位的mysql-connector-c-6.0.2包，因为我们前面只安装了64位的版本，所有一直找不到mysql-connector-c-6.0.2而报上面的错误
+
+解决方法一： 
+去mysql官网下载32位的mysql-connector-c-6.0.2，同时安装32位版本与64位版本，再运行： 【亲测，失败，但此方法应该可以，原因本人没有深究】
+
+1
+
+解决方法二： 
+下载MySQL-python-1.2.5的源码，解压并修改文件【MySQL-python-1.2.5/site.cfg】，找到如下一行的路径，将其修改成如下第二行（修改引用版本，将32位指向64位），再运行python setup.py install安装【亲测通过】 (前提：安装64位的mysql-connector-c-6.0.2，)
+

@@ -1,0 +1,20 @@
+File "<ipython-input-1-fb5e75e7f22b>", line 6
+    print sess.run(hello)
+             ^
+SyntaxError: invalid syntax
+
+这个报错是因为python3中print变成了一个方法，需要带括号当参数传入值。 今天研究tensorflow 一直遇到这个错误，郁闷的是，我已经通过jupyter设置kernel为python2，仍然报错这个。
+
+后来通过这两个命令解决了这个问题
+
+ipython2 kernelspec install-self
+ipython3 kernelspec install-self
+jupyter kernelspec install-self
+ipython kernel install
+ipython2 kernel install
+ipython3 kernel install
+
+虽然不知道哪一个命令有效，但是最后结果好使了。
+
+猜测是 /usr/local/share/jupyter/kernels/python2 这里的软连接建立的是错误的。
+

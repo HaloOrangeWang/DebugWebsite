@@ -1,0 +1,40 @@
+背景：想要为下载的anaconda安装tensorflow
+
+使用命令　pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow
+
+报错如下：
+
+解决办法：创建一个虚拟虚拟环境，在虚拟环境中安装tensorflow，然后使用pycharm创建项目，指定项目的运行环境为刚才创建的虚拟环境。
+
+一：创建虚拟环境：conda create -n test python=3.5　　　　-n后面是虚拟环境的名字   python=指定虚拟环境使用的python版本
+
+为虚拟环境安装tensorflow：
+
+进入虚拟环境：activate test
+
+升级pip：python -m pip install --upgrade pip
+
+查看当前安装了那些包：pip list
+
+安装tensorflow：
+
+$ conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+$ conda config --set show_channel_urls yes
+
+$ conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+$ conda config --set show_channel_urls yes
+
+使用命令安装：conda install tensorflow
+
+再次查看安装包：pip list
+
+这样，不仅可以为创建的虚拟环境安装tensorflow，也可以直接为anaconda安装tensorflow库
+
+二：创建项目。并选择改虚拟环境：
+
+PyCharm也能很方便的和anaconda的虚拟环境结合,在Setting => Project => Project Interpreter 里面修改 Project Interpreter , 点击齿轮标志再点击Add Local为你某个环境的python.exe解释器就行了.
+
+比如你要在learn环境中编写程序, 那么就修改为C:\Users\Administrator\AppData\Local\conda\conda\envs\learn, 可以看到这时候下面的依赖包也变成了learn环境中的包了.接下来我们就可以在pycharm中愉快的编码了。
+
+***************不积跬步无以至千里 ***************
+

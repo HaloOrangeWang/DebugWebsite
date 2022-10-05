@@ -1,0 +1,14 @@
+python 2.7 print 的数据中若包括中文，打印则会报错UnicodeDecodeError: 'gbk' codec can't decode bytes in position 459-460: illegal multibyte sequence，
+
+错误原因：将一个字符串，通过gbk的方式，去解码，想要获得Unicode字符串出错了，一般是因为解码的方式与其原编码方式不一致所致，比如该数据编码格式是utf-8，你却用gbk去解码，当然出错，“解码方式和编码方式要保持一致”，你应该用utf-8的解码方式去解码utf-8编码的数据，才能成功解码为unicode类型的数据。
+
+具体解决办法：
+
+1、通过encodetype=chardet.detect(data)['encoding']查看打印的数据data的编码格式encodetype；
+
+2、通过data.decode('encodetype')解码该数据，将成功解码为unicode类型的数据。
+
+3、示例：
+
+这样print就可以正常打印包含中文的数据了。
+

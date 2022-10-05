@@ -1,0 +1,28 @@
+报错如下
+
+File "C:\Python27\lib\site-packages\jinja2\environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "C:\Python27\lib\site-packages\jinja2\environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "<template>", line 1, in top-level template code
+TypeError: 'builtin_function_or_method' object is not iterable
+
+排查，模板引用中使用了关键字 values等
+
+{%tc for col in report.threat_score.weeks
+  %}
+
+{{col}}
+
+{%tc endfor %}
+
+{%tc for col in report.threat_score.values
+  %}
+
+{{col}}
+
+{%tc endfor %}
+
+{%tc for col in report.threat_score.values
+  %}
+

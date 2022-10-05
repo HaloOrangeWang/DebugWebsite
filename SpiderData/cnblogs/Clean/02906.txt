@@ -1,0 +1,38 @@
+Django第一个APP 报错：ImportError: No module named VersionApp.views
+
+IDE环境：Eclipse+pyDev+mysql+python2.7+django1.11.3
+
+代码目录结构如下：
+
+urls.py中代码如下：
+
+报错：找不到对应的模块
+
+解决办法：
+
+1、考虑到python中自定义模块的导入场景：同一个目录下的导入，不同目录下的导入等
+
+具体参考：https://www.cnblogs.com/hujq1029/p/7096236.html  中
+
+将当前python包加入到系统搜索路径，如下：
+
+依然报错：ImportError: No module named VersionApp.views
+
+2、再继续搜索资料  可能Django的版本号太低 导致的问题
+
+更新Django：   pip install Django==1.9.7
+
+重新创建django项目，发现该问题解决了。
+
+继 解决办法一 继续深入思考：
+
+撇开django，创建python project，代码目录结构如下：
+
+代码目录结构如下：不同目录下模块导入没问题。
+
+基于以上的代码目录结构，若加深一层目录，是否正常导入模块？
+
+此时，执行main.py  报错：ImportError: No module named pacakgeDemo2.hello
+
+复现django中的报错问题，说明这个问题 并非与django强相关，应该是python基础问题，目前还比较困惑，不知道问题出在哪里，求各位大神解答，万分感谢！！
+

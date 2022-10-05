@@ -1,0 +1,139 @@
+
+配置：
+
+系统：windows win7
+
+python版本：3.7.4
+
+robotframework-ride版本：1.7.4.1
+
+
+问题：
+
+双击快捷方式、双击ride.py文件都打不开ride界面
+
+命令窗口中执行ride.py后报错：
+
+D:\Python\Python37>ride.py
+
+Traceback (most recent call last):
+
+File "d:\python\python37\lib\site-packages\robotide\application\application.py
+
+", line 62, in OnInit
+
+self._plugin_loader.enable_plugins()
+
+File "d:\python\python37\lib\site-packages\robotide\application\pluginloader.p
+
+y", line 43, in enable_plugins
+
+p.enable_on_startup()
+
+File "d:\python\python37\lib\site-packages\robotide\application\pluginconnecto
+
+r.py", line 52, in enable_on_startup
+
+self.enable()
+
+File "d:\python\python37\lib\site-packages\robotide\application\pluginconnecto
+
+r.py", line 57, in enable
+
+self._plugin.enable()
+
+File "d:\python\python37\lib\site-packages\robotide\recentfiles\recentfiles.py
+
+", line 44, in enable
+
+self._add_recent_files_to_menu()
+
+File "d:\python\python37\lib\site-packages\robotide\recentfiles\recentfiles.py
+
+", line 114, in _add_recent_files_to_menu
+
+self.register_action(action)
+
+File "d:\python\python37\lib\site-packages\robotide\pluginapi\plugin.py", line
+
+204, in register_action
+
+action = self.__frame.actions.register_action(action_info)
+
+File "d:\python\python37\lib\site-packages\robotide\ui\mainframe.py", line 751
+
+, in register_action
+
+self._menubar.register(action)
+
+File "d:\python\python37\lib\site-packages\robotide\ui\actiontriggers.py", lin
+
+e 60, in register
+
+menu.add_menu_item(action)
+
+File "d:\python\python37\lib\site-packages\robotide\ui\actiontriggers.py", lin
+
+e 98, in add_menu_item
+
+menu_item = self._construct_menu_item(action)
+
+File "d:\python\python37\lib\site-packages\robotide\ui\actiontriggers.py", lin
+
+e 107, in _construct_menu_item
+
+menu_item = self._create_menu_item(action)
+
+File "d:\python\python37\lib\site-packages\robotide\ui\actiontriggers.py", lin
+
+e 139, in _create_menu_item
+
+pos = action.get_insertion_index(self.wx_menu)
+
+File "d:\python\python37\lib\site-packages\robotide\action\action.py", line 40
+
+, in get_insertion_index
+
+return self._insertion_point.get_index(menu)
+
+File "d:\python\python37\lib\site-packages\robotide\action\actioninfo.py", lin
+
+e 286, in get_index
+
+index = self._find_position_in_menu(menu)
+
+File "d:\python\python37\lib\site-packages\robotide\action\actioninfo.py", lin
+
+e 296, in _find_position_in_menu
+
+if self._get_menu_item_name(item).lower() == self._item.lower():
+
+File "d:\python\python37\lib\site-packages\robotide\action\actioninfo.py", lin
+
+e 301, in _get_menu_item_name
+
+return self._shortcut_remover.split(item.GetLabel())[0]
+
+AttributeError: 'MenuItem' object has no attribute 'GetLabel'
+
+OnInit returned false, exiting...
+
+Error in atexit._run_exitfuncs:
+
+wx._core.wxAssertionError: C++ assertion "GetEventHandler() == this" failed at .
+
+.\..\src\common\wincmn.cpp(475) in wxWindowBase::~wxWindowBase(): any pushed eve
+
+nt handlers must have been removed
+
+
+解决：
+
+网上查了好多都是这位大神遇到的问题：https://blog.csdn.net/u011127242/article/details/88864476，跟我的报错并不一样
+
+后来终于看到了这个http://www.manongjc.com/detail/10-xxoxarzgoimhmfo.html才转换了思路
+
+通过降低wxPython的版本就可以解决了：pip install wxPython==4.0.7
+
+最后的包版本信息：
+

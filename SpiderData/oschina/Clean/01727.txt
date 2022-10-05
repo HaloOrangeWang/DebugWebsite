@@ -1,0 +1,56 @@
+报错信息：
+
+[libprotobuf FATAL google/protobuf/src/google/protobuf/stubs/common.cc:67] This program requires version 3.6.1 of the Protocol Buffer runtime library, but the installed version is 3.0.0.  Please update your library.  If you compiled the program yourself, make sure that your headers are from the same version of Protocol Buffers as your link-time library.  (Version verification failed in "google/protobuf/descriptor.pb.cc".)
+terminate called after throwing an instance of 'google::protobuf::FatalException'
+  what():  This program requires version 3.6.1 of the Protocol Buffer runtime library, but the installed version is 3.0.0.  Please update your library.  If you compiled the program yourself, make sure that your headers are from the same version of Protocol Buffers as your link-time library.  (Version verification failed in "google/protobuf/descriptor.pb.cc".)
+Aborted
+
+问题原因：
+
+TensorFlow和protobuf版本不匹配
+
+解决一：版本降级
+
+先卸载
+
+pip uninstall protobuf
+
+再安装
+
+pip install protobuf==2.6.1
+
+如果版本降级后报"TypeError: __init__() got an unexpected keyword argument 'syntax' "的错误，错误详情如下：
+
+Traceback (most recent call last):
+  File "helloworld.py", line 10, in <module>
+    import tensorflow as tf
+  File "/usr/lib/python2.7/site-packages/tensorflow/__init__.py", line 28, in <module>
+    from tensorflow.python import pywrap_tensorflow  # pylint: disable=unused-import
+  File "/usr/lib/python2.7/site-packages/tensorflow/python/__init__.py", line 49, in <module>
+    from tensorflow.core.framework.graph_pb2 import *
+  File "/usr/lib/python2.7/site-packages/tensorflow/core/framework/graph_pb2.py", line 16, in <module>
+    from tensorflow.core.framework import attr_value_pb2 as tensorflow_dot_core_dot_framework_dot_attr__value__pb2
+  File "/usr/lib/python2.7/site-packages/tensorflow/core/framework/attr_value_pb2.py", line 16, in <module>
+    from tensorflow.core.framework import tensor_pb2 as tensorflow_dot_core_dot_framework_dot_tensor__pb2
+  File "/usr/lib/python2.7/site-packages/tensorflow/core/framework/tensor_pb2.py", line 16, in <module>
+    from tensorflow.core.framework import tensor_shape_pb2 as tensorflow_dot_core_dot_framework_dot_tensor__shape__pb2
+  File "/usr/lib/python2.7/site-packages/tensorflow/core/framework/tensor_shape_pb2.py", line 22, in <module>
+    serialized_pb=_b('\n,tensorflow/core/framework/tensor_shape.proto\x12\ntensorflow\"z\n\x10TensorShapeProto\x12-\n\x03\x64im\x18\x02 \x03(\x0b\x32 .tensorflow.TensorShapeProto.Dim\x12\x14\n\x0cunknown_rank\x18\x03 \x01(\x08\x1a!\n\x03\x44im\x12\x0c\n\x04size\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\tB/\n\x18org.tensorflow.frameworkB\x11TensorShapeProtosP\x01\x62\x06proto3')
+TypeError: __init__() got an unexpected keyword argument 'syntax'
+
+还有一个办法，就是升级TensorFlow的版本，把TensorFlow的版本更新成最近版本
+
+解决二：TensorFlow版本升级
+
+把protobuf卸载
+
+pip uninstall protobuf
+
+安装protobuf
+
+pip install 'protobuf>=3.0.0a3'
+
+升级TensorFlow
+
+pip install --upgrade tensorflow
+

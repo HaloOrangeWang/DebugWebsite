@@ -1,0 +1,162 @@
+
+问题
+
+本来只是写一个在子线程去请求网络，然后在通过信号槽与主线程通信的简单功能，示例代码如下：
+
+//Worker.h
+class Worker : public QObject
+{
+    Q_OBJECT
+        
+public:
+    explicit Worker(QObject *parent = nullptr);
+    ~Worker();
+    
+signals:
+    void requestFial(QString strError, int code);
+    void requestSuccess(QString strResponse);
+};
+
+//MainWindow.cpp
+class MainWindow::initData()
+{
+    m_thread = new QThread(this);
+    m_worker = new Worker();
+    m_worker->moveToThread();
+    connect(m_worker, &Worker::requestFail, this, [this](QString strError, int code){
+        //....
+        QMessageBox::information(this, "请求失败", strError);
+    });
+    connect(m_worker, &Worker::requestSuccess, [this](QString strResponse){
+       
+      /*--------报错-------*/  
+      //.....
+       QMessageBox::information(this, "请求成功", strResponse); 
+    });
+}
+
+代码在请求成功后通过信号槽与主线程通信时就报错：QBackingStore::endPaint() called with active painter on backingstore paint
+
+查了一下资料：
+
+Qt 解决报错：QBackingStore::endPaint() called with active painter_0ices的博客-CSDN博客
+
+但是我代码里没有用到QPainter 啊，但是或许是控件里面调用的，于是在开启调试，再次运行程序时，直接崩溃了？？？报错：QWidget::repaint: Recursive repaint detected when updating progress bar
+
+这个又去查了资料，这是在子线程更新UI导致的：
+
+c++ - QWidget::repaint: Recursive repaint detected when updating progress bar - Stack Overflow
+
+但是这更不可能了，我怎么可能会犯这种错误？耗时操作都放到子线程了，更新也是主线程完成的。
+
+然后不断尝试就在这两种错误间反复横跳，一直查这两个错误相关的资料，也去检查自己更新的UI的部分，指定信号槽的连接方式等，但是然并卵。
+
+
+问题解决
+
+后面无奈拿出输出调试大法，输出主线程，子线程以及槽函数部分的线程ID，果然发现异常了
+
+/*--------MainWindow.cpp-------------*/
+connect(m_worker, &Worker::requestSuccess, [this](QString strResponse){
+       
+      /*--------报错-------*/  
+      //.....
+       qDebug() << "threadId" << QThread::currentThreadId();    
+       QMessageBox::information(this, "请求成功", strResponse); 
+    });
+
+子线程的线程ID竟然和槽函数所在线程的ID一致！即槽函数的更新UI部分是在子线程里做的！所以才会导致崩溃。
+
+然后又去检查这部分代码，终于发现自己竟然漏写了接受者this!!!!!!!
+
+/*------------wrong-------------*/
+connect(m_worker, &Worker::requestSuccess, [this](QString strResponse){
+       
+      /*--------报错-------*/  
+      //.....
+       qDebug() << "threadId" << QThread::currentThreadId();    
+       QMessageBox::information(this, "请求成功", strResponse); 
+    });
+
+/*------------correct-----------*/
+connect(m_worker, &Worker::requestSuccess,this, [this](QString strResponse){
+       
+      /*--------报错-------*/  
+      //.....
+       qDebug() << "threadId" << QThread::currentThreadId();    
+       QMessageBox::information(this, "请求成功", strResponse); 
+    });
+
+但是这个编译竟然通过了，于是又去查QT帮助文档，找到了connect 的重载函数
+
+QMetaObject::Connection QObject::connect(const QObject *sender, const char *signal, const char *method, Qt::ConnectionType type = Qt::AutoConnection) const
+
+文档对这个重载方法说明如下：
+
+This function overloads connect().
+
+Connects signal from the sender object to this object's method.
+
+Equivalent to connect(sender, signal, this, method, type).
+
+说是等效于connect(sender, signal, this, method, type)
+
+但是这个this 是指当前类的示例，还是指sender ？
+
+于是又去做了试验，环境是win10+qt6.2.1+MinGW64
+
+分别输出主线程ID，槽函数所在线程ID，槽函数捕获的this所在的线程ID和子线程ID
+
+/*-----------------------Worker-----------------------------*/
+
+void Worker::run()
+{
+    qDebug() << "子线程ID" << QThread::currentThreadId();
+    emit requesetSuccess("请求成功!");
+}
+
+/*------------------------MainWindow------------------------*/
+
+qDebug() << "主线程ID" << QThread::currentThreadId();
+
+m_thread = new QThread(this);
+m_worker = new Worker();
+m_worker->moveToThread(m_thread);
+connect(m_thread, &QThread::started, m_worker, &Worker::run);
+connect(m_worker, &Worker::requesetSuccess, this, [this](QString response) {
+    qDebug() << "槽函数线程ID" << QThread::currentThreadId();
+    qDebug() << "this线程ID" << this->thread()->currentThreadId();
+    QMessageBox::information(this, "提示", response);
+});
+m_thread->start();
+
+结果如下
+
+主线程ID 0xd814
+子线程ID 0xeb54
+槽函数线程ID 0xd814
+this线程ID 0xd814
+
+结果一切正常。
+
+修改connect部分代码
+
+connect(m_worker, &Worker::requesetSuccess, this, [this](QString response) {
+    qDebug() << "槽函数线程ID" << QThread::currentThreadId();
+    qDebug() << "this线程ID" << this->thread()->currentThreadId();
+    QMessageBox::information(this, "提示", response);
+});
+
+结果如下：
+
+主线程ID 0xe46c
+子线程ID 0xe208
+槽函数线程ID 0xe208
+this线程ID 0xe208
+QObject::setParent: Cannot set parent, new parent is in a different thread
+17:22:56: 程序异常结束。
+
+槽函数是在子线程执行的这在上面已经验证过了，但是lambda表达式捕获的this竟然是子线程示例倒是我没想到的，之前一直以为自己捕获的是MainWindow实例。最终程序崩溃。
+
+但是这个重载版本的connect 内部原理还有待深入理解。#TODO
+

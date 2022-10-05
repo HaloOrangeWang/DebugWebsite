@@ -1,0 +1,25 @@
+问题描述，形如以下的C++调用python代码，在vs2015下报中文编码错误
+
+#include <iostream>
+using namespace std;
+
+int main() {
+	Py_Initialize(); /*初始化python解释器,告诉编译器要用的python编译器*/
+	// 检查初始化是否成功  
+	if (!Py_IsInitialized()) {
+		return -1;
+	}
+	PyRun_SimpleString("import sys"); /*调用python文件*/
+	PyRun_SimpleString("print(u'年后')"); /*调用python文件*/
+	Py_Finalize(); /*结束python解释器，释放资源*/
+	int b;
+	cin >> b;
+	return 0;
+}
+
+解决办法如下 ：
+
+1，设置代码格式为utf-8
+ 
+ 2，设置工程字符集为utf-8(不用我多说吧，选择工程点击右键，选择属性，如下图加上字符集编码即可)
+

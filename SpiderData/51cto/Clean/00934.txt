@@ -1,0 +1,33 @@
+代码中控制条输出含有中文，引起编码错误
+
+打包的时候去修改gooey源码Libsite-packages/gooey/gui/processor.py
+
+def _forward_stdout(self, process):
+        '''
+        Reads the stdout of `process` and forwards lines and progress
+        to any interested subscribers
+        '''
+        while True:
+            line = process.stdout.readline()  #同样的代码 打包前此处读取为utf-8编码 打包后却成为了gbk编码  所以一打包就无法输出中文 有兴趣的小伙伴可以print到控制台看结果
+            if not line:
+                break
+            _progress = self._extract_progress(line)
+
+pub.send_message(events.PROGRESS_UPDATE, progress=_progress)
+            if _progress is None or self.hide_progress_msg is False:
+                pub.send_message(events.CONSOLE_UPDATE,
+                                 msg=line.decode("gbk"))  #decode默认参数self.encoding 改为gbk打包即可显示中文
+        pub.send_message(events.EXECUTION_COMPLETE)
+
+def _extract_progress(self, text):
+        '''
+        Finds progress information in the text using the
+        user-supplied regex and calculation instructions
+        '''
+        # monad-ish dispatch to avoid the if/else soup
+        find = partial(re.search, string=text.strip().decode("gbk")) #decode默认参数self.encoding 改为gbk打包即可显示中文
+        regex = unit(self.progress_regex)
+        match = bind(regex, find)
+        result = bind(match, self._calculate_progress)
+        return result
+

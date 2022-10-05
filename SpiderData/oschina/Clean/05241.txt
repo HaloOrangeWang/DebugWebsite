@@ -1,0 +1,18 @@
+有时候我们从SVN导的项目，jre和jar包都没问题，但是就会出如下图的错误：
+
+xi
+
+点击红叉，显示错误信息如下：
+
+点击工具里面的window-->preferences-->java-->Compiler-->Compiler compliance settings到jdk1.5以上，刷新工程，重新编译。这是因为
+
+@Override是JDK5就已经有了，但是不支持对接口的实现，认为这不是Override而报错。JDK6修正了这个Bug，无论是对父类的方法覆盖还是对接口的实现都可以加上@Override。
+
+要解决该问题，首先要确保机器上安装了jdk 1.5以上版本，
+
+如果问题还没解决，就在报错的工程上，鼠标右键选择 Properties-->Java Compiler-->compiler compliance level 中选择 1.6,刷新工程，重新编译。
+
+如果jdk版本修改不了，可以按照下图修改根文件：
+
+问题解决，还不行，继续百度。
+

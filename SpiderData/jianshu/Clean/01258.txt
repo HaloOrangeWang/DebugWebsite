@@ -1,0 +1,103 @@
+刘小泽写于19.8.23
+
+最近经常遇到在Rstudio中安装Python出错的问题，比如Seurat、Monocle都需要用到Python的模块，搜索并探索了一下：https://cran.r-project.org/web/packages/reticulate/vignettes/python_packages.html
+
+这里写了不需要管理员权限的方法，基于管理员权限的可以看一下：单细胞Seurat包升级之2,700 PBMCs分析（下）https://www.jianshu.com/p/b46b6b6d344f 其中有介绍
+
+
+前言
+
+分析单细胞数据经常会用到一些降维聚类的优秀算法，比如UMAP、louvain，而它们都是利用python写的，我们需要下载Python程序到Rstudio中运行，其实R已经给我们提供了一些帮助，这里就来一起探索一下，应该怎么安装一个Python包
+
+
+安装reticulate
+
+这个来自CRAN的R包是首要因素，所有的python包都要通过这个进行下载安装，相当于一个R-Python接口 ，有了它，就能用py_install()安装python程序
+
+install.packages('reticulate')
+library(reticulate)
+
+
+先介绍Rstudio server、Mac Rstudio的操作
+
+根据系统不同而分为两种不同的操作：对linux、mac是使用virtualenv；而Windows使用Anaconda
+
+既然官方这么描述，我们也就这么跟着走
+
+step1 拿到包，加载上，我们干的第一件事可能就是直接安装
+
+reticulate::py_install("louvain")
+# 发生了报错
+# Error: Prerequisites for installing Python packages not available.
+
+# Please install the following Python packages before proceeding: virtualenv
+
+step2 说我们缺少一个部件：virtualenv，缺啥补啥，这个怎么安装？我也不知道，反之先运行一遍这个代码，看看提示再说：
+
+virtualenv_create("r-reticulate")
+# Creating virtual environment 'r-reticulate' ...
+# Using python: /usr/bin/python2.7
+# Error: tools for managing Python virtual environments are not installed.
+# 
+# Install virtualenv with:
+#   $ /usr/bin/python2.7 -m pip install --upgrade --user virtualenv
+
+
+step3 虽然有意料之中的报错，但是最后一句是重点，告诉了我们怎么安装virtualenv：
+
+/usr/bin/python2.7 -m pip install --upgrade --user virtualenv
+
+
+step4 再次运行virtualenv_create
+
+virtualenv_create("r-reticulate")
+# Creating virtual environment 'r-reticulate' ...
+# Using python: /usr/bin/python2.7
+# No LICENSE.txt / LICENSE found in source
+# New python executable in /home/jmzeng/.virtualenvs/r-reticulate/bin/python2.7
+# Also creating executable in /home/jmzeng/.virtualenvs/r-reticulate/bin/python
+# Installing setuptools, pip, wheel...
+# done.
+
+
+step5 安装想要的包
+
+virtualenv_install("r-reticulate", "louvain")
+
+
+step6 重要一步—重启
+
+然后检查一下：看到这里的python各种路径改成virtualenv的就可以了
+
+py_config()
+
+自己可以尝试一下安装UMAP：py_install(packages ='umap-learn')
+
+
+最后是Windows的操作
+
+Windows需要使用conda安装
+
+下载、安装、激活conda就不多说，一切默认、yes即可
+
+然后配置也是类似上面virtualenv
+
+# 首先创建一个环境
+library(reticulate)
+conda_create("r-reticulate")
+# 然后安装
+conda_install(envname = "r-reticulate", packages="louvain")
+# 配置个人python的路径(视个人情况修改)
+use_python("~/miniconda3/envs/r-reticulate/lib/python3.7/site-packages/")
+# RETICULATE_PYTHON="~/miniconda3/envs/r-reticulate/bin/python3"
+
+重点依旧是重启！重启！否则Rstudio不会这么智能判断新安装的Python位置
+
+重启之后：py_config()检查，只要不是系统原来默认的Python路径，就可以了
+
+同样的，安装一下umap-learn试试，最后能library(umap) 或者用其他函数能调用了就说明搞定
+
+欢迎关注我们的公众号～_～　　
+
+我们是两个农转生信的小硕，打造生信星球，想让它成为一个不拽术语、通俗易懂的生信知识平台。需要帮助或提出意见请后台留言或发送邮件到jieandze1314@gmail.com
+

@@ -1,0 +1,30 @@
+
+【报错信息】
+
+Max retries exceeded with url: /oauth2/login?code=dfgg&619847 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self signed certificate (_ssl.c:1124)')))
+
+
+【错误方向】🙅
+
+开始只搜索的前半部分Max retries exceeded with url，出来结果如下，尝试后发现无法解决。
+
+增加重试连接次数
+
+requests.adapters.DEFAULT_RETRIES = 5
+
+关闭多余的连接 requests使用了urllib3库，默认的http connection是keep-alive的，requests设置False关闭。
+
+操作方法: s = requests.session() s.keep_alive = False
+
+
+【解决方法】
+
+服务器使用的是自签名的ssl证书。可使用verify值为的可选参数构建客户端False，禁用所有ssl检查。
+
+
+【遗留问题】
+
+报错信息：requestss设置verify=False出现警告InsecureRequestWarning: Unverified HTTPS request is being made to host 'fir-download.fircli.cn'
+
+解决方法：加上如下代码
+

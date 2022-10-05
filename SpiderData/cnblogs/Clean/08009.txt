@@ -1,0 +1,150 @@
+本文为霍格沃兹测试学院学员学习笔记。
+
+
+Python 装饰器简介
+
+装饰器（Decorator）是 Python 非常实用的一个语法糖功能。装饰器本质是一种返回值也是函数的函数，可以称之为“函数的函数”。其目的是在不对现有函数进行修改的情况下，实现额外的功能。
+
+在 Python 中，装饰器属于纯粹的“语法糖”，不使用也没关系，但是使用的话能够大大简化代码，使代码更加简洁易读。
+
+最近在霍格沃兹测试学院的《Python 测试开发实战进阶》课程中学习了 App 自动化测试框架的异常处理，存在一定重复代码，正好可以当作题材，拿来练习一下装饰器。
+
+装饰器学习资料，推荐参考 RealPython
+
+https://realpython.com/primer-on-python-decorators/
+
+本文主要汇总记录 Python 装饰器的常见踩坑经验，列举报错信息、原因和解决方案，供大家参考。
+
+
+装饰器避坑指南
+
+坑 1：Hint: make sure your test modules/packages have valid Python names.
+
+
+报错信息
+
+
+原因
+
+exception.py 文件和 base_page.py 文件之间存在相互调用关系。
+
+
+解决方案
+
+把循环调用的包引入信息放在函数内。只要一方的引用信息放在函数里即可，不必两边都放。
+
+我只在 exception.py 文件里改了，base_page.py 保持不变。
+
+详解请戳：https://testerhome.com/topics/22428
+
+
+exception.py
+
+坑 2：IndexError: tuple index out of range
+
+
+报错信息
+
+
+原因
+
+第一次写装饰器真的很容易犯这个错，一起来看下哪里写错了。
+
+为什么返回函数调用会报这个错呢？
+
+因为调用 magic() 函数的时候，没有传参进去，但是 magic() 里面引用了入参，这时 args 没有值，自然就取不到 args[0] 了。
+
+
+解决方案
+
+去掉括弧就好了。
+
+坑 3：异常处理只执行了1次，自动化无法继续
+
+
+报错信息
+
+主要是定位元素过程中出现的各种异常，NoSuchElementException、TimeoutException等常见问题。
+
+
+原因
+
+异常处理后，递归逻辑写得不对。return func() 执行了 func()，跳出了异常处理逻辑，所以异常处理只执行一次。
+
+正确的写法是 return magic()。
+
+感觉又是装饰器小白容易犯的错误 …emmm…. :no_mouth:
+
+
+解决方案
+
+为了直观，已过滤不重要代码，异常处理逻辑代码会在文末放出。
+
+坑 4：如何复用 driver？
+
+
+问题
+
+自己刚开始尝试写装饰器的时候，发现一个问题。
+
+装饰器内需要用到 find_elements，这时候 driver 哪里来？还有 BasePage 的私有变量 error_max 和 error_count 怎么获取到呢？创建一个 BasePage 对象？然后通过 func 函数来传递 driver ？
+
+func 的 driver 是私有的，不能外部调用（事实证明可以emmm…）。
+
+我尝试把异常相关的变量做成公共的，没用，还是无法解决 find_elements 的调用问题。
+
+
+解决方案
+
+思寒老师的做法是，在装饰器里面创建一个 self 变量，取 args[0]，即函数 func 的第一个入参self。
+
+_self: BasePage = args[0] 这一简单的语句成功解答了我所有的疑问。
+
+类函数定义里面 self 代表类自身，因此可以获取 ._driver 属性，从而调用 find_elements。
+
+坑 5：AttributeError
+
+找到元素后，准备点击的时候报错
+
+
+报错信息
+
+
+原因
+
+看了下 find 函数，找到元素后，有返回元素本身。
+
+那就是装饰器写得不对了：
+
+
+解决方案
+
+要在装饰器里面返回函数调用，要不然函数本身的返回会被装饰器吃掉。
+
+
+思考：
+
+写装饰器的时候，各种return看着有点头晕。每个函数里面都可以return，分别代表什么含义呢？？？
+
+
+装饰器完整实现
+
+
+exception.py
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+
+一点学习心得
+
+“纸上得来终觉浅，绝知此事要躬行”。遇到问题后尝试自主解决，这样踩过的坑才印象深刻。
+
+所以，建议大家最好先根据自己的理解写一遍装饰器，遇到问题实在没有头绪了，再参考思寒老师的解法，那时会有一种豁然开朗的感觉，这样学习的效果最好。
+
+以上，Python 装饰器踩到的这些坑，如有遗漏，欢迎补充~
+
+
+更多技术文章分享及测试资料
+

@@ -1,0 +1,22 @@
+报错信息：Warning: (1366, "Incorrect string value: '\\xD6\\xD0\\xB9\\xFA\\xB1\\xEA...' for column 'VARIABLE_VALUE' at row 484")  result = self._query(query)
+
+最可疑之处 - MySQL驱动
+
+情景再现：数据库版本是mysql5.7，采用的是pymysql驱动，mysql5.5版本没有出现这个错误
+
+Python中操作MySQL数据库的适配器主要有两个，
+
+一是MySQLdb（即MySQL-Python）: 封装了MySQL C驱动的Python驱动器；
+
+另一个是mysql-connector：MySQL官方的纯Python驱动器。
+
+两者用法类似，但是在Python v3.x中，不再支持MySQLdb，但仍然支持mysql-connector，所以这里我们就以mysql-connector为例进行学习。
+
+直接使用pip来安装mysql-connector模块：
+
+pip install mysql-connector
+
+所以更换为mysql-connector驱动后即可
+
+# mysql+ mysqlconnector://username:password@host:port/database
+

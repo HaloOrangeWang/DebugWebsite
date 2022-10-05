@@ -1,0 +1,19 @@
+
+介绍
+
+通过pip或者源码来安装某些模块时，这些模块包含有c/c++源码，安装过程会调用本地的编译器编译这些代码。在Windows平台下我安装时候的错误消息是“error: Microsoft Visual C++ 9.0 is required (Unable to find vcvarsall.bat). Get it from http://aka.ms/vcpython27” 可以看出错误是由于没有找到该vc版本，对应的是vs2008，当然一种解决方法是安装该版本，但我已经安装了vs2015，所以我就需要修改下默认的这种配置。
+
+
+方法一
+
+1、首先确定自己安装vs的版本号，可以通过查看注册表，在HKLM\Software\Wow6432Node\Microsoft\VisualStudio\下，如图， 会有多个数字卡头的子项，只有安装的会有对应的InstallDir项，可以看出我安装的vs版本是14.0；
+
+2、打开 “python安装目录/Lib/distutils/msvc9compiler.py”文件，找到find_vcvarsall函数，
+
+3、在该函数开头添加version =上面的版本号， 即添加内容为 “VERSION = 14.0”， 这样就可以使用了如图：
+
+
+方法二
+
+这种方法更简单，在环境变量中添加项 VS90COMNTOOLS ，值为 “VS安装路径\Common7\Tools”, 如图， 之后重新打开命令行程序就可以使用了。
+

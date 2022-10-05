@@ -1,0 +1,50 @@
+问题一：给Flutter的primarySwatch设置为 Colors.blue没错，设置为 Colors.white则报错，肉眼看上去两者相同啊，干嘛一个报错一个不报错？
+
+答：primarySwatch虽然可设置主题的各类颜色，但是这里的颜色类是MaterialColor，相当于色域的意思，而像primaryColor的是Color，两者是不同的！而且纯色种的黑色和白色不是MaterialColor！所以不能设置primarySwatch为Colors.white，当前只能从以下选择：
+
+red
+
+pink,
+
+purple,
+
+deepPurple,
+
+indigo,
+
+blue,
+
+lightBlue,
+
+cyan,
+
+teal,
+
+green,
+
+lightGreen,
+
+lime,
+
+yellow,
+
+amber,
+
+orange,
+
+deepOrange,
+
+brown,
+
+blueGrey
+
+问题二：primaryColor设置为 Colors.white没错，那设置为 Colors.white30会报错吗？
+
+答：会。提示这样的错误：
+
+'color != null && color.alpha == 0xFF': is not true
+
+因为title的判断要求 alpha==0xFF，而像Colors.white30这样的后面数字其实对应的是alpha值，即没有数字的时候alpha才会是0xFF。
+
+Flutter 开发有风险，入坑需谨慎。
+

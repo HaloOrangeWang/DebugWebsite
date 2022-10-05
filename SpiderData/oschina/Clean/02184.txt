@@ -1,0 +1,48 @@
+我想把ggplot2做的图片直接保存成ppt，想到了之前的推文 《我不会用illustrator，只会用ppt！》 这里用到的是 export 包
+
+首选是安装 ，使用的命令是 install.packages("export")
+
+但是遇到报错
+
+Warning in install.packages :
+  package ‘export’ is not available for this version of R
+
+A version of this package for your version of R might be available elsewhere,
+see the ideas at
+https://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Installing-packages
+
+换成另外的命令安装
+
+devtools::install_github("tomwenseleers/export")
+
+成功
+
+导出为ppt用到的命令是
+
+export::graph2ppt(p1,file="Rplot02.ppt",
+                  width=12,
+                  height=4)
+
+遇到报错
+
+Error in PPTX_(file, bg, width, height, offx = offx, offy = offy, pointsize = pointsize,  : 
+  function 'Rcpp_precious_remove' not provided by package 'Rcpp'
+
+查了一下 说直接更新 Rcpp 这个R包 参考链接是 https://github.com/matthiasgomolka/simfinapi/issues/26
+
+更新R包直接把这个包重新安装一遍就可以
+
+install.packages("Rcpp")
+
+最终得到了结果
+
+欢迎大家关注我的公众号
+
+小明的数据分析笔记本
+
+小明的数据分析笔记本 公众号 主要分享：1、R语言和python做数据分析和数据可视化的简单小例子；2、园艺植物相关转录组学、基因组学、群体遗传学文献阅读笔记；3、生物信息学入门学习资料及自己的学习笔记！
+
+本文分享自微信公众号 - 小明的数据分析笔记本（gh_0c8895f349d3）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

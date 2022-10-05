@@ -1,0 +1,54 @@
+参考链接：
+
+http://blog.csdn.net/onlyanyz/article/details/45009697
+
+https://www.cnblogs.com/fendou-999/p/3822028.html
+
+
+【解析】
+
+UnboundLocalError： local variable 'xxx' referenced before assignment
+
+在函数外部已经定义了变量n，在函数内部对该变量进行运算，运行时会遇到了这样的错误：
+
+主要是因为没有让解释器清楚变量是全局变量还是局部变量。
+
+
+【案例】
+
+如下代码片所示：
+
+结果运行时就出现了上述错误。
+
+这是因为在函数内部对变量赋值进行修改后，该变量就会被Python解释器认为是局部变量而非全局变量，当程序执行到a+=1的时候，因为这条语句是给a赋值，所以a成为了局部变量，那么在执行return a(或是print a)的时候，因为a这个局部变量还没有定义，自然就会抛出这样的错误。
+
+那么问题就来了，出现这个问题我们就要考虑程序是按照全局变量，就是经过函数运算到函数外面还生效，还是按照局部变量在函数外生效。
+
+第一种，当全局变量来看，就是使用global关键字，在函数内部先声明a这个变量是全局变量。代码如下：
+
+这时，n就成为了全局变量，在函数内部修改该变量，也就没有问题了。
+
+这种情况外面的a执行完函数是2，而函数返回的也是2。
+
+第二种是当局部变量。就是这个变量只在函数内使用，那么只要在函数内把这个变量定义一下就行了
+
+这种情况外面的a执行完函数还是1，而函数返回的则是2。
+
+然而我还发现一个问题，理论上python中list作为全局变量无需global声明，因为像b[0] = 2这种赋值不会有歧义。它是“明确的”，因为如果把b当作是局部变量的话，它会报KeyError，所以它只能是引用全局的b,故不需要多此一举显式声明global。
+
+但是我在实际操作中，在函数外定义列表，在函数中多次添加值，而后在return打印出来。执行次数少没有问题，随着循环次数的增加会出现，此报错，报错信息如下：
+
+Traceback (most recent call last):
+
+File "C:/Users/xxxxxx/Desktop/工具/get_url2.py", line 153, in <module>
+
+r_get_url_list,script_list,html_list,other_list,suffix_list = please_geturl(url,s_url)
+
+File "C:/Users/xxxxxx/Desktop/工具/get_url2.py", line 93, in please_geturl
+
+if get_url_list: # 非空列表
+
+UnboundLocalError: local variable 'get_url_list' referenced before assignment
+
+这种情况困扰我很久，一直找不出问题，最后我定义了新的列表来装返回值，程序暂时不出问题了
+

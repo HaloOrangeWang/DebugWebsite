@@ -1,0 +1,40 @@
+在models中设置完数据库相关的东西后执行命令
+
+python manage.py makemigrations
+
+此处无错误
+
+再次执行
+
+python manage.py migrate
+
+发生报错
+
+错误信息很长，仔细查找，发现错误根源
+
+django.db.utils.ProgrammingError: (1146, "Table 'test.model_stude
+nt' doesn't exist")
+
+这个错误的原因是我手贱自己在mysql中删除了一张表，Django想做字段改变的时候发现表不在了，于是报错 - -
+
+杜绝再次发生的方法就是通过Django中的设置进行表的修改，不要自己去mysql中删除表
+
+解决办法如下：
+
+1.将mysql中自己建立的表删除（除了Django自动生成的表除外，将因业务需求自己设置的表删除）
+
+2.找到自己的模型，目录中有一个名为“migrations”的文件夹，进入这个文件夹
+
+3.保留pycache文件夹和init文件，其余的删除
+
+4.在mysql中找到你的数据库，找到表名为“django_migrations”的表
+
+5.删除表内所有数据
+
+6.重新执行两条命令
+
+python manage.py makemigrations 
+python manage.py migrate Model
+
+这样数据库就正常了！
+

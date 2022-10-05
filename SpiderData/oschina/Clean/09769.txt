@@ -1,0 +1,53 @@
+最近在接触android项目，其中涉及到APP自动更新的问题，当新APP下载成功后需要打开调用cordova.plugins.fileOpener2.open，但是当引用了cordova-plugin-file-opener2插件后，重新打包项目发现报错；
+
+代码：
+
+function downloadFile() {
+	$('#bbsm').css({
+		'height' : '200px',
+		'padding-top' : '20px',
+		'text-align' : 'center',
+		'font-size' : '18px',
+		'font-weight' : 'bold',
+		'line-height' : '180px'
+	});
+	document.getElementById("bbsm").innerHTML = ''
+			+ '<div class="progress progress-striped active">'
+			+ '<div id="jdt_div" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="">'
+			+ '</div>' + '</div>';
+	// 下载路径
+	var uri = encodeURI(Mobile_download);
+	var file = cordova.file.externalDataDirectory;
+	// 保存路径
+	var fileURL = encodeURI(file + 'update.apk');
+	fileTransfer.download(uri, fileURL, function(entry) {
+		// 下载成功打开文件
+		cordova.plugins.fileOpener2.open(entry.toURL(),
+				'application/vnd.android.package-archive').then(function() {
+		}, function(err) {
+		});
+	}, function(error) {
+		// 下载失败
+	}, false, {
+		headers : {
+			"Authorization" : "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
+		}
+	});
+
+报错信息如下：
+
+最后通过查找各种资料终于解决了问题，解决方案：
+
+在Android项目中找到platforms\android\app， 创建一个build-extras.gradle，内容为：
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-v4:27.1.0'
+    }
+
+}
+
+如图：
+
+以上内容若有错误，欢迎批评指正。
+

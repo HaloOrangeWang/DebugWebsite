@@ -1,0 +1,155 @@
+今天分享的绝对是干货哟，内容很长，请大家耐心观看！（这也是小编今天放假啦，耐心的给大家整理了这份资料，内容绝对好看也实用！）
+
+小编在项目里面使用Arcgis处理数据的过程中，遇到过地图文档无法打开、软件崩溃、地理处理工具不能运行、运行结果不正确等问题。
+
+一、软件无法打开
+
+C:\Program Files (x86)\ArcGIS
+
+C:\Program Files (x86)\Esri
+
+C:\Program Files (x86)\Common Files\ArcGIS
+
+C:\Program Files (x86)\Common Files\Esri
+
+C:\Program Files\ArcGIS
+
+C:\Program Files\Esri
+
+C:\Program Files\Common Files\ArcGIS
+
+C:\Program Files\Common Files\Esri
+
+C:\Program Data\Esri
+
+C:\Program Data\ArcGIS
+
+C:\Program Data\FLEXnet
+
+C:\Users\<USERNAME>\AppData\Local\ESRI
+
+C:\Users\<USERNAME>\AppData\Local\ArcGIS
+
+C:\Users\<USERNAME>\AppData\Roaming\ESRI
+
+C:\Users\<USERNAME>\AppData\Roaming\ArcGIS
+
+C:\ProgramData\Microsoft\Windows\Start Menu\Programs\ArcGIS
+
+C:\ProgramData\Microsoft\Windows\Start Menu\Programs\E sri
+
+HKEY_LOCAL_MACHINE\SOFTWARE\ESRI
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\ESRI
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Flex LM License Manager
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\<DeleteAny Folder that contains ArcGIS or Esri>
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\ArcGIS Server
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\<Delete AnyFolder that contains ArcGIS or Esri within>
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\FLEXnetLicensing Service
+
+HKEY_CLASSES_ROOT\Installer\Products\<Delete Any Folder thatcontains ArcGIS or Esri within>
+
+HKEY_CLASSES_ROOT\Installer\Assemblies\<Delete Any Folder thatcontains ArcGIS or Esri within>
+
+HKEY_CLASSES_ROOT\<Delete and Folder that contains ArcGIS or Esriwithin>
+
+HKEY_CLASSES_ROOT\Installer\Assemblies\Global\<Delete all Keysbeginning with ESRI or ArcGIS>
+
+360杀毒软件或安全卫士经常会错删ArcMap软件的***.dll文件，导致ArcMap无法打开。关闭360，找到安装程序，执行Desktop.exe，选择修复选项。修复完成后，重启电脑，再打开软件；当然也可以直接下载或者复制被删除的***.dll文件放入当初始位置。
+
+检查软件在第几步崩溃，ArcMap在打开过程中分为三个步骤，第一步是初始化许可，第二步是初始化应用程序，第三步是加载文档。
+
+1、在初始化许可时候崩溃
+
+打开 Windows 控制面板。
+
+第三种方案：
+
+1、低版本的ArcMap无法打开高版本保存的地图文档。
+
+这种情况我们可以使用MXD_Doctor工具转一下，不过是只有是10.3以上才有，这个独立的工具位于ArcGIS Desktop 安装目录下的Tools 文件夹中，这个工具可用于分析已损坏的.mxd文件。根据分析结果，可以将已损坏的.mxd文件中所包含的实体复制到新的或现有.mxd文件中。
+
+第一种方案：
+
+新建一个空白的地图文档，将原地图文档中的图层拷贝过来，保存为新的文档
+
+第二种方案：
+
+使用自带的文档碎片整理工具，减少文档的大小，方便打开。
+
+3、Arcmap和Catalo启动慢
+
+如果使用的是离线后的浮动版，将ArcGIS_Administrtor中的服务器IP地址删掉。
+
+在执行地理处理工具时，可能会遇到执行报错、输出结果不正确、错误999999等。可以按照如下步骤进行检查。
+
+1、查看错误提示
+
+运行地理处理工具后，出现运行失败。可以在结果窗口中查看错误提示。点开错误编号，查看帮助文档中的解决方案。即使是错误999999，在消息提示中也有内容。一般来说999999问题只要改改路径，名称问题就对了。
+
+2、执行程序报错，数据被占用
+
+执行相同的操作流程，用其他电脑看能否重现此问题，如果其他电脑不能重现，先检查自己电脑的软件安装环境，重新设置软件的本地配置或是修复软件。如果其他电脑也能重现此问题，就有可能是数据问题，或是Arcgis的已知问题，可以在Esri官网查找，或者找度娘！
+
+1、表属性与图形要素对不上
+
+在使用其他格式转为SHP或是要素类，就可能会出现数据存储层面的错误。比如自相交、空几何等。可以使用工具箱中的修复几何工具检查数据是不是有几何错误。
+
+这里要注意的是修复几何工具没有输出，会直接在原始数据上修改，用此工具前先要备份数据。
+
+如果没有几何错误的话，试用一下Shp修复工具，工具的连接我会在文章结尾公布。
+
+2、不能做数据叠加分析等问题
+
+①、数据的坐标系是否一致？
+
+
+6、工具处理时间过长
+
+在菜单栏地理处理 > 地理处理选项，去掉后台处理中启用的复选框，如果硬件支持的情况下也可以使用并行处理。
+
+7、部分工具无法使用
+
+8、用工具处理完的结果很离谱
+
+首先呢要确认自己的数据没问题的情况下，把工具恢复成默认的环境参数设置。
+
+9、编辑状态不能复制粘贴
+
+这个问题的根本原因就是读取文件使用的编码类型和文件实际存储的编码类型不一致。
+
+解决方法：
+
+reg add HKEY_CURRENT_USER\Software\ESRI\Desktop10.3\Common\CodePage/v dbfDefault /t REG_SZ /d 936 /f
+
+14、Arcmap指北针图乱码
+
+这种问题是由字体库缺失导致的，可以从没有问题的机器直接拷贝 Fonts（C:\Windows\Fonts）文件夹至现在的问题机器。或者使用光盘修复ArcGIS软件。
+
+15、工具箱总是弹出Windows安全警告窗口
+
+解决办法参照网址：https://blog.csdn.net/Sdnu08gis/article/details/85286219解决。
+
+16、栅格数据集无法输出
+
+看看路径中是否存在GDB，检查是否带上错误的后缀。
+
+呼，以上就是我今天分享的内容，我觉得这绝对是一篇干货~~~，喜欢的就点点收藏加关注！
+
+毕竟你们的行动就是支持小编我写下去的动力！
+
+Shp修复工具网盘链接：
+
+https://pan.baidu.com/s/1ff7k8LK9JMmRWcIAx3WFSA
+
+提取码:i86x
+
+本文分享自微信公众号 - Gis技术分享（ZH_q4600669）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

@@ -1,0 +1,42 @@
+一、若module的名字是自己创建的包名：
+
+1. 在要运行的文件最上方中添加如下代码，引号中内容为项目路径：
+
+import sys
+
+import sys
+
+sys.path.append(r"C:\Users\Administrator\PycharmProjects\ImoocAPI")
+
+sys.path.append(r"C:\Users\Administrator\PycharmProjects\ImoocAPI")
+
+注意：一定要写在所有引入模块的代码之前哦，例如：
+
+2. 在所有导入的文件中添加1中的两行代码，例如上图中的runmethod、get_data等文件都需要添加
+
+3. 另一种方法：新建文件base.py，添加代码如下：
+
+import sys
+
+import sys
+
+import os
+
+import os
+
+curPath = os.path.abspath(os.path.dirname(__file__))
+
+curPath = os.path.abspath(os.path.dirname(__file__))
+
+rootPath = os.path.abspath(os.path.dirname(curPath) + os.path.sep + ".")
+
+rootPath = os.path.abspath(os.path.dirname(curPath) + os.path.sep + ".")
+
+sys.path.append(rootPath)
+
+sys.path.append(rootPath)
+
+把该文件放在与报错的文件同路径下，并在报错的文件中添加 import base，如下图：
+
+二、 若module的名字是python的模块，则需要重新install一下，即在cmd中输入命令:pip install XXX即可
+

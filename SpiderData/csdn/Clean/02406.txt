@@ -1,0 +1,70 @@
+
+mac安装mysql-python报错历程
+
+python标准数据库接口为python DB-API, python DB-API为开发人员提供了数据库应用编程接口。python数据库接口支持非常多的数据库，不同的数据库需要下载不同的DB-API模块。DB-API是一个规范，它定义了一系列必须的对象和数据库存取方式，以便为各种各样的底层数据库系统和多种多样的数据库接口程序提供一致的访问接口。python的DB-API为大多数的数据库实现了接口，使用它连接各数据库后，就可以用相同的方式操作各数据库。
+
+
+安装mysql-python之前，要先安装mysql。
+
+通过homebrew安装。
+
+1>sudo brew install mysql
+2>sudo /usr/local/mysql/support-files/mysql.server start
+3>pip install mysql-python
+
+安装myslq-pyhon时会报错 
+ _mysql.c:44:10: fatal error: 'my_config.h' file not found 
+ #include "my_config.h" 
+ 1 error generated. 
+ error: command 'clang' failed with exit status 1 
+ -------------------------- 
+ Failed building wheel for MySQL-python 
+  
+ 这时mac执行以下语句：
+
+1>brew install mysql-connector-c
+
+安装mysql-connector-c时会报错如下：
+
+Error: Cannot install mysql-connector-c 
+ because conflicting formulae are installed. 
+ mysql: because both install MySQL client libraries 
+ Please ‘brew unlink mysql‘ before continuing. 
+ Unlinking removes a formula's symlinks from /usr/local. You can link the formula again after the install finishes. You can --force this install, but the build may fail or cause obscure side-effects in the resulting software.
+
+这时mac执行以下语句：
+
+1>brew unlink mysql
+2>brew install mysql-connector-c
+
+mysql-connector-c安装成功！
+
+此时如果执行
+
+1>sudo brew install mysql-python
+
+系统会报错如下：
+
+Traceback (most recent call last): 
+ File "<string>", line 1, in <module> 
+ File "/private/tmp/pip-install-vpfniL/mysql-python/setup.py", line 17, in <module> 
+ metadata, options = get_config() 
+ File "setup_posix.py", line 53, in get_config 
+ libraries = [ dequote(i[2:]) for i in libs if i.startswith(compiler_flag("l")) ] 
+ File "setup_posix.py", line 8, in dequote 
+ if s[0] in "\"'" and s[0] == s[-1]: 
+ IndexError: string index out of range
+
+这时在mac终端执行
+
+1> brew link --overwrite mysql
+
+创建mysql-connector-c时取消了到mysql的连接，mysql的相关信息只有在/usr/local/Cellar/mysql/8.0.11/bin/mysql_config中才能访问到。这里面的文件不实在任意位置都可以访问的，所以将mysql重新连接到/usr/local/bin目录下。 
+ 再执行
+
+1> sudo pip install mysql-python
+
+系统提示Successfully installed mysql-python-1.2.5， mysq-python安装成功！
+
+文末给大家推荐另一个小姐姐的博客，Mac安装MySQLdb（python-mysql）模块
+

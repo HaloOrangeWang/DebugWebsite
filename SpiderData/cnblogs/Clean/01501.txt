@@ -1,0 +1,12 @@
+在PyTorch中测试DataLoader读取后的图像，对图像画框cv2.rectangle时报错：
+
+网上搜索良久无果，维度和数值也都检查无误，后在Stack Overflow上发现解决方案：
+
+这里使用copy后，报错问题解决，但是Stack Overflow上也没有人知道原因所在，
+
+I faced the same problem with numpy 1.11.2 and opencv 3.3.0. Not sure why, but this did the job for me. Before using cv2.rectangle, add the line below:
+
+python         image = image.copy() # Change
+
+先mark上，后面寻找详细原因，不过根据报错类型来看，直觉上是因为这个版本的numpy和opencv在做各种转换的时候遗留下了MAT内部数据结构的一些坑，导致了在操作rectangle时候刚好用到了MAT中的某个属性，不兼容后报错，后面有时间可以再看看cv的python版源码找找原因。
+

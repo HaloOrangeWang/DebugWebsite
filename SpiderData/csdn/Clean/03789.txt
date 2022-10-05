@@ -1,0 +1,27 @@
+
+问题描述
+
+笔者在使用Jetson NX平台配置深度学习开发环境，安装好了PyTorch(1.7.0)与torchvision(0.8.1)后，在安装“seaborn”出现以下问题：
+
+出现了一个错误，虽然安装是成功的。
+
+在执行Python脚本时出现：“Illegal instruction(cpre dumped)”错误
+
+后面测试了一些其他指令，也是有问题，如下：
+
+
+
+问题解决
+
+在网上寻找解决方案时，看到了这个网页：https://stackoverflow.com/questions/65631801/illegal-instructioncore-dumped-error-on-jetson-nano
+
+解决的方法就是增加：OPENBLAS_CORETYPE=ARMV8
+
+可以使用临时添加方法，在运行Python指令前运行：export OPENBLAS_CORETYPE=ARMV8
+
+也可以采用增加系统变量方法，可以进行全局修改。
+
+将“export OPENBLAS_CORETYPE=ARMV8”加入到“~/.bashrc”中
+
+想弄清楚原因，可以查阅这个：https://www.reddit.com/r/JetsonNano/comments/ktcyoh/illegal_instructioncore_dumped_error_on_jetson/
+

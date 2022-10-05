@@ -1,0 +1,74 @@
+服务端代码
+
+control类
+
+1     @RequestMapping(value="getUser",method = RequestMethod.POST)
+ 2     @ResponseBody
+ 3     public User getUser(HttpServletRequest request){
+ 4         String name = request.getParameter("name");
+ 5         String age = request.getParameter("age");
+ 6         User user = new User();
+ 7         user.setPassWord("123123");
+ 8         user.setUserName("asdasd");
+ 9         return user;
+10     }
+
+spring核心控制器
+
+1     <!--配置Springmvc核心控制器 -->
+ 2     <servlet>
+ 3         <servlet-name>springmvc</servlet-name>
+ 4         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+ 5         <init-param>
+ 6             <param-name>contextConfigLocation</param-name>
+ 7             <param-value>classpath:springMVC.xml</param-value>
+ 8         </init-param>
+ 9     </servlet>
+10     <servlet-mapping>
+11         <servlet-name>springmvc</servlet-name>
+12         <url-pattern>*.action</url-pattern>
+13     </servlet-mapping>
+
+客户端代码
+
+1 import com.alibaba.fastjson.JSONObject;
+ 2 import org.apache.http.HttpResponse;
+ 3 import org.apache.http.client.ClientProtocolException;
+ 4 import org.apache.http.client.methods.HttpPost;
+ 5 import org.apache.http.entity.StringEntity;
+ 6 import org.apache.http.impl.client.DefaultHttpClient;
+ 7 import org.apache.http.util.EntityUtils;
+ 8 import org.junit.Test;
+ 9 
+10 import java.io.IOException;
+11 
+12 public class HttpclientTest {
+13     @Test
+14     public void httpReqUrl()
+15             throws ClientProtocolException, IOException {
+16         String url = "http://localhost:8080/ssm/user/getUser";
+17         JSONObject json = new JSONObject();
+18         DefaultHttpClient httpClient = new DefaultHttpClient();
+19         HttpPost method = new HttpPost(url);
+20         // 接收参数json列表
+21         JSONObject jsonParam = new JSONObject();
+22 
+23         StringEntity entity = new StringEntity(jsonParam.toString(), "utf-8");//解决中文乱码问题
+24         entity.setContentEncoding("UTF-8");
+25         entity.setContentType("application/json");
+26         method.setEntity(entity);
+27 
+28         HttpResponse result = httpClient.execute(method);
+29         // 请求结束，返回结果
+30         String resData = EntityUtils.toString(result.getEntity());
+31         JSONObject resJson = json.parseObject(resData);
+32         System.out.printf(":::"+resJson.toString());
+33     }
+34 }
+
+调用报错：http.404
+
+报错原因：服务端配置的核心控制器，只拦截以 “.action”结尾的请求
+
+解决方案：将服务端核心控制器配置“<url-pattern>*.action</url-pattern>”改为“<url-pattern>/</url-pattern>”
+

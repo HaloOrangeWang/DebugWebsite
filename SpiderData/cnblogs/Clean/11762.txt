@@ -1,0 +1,75 @@
+目录1.MySQL error分类2.测试3.参考
+
+目录
+
+1.MySQL error分类
+
+2.测试
+
+3.参考
+
+在使用MySQL的过程，有时会遇到MySQL 报错信息，例如，
+
+权限报错：
+
+连接报错：
+
+无法识别的MySQL server报错：
+
+这些错误信息哪里来的呢，都是MySQL server 服务端返回的错误吗？
+
+
+1.MySQL error分类
+
+实例上，MySQL error， 按照产生错误的来源，主要包括两类，一类是MySQL server error，另一类是MySQL client error。
+
+MySQL server error，是 server 端产生的，返回给client。例如，权限报错:
+
+Error 1045: Access denied for user 'xxx'@'xxx' (using password: YES)，可以通过网络抓包，确定是server端返回给client的。
+
+MySQL client error，是 client端产生的，错误码对应关系在client端MySQL代码库中。
+
+因此，server error 与 client 端使用的MySQL 代码库没有关系，而 client error 与 client端使用的MySQL代码库有关。
+
+这个好像听起来是废话。
+
+举个例子，就会更容易理解一些。
+
+例如，在连接数据库的使用场景中，使用golang语言中 go-sql-driver/mysql的时候，从来没有遇到过类似Error 2013: Lost connection to MySQL server during query这种报错。
+
+但是在使用Python的MySQLdb，却是不是遇到这种报错。
+
+通过查看代码实现，我们发现，
+
+在 go-sql-driver/mysql中，没有搜索到MySQL 错误的任何定义。
+
+在MySQLdb中，却是有搜到的。
+
+我们再来做下测试。
+
+
+2.测试
+
+下面分别 使用go-sql-driver/mysql和MySQL 命令行工具mysql 连接一个不存在的实例no-such-host，对比下报错信息。
+
+首先看下go-sql-driver/mysql的测试。
+
+output:
+
+接着，再使用mysql命令行测试：
+
+可以看到，这两个测试的报错信息完全不同。
+
+基于以上，
+
+go-sql-driver/mysql 代码中没有MySQL client error定义。
+
+MySQL client error是 与client 端的MySQL代码库高度相关的。
+
+
+3.参考
+
+go-sql-driver/mysql
+
+MySQL Error Reference
+

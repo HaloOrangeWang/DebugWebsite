@@ -1,0 +1,220 @@
+一. 指派游戏
+
+先来回顾一下，昨天的内容
+
+1. import 一个模块相当于执行这个py文件
+
+2.模块不会被重复导入
+
+3.导入的模块存到sysmodules里
+
+4.导入模块的之后发生了什么：
+
+　　先看看模块在不在sys.modules里，如果不在：
+
+　　生成一个属于模块的命名空间
+
+　　执行py文件
+
+　　创建一个与py文件同名变量来引用这个空间中的名字
+
+　　把导入的这个模块放到sys.modules里
+
+5.from ...import....
+
+6. 绝对导入和相对导入
+
+7.软件开发规范
+
+抽牌
+
+from collections import namedtuple
+
+Card = namedtuple('Card', ['rand', 'suit'])  # 定义2个属性，牌面和花色
+
+class FranchDeck:
+    ranks = [str(n) for n in range(2, 11)] + list('JQKA')  # 列表推导式+列表，组合成13张牌
+    suits = ['红心', '方板', '梅花', '黑桃']  # 4种花色
+
+　　
+
+上面的代码是靠__len__和__getitem__实现抽牌，每次拿到的牌是不一样的。
+
+描述一张牌
+
+from collections import namedtuple
+Card = namedtuple('Card',['rand','suit'])   #定义2个属性，牌面和花色
+print(Card('2','红心'))
+
+　　
+
+from collections import namedtuple
+
+Card = namedtuple('Card', ['rand', 'suit'])  # 定义2个属性，牌面和花色
+
+class FranchDeck:
+    ranks = [str(n) for n in range(2, 11)] + list('JQKA')
+    suits = ['红心', '方板', '梅花', '黑桃']
+
+def __init__(self):
+        self._cards = [Card(rank, suit) for rank in FranchDeck.ranks
+                       for suit in FranchDeck.suits]
+
+def __len__(self):
+        return len(self._cards)
+
+def __getitem__(self, item):
+        return self._cards[item]
+
+def __setitem__(self, key, value):
+        self._cards[key] = value
+
+二，异常和错误
+
+程序中难免 出现错误，而错误分成两分钟
+
+1.语法错误（这种错误，根本过不了python解释器的语法检测，必须在程序执行前就改正）
+
+if name = 10
+
+#2.逻辑错误
+
+num = 0
+100/num
+
+　　
+
+这个蓝色链接信息，是Pycharm做的，它可以跳转到指定的代码位置
+
+ZeroDivisionError是python解释器报的
+
+什么是异常
+
+异常就是程序运行时发生错误的信号，在python种，错误错发的异常如下
+
+异常就是程序运行时发生错误的信号，在python中,错误触发的异常如下
+
+
+python中的异常种类
+
+在python中不同的异常可以用不同的类型（python中统一了类与类型，类型即类）去标识，不同的类对象标识不同的异常，一个异常标识一种错误
+
+触发IndexError
+
+1
+
+2
+
+l=['egon','aa']
+l[3]
+
+l=['egon','aa']
+
+l[3]
+
+触发KeyError
+
+1
+
+2
+
+dic={'name':'egon'}
+dic['age']
+
+dic={'name':'egon'}
+
+dic['age']
+
+触发ValueError
+
+1
+
+2
+
+s='hello'
+int(s)
+
+s='hello'
+
+int(s)
+
+常用异常
+
+
+三、异常处理
+
+什么是异常？
+
+异常发生之后,异常之后的代码就不执行了
+
+什么是异常处理
+
+python解释器检测到错误，触发异常（也允许程序员自己触发异常）
+程序员编写特定的代码，专门用来捕捉这个异常（这段代码与程序逻辑无关，与异常处理有关）
+如果捕捉成功则进入另外一个处理分支，执行你为其定制的逻辑，使程序不会崩溃，这就是异常处理
+
+为什么要进行异常处理？
+
+python解析器去执行程序，检测到了一个错误时，触发异常，异常触发后且没被处理的情况下，程序就在当前异常处终止，后面的代码不会运行，谁会去用一个运行着突然就崩溃的软件。
+所以你必须提供一种异常处理机制来增强你程序的健壮性与容错性
+
+如何进行异常处理？
+
+首先须知，异常是由程序的错误引起的，语法上的错误跟异常处理无关，必须在程序运行前就修正
+
+一、使用if判断式
+
+正常的代码
+
+1
+
+2
+
+num1=input('>>: ') #输入一个字符串试试
+int(num1)
+
+num1=input('>>: ') #输入一个字符串试试
+
+int(num1)
+
+执行就报错了
+
+什么是异常？
+
+异常即是一个事件，该事件会在程序执行过程中发生，影响程序的正常执行。
+
+一般情况下，在python无法正常处理程序时候就会发生一个异常，异常是python对象。表示一个错误。
+
+当python脚本发生异常我们需要捕获处理它，否则程序会终止执行。
+
+
+捕捉异常:
+
+
+try的工作原理
+
+当开始一个try语句后，python就在当前程序的上下文中作标记，这样当异常出现时就可
+以回到这里，try子句先执行，接下来会发生什么依赖于执行时是否出现异常。
+
+例
+
+
+使用except不带任何异常类型
+
+你可以不带任何异常类型使用except，如下实例：
+
+以上方式try-except语句捕获所有发生的异常。但这不是一个很好的方式，我们不能通过该程序
+识别出具体的异常信息。因为它捕获所有的异常。
+
+二，python为每一种异常制定了一个类型，然后提供了一种特定的语法结构用来进行异常处理。
+
+part1 基本语法：
+
+如果文件不存在，提示报错
+
+FileNotFoundError: [Errno 2] No such file or directory: 'a.txt'
+
+　　
+
+　　
+

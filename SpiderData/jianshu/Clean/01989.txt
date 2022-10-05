@@ -1,0 +1,71 @@
+nodejs通过require('brain')请求brain.js模块；但是在运行的时候报错了，如下：
+
+于是去安装brain.js，命令如下：
+
+$npm install brain.js --save
+
+但是一直报错，无法正常安装。
+
+brain.js官网：https://brain.js.org/#/
+
+
+Windows
+
+Python 2.7
+
+Python 2.7
+
+Microsoft Visual Studio
+
+Microsoft Visual Studio
+
+d3dcompiler_47.dll should be in c:\windows\system32, but if isn't then you can find another copy in the deps/ folder
+
+d3dcompiler_47.dll should be in c:\windows\system32, but if isn't then you can find another copy in the deps/ folder
+
+(optional) A modern nodejs supporting es6 to run some examples https://iojs.org/en/es6.html
+
+(optional) A modern nodejs supporting es6 to run some examples https://iojs.org/en/es6.html
+
+For general information on building native modules, see the node-gyp documentation.
+
+For general information on building native modules, see the node-gyp documentation.
+
+按这个要求进行了如下操作：
+
+$npm install --global --production windows-build-tools
+
+$npm config set msvs_version 2017
+
+$npm rebuild
+
+这些都操作了一遍，还是报错，无法安装成功。
+
+最后通过cnpm解决：
+
+淘宝 NPM 镜像
+
+https://developer.aliyun.com/mirror/NPM
+
+$ npm install -g cnpm --registry=https://registry.npm.taobao.org
+
+（cnpm(gzip 压缩支持) 命令行工具代替默认的 npm）
+
+$ cnpm install brain.js -s
+
+在用cnpm安装brain的时候提示:
+
+百度了一下，需要用管理员权限打开powershell，然后输入：set-ExecutionPolicy RemoteSigned
+
+之后重新用cnpm安装brain.js就成功了；
+
+另外安装以前较早版本可以安装成功：
+
+$npm install brain.js@1.6.1 -s
+
+但是考虑到版本较早，怕有功能缺失等问题，便没有采用此方法。
+
+还有一种方式是通过购买香港的window 2019 VPS，此种方法没有去尝试。
+
+以上写的较为粗糙，先记录问题为主，然后有时间在做整理。
+

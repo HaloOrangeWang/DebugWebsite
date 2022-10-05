@@ -1,0 +1,44 @@
+在参与计算的时候两个参与loss计算的值要一样啊
+
+解析：
+
+如果y是one-hot encoding格式，使用sparse_categorical_crossentropy
+
+如果y是整数，非one-hot encoding格式，使用categorical_crossentropy
+
+tensorflow.python.framework.errors_impl.UnknownError: 2 root error(s) found.
+
+(0) Unknown:  Failed to get convolution algorithm. This is probably because cuDNN failed to initialize, so try looking to see if a warning log message was printed above.
+
+[[node SegNet/block1_conv2/Relu (defined at media/ac/ubuntu train/Semantic-Segmentation-main/train.py:337) ]]
+
+[[confusion_matrix/assert_less_1/Assert/AssertGuard/pivot_f/_31/_77]]
+
+(1) Unknown:  Failed to get convolution algorithm. This is probably because cuDNN failed to initialize, so try looking to see if a warning log message was printed above.
+
+[[node SegNet/block1_conv2/Relu (defined at media/ac/ubuntu train/Semantic-Segmentation-main/train.py:337) ]]
+
+0 successful operations.
+
+0 derived errors ignored. [Op:__inference_train_function_6169]
+
+原因分析：可能是显存太小
+
+按需分配现存
+
+tf 2.x与以前版本的差距是：
+
+tf 2.x：tensorflow.compat.v1
+
+按需分配现存示例：
+
+这样可以避免出错：x=torch.Tensor(x.numpy()).float().to(device) # .float() .numpy()
+
+x=torch.Tensor(x.numpy()).to(device)
+
+模型内部所以产生的变量都要以tensor的形式放在 gpu上 .to(device)
+
+第二点：模型 损失函数等要在gpu上
+
+在模型种 tensor 不要重复的 使用 .to(device) 和torch.Tensor(arr)
+

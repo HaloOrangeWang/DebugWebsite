@@ -1,0 +1,55 @@
+
+Python报错：SyntaxError: unexpected EOF while parsing
+
+报错现象分析解决
+
+报错现象
+
+分析解决
+
+标签：debug经验，Python
+
+
+报错现象
+
+File "<string>", line 1
+SyntaxError: unexpected EOF while parsing
+
+提示EOF（END OF FILE），即预期外的文件截止符。这个报错可能问题有：
+
+1）代码中（）未配对
+
+2）读取的string文件内容不符合函数使用规范
+
+
+分析解决
+
+小规模代码中，可以利用二分法快速定位，不断切分代码模块，打印或查看关键变量是否符合预期，从而找到出现问题的代码，确定具体哪行报错。
+
+举例：
+
+Y = []
+print('debug...')
+print(str1)
+for data in str1:
+    val = eval(data)
+    Y.append(val)
+
+假设，debug……过程中，发现在7行处开始异常返回并报错。
+
+首先，检验输入变量str1，是否符合预设：全为string类型的科学计数法字符串。如符合，再单步观察函数运行结果。str1打印结果如下：
+
+['0.000000000000000e+00', '0.000000000000000e+00', '0.000000000000000e+00', '\n']
+
+显然，不符合预期，即原字符串切割后，末尾的换行符也被放入了进来，无法转换为数字，导致报错。
+
+找到原因，于是就可以在倒数第一个项截止即可，从而就不会有异常字符串输入到eval()中，导致报错。
+
+Y = []
+print('debug...')
+print(str1)
+for i in range(len(str1) - 1):
+    Y.append(eval(str1[i]))
+
+输出正常，打工搞成。
+

@@ -1,0 +1,64 @@
+首先,应用程序似乎“不受信任”,在提示时单击“信任”将无法执行任何操作:
+
+其次,尝试创建新的Jupyter笔记本时出现以下错误:
+
+Creating Notebook Failed:
+
+The error was: Unexpected error while saving file: Desktop/Complete-Python-3-Bootcamp-master/03-Methods and Functions/Untitled.ipynb database is locked
+
+第三,如果我尝试加载其他Jupyter笔记本,我会遇到问题。例如,尝试打开03函数练习练习.ipynb来自Jupyter的“Python训练营”
+
+我得到以下信息:
+
+Error loading notebook
+
+An unknown error occurred while loading this notebook. This version can load notebook formats or earlier. See the server log for details.
+
+[W 14:40:06.678 NotebookApp] Notebook Desktop/Complete-Python-3-Bootcamp-master/03-Methods and Functions/04-Function Practice Exercises - Solutions.ipynb is not trusted
+
+以及:
+
+[E 14:57:45.839 NotebookApp] Uncaught exception GET /api/contents/Desktop/Complete-Python-3-Bootcamp-master/03-Methods%20and%20Functions/03-Function%20Practice%20Exercises.ipynb?type=notebook&_=1562536665698 (::1)
+
+HTTPServerRequest(protocol='http', host='localhost:8890', method='GET', uri='/api/contents/Desktop/Complete-Python-3-Bootcamp-master/03-Methods%20and%20Functions/03-Function%20Practice%20Exercises.ipynb?type=notebook&_=1562536665698', version='HTTP/1.1', remote_ip='::1')
+
+Traceback (most recent call last):
+
+File "/anaconda3/lib/python3.7/site-packages/tornado/web.py", line 1699, in _execute
+
+result = await result
+
+File "/anaconda3/lib/python3.7/site-packages/tornado/gen.py", line 209, in wrapper
+
+yielded = next(result)
+
+File "/anaconda3/lib/python3.7/site-packages/notebook/services/contents/handlers.py", line 112, in get
+
+path=path, type=type, format=format, content=content,
+
+File "/anaconda3/lib/python3.7/site-packages/notebook/services/contents/filemanager.py", line 433, in get
+
+model = self._notebook_model(path, content=content)
+
+File "/anaconda3/lib/python3.7/site-packages/notebook/services/contents/filemanager.py", line 392, in _notebook_model
+
+self.mark_trusted_cells(nb, path)
+
+File "/anaconda3/lib/python3.7/site-packages/notebook/services/contents/manager.py", line 503, in mark_trusted_cells
+
+trusted = self.notary.check_signature(nb)
+
+File "/anaconda3/lib/python3.7/site-packages/nbformat/sign.py", line 439, in check_signature
+
+return self.store.check_signature(signature, self.algorithm)
+
+File "/anaconda3/lib/python3.7/site-packages/nbformat/sign.py", line 239, in check_signature
+
+(datetime.utcnow(), algorithm, digest),
+
+sqlite3.OperationalError: database is locked
+
+[W 14:57:45.840 NotebookApp] Unhandled error
+
+这是最近才开始的,我不知道为什么。似乎这两个错误(无法创建新笔记本和无法打开现有笔记本)都是由某种权限问题引起的。我不应该从上面的图片列表中的一些笔记本文件可以打开没有问题。感谢您的帮助!
+

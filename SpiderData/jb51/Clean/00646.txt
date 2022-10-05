@@ -1,0 +1,15 @@
+使用os.remove删除文件，总是遇到错误：PermissionError: WinError
+
+找了很久没找到什么原因，以为是windows系统的问题，最后发现是删除了一个没有关闭的文件引起的。
+
+代码如下：
+
+with open(front_pic_path,'rb') as f:
+ pic_base64 = base64.b64encode(f.read())
+ #f.close()
+ os.remove(front_pic_path)
+
+后来我增加了那行f.close()就OK啦！
+
+以上这篇解决python删除文件的权限错误问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

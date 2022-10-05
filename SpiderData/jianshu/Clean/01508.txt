@@ -1,0 +1,40 @@
+is not valid Latin-1. Use body.encode('utf-8') if you want to send it encoded in UTF-8.
+
+问题指明：post请求中文，无法进行编码，需要对参数进行“utf-8”的编码
+
+尝试：按报错进行解决：
+
+response=requests.request("POST", url, data=payload.encode("utf-8"), headers=headers)
+
+出现问题：返回的response的中文数据为乱码：
+
+相当乱码的话，应该是编码不匹配的问题，尝试解决：
+
+print(response.text.encode("utf-8"))
+
+结果这乱码更加摸不着头脑了：
+
+这个问题，一直弄了我一个晚上，太困睡觉，起床后，直到这篇解决我的问题：python 设置requests 编码，完美解决中文乱码问题：
+
+response.enconding="utf-8"
+print(response.text)
+
+
+拓展：特别注意-requests的请求头header，一些设置编码的参数问题：
+
+请求头：header：
+'accept-encoding': "gzip, deflate, br",
+
+这个请求头直接印象下面乱码：
+
+解决分析参考： 从python爬虫引发出的gzip,deflate,sdch,br压缩算法分析
+
+就因为这个，让我弄了一晚，得到的经验是：在测试bug的时候，尽量减少变量，能不要的，就不要。
+
+
+参考
+
+Python 爬虫 (requests) 发送中文编码的 HTTP POST 请求：整个问题的解决流程；
+
+解决 python3 requests headers 参数不能有中文：这个有参考意义，但要注意是header还是body
+

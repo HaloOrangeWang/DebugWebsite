@@ -1,0 +1,84 @@
+
+Python---错误笔记
+
+
+1. Python编码问题：
+
+我们在编写 Python 脚本时，往往会写上中文凝视。可是有时候，当我们执行程序时。却发现例如以下错误：SyntaxError: Non-ASCII character '\xe5' in file /home/johnnie/Files/Workspace/python/head_first/chapter2/nester.py on line 7, but no encoding declared;
+ see http://python.org/dev/peps/pep-0263/ for details.
+
+可是有时候，当我们执行程序时。却发现例如以下错误：SyntaxError: Non-ASCII character '\xe5' in file /home/johnnie/Files/Workspace/python/head_first/chapter2/nester.py on line 7, but no encoding declared;
+ see http://python.org/dev/peps/pep-0263/ for details.
+
+出现原因：就是中文编码的问题
+
+解决方式：
+
+法1：在文件里开头添加例如以下：
+
+#!/usr/bin/python  或 者  #!user/bin/env python
+
+#encoding=utf-8
+
+# -*- coding: utf-8 -*-       # 推荐这样的方式：能够解决模块间导入中文的问题，建议每次都写上
+
+[注意的是声明的编码必须与文件实际保存时用的编码一致，否则非常大几率会出现代码解析异常。
+
+如今的IDE通常会自己主动处理这样的情况，改变声明后同一时候换成声明的编码保存，但文本编辑器控们
+
+须要小心]
+
+
+2. Python文件读取时出现的错误:
+
+在执行 read_file.py 程序时，遇到一个错误：need more than 1 value to unpack
+出现原因： line.split(":", 1) 这一语句造成的错误
+
+解决方式：我们应该查看我们所要读取的文件是否有末尾有空行，将空行删除就可以
+
+read_file 程序代码：
+
+
+3. Python 的 Web server执行 CGI 脚本报 FileNotFound 的错误：
+
+当 Web server执行 CGI 脚本遇到 FileNotFoundError: [Errno 2] No such file or directory 时，不要急，先查看：
+
+1). 是否真的有该 CGI 脚本？
+
+2). 是否给予该脚本可执行权限？
+
+3). 最easy疏忽的一部就是： CGI 脚本的首行必须加上例如以下代码：
+#!/usr/bin/python 或 #!/usr/bin/python3  而不是 #!usr/bin/python  [注意： usr前面另一个左斜线。！。！]
+
+。！]
+
+
+4. Django 模板中使用 {%url%}标签报错:
+
+在 Django 的模板文件 blog_detail.html 中的 <a> 标签的 href 属性中使用 {% url %} 标签，出现例如以下错误:arguments '()' and keyword arguments '{}' not found.....
+
+源码片段。根文件夹下的 urls.py:
+
+blog_details.html:
+
+....
+<a href = "{% url 'sblog/blog_details' blog.id %}">....</a>
+
+出现原因：
+
+配置 urls 和 标签的使用有误。首先，对于使用 {% url %} 标签时，推荐使用的是对于每个 app，都在
+
+该 app 文件夹下新建一个 urls.py 的文件，对该 app 的 url 进行管理。且应该将 url 定义为例如以下形式：url(r'^accounts/logout/$', logout_view, name = 'logout_view')
+
+首先，对于使用 {% url %} 标签时，推荐使用的是对于每个 app，都在
+
+该 app 文件夹下新建一个 urls.py 的文件，对该 app 的 url 进行管理。
+
+且应该将 url 定义为例如以下形式：url(r'^accounts/logout/$', logout_view, name = 'logout_view')
+
+解决方式：
+
+1) 改动根文件夹下的 urls.py:
+
+<a href="{% url 'blog_detail' blog.id %}">{{blog.caption}}</a>
+

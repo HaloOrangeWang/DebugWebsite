@@ -1,0 +1,40 @@
+这个错误可能是因为没有安装MySQL模块，这种情况下执行如下语句安装：
+
+pip install MySQLdb
+
+如果安装时遇到错误“_mysql.c:29:20: 致命错误：Python.h：没有那个文件或目录”，则应先安装好依赖：
+
+yum install -y python-devel
+
+可执行以下几个命令，查看MySQL包的安装情况：
+
+pip show mysql
+
+pip list
+
+yum list MySQL-python
+
+也可进入Python的Shell查看当前包的路径：
+
+import sys
+
+print sys.path
+
+如果安装好MySQLdb后仍然报错“ImportError: No module named MySQLdb”，可能是因为包路径问题，即MySQLdb的实际路径不在Python的搜索范围内，这里可以手工设置环境变量PYTHONPATH包含进来，比如：
+
+export PYTHONPATH=/usr/lib64/python2.7/site-packages:$PYTHONPATH
+
+或者代码中显示添加包路径：
+
+>>> import sys
+
+>>> sys.path.append("/usr/lib64/python2.7/site-packages")
+
+>>> import MySQLdb
+
+以Python-2.7为例，包默认路径一般在以几个：
+
+/usr/lib64/python2.7/site-packages
+
+/usr/local/lib/python2.7/site-packages
+

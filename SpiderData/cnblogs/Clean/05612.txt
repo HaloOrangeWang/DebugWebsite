@@ -1,0 +1,69 @@
+随手记录转载：
+
+#ModuleNotFoundError: No module named ‘cv2’
+在安装opevncv时会出现ImportError: No module named cv2 的错误，找不到cv2的包。 这时候安装扩展包即可：
+
+pip install opencv-python
+————————————————
+版权声明：本文为CSDN博主「Yoc Lu」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/LYKXHTP/article/details/82109053
+
+最近在学习Python，所以安装了Anaconda3，在用命令行输入：jupyter notebook的时候报错，无法打开jupyter notebook页面。
+
+查了网上的资料说是因为冲突的原因，因为在安装Anaconda3之前有安装过Python2.7，而安装的Anaconda3对应的Python版本是3.5，有可能就是这个问题导致的，所以按照网上的步骤尝试了一下，结果搞定了，所以记录一下。
+
+第一步：检查环境变量
+
+设置步骤如下:
+我的电脑>>属性>>高级系统设置>>环境变量>>系统环境变量>>path>>添加以下两个路径：
+1. Anaconda3的安装路径，如D:\Program Files\Anaconda3
+2. Anaconda3中Library文件夹的路径，如D:\Program Files\Anaconda3\Library\bin
+
+第二步：重新安装pyzmq
+
+在Anaconda Prompt窗口输入：
+pip uninstall pyzmq
+卸载完之后，再重新安装:
+pip install pyzmq
+
+第三步：输入jupyter notebook
+
+在cmd窗口输入jupyter notebook命令就可以成功打开jupyter notebook.
+————————————————
+版权声明：本文为CSDN博主「enen1129」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/enen1129/article/details/88553596
+
+
+jupyter notebook import tensorflow as tf 报错解决
+
+在anaconda5.2.0下 安装tensorflow完毕，在cmd下测试成功，但是在jupyter notebook中测试报错：大意是找不到指定的模块
+
+python版本为3.6.5
+
+解决方法：
+
+1、安装ipython，安装jupyter
+
+需要切入之前安装tensorflow时创建的tensorflow运行环境
+
+打开anaconda prompt，进行安装ipython
+
+(tensorflow)C:\Windows\system32>conda install ipython
+
+···
+
+进行安装jupyter
+
+(tensorflow)C:\Windows\system32>conda install jupyter
+
+...
+
+2、执行这句关键代码：ipython kernelspec install-self --user
+
+(tensorflow)C:\Windows\system32>ipython kernelspec install-self --user
+
+3、重新打开jupyter notebook ,再测试import tensorflow as tf成功了。
+————————————————
+版权声明：本文为CSDN博主「子春-寒」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/xavier_muse/article/details/84993608
+

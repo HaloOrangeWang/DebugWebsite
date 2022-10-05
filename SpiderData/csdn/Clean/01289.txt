@@ -1,0 +1,221 @@
+在使用Python时，作为萌新的我总是会粗心的掉这掉那，运行时就会出现各式各样的错误，因此写这么一篇博客，来总结下编写代码的一些常见错误以及解决办法。
+
+有什么python相关报错解答自己不会的、或者源码资料/模块安装/女装大佬精通技巧 都可以来这里：（https://jq.qq.com/?_wv=1027&k=2Q3YTfym）或者文末私号问我
+
+
+NameError
+
+报错：
+
+>>> print(a)
+Traceback (most recent call last):
+  File "<pyshell#0>", line 1, in <module>
+    print(a)
+NameError: name 'a' is not defined
+
+NameError
+ 名称错误
+
+原因及解决方案：
+
+先给a赋值，才能使用它。当出现NameError时，绝大多数情况不是没被赋值，而是我们将单词拼错，或大小写没注意到。因此要回头好好检查下哪里错了。
+
+
+SyntaxErrorError
+
+报错：
+
+#错误1
+>>> a = 1
+>>> if a:
+print(1)
+SyntaxError: expected an indented block
+
+#错误2
+>>> if a<b ：
+SyntaxError: invalid character in identifier
+
+#错误3
+>>> print('a)
+      
+SyntaxError: EOL while scanning string literal
+
+SyntaxError
+ 语法错误，代码形式错误
+
+原因及解决方案：
+
+错误1：没有缩进或者缩进格式错误。最常见的问题就是在于Tab和Space的混用。其实在多数编辑器上转行是会自动补好缩进的，如果实在不确定，可以手动按一下Tab或敲4下Space(更建议后者)。切记Tab和Space不要同时按或混着多按。
+
+错误2：绝大多数情况下出现这个错误是因为写代码时混用了中文标点，在不经意时按了Shift切换成了中文字符。在敲代码时，要多注意注意输入法是不是不小心改变了
+
+错误3：出现错误3，真的是非常非常非常不小心了。多出现在引号不对称或缺少引号的情况下。这时你应该检查下你的代码哪里的颜色有点奇怪。在多数编辑器中，输入单个引号后，如果没有另一个引号与之对应，")"的颜色或者代码的颜色会显得很奇怪
+
+
+AttributeError
+
+报错：
+
+>>> a = list()
+>>> a.add('1')
+Traceback (most recent call last):
+  File "<pyshell#21>", line 1, in <module>
+    a.add('1')
+AttributeError: 'list' object has no attribute 'add'
+
+AttributeError
+ 赋值异常
+
+原因及解决方案：
+
+出现这种错误主要是因为混用了语法。如上例：a是一个空列表，而往列表中添加元素是append，即本应用a.append(‘1’)。而a.add()是用于往集合中添加元素的，这种语法的混用，导致了AttributeError。
+
+
+TypeError
+
+报错：
+
+#错误1
+>>>a = input('Enter a number:')
+>>>print(a/2)
+
+Enter a number:1
+Traceback (most recent call last):
+  File "C:\Users\acer\Desktop\测试1.py", line 2, in <module>
+    print(a/2)
+TypeError: unsupported operand type(s) for /: 'str' and 'int'
+
+#错误2
+>>> for i in range(1,2,2,3):
+	print(i)
+
+Traceback (most recent call last):
+  File "<pyshell#29>", line 1, in <module>
+    for i in range(1,2,2,3):
+TypeError: range expected at most 3 arguments, got 4
+
+TypeError
+ 类型错误
+
+原因及解决方案：
+
+错误1：如上例，input()返回的是一个字符串类型的值，而字符串显而易见是不能直接与数字进行运算，因此出现了TypeError。解决该问题的关键在于你需要得到的是什么类型的值。若需要数值型，可在input()前加上eval()，即可返回数值型。若只需要整型，可加上int()。以此类推。
+
+错误2：参数个数错误。range()最多只能有三个参数(start,end,index)，但输入了4个参数，因此出现TypeError。该问题主要出现于对函数的不熟悉上。可通过help()先查看函数的具体用法，再添加合适的参数进行使用。
+
+
+IndexError
+
+报错：
+
+>>> a = list()
+>>> a.append('1,2,3,a,b');a
+['1,2,3,a,b']
+>>> a[5]
+Traceback (most recent call last):
+  File "<pyshell#41>", line 1, in <module>
+    a[5]
+IndexError: list index out of range
+>>>
+
+IndexError
+ 索引错误
+
+原因及解决方案：
+
+出现该错误主要原因在于索引不存在或超过序列范围。如上例：列表a只有5个元素**(切记：Python中索引都是从0开始)**，因此a[6]需要返回的是第6个元素，而总共只有5个元素。故出现该错误。多数情况是因为忘记了“从0开始”这个原则导致出现这种错误，改变下索引值便可解决。
+
+
+ValueError
+
+报错：
+
+>>> a = "abc"
+>>> int(a)
+Traceback (most recent call last):
+  File "<pyshell#46>", line 1, in <module>
+    int(a)
+ValueError: invalid literal for int() with base 10: 'abc'
+
+ValueError
+ 值错误
+ 原因及解决方案：
+
+出现这种错误主要原因是传给对象的参数类型不准确。如上例，a是一个字符串类型，而int()需要传入的是数值型，故出现了上述错误。解决起来也很容易，只用改变输入值的类型即可。
+
+
+KeyError
+
+报错：
+
+>>> d={'a':1,'b':2,'c':3}
+>>> d['a']
+1
+>>> d['f']
+Traceback (most recent call last):
+  File "<pyshell#49>", line 1, in <module>
+    d['f']
+KeyError: 'f'
+
+KeyError
+ 字典键值错误
+
+原因及解决方案：
+
+常见于字典中。如上例，字典d只有a，b，c三个键及对应的键值。而想得到的是d[‘f’]，明显是不存在的，故出现了该错误，可能因为漏填键及键值导致。通过访问已存在的键值(如a，b，c)来解决。
+
+
+FileNotFoundError
+
+报错：
+
+#在该目录下并没有hello,py这个文件
+>>> f = open('hello.py')
+Traceback (most recent call last):
+  File "<pyshell#54>", line 1, in <module>
+    f = open('hello.py')
+FileNotFoundError: [Errno 2] No such file or directory: 'hello.py'
+
+FileNotFoundError
+ 文件不存在错误
+
+原因及解决方案：
+
+常用于对文件的处理。由于输入文件名的不存在所导致的错误。查看该目录下是否存在目标文件，或将目标移至该目录下再进行open()
+
+ps:
+ 如何查看python解释器当前路径及目录下的文件：
+
+#查看目录
+import os
+os.getcwd()
+'C:\\Users\\acer\\Desktop'
+#查看目录下的文件
+os.listdir('C:\\Users\\acer\\Desktop')
+
+#,及对\的转义。若存在多个\需要转义也可通过r，即os.listdir(r’C:\Users\acer\Desktop’)解决。**切记当使用了r后，不能在句末再加入\
+
+
+io.UnsupportedOperation
+
+报错：
+
+>>> f = open('测试1.py')
+>>> f.write("test")
+Traceback (most recent call last):
+  File "<pyshell#56>", line 1, in <module>
+    f.write("test")
+io.UnsupportedOperation: not writable
+
+io.UnsupportedOperation
+ 文件权限问题报错(上例中是用的f.write，故为not writable
+
+原因及解决方案：
+
+open(“测试1.py”)如果入参没有加读写模式参数mode，说明默认打开文件的方式为只读方式，而此时又要写入字符，所以权限受限，才会报错。可通过更改模式解决，即>>>
+ f=open(“测试1.py”,‘w+’)。
+
+上述即为Python学习中常见的一些错误。
+
+有什么python相关报错解答自己不会的、或者源码资料/模块安装/女装大佬精通技巧 都可以来这里：（https://jq.qq.com/?_wv=1027&k=2Q3YTfym）或者文末私号问我
+

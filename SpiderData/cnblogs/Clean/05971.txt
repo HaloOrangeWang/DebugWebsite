@@ -1,0 +1,53 @@
+
+循环导入问题
+
+
+一、什么是循环导入？
+
+创建m2的名称空间
+
+执行m2.py，将执行产生的名字丢到m2.py
+
+在当前执行文件中拿到m2.x
+
+创建m1的名称空间
+
+执行m1.py，将执行产生的名字丢到m1.py
+
+在当前执行文件中拿到m1.y
+
+创建m1的名称空间
+
+创建m1的名称空间
+
+执行m1.py，将执行产生的名字丢到m1.py
+
+执行m1.py，将执行产生的名字丢到m1.py
+
+在当前执行文件中拿到m1
+
+在当前执行文件中拿到m1
+
+如果运行run.py，则会报错ImportError: cannot import name 'y'
+
+如果运行run.py，则会报错ImportError: cannot import name 'y'
+
+如果运行m1.py，则会报错ImportError: cannot import name 'x'
+
+如果运行m1.py，则会报错ImportError: cannot import name 'x'
+
+如果运行m2.py，则会报错ImportError: cannot import name 'y'
+
+如果运行m2.py，则会报错ImportError: cannot import name 'y'
+
+
+二、解决方案
+
+我们可以使用函数定义阶段只识别语法的特性解决循环导入的问题，我们也可以从本质上解决循环导入的问题，但是最好的解决方法是不要出现循环导入。
+
+
+2.1 方案一
+
+
+2.2 方案二
+

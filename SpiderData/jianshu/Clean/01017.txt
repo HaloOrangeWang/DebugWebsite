@@ -1,0 +1,139 @@
+
+1.Python3 报错AttributeError: module 'enum' has no attribute 'IntFlag'
+
+Fatal Python error: initsite: Failed to import the site module
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/site-packages/site.py", line 73, in <module>
+    __boot()
+  File "/usr/local/lib/python2.7/site-packages/site.py", line 26, in __boot
+    import imp  # Avoid import loop in Python >= 3.3
+  File "/usr/local/Cellar/python/3.7.0/Frameworks/Python.framework/Versions/3.7/lib/python3.7/imp.py", line 27, in <module>
+    import tokenize
+  File "/usr/local/Cellar/python/3.7.0/Frameworks/Python.framework/Versions/3.7/lib/python3.7/tokenize.py", line 33, in <module>
+    import re
+  File "/usr/local/Cellar/python/3.7.0/Frameworks/Python.framework/Versions/3.7/lib/python3.7/re.py", line 143, in <module>
+    class RegexFlag(enum.IntFlag):
+AttributeError: module 'enum' has no attribute 'IntFlag'
+
+解决办法：
+
+Terminal键入如下命令
+
+unset PYTHONPATH
+
+当然，这是头疼医头脚疼医脚的办法，并不能从根本上解决问题，要想从根本上解决问题，就得更改，.zshrc或则.bashrc中的PYTHONPATH路径
+
+eg：
+
+export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages
+
+折腾了好几天终于把Python、pip 、pip3、PyCharm、ipython折腾明白了。。。。
+
+
+2.Python默认编码错误SyntaxError: Non-ASCII character '\xe5'
+
+代码
+
+import cv2.cv as cv
+
+im = cv.LoadImage('/Users/heyu/Pictures/picture/QQ20171118-0.jpg', cv.CV_LOAD_IMAGE_COLOR)
+res = cv.CreateImage(cv.GetSize(im), cv.CV_8UC2)
+
+cv.Convert(im, res)
+cv.ShowImage("Converted", res)
+res2 = cv.CreateImage(cv.GetSize(im, cv.CV_CV_8UC2, 3))
+cv.CvtColor(im, res2, cv.CV_RGB2BGR) # HLS, HSV,YCrCb, ...
+cv.ShowImage("CvtColor", res2)
+cv.WaitKey(0)
+'''
+cv.Convert():#将图片从一个颜色空间转到另一个颜色空间
+cv.CvtColor(src, dst, code)：
+cv2:
+cv2.cvtColor(input_image, flag) # 函数实现图片颜色空间的转换，flag 参数决定变换类型。如 BGR->Gray flag 就可以设置为 cv2.COLOR_BGR2GRAY 。
+'''
+
+Terminal中键入
+
+python color_transformation.py
+
+出现如下报错
+
+File "color_transformation.py", line 13
+SyntaxError: Non-ASCII character '\xe5' in file color_transformation.py on line 17, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+
+解决方法：
+
+Python的默认编码文件是用的ASCII码，你将文件存成了UTF-8！！！（文件中存在中文或者其他语言，就会出现此问题！）
+
+解决办法很简单！！！
+
+在文件开头加入：
+
+# -*- coding: UTF-8 -*-    或者  #coding=utf-8
+
+（注：此语句一定要添加在源代码的第一行）
+
+
+3.Ubuntu中，升级了pip,再次使用pip 安装相关的python包的时候就出现以下错误
+
+ImportError: cannot import name main
+
+解决： pip文件在usr/bin目录下，cd进去，进行以下修改
+
+后来发现是因为将pip更新为10.0.0后库里面的函数有所变动造成这个问题。 解决方法如下：
+
+方法一：
+
+sudo gedit /usr/bin/pip
+
+将原来的
+
+from pip import main
+
+改为：
+
+from pip._internal import main
+
+方法二：
+
+sudo gedit /usr/bin/pip
+
+将原来的
+
+from pip import main
+if __name__ == '__main__':
+    sys.exit(main())
+
+改为：
+
+from pip import __main__
+if __name__ == '__main__':
+    sys.exit(__main__._main())
+
+就可以了，注意__main__左右的下划线是两个下划线，很多同学不成功的原因是因为只写了一个下划线
+
+
+4. pip命令报错Traceback (most recent call last): File "/usr/bin/pip", line 9, in
+
+Ubuntu升级pip后，使用时出现了问题：
+
+Traceback (most recent call last):
+      File "/usr/bin/pip", line 9, in <module>
+        from pip import main
+
+修改/usr/bin/pip中的内容即可
+
+sudo gedit /usr/bin/pip
+
+修改
+
+from pip import main  
+    if __name__ == '__main__':  
+        sys.exit(main())
+
+为
+
+from pip import __main__  //修改
+if __name__ == '__main__':  
+    sys.exit(__main__._main())//修改
+

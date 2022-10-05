@@ -1,0 +1,47 @@
+
+libpng warning: iCCP: cHRM chunk does not match sRGB 报错处理
+
+前言
+
+处理方法
+
+更新
+
+
+前言
+
+用python3.6.6 写了一段很简单的图像卷积处理代码，然后很奇怪的，出现一段报错：
+ libpng warning: iCCP: cHRM chunk does not match sRGB
+ 卷积代码如下：
+
+import matplotlib.pyplot as plt
+import pylab
+import cv2
+import numpy as np
+img = plt.imread("Test.jpg",0)   #在这里读取图片
+# img = plt.imread("Test2.jpg",0)   #在这里读取图片
+# plt.imshow(img)              #显示读取的图片
+# pylab.show()
+fil = np.array([[ -1,-1, -1],  #这个是设置的滤波，也就是卷积核
+                [ -1, 0, 1],
+                [  1, 1, 1]])
+
+res = cv2.filter2D(img,-1,fil) #使用opencv的卷积函数
+
+plt.imshow(res)                #显示卷积后的图片
+plt.imsave("result.jpg",res)
+pylab.show()
+
+使用的代码编辑器为pycharm，错误显示为：
+
+
+处理方法
+
+避免这个报错极其简单和没头没脑，Ctrl+shift 将输入法切换，不使用QQ输入法下运行，报错就没了。
+ 切换后运行：
+
+
+更新
+
+其他语言的碰到这个情况也可以这样切换输入法就好了，我碰到的QT、Visual Studio 2017这个报错都可以这么解决。
+

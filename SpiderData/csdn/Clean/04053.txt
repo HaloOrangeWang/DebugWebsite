@@ -1,0 +1,31 @@
+
+Ubuntu18.04 python “解释器错误: 权限不够”问题的解决方法
+
+出现的问题
+
+解决办法
+
+
+出现的问题
+
+当查看python或者pip时，出现如下错误：
+
+bash: /usr/lib/command-not-found: /usr/bin/python3: 解释器错误: 权限不够
+或者
+sudo: python3：找不到命令
+
+因为ubuntu自带的两个版本的python（2.7、3.6），当有多个版本python时，会因为不兼容偶尔发生上面的情况。
+
+需要将python重新指向python3.6，让其找到python源。
+
+
+解决办法
+
+终端依次输入：
+
+su
+rm /usr/bin/python3
+ln -s /usr/bin/python3.6 /usr/bin/python3 （重新指向python3.6）
+
+再次查看python --version或者pip3 list就正常了。
+

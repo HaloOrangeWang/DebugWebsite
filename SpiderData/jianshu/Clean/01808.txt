@@ -1,0 +1,28 @@
+安装过程：
+
+1.下载get-pip.py，下载路径并不重要 不用放到Python安装目录里。
+
+2.打开下载路径 python get-pip.py 运行这个py文件，pip安装成功。
+
+3.配置环境变量：
+
+到此 pip 全局安装成功了。
+
+4.在终端运行 pip install flask 我运行此行时报错，Google一下，解决方案是，先pin install markupsafe。（这一步仍有严重的错误，按下不表） 然后pip install flask，显示安装成功。
+
+5.测试是否安装成功。
+
+①在终端中输入 Python 打开Python
+
+②>>> import flask  结果报错了，错误代码如下：
+
+Traceback (most recent call last):  File "", line 1, inFile "D:\Python\lib\site-packages\flask\__init__.py", line 19, infrom jinja2 import Markup, escape  File "D:\Python\lib\site-packages\jinja2\__init__.py", line 33, infrom jinja2.environment import Environment, Template  File "D:\Python\lib\site-packages\jinja2\environment.py", line 15, infrom jinja2 import nodes  File "D:\Python\lib\site-packages\jinja2\nodes.py", line 19, infrom jinja2.utils import Markup  File "D:\Python\lib\site-packages\jinja2\utils.py", line 624, infrom markupsafe import Markup, escape, soft_unicode  File "D:\Python\lib\site-packages\markupsafe\__init__.py", line 14, infrom markupsafe._compat import text_type, string_types, int_types, \ModuleNotFoundError: No module named 'markupsafe._compat'
+
+作为一个没有什么经验的小白，我首先以为是目录的问题，后来找遍Google找到一些类似的错误代码，但没有正确的解决方案。有人说是安装包没装全，但我检查了我的，确实显示安装了。我在百度和谷歌反复搜索了错误代码的头几行，事实证明我naive了。 搜索无果后，我搜索了错误代码的最后一行，没有一个叫做markupsafe._compat的模块，不对呀，我的set-packages里明明有这个模块。
+
+然而这次正确的搜索帮我找到了答案。是用 pip 安装 markupsafe 那一步，Windows cmd 的编码问题。 解决方案是，删掉Python\Lib\site-packages目录下的 markupsafe和MarkupSafe-1.0.dist-info文件夹，打开git bash 在git终端里 pip install markupsafe。
+
+③测试一把
+
+在cmd里打开Python ，import flask 没报错，成功啦~~~
+

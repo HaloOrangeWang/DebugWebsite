@@ -1,0 +1,94 @@
+
+LNMP一键安装包上部署TP5项目500错误或者空白解决
+
+【问题原因】　　
+
+　　TP5的入口文件在public下，当他调用类文件时，跨目录所以造成500错误，或者一片空白的问题
+
+【解决方法】
+
+　　1.public和runtime的权限一般给755即可，如果不行那就给777，报错信息mkdir() Permission denied
+
+　　2.https://lnmp.org/faq/lnmp-vhost-add-howto.html
+
+　　　2.1 删除网站目录下的 .user.ini
+
+　　　　.user.ini文件无法直接修改，如要修或删除需要先执行：chattr -i /网站目录/.user.ini
+
+　　　 删除的话rm -f /网站目录/.user.ini 就可以。
+
+　　   2.2  注释open_basedir的最后一行
+
+　　　　   将 /usr/local/nginx/conf/fastcgi.conf 里面的fastcgi_param PHP_ADMIN_VALUE "open_basedir=$document_root/:/tmp/:/proc/"; 在该行行前添加 # 或删除改行，需要重启nginx。
+
+　　   2.3  确保你添加虚拟主机的时候，使用的是正确的路由规则
+
+　　
+
+LNMP 1.1及之前的版本使用php.ini里面，open_basedir设置
+
+LNMP 1.2及更高版本防跨目录功能使用.user.ini，该文件在网站根目录下，可以修改.user.ini 里面的open_basedir的值来设置限制访问的目录或删除来移除防跨目录的设置。
+
+.user.ini文件无法直接修改，如要修或删除需要先执行：chattr -i /网站目录/.user.ini
+可以使用winscp文件管理、vim编辑器或nano编辑器进行修改。
+删除的话rm -f /网站目录/.user.ini 就可以。
+修改完成后再执行：chattr +i /网站目录/.user.ini
+.user.ini不需要重启一般5分钟左右生效，也可以重启一下php-fpm立即生效。
+如果要更改网站目录必须要按上述方法修改防跨目录的设置，否则肯定报错！！
+
+LNMP 1.4上如果不想用防跨目录或者修改.user.ini的防跨目录的目录还需要将 /usr/local/nginx/conf/fastcgi.conf 里面的fastcgi_param PHP_ADMIN_VALUE "open_basedir=$document_root/:/tmp/:/proc/"; 在该行行前添加 # 或删除改行，需要重启nginx。
+
+LNMP 1.4上也可以直接使用lnmp1.4/tools/ 目录下的 ./remove_open_basedir_restriction.sh 进行移除。
+在Thinkphp、codeigniter、Laravel等框架下，网站目录一般是在public下，但是public下的程序要跨目录调用public上级目录下的文件，因为LNMP默认是不允许跨目录访问的，所以都是必须要将防跨目录访问的设置去掉，有时候这些框架类的程序提示500错误也可能是这个问题引起的。
+
+LNMPA或LAMP 模式1.2版本以上的防跨目录的设置使用的对应apache虚拟主机配置文件（lnmp管理工具添加的话文件是 /usr/local/apache/conf/vhost/域名.conf ）里的php_admin_value open_basedir参数进行设置。如果不需要设置可以在前面加 # 进行注释，或自行修改目录的限制。
+重启apache生效。
+　　3.pathinfo设置
+
+LNMP上各个版本pathinfo各个版本的设置基本一样：
+
+lnmp v1.1上，修改对应虚拟主机的配置文件(/usr/local/nginx/conf/vhost/域名.conf)
+去掉#include pathinfo.conf前面的#，把try_files $uri =404; 前面加上# 注释掉。
+
+1.2,1.3,1.4,1.5及以上版本，修改对应虚拟主机的配置文件(/usr/local/nginx/conf/vhost/域名.conf)
+将include enable-php.conf;替换为include enable-php-pathinfo.conf;
+
+1.4版本多PHP版本启用pathinfo的话，进入/usr/local/nginx/conf目录，拷贝一份enable-php-pathinfo.conf 命名为 enable-php7.2-pathinfo.conf，将 enable-php7.2.conf 文件里 fastcgi_pass这一行内容完整的复制下来替换 enable-php7.2-pathinfo.conf 文件中的 fastcgi_pass这一行 ，保存，再按前面的方法修改虚拟主机 include enable-php7.2-pathinfo.conf; 就行了，其他版本以此类推。
+
+1.5版本多PHP版本开启pathinfo的话，可以在lnmp vhost add 是选择启用pathinfo，如果存在多PHP版本就会提示你选择，也可以直接修改虚拟主机配置文件将include enable-php.conf; 替换为 include enable-php7.2-pathinfo.conf; 保存
+
+修改pathinfo需要重启nginx生效。
+
+　　注：如果是一件安装的LAMP或者LNMP，创建虚拟主机的时候pathinfo选择你使用的框架的就可以了
+
+
+验证码输入正确却一直报验证码错误
+
+1.代码问题
+2.存储满了
+
+
+TP5报错找不到模块Index
+
+在windows上一切正常,在linux环境报错
+
+1.大小写问题
+
+2.runtime和public权限问题
+
+　chmod -R 775 目录名
+
+将两个目录权限进行修改,775不行就试试777看下
+
+3.public下的index文件中指向的应用路径有问题
+
+　　#define('APP_PATH', __DIR__ . '/../application/');
+　　define('APP_PATH', __DIR__ . '/../app/');
+
+
+模板文件不存在
+
+window上没有,linux上出现,大小写问题
+
+找到对应的文件更改名称即可
+

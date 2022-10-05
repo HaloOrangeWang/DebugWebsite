@@ -1,0 +1,22 @@
+前言
+
+本文主要给大家介绍了解决apahce部署python程序出现503错误的相关内容，下面话不多说了，下一起看看详细的介绍吧。
+
+发现问题
+
+今天更新服务器后，发现使用apache部署的某个python程序无法访问了，返回503错误，报错日志如下：
+
+[Thu Apr 13 10:54:40 2017] [error] [client 127.0.0.1] (13)Permission denied: mod_wsgi (pid=1814): Unable to connect to WSGI daemon process 'trac' on '/etc/httpd/logs/wsgi.1798.0.2.sock' after multiple attempts.
+
+解决过程
+
+一看是权限问题，于是修改了对应sock文件的权限为777，发现还是503错误，重启httpd服务后也是如此。这时候发现一个问题，为啥这个sock文件会在logs目录呢？一般来说应该是在/var/run目录下啊？
+
+于是打开对应的配置文件，发现里面没有配置WSGISocketPrefix选项，于是在conf文件中添加WSGISocketPrefix /var/run/wsgi后重启服务，恢复正常了。
+
+奇怪的是，之前没有配置这个怎么就不会报错呢？难道是版本更新引起的问题？知道的朋友们可以留言进行讨论下。
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作能带来一定的帮助，如果有疑问大家可以留言交流，谢谢大家对脚本之家的支持。
+

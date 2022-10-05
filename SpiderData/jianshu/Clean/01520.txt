@@ -1,0 +1,150 @@
+环境说明：windows8.1 x64+python3.6+scrapy1.4
+
+window8.1 x64+R3.4.2+jiebaR插件+rJson插件+RStudio编辑器+wordcloud2插件
+
+
+写在前面
+
+以下所有问题答案均来源网络，在此整理并做记录
+
+本文记录源于萌新学习Python爬取B站弹幕+R语言分词demo说明
+
+建议结合食用，风味更佳
+
+
+python部分
+
+
+python安装过程中出现了当前程序已停止安装
+
+这个忘记截图了，就是在安装exe的过程中出现报错，安装成功后无法打开。后来查找到原因据说是进入python官网直接下的windows版本是32位的，当我找到64位时下载再安装就正常了。
+
+
+scrapy安装过程中报错Microsoft Visual C++ 14.0 is required.
+
+scrapy安装过程中报错如下：
+
+building 'twisted.test.raiser' extension
+ error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools": http://landinghub.visualstudio.com/visual-cpp-build-tools
+
+解决方式
+
+http://www.lfd.uci.edu/~gohlke/pythonlibs/#twisted
+
+下载twisted对应版本的whl文件（如我的Twisted‑17.5.0‑cp36‑cp36m‑win_amd64.whl，cp后面是python版本，amd64代表64位，运行命令：
+
+pip install E:\Twisted-17.5.0-cp36-cp36m-win_amd64.whl
+
+然后再次执行
+
+pip install Scrapy
+
+
+scrapy启动demo过程中报错ModuleNotFoundError: No module named 'win32api'
+
+https://sourceforge.net/projects/pywin32/files/pywin32/Build%20221/
+
+去这个网站下载对应的win32的软件
+
+
+安装win32的时候报错如下
+
+Python version 3.6 required, which was not found in the registry
+
+这个网上说是没有注册的问题，在网上找了一段代码
+
+from __future__ import print_function
+ 
+ 
+import sys
+ 
+try:
+    from winreg import *
+except ImportError:
+    from _winreg import *
+ 
+# tweak as necessary
+version = sys.version[:3]
+installpath = sys.prefix
+ 
+regpath = "SOFTWARE\\Python\\Pythoncore\\{0}\\".format(version)
+installkey = "InstallPath"
+pythonkey = "PythonPath"
+pythonpath = "{0};{1}\\Lib\\;{2}\\DLLs\\".format(
+    installpath, installpath, installpath)
+ 
+ 
+def RegisterPy():
+    try:
+        reg = OpenKey(HKEY_CURRENT_USER, regpath)
+    except EnvironmentError as e:
+        try:
+            reg = CreateKey(HKEY_CURRENT_USER, regpath)
+            SetValue(reg, installkey, REG_SZ, installpath)
+            SetValue(reg, pythonkey, REG_SZ, pythonpath)
+            CloseKey(reg)
+        except:
+            print("*** Unable to register!")
+            return
+        print("--- Python", version, "is now registered!")
+        return
+    if (QueryValue(reg, installkey) == installpath and
+        QueryValue(reg, pythonkey) == pythonpath):
+        CloseKey(reg)
+        print("=== Python", version, "is already registered!")
+        return
+    CloseKey(reg)
+    print("*** Unable to register!")
+    print("*** You probably have another Python installation!")
+ 
+if __name__ == "__main__":
+    RegisterPy()
+
+将代码保存成register.py，在该文件夹下执行
+
+python register.py
+
+问题解决
+
+
+R语言部分
+
+
+读取文件报错
+
+In read.table("E:/danmu/2.txt", header = FALSE, ) :
+   incomplete final line found by readTableHeader on 'E:/danmu/2.txt'
+
+当时的txt文件时我自己写入的，问题可能出在文件的结尾没有空格上，我在文件的结尾加了空格就可以正常使用了（如果空格也不行，试试回车）
+
+
+调用wordcloud2函数时报错
+
+Error in `[.data.frame`(data, , 1:2) : undefined columns selected
+
+这个问题我后来也没有解决，这个问题的上下文是
+
+keys = worker("keywords",topn=150)
+ re = vector_keywords(segment,keys)
+ wordcloud2(re, size = 2, minRotation = -pi/2, maxRotation = -pi/2)
+
+我这边猜测是jiebaR的vector_keywords函数返回的是向量，且输出的结果没有词频，当我把freq(segment)的结果传给wordcloud时就可以正常执行，此时freq(segment)的结果输出类型为data.frame，猜测如下：
+
+wordcloud接受的参数类型为data.frame 且需要有词频
+
+wordcloud接受的参数类型不一定为data.frame 但一定需要有词频
+
+词频是一定需要的，但是参数类型不确定，就因为vector_keywords的结果不知道怎么分出词频，才采用了freq()函数绘制词云。
+
+
+跪求大佬指导如何用关键词绘制词云啊，我真的不知道这个生成的关键词怎么把词频和词分开！而且为什么把vector_keywords的结果转换成list类型或者data.frame类型词频就消失了呢！输出的.csv文件里还是没有词频啊！
+
+
+R语言的插件安装的意外顺利，就是360总是要阻止行为
+
+the end.
+
+个人博客:
+
+进击的程序茗
+

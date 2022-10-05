@@ -1,0 +1,22 @@
+一、问题由来：
+
+　　　　我们用python Django开发web应用时，开发环境里使用 python manage.py runserver 来运行服务器。这只适用测试环境。
+
+　　　　正式发布的服务，我们需要一个可以稳定而持续的服务器 ，本文将以 Nginx 为例。我们使用Nginx +  UWSGI + Django来部署我们的Django代码
+
+　　　　然后，linux上pip下载UWSGI时，主要报错如下(图为网图，报错一致，自己未截图，取自：https://blog.csdn.net/zhangyichuan_dlut/article/details/103509382，侵删)：
+
+　　可以看出是gcc返回的错误，
+
+　　搜索得知，是因为  pip里的uwsgi包比较旧，系统中的gcc版本过高，会有报错的情况
+
+　二、解决方案：
+
+　　1、使用conda下载uwsgi，(由于anaconda本身似乎不含有此包，用下面命令)：
+
+　　　conda install -c conda-forge uwsgi        (亲测有效)
+
+　　下面是参考中的其他conda下载命令，（未验证，参考地址：https://github.com/unbit/uwsgi/issues/1770）
+
+（注意：网上许多的conda下载解决方案中，即使conda update conda是最新版，也无法直接conda install uwsgi实现下载，需要用博主上面的conda conda install -c conda-forge uwsgi）
+

@@ -1,0 +1,60 @@
+Locust环境搭建:
+pypi.python.org下载安装第三方插件cryptography、anslcrypto、pyzmq、msgpack-python、gevent、cffi、greenlet、locustio
+安装时看报错日志，根据日志安装第三方库，可通过离线安装tar.gz包的源码，但有时安装会报错，建议https://pypi.python.org/simple下直接下载第三方库的whl文件，pip install *.whl 进行在线安装能省去不少麻烦。
+注意：一定要安装插件依赖的对应版本。
+
+报错解决:
+windows下locust踩到的坑总结，每个问题让人奔溃，现在终于解决了:
+一、
+报错：Unable to find vcvarsall.bat
+出现原因：
+msvc9compiler.py从sys.version里提取MSVC的版本号，但是在注册表中并没有根据版本号找到vcvarsall.bat，在系统的环境变量中也没有找到版本号对应的路径。后来我根据版本号，在环境变量中添加了路径，但因为msvc9compiler.py主要是针对VS2008和VS2010所做的路径识别，因此还是不能正确地找到vcvarsall.bat。
+解决方法:
+
+下载VS2010并安装。
+
+设置python安装路径...\Lib\distutils目录下有个msvc9compiler.py获取vcvarsall.bat的路径，先在本地计算机找到vcvarsall.bat的位置path，然后直接在find_vcvarsall(version)函数中返回vcvarsall.bat的绝对路径。
+
+vcvarsall = path
+return vcvarsall
+
+二、
+报错：Fatal error C1083: Cannot open include file: 'openssl/opensslv.h‘
+解决方法：
+1、先检查安装的openssl.
+OpenSSL官网没有提供windows版本的安装包，可以选择其他开源平台提供的工具。例如 http://slproweb.com 下载安装OPENSSL。
+设置环境变量，例如工具安装在C:\OpenSSL-Win64，则将C:\OpenSSL-Win64\bin；复制到Path中
+
+2、然后将lib和include包copy到Python安装对应目录下：
+Copy "openssl" folder from C:\OpenSSL-Win32\include\ to    \Pyhton27\include\
+and copy all libs from C:\OpenSSL-win32\lib to   \Python27\Libs\
+cmd下设置:
+set LIB=C:\OpenSSL-win64\lib;%LIB%
+set INCLUDE=C:\OpenSSL-win64\include;%INCLUDE%
+
+三、
+安装第三方库报错：如cffi-1.11.5-cp37-cp37m-win64.whl is not a supported wheel on this platform.
+出现原因：安装的不是对应python版本的库，下载的库名中cp37代表python3.7，其他同理。
+python查看版本为32bit.
+Python 2.7 (r27:82525, Jul  4 2010, 09:01:59) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+解决方法：https://pypi.python.org/simple/cffi网站下载cffi-1.11.5-cp27-cp27m-win32.whl
+
+四、
+问题描述：SSL环境和locust环境都装好无报错之后，locust模块请求https协议接口，不论POST还是GET都提示错误：
+SSLError(Caused by SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:581)'),))",),)
+解决方法：
+查官网locust.io,终于找到解决方法：https://docs.locust.io/en/latest/api.html
+request(method, url, name=None, catch_response=False, **kwargs)
+Constructs and sends a requests.Request. Returns requests.Response object.
+利用verify参数，直接在POST/GET请求添加verify = False参数（self.client.get("/api",verify=False)），搞定，这是HTTPS网站所做的SSL证书认证，默认是True的，设置为False之后对测试没有影响；
+当然如果知道证书的路径，应该也可以用cert设置.pem文件的路径，也可以解决。
+
+五、
+问题描述：浏览器中打开127.0.0.1:8089失败
+出现原因：windows cmd下启动locust :locust -f test.py --host=https://www.baidu.com，
+netstat -ano |findstr 8089查看端口绑定在[::]:8089
+解决方法：浏览器中需访问ipv6本地地址：http://[::1]:8089/，访问成功
+
+如有转载请注明原文出处，谢谢！
+

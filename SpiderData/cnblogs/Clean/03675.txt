@@ -1,0 +1,60 @@
+本文转自http://blog.sina.com.cn/s/blog_135031dae0102yc8l.html
+
+安装好pyCharm后想要import MySQL，结果发现了一系列问题，像推到了塔罗牌一样，一个接一个的问题接踵而至，下面稍作整理，希望下次安装时能够借鉴：
+
+首先，需要连接MySQL，那么搜索第一个问题 pyCharm如何连接MySQL?
+
+下面时详细的连接步骤：
+
+1.File—>settings—>Plugins—>右侧输入‘Database Navigator’搜索，结果并没有，点击链接Search……，找到后—>Install—>OK—>Restart即可
+
+2.重启后，发现工具栏多了一个DB Navigator，点击打开'Open SQL Console'—>setup
+connection—>选择MySQL——填写用户名和密码点击测试，发现测试成功。可是在程序中import依旧报错找不到MySQLdb模块。进入第二个问题：pyCharm添加DB
+Navigator后无法成功import MySQLdb
+
+既然pyCharm已经测试成功，那么说明MySQL已经安装好了，那么是否是其他问题引起的呢？我们需要在cmd中再次测试，确认是否可导入MySQLdb：
+
+>>> import MySQLdb
+
+>>>conn=MySQLdb.connect(host='localhost',port=3306,user='root',passwd='111111',db='dbname')
+
+>>> cur=conn.cursor()
+
+发现报错：1251-Client does not support authentication protocol
+requested by server
+
+cd切换到mysql安装文件的bin目录下，然后输入mysql -u+用户名
+-p+密码，成功进入MySQL后，输入ALTER USER 'root'@'localhost' IDENTIFIED WITH
+mysql_native_password BY '111111';
+
+成功后输入flush privileges,刷新权限。
+
+继续查找问题：pycharm上安装MySQLdb-Python
+
+报错：error: Microsoft Visual C++ 9.0 is required (Unable to
+find vcvarsall.bat). Get it from
+http://aka.ms/vcpython27
+
+解决方案：缺少VC的一个库，根据提示到http://aka.ms/vcpython27下载，然后安装，
+
+解决方案：缺少驱动，需要安装MySQL-python-1.2.5.win-amd64-py2.7.exe（注意版本号）
+
+下载地址：https://pypi.org/project/MySQL-python/1.2.5/#files
+
+下载后粘贴到C:\Users\ ~\PycharmProjects\
+~\venv\Scripts目录下，cmd执行pip install安装后依旧报错，猜测问题出在驱动上，因此查询重新下载文件：MySQL_python-1.2.5-cp27-none-win_amd64.whl
+
+下载地址：https://www.lfd.uci.edu/~gohlke/pythonlibs/
+
+重新在cmd内安装，发现安装成功了，信息如下：
+
+再次回到pyCharm，发现设置中出现了MySQL-python
+
+程序也可以正常运行了！希望也能对大家有所帮助，再次总结下几个点：
+
+1.找不到教程上的包时，记得点击search
+
+2.按照步骤安装后依旧不成功，看是否时已有的python版本和驱动包不兼容，目前更新的MySQL_python-1.2.5-cp27-none-win_amd64.whl不适合python3.*的版本
+
+3.网上教程中给的MySQL-python-1.2.5.win-amd64-py2.7.exe对我来说不好用，没有找到原因，如果你试了也不行可以尝试MySQL_python-1.2.5-cp27-none-win_amd64.whl这个版本。
+

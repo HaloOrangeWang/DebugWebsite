@@ -1,0 +1,155 @@
+使用表格,在配置 columns时用到了 customRender,然后就报错了
+
+<script>
+import FileName from '@/views/admin/document/FileName'
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+    customRender: () => <FileName />,
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    key: 'age',
+    width: '12%'
+  },
+  {
+    title: 'Address',
+    dataIndex: 'address',
+    width: '30%',
+    key: 'address'
+  }
+]
+
+const data = [
+  {
+    key: 1,
+    name: 'John Brown sr.',
+    age: 60,
+    address: 'New York No. 1 Lake Park',
+  },
+  {
+    key: 2,
+    name: 'Joe Black',
+    age: 32,
+    address: 'Sidney No. 1 Lake Park'
+  }
+]
+export default {
+  name: 'DocumentList',
+  components: {
+    CreateForm,
+    NoData,
+    FileName
+  },
+  data() {
+    return {
+      data,
+      columns
+    }
+  },
+  computed: {},
+  methods: {
+    customRow (record) {
+      return {
+        on: { // 事件
+          click: () => {
+            console.log('点击行了')
+          },       // 点击行
+          mouseenter: () => {
+            console.log('鼠标移入行')
+          }  // 鼠标移入行
+        }
+      }
+    }
+  },
+  created() {
+  }
+}
+</script>
+
+
+报错原因, 没有把 columns放到data 里面,获取不到上下文
+
+这样改
+
+data() {
+    const columns = [...]
+    return {
+        columns
+    }
+}
+
+<script>
+import FileName from '@/views/admin/document/FileName'
+
+export default {
+  name: 'DocumentList',
+  components: {
+    FileName
+  },
+  data() {
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+    customRender: () => <FileName />,
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    key: 'age',
+    width: '12%'
+  },
+  {
+    title: 'Address',
+    dataIndex: 'address',
+    width: '30%',
+    key: 'address'
+  }
+]
+
+const data = [
+  {
+    key: 1,
+    name: 'John Brown sr.',
+    age: 60,
+    address: 'New York No. 1 Lake Park',
+  },
+  {
+    key: 2,
+    name: 'Joe Black',
+    age: 32,
+    address: 'Sidney No. 1 Lake Park'
+  }
+]
+
+return {
+      data,
+      columns
+    }
+  },
+  computed: {},
+  methods: {
+    customRow (record) {
+      return {
+        on: { // 事件
+          click: () => {
+            console.log('点击行了')
+          },       // 点击行
+          mouseenter: () => {
+            console.log('鼠标移入行')
+          }  // 鼠标移入行
+        }
+      }
+    }
+  },
+  created() {
+  }
+}
+</script>
+

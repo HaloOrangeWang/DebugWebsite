@@ -1,0 +1,145 @@
+
+这里将记录开发中的常见问题
+
+
+1.数据库同步问题VerificationCode.expiration_time:
+
+　　　WARNINGS:
+　　　　　api.VerificationCode.expiration_time: (fields.W161) Fixed default value provided.
+	　　　　　HINT: It seems you set a fixed date / time / datetime value as default for this field. This may not be what you want. If you want to have the current date as default, use `django.utils.timezone.now`
+
+
+　解决：
+
+　　
+
+　   ·
+
+　　
+
+
+2. python bs4.FeatureNotFound
+
+　　bs4.FeatureNotFound: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+
+　　问题所在：
+
+　　　　bs4.featurenotfound:找不到具有您请求的功能的树生成器：lxml。
+
+　　解决方法：
+
+　　　　pip install lxml
+
+
+3. selenium.common.exceptions.WebDriverException: Message: 'chromedriver'
+
+　　selenium.common.exceptions.WebDriverException: Message: 'chromedriver' executable needs to be in PATH. Please see https://sites.google.com/a/chromium.org/chromedriver/home
+
+　   问题所在：
+
+　   　　这是由于程序找不到 chromedriver 驱动
+
+　　解决方法：
+
+
+4. selenium.common.exceptions.SessionNotCreatedException:
+
+　　selenium.common.exceptions.SessionNotCreatedException: Message: session not created: This version of ChromeDriver only supports Chrome version 78
+
+　　问题所在：
+
+　　　　这是由于 ChromeDriver 和 Chrome 版本不对应
+
+　　解决方法：
+
+　　　　删除之前下载的 chromedriver
+
+　　　　重新下载 chromedriver　　http://chromedriver.storage.googleapis.com/index.html
+
+　　　　注意版本：版本对照表　　https://blog.csdn.net/BinGISer/article/details/88559532
+
+
+5. pip._vendor.urllib3.exceptions.ReadTimeoutError
+
+　　pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+　　
+
+　　问题所在：
+
+　　　　这是由于python 安装第三方库，超时报错--Read timed out.
+
+　　解决方法：
+
+　　　　pip install -i https://pypi.doubanio.com/simple pandas
+
+　　　　pip  --default-timeout=100000 install scrapy
+
+　　
+
+
+6. RecursionError: maximum recursion depth exceeded while calling a Python object
+
+　　RecursionError: maximum recursion depth exceeded while calling a Python object
+
+　　
+
+　　问题所在：
+
+　　　　递归错误：调用Python对象时超过了最大递归深度
+
+　　　　python默认递归深度为1000，超过了就会报错
+
+　　解决方法：
+
+　　　　其实这里的"解决方法" 是不推荐的
+
+这是我原本的代码：
+
+修改后的代码：（这里非常不推荐这样修改）
+
+
+7. 'bool' object is not callable
+
+问题描述：
+　　在django项目中 删除数据时出现这个问题
+
+问题所在：
+
+　　这是由于该条数据和其他表中的数据有关联
+
+解决方法：
+
+　　找到和这条数据有关的所有数据并删除，最后删除该条数据
+
+
+8. python pip install face_recognition 失败
+
+问题描述：
+
+　　python 安装 face_recognition 模块失败
+
+　　
+
+问题所在：
+
+　　这是由于缺少依赖包导致
+
+解决方法：
+
+　　pip install cmake
+
+　　pip install face_recognition
+
+
+9、ERROR: Could not build wheels for cryptography which use PEP 517 and cannot be installed directly
+
+问题描述：
+
+　　python 安装 scrapy 失败
+
+解决方法：
+
+1 python -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple/
+2 pip install scrapy -i https://pypi.tuna.tsinghua.edu.cn/simple/
+

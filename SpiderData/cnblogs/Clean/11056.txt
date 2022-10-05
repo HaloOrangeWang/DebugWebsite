@@ -1,0 +1,58 @@
+
+场景：
+
+　　前几天帮师弟安装一个vue项目时，需要用npm install安装项目依赖包。然后报了以下错误：
+
+Can't find Python executable "python", you can set the PYTHON env variable
+
+node-gyp rebuild报错，类似以下：
+command "node.exe" "node-gyp.js" "rebuild"
+
+command "node.exe" "node-gyp.js" "rebuild"
+
+安装node-sass报错
+
+
+问题分析：
+
+　　一头雾水，平时安装依赖包没有问题的。经过查阅知道，node-sass是用来解析sass，将其解析为css语法的依赖包。sass是使用了类似js的方法去写css，比如可以添加变量，如下：
+
+$test-color: #000;
+
+body {
+
+color: $test-color;
+
+}
+
+　　node-gpy就是为了适应多平台而使用的工具， 不同平台下用不同语言编译器进行编译。
+
+
+问题解决：
+
+首先尝试了安装python，然后没有用。
+
+尝试以下：
+
+npm install --global --production windows-build-tools
+
+npm install -g node-gyp
+
+前一个是安装windows下各语言的编译工具包（其实一般最新的node.js中有），后一个是单独安装node-gpy。但是没有用。
+
+npm install --global --production windows-build-tools
+
+npm install -g node-gyp
+
+前一个是安装windows下各语言的编译工具包（其实一般最新的node.js中有），后一个是单独安装node-gpy。但是没有用。
+
+还尝试了安装最新版本的node-gpy
+
+npm install --global node-gyp@latest
+
+　　
+
+　　最后：师兄帮我解决的。原来安装的node.js是最新版本，下载的是17版本的，可能用的node-gpy比较新，和项目中的不适配。于是安装node.js的14版本，问题解决，npm install安装成功。
+
+　　最后记录一下node.js的理解，node.js是基于 Chrome V8 引擎 的 JavaScript 运行时环境。可以让js在浏览器之外的地方解析js。
+

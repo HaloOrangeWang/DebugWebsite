@@ -1,0 +1,52 @@
+
+前言
+
+使用PyCharm在Python Interpreter设置中的Python虚拟环境安装第三方包时，很有可能报错：Non-zero exit code (2)，如图：
+
+甚至升级pip也会报错，如图：
+
+提示如下：
+
+Try to run this command from the system terminal. 
+Make sure that you use the correct version of 'pip' installed for your Python interpreter located at 
+'D:\Program Files\Python\py36-basic-v\Scripts\python.exe'.
+
+如上方所属，官方说可能的原因是pip没有被安装在虚拟环境的指定目录，并建议在终端中运行pip命令来安装第三方包。
+
+官方的提示有一定的合理性，不过并不试用所有情况，可以在虚拟环境的目录中查看是否存在pip模块，若不存在，将pip模块安装在指定目录即可；若存在，则不是pip模块路径的问题，那么到底是什么原因呢？
+
+经过调查，是pip版本的问题，我的Python版本为3.6，pip版本为21.3.1，该版本的pip一定会出现该问题，解决方案也很简单，将pip版本降级为20.2.4即可，操作方法参见下方的方案2：降级pip版本。（不建议升级pip，因为新版本的pip都有可能会出现同样的问题）
+
+
+方案1（推荐）：使用Terminal终端安装第三方包
+
+点开PyCharm底部工具栏的Terminal，如下图：
+
+输入pip install命令来安装第三方包，如图：
+
+但此方案治标不治本，问题并没有得到解决，只是通过替代方法进行第三方包的安装，若想根本解决问题，请参见下方的方案2。
+
+
+方案2（根本解决）：降级pip版本
+
+首先使用PyCharm打开一个项目。若没有Python环境，需先创建虚拟环境，如下图：
+
+在File - Settings - Python Interpreter中看到Python虚拟环境中的pip版本为21.3.1，如下图，我们需要降级pip的版本为20.2.4。
+
+点开PyCharm底部工具栏的Terminal，如下图：
+
+输入如下命令，注意一定要有python -m，否则没有权限：
+
+python -m pip install pip==20.2.4
+
+输入命令后，出现如下提示则证明降级成功：
+
+输入命令pip -V可查看当前pip版本，如下图：
+
+至此问题已经成功解决，在Settings中安装第三方包可以成功安装，如下图：
+
+
+总结
+
+到此这篇关于Pycharm报错Non-zero exit code (2)的解决方案的文章就介绍到这了,更多相关Pycharm报错Non-zero exit code (2)内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

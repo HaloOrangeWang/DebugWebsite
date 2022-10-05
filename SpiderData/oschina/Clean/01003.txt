@@ -1,0 +1,56 @@
+
+django2.0+连接mysql数据库迁移时候报错
+
+
+情况一
+
+
+错误信息
+
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+
+解决办法
+
+去到\python\lib\site-packages\django\db\backends\mysql\base.py"
+
+把里面的注释掉
+
+# if version < (1, 3, 13):
+#     raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+
+
+情况二
+
+
+错误信息
+
+AttributeError: 'str' object has no attribute 'decode'
+
+
+解决办法
+
+去到python\lib\site-packages\django\db\backends\mysql\operations.py
+
+再原基础上加上query = query.encode('utf8')
+
+改了后效果
+
+if query is not None:
+            query = query.encode('utf8')
+            query = query.decode(errors='replace')
+        return query
+
+
+情况三
+
+
+错误信息
+
+ValueError: The field admin.LogEntry.user was declared with a lazy reference to 'api.userinfo', but app 'api' isn't installed.
+
+
+解决办法
+
+找到自己的python3.x，进入site-packages/django/contrib/admin/migrations文件目录下，除了__init__.py文件，其他的全部删除。（注意，切勿把__init__.py文件删了，也不要把contrib/contenttypes这个文件夹下的migrations删了，不然会导致migrate功能失效，就只能把django卸了重下）。
+

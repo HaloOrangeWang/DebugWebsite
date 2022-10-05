@@ -1,0 +1,59 @@
+目录
+
+一、问题描述
+
+二、问题分析
+
+三、解决方法
+
+四、什么是_pywrap_tensorflow_internal
+
+
+一、问题描述
+
+最近朋友装环境时又遇到这个问题：
+
+ModuleNotFoundError: No module named '_pywrap_tensorflow_internal'
+ 
+ 
+Failed to load the native TensorFlow runtime.
+
+这个问题也许很多人一开始会认为是自己的CUDA或者是cuDNN的问题
+
+
+二、问题分析
+
+1.朋友的显卡是NVIDIA GeForce 1060，环境是CUDA9.0，cuDNN7.0，然后朋友运行了如下命令：
+
+pip install tensorflow-gpu
+
+2.报了上面提到的错误，查看了版本，发现版本是1.12版本。这里博主告诉朋友版本不兼容。
+
+
+三、解决方法
+
+1.卸载当前tensorflow-gpu：
+
+pip uninstall tensorflow-gpu
+
+2.安装较低版本tensorfow-gpu，这里博主安装的是1.7版本：
+
+pip install tensorflow-gpu==1.7
+
+3.安装了这个版本的tensorflow-gpu就没有报错了，朋友很感谢我~
+
+
+四、什么是_pywrap_tensorflow_internal
+
+1.我们查看Python库会发现，这个应该是和wrapper文件一样的。查看tensorflow和python的官网和一些解决问题的网站，我们会知道：pywrap_tensorflow_internal.py 模块被导入时，会加载_pywrap_tensorflow_internal.so动态链接
+
+2.这个文件是怎么来的呢？原来tensorflow使用bazel编译时，swig会生成两个wrapper文件：pywrap_tensorflow_internal.py和pywrap_tensorflow_internal.cc，前者是对接上层Python调用，后者对接底层C API调用
+
+3.什么是swig呢？前端多语言实现需要swig包装器，tensorflow很好的一点是它提供了这样的一个多种语言的前端接口。swig把c/c++ 封装成python可调用的so文动态链接库，这样我们就可以通过其他语言来完成深度学习的模型训练和测试
+
+4.较新版本添加了调用这个_pywrap_tensorflow_internal模块，找不到就安装旧一点的版本即可~
+
+本文同步分享在 博客“悲恋花丶无心之人”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

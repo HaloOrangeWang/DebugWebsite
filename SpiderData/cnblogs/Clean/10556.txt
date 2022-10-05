@@ -1,0 +1,15 @@
+jupyter notebokk报错情况出现背景：手动下载pytoch的whl安装文件，使用pip install pytorch.whl命令安装pytorch。
+
+出现的原因是因为有两个重复的文件libiomp5md.dll在python环境中。
+
+
+解决办法：
+
+第一种：搜索anaconda安装文件夹，把另外一个不在torch库下的文件备份删除。
+
+第二种：在代码中添加下面两行代码
+
+错误官方提示：
+
+OMP: Hint This means that multiple copies of the OpenMP runtime have been linked into the program. That is dangerous, since it can degrade performance or cause incorrect results. The best thing to do is to ensure that only a single OpenMP runtime is linked into the process, e.g. by avoiding static linking of the OpenMP runtime in any library. As an unsafe, unsupported, undocumented workaround you can set the environment variable KMP_DUPLICATE_LIB_OK=TRUE to allow the program to continue to execute, but that may cause crashes or silently produce incorrect results. For more information, please see http://www.intel.com/software/products/support/.
+

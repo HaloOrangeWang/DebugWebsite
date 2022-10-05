@@ -1,0 +1,50 @@
+一、 pod的报错：
+
+1. pod的容器无法启动报错：
+
+报错信息：
+
+Normal   SandboxChanged          4m9s (x12 over 5m18s)  kubelet, k8sn1     Pod sandbox changed, it will be killed and re-created.
+  Warning  FailedCreatePodSandBox  18s (x47 over 5m19s)   kubelet, k8sn1     Failed create pod sandbox: rpc error: code = Unknown desc 
+                                                                             = failed to start sandbox container for pod "default-http-backend-6cf4f686c4-nbxjv": 
+                                                                             Error response from daemon: OCI runtime create failed: container_linux.go:344: 
+                                                                             starting container process caused "process_linux.go:297: 
+                                                                             getting the final child's pid from pipe caused \"
+
+这种情况一般是属于：pod的运行资源给的不够，造成内存溢出
+
+需要修改资源配给：可以适当增大资源配给
+
+resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+
+　　
+
+二、 节点异常出现  没有pod 状态为 Evicted
+
+使用
+
+kubectl get pods
+
+发现很多pod的状态为evicted。
+
+原因：
+
+eviction，即驱赶的意思，意思是当节点出现异常时，kubernetes将有相应的机制驱赶该节点上的Pod。
+多见于资源不足时导致的驱赶。
+
+更多详情参考
+kubernetes的eviction机制
+
+解决：
+
+排查资源和异常原因，防止新的驱赶产生。
+使用如下命令删除旧驱赶的遗留
+
+kubectl get pods | grep Evicted | awk '{print $1}' | xargs kubectl delete pod
+

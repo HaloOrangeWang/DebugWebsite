@@ -1,0 +1,55 @@
+报错信息：
+
+TypeError: tuple indices must be integers or slices, not str
+
+报错信息含义：
+
+元祖的索引必须是整数或者切片，不能是字符
+
+报错代码如下：
+
+import pandas as pd
+df= pd.DataFrame({'a': range(0, 10000), 'b': range(10000, 20000)})
+count=0
+for r in df.iterrows():
+    a=r['a']
+    b=r['b']
+    print(a)
+    print(b)
+
+count+=1
+    if count>5:
+        break
+
+上述代码使用df的iterrows方法进行遍历，df.iterrows()其实返回的是一个tuple=>(索引，Series)，遍历时必须加上对索引的遍历，否则会报错，所以，将上述代码改为如下所示，报错即可解决：
+
+import pandas as pd
+df= pd.DataFrame({'a': range(0, 10000), 'b': range(10000, 20000)})
+count=0
+for i,r in df.iterrows():
+    a=r['a']
+    b=r['b']
+    print(a)
+    print(b)
+
+count+=1
+    if count>5:
+        break
+
+总结：
+ 将
+
+for r in df.iterrows():
+
+改为
+
+for i,r in df.iterrows():
+
+即可解决问题。
+ 关于如何使用python遍历dataframe或df，可以参考链接：1.遍历df.
+ 2.遍历df.
+ 3.遍历df.
+ 以上是3篇遍历df的文章推荐，只看第一个也可以。
+
+希望能帮助到大家。
+

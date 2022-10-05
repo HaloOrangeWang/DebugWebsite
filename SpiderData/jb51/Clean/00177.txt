@@ -1,0 +1,214 @@
+写在最前面：
+
+在阿里云租了一台服务器，搭建了一个博客，采用的是Ubuntu+Django+uwsgi+nginx+mysql的结构。
+
+运行了一段时间后，我发现我忘记了django自带后台的密码！
+
+然后很常规的修改密码的操作，就是无法登陆！
+
+然后想再创建一个超级用户，登上去看看什么情况，结果创建超级用户又报错？
+
+可是本地环境是ok的，然后同步数据库出错。。。反正没有对的。
+
+然后同步数据库报错如下：
+
+手机端截的图，查了一下报错，应该是setting.py的配置问题，然后我把生产上的代码拿下来看了下。
+
+如下：
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+ os.path.join(BASE_DIR, 'static'),
+ #os.path.join(os.path.dirname(__file__), '../static/').replace('\\', '/'),
+)
+
+这里要注意，STATIC_ROOT和STATICFILES_DIRS只要配置一个就可以！
+
+如果非要同时配置
+
+请将
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+改为
+
+STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
+
+然后同步数据库
+
+接下来创建超级用户也没有问题了
+
+登录到admin后台一看，原来的那个账号权限被关了。。。怪不得怎么修改密码都没有用。
+
+有空会详细讲讲我在阿里云部署Django的过程。
+
+补充知识：django2.0 foreignKey提示on_delete
+
+据说在django2.0之前创建外键foreignKey的参数on_delete是有默认值的，所以这个参数可以不用填，但在2.0之后on_delete没有默认值了，所以这个参数一定要传，不然就报以下的错：
+
+TypeError: __init__() missing 1 required positional argument: on_delete
+
+所以现在就来说一下关于这个on_delete要传的参数所代表的含义
+
+on_delete=None, # 删除关联表中的数据时,当前表与其关联的field的行为
+
+on_delete=models.CASCADE, # 删除关联数据,与之关联也删除
+
+on_delete=models.DO_NOTHING, # 删除关联数据,什么也不做
+
+on_delete=models.PROTECT, # 删除关联数据,引发错误ProtectedError
+
+# models.ForeignKey('关联表', on_delete=models.SET_NULL, blank=True, null=True)
+
+on_delete=models.SET_NULL, # 删除关联数据,与之关联的值设置为null（前提FK字段需要设置为可空,一对一同理）
+
+# models.ForeignKey('关联表', on_delete=models.SET_DEFAULT, default='默认值')
+
+on_delete=models.SET_DEFAULT, # 删除关联数据,与之关联的值设置为默认值（前提FK字段需要设置默认值,一对一同理）
+
+on_delete=models.SET, # 删除关联数据,
+
+a. 与之关联的值设置为指定值,设置：models.SET(值)
+
+b. 与之关联的值设置为可执行对象的返回值,设置：models.SET(可执行对象)
+
+例，创建一对多外键
+
+class UserType(models.Model):
+ caption = models.CharField(max_length=32)
+ 
+class UserInfo(models.Model):
+ user = models.CharField(max_length=32)
+ email = models.EmailField()
+ user_type = models.ForeignKey(to="UserType",to_field="id",on_delete=models.CASCADE)
+
+创建外键后，直接用models.xxxx.objects.create()创建数据时需要注意，外键这个值需要传关联表的对象,如下：
+
+class UserType(models.Model):
+ caption = models.CharField(max_length=32)
+ 
+class UserInfo(models.Model):
+ user = models.CharField(verbose_name='用户', max_length=32)
+ email = models.EmailField()
+ user_type = models.ForeignKey(to="UserType",to_field="id",on_delete=models.CASCADE)
+-----------上面是的是在models.py,下面的是在views.py-------------
+def test(requset):
+ ut = models.UserType.objects.filter(id=1).first()
+ #print(ut)
+ models.UserInfo.objects.create(user='小明',email='abc@163.com',user_type=ut)
+ return HttpResponse('ok')
+
+一对多的继承代码：
+
+class ForeignKey(ForeignObject):
+ def __init__(self, to, on_delete, related_name=None, related_query_name=None,
+ limit_choices_to=None, parent_link=False, to_field=None,
+ db_constraint=True, **kwargs):
+  super().__init__(to, on_delete, from_fields=['self'], to_fields=[to_field], **kwargs)
+
+创建一对一
+
+OneToOneField(ForeignKey)
+  to,   # 要进行关联的表名
+  to_field=None    # 要关联的表中的字段名称
+  on_delete=None,    # 当删除关联表中的数据时，当前表与其关联的行的行为
+ 
+ ###### 对于一对一 ######
+ # 1. 一对一其实就是 一对多 + 唯一索引
+ # 2.当两个类之间有继承关系时，默认会创建一个一对一字段
+ # 如下会在A表中额外增加一个c_ptr_id列且唯一：
+class C(models.Model):
+nid = models.AutoField(primary_key=True)
+part = models.CharField(max_length=12)
+ 
+class A(C):
+id = models.AutoField(primary_key=True)
+code = models.CharField(max_length=1)
+
+一对一的继承代码：
+
+class OneToOneField(ForeignKey):
+ def __init__(self, to, on_delete, to_field=None, **kwargs):
+  kwargs['unique'] = True
+  super().__init__(to, on_delete, to_field=to_field, **kwargs)
+
+创建多对多
+
+方式一：自定义关系表
+
+class Host(models.Model):
+ nid = models.AutoField(primary_key=True)
+ hostname = models.CharField(max_length=32,db_index=True)
+ ip = models.GenericIPAddressField(protocol="ipv4",db_index=True)
+ port = models.IntegerField()
+ b = models.ForeignKey(to="Business", to_field='id')
+ # 10
+class Application(models.Model):
+ name = models.CharField(max_length=32)
+ # 2
+ 
+class HostToApp(models.Model):
+ hobj = models.ForeignKey(to='Host',to_field='nid')
+ aobj = models.ForeignKey(to='Application',to_field='id')
+ 
+ 
+# HostToApp.objects.create(hobj_id=1,aobj_id=2)这里可以直接对第三张表直接操
+
+方式二：自动创建关系表
+
+class Host(models.Model):
+ nid = models.AutoField(primary_key=True)
+ hostname = models.CharField(max_length=32,db_index=True)
+ ip = models.GenericIPAddressField(protocol="ipv4",db_index=True)
+ port = models.IntegerField()
+ b = models.ForeignKey(to="Business", to_field='id')
+ # 10
+class Application(models.Model):
+ name = models.CharField(max_length=32)
+ r = models.ManyToManyField("Host") --------------> appname_application_r 表名
+
+无法直接对第三张表进行操作
+
+只能间接操作————————————————————
+
+obj = models.Application.objects.get(id=1)
+obj.name
+ 
+# 第三张表操作：HostToApp table   基于id=1的Application添加对应关系
+obj.r.add(1)增
+obj.r.add(2)
+obj.r.add(2,3,4)
+obj.r.add(*[1,2,3,4])
+ 
+obj.r.remove(1)   删
+obj.r.remove(2,4)
+obj.r.remove(*[1,2,3])
+ 
+obj.r.clear() 清除app_id =1 的列
+ 
+obj.r.set([3,5,7])   改set将原来数据库中的关系先全部删除，在添加1-3，1-5，1-7
+——————————————————————————
+# 所有相关的主机对象“列表” QuerySet
+obj.r.all()   obj.filter() obj.first()
+
+前端取
+
+｛%for app in app_list%｝
+  <tr>
+ <td>{{app.name}}</td>
+ <td>{{app.r.all}}</td>
+   </tr>
+  ｛%endfor%｝
+
+多对多的继承代码：
+
+class ManyToManyField(RelatedField):
+ def __init__(self, to, related_name=None, related_query_name=None,
+ limit_choices_to=None, symmetrical=None, through=None,
+ through_fields=None, db_constraint=True, db_table=None,
+ swappable=True, **kwargs):
+  super().__init__(**kwargs)
+
+以上这篇Django 解决阿里云部署同步数据库报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

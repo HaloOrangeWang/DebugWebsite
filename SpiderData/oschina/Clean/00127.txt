@@ -1,0 +1,79 @@
+
+报错背景：
+
+报错前sql代码展示：
+
+List = ['Manual', 'Float', 'TimeValue', 'None', '100', '100', '0', '0', '0', '0', 'Forced', '排水系统3#中央泵负压', '556', 'SLWS_ps_3hzybf_YL.PV', 'Analog', '2019/6/13 8:32:46', '-0.0034143477678299', '0']
+
+# sql = "insert into test(id, name) value ("+"'"+ List[0] + "'" + ","+"'"+ List[1]+ "'"+")"
+sql = "insert into para_ps(AcquisitionType, DataType, DeadbandType, EngUnit, MaxEU, MaxRaw, MinEU, MinRaw, RateDeadband, StorageRate, StorageType, TagDesc, TagKey, TagName, TagType, TimeStampp, Valuee, ValueDeadband) " \
+                      "values("\
+                      + "'" + List[0] + "'" + "," \
+                      + "'" + List[1] + "'" + "," \
+                      + "'" + List[2] + "'" + "," \
+                      + "'" + List[3] + "'" + "," \
+                      + "'" + List[4] + "'" + "," \
+                      + "'" + List[5] + "'" + "," \
+                      + "'" + List[6] + "'" + "," \
+                      + "'" + List[7] + "'" + "," \
+                      + "'" + List[8] + "'" + "," \
+                      + "'" + List[9] + "'" + "," \
+                      + "'" + List[10] + "'" + "," \
+                      + "'" + List[11] + "'" + "," \
+                      + "'" + List[12] + "'" + "," \
+                      + "'" + List[13] + "'" + "," \
+                      + "'" + List[14] + "'" + "," \
+                      + "'" + List[15] + "'" + "," \
+                      + "'" + List[16] + "'" + "," \
+                      + "'" + List[17] + "'" +")"
+
+主要功能是将python列表中的数据插入到Mysql数据库中的表中
+
+sql表设计展示：
+
+
+报错现象：
+
+D:\Softwares\Python\python.exe "D:\Softwares\Pycharm\PyCharm 2019.1.2\helpers\pydev\pydevconsole.py" --mode=client --port=60400
+import sys; print('Python %s on %s' % (sys.version, sys.platform))
+sys.path.extend(['D:\\Softwares\\Pycharm\\yk', 'D:/Softwares/Pycharm/yk'])
+PyDev console: starting.
+Python 3.7.3 (v3.7.3:ef4ec6ed12, Mar 25 2019, 22:22:05) [MSC v.1916 64 bit (AMD64)] on win32
+runfile('D:/Softwares/Pycharm/yk/bigdata/test/toSql2.py', wdir='D:/Softwares/Pycharm/yk/bigdata/test')
+insert into para_ps(AType, DataType, DeadbandType, EngUnit, MaxEU, MaxRaw, MinEU, MinRaw, RateDeadband, StorageRate, StorageType, TagDesc, TagKey, TagName, TagType, TimeStampp, Valuee, ValueDeadband) values('Manual','Float','TimeValue','None','100','100','0','0','0','0','Forced','排水系统3#中央泵负压','556','SLWS_ps_3hzybf_YL.PV','Analog','2019/6/13 8:32:46','-0.0034143477678299','0')
+Traceback (most recent call last):
+  File "<input>", line 1, in <module>
+  File "D:\Softwares\Pycharm\PyCharm 2019.1.2\helpers\pydev\_pydev_bundle\pydev_umd.py", line 197, in runfile
+    pydev_imports.execfile(filename, global_vars, local_vars)  # execute the script
+  File "D:\Softwares\Pycharm\PyCharm 2019.1.2\helpers\pydev\_pydev_imps\_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "D:/Softwares/Pycharm/yk/bigdata/test/toSql2.py", line 42, in <module>
+    cur.execute(sql)
+  File "D:\Softwares\Python\lib\site-packages\pymysql\cursors.py", line 170, in execute
+    result = self._query(query)
+  File "D:\Softwares\Python\lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\Softwares\Python\lib\site-packages\pymysql\connections.py", line 517, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\Softwares\Python\lib\site-packages\pymysql\connections.py", line 732, in _read_query_result
+    result.read()
+  File "D:\Softwares\Python\lib\site-packages\pymysql\connections.py", line 1075, in read
+    first_packet = self.connection._read_packet()
+  File "D:\Softwares\Python\lib\site-packages\pymysql\connections.py", line 684, in _read_packet
+    packet.check_error()
+  File "D:\Softwares\Python\lib\site-packages\pymysql\protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "D:\Softwares\Python\lib\site-packages\pymysql\err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.InternalError: (1054, "Unknown column 'AType' in 'field list'")
+
+
+报错原因：
+
+sql字段大小写问题！！！
+
+
+报错解决：
+
+全改成大写或者全改成小写，或者修改数据库设置。
+

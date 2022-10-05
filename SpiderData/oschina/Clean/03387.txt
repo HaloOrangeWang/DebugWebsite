@@ -1,0 +1,26 @@
+1、为什么会出现乱码问题，用什么方式编码就用什么方式解码，由于csv不是用的utf-8编码，故不能用它解码。
+
+常用的编码方式有 utf-8,ISO-8859-1、GB18030等。
+
+2、中文乱码原因：
+
+一般的csv文件如果使用
+
+data = pd.read_csv("data__361_46.csv", encoding='utf-8')
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb3 in position 0: invalid start byte
+
+若此时改为：
+
+data = pd.read_csv('sample.csv', encoding='ISO-8859-1')
+
+此时不再报错，但是中文字符解析异常，出现下列错误：
+
+3、有两种解决办法：
+
+（1）用记事本打开csv文件，另存为，编码格式改为utf-8然后用utf-8读取文件。
+
+（2）用 csv编码的 “GB18030” 解码方式读取文件。
+
+另外，由于python不支持中文，故一般在所有python代码开头第一行加上#coding=utf-8
+

@@ -1,0 +1,43 @@
+这两天在atlas200dk上部署目标检测算法，踩的坑多到破防
+
+记录一下碰到的两个错误
+
+
+错误一、运行.py时报错 /usr/bin/env: ‘python\r’: No such file or directory
+
+我在部署代码时，先在windows系统下把代码写好（有IDE写的快），然后复制到ubuntu里，然后就会报这个错误。
+
+
+原因
+
+在windows下，用连续的’\r’和’\n’两个字符进行换行。
+ 在Linux下，用’\n’进行换行。
+
+因此在Windows下编写的
+
+#!/usr/bin/env python
+
+在Linux中会被认为时
+
+#!/usr/bin/env python\r
+
+
+解决
+
+sudo apt-get install dos2unix
+# 转换报错文件file.ext
+dos2unix file.ext
+
+
+错误二、cv2的nms报错SystemError: returned NULL without setting an error
+
+后处理时偷懒，用opencv自带的nms，然后报错了
+
+
+原因
+
+cv.dnn.NMSBoxes(boxes, confidences, thresh, nms)
+
+参数boxes只能接受二维int型list，不接受np.ndarray，形如[[left1, top1, width1, height1], [left2, top2, width2, height2]]
+ 参数confidences只接受float型list
+

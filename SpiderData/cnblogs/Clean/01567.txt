@@ -1,0 +1,108 @@
+之前装好的虚拟机突然不能上网了，具体报错如下：
+
+systemctl network restart
+
+Restarting network (via systemctl):  Job for network.service failed because the control process exited with error code. See "systemctl status network.service" and "journalctl -xe" for details.
+
+[失败]
+
+使用systemctl status network.service命令查看结果如下：
+
+network.service - LSB: Bring up/down networking
+
+Loaded: loaded (/etc/rc.d/init.d/network)
+
+Active: failed (Result: exit-code) since 三 2016-08-17 11:34:36 CST; 54s ago
+
+Docs: man:systemd-sysv-generator(8)
+
+Process: 3847 ExecStart=/etc/rc.d/init.d/network start (code=exited, status=1/FAILURE)
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn systemd[1]: network.service: control process exited, code=exited status=1
+
+8月 17 11:34:36 python.cn systemd[1]: Failed to start LSB: Bring up/down networking.
+
+8月 17 11:34:36 python.cn systemd[1]: Unit network.service entered failed state.
+
+8月 17 11:34:36 python.cn systemd[1]: network.service failed.
+
+查看系统日志more /var/log/messages |grep network，报错如下：
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python systemd: network.service: control process exited, code=exited status=1
+
+Aug 17 11:34:36 python systemd: Failed to start LSB: Bring up/down networking.
+
+Aug 17 11:34:36 python systemd: Unit network.service entered failed state.
+
+Aug 17 11:34:36 python systemd: network.service failed.
+
+Aug 17 11:36:28 python systemd: Starting LSB: Bring up/down networking...
+
+Aug 17 11:36:29 python network: 正在打开环回接口： 无法载入文件 '/etc/sysconfig/network-scripts/ifcfg-lo'
+
+Aug 17 11:36:29 python network: 无法载入文件 '/etc/sysconfig/network-scripts/ifcfg-lo'
+
+Aug 17 11:36:29 python network: 无法载入文件 '/etc/sysconfig/network-scripts/ifcfg-lo'
+
+Aug 17 11:36:29 python network: 无法载入文件 '/etc/sysconfig/network-scripts/ifcfg-lo'
+
+Aug 17 11:36:29 python network: [  确定  ]
+
+Aug 17 11:36:29 python network: 正在打开接口 eno16777736： 错误：激活连接失败：No suitable device found for this connection.
+
+经查，确认/etc/sysconfig/network-scripts/ifcfg-lo文件是存在的。
+
+百度答案：
+
+mac地址不对，修改mac地址。
+
+编辑文件，加入mac地址。
+
+vi /etc/sysconfig/network-scripts/ifcfg-eno16777736
+
+HWADDR=
+
+Google答案，跟系统自带的NetworkManager这个管理套件有关系，关掉就可以解决。
+
+systemctl stop NetworkManager
+
+systemctl disable NetworkManager
+
+重新启动网络：
+
+systemctl start network.service
+
+或重启reboot，再次查看网络systemctl status network。
+
+网络正常启动，访问正常。
+

@@ -1,0 +1,82 @@
+一、用户名密码都正确的情况下被登录拦截器拦截
+
+控制台报错：org.apache.ibatis.executor.ExecutorException: A query was run and no Result Maps were found for the Mapped Statement 'com.spbt.mapper.EmpeeMapper.selectName'. It's likely that neither a Result Type nor a Result Map was specified.
+
+这个异常是在mapper文件的<select>标签中没有指定 resultType 或者 resultMap，也就是说没有指定返回值类型或者返回值类型的map集合
+
+所以检查自己的mapper文件：
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spbt.mapper.EmpeeMapper">
+
+<select id="selectName" parameterType="String">
+    select username from empee where username=#{username}
+  </select>
+
+<select id="selectPwdByName" parameterType="String">
+    select password from empee where username=#{username}
+  </select>
+
+</mapper>
+
+可以发现我的<select>标签中没有指定 resultType，而是指定的parameterType（参数类型）
+
+解决：将parameterType修改为resultType
+
+登录成功：
+
+二、页面没有显示传递的消息
+
+这是LoginController的实现登录代码
+
+RequestMapping("/empee/login")
+public String login(@RequestParam("username") String username,
+          @RequestParam("password") String password,
+          Model model, HttpSession session){
+  if (empeeMapper.selectName(username)!=null){
+    //用户名存在
+    if (empeeMapper.selectPwdByName(username).equals(password)){
+      //密码也正确
+      session.setAttribute("loginEmpee",username);
+      return "redirect:/main.html";
+    }else {
+      model.addAttribute("msg","密码错误");
+      return "redirect:/index";
+    }
+  }else {
+    model.addAttribute("msg","用户名不存在，请注册");
+    return "redirect:/index";
+  }
+}
+
+我输入错误的信息，而点击登录之后应该会反馈给页面
+
+解决：这其实是一个非常低级的错误，因为我设置了重定向redirect：/index，所以重新定回这个页面当然就没有反馈信息了，去掉多余的redirect：/就可以了
+
+三、添加（注册）成功却跳转到空白页
+
+点击添加，出现空白页
+
+但是查看自己的数据库发现注册是成功的
+
+控制台报错：org.apache.ibatis.binding.BindingException: Mapper method 'com.spbt.mapper.EmpeeMapper.insertEmpee' has an unsupported return type: class com.spbt.pojo.Empee
+
+可以发现出错原因在于EmpeeMapper文件的insertEmpee方法，而且是返回值类型的错误
+
+检查EmpeeMapper：
+
+我使用的是Empee类型的返回值类型，而我的Controller文件中并没有写他的返回值
+
+解决方法：把EmpeeMapper文件的insertEmpee方法修改为void类型
+
+添加成功并且成功跳转
+
+我还在网上看见另一种解决方法，是修改为int类型，经过验证确实可行
+
+由于之后没有进行其他操作，因此不清楚这样做会对之后的操作是否有影响，总之还是一步一个脚印的改下去吧
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

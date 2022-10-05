@@ -1,0 +1,27 @@
+web.py报错
+
+Python代码：
+
+import web
+urls = (
+    '/(.*)', 'hello'
+)
+app = web.application(urls, globals())
+
+class hello:
+    def GET(self, name):
+        if not name:
+            name = 'World'
+        return 'Hello, ' + name + '!'
+
+if __name__ == "__main__":
+    app.run()
+
+代码执行完毕后报如下错误：
+
+问题原因：
+
+端口8080被其他程序占用导致报错：No socket could be created -- (('0.0.0.0', 8080)
+
+解决办法：
+

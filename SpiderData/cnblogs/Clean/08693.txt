@@ -1,0 +1,129 @@
+xlrd》操作excel  出现的问题
+
+报错如下：
+
+D:\python37\python.exe D:/testWang/waimai/tools/get_excelData.py
+*** formula/tFunc unknown FuncID:186
+*** formula/tFunc unknown FuncID:186
+*** formula/tFunc unknown FuncID:186
+*** formula/tFunc unknown FuncID:186
+*** formula/tFunc unknown FuncID:186
+*** formula/tFunc unknown FuncID:186
+Traceback (most recent call last):
+  File "D:/testWang/waimai/tools/get_excelData.py", line 42, in <module>
+    print(get_excelData('登录模块', 2, 7))
+  File "D:/testWang/waimai/tools/get_excelData.py", line 18, in get_excelData
+    workBook = xlrd.open_workbook(excelDir, formatting_info=True)
+  File "D:\python37\lib\site-packages\xlrd\__init__.py", line 157, in open_workbook
+    ragged_rows=ragged_rows,
+  File "D:\python37\lib\site-packages\xlrd\book.py", line 117, in open_workbook_xls
+    bk.parse_globals()
+  File "D:\python37\lib\site-packages\xlrd\book.py", line 1245, in parse_globals
+    self.names_epilogue()
+  File "D:\python37\lib\site-packages\xlrd\book.py", line 1043, in names_epilogue
+    evaluate_name_formula(self, nobj, namex, blah=blah)
+  File "D:\python37\lib\site-packages\xlrd\formula.py", line 1150, in evaluate_name_formula
+    assert len(tgtobj.stack) == 1
+AssertionError
+
+Process finished with exit code 1
+
+
+问题现象：
+
+python脚本在调用xlrd模块解析excel文件时，提示如下错误：
+
+进而导致整个脚本崩溃。
+
+
+原因分析：
+
+xlrd模块在解析excel文件时会尝试解析excel中的函数，这些函数被定义在一个字典
+
+而当前xlrd对excel函数的支持并不全，比如index:186的就不支持；
+
+遇到这种不支持的函数，xlrd会assert异常，终止解析；
+
+其实这种做法无可厚非，遇到未知的情况，在不能保证正确的情况下终止解析，看起来是最好的；
+
+但是，在有些情况下，我们还是希望能够选择忽略掉这个错误接着解析的，但是xlrd没有给我们这个选择。
+
+
+解决方案：
+
+思路：忽略异常，继续解析文件；
+
+
+思路一： 让assert无效。
+
+我知道c++在release版中assert都是无效的，但是python中貌似做不到。
+
+我尝试过把脚本编译成pyc后执行，但仍会assert的。
+
+
+思路二： 修改xlrd
+
+既然问题出在xlrd上，那么最直接的办法就是修改xlrd；这里有两种方案：
+
+
+一、     方案一：
+
+参考网上的方法，对未知的excel函数，假装知道——在xlrd的字典中，添加FuncID:186，让xlrd认为支持这个函数，不再报错：
+
+/usr/local/lib/python3.4/site-packages/xlrd-1.0.0-py3.4.egg/xlrd/formula.py：240
+
+184: ('FACT',             1,  1, 0x02,  1, 'V', 'V'),
+
+184: ('FACT',             1,  1, 0x02,  1, 'V', 'V'),
+
++   186: ('HACKED',           1, 1, 0x02,  1, 'V', 'V'),
+
++   186: ('HACKED',           1, 1, 0x02,  1, 'V', 'V'),
+
+189: ('DPRODUCT',         3,  3, 0x02,  3, 'V', 'RRR'),
+
+189: ('DPRODUCT',         3,  3, 0x02,  3, 'V', 'RRR'),
+
+
+二、     方案二：
+
+与方案一思路一致，删除assert,让程序继续进行下去；
+
+/usr/local/lib/python3.4/site-packages/xlrd-1.0.0-py3.4.egg/xlrd/formula.py：1307
+
+else:
+
+else:
+
+# assert len(tgtobj.stack) == 1
+
+# assert len(tgtobj.stack) == 1
+
+res = copy.deepcopy(tgtobj.stack[0])
+
+res = copy.deepcopy(tgtobj.stack[0])
+
+
+优劣：
+
+方案一：修改后影响未知，xlrd最终会怎么处理186这个id我并不清楚；
+
+方案二：相对安全，但我们丧失了提前得知脚本有问题的优势；
+
+
+思路三： 使用期他的excel库解析；
+
+逃避方案: xlwingsble/, openpyxl/en/latest/, pandas, win32com-excel-mini-cookbook/, xlsxwriter/, DataNitro
+
+
+结论
+
+综合考虑，目前我采用的是第二个思路的方案二。
+
+
+参考资料：
+
+https://stackoverflow.com/questions/29971186/python-xlrd-error-formula-tfunc-unknown-funcid186
+
+https://github.com/python-excel/xlrd/issues/154
+

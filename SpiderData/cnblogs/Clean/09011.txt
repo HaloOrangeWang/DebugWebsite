@@ -1,0 +1,330 @@
+感谢Toroidals/ hunterhe
+
+https://blog.csdn.net/hunterhe/article/details/111655472?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-2&spm=1001.2101.3001.4242
+
+https://blog.csdn.net/qymufeng/article/details/103599280
+
+1.
+
+
+为了将python开发环境复制到无法联网的环境中，利用pip统计出所有已装模块，下载到本地，然后复制到新环境中即可离线安装。
+
+
+1.已装模块统计并保存到setup.txt
+
+1
+
+
+2.将统计的模块下载到本地文件夹
+
+1
+
+
+3.在新环境安装复制过来的模块文件夹
+
+2.
+
+安装pip
+
+
+安装pip
+
+安装setuptools，从setuptools官网下载setuptools
+
+https://pypi.org/project/setuptools/#files
+
+解压
+
+切换到该目录下
+
+安装
+
+下载pip     https://pypi.python.org/pypi/pip
+
+解压
+
+切换到该目录下
+
+安装
+
+########### 我的操作实例
+1.下载requeirment,.
+ pip freeze > requirements.txt
+
+pip download /root  -r setup.txt
+
+2.下载requirment，第一次肯定失败，然后将requirements.txt 分割成requirements.txt 和requirements1.txt
+
+python -m pip download --destination-directory /root/package -r requirements.txt
+
+中途遇到报错，ERROR: Could not find a version that satisfies the requirement ethtool==0.8 (from -r requirements.txt (line 5)) (from versions: 0.13, 0.14)
+ERROR: No matching distribution found for ethtool==0.8 (from -r requirements.txt (line 5))
+中途遇到报错，整个下载就中断了。ethtool==0.8 版本找不到，就不指定版本，单独下载版本
+然后每次手工排除文件，就分割文件一次，一分为2，
+一个文件将一个文件分割成多个文件requirements.txt 分割成requirements1.txt，requirements2.txt
+
+需要注意以下提示， errr -noversion， 就是在 官方的  https://pypi.org/  网站找不到这个文件，也就是官方不提供这个插件，下载不了
+
+pip download --no-binary=:all: ethtool -d package/
+
+pip download --no-binary=:all: pciutils -d package/                              errr -noversion
+
+pip download --no-binary=:all: Magic-file-extensions  -d package/          errr -noversion
+ 
+pip download --no-binary=:all:  perf   -d package/                   errr -noversion
+
+pip download --no-binary=:all: policycoreutils-default-encoding  -d package/     errr -noversion
+
+pip download --no-binary=:all: yum-metadata-parser  -d package/     errr -noversion
+
+pip download --no-binary=:all: ptvsd -d package/           -already donwload
+pip download --no-binary=:all:  pycurl -d package/         -error donwload   menas there is no support in https://pypi.org/
+pip download --no-binary=:all:   pygobject -d package/     -error donwload
+pip download --no-binary=:all:   python-dmidecode -d package/   errr -noversion
+pip download --no-binary=:all:   python-linux-procfs -d package/    -error donwload
+pip download --no-binary=:all:    rhnlib -d package/     -error donwload
+pip download --no-binary=:all:     schedutils -d package/   -error donwload
+pip download --no-binary=:all:     seobject  -d package/   -error donwload
+pip download --no-binary=:all:      sepolicy -d package/    -error donwload
+pip download --no-binary=:all:      slip  -d package/       stop download    SLIP: a Simple Library for Image Processing
+pip download --no-binary=:all:      slip.dbus  -d package/        -error download
+
+pip download --no-binary=:all:     subscription-manager  -d package/      -error download    
+pip download --no-binary=:all:   urlgrabber -d package/        stop download           A high-level cross-protocol url-grabber
+pip download --no-binary=:all:   yum-metadata-parser  -d package/     -error download
+
+python -m pip download --destination-directory /root/package -r requirements1.txt
+python -m pip download --destination-directory /root/package -r requirements2.txt
+
+python -m pip download --destination-directory /root/package -r req3.txt
+
+###sample 3: 安装pip
+
+测试机
+
+#####linux 下安装pip
+感谢尚
+https://www.php.cn/python-tutorials-424350.html
+https://pypi.org/project/pip/#files
+
+1.下载 pip-20.3.3-py2.py3-none-any.whl
+2.python 命令安装pip 包
+python pip-20.3.3-py2.py3-none-any.whl/pip install pip-20.3.3-py2.py3-none-any.whl
+
+如果有多个python 环境，比如python 27 装在另外目录下 /home/ansible/python27/bin/python
+
+/home/ansible/python27/bin/python pip-20.3.3-py2.py3-none-any.whl/pip install pip-20.3.3-py2.py3-none-any.whl
+
+装好之后；pip s所在的文件夹就在
+
+/home/ansible/python27/bin/pip 目录下
+
+####sample 4;
+
+感谢云斜月
+
+测试环境执行pip list 发现安装的版本（ptvsd 4.3.2），发现执行命令ok
+
+import ptvsd
+ptvsd.enable_attach(address =('10.200.210.187',5678))
+
+生产环境执行pip list 发现安装的版本（ptvsd 3.3.2），发现执行命令报错
+
+import ptvsd
+ptvsd.enable_attach(address =('10.200.210.187',5678))
+
+于是决定升级ptvsd. 升级过程中报错；
+
+ERROR: Cannot uninstall 'wrapt'. It is a distutils installed project and thus
+
+ERROR: Cannot uninstall 'wrapt'. It is a distutils installed project and thus
+
+we cannot accurately determine which files belong to it which would lead to only
+
+we cannot accurately determine which files belong to it which would lead to only
+
+a partial uninstal
+
+解决方案：
+ 
+pip install -U --ignore-installed wrapt
+
+a partial uninstal
+
+解决方案：
+ 
+pip install -U --ignore-installed wrapt
+
+解决方案：
+
+pip install -U --ignore-installed wrapt
+
+或者
+
+/home/ansible/python27/bin/pip install -U --ignore-installed ptvsd-4.3.2-py2.py3-none-any.whl
+
+或者
+
+/home/ansible/python27/bin/pip install -U --ignore-installed ptvsd-4.3.2-py2.py3-none-any.whl
+
+/home/ansible/python27/bin/pip install -U --ignore-installed ptvsd-4.3.2-py2.py3-none-any.whl
+
+7. 开始调试阶段：
+7.1
+python程序运行总是有invalid syntax 错误 如何解决？
+感谢藤井树_z
+
+原因1：然后盯着我的命令窗口看了半天之后才发现了一个很严重的问题，那就是路径错啦！我是直接用鼠标把文件拖进命令窗口的，然后就出现了下图这样的。
+原因2：一般是格式上漏掉或者多了些东西。或者字符格式不对。（1）错误原因：第二行的 each_items多了一个s
+
+7.1 cx_Oracle Exception Handling 异常处理方法，不知道为何插入不了数据，所以看了python第三方包的文档 https://cx-oracle.readthedocs.io/en/latest/user_guide/exception_handling.html
+
+https://github.com/oracle/python-cx_Oracle/issues/252
+https://stackoverflow.com/questions/8881992/python-and-cx-oracle-dynamic-cursor-setinputsizes
+https://stackoverflow.com/questions/23341391/ora-24816-expanded-non-long-bind-data-supplied-after-actual-long-or-lob-column
+
+7.1.1.cx_Oracle.DatabaseError: ORA-01461: can bind a LONG value only for insert into a LONG column
+这个报错是因为CX_ORACLE 无法插入blob 字段，经过查询，如果插入单个blob字段的sql.,该blob 字段是为sql_text，定义类型为cx_Oracle.LONG_STRING，如下：
+inputSizes = [cx_Oracle.LONG_STRING] * 1
+targetCursor.setinputsizes(*inputSizes)
+targetCursor.execute("insert into db_sql_stats (sql_text) values (:sql_text)", [sql_text])
+
+如果插入多个字段，其中一个字段是blob ，blob 字段应该放在inset 语句的最后一个字段，这里一共插入9个字段，一定要保证最后一个字段是blob,最后一个字段sql_text是blob 字段，定义类型为cx_Oracle.LONG_STRING
+then while inserting the data make sure you keep Field1 and Field2 values at the end like below.
+
+targetCursor.setinputsizes(cx_Oracle.STRING,cx_Oracle.STRING,cx_Oracle.STRING,cx_Oracle.STRING,cx_Oracle.NUMBER,cx_Oracle.NUMBER,cx_Oracle.NUMBER,cx_Oracle.NUMBER,cx_Oracle.LONG_STRING)
+targetCursor.execute("insert into db_sql_stats (db_name,time,sql_id,parsing_schema_name,seconds_since_date,execs_since_date,gets_since_date,avg_query_time,sql_text) \
+values (:db_name,:sql_time,:sql_id,:parsing_schema_name,:seconds_since_date,:execs_since_date,:gets_since_date,:avg_query_time, :sql_text)",\
+[SERVER_SID,sql_time,sql_id,parsing_schema_name,seconds_since_date,execs_since_date,gets_since_date,avg_query_time,sql_text])
+
+##sample 7
+
+https://blog.csdn.net/qq_32656561/article/details/107554328
+
+内网服务器离线安装cryptography
+
+
+内网服务器离线安装cryptography
+
+创建一个文件夹i
+pip download cryptography
+
+将这个文件夹传输到内网电脑，然后根据下载时显示的安装顺序倒序安装
+pip install pycparser-2.20-py2.py3-none-any.whl
+pip install cffi-1.14.0-cp36-cp36m-manylinux1_x86_64.whl
+pip install six-1.15.0-py2.py3-none-any.whl
+pip install cryptography-3.0-cp35-abi3-manylinux1_x86_64.whl
+也可以
+pip install cryptography-3.0-cp35-abi3-manylinux1_x86_64.whl cffi-1.14.0-cp36-cp36manylinux1_x86_64.whl six-1.15.0-py2.py3-none-any.whl pycparser-2.20-py2.py3-none-any.whl
+ok！安装成功
+
+####sample 7
+
+解决pip安装报错：is not a supported wheel on this platform
+
+
+解决pip安装报错：is not a supported wheel on this platform
+
+我是通过一台linux 7 上按照sample 6 的方法下载下3个安装包。然后copy文件到 内网服务器的Linux 6 上。
+
+然后按照文档https://blog.csdn.net/sty945/article/details/105200436
+
+一次同时安装3个版本
+
+pip install cryptography-3.4.6-cp36-abi3-manylinux2010_x86_64.whl cffi-1.14.5-cp36-cp36m-manylinux1_x86_64.whl pycparser-2.20-py2.py3-none-any.whl
+
+在Linux  7 上安装成功，但是在Linux 6 安装失败。
+
+前提条件：
+
+（一定要安装pip 20版本）
+
+理由如下：
+
+1.从21降低到20 版本，一定要用到pip20,因为pip21 无法根据文档https://blog.csdn.net/sty945/article/details/105200436
+
+检测到改python 支持的版本名字，为啥用检测，是因为有时候安装whl 文件，报错如下：
+
+2.PyMuPDF-1.16.11-cp36-cp36m-manylinux2010_x86_64.whl is not a supported wheel on this platform.
+
+需要查看支持的版本，然后改动whl 名字从不支持的版本到支持的版本
+
+>>> import pip._internal.pep425tags;
+
+>>>print(pip._internal.pep425tags.get_supported())
+
+分析思路：
+
+linux 7上查看支持的os版本,同样找不到-manylinux2014， 只能找到manylinux2010，但是linux 7 可以一次安装成功3个whl。
+
+linux 6上查看支持的os版本,找不到-manylinux2014， 只能找到manylinux2010，但是linux6 安装就报错了，不管这么多，将名字从manylinux2014 调整到manylinux2010,就可以规避这个问题。
+。
+
+>>> import pip._internal.pep425tags;
+
+>>>print(pip._internal.pep425tags.get_supported())
+
+[<cp36-cp36m-manylinux2010_x86_64 @ 140489403375816>, <cp36-cp36m-manylinux1_x86_64 @ 140489403375752>, <cp36-cp36m-linux_x86_64 @ 140489403375880>, <cp36-abi3-manylinux2010_x86_64 @ 140489403377032>, <cp36-abi3-manylinux1_x86_64 @ 140489403379656>, <cp36-abi3-linux_x86_64 @ 140489403461704>, <cp36-none-manylinux2010_x86_64 @ 140489403461832>, <cp36-none-manylinux1_x86_64 @ 140489403461896>, <cp36-none-linux_x86_64 @ 140489403461960>, <cp35-abi3-manylinux2010_x86_64 @ 140489403462088>, <cp35-abi3-manylinux1_x86_64 @ 140489403462152>, <cp35-abi3-linux_x86_64 @ 140489403462216>, <cp34-abi3-manylinux2010_x86_64 @ 140489403462344>, <cp34-abi3-manylinux1_x86_64 @ 140489403462408>, <cp34-abi3-linux_x86_64 @ 140489403462472>, <cp33-abi3-manylinux2010_x86_64 @ 140489403462600>, <cp33-abi3-manylinux1_x86_64 @ 140489403462664>, <cp33-abi3-linux_x86_64 @ 140489403462728>, <cp32-abi3-manylinux2010_x86_64 @ 140489403462856>, <cp32-abi3-manylinux1_x86_64 @ 140489403462920>, <cp32-abi3-linux_x86_64 @ 140489403462984>, <py36-none-manylinux2010_x86_64 @ 140489403463176>, <py36-none-manylinux1_x86_64 @ 140489403463112>, <py36-none-linux_x86_64 @ 140489403463304>, <py3-none-manylinux2010_x86_64 @ 140489403463432>, <py3-none-manylinux1_x86_64 @ 140489403463496>, <py3-none-linux_x86_64 @ 140489403463560>, <py35-none-manylinux2010_x86_64 @ 140489403463688>, <py35-none-manylinux1_x86_64 @ 140489403463752>, <py35-none-linux_x86_64 @ 140489403463816>, <py34-none-manylinux2010_x86_64 @ 140489403463944>, <py34-none-manylinux1_x86_64 @ 140489403464008>, <py34-none-linux_x86_64 @ 140489403464072>, <py33-none-manylinux2010_x86_64 @ 140489403464200>, <py33-none-manylinux1_x86_64 @ 140489403464264>, <py33-none-linux_x86_64 @ 140489403464328>, <py32-none-manylinux2010_x86_64 @ 140489403464456>, <py32-none-manylinux1_x86_64 @ 140489403464520>, <py32-none-linux_x86_64 @ 140489403464584>, <py31-none-manylinux2010_x86_64 @ 140489403464712>, <py31-none-manylinux1_x86_64 @ 140489403464776>, <py31-none-linux_x86_64 @ 140489403464840>, <py30-none-manylinux2010_x86_64 @ 140489403464968>, <py30-none-manylinux1_x86_64 @ 140489403465032>, <py30-none-linux_x86_64 @ 140489403465096>, <cp36-none-any @ 140489403465224>, <py36-none-any @ 140489403465288>, <py3-none-any @ 140489403465352>, <py35-none-any @ 140489403465416>, <py34-none-any @ 140489403465480>, <py33-none-any @ 140489403465544>, <py32-none-any @ 140489403465608>, <py31-none-any @ 140489403465672>, <py30-none-any @ 140489403478088>]
+
+报错如下：
+zbxdb@nbutest3 py_soft]$ pip install cryptography-3.4.6-cp36-abi3-manylinux2014_x86_64.whl cffi-1.14.5-cp36-cp36m-manylinux1_x86_64.whl pycparser-2.20-py2.py3-none-any.whl
+ERROR: cryptography-3.4.6-cp36-abi3-manylinux2014_x86_64.whl is not a supported wheel on this platform
+
+调整后，成功的执行过程如下：（将名字从manylinux2014 调整到manylinux2010,就可以规避这个问题。）
+pip install cryptography-3.4.6-cp36-abi3-manylinux2010_x86_64.whl cffi-1.14.5-cp36-cp36m-manylinux1_x86_64.whl pycparser-2.20-py2.py3-none-any.whl
+
+##sample 9
+
+https://blog.csdn.net/sty945/article/details/105200436
+
+感谢 sty945
+
+
+原因1
+
+你下载安装的包不是当前平台所支持的
+
+
+原因2
+
+你下载的包，不符合你所在的平台的安装whl的名称规范，所以出错。
+比如当前我要安装的包是：PyMuPDF-1.16.16-cp36-cp36m-manylinux2010_x86_64.whl
+
+但是在我的系统中使用如下命令安装：
+
+1
+
+但是出现了下面的错误提示：
+
+1
+
+
+解决办法1
+
+在shell中运行python,然后输入如下的命令：
+
+1
+
+输出结果如下:
+
+1
+
+其中有一个('cp36', 'cp36m', 'manylinux1_x86_64')意味着如果我要安装python3.6版本的whl，那么我的whl文件中应该是manylinux1_x86_64而不是manylinux2010_x86_64,所以我将文件名改成PyMuPDF-1.16.11-cp36-cp36m-manylinux1_x86_64.whl,然后再进行安装，结果安装成功。
+
+
+解决方法2
+
+在方法1中，我们通过import pip;print(pip.pep425tags.get_supported())得到文件支持的格式，但是这个命令应该只适用于低版本的pip，比如pip 9.0.1.如果我们的系统是高版本的系统，可以使用下面的命令:
+
+1
+
+比如如果pip版本是pip 20.0.2，那么得到的结果是:
+
+1
+
+可以看见支持安装的版本一下子多了起来，所以第二种解决办法就是升级pip，可以通过如下命令升级pip:
+
+1
+
+通常情况下，你的电脑里如果安装了python2.x也同时安装了python3.x，那么应该就会有两个pip。一个是pip2，另一个是pip3。那么可以采用：
+

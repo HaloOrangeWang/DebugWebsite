@@ -1,0 +1,23 @@
+报错显示： 首先进行Traceback，发现报错语句为：pickle.load()
+
+之后网上查找原因有：
+
+（1）https://www.cnblogs.com/rychh/p/9833318.html
+ （2）https://blog.csdn.net/qq_20373723/article/details/85258535
+
+对上面作者提供的方法进行测试：
+
+import pickle
+with open("./data_preprocess.pkl","rb") as f1:
+    data=pickle.load(f1)
+print(data)
+
+最后重新进行数据存入
+
+pickle.dump((
+                title_count, title_set, genres2int, features, targets_values, ratings, users, movies, data, movies_orig,
+                users_orig), open('..\model\data_preprocess.pkl', 'wb'))
+
+解决问题。
+ 出现Ran out of input时，可以先试试上面的两种方法，最后考虑是不是pikle.load( )加载的文件对不对，重置文件即可。
+

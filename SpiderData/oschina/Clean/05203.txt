@@ -1,0 +1,20 @@
+　　小爬从使用Pyinstaller打包py为exe文件以来，一直都会碰到Warning：lib not found等相关问题，诸如：
+
+　　虽然大多数时候，您像我一样忽略这些warning，打包后的exe也能运行。网上有一堆的方法，有建议装win7的，也有建议换32位python文件的，有提示下载2G大小的相关SDK的。总之，就是pyinstaller对目前的win10支持不够友好！但是网上这些方法代价太高，那么不改win10 X64系统，不更改 python版本（3.6.4）的情况下，如何优雅地使用pyinstaller且没有满屏的warning提示呢？
+
+　　小爬我经过一番摸索，终于找到了方法，pyinstaller提示找不到的这些dll文件，比如 api-ms-win-crt-runtime-l1-1-0.dll  其实 在win10系统中同样是存在的，大部分都在：C:\Windows\System32\downlevel路径和它的上层路径C:\Windows\System32 下，如下图：
+
+我们只需要将这两个路径加入用户环境变量即可。
+
+添加完环境变量后，pyinstaller再打包py文件时，会优先在这些路径查找，就可以成功打包了。PS：记得注销系统重新登陆后，方能生效！
+
+再次打包，页面清爽多了，win10 X64下亲测有效！
+
+　　PS：需要注意的是，很多时候我们pyinstaller打包py文件虽然显示“成功”，但是真正运行exe文件，依旧会报错，诸如fail to execute script之类，终端界面往往一闪而过，我们肉眼很多时候甚至看不清具体原因！小爬有个笨方法——录屏。推荐一个好用的录屏软件Ocam。肉眼看上去一闪而过的提示信息会被录屏软件完整记录下来，形成mp4文件，我们再借助播放器的暂停功能，就可以定位到错误信息。以下是我执行时遇到的几个错误：
+
+这个时候问题就简单了，比如，上面这两个图提示的是，一个找不到模块distuils，一个提示需要安装依赖库xlrd。我们将distuils文件夹从python文件位置对应的lib文件下找到，放到我们的python（env）对应的文件夹下即可，xlrd则直接用pip安装即可。
+
+　　ps：如果您要打包的是像我一样引用了pandas库的py文件，则程序中尽可能不要直接 import pandas as pd，这样打包后的exe文件非常大，可以考虑用到什么函数就引用什么函数，如：
+
+　　如果您在使用pyinstaller时有这类困扰，快用我的方法再试试吧！
+

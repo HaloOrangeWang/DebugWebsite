@@ -1,0 +1,22 @@
+本文主要解决Python脚本报错ValueError: invalid literal for int() with base 10: '\xef\xbb\xbf1'问题。
+
+出现场景：在打开UTF-8格式文件后，进行int类型转换时报错。
+
+出错代码如下：
+
+with open(file) as f:
+
+for i in f:
+
+print int(i.split(','))
+
+报错如下：
+
+ValueError: invalid literal for int() with base 10: '\xef\xbb\xbf1'
+
+解决方法：
+
+使用codecs.open 打开文件，它以UTF-8格式解码并忽略文件的初始BOM，最后返回Unicode的数据。
+
+代码如下：
+

@@ -1,0 +1,45 @@
+(flask_venv) D:\DjangoProject\flask_test>flask db init
+Traceback (most recent call last):
+  File "c:\users\daiyongdong0520\appdata\local\programs\python\python37\Lib\runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+  File "c:\users\daiyongdong0520\appdata\local\programs\python\python37\Lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "d:\virtualenv\flask_venv\Scripts\flask.exe\__main__.py", line 7, in <module>
+  File "d:\virtualenv\flask_venv\lib\site-packages\flask\cli.py", line 966, in main
+    cli.main(prog_name="python -m flask" if as_module else None)
+  File "d:\virtualenv\flask_venv\lib\site-packages\flask\cli.py", line 586, in main
+    return super(FlaskGroup, self).main(*args, **kwargs)
+  File "d:\virtualenv\flask_venv\lib\site-packages\click\core.py", line 717, in main
+    rv = self.invoke(ctx)
+  File "d:\virtualenv\flask_venv\lib\site-packages\click\core.py", line 1137, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "d:\virtualenv\flask_venv\lib\site-packages\click\core.py", line 1137, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "d:\virtualenv\flask_venv\lib\site-packages\click\core.py", line 956, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "d:\virtualenv\flask_venv\lib\site-packages\click\core.py", line 555, in invoke
+    return callback(*args, **kwargs)
+  File "d:\virtualenv\flask_venv\lib\site-packages\click\decorators.py", line 17, in new_func
+    return f(get_current_context(), *args, **kwargs)
+  File "d:\virtualenv\flask_venv\lib\site-packages\flask\cli.py", line 425, in decorator
+    with __ctx.ensure_object(ScriptInfo).load_app().app_context():
+  File "d:\virtualenv\flask_venv\lib\site-packages\flask\cli.py", line 392, in load_app
+    app = locate_app(self, import_name, None, raise_if_not_found=False)
+  File "d:\virtualenv\flask_venv\lib\site-packages\flask\cli.py", line 257, in locate_app
+    return find_best_app(script_info, module)
+  File "d:\virtualenv\flask_venv\lib\site-packages\flask\cli.py", line 83, in find_best_app
+    app = call_factory(script_info, app_factory)
+  File "d:\virtualenv\flask_venv\lib\site-packages\flask\cli.py", line 117, in call_factory
+    return app_factory(script_info)
+  File "D:\DjangoProject\flask_test\app\__init__.py", line 23, in create_app
+    app.config.from_object(config[config_name])
+KeyError: <flask.cli.ScriptInfo object at 0x000001638AC164E0>
+
+报错原因：
+
+没有指向指向启动文件 flask_test.py
+
+添加一个环境变量，解决
+
+set FLASK_APP=flask_test.py
+

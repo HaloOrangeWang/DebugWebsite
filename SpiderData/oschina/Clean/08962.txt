@@ -1,0 +1,60 @@
+环境：RHEL6.5
+
+使用scp命令报错：
+
+[root@oradb23 media]# scp /etc/hosts oradb24:/etc/
+-bash: scp: command not found
+
+查看openssh相关包：
+
+[root@oradb23 ~]# rpm -qa openssh*
+openssh-5.3p1-94.el6.x86_64 openssh-server-5.3p1-94.el6.x86_64
+
+发现服务器默认没有安装openssh的客户端。
+
+yum 安装openssh客户端
+
+[root@oradb23 ~]# yum install openssh-clients
+
+[root@oradb23 ~]# rpm -qa openssh* openssh-clients-5.3p1-94.el6.x86_64 openssh-5.3p1-94.el6.x86_64 openssh-server-5.3p1-94.el6.x86_64
+
+yum配置本地源可参考：
+
+# mkdir -p /media/cdrom
+
+# mount -o loop -t iso9660 /opt/rhel-server-6.2-x86_64-dvd.iso /media/cdrom
+
+# vi /etc/yum.repos.d/rhel-source.repo
+
+[ISO]
+name=iso
+baseurl=file:///media/cdrom/Server/ enabled=1 gpgcheck=0
+
+验证scp命令可用
+
+[root@oradb23 ~]# scp
+usage: scp [-1246BCpqrv] [-c cipher] [-F ssh_config] [-i identity_file]
+           [-l limit] [-o ssh_option] [-P port] [-S program] [[user@]host1:]file1 ... [[user@]host2:]file2
+
+再次执行：
+
+[root@oradb23 ~]# scp /etc/hosts oradb24:/etc/
+The authenticity of host 'oradb24 (192.168.1.24)' can't be established.
+RSA key fingerprint is e0:fb:fb:67:a0:fc:cd:a5:dc:c8:bc:68:67:b1:93:3f. Are you sure you want to continue connecting (yes/no)? yes Warning: Permanently added 'oradb24,192.168.1.24' (RSA) to the list of known hosts. root@oradb24's password: bash: scp: command not found lost connection
+
+说明oradb24主机同样没有安装openssh客户端，
+在oradb24主机也同样yum 安装,确定scp可用
+
+[root@oradb24 ~]# yum install openssh-clients
+[root@oradb24 ~]# scp
+usage: scp [-1246BCpqrv] [-c cipher] [-F ssh_config] [-i identity_file]
+           [-l limit] [-o ssh_option] [-P port] [-S program] [[user@]host1:]file1 ... [[user@]host2:]file2
+
+再次尝试scp拷贝，这次就可以正常拷贝了。
+
+[root@oradb23 ~]# scp /etc/hosts oradb24:/etc/
+root@oradb24's password: 
+hosts                                                                                                                                                                            100%  380     0.4KB/s   00:00
+
+说明scp拷贝，两端都需要保证scp命令可用才可以。
+

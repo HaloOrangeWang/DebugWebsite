@@ -1,0 +1,18 @@
+cinder-volume报错vmdk2 is reporting problems, not sending heartbeat. Service will appear "down".
+
+2019-04-21 03:08:39.255 36 WARNING cinder.volume.manager [req-fc576c81-8b77-46cd-aa9a-f2eb30a96e75 - - - - -] Update driver status failed: (config name vmwarevc-vmdk) is uninitialized.
+2019-04-21 03:08:47.435 35 ERROR cinder.service [-] Manager for service cinder-volume control01@vmwarevc-vmdk2 is reporting problems, not sending heartbeat. Service will appear "down".
+2019-04-21 03:08:49.140 36 ERROR cinder.service [-] Manager for service cinder-volume control01@vmwarevc-vmdk is reporting problems, not sending heartbeat. Service will appear "down".
+2019-04-21 03:08:57.436 35 ERROR cinder.service [-] Manager for service cinder-volume control01@vmwarevc-vmdk2 is reporting problems, not sending heartbeat. Service will appear "down".
+2019-04-21 03:08:59.140 36 ERROR cinder.service [-] Manager for service cinder-volume control01@vmwarevc-vmdk is reporting problems, not sending heartbeat. Service will appear "down".
+2019-04-21 03:09:07.437 35 ERROR cinder.service [-] Manager for service cinder-volume control01@vmwarevc-vmdk2 is reporting problems, not sending heartbeat. Service will appear "down".
+2019-04-21 03:09:09.141 36 ERROR cinder.service [-] Manager for service cinder-volume control01@vmwarevc-vmdk is reporting problems, not sending heartbeat. Service will appear "down".
+2019-04-21 03:09:17.437 35 ERROR cinder.service [-] Manager for service cinder-volume control01@vmwarevc-vmdk2 is reporting problems, not sending heartbeat. Service will appear "down".
+2019-04-21 03:09:18.030 35 DEBUG oslo_service.periodic_task [req-30a368b7-e2b6-4b90-8fde-3881d7502a38 - - - - -] Running periodic task VolumeManager._publish_service_capabilities run_periodic_tasks /var/lib/kolla/venv/lib/python2.7/site-packages/oslo_service/periodic_task.py:215
+
+问题原因：
+
+openstack服务连接VMware的存储服务，分析为VC版本太低，无法兼容
+
+解决办法 升级vc 6.0以上
+

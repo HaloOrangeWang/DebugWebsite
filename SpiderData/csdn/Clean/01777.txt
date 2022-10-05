@@ -1,0 +1,48 @@
+
+场景：
+
+
+问题1描述：
+
+import pymysql
+db = pymysql.connect(host='DESKTOP-FBB7URP',port=3306,user='sa',password='local',database='student')
+
+报错信息。
+
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10054] 远程主机强迫关闭了一个现有的连接。)')
+
+
+原因分析：
+
+这个问题耗费了我一个半小时的时间，但是问题还是没有解决。正当我将要放弃的时候。朋友给我了一个提示，我用的数据库是SQL Server，但是老师讲课用的是MySQL，啊啊啊啊，天哪，激动的心颤抖的手，这这这难道就是问题的根源？
+ 后来查阅发现，MySQL和SQL Server连接数据库导入的模块确实不一样，MySQL用pymysql，SQL Server用pymssql。于是我又重新导入pymssql，尝试运行看看能不能成功。这次又报错了，但是错误不一样了，内心五味杂陈，还是得硬着头皮整它，勇敢牛牛，不怕困难。几经周折，最后终于解决了，在这里记录一下，也希望对大家有所帮助。
+
+
+问题2描述：
+
+内联代码片。
+
+import pymssql
+print("start")
+db = pymssql.connect(host='DESKTOP-FBB7URP',port=3306,user='sa',password='local',database='student')
+
+报错信息：
+
+　　pymssql.OperationalError: (20009, b'DB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (SZS\\SQLEXPRESS)\n')
+
+
+原因分析：
+
+数据库端口没有开
+
+通过查阅一些文章，这种造成这种情况的可能性有多种，由于个人是初学者，能力有限，就紧着看得懂的方法尝试。接下来给大家展示怎样解决这个问题。
+ 进行以下配置：
+ sql server配置管理器—>SQL Server 网络配置---->选择当前使用的实例------>开启TCP/IP---->找到当前的动态端口号（当前是3306），如下图：
+ 
+ 然后重启你的数据库，连接数据库。
+
+这次终于运行成功了。
+ 
+ 感谢大家阅读，如有错误或者不妥之处，请指正。
+

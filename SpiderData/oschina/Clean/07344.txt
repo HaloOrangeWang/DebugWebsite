@@ -1,0 +1,8 @@
+Jquery实现Ajax异步提交时报错"Uncaught TypeError: Illegal invocation"，如下图：
+
+排查发现错误在于此：
+
+data:{"search_value":$('input[name=search_value]'),"order_source":buyerType,"order_status":orderType}
+
+$('input[name=search_value]') 是一个对象而不是一个值，正确的写法应该是 $('input[name=search_value]').val()
+

@@ -1,0 +1,91 @@
+根据官网https://multicorn.readthedocs.io/en/latest/installation.html的安装指南下载安装，关键信息：
+
+Postgresql 9.1+
+
+Postgresql development packages
+
+Python development packages
+
+python 2.6 or >= python 3.3 as your default python
+
+If you are using PostgreSQL 9.1, you should use the 0.9.1 release.
+
+If you are using PostgreSQL 9.2 or superior, you should use the 1.0.0 series. (Currently 1.0.1).
+
+问题1：libpython3.5m.a(abstract.o): relocation R_X86_64_32S against `_Py_NotImplementedStruct' can not be used when making a shared object; recompile with -fPIC
+
+1.分析：问题其实处在python上。默认方式安装的python生成的是libpython3.5m.a静态库。这里的recompile with -fPIC实际是要求使用的python版本提供动态库*.so.
+
+1.分析：问题其实处在python上。默认方式安装的python生成的是libpython3.5m.a静态库。这里的recompile with -fPIC实际是要求使用的python版本提供动态库*.so.
+
+问题2
+
+./configure --prefix=/usr/local/  --enable-shared CFLAGS=-fPIC
+make clean
+make && sudo make install(make 是把源码包编译成二进制可执行文件，make install 即安装 && 表示前一个执行成功，执行后面的命令)
+
+./configure --prefix=/usr/local/  --enable-shared CFLAGS=-fPIC
+
+make clean
+
+make && sudo make install(make 是把源码包编译成二进制可执行文件，make install 即安装 && 表示前一个执行成功，执行后面的命令)
+
+安装完成后用python3.7检查，报错：error while loading shared libraries: libpython2.7.so.1.0: cannot open shared object file: No such file or directory，意思是说找不到*.so文件
+
+分析python可执行文件目录默认一般在/usr/bin 下，前面我们安装时的指定的目录是/usr/local/。执行时，linux会到/etc/ld.so.conf文件里面的路径需找需要的*.so文件，并且修改后需要运行ldconfig立即生效。使用ldconfig -v 可以查看目前有效路径。因此我们需要在ld.so.conf中加入声明/usr/local/lib 才能找到libpython2.7.so.1.0文件
+
+分析python可执行文件目录默认一般在/usr/bin 下，前面我们安装时的指定的目录是/usr/local/。执行时，linux会到/etc/ld.so.conf文件里面的路径需找需要的*.so文件，并且修改后需要运行ldconfig立即生效。使用ldconfig -v 可以查看目前有效路径。因此我们需要在ld.so.conf中加入声明/usr/local/lib 才能找到libpython2.7.so.1.0文件
+
+python使用补充说明
+
+不同bin路径下多个python并存时调用顺序。如果两个目录下有相同的可执行程序python，谁优先执行受到PATH环境变量的影响，/usr/bin下面的都是系统预装的可执行程序，会随着系统升级而改变。/usr/local/bin目录是给用户放置自己的可执行程序的地方，推荐放在这里，不会被系统升级而覆盖同名文件。路径在前面的先被执行
+echo $PATH
+ 
+/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+ 
+/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/dean/bin
+ 
+这里/usr/local/bin优先于/usr/bin, 一般都是如此。
+
+同一路径下多个python版本时，设置默认版本。
+ # update-alternatives --install /usr/local/bin/python python /usr/local/bin/python2.7 1
+# update-alternatives --install /usr/local/bin/python python /usr/local/bin/python3.5 0
+# update-alternatives --install /usr/local/bin/python python /usr/local/bin/python3.7 3
+
+不同bin路径下多个python并存时调用顺序。如果两个目录下有相同的可执行程序python，谁优先执行受到PATH环境变量的影响，/usr/bin下面的都是系统预装的可执行程序，会随着系统升级而改变。/usr/local/bin目录是给用户放置自己的可执行程序的地方，推荐放在这里，不会被系统升级而覆盖同名文件。路径在前面的先被执行
+echo $PATH
+ 
+/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+ 
+/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/dean/bin
+ 
+这里/usr/local/bin优先于/usr/bin, 一般都是如此。
+
+不同bin路径下多个python并存时调用顺序。如果两个目录下有相同的可执行程序python，谁优先执行受到PATH环境变量的影响，/usr/bin下面的都是系统预装的可执行程序，会随着系统升级而改变。/usr/local/bin目录是给用户放置自己的可执行程序的地方，推荐放在这里，不会被系统升级而覆盖同名文件。路径在前面的先被执行
+
+echo $PATH
+
+/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/dean/bin
+
+这里/usr/local/bin优先于/usr/bin, 一般都是如此。
+
+同一路径下多个python版本时，设置默认版本。
+ # update-alternatives --install /usr/local/bin/python python /usr/local/bin/python2.7 1
+# update-alternatives --install /usr/local/bin/python python /usr/local/bin/python3.5 0
+# update-alternatives --install /usr/local/bin/python python /usr/local/bin/python3.7 3
+
+# update-alternatives --install /usr/local/bin/python python /usr/local/bin/python2.7 1
+
+# update-alternatives --install /usr/local/bin/python python /usr/local/bin/python3.5 0
+
+# update-alternatives --install /usr/local/bin/python python /usr/local/bin/python3.7 3
+
+修改默认版本
+update-alternatives --config python
+
+update-alternatives --config python
+
+到这里就可以顺利安装Multicorn啦，感谢认真总结的自己。
+

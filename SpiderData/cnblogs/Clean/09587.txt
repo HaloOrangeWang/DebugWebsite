@@ -1,0 +1,26 @@
+用了一段时间的 python 的 django 框架，在修改 sqlite 数据库的时候遇到如下错误：django.db.utils.IntegrityError: NOT NULL constraint failed: new__ImageRecognition_answercx.user_id
+
+其中 ImageRecognition 是 app 的名称。这个错误是发生在我在 ImageRecognition 项目下的 models.py 中的 AnswerCX 函数中使用添加了 user 字段，而这个字段是之前存在后来又被我删除了，现在想要重新添加的，我的添加语法是： user = models.ForeignKey(User, on_delete=models.CASCADE) ，但是结果就报错了，后来看了很多资料，就算修改成 user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None) 也是报错，后来终于找到了解决方案，分享给大家。
+
+参考资料：https://stackoverflow.com/questions/42733221/django-db-utils-integrityerror-not-null-constraint-failed-products-product-ima
+
+第一步，到当前 app 所在的文件夹下，我的 app 名字 ImageRecognition，然后找到 migrations 文件，找到前缀是 000 开头的文件，从你出错的地方开始删除文件。我看了下这个 app 下数据库的变化都存在这里，所以实在不懂操作，可以适当删除到你开始出错的地方。
+
+第二步：删除后再次运行以下两条语句
+
+python3 manage.py makemigrations
+
+python3 manage.py migrate
+
+这时候如果两句都运行通过了，就说明已经成功啦。
+
+（可选）： 如果你的错误和我类似，那么你就把原来添加的
+
+user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+的语句修改成
+
+user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
+
+这时候添加就可以成功添加 user 字段啦~
+

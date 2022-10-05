@@ -1,0 +1,23 @@
+将try except中捕获到的异常信息输出到日志文件中，方便查找错误原因，tranceback模块提供了把详细出错堆栈信息格式化成字符串返回函数format_exc().
+
+具体代码如下
+
+import traceback
+import logging
+
+logging.basicConfig(filename='log.log')
+
+def error_func():
+  b = 1 / 0
+
+if __name__ == '__main__':
+  try:
+    error_func()
+  except:
+    s = traceback.format_exc()
+    logging.error(s)
+
+出错后，就能在log.log中查看错误信息。
+
+以上这篇python实现异常信息堆栈输出到日志文件就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

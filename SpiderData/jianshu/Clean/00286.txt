@@ -1,0 +1,272 @@
+镜像下载、域名解析、时间同步请点击 阿里云开源镜像站
+
+
+错误一:
+
+Invalid configuration value: failovermethod=priority in /etc/yum.repos.d/CentOS-Linux-BaseOS.repo; Configuration: OptionBinding with id "failovermethod" does not exist
+CentOS Linux 8 - AppStream                                                 6.3 kB/s | 2.3 kB     00:00    
+Errors during downloading metadata for repository 'appstream':
+  - Status code: 404 for http://mirrors.cloud.aliyuncs.com/centos/8/AppStream/x86_64/os/repodata/repomd.xml (IP: 100.100.2.148)
+Error: Failed to download metadata for repo 'appstream': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried
+
+当前环境为:
+
+[root@iZ2vc5xk901ftf2vfscwc1Z yum.repos.d]# uname -srm
+Linux 4.18.0-348.2.1.el8_5.x86_64 x86_64
+
+CentOS版本为:
+
+[root@iZ2vc5xk901ftf2vfscwc1Z yum.repos.d]# cat /etc/redhat-release
+CentOS Linux release 8.5.2111
+
+
+解决办法:
+
+1.找到CentOS相关目录,备份CentOS-AppStream,CentOS-Base文件,一般CentOS目录在/etc/yum.repos.d文件夹下,如下:
+
+备份:
+
+cp CentOS-Linux-AppStream.repo CentOS-Linux-AppStream.repo1
+cp CentOS-Linux-BaseOS.repo CentOS-Linux-BaseOS.repo1
+
+2.编辑文件CentOS-Linux-AppStream.repo,CentOS-Linux-BaseOS.repo进行字符串替换:
+
+vi CentOS-Linux-BaseOS.repo
+# esc 键盘 ： 命令模式下执行：
+%s/mirrors.cloud.aliyuncs.com/mirrors.aliyun.com/g 
+# 继续执行:
+%s/$releasever/$releasever-stream/g
+ 
+vi CentOS-Linux-AppStream.repo
+# esc 键盘 ： 命令模式下执行：
+%s/mirrors.cloud.aliyuncs.com/mirrors.aliyun.com/g 
+# 继续执行:
+%s/$releasever/$releasever-stream/g
+
+3.执行命令:
+
+yum makecache
+yum update
+
+命令执行效果:
+
+[root@iZ2vc5xk901ftf2vfscwc1Z yum.repos.d]# yum update
+Invalid configuration value: failovermethod=priority in /etc/yum.repos.d/CentOS-Linux-epel.repo; Configuration: OptionBinding with id "failovermethod" does not exist
+Last metadata expiration check: 0:01:22 ago on Wed 09 Mar 2022 10:20:01 AM CST.
+Error: 
+ Problem: package centos-stream-release-8.6-1.el8.noarch requires centos-stream-repos, but none of the providers can be installed
+  - package centos-linux-repos-8-3.el8.noarch conflicts with centos-repos(8) provided by centos-stream-repos-8-2.el8.noarch
+  - package centos-stream-repos-8-2.el8.noarch conflicts with centos-repos(8) provided by centos-linux-repos-8-3.el8.noarch
+  - package centos-linux-repos-8-3.el8.noarch conflicts with centos-repos(8) provided by centos-stream-repos-8-3.el8.noarch
+  - package centos-stream-repos-8-3.el8.noarch conflicts with centos-repos(8) provided by centos-linux-repos-8-3.el8.noarch
+  - package centos-linux-repos-8-3.el8.noarch conflicts with centos-repos(8) provided by centos-stream-repos-8-4.el8.noarch
+  - package centos-stream-repos-8-4.el8.noarch conflicts with centos-repos(8) provided by centos-linux-repos-8-3.el8.noarch
+  - cannot install the best update candidate for package centos-linux-release-8.5-1.2111.el8.noarch
+  - problem with installed package centos-linux-repos-8-3.el8.noarch
+(try to add '--allowerasing' to command line to replace conflicting packages or '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
+
+再次执行命令yum install expect,结果如下:
+
+[root@iZ2vc5xk901ftf2vfscwc1Z yum.repos.d]# yum install *expect*
+Invalid configuration value: failovermethod=priority in /etc/yum.repos.d/CentOS-Linux-epel.repo; Configuration: OptionBinding with id "failovermethod" does not exist
+Last metadata expiration check: 0:07:00 ago on Wed 09 Mar 2022 10:20:01 AM CST.
+Package python3-pexpect-4.3.1-3.el8.noarch is already installed.
+Dependencies resolved.
+===========================================================================================================
+ Package                       Architecture         Version                     Repository            Size
+===========================================================================================================
+Installing:
+ expect                        x86_64               5.45.4-5.el8                baseos               267 k
+ python3-aexpect               noarch               1.6.2-1.el8                 epel                  93 k
+Installing dependencies:
+ tcl                           x86_64               1:8.6.8-2.el8               baseos               1.1 M
+ 
+Transaction Summary
+===========================================================================================================
+Install  3 Packages
+ 
+Total download size: 1.5 M
+Installed size: 5.2 M
+Is this ok [y/N]: y
+Downloading Packages:
+(1/3): python3-aexpect-1.6.2-1.el8.noarch.rpm                              467 kB/s |  93 kB     00:00    
+(2/3): expect-5.45.4-5.el8.x86_64.rpm                                      282 kB/s | 267 kB     00:00    
+(3/3): tcl-8.6.8-2.el8.x86_64.rpm                                          351 kB/s | 1.1 MB     00:03    
+-----------------------------------------------------------------------------------------------------------
+Total                                                                      461 kB/s | 1.5 MB     00:03     
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                                                   1/1 
+  Installing       : tcl-1:8.6.8-2.el8.x86_64                                                          1/3 
+  Running scriptlet: tcl-1:8.6.8-2.el8.x86_64                                                          1/3 
+  Installing       : expect-5.45.4-5.el8.x86_64                                                        2/3 
+  Installing       : python3-aexpect-1.6.2-1.el8.noarch                                                3/3 
+  Running scriptlet: python3-aexpect-1.6.2-1.el8.noarch                                                3/3 
+  Verifying        : expect-5.45.4-5.el8.x86_64                                                        1/3 
+  Verifying        : tcl-1:8.6.8-2.el8.x86_64                                                          2/3 
+  Verifying        : python3-aexpect-1.6.2-1.el8.noarch                                                3/3 
+ 
+Installed:
+  expect-5.45.4-5.el8.x86_64       python3-aexpect-1.6.2-1.el8.noarch       tcl-1:8.6.8-2.el8.x86_64      
+ 
+Complete!
+
+oK,可以进行yum安装啦.
+
+注意：实际使用中如果没有 CentOS-AppStream.repo相关文件， 则不对其进行操作
+
+eg:安装git:
+
+[root@iZ2vc5xk901ftf2vfscwc1Z yum.repos.d]# yum -y install git
+Invalid configuration value: failovermethod=priority in /etc/yum.repos.d/CentOS-Linux-epel.repo; Configuration: OptionBinding with id "failovermethod" does not exist
+Last metadata expiration check: 0:07:51 ago on Wed 09 Mar 2022 10:20:01 AM CST.
+Dependencies resolved.
+===========================================================================================================
+ Package                      Architecture       Version                       Repository             Size
+===========================================================================================================
+Installing:
+ git                          x86_64             2.31.1-2.el8                  appstream             161 k
+Installing dependencies:
+ git-core                     x86_64             2.31.1-2.el8                  appstream             4.7 M
+ git-core-doc                 noarch             2.31.1-2.el8                  appstream             2.6 M
+ perl-Error                   noarch             1:0.17025-2.el8               appstream              46 k
+ perl-Git                     noarch             2.31.1-2.el8                  appstream              78 k
+ perl-TermReadKey             x86_64             2.37-7.el8                    appstream              40 k
+ 
+Transaction Summary
+===========================================================================================================
+Install  6 Packages
+ 
+Total download size: 7.7 M
+Installed size: 38 M
+Downloading Packages:
+(1/6): git-2.31.1-2.el8.x86_64.rpm                                         299 kB/s | 161 kB     00:00    
+(2/6): perl-Error-0.17025-2.el8.noarch.rpm                                 185 kB/s |  46 kB     00:00    
+(3/6): perl-Git-2.31.1-2.el8.noarch.rpm                                    290 kB/s |  78 kB     00:00    
+(4/6): perl-TermReadKey-2.37-7.el8.x86_64.rpm                              148 kB/s |  40 kB     00:00    
+(5/6): git-core-doc-2.31.1-2.el8.noarch.rpm                                385 kB/s | 2.6 MB     00:07    
+(6/6): git-core-2.31.1-2.el8.x86_64.rpm                                    394 kB/s | 4.7 MB     00:12    
+-----------------------------------------------------------------------------------------------------------
+Total                                                                      640 kB/s | 7.7 MB     00:12     
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                                                   1/1 
+  Installing       : git-core-2.31.1-2.el8.x86_64                                                      1/6 
+  Installing       : git-core-doc-2.31.1-2.el8.noarch                                                  2/6 
+  Installing       : perl-TermReadKey-2.37-7.el8.x86_64                                                3/6 
+  Installing       : perl-Error-1:0.17025-2.el8.noarch                                                 4/6 
+  Installing       : perl-Git-2.31.1-2.el8.noarch                                                      5/6 
+  Installing       : git-2.31.1-2.el8.x86_64                                                           6/6 
+  Running scriptlet: git-2.31.1-2.el8.x86_64                                                           6/6 
+  Verifying        : git-2.31.1-2.el8.x86_64                                                           1/6 
+  Verifying        : git-core-2.31.1-2.el8.x86_64                                                      2/6 
+  Verifying        : git-core-doc-2.31.1-2.el8.noarch                                                  3/6 
+  Verifying        : perl-Error-1:0.17025-2.el8.noarch                                                 4/6 
+  Verifying        : perl-Git-2.31.1-2.el8.noarch                                                      5/6 
+  Verifying        : perl-TermReadKey-2.37-7.el8.x86_64                                                6/6 
+ 
+Installed:
+  git-2.31.1-2.el8.x86_64             git-core-2.31.1-2.el8.x86_64   git-core-doc-2.31.1-2.el8.noarch    
+  perl-Error-1:0.17025-2.el8.noarch   perl-Git-2.31.1-2.el8.noarch   perl-TermReadKey-2.37-7.el8.x86_64  
+ 
+Complete!
+[root@iZ2vc5xk901ftf2vfscwc1Z yum.repos.d]# git --version
+git version 2.31.1
+
+
+错误二:
+
+Invalid configuration value: failovermethod=priority in /etc/yum.repos.d/CentOS-Linux-epel.repo; Configuration: OptionBinding with id "failovermethod" does not exist
+Repository extras is listed more than once in the configuration
+CentOS Linux 8 - AppStream                                                 6.7 kB/s | 2.3 kB     00:00    
+Errors during downloading metadata for repository 'appstream':
+  - Status code: 404 for http://mirrors.cloud.aliyuncs.com/centos/8/AppStream/x86_64/os/repodata/repomd.xml (IP: xxx.xxx.xxx.xxx)
+Error: Failed to download metadata for repo 'appstream': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried
+
+
+解决方法
+
+进入文件 /etc/yum.repos.d/CentOS-Epel.repo，将 failovermethod=priority 注释:
+
+ok, 这样也可以进行yum安装
+
+
+错误三:
+
+Errors during downloading metadata for repository 'appstream':
+  - Status code: 404 for http://mirrors.cloud.aliyuncs.com/centos/8/AppStream/x86_64/os/repodata/repomd.xml (IP: xxx.xxx.xxx.xxx)
+Error: Failed to download metadata for repo 'appstream': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried
+
+这个错误的意思是: 为仓库 'base' 下载元数据失败
+
+那么我们就要考虑是不是yum源的问题了,因为上面说了,我们的系统是CentOS Linux release 8.5.2111版本的,而CentOS 8操作系统版本结束了生命周期（EOL），Linux社区已不再维护该操作系统版本
+
+背景信息
+
+2021年12月31日CentOS 8 EOL。按照社区规则，CentOS 8的源地址http://mirror.centos.org/centos/8/内容已移除，目前第三方的镜像站中均已移除CentOS 8的源。阿里云的源http://mirrors.cloud.aliyuncs.com和http://mirrors.aliyun.com也无法同步到CentOS 8的源。当您在阿里云上继续使用默认配置的CentOS 8的源会发生报错。报错示例如下图所示：
+
+您可以通过下文的操作步骤，在CentOS 8操作系统的ECS实例中将源配置按照网络环境不同进行切换。
+
+yum源：专有网络VPC类型实例需切换为http://mirrors.cloud.aliyuncs.com/centos-vault/8.5.2111源。
+
+epel源：专有网络VPC类型实例需切换为http://mirrors.cloud.aliyuncs.com/epel-archive/8/源
+
+官方操作布置,如下:
+
+1.登录CentOS 8系统的ECS实例
+
+2.运行以下命令备份之前的repo文件。
+
+rename '.repo' '.repo.bak' /etc/yum.repos.d/*.repo
+
+3.运行以下命令下载最新的repo文件。
+
+wget https://mirrors.aliyun.com/repo/Centos-vault-8.5.2111.repo -O /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+wget https://mirrors.aliyun.com/repo/epel-archive-8.repo -O /etc/yum.repos.d/epel-archive-8.repo
+
+4.运行以下命令替换repo文件中的链接。
+
+sed -i 's/mirrors.cloud.aliyuncs.com/url_tmp/g'  /etc/yum.repos.d/Centos-vault-8.5.2111.repo &&  sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo && sed -i 's/url_tmp/mirrors.aliyun.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/epel-archive-8.repo
+
+5.运行以下命令重新创建缓存。
+
+yum clean all && yum makecache
+
+yum源和epel源切换完成后，即可使用yum install命令在实例上安装您所需要的软件包
+
+跟着官方的步骤走下去，最后如果有报错，下面是正确解决流程:
+
+1.进入/etc/yum.d.repos.d/,运行以下命令备份之前的repo文件
+
+rename '.repo' '.repo.bak' /etc/yum.repos.d/*.repo
+
+2.运行以下命令下载最新的repo文件:
+
+wget https://mirrors.aliyun.com/repo/Centos-vault-8.5.2111.repo -O /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+wget https://mirrors.aliyun.com/repo/epel-archive-8.repo -O /etc/yum.repos.d/epel-archive-8.repo
+
+3.运行以下命令替换repo文件中的链接，这一步出错了,官方提供的命令：
+
+sed -i 's/mirrors.cloud.aliyuncs.com/url_tmp/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo && sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo && sed -i 's/url_tmp/mirrors.aliyun.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/epel-archive-8.repo
+
+http://mirrors.cloud.aliyuncs.com 需要替换为http://mirrors.aliyun.com ，但是官方提供的命令没替换完，如果有执行官方提供的命令还是不行的话执行下面的命令：
+
+sed -i 's/mirrors.cloud.aliyuncs.com/mirrors.aliyun.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+sed -i 's/mirrors.cloud.aliyuncs.com/mirrors.aliyun.com/g' /etc/yum.repos.d/epel-archive-8.repo
+
+运行以下命令重新创建缓存
+
+yum clean all && yum makecache
+
+执行成果，yum install也就可以正常使用了~
+
+本文转自：https://blog.csdn.net/zhoupenghui168/article/details/123370719
+

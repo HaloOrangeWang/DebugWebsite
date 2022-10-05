@@ -1,0 +1,10 @@
+python抓取网页后用decode解码，报错信息如下：
+
+UnicodeDecodeError:'gbk' codec can't decode byte 0xfb in position 851: illegal multibyte sequence
+
+推测是网页数据中有错误的字符无法解码，decode有参数errors，设置一下OK
+
+response=r.content.decode('gbk',errors = 'ignore')
+
+参考文章：https://www.213.name/archives/1065
+

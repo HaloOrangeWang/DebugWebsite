@@ -1,0 +1,21 @@
+事先定义好headers，发送post请求，后台一直报错‘505 非法请求’：
+
+headers = dict()
+headers.setdefault("Content-Type","application/json;charset=UTF-8")
+headers.setdefault("sign",sign)
+headers.setdefault("timestamp",timestamp)
+response = requests.post(loginUrl,body_data,headers)
+print("result---- %s" % response.text)
+
+通过与后端确定，后端说我的headers里面没有传timestamp，但是我明明在headers里面加了timestamp，于是开启debug，发现headers字典确实里含有timestamp，但是！！！发送出去的request中headers中根本和我定义的请求头不一样：
+
+通过与后端确定，后端说我的headers里面没有传timestamp，但是我明明在headers里面加了timestamp，于是开启debug，发现headers字典确实里含有timestamp，但是！！！发送出去的request中headers中根本和我定义的请求头不一样：
+
+于是将post方法中所有的参数都指定名称：
+
+response = requests.post(url=loginUrl,json=body_data,headers=headers)
+
+再次发送请求，请求成功；
+
+注：如果bodydata是json格式的参数的话，参数中要指定名称是“json=”，不要指定为“data=”；
+

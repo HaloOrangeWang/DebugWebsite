@@ -1,0 +1,92 @@
+
+Python常见错误
+
+在刚学习 Python 编程时，经常会看到一些报错信息，下面是一些常见易犯的错误
+
+
+1.语法错误
+
+Python 的语法错误或者称之为解析错，是初学者经常碰到的，如下实例
+
+while True print('Hello world')
+
+File "<stdin>", line 1, in ?
+    while True print('Hello world')
+                   ^
+SyntaxError: invalid syntax
+
+这个例子中，函数 print() 被检查到有错误，是它前面缺少了一个冒号 : 。
+
+语法分析器指出了出错的一行，并且在最先找到的错误的位置标记了一个小小的箭头。
+
+
+缩进错误
+
+Python默认的缩进为四个空格，通常我们使用一次Tab来控制缩进，以防止空格输出混乱
+
+while True ：
+   print('Hello world')
+
+File "<stdin>", line 1
+    while True ：
+               ^
+SyntaxError: invalid character in identifier
+
+未使用缩进
+
+str = ['a', 'b', 'c'];
+for name in str1:
+print(name)
+
+File "<stdin>", line 3
+    print(name)
+        ^
+IndentationError: expected an indented block
+
+
+3.变量未定义
+
+while True:
+    a
+    break
+
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+    a
+NameError: name 'a' is not defined
+
+
+4.尝试连接非字符串值与字符串
+
+a = '2' + 2
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    a = '2' + 2
+TypeError: can only concatenate str (not "int") to str
+
+
+5.修改元组
+
+元组是不可变类型，不可对元素进行修改，但如果元素是可变类型(列表，字典等)可对内容进行修改
+
+a = ('a', 'b', 'c')
+a[0] = 'd'
+
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+    a[0] = 'd'
+TypeError: 'tuple' object does not support item assignment
+
+
+6.应用库版本问题
+
+由于某些库在不断更新，可能会导致版本之间互相不兼容，需要使用合适的库版本来搭建程序
+
+from collections import Iterator
+
+DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
+  from collections import Iterator
+
+出现错误时，终端或者pycharm的Terminal终端中会出现报错信息，翻译报错信息通常可以使我们定位出现错误的位置及直接原因，根据提示来一步步修改至可以正常运行程序即可
+

@@ -1,0 +1,350 @@
+编译问题1（audiomanager_7.0.bb的do_configure报错）：
+
+错误：CMake Error at Plugins/PluginCommandInterfaceCAPI/cmake/CommonAPI.cmake:352 (message):
+
+|   Failed to generate files from FIDL:
+
+手动执行一下：
+
+$ commonapi-generator-linux-x86 -ll verbose -sk Default -d . /data/linux/hz_rs28_bm/sources/build/tmp/work/armv7a-vfp-neon-poky-linux-gnueabi/audiomanager/7.0-r1/audiomanager-7.0/Plugins/PluginCommandInterfaceCAPI/fidl/CommandInterface.fidl
+
+-bash: /data/linux/hz_rs28_bm/sources/src/build/tools/commonapi_tool/commonapi-generator/commonapi-generator-linux-x86: /lib/ld-linux.so.2: bad ELF interpreter: No such file or directory
+
+解决（需要安装32位的glibc库和32位java jre环境）：
+
+$ sudo yum install glibc.i686
+
+$ sudo yum install java-1.8.0-openjdk.i686
+
+$ sudo ln -s /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.191.b12-1.el7_6.i386/jre/bin/java /bin/java
+
+$ java -version    （保证是32位的java）
+
+编译问题2（perl_5.20.0.bb的do_package报错）：
+
+错误：ERROR: objcopy failed with exit code 256 (cmd was ‘arm-poky-linux-gnueabi-objcopy’ –only-keep-debug
+
+… generate_uudmap: File format not recognized
+
+解决（tar在1.29版本之后需要exclude在路径的前面）：
+
+sources/meta/poky/bitbake/lib/bb/fetch2/bzr.py
+
+tar_flags = “–exclude ‘.bzr’ –exclude ‘.bzrtags'”
+
+修改成：
+
+tar_flags = “–exclude=’.bzr’ –exclude=’.bzrtags'”
+
+sources/meta/poky/bitbake/lib/bb/fetch2/cvs.py
+
+tar_flags = “–exclude ‘CVS'”
+
+修改成：
+
+tar_flags = “–exclude=’CVS'”
+
+sources/meta/poky/bitbake/lib/bb/fetch2/repo.py
+
+tar_flags = “–exclude ‘.repo’ –exclude ‘.git'”
+
+修改成：
+
+tar_flags = “–exclude=’.repo’ –exclude=’.git'”
+
+sources/meta/poky/bitbake/lib/bb/fetch2/svn.py
+
+tar_flags = “–exclude ‘.svn'”
+
+修改成：
+
+tar_flags = “–exclude=’.svn'”
+
+sources/meta/poky/meta/recipes-devtools/quilt/quilt-0.63.inc
+
+tar -cf – bin/ –exclude \*.in | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+tar -cf – compat/ –exclude \*.in | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+tar -cf – quilt/ –exclude \*.in | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+tar -cf – test/ –exclude mail.test –exclude delete.test | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+修改成：
+
+tar -c –exclude=\*.in bin/ | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+tar -c –exclude=\*.in compat/ | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+tar -c –exclude=\*.in quilt/ | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+tar -c –exclude=mail.test –exclude=delete.test test/ | ( cd ${D}${PTEST_PATH} && tar -xf – && chmod 777 test)
+
+sources/meta/poky/meta/recipes-extended/sed/sed-4.2.2/sed-add-ptest.patch
+
++       cd $(BUILDDIR); tar -cf – $(TESTDIR) –exclude *.o | ( cd $(DESTDIR) && tar -xf – )
+
+修改成：
+
++       cd $(BUILDDIR); tar -c –exclude=*.o $(TESTDIR) | ( cd $(DESTDIR) && tar -xf – )
+
+sources/meta/poky/meta/recipes-support/attr/acl.inc
+
+tar -cf – test/ –exclude nfs | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+修改成：
+
+tar -c –exclude=nfs test/ | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+sources/meta/poky/meta/recipes-support/attr/attr.inc
+
+tar -cf – test/ –exclude ext | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+修改成：
+
+tar -c –exclude=ext test/ | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+sources/meta/poky/meta/recipes-devtools/perl/perl-ptest.inc
+
+tar -cf – * –exclude \*.o –exclude libperl.so –exclude Makefile –exclude makefile –exclude hostperl \
+
+–exclude miniperl –exclude generate_uudmap –exclude patches | ( cd ${D}${PTEST_PATH} && tar -xf – )
+
+修改成：
+
+tar -c –exclude=\*.o –exclude=libperl.so –exclude=Makefile –exclude=makefile –exclude=hostperl \
+
+–exclude=miniperl –exclude=generate_uudmap –exclude=patches * | ( cd ${D}${PTEST_PATH} && tar -x )
+
+编译问题3（libunwind_1.1.bb的do_compile报错）：
+
+错误：make[1]: latex2man: Command not found
+
+解决：
+
+$ sudo yum install texlive-tetex
+
+$ sudo rpm -ivh ~/latex2man-1.18-2.noarch.rpm
+
+编译问题3（qt5-app_1.0.bb的do_compile报错）：
+
+错误（有一批类似的错误）：ld: cannot find -lgtest
+
+解决：
+
+$ vi atc_linux/application/btate/btate.pro
+
+equals(MY_BUILD_SYSTEM, atc) {
+
+LIBS += -L $(DA_LIBDIR)/lib -lgtest -lpthread -lbluetoothclient -lglobalbus -lappobj -lapputils
+
+} else {
+
+LIBS += -L$(DA_TOP)/application/lib -L$(DA_TOP)/../../sources/build/tmp/work/armv7a-vfp-neon-poky-linux-gnueabi/atc-binarys/1.0-r0/image/usr/lib -lgtest -lpthread -lbluetoothclient -l
+
+globalbus -lappobj -lapputils
+
+}
+
+$ vi atc_linux/application/gps/gps_bin.pro
+
+equals(MY_BUILD_SYSTEM, atc) {
+
+LIBS += -L $(DA_LIBDIR)/lib  -lapputils  -lglobalbus -lappobj -lgps
+
+} else {
+
+LIBS += -L$(DA_TOP)/application/lib -L$(DA_TOP)/../../sources/build/tmp/work/armv7a-vfp-neon-poky-linux-gnueabi/gpsd/3.10-r0/gpsd-3.10/ -lapputils  -lglobalbus -lappobj -lgps
+
+}
+
+$ vi atc_linux/application/dvr/dvr_bin.pro
+
+equals(MY_BUILD_SYSTEM, atc) {
+
+LIBS    += -L${DA_TOP}/lib/lib/ -ldvr -ludev -lsurface_atc -lglobalbus -lappobj -lapputils -lstorage_atc -lgps
+
+} else {
+
+LIBS    += -L${DA_TOP}/application/lib -L$(DA_TOP)/../../sources/build/tmp/work/armv7a-vfp-neon-poky-linux-gnueabi/gpsd/3.10-r0/gpsd-3.10/ -ldvr -ludev -lsurface_atc -lglobalbus –
+
+lappobj -lapputils -lstorage_atc -lgps
+
+}
+
+$ vi atc_linux/application/dvr/dvr_bin.pro
+
+INCLUDEPATH +=  ${DA_TOP}/kernel/kernel-3.18/drivers/ \
+
+../common/  \
+
+../utils/   \
+
+../appobj/include/          \
+
+../globalbus/include/       \
+
+../appcommon/include/       \
+
+../storage_atc/             \
+
+../dvr/gps/             \
+
+../gps/include/         \
+
+../gps/includeex/       \
+
+编译问题4（makall报错）：
+
+报错：./makall: line 169: mkisofs: command not found
+
+解决：$ sudo yum install mkisofs
+
+编译问题5（修改ac83xx_systemd_defconfig再编译时报错）：
+
+报错：Applying patch remove-selinux-android.patch
+
+patching file system/extras/ext4_utils/make_ext4fs.c
+
+Hunk #1 FAILED at 62.
+
+1 out of 1 hunk FAILED — rejects in file system/extras/ext4_utils/make_ext4fs.c
+
+解决：
+
+$ vi sources/meta/meta-atc/recipes-devtools/android-tools/android-tools_5.1.1.r37.bb
+
+在里面做个假的do_patch()，bitbake会优先使用本bb文件的do_patch()函数。
+
+do_patch(){
+
+}
+
+编译问题6（修改ac83xx_systemd_defconfig再编译时报错）：
+
+报错：sources/build/tmp/work/armv7a-vfp-neon-poky-linux-gnueabi/qtbase/5.5.0+gitAUTOINC+c619d2daac-r0/git/src/corelib/tools/qregexp.cpp:3947:1: internal compiler error: in add_stores, at var-tracking.c:6000
+
+解决：
+
+$ cd sources/meta/poky/meta/recipes-devtools/gcc/gcc-4.9/
+
+$ wget http://openlinux.windriver.com/overc/sources/core2_64/gcc-4.9.2-r0.1/0062-gcc-var-tracking.c-backport-from-gcc-trunk-r212178.patch
+
+$ vi sources/meta/poky/meta/recipes-devtools/gcc/gcc-4.9.inc
+
+file://0058-gcc-r212171.patch \
+
+file://0059-gcc-PR-rtl-optimization-63348.patch \
+
+file://target-gcc-includedir.patch \
+
+file://0062-gcc-var-tracking.c-backport-from-gcc-trunk-r212178.patch \
+
+其实就是这个文件：
+
+$ cat 0062-gcc-var-tracking.c-backport-from-gcc-trunk-r212178.patch
+
+From b30ffb8097749fdb55704aa7d8307ca1a58255d6 Mon Sep 17 00:00:00 2001
+
+From: =?UTF-8?q?Stefan=20M=C3=BCller-Klieser?= <s.mueller-klieser@phytec.de>
+
+Date: Tue, 7 Apr 2015 16:15:11 +0200
+
+Subject: [PATCH] gcc/var-tracking.c: backport from gcc trunk r212178
+
+MIME-Version: 1.0
+
+Content-Type: text/plain; charset=UTF-8
+
+Content-Transfer-Encoding: 8bit
+
+resolves a bug seen on cortexa8 building qt5 libraries.
+
+2014-06-30  Joseph Myers  <joseph@codesourcery.com>
+
+* var-tracking.c (add_stores): Return instead of asserting if old
+
+and new values for conditional store are the same.
+
+git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@212178 138bc75d-0d04-0410-961f-82ee72b054a4
+
+Signed-off-by: Stefan Müller-Klieser <s.mueller-klieser@phytec.de>
+
+---
+
+gcc/var-tracking.c | 3 ++-
+
+1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/gcc/var-tracking.c b/gcc/var-tracking.c
+
+index 65d8285..7c38910 100644
+
+--- a/gcc/var-tracking.c
+
++++ b/gcc/var-tracking.c
+
+@@ -5997,7 +5997,8 @@ add_stores (rtx loc, const_rtx expr, void *cuip)
+
+{
+
+cselib_val *oval = cselib_lookup (oloc, GET_MODE (oloc), 0, VOIDmode);
+
+-      gcc_assert (oval != v);
+
++      if (oval == v)
+
++        return;
+
+gcc_assert (REG_P (oloc) || MEM_P (oloc));
+
+if (oval && !cselib_preserved_value_p (oval))
+
+--
+
+1.9.1
+
+编译问题7（修改ac83xx_systemd_defconfig再编译时报错）：
+
+报错：libevdev/1.2.2-r0/libevdev-1.2.2/test/test-main.c:24:19: fatal error: check.h: No such file or directory
+
+解决：
+
+$ vi meta/poky/meta/recipes-support/libevdev/libevdev_1.2.2.bb
+
+LIC_FILES_CHKSUM = “file://COPYING;md5=75aae0d38feea6fda97ca381cb9132eb \
+
+file://libevdev/libevdev.h;endline=21;md5=7ff4f0b5113252c2f1a828e0bbad98d1″
+
+DEPENDS += “libcheck”
+
+SRC_URI = “http://www.freedesktop.org/software/libevdev/${BP}.tar.xz”
+
+编译问题8（修改ac83xx_systemd_defconfig再编译时报错）：
+
+报错：python报错： ‘do_rootfs’, lineno: 17, function
+
+Exception: CalledProcessError: Command ‘[‘du’, ‘-ks’, …
+
+解决： 没有实际问题，重新编译一次即可，可能是机器太忙导致超时，或者某个命令执行不成功。
+
+编译问题9（preuboot编译工具问题）：
+
+报错：make: armv7a-mediatek451_001_vfp-linux-gnueabi-gcc: Command not found
+
+解决：
+
+$ vi atc_linux/bootloader/preuboot/Makefile
+
+#CROSS_COMPILE  :=armv7a-mediatek451_001_vfp-linux-gnueabi-
+
+CROSS_COMPILE  :=arm-poky-linux-gnueabi-
+
+$ vi ../../atc_linux/bootloader/preuboot/driver/mmc/include/linux/list.h
+
+#ifndef NULL
+
+#define NULL 0
+
+#endif
+

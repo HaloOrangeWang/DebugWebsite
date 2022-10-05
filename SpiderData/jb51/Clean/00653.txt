@@ -1,0 +1,80 @@
+
+前言：
+
+最近在学习单片机，老师要求自己写串口通信的上位机程序，我采用比较简单的pyqt5+serial模块来完成任务，pycharm测试一切正常，在用pyinstaller打包时出现了很多错误，查询了很多资料后得到了解决，这里汇总一下解决的方法
+
+
+1. WARNING: lib not found: api-ms-win-crt-string-l1-1-0.dll dependency
+
+2999 WARNING: lib not found: api-ms-win-crt-runtime-l1-1-0.dll dependency of c:\python\python.exe
+
+3031 WARNING: lib not found: api-ms-win-crt-heap-l1-1-0.dll dependency of c:\python\python.exe
+
+3218 WARNING: lib not found: api-ms-win-crt-runtime-l1-1-0.dll dependency of c:\python\VCRUNTIME140.dll
+
+3312 WARNING: lib not found: api-ms-win-crt-convert-l1-1-0.dll dependency of c:\python\VCRUNTIME140.dll
+
+6494 WARNING: lib not found: api-ms-win-crt-heap-l1-1-0.dll dependency of c:\python\DLLs_hashlib.pyd
+
+7271 WARNING: lib not found: api-ms-win-crt-stdio-l1-1-0.dll dependency of c:\python\DLLs\unicodedata.pyd
+
+类似于这种情况就是在python目录下缺少相关的ddl文件，而自己的anocoda目录下是有这些文件的，我的解决办法是把anaconda目录下的文件直接复制到python的目录下，问题就得到了解决。
+
+考虑到可能有的人没有下载anaconda，这里我把文件打包下来，大家自取。
+
+点击这里下载
+
+
+2. 打包完成后运行时出现 "fail to excute script"
+
+这里是不容易发现问题的，造成这种问题的原因很多。
+
+在使用PyInstaller打包python程序，打包命令为：
+
+pyinstaller -F -w -i manage.ico yourpyfile.py
+
+顺便说一下几个参数的作用
+
+-F：是直接生成单独的exe文件，不附带各种依赖文件的。
+
+- -c：生成的exe文件打开方式为控制台打开。
+
+-w：这个和上面的-c对应，如果你的程序是有ui的，那就用这个-w。这样不会出现控制台，直接是你的ui。
+
+-w：这个和上面的-c对应，如果你的程序是有ui的，那就用这个-w。这样不会出现控制台，直接是你的ui。
+
+-I：给你的exe文件添加一个图标，后面要紧接着你想要的ico文件。
+
+-I：给你的exe文件添加一个图标，后面要紧接着你想要的ico文件。
+
+-p：后面紧跟着你要指定的模块搜索路径，如果你的模块安装的路径没有被PyInstaller自动检索到的话，就需要自己指定了。
+
+-p：后面紧跟着你要指定的模块搜索路径，如果你的模块安装的路径没有被PyInstaller自动检索到的话，就需要自己指定了。
+
+出现“failed to excute script xxx”
+
+这个原因实在是太多了，他就是告诉你程序不能运行。如果你是用-w方式打包的，我们这样不能看出来问题的根源是什么。所以我们还是以-c方式打包exe看一下控制台输出的error内容是什么。
+
+cmd下运行打包出来的exe
+
+给我报的错误是：no modle named "PyQt5.sip"
+
+其实tensorflow这个包我已经导入了，而且可以被PyInstaller搜索到。只是它提示我的tensorflow.contirb这个搜索不到，
+
+我猜是版本问题？因为我的tensorflow更新过，最新版的去掉了好多东西，也有一些模块改了实现方式和名称。‘
+
+真正的原因我还没找，但是就先这样吧，因为我想赶紧把问题解决了。
+
+那就：
+
+pyinstaller -F -I manage.ico yourpyfile.py --hidden-import PyQt5.sip
+
+这样打包，直接把它想要import的这个子包屏蔽掉了，反正也没用到。
+
+到这里所有的问题都得到了解决！
+
+
+总结
+
+到此这篇关于pyinstaller打包python3.6和PyQt5中各种错误解决的文章就介绍到这了,更多相关pyinstaller打包python3.6 PyQt5内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

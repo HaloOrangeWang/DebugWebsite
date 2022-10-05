@@ -1,0 +1,40 @@
+L3.agent中出现大量消息超时错误，对网络的操作各种异常。
+
+报错如下：
+
+2018-09-24 05:54:59.886 15110 ERROR neutron.agent.l3.agent [req-db9207e6-9270-4f23-8c19-0d91d20cc6fb ] Failed synchronizing routers due to RPC error
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent Traceback (most recent call last):
+2016-02-25 05:54:59.886 15110 TRACE neutron.agent.l3.agent   File "/usr/lib/python2.7/site-packages/neutron/agent/l3/agent.py", line 593, in fetch_and_sync_all_routers
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent     routers = self.plugin_rpc.get_routers(context)
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent   File "/usr/lib/python2.7/site-packages/neutron/agent/l3/agent.py", line 93, in get_routers
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent     router_ids=router_ids)
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent   File "/usr/lib/python2.7/site-packages/oslo_messaging/rpc/client.py", line 156, in call
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent     retry=self.retry)
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent   File "/usr/lib/python2.7/site-packages/oslo_messaging/transport.py", line 90, in _send
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent     timeout=timeout, retry=retry)
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent   File "/usr/lib/python2.7/site-packages/oslo_messaging/_drivers/amqpdriver.py", line 350, in send
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent     retry=retry)
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent   File "/usr/lib/python2.7/site-packages/oslo_messaging/_drivers/amqpdriver.py", line 339, in _send
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent     result = self._waiter.wait(msg_id, timeout)
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent   File "/usr/lib/python2.7/site-packages/oslo_messaging/_drivers/amqpdriver.py", line 243, in wait
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent     message = self.waiters.get(msg_id, timeout=timeout)
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent   File "/usr/lib/python2.7/site-packages/oslo_messaging/_drivers/amqpdriver.py", line 149, in get
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent     'to message ID %s' % msg_id)
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent MessagingTimeout: Timed out waiting for a reply to message ID d4baae114cee4f6d831c5eec3c5f0de3
+2018-09-24 05:54:59.886 15110 TRACE neutron.agent.l3.agent
+
+所有超时都指向同步路由的操作。 而且同步失败时，rabbit中的队列q-l3-plugin中有大量未应答消息积压，该队列为同步路由时使用，路由同步时会使用消息队列传送所有路由的属性详情，消息量很大。
+
+1）测试是否由于消息太大导致，编写测试代码，尝试连续1000次发送该消息，并未出现丢失消息的情况。
+
+2）尝试减少路由器数量，短时内情况有所改善，但是随时间增加，消息积压依然有更加严重的趋势。
+
+最终跟踪neutron代码，发现消息队列出现Timeout的原因是： neutron在同步路由信息时，会从neutron-server获取所有router的信息，这个过程会比较长（130s左右，和网络资源的多少有关系），而 在/etc/neutron/neutron.conf中会有一个配置项“rpc_response_timeout”，它用来配置RPC的超时时间，默认为60s,所以导致超时异常.
+
+解决方法：
+
+vi /etc/neutron/neutron.conf
+rpc_response_timeout=180
+
+问题解决。
+

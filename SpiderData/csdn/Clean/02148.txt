@@ -1,0 +1,6 @@
+笔者最近重新安装了系统，搭建了新的Python环境，一些常用的Python第三方模块也重新进行了安装，其中包括requests等常用爬虫库，最初的时候一切库使用正常，当我使用fiddler抓包工具进行抓包的时候，用requests模块发送请求，就一直报错，如下图所示，关闭fiddler抓包工具后代码又能正常进行。
+ 
+ 解决方案，降低requests模块的版本或者是降低urllib3的版本，我采用的是降低urllib3的版本：(注意安装模块前，要关闭)fiddler抓包工具。我是直接在pycharm中进行修改的，也可以使用 pip install 指定版本进行安装，如下图所示：
+ 
+ 安装完成之后，打开fiddler抓包工具，代码就能正常执行了，但是要在requests请求参数中加上：verify=False。
+

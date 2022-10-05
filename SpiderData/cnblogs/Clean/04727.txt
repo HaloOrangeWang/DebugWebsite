@@ -1,0 +1,22 @@
+Win7，python3.6，pip安装tensorflow之后报错：
+
+　　
+
+解决办法：
+
+有人说（https://blog.csdn.net/fhqlongteng/article/details/80279197）是CPU太老了，我也不太懂CPU，但安装他说的办法：
+
+问题的原因是我的电脑（联想V460）的cpu比较老，不支持AVX指令导致的，需要安装特殊编译的tensorflow 1.6.0版本才可以解决，注意安装时要先卸载先前安装的1.8.0版本。关于这个问题的详细解决过程可以参考github上面tensorflow的论坛。
+
+问题解决了。
+
+安装上面说的版本之后还可能出现一个错误：
+
+from google.protobuf.pyext import _message，使用tensorflow出现 ImportError: DLL load failed
+
+按照这篇博客（https://blog.csdn.net/u012193416/article/details/86301899）说的方法解决了问题：
+
+在自动安装了tensorflow时， protobuf安装的是最新版本3.6.1， 出现了不兼容的问题。
+
+更换为 protobuf 3.6.0即可（pip install protobuf==3.6.0）
+

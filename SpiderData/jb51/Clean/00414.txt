@@ -1,0 +1,78 @@
+背景
+
+在公司用多卡训练模型，得到权值文件后保存，然后回到实验室，没有多卡的环境，用单卡训练，加载模型时出错，因为单卡机器上，没有使用DataParallel来加载模型，所以会出现加载错误。
+
+原因
+
+DataParallel包装的模型在保存时，权值参数前面会带有module字符，然而自己在单卡环境下，没有用DataParallel包装的模型权值参数不带module。本质上保存的权值文件是一个有序字典。
+
+解决方法
+
+1.在单卡环境下，用DataParallel包装模型。
+
+2.自己重写Load函数，灵活。
+
+from collections import OrderedDict
+def myOwnLoad(model, check):
+  modelState = model.state_dict()
+  tempState = OrderedDict()
+  for i in range(len(check.keys())-2):
+    print modelState.keys()[i], check.keys()[i]
+    tempState[modelState.keys()[i]] = check[check.keys()[i]]
+  temp = [[0.02]*1024 for i in range(200)] # mean=0, std=0.02
+  tempState['myFc.weight'] = torch.normal(mean=0, std=torch.FloatTensor(temp)).cuda()
+  tempState['myFc.bias']  = torch.normal(mean=0, std=torch.FloatTensor([0]*200)).cuda()
+
+model.load_state_dict(tempState)
+  return model
+
+补充知识：Pytorch：多GPU训练网络与单GPU训练网络保存模型的区别
+
+测试环境：Python3.6 + Pytorch0.4
+
+在pytorch中，使用多GPU训练网络需要用到 【nn.DataParallel】：
+
+gpu_ids = [0, 1, 2, 3]
+device = t.device("cuda:0" if t.cuda.is_available() else "cpu") # 只能单GPU运行
+net = LeNet()
+if len(gpu_ids) > 1:
+  net = nn.DataParallel(net, device_ids=gpu_ids)
+net = net.to(device)
+
+而使用单GPU训练网络：
+
+device = t.device("cuda:0" if t.cuda.is_available() else "cpu") # 只能单GPU运行
+
+net = LeNet().to(device)
+
+由于多GPU训练使用了 nn.DataParallel(net, device_ids=gpu_ids) 对网络进行封装，因此在原始网络结构中添加了一层module。网络结构如下：
+
+DataParallel(
+ (module): LeNet(
+  (conv1): Conv2d(3, 6, kernel_size=(5, 5), stride=(1, 1))
+  (conv2): Conv2d(6, 16, kernel_size=(5, 5), stride=(1, 1))
+  (fc1): Linear(in_features=400, out_features=120, bias=True)
+  (fc2): Linear(in_features=120, out_features=84, bias=True)
+  (fc3): Linear(in_features=84, out_features=10, bias=True)
+ )
+)
+
+而不使用多GPU训练的网络结构如下：
+
+LeNet(
+ (conv1): Conv2d(3, 6, kernel_size=(5, 5), stride=(1, 1))
+ (conv2): Conv2d(6, 16, kernel_size=(5, 5), stride=(1, 1))
+ (fc1): Linear(in_features=400, out_features=120, bias=True)
+ (fc2): Linear(in_features=120, out_features=84, bias=True)
+ (fc3): Linear(in_features=84, out_features=10, bias=True)
+)
+
+由于在测试模型时不需要用到多GPU测试，因此在保存模型时应该把module层去掉。如下：
+
+if len(gpu_ids) > 1:
+  t.save(net.module.state_dict(), "model.pth")
+else:
+  t.save(net.state_dict(), "model.pth")
+
+以上这篇解决pytorch多GPU训练保存的模型,在单GPU环境下加载出错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

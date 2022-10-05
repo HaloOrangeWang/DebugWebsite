@@ -1,0 +1,20 @@
+在使用iText操作PDF进行合并的时候报错：
+
+com.lowagie.text.exceptions.BadPasswordException: PdfReader not opened with owner password
+
+public static PdfReader unlockPdf(PdfReader pdfReader) {
+    	if (pdfReader == null) {
+    		return pdfReader;
+    	}
+    	try {
+    		java.lang.reflect.Field f = pdfReader.getClass().getDeclaredField("encrypted");
+    		f.setAccessible(true);
+    		f.set(pdfReader, false);
+    	} catch (Exception e) {
+    		 // ignore
+    	}
+    	return pdfReader;
+    }
+
+对reader使用上述方法即可解决该问题。
+

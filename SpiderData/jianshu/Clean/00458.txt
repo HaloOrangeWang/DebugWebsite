@@ -1,0 +1,46 @@
+utils/util.js
+
+// 格式化时间
+const timeLength = (value) => {
+    if (!value) return ''
+    let result = parseInt(value)
+    let h = Math.floor(result / 3600) < 10 ? '0' + Math.floor(result / 3600) : Math.floor(result / 3600);
+    let m = Math.floor((result / 60 % 60)) < 10 ? '0' + Math.floor((result / 60 % 60)) : Math.floor((result / 60 % 60));
+    let s = Math.floor((result % 60)) < 10 ? '0' + Math.floor((result % 60)) : Math.floor((result % 60));
+
+let res = '';
+    if (h !== '00') res += `${h}:`;
+    res += `${m}:${s}`;
+    return res;
+}
+module.exports = {
+    timeLength
+}
+
+index.vue
+
+<span v-if="xinzeng == 1" class="tips timeLength">(视频时长：{{timeLength(time_length)}})</span>
+import { timeLength } from '../../../utils/util';
+
+以上用法会出现报错：Property or method "timeLength" is not defined
+
+
+原因：
+
+虽然vue组件中HTML，css，js可以在同一个页面书写，但是js里面的函数、变量是需要使用export default{ }抛出之后html才能使用的。
+
+解决方法：
+
+需要在methods里面再声明一下这个方法
+
+methods: {
+    timeLength, // import进来需要重新声明一下才能在html中使用
+}
+
+重新定义一个方法，在这个方法里面使用它
+
+<span v-if="xinzeng == 1" class="tips timeLength">(视频时长：{{formatTime(time_length)}})</span>
+formatTime(val){
+    return timeLength(val)
+},
+

@@ -1,0 +1,33 @@
+
+问题：
+
+python+Flask 反复调用model报错
+
+ValueError: Tensor Tensor("dense_2/Softmax:0"...) is not an element of this graph.
+
+
+原因：
+
+不明
+
+
+解决方案：
+
+在初始化加载模型之后，就随便生成一个向量让 model 执行一次 predict 函数
+
+from keras.models import load_model
+# ...
+model = load_modle('xxx.hdf5')
+model.predict(...)
+
+补充：from models import * 报错，找不到models的解决办法
+
+
+解决方法
+
+from .models import *
+
+在models 前加个点，引用当前目录下的models
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

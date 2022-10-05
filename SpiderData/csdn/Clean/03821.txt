@@ -1,0 +1,86 @@
+
+Python 错误：TypeError String Indices Must be Integers 【已解决】
+
+如果你尝试使用字符串值，而不是整数值来访问字典或可迭代对象的值，那么你将收到以下错误消息：
+
+TypeError: string indices must be integers
+
+在本文中，我将向你展示为什么会收到这个错误消息以及如何修复它的示例。
+
+
+Python 访问 list 中的值
+
+在下面例子中，我们有一个 instruments 列表：
+
+instruments = ['flute', 'trumpet', 'oboe', 'percussion', 'guitar']
+
+如果我们想访问列表中的第3个元素，我们将使用数字索引值2：
+
+instruments[2]
+
+下面的代码可以正确地打印出 oboe 的结果：
+
+instruments = ['flute', 'trumpet', 'oboe', 'percussion', 'guitar']
+print(instruments[2])
+
+如果尝试访问同样的列表，但是使用了字符串索引 oboe ，那么它会导致一个错误消息：
+
+instruments = ['flute', 'trumpet', 'oboe', 'percussion', 'guitar']
+print(instruments['oboe'])
+
+如果遇到此错误消息，请再次检查，确保使用数值索引值而不是字符串值访问元素。
+
+
+如何在 Python 中访问 Dictionary 中的值
+
+让我们修改前面的示例，创建一个 instruments 和 quantities 的字典。
+
+instruments = {
+    'flute': 2,
+    'trumpet': 5,
+    'oboe': 1,
+    'percussion': 4,
+    'guitar': 9
+}
+
+如果我们想打印出字典 instruments 所有的值，我们可以使用循环与 .values() 方法。
+
+for quantity in instruments.values():
+    print(quantity)
+
+如果我们移除 .values() 方法并尝试使用字符串索引访问这些值，那么我们将收到以下错误消息：
+
+for quantity in instruments:
+    print(quantity['flute'])
+    print(quantity['trumpet'])
+    print(quantity['oboe'])
+    print(quantity['percussion'])
+    print(quantity['guitar'])
+
+如果你打印出 quantity ，那么你会看到它是一个字符串。
+
+for quantity in instruments:
+    print(quantity)
+
+如果你试图写 quantity['flute'] ，那么它转换成 'flute'['flute'] ，这在 Python 中是没有意义的。
+
+解决这个问题的方法是引用字典 instruments ，而不是使用 quantity 。
+
+下面的重构代码将产生正确的结果：
+
+instruments = {
+    'flute': 2,
+    'trumpet': 5,
+    'oboe': 1,
+    'percussion': 4,
+    'guitar': 9
+}
+
+print(instruments['flute'])
+print(instruments['trumpet'])
+print(instruments['oboe'])
+print(instruments['percussion'])
+print(instruments['guitar'])
+
+我希望你喜欢这篇文章，并祝你在 Python 之旅中好运。
+

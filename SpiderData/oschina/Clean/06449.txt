@@ -1,0 +1,64 @@
+# -*- coding: utf-8 -*-
+"""
+Spyder Editor
+
+This is a temporary script file.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+#第一步 获取与处理数据
+
+x,y=[],[] #定义存储输入数据和目标数据的数组
+
+for sample in open('a.txt','r'): #遍历数据集并保存
+    _x,_y=sample.split(",")
+    x.append(float(_x))
+    y.append(float(_y))
+
+x,y=np.array(x),np.array(y) #转化为numpy数组
+
+x=(x-x.mean())/x.std() #标准化
+
+plt.show
+
+过程中遇到的问题：
+
+1.在获取与处理数据的过程中，文件老是找不到，在这里有两种常见的错误
+
+(1)FileNotFoundError: [Errno 2] No such file or directory: 'C：/a.txt'
+
+错误分析与解决：可能是文件路径写错了，也可能是文件名写错了，检查自己设置的文件名后缀，我的错误就是没注意文件名后缀，结果我的文件名实际上是a.txt.txt，所以说一直提示我找不到文件，后来在保存文件的地方重新设置显示文件扩展名，顺利解决问题，可以将数据文件和py源文件放在一个文件夹下，就可以只输入文件名，而不输入文件路径
+
+(2)SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape
+
+错误分析与解决：
+
+
+从他的博客取经的
+
+
+@淘气小子
+
+原因：
+window 读取文件可以用\，但是在字符串中\是被当作转义字符来使用，所以’d:\a.txt’会被转义成’d:\a.txt’这是正确路径，所以不会报错。而‘C:\Users\FrankYuan\Pictures\Camera Roll\WIN_20161010_08_51_57_Pro.jpg ’中经过转义之后可能就找不到路径的资源了，例如\t可能就转义成tab键了。
+解决办法
+python在描述路径时可以有多种方式，现列举常见的三种
+方式一:转义的方式
+'d:\\a.txt'
+方式二:显式声明字符串不用转义
+'d:r\a.txt'
+方式三:使用Linux的路径/         最推荐
+'d:/a.txt'
+我强烈推荐第三种写法，这在Linux和window下都是行的通的。
+
+2.标签的正确拼写 label   这个错误犯过很多次了，每次拼写成lable，导致报错，去网上搜还出来一堆看起来特别合理的解释，说什么IDE问题，哎，实际上就是粗心大意拼写错误
+
+3.#核心代码  仔细研究   建立回归模型，多看多思考
+def get_model(deg):#得到模型，这一步尤其重要，要仔细分析
+    return lambda input_x=x0: np.polyval(np.polyfit(x,y,deg),input_x)
+
+def get_cost(deg,input_x,input_y):#返回损失值
+    return 0.5*((get_model(deg)(input_x)-input_y)**2).sum()
+

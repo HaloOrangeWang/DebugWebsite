@@ -1,0 +1,217 @@
+
+orm部分
+
+本篇文章我会持续更新，把开发中遇到的一切orm相关的问题都放在这里
+
+
+mysql索引报错
+
+使用django 的orm，数据库用的mysql，在使用makemigrations和migrate生成数据库表时，报如下错误：
+
+Traceback (most recent call last):
+  File "manage.py", line 15, in <module>
+    execute_from_command_line(sys.argv)
+  File "C:\Program Files\Python37\lib\site-packages\django\core\management\__init__.py", line 381, in execute_from
+_command_line
+    utility.execute()
+  File "C:\Program Files\Python37\lib\site-packages\django\core\management\__init__.py", line 375, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "C:\Program Files\Python37\lib\site-packages\django\core\management\base.py", line 316, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "C:\Program Files\Python37\lib\site-packages\django\core\management\base.py", line 353, in execute
+    output = self.handle(*args, **options)
+  File "C:\Program Files\Python37\lib\site-packages\django\core\management\base.py", line 83, in wrapped
+    res = handle_func(*args, **kwargs)
+  File "C:\Program Files\Python37\lib\site-packages\django\core\management\commands\migrate.py", line 203, in hand
+le
+    fake_initial=fake_initial,
+  File "C:\Program Files\Python37\lib\site-packages\django\db\migrations\executor.py", line 117, in migrate
+    state = self._migrate_all_forwards(state, plan, full_plan, fake=fake, fake_initial=fake_initial)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\migrations\executor.py", line 147, in _migrate_all_f
+orwards
+    state = self.apply_migration(state, migration, fake=fake, fake_initial=fake_initial)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\migrations\executor.py", line 244, in apply_migratio
+n
+    state = migration.apply(state, schema_editor)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\migrations\migration.py", line 124, in apply
+    operation.database_forwards(self.app_label, schema_editor, old_state, project_state)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\migrations\operations\models.py", line 514, in datab
+ase_forwards
+    getattr(new_model._meta, self.option_name, set()),
+  File "C:\Program Files\Python37\lib\site-packages\django\db\backends\base\schema.py", line 360, in alter_unique_
+together
+    self.execute(self._create_unique_sql(model, columns))
+  File "C:\Program Files\Python37\lib\site-packages\django\db\backends\base\schema.py", line 133, in execute
+    cursor.execute(sql, params)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\backends\utils.py", line 100, in execute
+    return super().execute(sql, params)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\backends\utils.py", line 68, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\backends\utils.py", line 77, in _execute_with_wrappe
+rs
+    return executor(sql, params, many, context)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\backends\utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Program Files\Python37\lib\site-packages\django\db\backends\utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Program Files\Python37\lib\site-packages\django\db\backends\mysql\base.py", line 71, in execute
+    return self.cursor.execute(query, args)
+  File "C:\Program Files\Python37\lib\site-packages\pymysql\cursors.py", line 170, in execute
+    result = self._query(query)
+  File "C:\Program Files\Python37\lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "C:\Program Files\Python37\lib\site-packages\pymysql\connections.py", line 516, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\Program Files\Python37\lib\site-packages\pymysql\connections.py", line 727, in _read_query_result
+    result.read()
+  File "C:\Program Files\Python37\lib\site-packages\pymysql\connections.py", line 1066, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Program Files\Python37\lib\site-packages\pymysql\connections.py", line 683, in _read_packet
+    packet.check_error()
+  File "C:\Program Files\Python37\lib\site-packages\pymysql\protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "C:\Program Files\Python37\lib\site-packages\pymysql\err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+django.db.utils.InternalError: (1071, 'Specified key was too long; max key length is 767 bytes')
+
+
+解决方法
+
+
+1.检查CharField字段的max_length，是否超过最大值
+
+
+2.mysql修改默认编码为utf8，出现以上问题可能是mysql默认的编码是utf8mb4
+
+使用 以下命令可以查看默认编码
+
+到mysql的配置文件里把编码改为utf8即可，修改步骤具体百度解决
+
+
+3.修改mysql默认最大索引
+
+配置文件里修改
+
+default-storage-engine=INNODB
+innodb_large_prefix=on
+
+
+4.奇葩问题解决
+
+我遇到的问题和以上的方法都没有关系，就把定义的字段，重新审查了一遍，把choices字段，能用SmallIntergerField或者PositiveIntegerField都由之前的IntegerField改成前者两个，把CharField的max_length超过1024的字段都换成TextField，把DateTimeField能换成DateField都改成DateField。就这样，问题奇迹般的解决
+
+
+外键查询时报错
+
+在orm操作里，做外键查询时，反向查询按表名时报错，比如一个课程对象 course，需要去拿与course做一对一关联的coursedetail数据，发现报错course no attribute "coursedetail"
+
+反复检查查询字段，没有问题，就是报错，最后发现是因为一对一的两个表数据量不统一，有的为空，所以在一对一查询时有NoneType对象，所以会报错没有coursedetail属性。添加上匹配的字段后，正常返回数据
+
+
+跨表查询时，无法去重
+
+首先，场景是这样的，有个课程系统，课程表因为不同使用时间有不同的价格， 所以使用django的ccontent_type表把价格策略放进去，然后在做数据提取时，前端有个价格排行，如下：
+
+后端接口，提取数据部分
+
+前端请求的结果：
+
+数据库用的mysql。遵循了restful规范，所以用了djangorestframwork框架
+
+其他无关紧要的就不展示了
+
+其实我整个数据库的课程表就只有十五个，但是产生了重复的部分，因为数据库表有价格策略数据，如下：
+
+课程表：
+
+价格策略表：
+
+因为相同课程有不同的价格，所以导致出现了一个课程有多个数据
+
+但是，我明明使用了distinct还是无法去重啊
+
+然后网上查阅了很多资料，看django的官方文档，有如下说法：
+
+
+1.distinct（）方法里加限制参数
+
+我加了：distinct('id')
+
+报错：DISTINCT ON fields is not supported by this database backend
+
+意思是当前的数据库不支持在distinct里加参数
+
+
+2.使用values()取值之后再去重
+
+这个方法是网上找到的最多的方法，我想说，老弟啊，我就是要取数据库的对象啊，你这用values是把字段的值取出来啊，这个方法我想都没想，直接放弃这个方法
+
+当然是可以用values的，方法是可行的，主要是什么，我需要的是把数据库的对象取出来，交给restframework去序列化，然后传给前端的：
+
+所以此法不行
+
+以下是我想的方法，最后一个方法才能完美解决去重问题
+
+
+3.用djagno自带的API
+
+用django的annotate()方法，原理就是先分组，就可以把有重复数据的分组出来，然后再处理筛选即可，这方法已试，没用
+
+
+4.对取出的数据库对象拆分去重
+
+就在如下位置写差费去重代码
+
+但是，因为取出来的数据是QuerySet对象，这个是django自带的对象，我们熟悉的Python的操作都不太好完成，怎么去重嘛，想了很多，码了很多种方法都不行，有点难度
+
+因为什么，你去重，是不是要先全部遍历一遍，另外放进一个对象里，然后当第二次遍历相同数据时就不再存进去就行了，说起来简单，你另外创建的变量最终也得是QuerySet对象，然后QuerySet对象没有  in 的判断，像列表，字典，就有 if  XXX  in dict/list/tuple...，QuerySet就不支持这个if  XXX in QuerySet的写法
+
+而且就算支持也没有把数据存进去的方法，不存在append方法
+
+在QuerySet源码中找了两个update，update_or_create()方法，不行，会报错，所以这个方法也放弃
+
+
+5.对最后拿到的结果进行去重
+
+首先，看res.data里的数据的对象是什么类型：
+
+这里你要是用OrderedDict来进行后续操作你就大错特错了，我都是慢慢摸索出的，最后serializer序列化得到的res.data是ReturnList对象，而并不是OrederedDict对象
+
+所以这里创建一个ReturnList跟res.data进行拆分去重：
+
+发现还是报错，看了源码，貌似要传入一个serializer对象才行，这里又没办法了，最后还是看源码，在ReturnList源码里，找到几个方法：
+
+['__add__', '__class__', '__contains__', '__delattr__', '__delitem__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__iadd__', '__imul__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__module__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__rmul__', '__setattr__', '__setitem__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'append', 'clear', 'copy', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'serializer', 'sort']
+
+魔法方法就忽略了，看那几个比较熟悉的方法名，看着是不是就是list的一些方法啊？所以，最后的代码：
+
+# 针对mysql数据库数据去重
+        if query:
+            temp = res.data
+            temp.clear()
+            for item in res.data:
+                if item not in temp:
+                    temp.append(item)
+                else:
+                    continue
+            return Response(temp)
+
+前端展示，正确返回，完成去重
+
+这个问题耗了我几个小时，终于找到了解决方法。
+
+但是，此法并不是通用的，因为结合了djagnorestframework才完成的，如果你没用这个框架，那就不用考虑取到的数据一定得是数据库对象了，使用values（'xxxx'）之后，再用用distinct('XX')传参去重就行了。
+
+
+ur部分
+
+报如下错误：
+
+RuntimeError: You called this URL via POST, but the URL doesn't end in a slash and you have APPEND_SLASH set. Django can't redirect to the slash URL while maintaining POST data. Change your form to point to 127.0.0.1:8000/XXXX (note the trailing slash), or set APPEND_SLASH=False in your Django settings.
+
+发现是因为在url定义的时候给结束符 【/】，而在请求测试的时候没有给【/】：
+
+所以两者统一就行。
+

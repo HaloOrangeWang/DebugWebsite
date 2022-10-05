@@ -1,0 +1,20 @@
+python之json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+当我们在使用pycharm进行Python编程时，有时候会遇到编码问题，我今天在网络爬虫时，遇到了一个编码问题，那就是Unicode编码的解码问题。
+
+当我们在爬取一些网页时，有些网页的内容是通过Unicode字符编码进行传输的，比如：
+
+s="\u7b14\u8bb0\u672c\u7535\u8111\u4ea4\u6d41\uff1a834237275\uff0c\u8be6\u7ec6\u54a8\u8be2\u8bf7\u8d70\u4ed8\u8d39\u54a8\u8be2\u3002"
+
+如果我们想让它正常显示，那么我们有很多种方法，
+
+比如爬虫解码法：
+
+1 import requests
+2 
+3 reps = requests.get(url=url)
+4 reps.content.decode("utf-8")
+5 #或者使用这条语句  reps.content.decode("unicode_escape")
+
+但是有的时候我们运行时下面那条被注释的语句又能正常运行，但是有时候又会报错误，也就是题目中的错误，所以，我们如果想要正常显示的话那就使用“utf-8”进行解码。
+

@@ -1,0 +1,35 @@
+用Pip来安装Selenium Web Driver的python库，命令为：pip install selenium
+
+安装完成后，运行python解释器，执行命令import selenium，如果没有异常，则表示安装成功了
+
+问题：
+
+在安装第三方库的时候，Python报错pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+当我们在用pip或者pycharm来安装模块的时候，经常会遇到ReadTimeout错误，造成这个问题的原因就是网速问题。我的解决方法有两条，如下：
+
+1.换个网络连接重新下载
+可以看到下面在cmd中用pip安装的下载速度为几十KB/S，这已经算不错的速度。想想之前出现错误可都是几KB/S
+
+2.使用命令
+
+pip --default-timeout=1000 install -U 模块名
+例如
+pip --default-timeout=1000 install -U matplotlib
+来下载matplotlib，让它的延迟检测时间变长。
+
+pip --default-timeout=1000 install -U selenium
+
+3.利用国内的其他镜像源
+清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
+阿里云 http://mirrors.aliyun.com/pypi/simple/
+中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/
+豆瓣(douban) http://pypi.douban.com/simple/
+中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/
+
+下载安装 selenium
+
+pip  install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com selenium
+
+https://blog.csdn.net/hahaxq/article/details/104120025
+

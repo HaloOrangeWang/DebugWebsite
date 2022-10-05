@@ -1,0 +1,52 @@
+相信用python的朋友都碰到过这样的错误，我已经碰到过无数次了，网上下载跑别人的代码时，
+
+scipy.misc module has no attribute “imread”
+ scipy.misc module has no attribute “imresize”
+
+所以在这里立一个帖子。
+
+当然，废话不多说了，主要原因是因为scipy的版本更新到1.2以后，对pillow的支持渐渐减少，其官方的说法是，
+ code is not "ours"
+
+所以网上那些通过降低版本，或安装pillow的方法都是不靠谱的。
+
+当然，本质上scipy也只是对pillow做了一个包装，需要的时候，你是完全可以直接用pillow的。
+
+所以，下面的代码是对应的，
+
+
+read
+
+misc_image = misc.imread(image_path)
+<====>
+image = PIL.Image.open(image_path)
+
+
+resize
+
+misc_image = misc.imresize(image, [resize_height, resize_width], interp="bilinear")        
+<====>
+image.resize([resize_height, resize_width], PIL.Image.BILINEAR)
+
+其他类似的函数就不多说了，直接到pillow的文档中去查看吧。
+
+
+和numpy数据互换
+
+当然，最后你一般都得把这和numpy数据相互转换。
+
+如果你是用misc.image的话，那种老套路一般都是np.array([misc_image])。
+
+不过既然我们将老套路弃之不用，就要用下面的新方法，
+
+#pillow image to numpy array
+import numpy as np
+picture = np.array(image)
+#..or..
+picture = np.array(image.getdata()).reshape(image.size[0], image.size[1], 3)
+
+#numpy array to pillow image
+im = PIL.Image.fromarray(np.uint8(picture))
+
+要注意里面picture的数据类型是int64的，所以你必须使用np.uint8进行数据转换。
+

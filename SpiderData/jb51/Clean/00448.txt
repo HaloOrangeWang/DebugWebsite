@@ -1,0 +1,33 @@
+写了个等待分析结果，解析分析结果json的脚本
+
+那个文件生成时候有点大，有时候监测到新文件就去解析可能文件只生成了一半，就会抛出异常退出当前线程，此次的分析结果就丢失了，如果load json文件失败，一般就是上百M到几G的json大文件，等待10秒，如果再次load失败，重新再load一次，这样脚本看上去挺繁琐的，监控线程又只能监控文件的创建，修改和删除，不知道创建的文件是否写完毕。
+
+def run_analyze():
+    sleep(2)
+    berror = True
+    temp = {}
+    while berror == True:
+      with open(self.filepath, 'r') as f:
+      global filename,filescore,filesize,filebehavior,filestrings
+        try:
+          temp = json.loads(f.read())
+          berror = False
+        except:#KeyError, VauleError
+          print "analyze report is creating,please wait a moment..."
+          f.close()
+          sleep(5)
+          berror = True
+          pass
+    filescore = float(temp['info']['score'])
+    print ("filescore:%d" %filescore)
+
+补充知识：Python强制抛出自定义异常
+
+如下所示：
+
+raise Exception("My Exception")
+
+当程序运行到这行时，会抛出异常，打印出Exception: My Exception
+
+以上这篇python except异常处理之后不退出,解决异常继续执行的实现就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

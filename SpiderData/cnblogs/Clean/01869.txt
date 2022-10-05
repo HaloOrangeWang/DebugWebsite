@@ -1,0 +1,22 @@
+今天使用yum安装程序，报错 原来是我之前调试东西的时候，安装了其他版本的python导致的。
+
+网上搜了一下问题处理，解决了，记录一下。
+
+[jumpserver@SX-Test-Nginx ~]$ sudo yum install -y epel-release
+There was a problem importing one of the Python modules
+required to run yum. The error leading to this problem was:
+
+No module named yum
+
+Please install a package which provides this module, or
+verify that the module is installed correctly.
+
+检查一下python环境
+
+直接修改yum，将python修改成python2.6
+
+[jumpserver@SX-Test-Nginx ~]$ sudo vim /usr/bin/yum
+#!/usr/bin/python2.6
+
+修改完后再yum安装就可以了。
+

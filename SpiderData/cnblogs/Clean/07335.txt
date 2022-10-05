@@ -1,0 +1,35 @@
+在sublime3中，编译用户输入函数input()如下：
+
+msg=input("请输入你的值：")
+print(msg)
+
+此时会报错
+
+原因是sublime本身是没有交互功能，想要实现交互功能需要加入SublimeREPL。
+
+解决方法：
+
+
+1. 进入PackageControl插件（菜单-首选项Preferences下有插件控制PackageControl），没有需安装。
+
+2. 输入Install Package
+
+此时左下角会loading，需要经过漫长的等待。。。
+
+3. 输入SublimeREPL，点击安装即可。（我已安装，所以不会再显示）
+
+安装成功左下角会显示successful，安装后重启sublime3。
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+此时问题已经得到解决，需要编译用户输入函数时，选择Tools>SublimeREPL>Python>Python – RUN current file即可。
+
+运行后结果如下：
+
+另外，如果觉得每次都需要运行麻烦可以添加快捷键 首选项-按键绑定（用户），输入如下源代码：
+
+{ "keys": ["f7"], "command": "toggle_setting", "args": {"setting": "word_wrap"} },
+{ "keys":["f5"], "caption": "SublimeREPL: Python - RUN current file", "command": "run_existing_window_command", "args":{"id": "repl_python_run","file": "config/Python/Main.sublime-menu"}}
+
+保存即可。
+

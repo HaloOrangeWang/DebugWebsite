@@ -1,0 +1,107 @@
+# i=10
+# print(30/(i-10))
+# #程序将会出现以下报错信息
+# # Traceback (most recent call last):
+# #   File "C:/Users/Administrator/PycharmProjects/s14/day1/38.py", line 2, in <module>
+# #     print(30/(i-10))
+# # ZeroDivisionError: division by zero
+
+##在没有异常处理代码的情况下，当程序运行过程中出现异常时，程序弹出异常信息，然后退出。这给用户感觉很不友好
+try:
+    i=10
+    print(30/(i-10))
+except Exception as e:#在except语句块中，程序定义了一个Exception对象e，用于接收异常处理对象。
+    print(e)#打印e可以输出异常信息。因为程序已经捕获异常信息，所以不会出现异常情况而退出。
+finally:#通常可以在finally块中释放资源
+    print('执行完成')
+
+
+python raise:
+
+演示raise用法
+
+try:
+     s = None
+     if s is None:
+         print "s 是空对象"
+         raise NameError     #如果引发NameError异常，后面的代码将不能执行
+     print len(s)  #这句不会执行，但是后面的except还是会走到
+except TypeError:
+     print "空对象没有长度"
+ 
+s = None
+if s is None:
+    raise NameError 
+print 'is here?' #如果不使用try......except这种形式，那么直接抛出异常，不会执行到这里
+
+
+触发异常
+
+我们可以使用raise语句自己触发异常
+
+raise语法格式如下：
+
+raise [Exception [, args [, traceback]]]
+
+语句中 Exception 是异常的类型（例如，NameError）参数标准异常中任一种，args 是自已提供的异常参数。
+
+最后一个参数是可选的（在实践中很少使用），如果存在，是跟踪异常对象。
+
+
+实例
+
+一个异常可以是一个字符串，类或对象。 Python的内核提供的异常，大多数都是实例化的类，这是一个类的实例的参数。
+
+定义一个异常非常简单，如下所示：
+
+def functionName( level ):
+    if level < 1:
+        raise Exception("Invalid level!", level)
+        # 触发异常后，后面的代码就不会再执行
+
+注意：为了能够捕获异常，"except"语句必须有用相同的异常来抛出类对象或者字符串。
+
+例如我们捕获以上异常，"except"语句如下所示：
+
+try:
+    正常逻辑 except Exception,err: 触发自定义异常 else: 其余代码
+
+
+实例
+
+python2写法：
+
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# 定义函数
+def mye( level ):
+    if level < 1:
+        raise Exception,"Invalid level!"
+        # 触发异常后，后面的代码就不会再执行
+try:
+    mye(0)            # 触发异常
+except Exception,err:
+    print 1,err
+else:
+    print 2
+
+python3写法：
+
+def mye( level ):
+    if level < 1:
+        raise Exception("Invalid level!")
+        # 触发异常后，后面的代码就不会再执行
+try:
+    mye(0)            # 触发异常
+except Exception as err:
+    print(1,err)
+else:
+    print(2)
+
+执行以上代码，输出结果为：
+
+$ python test.py 
+1 Invalid level!
+
+　　
+

@@ -1,0 +1,15 @@
+
+1 python异常打印堆栈
+
+python调试中难免要捕获异常，并捕捉异常信息，使用 print(e) ，无法得到调用堆栈，不利于问题定位，这里列出python的异常打印方法，记住方便后续调试问题。
+
+import traceback
+def fun(a,b):
+    return a/b
+try:
+    fun(1,0)
+except Exception as e:
+    traceback.print_exc()
+    #或者得到堆栈字符串信息
+    info = traceback.format_exc()
+

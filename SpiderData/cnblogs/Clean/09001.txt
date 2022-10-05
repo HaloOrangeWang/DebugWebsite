@@ -1,0 +1,246 @@
+
+错误类型总览
+
+IndexError
+
+AttributeError
+
+SyntaxError
+
+TypeError
+
+IndentationError
+
+NameError
+
+IOError
+
+KeyError
+
+IndexError
+
+- Python中的列表索引超出范围
+
+AttributeError
+
+- 当前对象类型并没有你调用的这一方法 / 属性，例如，对于 Python 3，你在一个 List 对象上调用 add 方法（列表没有 add 方法）
+
+SyntaxError
+
+- 忘记在字符串两端都加上单引号 '（或双引号 "）
+
+- 忘记在 def、if、for 行末添加冒号 :
+
+左括号与右括号数量不匹配，包括小括号 ()、中括号 [] 和大括号 {}
+
+TypeError
+
+- 在一个错误类型的对象上执行某个操作，例如，你拿一个 List 对象去除一个整型数字，或是想要改变一个 immutable 类型（如 Tuple, String）变量的值
+
+- 你认为有值的对象其实为 None
+
+- 使用一个非整型数字作为列表的索引
+
+- 在调用一个方法时，传入错误数量或错误类型的参数
+
+IndentationError
+
+- 一个代码块内的代码缩进了但没有对齐
+
+- 在代码缩进时混用了空格和制表位（有些行使用空格缩进，有些则使用制表位），虽然有时这些代码看上去是对齐了的
+
+NameError
+
+- 错拼了一个变量、函数或方法的名字
+
+- 忘记导入对应模块
+
+- 忘记定义该变量
+
+- 在函数定义前调用该函数
+
+- 在变量作用域之外使用该变量，例如，在 for 外使用一个在该 for 循环内部定义的一个变量
+
+- 在使用 print 输出单个字符时，忘记给该字符加上引号，例如，你只想输出字母 a，但写成了 print(a)，这是程序会认为你要输出变量 a，但名为 a 的变量并未被定义
+
+IOError
+
+- 你试图打开一个不存在的文件
+
+KeyError
+
+- 你试图从一个字典中获取一个并不存在的 key 的值
+
+----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+
+报错：ImportError: cannot import name 'xxxxx' from 'xxxx'
+
+据说：“ 一个是路径问题，一个是命名问题”
+
+根据一个实际案例，是换成低版本的库就可以使用，那估计是文件命名冲突的问题。
+
+报错：IndexError: tuple index out of range
+
+报错：TypeError: 'float' object cannot be interpreted as an integer
+
+emmm，原来是符号打错了，打扰了。。。
+
+报错：UnicodeEncodeError: 'gbk' codec can't encode character '\x80' in position 33: illegal multibyte sequence
+
+这个报错好像可以忽略。还是有结果输出。。。如果不想看到报错的话，可以在open的里加
+
+errors='ignore'
+
+其他解决方案：
+
+源代码：with open (os.path.join(self.root,filename),mode=‘w’,newline=’’) as f:
+
+其他： 在open（）里面加入 encoding=‘utf-8’ 【未尝试成功，仅做记录】
+
+-------------------------------------------------------------------------2020年12月前↓
+
+1）忘记在 if , elif , else , for , while , class ,def 声明末尾添加 ：（导致 “SyntaxError ：invalid syntax”）
+
+正例：
+
+2)使用 = 而不是 ==（导致“SyntaxError: invalid syntax”）
+
+例：
+
+3）错误的使用缩进量。（导致“IndentationError：unexpected indent”、“IndentationError：unindent does not match any outer indetation level”以及“IndentationError：expected an indented block”）
+
+反例：
+
+4）在 for 循环语句中忘记调用 len() (导致“TypeError: 'list' object cannot be interpreted as an integer”)
+
+反例：
+
+正例：
+
+5）尝试修改string的值（导致“TypeError: 'str' object does not support item assignment”）
+
+string是一种不可变的数据类型，该错误发生在如下代码中：
+
+正例：
+
+6）尝试连接非字符串值与字符串（导致 “TypeError: Can't convert 'int' object to str implicitly”）
+
+该错误发生在如下代码中：
+
+而你实际想要这样做：
+
+numEggs = 12 
+print('I have ' + str(numEggs) + ' eggs.')  
+或者：  
+numEggs = 12 
+print('I have %s eggs.' % (numEggs)) 
+7）在字符串首尾忘记加引号（导致“SyntaxError: EOL while scanning string literal”）
+
+该错误发生在如下代码中：
+
+print(Hello!')  
+或者:  
+print('Hello!)  
+或者:  
+myName = 'Al' 
+print('My name is ' + myName + . How are you?') 
+8）变量或者函数名拼写错误（导致“NameError: name 'fooba' is not defined”）
+
+foobar = 'Al' 
+print('My name is ' + fooba)  
+或者:  
+spam = ruond(4.2)  
+或者:  
+spam = Round(4.2) 
+9）方法名拼写错误（导致 “AttributeError: 'str' object has no attribute 'lowerr'”）
+
+spam = 'THIS IS IN LOWERCASE.' 
+spam = spam.lowerr() 
+10）引用超过list***索引（导致“IndexError: list index out of range”）
+
+该错误发生在如下代码中：
+
+spam = ['cat', 'dog', 'mouse']  
+print(spam[6]) 
+11）使用不存在的字典键值（导致“KeyError：‘spam’”）
+
+该错误发生在如下代码中：
+
+spam = {'cat': 'Zophie', 'dog': 'Basil', 'mouse': 'Whiskers'}  
+print('The name of my pet zebra is ' + spam['zebra']) 
+12）尝试使用Python关键字作为变量名（导致“SyntaxError：invalid syntax”）
+
+Python关键不能用作变量名，该错误发生在如下代码中：
+
+class = 'algebra' 
+Python3的关键字有：and, as, assert, break, class, continue, def, del, elif, else, except, False, finally, for, from, global, if, import, in, is, lambda, None, nonlocal, not, or, pass, raise, return, True, try, while, with, yield
+
+13）在一个定义新变量中使用增值操作符（导致“NameError: name 'foobar' is not defined”）
+
+不要在声明变量时使用0或者空字符串作为初始值，这样使用自增操作符的一句spam += 1等于spam = spam + 1，这意味着spam需要指定一个有效的初始值。
+
+该错误发生在如下代码中：
+
+spam = 0 
+spam += 42 
+eggs += 42 
+14）在定义局部变量前在函数中使用局部变量（此时有与局部变量同名的全局变量存在）（导致“UnboundLocalError: local variable 'foobar' referenced before assignment”）
+
+在函数中使用局部变来那个而同时又存在同名全局变量时是很复杂的，使用规则是：如果在函数中定义了任何东西，如果它只是在函数中使用那它就是局部的，反之就是全局变量。
+
+这意味着你不能在定义它之前把它当全局变量在函数中使用。
+
+该错误发生在如下代码中：
+
+someVar = 42 
+def myFunction():  
+    print(someVar)  
+    someVar = 100 
+myFunction() 
+15）尝试使用 range()创建整数列表（导致“TypeError: 'range' object does not support item assignment”）
+
+有时你想要得到一个有序的整数列表，所以 range() 看上去是生成此列表的不错方式。然而，你需要记住 range() 返回的是 “range object”，而不是实际的 list 值。
+
+该错误发生在如下代码中：
+
+spam = range(10)  
+spam[4] = -1 
+也许这才是你想做：
+
+spam = list(range(10))  
+spam[4] = -1 
+（注意：在 Python 2 中 spam = range(10) 是能行的，因为在 Python 2 中 range() 返回的是list值，但是在 Python 3 中就会产生以上错误）
+
+16）不错在 ++ 或者 -- 自增自减操作符。（导致“SyntaxError: invalid syntax”）
+
+如果你习惯于例如 C++ , Java , PHP 等其他的语言，也许你会想要尝试使用 ++ 或者 -- 自增自减一个变量。在Python中是没有这样的操作符的。
+
+该错误发生在如下代码中：
+
+spam = 1  
+spam++ 
+也许这才是你想做的：
+
+spam = 1 
+spam += 1 
+17）忘记为方法的***个参数添加self参数（导致“TypeError: myMethod() takes no arguments (1 given)”）
+
+该错误发生在如下代码中：
+
+class Foo():  
+    def myMethod():  
+        print('Hello!')  
+a = Foo()  
+a.myMethod()
+
+人家在2012年写的文章，到现在还能用。有些经验不会过时，路上的坑借前人总结的经验绕开。
+
+参考链接：
+
+- https://www.oschina.net/question/89964_62779
+
+- Python 常见错误排查_夏树让的博客-CSDN博客
+
+
+AttributeError
+

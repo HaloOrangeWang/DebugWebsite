@@ -1,0 +1,98 @@
+Python异常处理
+
+我们一般使用try-except语句来进行异常处理。
+
+使用except Exception as err可以统一捕捉所有异常，而也可以分开处理单个异常。
+
+# 分开捕捉单个异常
+
+try:
+    num1 = int(input('Enter the first number:'))
+    num2 - int(input('Enter the sencond number:'))
+    print(num1 / num2)
+except ValueError: #捕捉数字转化异常
+    print('Please input a digit!')
+except ZeroDivisionError: #捕捉除0异常
+    print('The second number cannot be zero')
+
+# 两种异常一起捕捉
+
+try:
+    num1 = int(input('Enter the first number:'))
+    num2 - int(input('Enter the sencond number:'))
+    print(num1 / num2)
+except (ValueError,ZeroDivisionError): 
+    print('Invalid input!')
+
+# 统一捕捉所有异常
+
+try:
+    num1 = int(input('Enter the first number:'))
+    num2 - int(input('Enter the sencond number:'))
+    print(num1 / num2)
+except Exception as err:
+    print('Something webt wrong!')
+    print(err)
+
+
+else语句
+
+try-except还可以和else一起使用，如果语句中没有异常引发，那么这个else语句就会执行。
+
+try:
+    num1 = int(input('Enter the first number:'))
+    num2 - int(input('Enter the sencond number:'))
+    print(num1 / num2)
+except (ValueError,ZeroDivisionError): 
+    print('Invalid input!')
+else:
+    print('Aha, everything is OK.')
+
+
+循环
+
+如果我们想要用户直到输入正确，那么就要使用循环，使用while True加上break语句
+
+while True：
+	try:
+        num1 = int(input('Enter the first number:'))
+        num2 - int(input('Enter the sencond number:'))
+        print(num1 / num2)
+    except (ValueError,ZeroDivisionError): 
+        print('Invalid input!')
+    print('Aha, everything is OK.')
+
+
+Finally语句
+
+finally和else不一样，不管有没有异常引发，finally语句都要执行。
+
+try:
+    num1 = int(input('Enter the first number:'))
+    num2 - int(input('Enter the sencond number:'))
+    print(num1 / num2)
+except (ValueError,ZeroDivisionError): 
+    print('Invalid input!')
+finally:
+    print('It is a finally clause.')
+
+
+上下文管理器(Context Manager)和With语句
+
+如果我们打开文件使用下面的代码，在finally语句中，因为f可能没被成功定义，可能还是会报错。
+
+try:
+    f = open('data.txt')
+    for line in f:
+        print(line, end ='')
+except IOError:
+    print('Cannnot open the file!')
+finally:
+    f.close()
+
+而我们可以使用下面的代码打开文件，通过这个上下文管理器可以定义和控制代码块执行前的准备动作及执行后的收尾动作。
+
+with open('data.txt') as f:
+    for line in f:
+        print(line, end='')
+

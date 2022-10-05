@@ -1,0 +1,130 @@
+
+1.错误背景
+
+安装了N版Openstack Ha，在创建云主机时源选择镜像并创建新卷时，云主机创建失败。检查发现，卷其实创建成功了并且可用，可以通过创建的卷启动云主机。使用cirros测试镜像，不会出现问题，使用CentOS7.3会出现这种报错，不仅同时创建2个，就连一次只创建一个也会报错。
+
+
+2.检查日志
+
+2017-06-06 09:30:28.513 665097 WARNING nova.virt.block_device [req-c5016b48-399b-44f8-adea-a86421f1e129 c49d86f8a39148bb809d2da44811ca3b f19126d9035d4209b363386e8e267129 - - -] Failed to delete volume: dd04f3d2-63cb-45f2-9a31-9ecc523bd4
+0f due to Invalid input received: Invalid volume: Volume status must be available or error or error_restoring or error_extending and must not be migrating, attached, belong to a group or have snapshots. (HTTP 400) (Request-ID: req-0bd8e
+4b4-6989-4c34-a623-20d2bff98816)
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [req-c5016b48-399b-44f8-adea-a86421f1e129 c49d86f8a39148bb809d2da44811ca3b f19126d9035d4209b363386e8e267129 - - -] [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94] Instance faile
+d block device setup
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94] Traceback (most recent call last):
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/compute/manager.py", line 1586, in _prep_block_device
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     wait_func=self._await_block_device_map_created)
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/virt/block_device.py", line 514, in attach_block_devices
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     map(_log_and_attach, block_device_mapping)
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/virt/block_device.py", line 512, in _log_and_attach
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     bdm.attach(*attach_args, **attach_kwargs)
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/virt/block_device.py", line 404, in attach
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     self._call_wait_func(context, wait_func, volume_api, vol['id'])
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/virt/block_device.py", line 363, in _call_wait_func
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     {'volume_id': volume_id, 'exc': exc})
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/oslo_utils/excutils.py", line 220, in __exit__
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     self.force_reraise()
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/oslo_utils/excutils.py", line 196, in force_reraise
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     six.reraise(self.type_, self.value, self.tb)
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/virt/block_device.py", line 353, in _call_wait_func
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     wait_func(context, volume_id)
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/compute/manager.py", line 1258, in _await_block_device_map_created
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     volume_status=volume_status)
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94] VolumeNotCreated: Volume dd04f3d2-63cb-45f2-9a31-9ecc523bd40f did not finish being created even after we waited 189 seconds or 61
+attempts. And its status is downloading.
+2017-06-06 09:30:28.514 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]
+2017-06-06 09:30:28.638 665097 WARNING nova.scheduler.client.report [req-c5016b48-399b-44f8-adea-a86421f1e129 c49d86f8a39148bb809d2da44811ca3b f19126d9035d4209b363386e8e267129 - - -] No authentication information found for placement API
+. Placement is optional in Newton, but required in Ocata. Please enable the placement service before upgrading.
+2017-06-06 09:30:28.638 665097 WARNING nova.scheduler.client.report [req-c5016b48-399b-44f8-adea-a86421f1e129 c49d86f8a39148bb809d2da44811ca3b f19126d9035d4209b363386e8e267129 - - -] Unable to refresh my resource provider record
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [req-c5016b48-399b-44f8-adea-a86421f1e129 c49d86f8a39148bb809d2da44811ca3b f19126d9035d4209b363386e8e267129 - - -] [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94] Build of insta
+nce 30e8a024-d1c0-4a64-aae7-a830e8c6be94 aborted: Block Device Mapping is Invalid.
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94] Traceback (most recent call last):
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/compute/manager.py", line 1783, in _do_build_and_run_instance
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     filter_properties)
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/compute/manager.py", line 1943, in _build_and_run_instance
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     'create.error', fault=e)
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/oslo_utils/excutils.py", line 220, in __exit__
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     self.force_reraise()
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/oslo_utils/excutils.py", line 196, in force_reraise
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     six.reraise(self.type_, self.value, self.tb)
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/compute/manager.py", line 1908, in _build_and_run_instance
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     block_device_mapping) as resources:
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib64/python2.7/contextlib.py", line 17, in __enter__
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     return self.gen.next()
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]   File "/usr/lib/python2.7/site-packages/nova/compute/manager.py", line 2071, in _build_resources
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]     reason=e.format_message())
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94] BuildAbortException: Build of instance 30e8a024-d1c0-4a64-aae7-a830e8c6be94 aborted: Block Device Mapping is Invalid.
+2017-06-06 09:30:28.639 665097 ERROR nova.compute.manager [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94]
+2017-06-06 09:30:29.364 665097 INFO nova.compute.manager [req-c5016b48-399b-44f8-adea-a86421f1e129 c49d86f8a39148bb809d2da44811ca3b f19126d9035d4209b363386e8e267129 - - -] [instance: 30e8a024-d1c0-4a64-aae7-a830e8c6be94] Took 0.72 secon
+ds to deallocate network for instance.
+
+
+3.错误分析：
+
+底层存储Ceph创建新卷的时候速度太慢，导致nova连接卷超时或者超出连接次数 两个解决办法： 一个是提高ceph读写速度（增加ssd作为journal），条件不允许,此方法作罢。 另一个是寻找是否有相关参数设定连接时间或者连接次数。
+
+
+4.源码查看
+
+错误信息中看到了_await_block_device_map_created 找到了对应的函数
+
+def _await_block_device_map_created(self, context, vol_id):
+        # TODO(yamahata): creating volume simultaneously
+        #                 reduces creation time?
+        # TODO(yamahata): eliminate dumb polling
+        start = time.time()
+        retries = CONF.block_device_allocate_retries
+        if retries < 0:
+            LOG.warning(_LW("Treating negative config value (%(retries)s) for "
+                            "'block_device_retries' as 0."),
+                        {'retries': retries})
+        # (1) treat  negative config value as 0
+        # (2) the configured value is 0, one attempt should be made
+        # (3) the configured value is > 0, then the total number attempts
+        #      is (retries + 1)
+        attempts = 1
+        if retries >= 1:
+            attempts = retries + 1
+        for attempt in range(1, attempts + 1):
+            volume = self.volume_api.get(context, vol_id)
+            volume_status = volume['status']
+            if volume_status not in ['creating', 'downloading']:
+                if volume_status == 'available':
+                    return attempt
+                LOG.warning(_LW("Volume id: %(vol_id)s finished being "
+                                "created but its status is %(vol_status)s."),
+                            {'vol_id': vol_id,
+                             'vol_status': volume_status})
+                break
+            greenthread.sleep(CONF.block_device_allocate_retries_interval)
+        raise exception.VolumeNotCreated(volume_id=vol_id,
+                                         seconds=int(time.time() - start),
+                                         attempts=attempt,
+                                         volume_status=volume_status)
+
+有两个参数block_device_allocate_retries和block_device_allocate_retries_interval，看名字可以知道一个是尝试次数，一个是尝试间隔
+
+
+5.解决经过
+
+参数默认值
+
+block_device_allocate_retries_interval=3
+block_device_allocate_retries=60
+
+先修改间隔
+ block_device_allocate_retries_interval=10
+
+重启nova-compute
+
+systemctl restart openstack-nova-compute.service
+
+再以同样的方式创建一台云主机，发现可以创建成功。
+
+
+6.总结
+
+Newton版本创建云主机可以同时批量从云硬盘创建云主机，相比先前自己用的kilo版要方便许多，对于一次创建多台，上面两个参数可能还需调整，多次尝试应该会找到合适的参数值。
+
+参考了http://blog.csdn.net/onlyellow/article/details/51200267， 我们的环境差不多，对于haproxy的转发方式以及galera的参数调整需要进一步测试才能知道。
+

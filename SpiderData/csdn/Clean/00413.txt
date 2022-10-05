@@ -1,0 +1,170 @@
+最近写了一个软件屡屡打包不能正常运行，而直接在cmd命令行窗口运行却都能正常输出，没有任何报错，一开始怀疑程序里面sys.args[1]使用不对，找了很久发现import numpy才是导致代码不能打包的直接原因。
+
+不知道为何引用这个包就不能正常打包成exe了。
+
+程序编译中出错的代码如下
+
+pyinstaller -F C:\Users\LHD_PC\AppData\Local\Progr
+
+ams\Python\Python38-32\Scripts\AutoElecCalcE.py
+
+91 INFO: PyInstaller: 3.6
+
+91 INFO: Python: 3.8.0
+
+93 INFO: Platform: Windows-10-10.0.17134-SP0
+
+94 INFO: wrote C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts\AutoElecCalcE.spec
+
+99 INFO: UPX is not available.
+
+101 INFO: Extending PYTHONPATH with paths
+
+[‘C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts',
+
+‘C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts']
+
+101 INFO: checking Analysis
+
+113 INFO: Building because C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts\AutoElecCalcE.py changed
+
+113 INFO: Initializing module dependency graph…
+
+119 INFO: Caching module graph hooks…
+
+134 INFO: Analyzing base_library.zip …
+
+5521 INFO: Caching module dependency graph…
+
+5650 INFO: running Analysis Analysis-00.toc
+
+5654 INFO: Adding Microsoft.Windows.Common-Controls to dependent assemblies of final executable
+
+required by c:\users\lhd_pc\appdata\local\programs\python\python38-32\python.exe
+
+6018 INFO: Analyzing C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts\AutoElecCalcE.py
+
+6547 INFO: Processing pre-find module path hook distutils
+
+6549 INFO: distutils: retargeting to non-venv dir ‘c:\users\lhd_pc\appdata\local\programs\python\python38-32\lib'
+
+7356 INFO: Processing pre-find module path hook site
+
+7357 INFO: site: retargeting to fake-dir ‘c:\users\lhd_pc\appdata\local\programs\python\python38-32\lib\site-packages\PyInstaller\fake-modules'
+
+8994 INFO: Processing pre-safe import module hook setuptools.extern.six.moves
+
+12451 INFO: Processing module hooks…
+
+12451 INFO: Loading module hook “hook-distutils.py”…
+
+12454 INFO: Loading module hook “hook-encodings.py”…
+
+12744 INFO: Loading module hook “hook-lib2to3.py”…
+
+12757 INFO: Loading module hook “hook-numpy.core.py”…
+
+13540 INFO: Loading module hook “hook-numpy.py”…
+
+13546 INFO: Loading module hook “hook-pkg_resources.py”…
+
+15200 INFO: Processing pre-safe import module hook win32com
+
+15767 INFO: Excluding import ‘main'
+
+15769 INFO: Removing import of main from module pkg_resources
+
+15769 INFO: Loading module hook “hook-pydoc.py”…
+
+15782 INFO: Loading module hook “hook-pythoncom.py”…
+
+16198 INFO: Loading module hook “hook-pywintypes.py”…
+
+16605 INFO: Loading module hook “hook-scipy.py”…
+
+16663 INFO: Loading module hook “hook-setuptools.py”…
+
+18364 INFO: Loading module hook “hook-sysconfig.py”…
+
+18375 INFO: Loading module hook “hook-win32com.py”…
+
+c:\users\lhd_pc\appdata\local\programs\python\python38-32\lib\site-packages\win32com\client\makepy.py:369: SyntaxWarning: “is not” with a literal. Did you mean “!=”?
+
+if path is not ‘' and not os.path.exists(path):
+
+20023 INFO: Loading module hook “hook-xml.dom.domreg.py”…
+
+20030 INFO: Loading module hook “hook-xml.py”…
+
+20090 INFO: Looking for ctypes DLLs
+
+20132 INFO: Analyzing run-time hooks …
+
+20139 INFO: Including run-time hook ‘pyi_rth_multiprocessing.py'
+
+20162 INFO: Including run-time hook ‘pyi_rth_pkgres.py'
+
+20192 INFO: Including run-time hook ‘pyi_rth_win32comgenpy.py'
+
+20229 INFO: Looking for dynamic libraries
+
+21772 INFO: Looking for eggs
+
+21772 INFO: Using Python library c:\users\lhd_pc\appdata\local\programs\python\python38-32\python38.dll
+
+21773 INFO: Found binding redirects:
+
+[]
+
+21798 INFO: Warnings written to C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts\build\AutoElecCalcE\warn-AutoElecCalcE.txt
+
+21932 INFO: Graph cross-reference written to C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts\build\AutoElecCalcE\xref-AutoElecCalcE.html
+
+22003 INFO: checking PYZ
+
+22017 INFO: Building because toc changed
+
+22017 INFO: Building PYZ (ZlibArchive) C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts\build\AutoElecCalcE\PYZ-00.pyz
+
+23373 INFO: Building PYZ (ZlibArchive) C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts\build\AutoElecCalcE\PYZ-00.pyz completed successfully.
+
+23419 INFO: checking PKG
+
+23427 INFO: Building because toc changed
+
+23427 INFO: Building PKG (CArchive) PKG-00.pkg
+
+37085 INFO: Building PKG (CArchive) PKG-00.pkg completed successfully.
+
+37098 INFO: Bootloader c:\users\lhd_pc\appdata\local\programs\python\python38-32\lib\site-packages\PyInstaller\bootloader\Windows-32bit\run.exe
+
+37098 INFO: checking EXE
+
+37107 INFO: Rebuilding EXE-00.toc because AutoElecCalcE.exe missing
+
+37107 INFO: Building EXE from EXE-00.toc
+
+37111 INFO: Appending archive to EXE C:\Users\LHD_PC\AppData\Local\Programs\Python\Python38-32\Scripts\dist\AutoElecCalcE.exe
+
+37154 INFO: Building EXE from EXE-00.toc completed successfully.
+
+之前一直怀疑路径没处理对，后面看了很多别的代码发现也没问题，突发奇想是不是某个包造成不能正常压缩的，然后写了个测试文件，一行行注释掉引用的包后，发现只要注释掉了numpy便可以正常压缩成exe文件了。
+
+补充：pyinstaller安装失败的解决办法
+
+pyinstaller是一个很好用的将python文件打包成不依赖python环境的exe的库，但是在cmd中使用 “pip install pyinstaller”时，总会出现很多奇奇怪怪的问题。
+
+我在安装库的过程中，碰到了下载之后，直接开始安装就报错退出安装的问题。
+
+解决办法如下
+
+1.其实一点也不麻烦
+
+2.先“pip install pywin32”
+
+3.在“pip install wheel”
+
+4.试一下“pip install pyinstaller”
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

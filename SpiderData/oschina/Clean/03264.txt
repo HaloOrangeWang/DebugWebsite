@@ -1,0 +1,32 @@
+>>> import tensorflow as tf
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+File "/usr/local/lib/python3.5/dist-packages/tensorflow/__init__.py", line 24, in <module>
+from tensorflow.python import *
+File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/__init__.py", line 52, in <module>
+from tensorflow.core.framework.graph_pb2 import *
+File "/usr/local/lib/python3.5/dist-packages/tensorflow/core/framework/graph_pb2.py", line 6, in <module>
+from google.protobuf import descriptor as _descriptor
+ImportError: No module named 'google.protobuf'
+
+试了很多方法 差点卸载tensorflow重装了
+
+最后卸载protobuf
+
+pip uninstall protobuf
+
+可以执行多次 直到把所有版本protobuf全部卸载
+
+然后再次安装protobuf
+
+pip install protobuf
+
+然后遇到了新问题：
+
+Could not install packages due to an EnvironmentError: [Errno 13] Permission denied: '/usr/local/lib/python3.5/dist-packages/protobuf-3.6.0-py3.5-nspkg.pth'
+Consider using the `--user` option or check the permissions.
+
+执行：
+
+pip install  -- user protobuf
+

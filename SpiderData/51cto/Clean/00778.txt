@@ -1,0 +1,18 @@
+如题，我用python 解析文件（文件中含有中文），并写入其他文件时报错：
+
+经过google大神的指导，确定以下解决方式：
+
+疑问：为什么需要reload呢？
+
+把del sys.setdefaultencoding 防止用户在改变defaultencoding ，这个原因暂时真不知。。
+
+对于windows平台，上面的办法真不行，对于python 2.x中，总是存在这个问题，在Python 3.x的时候这真不是个事，
+
+对于windows 平台，
+
+文件开头声明为 #coding=utf-8,
+
+写入字符串时，转换编码为GBK
+
+还要注意的是：open(....) 不能有任何运算，一次 只能写入一行，所以要用 + 来连成一行
+

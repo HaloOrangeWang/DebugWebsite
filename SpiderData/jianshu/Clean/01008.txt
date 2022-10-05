@@ -1,0 +1,42 @@
+Python报错信息：UnicodeDecodeError: 'utf-8' codec can't decode byte 0x8b in position 1: invalid start byte
+
+获取笔趣阁首页内容，运行代码如下：
+
+from urllib import request
+
+if  __name__ =='__main__':
+
+response = request.urlopen('http://www.xbiquge.la/')
+
+html = response.read()
+
+html = html.decode('utf-8')
+
+print(html)
+
+百度了下原因 服务器和本地都支持压缩的话 就给你传gzip压缩后得数据，可以在本地关闭，或者解压
+
+解压方式如下：
+
+from urllib import request
+
+from io import BytesIO
+
+import gzip
+
+if __name__ == "__main__":
+
+response = request.urlopen("http://www.xbiquge.la/")
+
+html = response.read()
+
+buff = BytesIO(html)
+
+f = gzip.GzipFile(fileobj=buff)
+
+html = f.read().decode('utf-8')
+
+print(html)
+
+解压后我重新运行第一次的代码也好用了，不知道为啥。。。。
+

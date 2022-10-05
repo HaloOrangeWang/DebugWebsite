@@ -1,0 +1,72 @@
+0x00 背景
+
+突然有一天IDA6.8 打开提示idapython错误：
+
+报错信息如下：
+
+0x01 问题原因
+
+ida官网有对该问题的解释：
+
+This issue is usually caused by presence of non-standard python27.dll
+
+in the PATH which uses its own set of modules (you should edit PATH in
+
+this case). However, it may happen if your Python installation is
+
+broken in some way. Reinstalling Python manually may fix it.
+
+大致原因是：你主机的环境变量path包含了非标准的python27.dll导致的，当然，也可能是某次安装时意外终端导致的。手动重新安装python可能会修复这个问题。
+
+0x02 问题修复
+
+官方也好心的给出了详细的修复方法：
+
+查看python27.dll的位置
+
+c:\>where python27.dll
+
+C:\Windows\System32\python27.dll
+
+1
+
+2
+
+查看注册表中 HKEY_LOCAL_MACHINE\SOFTWARE\Python\PythonCore\2.7\InstallPath 的值是python2.7的安装路径
+
+增加一个环境变量，key为PYTHONHOME，value为python的安装路径。
+
+如果idapython被正常加载，但还是存在这个错误，请打印下sys.path，确定是否符合预期
+
+Python>import sys
+
+Python>sys.path
+
+['C:\\Windows\\system32\\python27.zip', 'C:\\Python27-x64\\Lib', 'C:\\Python27-x64\\DLLs', 'C:\\Python27-x64\\Lib\\lib-tk', 'C:\\Program Files\\IDA 7.0\\python', 'C:\\Python27-x64', 'C:\\Python27-x64\\lib\\site-packages', 'C:\\Program Files\\IDA 7.0\\python\\lib\\python2.7\\lib-dynload\\ida_32', 'C:\\Program Files\\IDA 7.0\\python']
+
+1
+
+2
+
+3
+
+跟踪IDAPython模块的加载过程。在IDA运行前设置环境变量 PYTHONVERBOSE=1，path路径将被打印出来（或者在IDA运行命令中加入-L 生成日志文件）。
+
+0x03 问题解决
+
+使用第三个步骤，创建一个环境变量 PYTHONHOME 即可解决我目前的问题。
+
+比较坑的是某些博客，写到创建环境变量%PYTHONHOME%，这是什么鬼？
+
+在环境变量中，%path%中百分号的意思，就是表示path是一个已定义的一个环境变量的调用，相当于linux中的$path。第一次定义变量是，不会使用%%。
+
+0x04 参考文献
+
+https://www.hexblog.com/?p=1132
+
+————————————————
+
+版权声明：本文为CSDN博主「counsellor」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+
+原文链接：https://blog.csdn.net/counsellor/java/article/details/98968082
+

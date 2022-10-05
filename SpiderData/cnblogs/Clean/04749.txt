@@ -1,0 +1,52 @@
+原文链接：http://www.one2know.cn/bug3/
+
+报错
+
+Traceback (most recent call last):
+
+File "D:/PyCharm 5.0.3/WorkSpace/2.NLP/2.获取数据源和规范化/4.word.py", line 1, in
+
+import docx
+
+File "D:\Anaconda3\lib\site-packages\docx_init_.py", line 3, in
+
+from docx.api import Document  # noqa
+
+File "D:\Anaconda3\lib\site-packages\docx\api.py", line 14, in
+
+from docx.package import Package
+
+File "D:\Anaconda3\lib\site-packages\docx\package.py", line 9, in
+
+from docx.opc.package import OpcPackage
+
+File "D:\Anaconda3\lib\site-packages\docx\opc\package.py", line 9, in
+
+from docx.opc.part import PartFactory
+
+File "D:\Anaconda3\lib\site-packages\docx\opc\part.py", line 12, in
+
+from .oxml import serialize_part_xml
+
+File "D:\Anaconda3\lib\site-packages\docx\opc\oxml.py", line 12, in
+
+from lxml import etree
+
+ImportError: DLL load failed: %1 不是有效的 Win32 应用程序。
+
+原因
+
+安装的包与python位数不一样
+
+解决
+
+用Anaconda3将python从64位切换到32位：
+
+set CONDA_FORCE_32BIT=1
+
+在系统命令提示符中下载python-docx：
+
+pip install python-docx
+
+参考：https://blog.csdn.net/weixin_41710606/article/details/86747877
+

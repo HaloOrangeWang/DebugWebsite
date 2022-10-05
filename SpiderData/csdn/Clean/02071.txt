@@ -1,0 +1,73 @@
+
+应用场景
+
+本来是在pycharm里运行Python file，一切都很正常，然后为了让脚本自己乖乖地在服务器上跑，不占用IDE调试其他代码，所以决定用命令行直接在服务器上运行，结果报了如下错误：
+
+ModuleNotFoundError: No module named xxx
+
+其中 xxx 是项目中的子文件夹。
+
+
+解决方案
+
+这小错误，用我闪亮而聪慧的大眼睛一看，就是没搜索到该子文件夹的路径呀。在IDE中执行python程序，都已经在默认的项目路径中，所以直接执行没有问题。但是在cmd中执行程序，所在路径是python的搜索路径。
+
+于是，查了一下如何将其添加进路径，感谢这位博主的解决方案如下：
+
+在运行报错的脚本（.py)中导入module之前添加如下代码：
+
+import sys
+import os
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
+
+# 然后再from xxx（项目中的子目录） import xxx
+# import xxx.xxxx as xx
+
+然后再在cmd中运行，就可以正常跑通啦！
+
+继续写代码去了……DDL等等我……
+
+A
+        
+        
+         u
+        
+        
+         t
+        
+        
+         h
+        
+        
+         o
+        
+        
+         r
+        
+        
+         ：
+        
+        
+         C
+        
+        
+         h
+        
+        
+         i
+        
+        
+         e
+        
+        
+         r
+        
+       
+       
+         Author：Chier 
+       
+      
+     Author：Chier
+

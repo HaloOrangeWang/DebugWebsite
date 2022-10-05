@@ -1,0 +1,33 @@
+
+分析
+
+这个错误和python的中ssl (Secure Sockets Layer，一种国际标准的加密与身份认证通讯协议)模块有一定关系，成功安装了ssl模块，就可以解决这个问题。
+
+
+解决方法
+
+Windows系统和其他类Unix系统略有不同，但是都可以确认一下使用的python版本中是否安装了ssl模块，在python环境中使用以下命令查看已安装的模块：
+
+help("modules")
+
+通过python的官方文档了解到，ssl是python标准库中的用于网络和进程间通信的一个模块，Windows版本的python安装程序通常包含整个标准库，甚至还有额外的组件；而其他类Unix操作系统，会分成一系列软件包，可能需要通过包管理工具来安装部分或全部组件。
+
+Windows系统
+
+因为Windows版本的python安装程序包含ssl了模块，所以检查一下环境变量有没有设置好。
+
+如果使用的是Anaconda，因为里面已经包含了python，所以查看已安装的模块里面有ssl后，再检查以下环境变量是否添加齐全。
+
+InstallPath              #假设InstallPath是你的安装路径
+InstallPath\Scripts      
+InstallPath\Library\bin
+
+如果没有ssl模块、或者以上操作都没有问题，仍然报错，可以尝试重新安装python。
+
+类Unix操作系统
+
+默认安装后涉及到ssl的功能是不能正常使用的，在编译前检查配置时需要加上相应的参数。
+
+# 安装python时加上 --with-ssl 参数
+./configure --prefix=/usr/local/python37 --with-ssl
+

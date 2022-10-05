@@ -1,0 +1,32 @@
+直接运行整个项目正常，直接运行url文件报错
+
+报错内容：
+
+E:\Python\python.exe D:/Python储存文件/ceshiweb/ceshiweb/urls.py
+Traceback (most recent call last):
+  File "D:/Python储存文件/ceshiweb/ceshiweb/urls.py", line 28, in <module>
+    url(r'^admin/', admin.site.urls),
+  File "E:\Python\lib\site-packages\django-1.10.8-py3.6.egg\django\contrib\admin\sites.py", line 267, in urls
+    return self.get_urls(), 'admin', self.name
+  File "E:\Python\lib\site-packages\django-1.10.8-py3.6.egg\django\contrib\admin\sites.py", line 225, in get_urls
+    from django.contrib.contenttypes import views as contenttype_views
+  File "E:\Python\lib\site-packages\django-1.10.8-py3.6.egg\django\contrib\contenttypes\views.py", line 5, in <module>
+    from django.contrib.contenttypes.models import ContentType
+  File "E:\Python\lib\site-packages\django-1.10.8-py3.6.egg\django\contrib\contenttypes\models.py", line 138, in <module>
+    class ContentType(models.Model):
+  File "E:\Python\lib\site-packages\django-1.10.8-py3.6.egg\django\contrib\contenttypes\models.py", line 139, in ContentType
+    app_label = models.CharField(max_length=100)
+  File "E:\Python\lib\site-packages\django-1.10.8-py3.6.egg\django\db\models\fields\__init__.py", line 1043, in __init__
+    super(CharField, self).__init__(*args, **kwargs)
+  File "E:\Python\lib\site-packages\django-1.10.8-py3.6.egg\django\db\models\fields\__init__.py", line 166, in __init__
+    self.db_tablespace = db_tablespace or settings.DEFAULT_INDEX_TABLESPACE
+  File "E:\Python\lib\site-packages\django-1.10.8-py3.6.egg\django\conf\__init__.py", line 53, in __getattr__
+    self._setup(name)
+  File "E:\Python\lib\site-packages\django-1.10.8-py3.6.egg\django\conf\__init__.py", line 39, in _setup
+    % (desc, ENVIRONMENT_VARIABLE))
+django.core.exceptions.ImproperlyConfigured: Requested setting DEFAULT_INDEX_TABLESPACE, but settings are not configured. You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.
+
+解决方案：
+
+在代码开始出添加：
+

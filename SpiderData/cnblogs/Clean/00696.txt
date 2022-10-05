@@ -1,0 +1,31 @@
+最近在学习ros过程中
+
+出现了一个包错误  ERROR:cannot launch node of type [arbotix_python/arbotix_driver]:arbotix_python
+
+ERROR:cannot launch node of type [arbotix_python/arbotix_driver]:arbotix_python
+
+原因是没有安装 arbotix 这个相关的软件包集，使用sudo apt-get install ros-kinetic-arbotix*  ，无法安装
+
+1 sudo apt-get install ros-kinetic-arbotix*
+
+这下尴尬了在kinetic版本下，无法按照往常的ros包安装方法安装arbotix软件包集
+
+在网上查找了一番，发现一个博主说可以采用git下载源码的方法安装。
+
+于是就开始下载源码
+
+1 git clone https://github.com/vanadiumlabs/arbotix_ros.git
+
+下载好源码后，直接把源码拷贝到你自己的ros 工作空间下的src目录即可。 我的就是  ~/catkin_ws/src  目录下。
+
+我这里烦了，你可以先进到你的 ros工作空间的src目录下，然后下载源码。
+
+下载完成后，在工作空间目录下，进行编译。
+
+1 $ cd ~/catkin_ws
+2 $ catkin_make
+
+如果你编译没有报错。
+
+然后编译成功后即可以正常使用了。
+

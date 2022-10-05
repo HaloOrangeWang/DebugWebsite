@@ -1,0 +1,22 @@
+AssertionError: .accepted_renderer not set on Response
+
+出错原因，没有在合法的方法内使用 response 响应，之前在dispatch内直接return 了，导致报错，return response 必须放在 get post 等方法内。
+
+按道理讲，django视图会先经过dispatch分发，如果我们在分发的时候发现权限问题，那么提前响应应该没问题，那么为啥会报错呢？
+
+报错信息显示accepted_renderer没有在Response内设定，找一下源码，如下(具体原因都在下面代码后面的注释里了)：
+
+　　
+
+　　
+
+django.core.exceptions.AppRegistryNotReady: Apps aren't loaded yet.
+
+出错原因，两个，第一，相关包没有安装或者版本有问题；第二，在不合适的地方使用了项目的model模型，版本不同情况不一样。
+
+XXX doesn't declare an explicit app_label and either isn't in an application in INSTALLED_APPS or else was imported before its application was loaded. This will no longer be supported
+
+出错原因，在不合适的地方导用了model，如本次是在 app.__init__.py中导入本app的model导致的
+
+虚拟环境中，Python库的安装直接使用pip安装，不用加sudo，不然项目没有权限使用该库，会导致出现 Apps aren't loaded yet.
+

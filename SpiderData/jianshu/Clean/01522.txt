@@ -1,0 +1,18 @@
+背景：在写UI自动化的过程中，需要把重复操作的流程提取出来，进行封装，后续再写用例时直接调用。但是在写好后发现运行到封装好的用例时，报如下错误信息。一开始以为自己找的元素有问题，或者参数类型有问题，最后才发现是自己在应该input的元素使用click操作，使用div等应该点击的元素，使用了sendkeys，算是自己给自己挖了个坑。
+
+1. TypeError: an integer is required (got type str)
+
+翻译：TypeError:需要一个整数（获取类型str）
+
+错误写法：self.waitAndClick('//input[@placeholder="树懒"]','K7119')
+
+正确写法：self.waitAndSendKeys('//input[@placeholder="树懒"]','K7119')
+
+2. TypeError: waitAndSendKeys() missing 1 required positional argument: 'key'
+
+翻译：TypeError:waitAndSendKeys（）缺少1个必需的位置参数：“key”
+
+错误写法：self.waitAndSendKeys('//div[text()="树懒"]')
+
+正确写法：self.waitAndClick('//div[text()="树懒"]')
+

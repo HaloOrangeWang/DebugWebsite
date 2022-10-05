@@ -1,0 +1,36 @@
+问题场景：使用xcode13.0版本开发项目，模拟器和真机在debug模式下可成功运行。然而在realease下编译和Archive遇到以下错误：
+
+解决方法：
+
+1、由于项目未使用到SwiftUI，可在Podfile文件中添加以下代码，将SwiftUI和报错相关代码移除，然后运行pod install即可。
+
+2、添加的代码为platform :ios, "10.0"到use_frameworks!之间
+
+platform :ios, "10.0"
+use_modular_headers!
+inhibit_all_warnings!
+pre_install do |installer|
+    remove_swiftui()
+end
+
+def remove_swiftui
+  # 解决 xcode13 Release模式下SwiftUI报错问题
+  system("rm -rf ./Pods/Kingfisher/Sources/SwiftUI")
+  code_file = "./Pods/Kingfisher/Sources/General/KFOptionsSetter.swift"
+  code_text = File.read(code_file)
+  code_text.gsub!(/#if canImport\(SwiftUI\) \&\& canImport\(Combine\)(.|\n)+#endif/,'')
+  system("rm -rf " + code_file)
+  aFile = File.new(code_file, 'w+')
+  aFile.syswrite(code_text)
+  aFile.close()
+end
+
+use_frameworks!
+
+target 'SwiftTest' do
+
+pod 'HandyJSON'
+pod 'Kingfisher'
+
+end
+

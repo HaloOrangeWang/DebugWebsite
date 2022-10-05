@@ -1,0 +1,75 @@
+
+OSError: [WinError 10048] 通常每个套接字地址(协议/网络地址/端口)只允许使用一次
+
+
+工具：
+
+Pycharm
+
+
+问题：
+
+博主在进行一次使用socket模块进行服务端和客户端之间的连接时出现如上错误。
+
+
+错误如下：
+
+
+1：server.py 代码
+
+# coding=utf-8
+"""
+@author: jiajiknag
+程序功能：服务器
+"""
+import socket
+# 创建套接字一个实例
+s = socket.socket()
+# 获取主机名
+host = socket.gethostname()
+# 定义端口号
+port = 4321
+# 一个地址就是一个元组
+s.bind((host, port))
+
+s.listen(5)
+while True:
+    c, addr = s.accept()
+    print("go connection from ", addr)
+    c.send("Thank you for connecting")
+    c.close()
+
+
+2：client.py代码
+
+# coding=utf-8
+"""
+@author: jiajiknag
+程序功能： 客户端
+"""
+import socket
+s = socket.socket()
+
+host = socket.gethostname()
+port = 4321
+s.connect((host, port))
+print(s.recv(1024))
+print("恭喜你，连接成功！！！")
+
+
+3：结果
+
+
+解决
+
+
+原因：
+
+当我们在PyCharm中把运行窗口中运行状态终结了，实质是执行的python程序还没有结束， 所以打开windows任务管理器，把名为python的进程统统结束。
+
+
+1：关闭python运行程序
+
+
+2：再次运行结果
+

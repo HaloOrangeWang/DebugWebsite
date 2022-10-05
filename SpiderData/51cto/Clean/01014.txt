@@ -1,0 +1,103 @@
+Python 中可以读取 word 文件的库有 python-docx 和 pywin32。
+
+
+pywin32
+
+这个库很强大，不仅仅可以读取 word，但是网上介绍用 pywin32 读取 .doc 的文章真不多，因为，真心不好用。
+
+以下是 pywin32 读取 .doc 的代码示例，但是读取表格有问题，输出全是空，原因不明，因为不打算用所以没有深入研究。另外，如果表格中有纵向合并单元格，会报错：“无法访问此集合中单独的行，因为表格有纵向合并的单元格。”
+
+from win32com.client import Dispatch
+
+word = Dispatch('Word.Application')     # 打开word应用程序
+# word = DispatchEx('Word.Application') # 启动独立的进程
+word.Visible = 0        # 后台运行,不显示
+word.DisplayAlerts = 0  # 不警告
+
+path = r'E:\abc\test.doc'
+doc = word.Documents.Open(FileName=path, Encoding='gbk')
+
+for para in doc.paragraphs:
+    print(para.Range.Text)
+
+for t in doc.Tables:
+    for row in t.Rows:
+        for cell in row.Cells:
+            print(cell.Range.Text)
+
+doc.Close()
+word.Quit
+
+但是 pywin32 有另外一个功能，就是将 .doc 格式另存为 .docx 格式，这样我们就可以使用 python-docx 来处理了。
+
+def doc2docx(path):
+    w = win32com.client.Dispatch('Word.Application')
+    w.Visible = 0
+    w.DisplayAlerts = 0
+    doc = w.Documents.Open(path)
+    newpath = os.path.splitext(path)[0] + '.docx'
+    doc.SaveAs(newpath, 12, False, "", True, "", False, False, False, False)
+    doc.Close()
+    w.Quit()
+    os.remove(path)
+    return newpath
+
+
+python-docx
+
+import docx
+
+fn = r'E:\abc\test.docx'
+doc = docx.Document(fn)
+
+for paragraph in doc.paragraphs:
+        print(paragraph.text)
+
+for table in doc.tables:
+    for row in table.rows:
+        for cell in row.cells:
+            print(cell.text)
+
+对于纵向合并单元格，python-docx 的处理也很贴心。
+
+
+Word 未能引发事件
+
+我的爬虫在爬取到 .doc 文件之后，就通过上面的方法将其转为 .docx 格式，原本一切都好，下班挂机在跑，第二天来一看，报了这个错：pywintypes.com_error: (-2147352567, '发生意外。', (0, 'Microsoft Word', 'Word 未能引发事件。', 'D:\工具\Microsoft Office\Office12\2052\WDMAIN11.CHM', 25482, -2146822286), None)
+
+我用报错的文件单独调试了 doc2docx 方法，并没有报错。网上查了这个错误，没有啥收获。
+
+反复测试后发现总是那个网页报错，说明 bug 可以重现，问题是到底是哪里报错。
+
+我将代码一行行删去，直到只留下执行到报错所必须的代码：
+
+def get_winningbid_detail(url, name):
+    r = requests.get(url)
+    r.encoding = 'utf-8'
+    html = r.text
+    soup = BeautifulSoup(html, 'lxml')
+
+ps = soup.find_all(text=re.compile('附件'))
+    if len(ps) > 0:
+        os.makedirs(os.path.join(download_dir, name), exist_ok=True)
+        for p in ps:
+            a_tab = p.find_next_sibling('a')
+            if a_tab is not None:
+                link = homepage + a_tab['href']
+                localfilename = os.path.join(download_dir, name, a_tab.text)
+                # print(localfilename)
+                with open(localfilename, 'wb+') as sw:
+                    sw.write(requests.get(link).content)
+                if localfilename.endswith('.doc'):
+                    doc2docx(localfilename)
+
+反复读这段代码，并没有发现什么问题。
+
+因为有些网页的附件名称是相同的，例如 公告.doc，所以我按每个网页的标题（在总览页面爬到的）分文件夹放置下载的文件，所以方法中传了一个 name 参数，而如果 name 参数传空，则不会报错。
+
+其实由此已经可以发现 bug 所在了，但我却没想到，又反复折腾了很久才发现，原来是文件名太长了。
+
+在 windows 下面，单个文件名的长度限制是25，完整的路径长度（如 E:\abc\test.doc 这样限制是260）
+
+路径最后有一个字符串结束符 '\0' 要占掉一个字符，所以完整路径实际限长是259。
+

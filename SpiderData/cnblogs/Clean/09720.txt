@@ -1,0 +1,35 @@
+
+探测域名解析依赖关系
+
+最近很懒，今天晚上才开始这个任务，然后发现我原来能跑起来的程序跑不起来了。
+
+一直报错 ModuleNotFoundError: No module named 'DNS'
+
+这个应该是py3DNS部分的错误，但是运行命令 pip show py3dns，可以正常得到结果
+
+pip卸载第三方库
+
+pip uninstall selenium
+
+并没有成功
+
+在查询资料时发现有人提出 如果和dnspython混用会发生DNS库无法导入的问题，不知道是不是这个问题
+
+有点乱，说一下大致解决办法
+
+可能确实是混用引起的
+
+我写过一篇博客 https://www.cnblogs.com/serendipity-my/p/14227576.html
+
+讲python使用dnspython一直报错 ModuleNotFoundError: No module named 'dns'的解决办法，当时我把一个DNS文件夹重命名为了dns
+
+解决了使用dnspython的问题
+
+但是这个好像和使用Py3dns有了冲突
+
+我刚才把dnspython卸载了，有时间看看能不能解决冲突，然后把那个文件夹的名字改回了DNS
+
+再运行就正常了
+
+这个解决方法不好，有时间我再看一看。
+

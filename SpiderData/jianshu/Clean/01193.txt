@@ -1,0 +1,82 @@
+在使用python中的ffmpeg-python时候遇到了几个问题，在此总结一下
+
+1、调用 FFmpeg 报错 module ‘ffmpeg’ has no attribute ‘input’
+
+ffmpeg原本是一个命令行工具，只是通过python封装好的API来执行，所以还是要在你本地安装ffmpeg的工具包，当时我的报错如下
+
+方法：如果是mac，本地命令行中执行
+
+pip3 install ffmpeg-python -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip3 uninstall ffmpeg
+
+2、TypeError: img is not a numpy array, neither a scalar
+
+使用ffmpeg输出的结果是byte类型的数据，如果用下面的方式存储成图片可能会遇到问题
+
+cv2.imwrite("./videoframe/" + str(i) + ".jpg", cur_frame)
+
+报错截图如下：
+
+建议采用这种方式转化byte和图片数据，先创建图片然后注入数据：
+
+file = open(img_path, 'wb')
+  file.write(byte_data)
+
+3、从视频中提取视频帧的代码如下
+
+from moviepy.editor import *
+import wave
+import numpy as np
+import pylab
+import skimage
+import imageio
+import cv2
+import ffmpeg
+import time
+
+def extract_frame(input_path='./test.mp4'):
+    """
+    以60s为间隔提取视频帧，并将其作为图片保存
+    :str input_path:
+    :None:
+    """
+    vc = cv2.VideoCapture(input_path)
+    c = 1
+    if vc.isOpened():
+        # 文件读取到结尾，rval的返回值就为False
+        rval, frame = vc.read()
+    else:
+        rval = False
+    time_interval = 60
+    # 视频采样的间隔是60s，vc.get(5)获得帧频，CV_CAP_PROP_FPS
+    fps = vc.get(5)
+    total_frame = vc.get(7)
+    loop_number = int(total_frame/(fps*60))
+    timeF = fps * time_interval
+    count = 0
+    for i in range(loop_number):
+        cur_frame = read_frame_by_time(input_path, i*60)
+        cur_path = "./videoframe/" + str(i) + ".jpg"
+        file = open(cur_path, 'wb')
+        file.write(cur_frame)
+    vc.release()
+
+def read_frame_by_time(input_file, t):
+    """
+    指定时间节点读取任意帧
+    """
+    output_file = "./videoframe/" + str(int(t/60)) + ".jpg"
+    out, err = (
+        ffmpeg.input(input_file, ss=t)
+            .filter('select', 'gte(n,{})'.format(250))
+            .output('pipe:', vframes=1, format='image2', vcodec='mjpeg')
+            .run(capture_stdout=True)
+    )
+    print(type(out))
+    return out
+
+if __name__ == '__main__':
+    time_start = time.time()
+    extract_frame()
+    time_end = time.time()
+

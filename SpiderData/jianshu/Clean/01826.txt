@@ -1,0 +1,18 @@
+centos7 不再使用iptables来操作，而是使用firewalld命令来开启端口
+
+但是最近使用发现老是报错：
+
+解决问题的办法：
+
+修改/usr/bin/firewall-cmd 目录中的python指向，由于firewall命令只支持python2，所以我们需要修改为python2的本地环境，是由于之前我把centos7的python环境升级到python3.6的缘故。导致现在命令无法正常运行。
+
+我这边执行 vi /usr/bin/firewall-cmd 修改第一行的python指向即可，
+
+由之前的#!/usr/bin/python修改为：#!/usr/bin/python2
+
+还有一处：/usr/sbin/firewalld 也是修改第一行的python指向。
+
+在安装firewall时，我还参考了一遍博文，也是解决报错的问题，供大家参考。
+
+http://blog.csdn.net/Joe68227597/article/details/75207859
+

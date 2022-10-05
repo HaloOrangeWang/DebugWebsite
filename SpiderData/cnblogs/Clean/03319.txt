@@ -1,0 +1,57 @@
+前言
+
+接了一个新的校验任务,但是核对期望数据得要用一个已有的程序生产,然后就出现以下坑以及填坑方案;
+
+接了一个新的校验任务,但是核对期望数据得要用一个已有的程序生产,然后就出现以下坑以及填坑方案;
+
+SNIMissingWarning: An HTTPS request has been m ade, but the SNI (Subject Name Indication) extension && InsecurePlatformWarning: A true SSLContext obj ect is not available.
+
+这2个报错是连在一起的,按照网上的说法 直接 pip install pyopenssl ndg-httpsclient pyasn1, 但是问题并没有解决,仍然报错.
+前往官网https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings,发现"This happens on Python 2 versions older than 2.7.9",查了以下服务器的python版本,2.7.4,Orz.
+直接升级到最新版本:
+sudo add-apt-repository ppa:fkrull/deadsnakes-python2.7
+sudo apt-get update
+sudo apt-get install python2.7
+
+解决问题.舒舒服服.
+
+这2个报错是连在一起的,按照网上的说法 直接 pip install pyopenssl ndg-httpsclient pyasn1, 但是问题并没有解决,仍然报错.
+
+前往官网https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings,发现"This happens on Python 2 versions older than 2.7.9",查了以下服务器的python版本,2.7.4,Orz.
+
+直接升级到最新版本:
+sudo add-apt-repository ppa:fkrull/deadsnakes-python2.7
+sudo apt-get update
+sudo apt-get install python2.7
+
+sudo add-apt-repository ppa:fkrull/deadsnakes-python2.7
+
+sudo apt-get update
+
+sudo apt-get install python2.7
+
+解决问题.舒舒服服.
+
+GotoBLAS : Architecture Initialization failed. No initialization function found.这个问题简而言之就是版本问题,涉及到多个lib环境.
+
+目前用的2.7.12. 直接
+statsmodels==0.8.0
+scipy==1.0.0
+numpy>1.8
+matplotlib>=1.5.3
+解决问题.
+
+目前用的2.7.12. 直接
+
+statsmodels==0.8.0
+
+scipy==1.0.0
+
+numpy>1.8
+
+matplotlib>=1.5.3
+
+解决问题.
+
+GotoBLAS 调试版本配置过程中会遇到各种提示,找到报错位置,安装对应lib就行,另外基础环境大致 apt-get install python-devel libffi-devel openssl-devel 就行.
+

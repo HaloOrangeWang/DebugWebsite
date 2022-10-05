@@ -1,0 +1,83 @@
+1 ， 初始化 uiautomator2 <python -m uiautomator2 init>报错： ValueError: builtins.type size changed, may indicate binary incompatibility. Expected 880 from C header, got 864 from PyObject
+
+　　
+
+Traceback (most recent call last):
+  File "D:\Python38\lib\runpy.py", line 183, in _run_module_as_main
+    mod_name, mod_spec, code = _get_module_details(mod_name, _Error)
+  File "D:\Python38\lib\runpy.py", line 142, in _get_module_details
+    return _get_module_details(pkg_main_name, error)
+  File "D:\Python38\lib\runpy.py", line 109, in _get_module_details
+    __import__(pkg_name)
+  File "D:\Python38\lib\site-packages\uiautomator2\__init__.py", line 46, in <module>
+    from . import xpath
+  File "D:\Python38\lib\site-packages\uiautomator2\xpath.py", line 31, in <module>
+    from lxml import etree
+  File "type.pxd", line 9, in init lxml.etree
+ValueError: builtins.type size changed, may indicate binary incompatibility. Expected 880 from C header, got 864 from PyObject
+
+使用
+
+pip uninstall lxml
+
+然后再次运行
+
+python -m uiautomator2 init
+
+初始化成功
+
+2 ，启动weditor时，报错如下：
+
+python -m weditor
+
+Traceback (most recent call last):
+  File "D:\Python38\lib\runpy.py", line 192, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "D:\Python38\lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "D:\Python38\lib\site-packages\weditor\__main__.py", line 210, in <module>
+    main()
+  File "D:\Python38\lib\site-packages\weditor\__main__.py", line 206, in main
+    run_web(args.debug, args.port, open_browser, args.force_quit)
+  File "D:\Python38\lib\site-packages\weditor\__main__.py", line 152, in run_web
+    application.listen(port)
+  File "D:\Python38\lib\site-packages\tornado\web.py", line 2112, in listen
+    server.listen(port, address)
+  File "D:\Python38\lib\site-packages\tornado\tcpserver.py", line 152, in listen
+    self.add_sockets(sockets)
+  File "D:\Python38\lib\site-packages\tornado\tcpserver.py", line 165, in add_sockets
+    self._handlers[sock.fileno()] = add_accept_handler(
+  File "D:\Python38\lib\site-packages\tornado\netutil.py", line 279, in add_accept_handler
+    io_loop.add_handler(sock, accept_handler, IOLoop.READ)
+  File "D:\Python38\lib\site-packages\tornado\platform\asyncio.py", line 99, in add_handler
+    self.asyncio_loop.add_reader(fd, self._handle_events, fd, IOLoop.READ)
+  File "D:\Python38\lib\asyncio\events.py", line 498, in add_reader
+    raise NotImplementedError
+
+NotImplementedError
+
+在文件夹快速搜索：asyncio.py，在该py中添加如下3行代码，然后重新运行python -m weditor即可
+
+import sys
+
+if sys.platform == 'win32':
+　　asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+如下所示：
+
+import concurrent.futures
+import functools
+
+from threading import get_ident
+from tornado.gen import convert_yielded
+from tornado.ioloop import IOLoop, _Selectable
+
+import asyncio
+
+import typing
+from typing import Any, TypeVar, Awaitable, Callable, Union, Optional
+
+　　
+
+　　
+

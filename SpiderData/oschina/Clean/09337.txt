@@ -1,0 +1,53 @@
+
+1、报错信息
+
+client does not support authentication protocol requested by server；consider upgrading MySQL client
+
+
+2、分析
+
+根据报错的字面意思：客户端不支持服务器请求的身份验证协议，可考虑升级MySQL客户端。
+
+问题就出在用户密码上.
+
+经查询：MySQL8.0.4以前的版本和MySQL8.0.4及以后的版本，密码认证插件有所改变，之前使用的是“mysql_native_password”，8.0.4及以后使用的是“caching_sha2_password”，
+
+所以在修改密码的语句上，也有所不同，以前修改密码语句：
+
+SET PASSWORD=PASSWORD('newpassword')
+
+现在修改语句：
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'newpassword';
+
+
+3、解决方法
+
+可以把密码认证插件改为“mysql_native_password”，同时修改密码。
+
+-- 黑窗口登录mysql
+mysql -u root -p
+
+-- 查看用户相关信息：
+/*
+
+user: 用户名
+host：允许连接的主机，%表示所有主机都可以连接
+plugin：密码认证插件
+authentication_string ：密码，加密处理了的
+*/
+
+select host,user,plugin,authentication_string from mysql.user;
+
+-- 修改密码认证插件为mysql_native_password，同时修改密码：我这里修改密码为Zxit@2018
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Zxit@2018';
+
+修改前的：
+
+修改后的：
+
+
+4、验证
+
+再次用Navicat连接测试，显示成功
+

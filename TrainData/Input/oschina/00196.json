@@ -1,0 +1,31 @@
+{
+    "err_msg": {
+        "text": "--- no python application found, check your startup logs for errors ---",
+        "lines": [39],
+        "weight": [1]
+    },
+    "scene": [
+        {
+            "text": "django启动uwsgi",
+            "lines": ["title"],
+            "weight": [1]
+        },
+        {
+            "text": "windows下pip安装python模块",
+            "lines": [2],
+            "weight": [1]
+        }
+    ],
+    "solve": [
+        {
+            "text": "1.卸载uwsgi\n\npip uninstall uwsgi\n\n#注意此时卸载，pip会有缓存留在系统里\n\n2.安装pcre支持库\n\nyum install pcre pcre-devel pcre-static\n\n3.继续安装uwsgi，不走pip缓存\n\npip install uwsgi -I --no-cache-dir\n\n#启动uwsgi",
+            "lines": [44, 46, 48, 50, 52, 54, 56, 58],
+            "weight": [1, 0.5, 1, 1, 0.5, 1, 0.5, 1]
+        },
+        {
+            "text": "需要在你的uwsgi.ini文件中module指定项目下面的wsgi：\n\nmodule=xxx.wsgi",
+            "lines": [62, 64],
+            "weight": [1, 0.5]
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+使用yum命令报错
+ File "/usr/bin/yum", line 30 except KeyboardInterrupt, e: ^ SyntaxError: invalid syntax
+
+问题出现原因：
+yum包管理是使用python2.x写的，
+将python2.x升级到python3.x以后，
+由于python版本语法兼容性导致问题出现
+
+解决办法： 修改yum配置文件，将python版本指向以前的旧版本
+
+vi /usr/bin/yum
+#!/usr/bin/python2.7
+
+修改urlgrabber-ext-down文件，更改python版本
+
+vi /usr/libexec/urlgrabber-ext-down 
+#!/usr/bin/python2.7
+

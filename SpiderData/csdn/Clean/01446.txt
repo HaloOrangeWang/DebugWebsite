@@ -1,0 +1,58 @@
+1.语法错误：不正确的语法
+
+SyntaxError: invalid syntax
+
+原因在于：这段代码符合的语法规范是Python2.7的，而我使用的版本是3.4的。Python3.4的语法规范和2.7是有区别的。就本段代码而言，区别在于：3.4中print后需要括号，而2.7的print后不需要括号
+
+2.操作系统位数问题
+
+ImportError: DLL load failed: %1 不是有效的 Win32 应用程序。
+
+因为你安装了64位的python，然后安装32位的xx模块，或者你安装了32位的python，然后安装64位的xx模块
+
+查看自己是多少位的Python：
+
+3.模块未正确导入
+
+TypeError: 'module' object is not callable
+
+模块未正确导入，层级关系没找对
+
+4.缩进错误。
+
+indentationError: unexpected indent
+
+出错原因：空格和tab混用了
+
+在notepad++可以看出是空格还是tab：
+
+空格和tab键之间的相互转换
+
+5..pyc文件存在问题
+
+AttributeError: ‘module’ object has no attribute’xxx’
+
+方法一：删除该库的.pyc文件
+
+方法二：
+
+**pyc文件介绍
+
+pyc文件，是python编译后的字节码(bytecode)文件。只要你运行了py文件，python编译器就会自动生成一个对应的pyc字节码文件。这个pyc字节码文件，经过python解释器，会生成机器码运行(这也是为什么pyc文件可以跨平台部署，类似于java的跨平台，java中JVM运行的字节码文件)。下次调用直接调用pyc，而不调用py文件。直到你这个py文件有改变。python解释器会检查pyc文件中的生成时间，对比py文件的修改时间，如果py更新，那么就生成新的pyc。
+
+引包错误
+
+自己写的py文件不要与第三方库重名
+
+编码错误
+
+1、程序本身有编码，一般在程序的头部声明
+
+2、使用的IDE有编码，除了python idle
+
+3、读取外部数据or文件 decode(把其它编码的字符串转换成unicode编码) encode(把unicode编码转换成其它编码的字符串)
+
+分析错误
+
+看报错消息的首和尾
+

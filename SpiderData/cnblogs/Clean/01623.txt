@@ -1,0 +1,16 @@
+造成yum下载安装时语法出错， 一般是由于python多个版本共存的原因。
+所以，只需将yum 设置文件固定python 版本，也就是python2
+
+下面的操作能解决版本冲突问题。
+
+1.sudo vim /usr/bin/yum
+打开，将首行的python 修改为python2.7
+
+2.vim /usr/libexec/urlgrabber-ext-down
+打开，将首行的python 修改为python2.7
+
+3.vim /usr/bin/yum-config-manager
+同上，将首行的python -tt  修改为python2.7 -tt
+
+再次运行yum install，没有报错
+

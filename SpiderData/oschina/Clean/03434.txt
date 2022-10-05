@@ -1,0 +1,45 @@
+1、更新了pip之后还提示更新
+
+//  卸载
+pip uninstall pip
+// 重新安装
+easy_install pip
+
+pip -V
+
+2、时间比当前时间少8小时问题
+
+// 设置setting.py
+
+LANGUAGE_CODE = 'zh-Hans'
+
+TIME_ZONE = 'Asia/Shanghai'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = False
+
+3、  python manage.py migrate  出错之后，一直修复不了解决办法
+
+删除 migrations 下除了 __init__.py以外的其他文件
+
+删除数据库中 django_migrations 表中，导致问题的模块的 数据 （app=模块名）的数据
+
+python manage.py makemigrations
+
+python manage.py migrate
+
+4、django中的channel模块
+
+from django.db import close_old_connections
+
+# 自己定义一个decorator，用来装饰使用数据库的函数
+def close_old_connections_wrapper(func):
+    def wrapper(*args, **kwargs):
+        close_old_connections()
+        return func(*args, **kwargs)
+
+return wrapper
+

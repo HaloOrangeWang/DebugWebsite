@@ -1,0 +1,48 @@
+转载请声明，本文来自：https://blog.csdn.net/shijianduan1/article/details/106415395
+
+相信很多小伙伴， 在遇到报错的时候，直接搜索报错内容，
+ 然后事故开始了。。。
+
+当使用Sqlite3，查询数据为空的时候， 给我报错了这个，
+
+TypeError: ‘NoneType’ object is not callable
+
+接下来我就看到了
+ 这个 - 记录一次解决TypeError: ‘NoneType’ object is not callable的办法
+ 这个 - TypeError: ‘NoneType’ object is not callable
+ 这个 - TypeError: ‘NoneType’ object is not callable
+ 这个 - python使用装饰器，报错TypeError: ‘NoneType’ object is not callable’
+
+呼声最高的是：去掉最后函数调用语句的"()"，
+
+可惜我的方法是带参的， 怎么也不能说去掉"()" 。 T_T
+
+def aaa(num):
+    r = db.exec(sql + num ).fetchone() 
+    return r
+
+硬着头皮继续翻啊翻啊， 一页没有，翻十页，
+ 十页没有，换个姿势搜，再翻十页。
+
+终于当我看到了它，
+ 黑夜里的明灯，暴风雨中的灯塔，
+ 挽救了我为数不多的头发
+
+诡异的python类的实例方法，返回值为什么是None？？
+
+
+好了，以上均属报复性码字，以下言归正传。
+
+方法（函数）没有写显示的return语句， 在python中会隐式地返回一个None
+
+茅塞顿开，完全可以绕过 返回值为None的对象
+
+def aaa(num):
+    r = db.exec(sql + num ).fetchone() 
+    if r is not None
+    	return r
+
+就这样成功的 把 None 通过方法传出去了。。。
+
+给个赞吧，为了祭奠我掉落的头发。
+

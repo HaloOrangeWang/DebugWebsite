@@ -1,0 +1,138 @@
+1、首先在models.py里面创建模型， 然后执行makemigrations和migrate同步数据库
+
+from django.db import models
+
+# Create your models here.
+
+class Blog(models.Model):
+    name = models.CharField(max_length=100)
+    tagline = models.TextField()
+
+def __str__(self):
+        return self.name
+
+class Author(models.Model):
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+
+def __str__(self):
+        return  self.name
+
+class Entry(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    headline = models.CharField(max_length=255)
+    body_text = models.TextField()
+    pub_date = models.DateField()
+    mod_date = models.DateField()
+    authors = models.ManyToManyField(Author)
+    number_of_comments = models.IntegerField()
+    number_of_pingbacks = models.IntegerField()
+
+def __str__(self):
+        return self.headline
+
+2、删除模型Entry中部分字段，执行makemigrations和migrate会直接成功
+
+from django.db import models
+
+# Create your models here.
+
+class Blog(models.Model):
+    name = models.CharField(max_length=100)
+    tagline = models.TextField()
+
+def __str__(self):
+        return self.name
+
+class Author(models.Model):
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+
+def __str__(self):
+        return  self.name
+
+class Entry(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    headline = models.CharField(max_length=255)
+    body_text = models.TextField()
+    # pub_date = models.DateField()
+    # mod_date = models.DateField()
+    # authors = models.ManyToManyField(Author)
+    number_of_comments = models.IntegerField()
+    number_of_pingbacks = models.IntegerField()
+
+def __str__(self):
+        return self.headline
+
+3、新增模型Entry中部分字段number_of_pingbacks2，执行makemigrations和migrate， 若没有null=True的参数， 执行makemigrations和migrate会提示输入默认值
+
+所以解决办法：
+
+3.1、null=True ；
+
+number_of_pingbacks2 = models.IntegerField(null=True)
+
+3.2、设置默认值，可以参数default方式； 这种方法，在创建对象的时候， 是必须传值的
+
+number_of_pingbacks2 = models.IntegerField(default= None)
+
+也可以执行makemigrations的时候手动输入
+
+from django.db import models
+
+# Create your models here.
+
+class Blog(models.Model):
+    name = models.CharField(max_length=100)
+    tagline = models.TextField()
+
+def __str__(self):
+        return self.name
+
+class Author(models.Model):
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+
+def __str__(self):
+        return  self.name
+
+class Entry(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    headline = models.CharField(max_length=255)
+    body_text = models.TextField()
+    # pub_date = models.DateField()
+    # mod_date = models.DateField()
+    # authors = models.ManyToManyField(Author)
+    number_of_comments = models.IntegerField()
+    number_of_pingbacks = models.IntegerField()
+    number_of_pingbacks2 = models.IntegerField()
+
+def __str__(self):
+        return self.headline
+
+执行makemigrations后，提示如下：
+
+manage.py@untitled1 > makemigrations
+"D:\Program Files\PyCharm 2018.1.4\bin\runnerw.exe" "D:\Program Files\python3.6.7\python.exe" "D:\Program Files\PyCharm 2018.1.4\helpers\pycharm\django_manage.py" makemigrations D:/pythonWorkspace/untitled1
+Tracking file by folder pattern:  migrations
+You are trying to add a non-nullable field 'number_of_pingbacks2' to entry without a default; we can't do that (the database needs something to populate existing rows).
+Please select a fix:
+ 1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+ 2) Quit, and let me add a default in models.py
+Select an option:
+
+4、默认null=False， 代表创建对象，对应的属性必须有值
+
+c = Blog(name='gerry Blog')
+c.save()
+
+创建对象的时候，只传入name， 没有传入tagline的值，但是可以创建成功；
+
+由此，推测django是将tagline当空字符串来处理的，所以列值是空，而不是默认的Null;
+
+把设计表，不是Null的限制取消：
+
+执行插入命令，只插入name, 不插入tagline，效果如下：
+
+再将设计表，tagline设置为不允许Null,  因为已经存在Null类型的tagline数据，所以会报错
+

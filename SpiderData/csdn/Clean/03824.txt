@@ -1,0 +1,46 @@
+
+前言
+
+在学习并使用Python的过程中，总会遇到各种各样的错误，因此，写下整个系列的帖子，方便自己回顾，也方便其他同学参阅。
+
+
+正文
+
+在Python运行过程中遇到了如下错误： 
+ TypeError: ‘list’ object is not callable
+
+list = ['经点', '咸汤', '鱼儿', '骆驼']
+
+tup_1 = (1, 2, 3, 4, 5)
+tupToList = list(tup_1)
+
+print(tupToList)
+
+代码运行后出错了，提示是TypeError: ‘list’ object is not callable
+
+Traceback (most recent call last):
+  File "<pyshell#42>", line 1, in <module>
+    counterA()
+TypeError: 'list' object is not callable
+
+callable()是python的内置函数，用来检查对象是否可被调用，可被调用指的是对象能否使用()括号的方法调用，类似于iterable（） 
+ 在如上代码中，由于变量list和函数list重名了，所以函数在使用list函数时，发现list是一个定义好的列表，而列表是不能被调用的，因此抛出一个类型错误
+
+
+解决办法
+
+我们只需修改变量名listx就可以了：
+
+listx = ['经点', '咸汤', '鱼儿', '骆驼']
+
+tup_1 = (1, 2, 3, 4, 5)
+tupToList = list(tup_1)
+
+print(tupToList)
+
+运行后和结果是正常的：
+
+[1, 2, 3, 4, 5]
+
+因此，在命名变量时要注意，应避免和python的函数名、关键字冲突。
+

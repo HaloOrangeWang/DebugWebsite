@@ -1,0 +1,152 @@
+我写的这个程序
+
+import tensorflow as tf
+
+sess=tf.InteractiveSession()
+x=tf.Variable([1.0,2.0])
+a=tf.constant([3.0,3.0])
+x.initializer.run()
+sun=tf.div(x,a)
+print(sub.eval())
+sess.close()
+
+出现了如下所示的错误：
+
+原因是倒数第二行的sub没有初始化，倒数第三行应该是初始化sub的，但是打错了，成了sun,这样后面出现的sub就相当于没有初始化，所以出现了变量没有初始化的错误。
+
+FailedPreconditionError          Traceback (most recent call last)
+C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\client\session.py in _do_call(self, fn, *args)
+  1360   try:
+-> 1361    return fn(*args)
+  1362   except errors.OpError as e:
+
+C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\client\session.py in _run_fn(session, feed_dict, fetch_list, target_list, options, run_metadata)
+  1339      return tf_session.TF_Run(session, options, feed_dict, fetch_list,
+-> 1340                  target_list, status, run_metadata)
+  1341
+
+C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\framework\errors_impl.py in __exit__(self, type_arg, value_arg, traceback_arg)
+  515       compat.as_text(c_api.TF_Message(self.status.status)),
+--> 516       c_api.TF_GetCode(self.status.status))
+  517   # Delete the underlying status object from memory otherwise it stays alive
+
+FailedPreconditionError: Attempting to use uninitialized value Variable_1
+	 [[Node: Variable_1/read = Identity[T=DT_FLOAT, _class=["loc:@Variable_1"], _device="/job:localhost/replica:0/task:0/device:CPU:0"](Variable_1)]]
+
+During handling of the above exception, another exception occurred:
+
+FailedPreconditionError          Traceback (most recent call last)
+<ipython-input-3-cac34f40642f> in <module>()
+   5 x.initializer.run()
+   6 sun=tf.div(x,a)
+----> 7 print(sub.eval())
+   8 sess.close()
+
+C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\framework\ops.py in eval(self, feed_dict, session)
+  654 
+  655   """
+--> 656   return _eval_using_default_session(self, feed_dict, self.graph, session)
+  657 
+  658
+
+C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\framework\ops.py in _eval_using_default_session(tensors, feed_dict, graph, session)
+  4899            "the tensor's graph is different from the session's "
+  4900            "graph.")
+-> 4901  return session.run(tensors, feed_dict)
+  4902 
+  4903
+
+C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\client\session.py in run(self, fetches, feed_dict, options, run_metadata)
+  903   try:
+  904    result = self._run(None, fetches, feed_dict, options_ptr,
+--> 905             run_metadata_ptr)
+  906    if run_metadata:
+  907     proto_data = tf_session.TF_GetBuffer(run_metadata_ptr)
+
+C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\client\session.py in _run(self, handle, fetches, feed_dict, options, run_metadata)
+  1135   if final_fetches or final_targets or (handle and feed_dict_tensor):
+  1136    results = self._do_run(handle, final_targets, final_fetches,
+-> 1137               feed_dict_tensor, options, run_metadata)
+  1138   else:
+  1139    results = []
+
+C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\client\session.py in _do_run(self, handle, target_list, fetch_list, feed_dict, options, run_metadata)
+  1353   if handle is None:
+  1354    return self._do_call(_run_fn, self._session, feeds, fetches, targets,
+-> 1355              options, run_metadata)
+  1356   else:
+  1357    return self._do_call(_prun_fn, self._session, handle, feeds, fetches)
+
+C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\client\session.py in _do_call(self, fn, *args)
+  1372     except KeyError:
+  1373      pass
+-> 1374    raise type(e)(node_def, op, message)
+  1375 
+  1376  def _extend_graph(self):
+
+FailedPreconditionError: Attempting to use uninitialized value Variable_1
+	 [[Node: Variable_1/read = Identity[T=DT_FLOAT, _class=["loc:@Variable_1"], _device="/job:localhost/replica:0/task:0/device:CPU:0"](Variable_1)]]
+
+Caused by op 'Variable_1/read', defined at:
+ File "C:\Users\SKJ\Anaconda3\lib\runpy.py", line 184, in _run_module_as_main
+  "__main__", mod_spec)
+ File "C:\Users\SKJ\Anaconda3\lib\runpy.py", line 85, in _run_code
+  exec(code, run_globals)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\ipykernel\__main__.py", line 3, in <module>
+  app.launch_new_instance()
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\traitlets\config\application.py", line 653, in launch_instance
+  app.start()
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\ipykernel\kernelapp.py", line 474, in start
+  ioloop.IOLoop.instance().start()
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\zmq\eventloop\ioloop.py", line 162, in start
+  super(ZMQIOLoop, self).start()
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tornado\ioloop.py", line 887, in start
+  handler_func(fd_obj, events)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tornado\stack_context.py", line 275, in null_wrapper
+  return fn(*args, **kwargs)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\zmq\eventloop\zmqstream.py", line 440, in _handle_events
+  self._handle_recv()
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\zmq\eventloop\zmqstream.py", line 472, in _handle_recv
+  self._run_callback(callback, msg)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\zmq\eventloop\zmqstream.py", line 414, in _run_callback
+  callback(*args, **kwargs)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tornado\stack_context.py", line 275, in null_wrapper
+  return fn(*args, **kwargs)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\ipykernel\kernelbase.py", line 276, in dispatcher
+  return self.dispatch_shell(stream, msg)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\ipykernel\kernelbase.py", line 228, in dispatch_shell
+  handler(stream, idents, msg)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\ipykernel\kernelbase.py", line 390, in execute_request
+  user_expressions, allow_stdin)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\ipykernel\ipkernel.py", line 196, in do_execute
+  res = shell.run_cell(code, store_history=store_history, silent=silent)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\ipykernel\zmqshell.py", line 501, in run_cell
+  return super(ZMQInteractiveShell, self).run_cell(*args, **kwargs)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py", line 2717, in run_cell
+  interactivity=interactivity, compiler=compiler, result=result)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py", line 2821, in run_ast_nodes
+  if self.run_code(code, result):
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py", line 2881, in run_code
+  exec(code_obj, self.user_global_ns, self.user_ns)
+ File "<ipython-input-2-69a776ba1e33>", line 3, in <module>
+  x=tf.Variable([1.0,2.0])
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\ops\variables.py", line 233, in __init__
+  constraint=constraint)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\ops\variables.py", line 381, in _init_from_args
+  self._snapshot = array_ops.identity(self._variable, name="read")
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\ops\array_ops.py", line 131, in identity
+  return gen_array_ops.identity(input, name=name)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 2656, in identity
+  "Identity", input=input, name=name)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+  op_def=op_def)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\framework\ops.py", line 3271, in create_op
+  op_def=op_def)
+ File "C:\Users\SKJ\Anaconda3\lib\site-packages\tensorflow\python\framework\ops.py", line 1650, in __init__
+  self._traceback = self._graph._extract_stack() # pylint: disable=protected-access
+
+FailedPreconditionError (see above for traceback): Attempting to use uninitialized value Variable_1
+	 [[Node: Variable_1/read = Identity[T=DT_FLOAT, _class=["loc:@Variable_1"], _device="/job:localhost/replica:0/task:0/device:CPU:0"](Variable_1)]]
+
+以上这篇解决tensorflow由于未初始化变量而导致的错误问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

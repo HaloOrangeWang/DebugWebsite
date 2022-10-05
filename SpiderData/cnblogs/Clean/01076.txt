@@ -1,0 +1,142 @@
+
+一、安装OpenssL
+
+1、下载的压缩包放在根目录
+
+wget http://www.openssl.org/source/openssl-1.0.2j.tar.gz
+
+2、在文件夹下解压缩，得到openssl-1.0.2j文件夹
+
+tar -xzf openssl-1.0.2j.tar.gz
+
+3、进入解压的目录：
+
+cd openssl-1.0.2j
+
+4、设定Openssl 安装，( --prefix )参数为欲安装之目录，也就是安装后的档案会出现在该目录下：
+
+./config --prefix=/usr/local/openssl
+
+5、执行命令
+
+./config -t
+
+6.执行make，编译Openssl
+
+make
+
+这里如果出现如下错误
+
+make[1]: gcc: Command not found
+
+上网查才发现我安装的CentOS7中没有GCC编译器
+
+保证系统网络畅通以后，执行命令 yum -y install gcc 安装GCC
+
+7、安装 Openssl:
+
+make install
+
+8、查看版本
+
+openssl version
+
+
+二、安装Python3.6.4 及解决 ssl 问题
+
+1、安装python3.6可能使用的依赖
+
+yum install openssl-devel bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel gcc gcc-c++  openssl-devel
+
+2、到python官网找到下载路径, 用wget下载
+
+wget https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz
+
+3 解压tgz包
+
+tar -xf Python-3.6.5.tgz
+
+4 进入python目录
+
+cd /Python-3.6.5/
+
+5、编译，安装
+
+　　5.1 提示找不到SSL模块
+
+　　python安装完毕后，提示找不到ssl模块：
+
+import _ssl # if we can't import it, let the error propagate
+ImportError: No module named _ssl
+
+　　5.2 重新编译python（去掉最后4行的注释）
+
+5.3 编译安装
+
+5.4 测试，已可正常使用
+
+注：如需保留旧版本的就不需要执行 6 .7两部
+
+6、重命名旧版本的python依赖
+
+ll /usr/bin | grep python
+mv /usr/bin/python /usr/bin/python2.7
+
+7、删除旧的软链接，创建新的软链接到最新的python
+
+rm -rf /usr/bin/python
+ln -s /usr/local/bin/python3.6 /usr/bin/python
+python -V
+
+使用yum命令报错File "/usr/bin/yum", line 30 except KeyboardInterrupt, e:
+问题出现原因：
+
+yum包管理是使用python2.x写的，将python2.x升级到python3.1.3以后，由于python版本语法兼容性导致问题出现 
+解决办法： 
+修改yum配置文件，将python版本指向以前的旧版本
+
+# vi /usr/bin/yum
+#!/usr/bin/python2.7
+
+修改urlgrabber-ext-down文件，更改python版本
+
+# vi /usr/libexec/urlgrabber-ext-down
+#!/usr/bin/python2.7
+
+
+添加环境变量
+
+vim ~/.bash_profile
+
+添加下面这条参数
+
+export PATH=/usr/local/python/bin:$PATH
+
+保存
+source ~/.bash_profile
+
+
+执行脚本如下:
+
+vim install_python.sh
+
+#!/bin/bash
+echo "正在安装相关组件"
+yum install -y openssl-devel bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel gcc-c++ gcc openssl-devel
+
+echo "下载安装包"
+wget https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz
+
+echo "正在解压安装包"
+tar -xf Python-3.6.5.tgz -C /root/  && cd /root/Python-3.6.5/
+
+echo "添加ssl支持"
+cat >> /root/Python-3.6.5/Modules/Setup.dist <<"EOF"
+_socket socketmodule.c
+
+参考文章：https://blog.csdn.net/ikownyou/article/details/53021686
+
+　　　　　http://blog.51cto.com/13160495/2093863
+
+　　　　　https://www.cnblogs.com/mlgjb/p/7976561.html
+

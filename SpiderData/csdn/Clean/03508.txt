@@ -1,0 +1,31 @@
+今天早上看到群里有个同学询问matplotlib画图作业，需求如下：
+  
+ 作为一个python的初学者，我就想根据ta作业的要求试着画画，参考了书籍之后，用我仅余的一点matplotlib知识写了代码，发现它一直报这样的错误：
+TypeError: only size-1 arrays can be converted to Python scalars
+
+刚开始我还以为是那个函数表达式太复杂了，我没有写对（其实我确实是没有写对，因为我直接写了一连串然后接到np后面去了，以至于又报了np没有这样的函数的错误），之后把代码修正之后，它还是报那个typeerror的错误，有点懵圈的我就上网找，感觉没什么灵感，都是什么不能from math import * 什么的，或者是加上np.什么的，虽然他们的解决了，但就是没解决到我的点上，苦寻无果的我仔细地看了看代码，错误代码如下：
+  
+ 错误的意思大概好像是说“只传了一个参数”，然后我继续检查我的代码，终于发现了端倪，确实，在y那里只接受了x里的一个参数，毕竟np.linspace(0,3)的结果直接点来说就是个列表，列表里不止一个数，而我的y却只传了一个x,所以它就报错了，重新书写的代码如下：
+
+import matplotlib.pyplot as plt
+
+import matplotlib as mpl
+ import numpy as np
+ import math
+
+mpl.rcParams["font.sans-serif"]=["SimHei"]
+ mpl.rcParams["axes.unicode_minus"]=False
+
+x = np.linspace(0,3)
+ a=[]
+ for i in x:
+     k=(i-2)*math.pow(math.e,-i*i)
+     a.append(k)
+ y=np.sin(a)*np.sin(a)
+ plt.plot(x,y,ls="-.",lw=2,label="红色点划线",c='r')
+ plt.legend()
+ plt.show()
+ 最后输出结果如下：
+  
+主要就是遍历x里的每个元素，套进y里进行计算，然后再将计算后的值返回给一个列表，再应用plot函数进行画图，到这里我算是把错误解决了。
+

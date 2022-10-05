@@ -1,0 +1,30 @@
+python的base64.decodestring方法做base64解码时报错：
+
+复制代码 代码如下:
+
+Traceback (most recent call last):
+
+File "/export/www/outofmemory.cn/controllers/user.py", line 136, in decryptPassword
+
+encryptPwd = base64.b64decode(encryptPwd)
+
+File "/usr/lib/python2.7/base64.py", line 76, in b64decode
+
+raise TypeError(msg)
+
+TypeError: Incorrect padding
+
+:param data: Base64 data as an ASCII byte string
+
+:returns: The decoded byte string.
+
+"""
+
+missing_padding = 4 - len(data) % 4
+
+if missing_padding:
+
+data += b'='* missing_padding
+
+return base64.decodestring(data)
+

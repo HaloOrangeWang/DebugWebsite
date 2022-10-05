@@ -1,0 +1,126 @@
+一、安装xlrd和xlwt功能模块步骤
+
+1.使用python -V查看python的版本号，并查看python安装环境，是否安装成功；
+
+2.可以通过官网（python官网：https://pypi.python.org/pypi）或者其他手段获取到功能模块的安装程序包；
+
+3.将程序包解压，并放在python->Lib文件下
+
+4.在cmd命令窗口中，进入E:\Python\Python36\Lib目录下，分别进入xlrd和xlwt的目录下，执行python setup.py install命令；
+
+5.在python工具中，执行import xlwt3和import xlrd，运行结果没有报错，则证明安装成功；
+
+二、在使用xlwt时，报错的解决方法
+
+1.导入xlwt3报错：ValueError: cannot use LOCALE flag with a str pattern
+
+详细错误信息：
+
+Traceback (most recent call last):
+
+File "F:/1/1", line 1, in
+
+import xlwt3
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\__init__.py", line 3, in
+
+from .workbook import Workbook
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\workbook.py", line 5, in
+
+from .worksheet import Worksheet
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\worksheet.py", line 7, in
+
+from .row import Row
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\row.py", line 8, in
+
+from . import formula
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\formula.py", line 1, in
+
+from .excel import formulaparser, formulalexer
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\excel\formulalexer.py", line 52, in
+
+VERBOSE+LOCALE+IGNORECASE)
+
+File "E:\Python\Python36\lib\re.py", line 233, in compile
+
+return _compile(pattern, flags)
+
+File "E:\Python\Python36\lib\re.py", line 301, in _compile
+
+p = sre_compile.compile(pattern, flags)
+
+File "E:\Python\Python36\lib\sre_compile.py", line 562, in compile
+
+p = sre_parse.parse(p, flags)
+
+File "E:\Python\Python36\lib\sre_parse.py", line 866, in parse
+
+p.pattern.flags = fix_flags(str, p.pattern.flags)
+
+File "E:\Python\Python36\lib\sre_parse.py", line 833, in fix_flags
+
+raise ValueError("cannot use LOCALE flag with a str pattern")
+
+ValueError: cannot use LOCALE flag with a str pattern
+
+解决方法：
+
+进入E:\Python\Python36\Lib\sre_parse.py文件下，修改该代码：
+
+if flags & SRE_FLAG_LOCALE:
+
+pass #stone20170712 raise ValueError("cannot use LOCALE flag with a str pattern")
+
+执行import xlwt3，结果OK
+
+2.导入xlwt3报错：ValueError: ‘__init__‘ in __slots__ conflicts with class variable
+
+详细错误信息：
+
+Traceback (most recent call last):
+
+File "F:/1/1", line 1, in
+
+import xlwt3
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\__init__.py", line 3, in
+
+from .workbook import Workbook
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\workbook.py", line 5, in
+
+from .worksheet import Worksheet
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\worksheet.py", line 7, in
+
+from .row import Row
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\row.py", line 8, in
+
+from . import formula
+
+File "E:\Python\Python36\lib\site-packages\xlwt3\formula.py", line 6, in
+
+class Formula(object):
+
+ValueError: ‘__init__‘ in __slots__ conflicts with class variable
+
+解决方法：
+
+进入E:\Python\Python36\Lib\site-packages\xlwt3\formula.py文件下，将其中
+
+__slots__ = [ "__init__","__s", "__parser", "__sheet_refs", "__xcall_refs"]
+
+修改为：
+
+__slots__ = [ "__s", "__parser", "__sheet_refs", "__xcall_refs"]
+
+执行import xlwt3，结果OK
+
+原文：http://www.cnblogs.com/kongjiangbing/p/7158269.html
+

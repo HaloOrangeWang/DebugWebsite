@@ -1,0 +1,120 @@
+第一个坑：'geckodriver' executable needs to be in PATH
+
+1.如果启动浏览器过程中报如下错误
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\firefox\webdriver.py", line 145, in __init__
+
+self.service.start()
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\common\service.py", line 81, in start
+
+os.path.basename(self.path), self.start_error_message)
+
+selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable needs to be in PATH.
+
+2.这个是因为最新的selenium3.0启动firefox需要geckodriver.exe这个驱动文件。
+
+3.下载之后，配置到环境变量path下（可以直接放python根目录）
+
+第二坑：Expected browser binary location, but unable to find binary in default location
+
+1.如果启动浏览器过程中报如下错误：
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\firefox\webdriver.py", line 155, in __init__
+
+keep_alive=True)
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 92, in __init__
+
+self.start_session(desired_capabilities, browser_profile)
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 179, in start_session
+
+response = self.execute(Command.NEW_SESSION, capabilities)
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 238, in execute
+
+self.error_handler.check_response(response)
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 193, in check_response
+
+raise exception_class(message, screen, stacktrace)
+
+selenium.common.exceptions.WebDriverException: Message: Expected browser binary location, but unable to find binary in default location,
+
+no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line.
+
+2.这个是因为firefox.exe这个文件也需要配置到环境变量path下。
+
+3.这个路径就是安装完firefox后，找到firefox.exe这个文件的地址，加到path下。
+
+第三坑：Unsupported Marionette protocol version 2, required 3
+
+1.如果启动浏览器过程中出现如下错误
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\firefox\webdriver.py", line 155, in __init__
+
+keep_alive=True)
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 92, in __init__
+
+self.start_session(desired_capabilities, browser_profile)
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 179, in start_session
+
+response = self.execute(Command.NEW_SESSION, capabilities)
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 238, in execute
+
+self.error_handler.check_response(response)
+
+File "D:\test\python3\lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 193, in check_response
+
+raise exception_class(message, screen, stacktrace)
+
+selenium.common.exceptions.WebDriverException: Message: Unsupported Marionette protocol version 2, required 3
+
+2.这个错误原因是firefox版本过低了，最新的selenium3.0版本支持firefox47以上的版本，升级版本就可以了
+
+第四坑：WebDriverException: Message: newSession
+
+1.Traceback (most recent call last):
+
+File “D:\test\python3\lib\site-packages\selenium\webdriver\firefox\\webdriver.py”, line 170, in init
+
+keep_alive=True)
+
+File “D:\test\python3\lib\site-packages\selenium\webdriver\firefox\\webdriver.py”, line 156, in init
+
+self.start_session(capabilities, browser_profile)
+
+File “D:\test\python3\lib\site-packages\selenium\webdriver\firefox\\webdriver.py”, line 245, in start_session
+
+response = self.execute(Command.NEW_SESSION, parameters)
+
+File “D:\test\python3\lib\site-packages\selenium\webdriver\firefox\\webdriver.py”, line 314, in execute
+
+self.error_handler.check_response(response)
+
+File “D:\test\python3\lib\site-packages\selenium\webdriver\firefox\\errorhandler.py”, line 242, in check_response
+
+raise exception_class(message, screen, stacktrace)
+
+selenium.common.exceptions.WebDriverException: Message: newSession
+
+2.下载最新的geckodriver.exe 然后把它放到python的安装目录下
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

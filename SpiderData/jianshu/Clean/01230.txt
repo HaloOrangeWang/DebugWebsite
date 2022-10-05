@@ -1,0 +1,82 @@
+周末用pytorch框架写了一个卷积神经网络的小demo，运行的时候报了一个错误，如下图
+
+代码如下
+
+import torch
+import torch.nn as nn
+from torch.autograd import Variable
+import torch.utils.data as Data
+from torchvision import datasets, transforms
+import matplotlib.pyplot as plt
+
+EPOCH = 1
+BATCH_SIZE = 50
+LR = 0.001
+DOWNLOAD_MNIST = False
+
+train_data = datasets.MNIST(
+    root='./mnist',  # 数据保存的目录
+    train=True,  # 是训练的数据，False的话会给test数据，少一些
+    transform=transforms.ToTensor,  # (0,255)-->(0,1) 把原始的数据改成什么样的，这里Numpy Array改成Tensor的格式
+    download=DOWNLOAD_MNIST  # 如果已经下载数据设成False，否则用True
+)
+
+train_loader = Data.DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
+test_data = datasets.MNIST(root='./mnist',
+                           train=False,
+                           download=False,
+                           transform=transforms.ToTensor()
+                           )  # train=False会提取出文件夹下的test数据
+test_x = Variable(torch.unsqueeze(test_data.test_data, dim=1), volatile=True).type(torch.FloatTensor)[:2000]/255
+# 原始数据在[0,255]之间，应该要压缩到1之内
+test_y = test_data.test_labels[:2000]  # 截取前2000个可以节约内存，和程序无关
+
+class CNN(nn.Module):
+    def __init__(self):
+        super(CNN, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(  # 输入的数据尺寸是：1*28*28
+                in_channels=1,  # 图片有多少个通道，灰度图有一个层，rgb有三个层（高度为1的图片）
+                out_channels=16,  # 输出的高度==滤波器的数量，输出的通道有16个（高度为16的图片）
+                kernel_size=5,  # 卷积核的长和宽都是5
+                stride=1,  # 卷积核每次只移动1个格子（pixel）
+                padding=2  # 5-1/2=2，因为卷积核靠边，所以需要在每一个图片周围添加2行数据
+            ),  # 卷积层是一个过滤器，提取出局部的特征
+            nn.ReLU(),  # 激活函数
+            nn.MaxPool2d(kernel_size=2),  # 最大池化，筛选重要的部分
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(16, 32, 5, 1, 2),  # 接收16层的图片加工成32层
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+        )
+        self.out = nn.Linear(32*7*7, 10)  # 展平成二维数据，28-maxpool(2)->14-maxpool(2)->7
+
+def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)  # （batch，32，7，7）
+        x = x.view(x.size(0), -1)  # 展平（batch，32*7*7）-1让32 7 7展平到一起
+        return x
+
+cnn = CNN()
+optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)
+loss_func = nn.CrossEntropyLoss()  # 因为使用的是label的数据
+for epoch in range(EPOCH):
+    # print(enumerate(train_loader))
+    # d = iter(train_loader).next()
+    # dataiter = iter(train_loader)
+    # images, labels = dataiter.next()
+    for i, data in enumerate(train_loader):
+        inputs, labels = data
+        b_x = Variable(inputs)
+        b_y = Variable(labels)
+
+output = cnn(b_x)
+        # print('out', inputs, labels, output)
+        loss = loss_func(output, b_y)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+捡查了一下原因是，datasets.MNIST的transform=transforms.ToTensor没有加()执行
+

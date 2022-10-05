@@ -1,0 +1,23 @@
+在用 PySpider 爬取 https 开头的网站的时候遇到了 HTTP 599: SSL certificate problem: self signed certificate in certificate chain 的错误。
+
+经过一番排查，解决方案总结如下
+
+
+错误原因
+
+这个错误会发生在请求 https 开头的网址，SSL 验证错误，证书有误。
+
+报错如下：
+
+最简单的解决方法是：
+
+在 crawl 方法中加入忽略证书验证的参数，validate_cert=False，即
+
+1
+
+1
+
+self.crawl(url,callback=method_name,validate_cert=False)
+
+self.crawl(url,callback=method_name,validate_cert=False)
+

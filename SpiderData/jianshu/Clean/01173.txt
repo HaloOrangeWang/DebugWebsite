@@ -1,0 +1,10 @@
+用mysql 语句如下， 不报错：
+
+select customer_id, approval_cash, status, apply_time, from_unixtime(apply_time,'%Y-%m-%d') as apply_time_1 from cust
+
+但同样的语句放入pymysql时就报错
+
+修改如下：
+
+原因是SQL中的单引号与‘%Y-%m’中的相冲突。
+

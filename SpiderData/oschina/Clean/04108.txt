@@ -1,0 +1,40 @@
+在win10下使用pip install tesserocr安装时，始终报错，未解决问题
+
+解压tesserocr-2.2.2.tar.gz该文件夹后，查看setup.py文件，发现似乎model只能再linux下安装。
+
+记录该问题，希望以后能够找到根本问题所在，并解决。
+
+C:\Users\Lenovo>pip install tesserocr
+Collecting tesserocr
+  Using cached tesserocr-2.2.2.tar.gz
+Building wheels for collected packages: tesserocr
+  Running setup.py bdist_wheel for tesserocr ... error
+  Complete output from command C:\Users\Lenovo\AppData\Local\Programs\Python\Python35\python.exe -u -c "import setuptools, tokenize;__file__='C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pip-build-jg52tngj\\tesserocr\\setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" bdist_wheel -d C:\Users\Lenovo\AppData\Local\Temp\tmplxr9xiuxpip-wheel- --python-tag cp35:
+  pkg-config failed to find tesseract/lept libraries: b"Package tesseract was not found in the pkg-config search path.\r\nPerhaps you should add the directory containing `tesseract.pc'\r\nto the PKG_CONFIG_PATH environment variable\r\nNo package 'tesseract' found\r\n"
+  Supporting tesseract v3.05.01
+  Building with configs: {'cython_compile_time_env': {'TESSERACT_VERSION': 197889}, 'libraries': ['tesseract', 'lept']}
+  running bdist_wheel
+  running build
+  running build_ext
+  building 'tesserocr' extension
+  error: [WinError 2] 系统找不到指定的文件。
+
+----------------------------------------
+  Failed building wheel for tesserocr
+  Running setup.py clean for tesserocr
+Failed to build tesserocr
+Installing collected packages: tesserocr
+  Running setup.py install for tesserocr ... error
+    Complete output from command C:\Users\Lenovo\AppData\Local\Programs\Python\Python35\python.exe -u -c "import setuptools, tokenize;__file__='C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pip-build-jg52tngj\\tesserocr\\setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record C:\Users\Lenovo\AppData\Local\Temp\pip-my824laz-record\install-record.txt --single-version-externally-managed --compile:
+    pkg-config failed to find tesseract/lept libraries: b"Package tesseract was not found in the pkg-config search path.\r\nPerhaps you should add the directory containing `tesseract.pc'\r\nto the PKG_CONFIG_PATH environment variable\r\nNo package 'tesseract' found\r\n"
+    Supporting tesseract v3.05.01
+    Building with configs: {'libraries': ['tesseract', 'lept'], 'cython_compile_time_env': {'TESSERACT_VERSION': 197889}}
+    running install
+    running build
+    running build_ext
+    building 'tesserocr' extension
+    error: [WinError 2] 系统找不到指定的文件。
+
+----------------------------------------
+Command "C:\Users\Lenovo\AppData\Local\Programs\Python\Python35\python.exe -u -c "import setuptools, tokenize;__file__='C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pip-build-jg52tngj\\tesserocr\\setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record C:\Users\Lenovo\AppData\Local\Temp\pip-my824laz-record\install-record.txt --single-version-externally-managed --compile" failed with error code 1 in C:\Users\Lenovo\AppData\Local\Temp\pip-build-jg52tngj\tesserocr\
+

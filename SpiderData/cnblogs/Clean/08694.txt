@@ -1,0 +1,576 @@
+
+错误&异常
+
+错误
+
+Error
+
+错误
+
+Error
+
+异常
+
+写的时候代码不报错，但是运行时报错
+一旦出错，后面的代码无法执行
+需要捕获异常，让后面的代码正常执行
+
+异常
+
+写的时候代码不报错，但是运行时报错
+
+一旦出错，后面的代码无法执行
+
+需要捕获异常，让后面的代码正常执行
+
+捕获异常
+
+try-except
+
+try:
+    print(10/n)
+except:
+    print('不好意思，报错了')
+
+捕获异常
+
+try-except
+
+try:
+    print(10/n)
+except:
+    print('不好意思，报错了')
+
+try-except
+
+try:
+    print(10/n)
+except:
+    print('不好意思，报错了')
+
+try：尝试执行某段代码
+
+try：尝试执行某段代码
+
+except：如果在try中代码出现错误，则会进入except
+
+except：如果在try中代码出现错误，则会进入except
+
+捕获指定的错误
+
+try:
+    a += 1
+except TypeError as e:
+    print(e)
+except NameError as e:
+    print(e)
+
+捕获指定的错误
+
+try:
+    a += 1
+except TypeError as e:
+    print(e)
+except NameError as e:
+    print(e)
+
+错误类型
+
+'''
+NameError:变量未被定义
+TypeError:类型错误
+IndexError:索引异常
+KeyError:字典的key错误
+ValueError:值错误
+AttributeError:属性异常
+ImportError:导入模块的时候路径异常
+SntaxError:语法错误，代码不能编译
+'''
+
+错误类型
+
+'''
+NameError:变量未被定义
+TypeError:类型错误
+IndexError:索引异常
+KeyError:字典的key错误
+ValueError:值错误
+AttributeError:属性异常
+ImportError:导入模块的时候路径异常
+SntaxError:语法错误，代码不能编译
+'''
+
+捕获所有错误并得到错误内容
+
+Exception是错误的父类
+
+BaseException是Exception的父类
+
+try:
+    a = 1/0
+except Exception as e:
+    print(e)  # division by zero
+    print(type(e))  # <class 'ZeroDivisionError'>
+
+捕获所有错误并得到错误内容
+
+Exception是错误的父类
+
+Exception是错误的父类
+
+BaseException是Exception的父类
+
+try:
+    a = 1/0
+except Exception as e:
+    print(e)  # division by zero
+    print(type(e))  # <class 'ZeroDivisionError'>
+
+BaseException是Exception的父类
+
+try:
+    a = 1/0
+except Exception as e:
+    print(e)  # division by zero
+    print(type(e))  # <class 'ZeroDivisionError'>
+
+try-except-else
+
+没有错误时执行else后的代码
+
+try:
+    a = []
+    b = a[2]
+except BaseException as e:
+    print('出现错误:', e)
+else:
+    print('没有错误')
+
+try-except-else
+
+没有错误时执行else后的代码
+
+try:
+    a = []
+    b = a[2]
+except BaseException as e:
+    print('出现错误:', e)
+else:
+    print('没有错误')
+
+没有错误时执行else后的代码
+
+try:
+    a = []
+    b = a[2]
+except BaseException as e:
+    print('出现错误:', e)
+else:
+    print('没有错误')
+
+try-except-finally
+
+无论是否出错都会执行finally后的代码
+
+try:
+    a = []
+    b = a[2]
+except BaseException as e:
+    print('出现错误:', e)
+finally:
+    print('不管有没有错，我都会执行')
+
+try-except-finally
+
+无论是否出错都会执行finally后的代码
+
+try:
+    a = []
+    b = a[2]
+except BaseException as e:
+    print('出现错误:', e)
+finally:
+    print('不管有没有错，我都会执行')
+
+无论是否出错都会执行finally后的代码
+
+try:
+    a = []
+    b = a[2]
+except BaseException as e:
+    print('出现错误:', e)
+finally:
+    print('不管有没有错，我都会执行')
+
+抛出异常
+
+raise NameError('这是我主动抛出的异常')
+
+自定义异常
+
+class MyException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+try:
+    raise MyException('自定义异常')
+except Exception as e:
+    print(e)
+    print(type(e))  # <class '__main__.MyException'>
+
+抛出异常
+
+raise NameError('这是我主动抛出的异常')
+
+raise NameError('这是我主动抛出的异常')
+
+自定义异常
+
+class MyException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+try:
+    raise MyException('自定义异常')
+except Exception as e:
+    print(e)
+    print(type(e))  # <class '__main__.MyException'>
+
+自定义异常
+
+class MyException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+try:
+    raise MyException('自定义异常')
+except Exception as e:
+    print(e)
+    print(type(e))  # <class '__main__.MyException'>
+
+断言
+
+assert预测
+
+如果跟我预测的不一致则抛出异常，右边的字符串是错误提示
+
+def f2(n):
+    # 预测n != 0, 如果跟我的预测不一致，则抛出异常，右边的字符串是错误提示
+    assert n != 0, 'n不能为0'  # 报错，AssertionError: n不能为0
+    a = 10/n
+f2(0)
+
+断言
+
+assert预测
+
+assert预测
+
+如果跟我预测的不一致则抛出异常，右边的字符串是错误提示
+
+def f2(n):
+    # 预测n != 0, 如果跟我的预测不一致，则抛出异常，右边的字符串是错误提示
+    assert n != 0, 'n不能为0'  # 报错，AssertionError: n不能为0
+    a = 10/n
+f2(0)
+
+如果跟我预测的不一致则抛出异常，右边的字符串是错误提示
+
+def f2(n):
+    # 预测n != 0, 如果跟我的预测不一致，则抛出异常，右边的字符串是错误提示
+    assert n != 0, 'n不能为0'  # 报错，AssertionError: n不能为0
+    a = 10/n
+f2(0)
+
+
+文件读写
+
+文件操作流程
+
+打开文件
+
+默认encoding是GBK
+fp = open('hello.txt', 'r', encoding='utf-8')
+
+进行文件操作(读写)
+
+fp.read()/fp.write()
+
+关闭文件
+
+fp.close()
+
+文件操作流程
+
+打开文件
+
+默认encoding是GBK
+fp = open('hello.txt', 'r', encoding='utf-8')
+
+默认encoding是GBK
+
+fp = open('hello.txt', 'r', encoding='utf-8')
+
+进行文件操作(读写)
+
+fp.read()/fp.write()
+
+fp.read()/fp.write()
+
+关闭文件
+
+fp.close()
+
+fp.close()
+
+文件模式
+
+'''
+mode：打开方式
+r：只读，文件不存在则报错
+rb：只读，读二进制，文件不存在则报错
+r+:可读写，了解，建议不用
+rb+：可读写，读写二进制，了解，建议不用
+w:只写，文件不存在则自动创建，清空写
+wb：只写，写二进制，文件不存在则自动创建
+a：追加写，文件不存在则自动创建
+ab：追加写，写二进制，文件不存在则自动创建
+'''
+
+文件模式
+
+'''
+mode：打开方式
+r：只读，文件不存在则报错
+rb：只读，读二进制，文件不存在则报错
+r+:可读写，了解，建议不用
+rb+：可读写，读写二进制，了解，建议不用
+w:只写，文件不存在则自动创建，清空写
+wb：只写，写二进制，文件不存在则自动创建
+a：追加写，文件不存在则自动创建
+ab：追加写，写二进制，文件不存在则自动创建
+'''
+
+fp:文件句柄对象
+
+fp:文件句柄对象
+
+读
+
+fp = open('hello.txt', 'r', encoding='utf-8')
+print(fp.read())  # 读取文件的所有内容
+print(fp.read(5))  # 读取5个字符
+print(fp.read(5))  # 再读取5个字符
+print(fp.readline())  # 读取1行
+print(fp.readline())  # 再读取1行
+print(fp.readlines())  # 读取所有行组成的列表
+如果是读二进制，文件为字符串，需要进行解码
+
+print(fp.read().decode())  # 字符串
+
+读
+
+fp = open('hello.txt', 'r', encoding='utf-8')
+
+print(fp.read())  # 读取文件的所有内容
+
+print(fp.read(5))  # 读取5个字符
+
+print(fp.read(5))  # 再读取5个字符
+
+print(fp.readline())  # 读取1行
+
+print(fp.readline())  # 再读取1行
+
+print(fp.readlines())  # 读取所有行组成的列表
+
+如果是读二进制，文件为字符串，需要进行解码
+
+print(fp.read().decode())  # 字符串
+
+print(fp.read().decode())  # 字符串
+
+写
+
+如果是写二进制，写入的文件为字符串，需要进行编码
+
+fp.write('嘿嘿'.encode())  # 把嘿嘿转换成二进制写进去
+
+写
+
+如果是写二进制，写入的文件为字符串，需要进行编码
+
+fp.write('嘿嘿'.encode())  # 把嘿嘿转换成二进制写进去
+
+如果是写二进制，写入的文件为字符串，需要进行编码
+
+fp.write('嘿嘿'.encode())  # 把嘿嘿转换成二进制写进去
+
+fp.flush()  # 清空缓冲区，频繁不断地写采用
+
+fp.flush()  # 清空缓冲区，频繁不断地写采用
+
+如果文件不存在，要防止文件读取时报错
+
+try-except-else
+
+try:
+    fp = open('a.txt', 'r', encoding='utf-8')
+    content = fp.read()
+    print(content)
+except Exception as e:
+    print('文件操作读取错误：', e)
+else:
+    fp.close()
+
+如果文件不存在，要防止文件读取时报错
+
+try-except-else
+
+try:
+    fp = open('a.txt', 'r', encoding='utf-8')
+    content = fp.read()
+    print(content)
+except Exception as e:
+    print('文件操作读取错误：', e)
+else:
+    fp.close()
+
+try-except-else
+
+try:
+    fp = open('a.txt', 'r', encoding='utf-8')
+    content = fp.read()
+    print(content)
+except Exception as e:
+    print('文件操作读取错误：', e)
+else:
+    fp.close()
+
+with关键字（Python的上下文管理）
+
+作用：自动关闭文件，即使是在出现异常的情况下也会关闭
+
+with open('hello.txt', 'r', encoding='utf-8') as fp:
+    content = fp.read()
+    print(content)
+
+with关键字（Python的上下文管理）
+
+作用：自动关闭文件，即使是在出现异常的情况下也会关闭
+
+with open('hello.txt', 'r', encoding='utf-8') as fp:
+    content = fp.read()
+    print(content)
+
+作用：自动关闭文件，即使是在出现异常的情况下也会关闭
+
+with open('hello.txt', 'r', encoding='utf-8') as fp:
+    content = fp.read()
+    print(content)
+
+# 打开一个文件资源的时候，往往需要自己手动关闭资源，比较麻烦
+fp = open('a.txt', 'r')
+data = fp.read()
+fp.close()
+
+# 使用with语法可以自动的释放资源
+with open('a.txt', 'r') as fp:
+  data = fp.read()
+  
+# with的使用必须要实现两个方法，__enter__(), __exit__()
+class File:
+    def __init__(self, filename, mode):
+        self.fp = open(filename, mode)
+    def __enter__(self):
+        print("entering")
+        return self.fp
+    def __exit__(self, *args):
+        print("exitting")
+        self.fp.close()
+
+def main():
+    with File("a.txt", "r") as f:
+        print(f.read())
+
+if __name__ == "__main__":
+    main()
+'''
+entering
+嘿嘿
+exitting
+'''
+
+
+csv模块
+
+import csv
+
+读取
+
+# 读取
+fp = open(path, 'r', encoding='utf-8')
+# print(fp.read())
+# csv模块
+reader = csv.reader(fp)
+for row in reader:
+    print(row)
+    fp.close()
+
+import csv
+
+读取
+
+# 读取
+fp = open(path, 'r', encoding='utf-8')
+# print(fp.read())
+# csv模块
+reader = csv.reader(fp)
+for row in reader:
+    print(row)
+    fp.close()
+
+读取
+
+# 读取
+fp = open(path, 'r', encoding='utf-8')
+# print(fp.read())
+# csv模块
+reader = csv.reader(fp)
+for row in reader:
+    print(row)
+    fp.close()
+
+读取后可以遍历读取的内容，每个元素是一行，打印出来则每行作为一个列表
+
+reader = csv.reader(fp)
+
+读取后可以遍历读取的内容，每个元素是一行，打印出来则每行作为一个列表
+
+reader = csv.reader(fp)
+
+写入
+
+写入的时候也是每次写入一行，以列表的形式
+
+fp = open(path, 'a', encoding='utf-8', newline='')  # 写的时候不换行
+# csv模块
+writer = csv.writer(fp)
+writer.writerow(['zhangsan', 'a22222', '17', 'china'])
+fp.close()
+
+writer = csv.writer(fp)
+
+写入
+
+写入的时候也是每次写入一行，以列表的形式
+
+写入的时候也是每次写入一行，以列表的形式
+
+fp = open(path, 'a', encoding='utf-8', newline='')  # 写的时候不换行
+# csv模块
+writer = csv.writer(fp)
+writer.writerow(['zhangsan', 'a22222', '17', 'china'])
+fp.close()
+
+writer = csv.writer(fp)
+
+writer = csv.writer(fp)
+

@@ -1,0 +1,219 @@
+解决问题：interproscan 软件 在Linux中配置（个人经验，仅供参考~）
+
+提示：安装的版本是interproscan-5.55-88.0-64-bit
+
+
+一、参考文档
+
+https://interproscan-docs.readthedocs.io/en/latest/
+
+https://github.com/ebi-pf-team/interproscan
+
+
+二、需要软件
+
+
+Software requirements:
+
+64-bit Linux
+
+64-bit Linux
+
+Perl 5 (default on most Linux distributions)
+
+Perl 5 (default on most Linux distributions)
+
+Python 3 List item(InterProScan 5.30-69.0 onwards)
+
+Python 3 List item(InterProScan 5.30-69.0 onwards)
+
+Java JDK/JRE version 11 (InterProScan 5.37-76.0 onwards)
+
+Java JDK/JRE version 11 (InterProScan 5.37-76.0 onwards)
+
+Environment variables set $JAVA_HOME
+
+should point to the location of the JVM
+
+PATH
+
+Environment variables set $JAVA_HOME
+
+should point to the location of the JVM
+
+PATH
+
+1.检验perl安装版本：
+
+perl -version
+
+2.检验python版本：
+
+python
+
+quit() 退出python环境
+
+3.检验java 版本
+
+java -version
+
+配置Java 环境
+
+1：下载jdk包：本章使用的为后缀为tar.gz的文件（不需要安装），jdk-11.0.13_linux-x64_bin.tar.gz
+
+官网注册下载即可，版本要和linux 版本匹配！！！（因为有很多版本）
+
+2：将压缩包上传至服务器安装目录下
+
+3：解压
+
+tar -zxvf 11.0.13_linux-x64_bin.tar.gz
+
+3: 解压生成jdk-11.0.13 文件夹，将文件夹目录路径添加到 .proflie  文件中
+
+JAVA_HOME=/home/user/java/jdk-11.0.13
+PATH=$JAVA_HOME/bin:$PATH
+CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export JAVA_HOME
+export PATH
+export CLASSPATH
+
+4: 运行 source ./.profile
+
+5: 运行 java -version 看是否生效。若出现jdk版本号，则安装并配置环境变量成功
+
+
+三、下载安装
+
+
+1.下载压缩包
+
+代码如下（示例）：
+
+mkdir my_interproscan
+cd my_interproscan
+wget https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/5.55-88.0/interproscan-5.55-88.0-64-bit.tar.gz
+wget https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/5.55-88.0/interproscan-5.55-88.0-64-bit.tar.gz.md5
+
+# checksum 是为了验证文件下载的完整性，interproscan 比较大，验证是为了减少后续软件缺省的麻烦:
+md5sum -c interproscan-5.55-88.0-64-bit.tar.gz.md5
+# Must return *interproscan-5.55-88.0-64-bit.tar.gz: OK*
+# 如果 failed 则需要重新下载.
+
+
+2.解压
+
+tar -pxvzf interproscan-5.55-88.0-*-bit.tar.gz
+
+# where:
+#     p = preserve the file permissions
+#     x = extract files from an archive
+#     v = verbosely list the files processed
+#     z = filter the archive through gzip
+#     f = use archive file
+
+
+3. 和hmm model 建立索引
+
+python3 initial_setup.py
+#时间比较长
+
+
+4. pather model
+
+最新版不需要下载pather model！！！
+
+
+5. 运行
+
+./interproscan.sh
+
+
+四、问题解决
+
+
+1 软件缺失
+
+Deactivated analyses:
+        SignalP_GRAM_POSITIVE (X.X) : Analysis SignalP_GRAM_POSITIVE-X.X is deactivated, because the following parameters are not set in the interproscan.properties file: binary.signalp.4.0.path
+                  SignalP_EUK (X.X) : Analysis SignalP_EUK-X.X is deactivated, because the following parameters are not set in the interproscan.properties file: binary.signalp.4.0.path
+                      Phobius (X.XX) : Analysis Phobius-X.XX is deactivated, because the following parameters are not set in the interproscan.properties file: binary.phobius.pl.path.1.01
+                        TMHMM (X.Xc) : Analysis TMHMM-X.Xc is deactivated, because the following parameters are not set in the interproscan.properties file: binary.tmhmm.path, tmhmm.model.path
+        SignalP_GRAM_NEGATIVE (X.X) : Analysis SignalP_GRAM_NEGATIVE-X.X is deactivated, because the following parameters are not set in the interproscan.properties file: binary.signalp.4.0.path
+
+运行完后，在一系列参数说明的结尾，会提示有某些软件无法获得，这些软件需要自行前往官网注册并下载,并将下载软件添加到 interproscan 相应目录下
+
+signalp-4.1
+
+SignalP-4.1 download
+
+tmhmm-2.0c
+
+tmhmm-2.0c
+
+phobius1.01
+
+phobius1.01 download
+
+
+2 报错提醒
+
+signalp-4.1报错
+
+SignalP Error message: Can't locate FASTA.pm in @INC
+
+软件路径需要更改
+
+修改文件signalp
+
+#原文件路径
+BEGIN {
+ $ENV{SIGNALP} = '/usr/opt/www/pub/CBS/services/SignalP-4.1/signalp-4.1';
+}
+#修改为自己的路径
+BEGIN {
+ $ENV{SIGNALP} = '/home/usr/bacteria/app/interproscan2/interproscan-5.55-88.0/bin/signalp/4.1/';
+}
+
+hmm model报错
+
+pather.hmm bad file format…………
+
+可能是软件解压过程hmm model 不完全的问题导致的
+
+需要回到最初解压软件压缩包的步骤；修改 interproscan-5.55-88.0-64-bit.tar.gz权限
+
+chmod 777 interproscan-5.55-88.0-64-bit.tar.gz
+
+phobius1.01
+
+报错Could not read provided fasta sequence at bin/phobius/1.01/phobius.pl line 408
+Could not read provided fasta sequence at bin/phobius/1.01/phobius.pl line 408
+
+phobius 版本与Linux 操作系统版本（64位）不对应，一般而言 phobius 默认的是32 位的
+检查是否是32bit
+file bin/phobius/1.01/decodeanhmm |grep 32-bit
+
+如果是32 bit，则需要将decodeanhmm 删除，并将decodehmm.64bit 文件改名为decodeanhmm
+
+phobius1.01
+
+报错Could not read provided fasta sequence at bin/phobius/1.01/phobius.pl line 408
+
+Could not read provided fasta sequence at bin/phobius/1.01/phobius.pl line 408
+
+phobius 版本与Linux 操作系统版本（64位）不对应，一般而言 phobius 默认的是32 位的
+
+检查是否是32bit
+
+file bin/phobius/1.01/decodeanhmm |grep 32-bit
+
+如果是32 bit，则需要将decodeanhmm 删除，并将decodehmm.64bit 文件改名为decodeanhmm
+
+
+总结
+
+以上仅个人安装 interproscan 过程中踩过的坑及解决方案，希望能够为大家提供帮助~
+
+有错误的地方希望大家指出，彼此交流，共勉！
+

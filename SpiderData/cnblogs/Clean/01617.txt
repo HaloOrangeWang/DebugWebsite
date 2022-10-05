@@ -1,0 +1,33 @@
+本来是想着好好整理下杂乱无章的代码的，将不同的函数分类整理到不同的py文件中，在主函数中调用的，结果在主函数输入路径中出现了中文字符，就报错了：
+
+SyntaxError: Non-UTF-8 code starting with '\xba' in file D:\Python Projects\RidgeMorphology\src\ridgemorph.py on line 19, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+
+经过调试，看到的内容是：
+
+warning: Debugger speedups using cython not found. Run '"C:\Users\users\AppData\Local\Programs\Python\Python37\python.exe" "C:\Users\Jia\.p2\pool\plugins\org.python.pydev.core_6.4.3.201807050139\pysrc\setup_cython.py" build_ext --inplace' to build.
+pydev debugger: starting (pid: 6688)
+Traceback (most recent call last):
+  File "C:\Users\users\.p2\pool\plugins\org.python.pydev.core_6.4.3.201807050139\pysrc\pydevd.py", line 1715, in <module>
+    main()
+  File "C:\Users\users\.p2\pool\plugins\org.python.pydev.core_6.4.3.201807050139\pysrc\pydevd.py", line 1709, in main
+    globals = debugger.run(setup['file'], None, None, is_module)
+  File "C:\Users\users\.p2\pool\plugins\org.python.pydev.core_6.4.3.201807050139\pysrc\pydevd.py", line 1062, in run
+    return self._exec(is_module, entry_point_fn, module_name, file, globals, locals)
+  File "C:\Users\users\.p2\pool\plugins\org.python.pydev.core_6.4.3.201807050139\pysrc\pydevd.py", line 1069, in _exec
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+  File "C:\Users\users\.p2\pool\plugins\org.python.pydev.core_6.4.3.201807050139\pysrc\_pydev_imps\_pydev_execfile.py", line 20, in execfile
+    contents = stream.read()
+  File "C:\Users\users\AppData\Local\Programs\Python\Python37\lib\codecs.py", line 322, in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xba in position 515: invalid start byte
+
+但是我在定义文件的时候分明已经定义了编码：# -*- coding: utf-8 -*-
+
+上网搜索了很多，都没有搜到解决方法，后来突发奇想，是不是编译器的问题
+
+所以将编译器内的编码格式设定为 utf-8
+
+问题解决！
+
+作为python菜鸟，遇到问题总是从代码层面来找问题，编译器造成的错误也不容忽视。
+

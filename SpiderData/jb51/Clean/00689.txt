@@ -1,0 +1,35 @@
+可能很多人遇到过这个错误，当使用setup.py安装python2.7图像处理模块PIL时，python默认会寻找电脑上以安装的vs2008.如果你没有安装vs2008，会出现Unable to find vcvarsall.bat错误。
+
+那么如何解决这个错误呢？以下就是这个错误的解决办法。
+
+你可以通过设置VS90COMNTOOLS环境变量来引导python去识别一个新的vs.然后再执行setup.py继续完成安装。
+
+如果你安装了vs2010,在cmd中执行：
+
+SET VS90COMNTOOLS=%VS100COMNTOOLS%
+
+如果安装了vs2012,在cmd中执行：
+
+SET VS90COMNTOOLS=%VS110COMNTOOLS%
+
+如果你安装了vs2013,在cmd中执行：
+
+SET VS90COMNTOOLS=%VS120COMNTOOLS%
+
+如果你觉得VS太大，不想安装，也可以安装MinGW 来解决。
+
+1、在MinGW的安装目录下找到bin文件夹，找到mingw32-make.exe，复制一份更名为make.exe
+
+2、把MinGW的路径添加到环境变量path中，比如我把MinGW安装到D:\MinGW\中，就把D:\MinGW\bin添加到path中；
+
+3、在<python安装目录>\distutils增加文件distutils.cfg，在文件里输入：
+
+[build] 
+compiler=mingw32
+
+保存文件即可。
+
+总结
+
+以上就是python安装PIL模块时遇到Unable to find vcvarsall.bat错误的解决方法，希望能对大家的学习或者工作带来一定的帮助，如果有疑问大家可以留言交流。
+

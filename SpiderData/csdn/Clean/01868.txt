@@ -1,0 +1,69 @@
+
+背景
+
+测试小工具功能逻辑是从 elasticsearch 拉取数据进行展示，今天突然发现获取信息为空，服务框架Python Flask 部署在k8s上，由于没有打印错误日志信息，无法得知问题原因
+
+
+定位过程
+
+登陆容器尝试手动执行报错部分 python 脚本，检查是否有报错，代码如下：
+
+from elasticsearch import Elasticsearch
+
+es = Elasticsearch(
+    ["127.0.0.1:9200"], # 连接集群，以列表的形式存放各节点的IP地址
+    sniff_on_start=True,    # 连接前测试
+    sniff_on_connection_fail=True,  # 节点无响应时刷新节点
+    sniff_timeout=300    # 设置超时时间
+)
+query = {}
+query['bool'] = {}
+query['bool']['must'] = []
+res = es.search(index="index_name", query=query, sort= [{"create_time.keyword": "desc"}])
+
+执行报错，显示错误信息：
+ 
+ 提示在连接 elasticsearch 时，语法逻辑错误导致 elasticsearch 集群连接失败，按照报错提示尝试将代码修改为：
+
+es = Elasticsearch('http://127.0.0.1:9200/')
+
+修改连接方式后可以执行成功，但尝试执行 es.search 进行数据查询时依然报错：
+ elasticsearch.ApiError: ApiError(406, ‘Content-Type header [application/vnd.elasticsearch+json; compatible-with=8] is not supported’, ‘Content-Type header [application/vnd.elasticsearch+json; compatible-with=8] is not supported’)
+ 
+ 提示错误代码406，上网查询了一下错误信息，有很多文章提示可能由于版本不兼容原因导致报错，在elasticsearch查询了一下更新情况，并对比本地 elasticsearch 插件库版本和服务器版本信息发现
+
+本地版本： elasticsearch 6.3.1
+
+服务器版本：elasticsearch 8.0.0
+
+可以确定是由于版本升级问题导致脚本报错
+
+
+解决方案
+
+在脚本 requirements.txt 文件中，指定安装插件版本
+ elasticsearch==6.3.1
+
+重新发布服务后，pip list 检查安装插件版本信息，确认已安装 6.3.1版本 elasticsearch
+
+
+新的问题
+
+解决版本兼容问题后，可以成功连接 elasticsearch，但 es.search 查询语句依然报错
+ TypeError: search() got an unexpected keyword argument ‘query’
+ 
+ 阅读 es.search 函数定义源码后，将 query 部分写入body参数中，代码修改为:
+
+res = es.search(index="index_name", body={'query': query, 'from' : data_from, 'size' : size, 'sort' : [{"create_time.keyword": "desc"}]})
+
+修改后执行成功，问题解决
+
+
+一些思考
+
+在python requirements.txt 文件中需要定义第三方插件库版本，防止由于插件版本升级导致代码报错问题
+
+代码编写中，需要多添加日志打印，方便机型问题定位和调试
+
+虽然问题已经解决，但为什么 es.search 参数由 query 变成 body 后才可以执行成功，还需要继续查找原因
+

@@ -1,0 +1,30 @@
+Vue 中提示警告
+
+TypeError: handlers[i].call is not a function
+    at callHook (vue.esm.js?a026:2921)
+    at Object.insert (vue.esm.js?a026:4158)
+    at invokeInsertHook (vue.esm.js?a026:5960)
+    at Vue.patch [as __patch__] (vue.esm.js?a026:6179)
+    at Vue._update (vue.esm.js?a026:2660)
+    at Vue.updateComponent (vue.esm.js?a026:2788)
+    at Watcher.get (vue.esm.js?a026:3142)
+    at new Watcher (vue.esm.js?a026:3131)
+    at mountComponent (vue.esm.js?a026:2795)
+    at Vue.$mount (vue.esm.js?a026:8540)
+
+虽然提示报错了功能还是目前来说还是可以使用，但是给后面留下来了非常大的风险性
+
+那么首先你得知道这个提示是什么原因引起的~
+
+从报错的handlers[i].call 入手查找原因--这个错误是 调用相关的生命周期钩子函数引起来的错误
+
+生命周期钩子函数---那么有了方向我们去找相应报错页面
+
+查看你的页面相关 生命周期钩子函数 是否有 声明了未定义方法 或是 只声名了钩子函数：
+
+例如如图（生命周期钩子请自查看官网API，图文只举例其中一个）
+
+mounted: {}
+
+把钩子删除，或是把你定义的方法写完全了就可以了！！
+

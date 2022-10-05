@@ -1,0 +1,110 @@
+这是之前的一篇文章，由于有小伙伴也遇到同样的错误，就拿出来分享下吧
+
+[root@master ~]# salt 'minion.saltstack.com' state.sls init.pkg
+[ERROR   ] An un-handled exception was caught by salt's global exception handler:
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe8 in position 97: ordinal not in range(128)    ###python编码错误####
+
+Traceback (most recent call last):
+  File "/usr/bin/salt", line 10, in <module>
+    salt_main()
+  File "/usr/lib/python2.6/site-packages/salt/scripts.py", line 349, in salt_main
+    client.run()
+  File "/usr/lib/python2.6/site-packages/salt/cli/salt.py", line 210, in run
+    self._output_ret(ret_, out)
+  File "/usr/lib/python2.6/site-packages/salt/cli/salt.py", line 300, in _output_ret
+    salt.output.display_output(ret, out, self.config)
+  File "/usr/lib/python2.6/site-packages/salt/output/__init__.py", line 94, in display_output
+    display_data = try_printout(data, out, opts)
+  File "/usr/lib/python2.6/site-packages/salt/output/__init__.py", line 46, in try_printout
+    return get_printout(out, opts)(data).rstrip()
+  File "/usr/lib/python2.6/site-packages/salt/output/highstate.py", line 84, in output
+    return _format_host(host, hostdata)[0]
+  File "/usr/lib/python2.6/site-packages/salt/output/highstate.py", line 112, in _format_host
+    .format(hcolor, err, colors)))
+
+检查客户端版本问题，然并卵。
+
+[root@minion ~]# salt-minion  --versions-report
+
+Salt: 2015.5.10
+
+Python: 2.6.6 (r266:84292, Aug 18 2016, 15:13:37)
+
+Jinja2: 2.2.1
+
+M2Crypto: 0.20.2
+
+msgpack-python: 0.4.6
+
+msgpack-pure: Not Installed
+
+pycrypto: 2.0.1
+
+libnacl: Not Installed
+
+PyYAML: 3.10
+
+ioflo: Not Installed
+
+PyZMQ: 14.3.1
+
+RAET: Not Installed
+
+ZMQ: 3.2.5
+
+Mako: Not Installed
+
+Tornado: Not Installed
+
+timelib: Not Installed
+
+dateutil: Not Installed
+
+在网上寻找答案时发现有人和我有一样的报错，下面是链接：
+
+http://nginxs.blog.51cto.com/4676810/1371072
+
+但是我和他的出错原因并不一样，
+
+[root@master init]# pwd
+/etc/salt/states/init
+
+[root@master init]# vim pkg.sls 
+pkg.init:#起一个名字而已
+  pkg.installed:
+    - names:
+      - lrzsz
+      - mtr
+      - nmap
+
+看到没有，我在pkg.sls里加入了中文字符了。所以会出现###python编码错误####
+
+解决这个问题可以设置默认的编码。python 2.x的默认编码是ascii，如果改为utf-8，就可以了
+
+报错及处理
+    错误一 sls放置路径不对
+    [root@master states]# salt 'minion.saltstack.com' state.highstate
+    minion.saltstack.com:
+        Data failed to compile:
+    ----------
+        No matching sls found for 'php.php_fastcgi' in env 'base'
+    ----------
+        No matching sls found for 'init.pkg' in env 'prod'
+    错误二 出现下面这个错误是说该对其的没有对齐。
+    ParserError: while parsing a block mapping
+      in "<unicode string>", line 4, column 3:
+          file.managed:
+          ^
+    expected <block end>, but found '<block sequence start>'
+      in "<unicode string>", line 12, column 4:
+           - unless: test -d /usr/local/php ... 
+           ^
+  
+ 
+ 错误三：这个地方我用了一晚上好几个小时，包括网上也找了答案，很少有这样的错误，有一个，不过是英文的，而且错误地方不一样，他是简单的缩进不对，最后我把filemange和cmd的内容分别注释，发现是filemanaged的错误，但是还是不知道哪里出粗了，最后复制了zabbix的filemange文件，然后由手敲了-name和-source，可以了！应该是当时有中文字符或者其他原因识别salt不出来把。
+    [root@master states]#  salt 'minion.saltstack.com' state.highstate test=true
+    minion.saltstack.com:
+        Data failed to compile:
+    ----------
+        Too many functions declared in state 'file' in SLS 'php.php_fastcgi'
+

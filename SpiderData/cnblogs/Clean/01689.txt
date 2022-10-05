@@ -1,0 +1,170 @@
+chenhuimingdeMacBook-Pro:groceryList Mch$
+
+sudo pip3 install beautifulsoup4
+
+The directory '/Users/Mch/Library/Caches/pip/http' or its parent directory is not owned by the current user and the cache has been disabled. Please check the permissions and owner of that directory. If executing pip with sudo, you may want sudo's -H flag.
+The directory '/Users/Mch/Library/Caches/pip' or its parent directory is not owned by the current user and caching wheels has been disabled. check the permissions and owner of that directory. If executing pip with sudo, you may want sudo's -H flag.
+Collecting beautifulsoup4
+  Could not fetch URL https://pypi.python.org/simple/beautifulsoup4/: There was a problem confirming the ssl certificate: [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:590) - skipping
+  Could not find a version that satisfies the requirement beautifulsoup4 (from versions: )
+No matching distribution found for beautifulsoup4
+
+Solution:
+
+* reinstall python？
+
+brew reinstall python
+
+　　
+
+* install pip3
+
+brew install pip3
+
+　　
+
+Error: No available formula with the name "pip3"
+==> Searching for a previously deleted formula (in the last month)...
+Error: No previously deleted formula found.
+==> Searching for similarly named formulae...
+Error: No similarly named formulae found.
+==> Searching taps...
+==> Searching taps on GitHub...
+Warning: Error searching on GitHub: GitHub
+The GitHub credentials in the macOS keychain may be invalid.
+Clear them with:
+  printf "protocol=https\nhost=github.com\n" | git credential-osxkeychain erase
+Or create a personal access token:
+  https://github.com/settings/tokens/new?scopes=gist,public_repo&description=Homebrew
+and then set the token as: export HOMEBREW_GITHUB_API_TOKEN="your_new_token"
+
+Error: No formulae found in taps.
+
+* Clear The GitHub credentials in the macOS keychain
+
+printf "protocol=https\nhost=github.com\n" | git credential-osxkeychain erase
+
+　　
+
+* create a personal access token
+
+https://github.com/settings/tokens/new?scopes=gist,public_repo&description=Homebrew
+
+Generate token
+
+* Click Button "Generate token"
+
+https://github.com/settings/tokens
+
+把这个40位的token粘贴出来
+
+* emacs ~/.bash_profile
+
+echo 'export HOMEBREW_GITHUB_API_TOKEN="your_token"' >> ~/.bash_profile
+. !$
+
+　　
+
+* 再试安装beautifulsoup4
+
+pip3 install beautifulsoup4
+
+　　
+
+Collecting beautifulsoup4
+  Downloading https://files.pythonhosted.org/packages/fe/62/720094d06cb5a92cd4b3aa3a7c678c0bb157526a95c4025d15316d594c4b/beautifulsoup4-4.6.1-py3-none-any.whl (89kB)
+    100% |████████████████████████████████| 92kB 180kB/s
+Installing collected packages: beautifulsoup4
+Successfully installed beautifulsoup4-4.6.1
+
+* upgrade pip
+
+sudo curl https://bootstrap.pypa.io/get-pip.py | python3
+
+　　
+
+Could not install packages due to an EnvironmentError: [Errno 13] Permission denied: '/usr/local/bin/pip'
+
+Consider using the `--user` option or check the permissions.
+
+sudo chown -hR `whoami`:staff /usr/local/bin/
+
+output:　　
+
+　　
+
+* 在引用bs4 “frombs4 import BeautifulSoup”时还会报错“ModuleNotFoundError: Nomodule named 'bs4'.” 未找到名为bs4的模块，这时需要在Pycharm上安装bs4模块来解决
+
+按Cmd(win) + , (windows图标键 和 逗号 一起按)或者点 Pycharm => Preferences
+
+windows下 File => settings
+
+* 点击 右边框 左下角 + install
+
+🔍bs  再点击 "Install Package"
+
+这行代码不报错了
+
+from bs4 import BeautifulSoup
+
+　　
+
+* 创建python文件
+
+#-*- coding: UTF-8 -*-
+#!/usr/local/bin/python3
+
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+
+html = urlopen("http://pythonscraping.com/pages/page1.html")
+bsObj = BeautifulSoup(html.read())
+print(bsObj.h1)
+
+　　Run:
+
+　　
+
+* 这里有一个警告⚠️第8行出错
+
+根据提示
+
+找到这个构造函数在文件/Users/Mch/PycharmProjects/BeautifulSoup/venv/lib/python3.7/site-packages/bs4/__init__.py
+
+def __init__(self, markup="", features=None, builder=None,
+                 parse_only=None, from_encoding=None, exclude_encodings=None,
+                 **kwargs):
+
+　　
+
+因此在第8行添加参数 'html.parser'
+
+bsObj = BeautifulSoup(html.read(), 'html.parser')
+
+　再运行：
+
+/Users/Mch/PycharmProjects/BeautifulSoup/venv/bin/python /Users/Mch/PycharmProjects/BeautifulSoup/index.py
+<h1>An Interesting Title</h1>
+
+Process finished with exit code 0
+
+warning没有了
+
+* try ... except... else
+
+　　
+
+* 可靠的网络连接
+
+　　
+
+Run:
+
+python3 ./index.py
+
+　　<h1>An Interesting Title</h1>
+
+* python库下载
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/
+

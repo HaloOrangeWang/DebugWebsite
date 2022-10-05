@@ -1,0 +1,68 @@
+报错类型：  error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+...................................
+
+warning: no previously-included files matching '*.misc' found under directory 'src/twisted'
+    warning: no previously-included files matching '*.bugfix' found under directory 'src/twisted'
+    warning: no previously-included files matching '*.doc' found under directory 'src/twisted'
+    warning: no previously-included files matching '*.feature' found under directory 'src/twisted'
+    warning: no previously-included files matching '*.removal' found under directory 'src/twisted'
+    warning: no previously-included files matching 'NEWS' found under directory 'src/twisted'
+    warning: no previously-included files matching 'README' found under directory 'src/twisted'
+    warning: no previously-included files matching 'newsfragments' found under directory 'src/twisted'
+    warning: no previously-included files found matching 'src/twisted/topfiles/CREDITS'
+    warning: no previously-included files found matching 'src/twisted/topfiles/ChangeLog.Old'
+    warning: no previously-included files found matching 'pyproject.toml'
+    warning: no previously-included files found matching 'codecov.yml'
+    warning: no previously-included files found matching 'appveyor.yml'
+    warning: no previously-included files found matching '.circleci'
+    warning: no previously-included files matching '*' found under directory '.circleci'
+    no previously-included directories found matching 'bin'
+    no previously-included directories found matching 'admin'
+    no previously-included directories found matching '.travis'
+    no previously-included directories found matching '.github'
+    warning: no previously-included files found matching 'docs/historic/2003'
+    warning: no previously-included files matching '*' found under directory 'docs/historic/2003'
+    writing manifest file 'src/Twisted.egg-info/SOURCES.txt'
+    copying src/twisted/python/twisted-completion.zsh -> build/lib.linux-x86_64-3.6/twisted/python
+    creating build/lib.linux-x86_64-3.6/twisted/python/_pydoctortemplates
+    copying src/twisted/python/_pydoctortemplates/common.html -> build/lib.linux-x86_64-3.6/twisted/python/_pydoctortemplates
+    copying src/twisted/python/_pydoctortemplates/index.html -> build/lib.linux-x86_64-3.6/twisted/python/_pydoctortemplates
+    copying src/twisted/python/_pydoctortemplates/summary.html -> build/lib.linux-x86_64-3.6/twisted/python/_pydoctortemplates
+    copying src/twisted/test/cert.pem.no_trailing_newline -> build/lib.linux-x86_64-3.6/twisted/test
+    copying src/twisted/test/key.pem.no_trailing_newline -> build/lib.linux-x86_64-3.6/twisted/test
+    copying src/twisted/test/server.pem -> build/lib.linux-x86_64-3.6/twisted/test
+    copying src/twisted/mail/test/rfc822.message -> build/lib.linux-x86_64-3.6/twisted/mail/test
+    copying src/twisted/python/test/_deprecatetests.py.3only -> build/lib.linux-x86_64-3.6/twisted/python/test
+    copying src/twisted/words/im/instancemessenger.glade -> build/lib.linux-x86_64-3.6/twisted/words/im
+    copying src/twisted/words/xish/xpathparser.g -> build/lib.linux-x86_64-3.6/twisted/words/xish
+    copying src/twisted/internet/iocpreactor/notes.txt -> build/lib.linux-x86_64-3.6/twisted/internet/iocpreactor
+    copying src/twisted/internet/test/_awaittests.py.3only -> build/lib.linux-x86_64-3.6/twisted/internet/test
+    copying src/twisted/internet/test/_yieldfromtests.py.3only -> build/lib.linux-x86_64-3.6/twisted/internet/test
+    creating build/lib.linux-x86_64-3.6/twisted/internet/test/fake_CAs
+    copying src/twisted/internet/test/fake_CAs/chain.pem -> build/lib.linux-x86_64-3.6/twisted/internet/test/fake_CAs
+    copying src/twisted/internet/test/fake_CAs/not-a-certificate -> build/lib.linux-x86_64-3.6/twisted/internet/test/fake_CAs
+    copying src/twisted/internet/test/fake_CAs/thing1.pem -> build/lib.linux-x86_64-3.6/twisted/internet/test/fake_CAs
+    copying src/twisted/internet/test/fake_CAs/thing2-duplicate.pem -> build/lib.linux-x86_64-3.6/twisted/internet/test/fake_CAs
+    copying src/twisted/internet/test/fake_CAs/thing2.pem -> build/lib.linux-x86_64-3.6/twisted/internet/test/fake_CAs
+    running build_ext
+    building 'twisted.test.raiser' extension
+    creating build/temp.linux-x86_64-3.6
+    creating build/temp.linux-x86_64-3.6/src
+    creating build/temp.linux-x86_64-3.6/src/twisted
+    creating build/temp.linux-x86_64-3.6/src/twisted/test
+    x86_64-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -I/usr/include/python3.6m -c src/twisted/test/raiser.c -o build/temp.linux-x86_64-3.6/src/twisted/test/raiser.o
+    src/twisted/test/raiser.c:4:20: fatal error: Python.h: 没有那个文件或目录
+    compilation terminated.
+    error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+    
+    ----------------------------------------
+Command "/usr/bin/python3.6 -u -c "import setuptools, tokenize;__file__='/tmp/pip-install-e6p918pk/twisted/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /tmp/pip-record-jo3m5dbj/install-record.txt --single-version-externally-managed --compile" failed with error code 1 in /tmp/pip-install-e6p918pk/twisted/
+
+我尝试了博客上的好多方法都失败了，最后总结了两个，尝试了一下成功了
+
+1.#sudo apt-get install python3.6-gdbm
+
+2.#sudo apt-get install python3.6-dev
+
+因为ubuntu16.04自带Python2.7和Python3.5，打开channels官网会有最新版的channels==2.1.7，Python2.7支持channels==1.8，所以在用Python2.7时会有好多包函数无法导入，于是下载了Python3.6,，问题解决。
+

@@ -1,0 +1,30 @@
+ajaxSubmit提交js报错，需要在页面单独引入jquery.form.js
+
+<scripttype="text/JavaScript" src="${pageContext.request.contextPath}/static/jquery-validation/1.11.1/lib/jquery.form.js"></script>
+
+那么，可以通过ajax方式提交form表单。
+
+var ajax_option = {
+                 type: 'post', 
+                 url: '${ctx}/basic/smQuestion/saveToQAndO', 
+                 data: {},
+                 success: function(data) {
+                     closeLoading();
+                     top.frames["${frameName}"].refreshList();
+                     if(data.success){
+                         jBox.tip("提交成功！");
+                         top.$.jBox.close();
+                     }else{
+                         jBox.tip("提交失败！");
+                     }
+                 }
+             }
+
+提交表单后，需要关闭当前弹出页面，刷新父页面。
+
+需要在父页面写一个刷新方法
+
+function refreshList(){
+             window.location.href = "${ctx}/config/smSymQues/form?sym.id=${smSymQues.sym.id}&tabPageId=mainFrame";
+         }
+

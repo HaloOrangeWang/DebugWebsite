@@ -1,0 +1,92 @@
+问题：
+
+编码的问题导致。在pymysql.connect()创建连接时，参数charset="utf8",而非"utf-8".
+
+2、latin-1 codec can't encode
+
+characters
+
+编码的问题导致。数据库的编码和数据源的编码不一致，并且包含了不能处理的字符。
+
+出现这种报错时，一般是在open一个文件后，文件的编码异常。如果仅为若干行有异常，则可在open()命令中添加参数errors="ignore"，以删除编码有问题的行；或errors="replace",用特殊字符进行替换。个人建议用前者。
+
+3、Python 中pandas读取文件Initializing from file failed
+
+问题：
+
+当你用pandas读取文件报这种错误时，一般是因为你的文件名或文件路径中带有中文，例如：
+
+res = pd.read_csv('我的文件.csv')
+
+这种情况就会报错，只需要这样更改就可以：
+
+f = open('我的文件.csv')
+
+res = pd.read_csv(f)
+
+问题解决。
+
+4、作图像分类时，通过cv2获取图像数据：
+
+img=cv2.imread('图像路径')，得到的img为NONE。
+
+问题：主要由于文件路径中带有中文字符。全使用英文字符时即正常。
+
+5、使用pickle将对象存储到文件中时出现 TypeError: write() argument must be
+
+str, not bytes
+
+解释：pickle默认操作二进制文件，使用文件函数的时候需要注意，否则出现 TypeError
+
+解决方法：open函数将参数'w'更改为 'wb' 可以正常运行。
+
+拓展：w是以文本方式打开文件，wb是二进制方式打开文件。
+
+6.dataframe操作中，通过a[0][0]=的方式直接给datarame中的元素赋值，发生如下报错：
+
+A value is trying to be set on a copy of a slice from a
+
+DataFrame
+
+这种情况，当数据量较小时不会报错，一旦数据量变大，则会发生错误。
+
+解决方法：解决方法就是，不要直接将一个dataframe中的元素赋给另一个，而是将需要的数据重新生成一个list,再通过df['x']
+
+= list的方式，将该列的数据进行替换。亲测不会出现报错。
+
+7.安装tensorflow,import 的时候报错：
+
+FutureWarning: Conversion
+
+of the second argument of issubdtype from `float` to `np.floating`
+
+is
+
+解决方法：
+
+对h5py进行更新升级
+
+分享：
+
+喜欢
+
+0
+
+赠金笔
+
+加载中，请稍候......
+
+评论加载中，请稍候...
+
+发评论
+
+登录名： 密码： 找回密码 注册记住登录状态
+
+昵   称：
+
+评论并转载此博文
+
+发评论
+
+以上网友发言只代表其个人观点，不代表新浪网的观点或立场。
+

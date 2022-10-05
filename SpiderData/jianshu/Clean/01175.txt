@@ -1,0 +1,41 @@
+网络上多是说这个原因是因为单引号导致。
+
+而在我的项目中却无论我怎么改，就是报错：
+
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 2 column 5 (char 6)
+
+后来，我去json对应找到第2行，第5列的代码。
+
+发现，我这里写了
+
+{
+    // 数据库配置
+    "DB": {
+        "DatabaseType": "mysql",
+        "API": "pymysql",
+        "Username": "root",
+        "Password": "",
+        "IP": "",
+        "Port": "",
+        "DatabaseName": ""
+    }
+}
+
+删除掉// 数据库配置，报错就消失了。
+
+{
+    "DB": {
+        "DatabaseType": "mysql",
+        "API": "pymysql",
+        "Username": "root",
+        "Password": "",
+        "IP": "",
+        "Port": "",
+        "DatabaseName": ""
+    }
+}
+
+后来查看资料发现，json是不支持注释。
+
+很容易忘记一件非常简单的知识点。
+

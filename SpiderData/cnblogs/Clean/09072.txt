@@ -1,0 +1,44 @@
+新版本pymysql模块问题导致的错误，其他原因导致请绕道
+
+Python代码如下：
+
+运行报错： TypeError: __init__() takes from 1 to 5 positional arguments but 6 were given
+
+#!/usr/bin/python3
+ 
+import pymysql
+
+sql = f"select * from serverlist where ip='192.168.10.36'"
+# 打开数据库连接
+db = pymysql.connect("192.168.10.10", "root", "password", "db_name", 3306 )
+
+两种方法：
+
+可能是新版本问题，我下面这1.0.1版本就有问题
+
+检查pymysql版本：
+
+pip3 show pymysql
+
+方法一：
+
+可安装旧版本解决报错：
+
+先卸载当前版本
+
+pip3 uninstall pymysql
+
+安装指定0.10.1版本
+
+pip3 install pymysql==0.10.1
+
+再次运行脚本，就不再报错了
+
+方法二：
+
+或者把连接语句做下修改，键值匹配
+
+db = pymysql.connect(host="192.168.10.10", user="root", passwd="password", db="db_name", port=3306 )
+
+再次运行脚本
+

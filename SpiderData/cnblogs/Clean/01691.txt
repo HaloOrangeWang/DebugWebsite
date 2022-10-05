@@ -1,0 +1,41 @@
+之前在本地安装过kubernetes的python库，安装下来一切正常，但今天换到测试机器上去部署，确保错了，具体步骤如下。
+
+第一步，克隆代码，执行以下命令：
+
+# git clone --recursive https://github.com/kubernetes-client/python.git
+
+（因为测试机无法连到github，这一步是通过我本地下载后scp到测试机上的）
+
+第二步，进入python文件夹，执行以下命令安装：
+   # pip install setup.py
+
+安装报错：
+
+报错内容看不出具体原因，难道是测试机上python版本问题，查到该机器上python版本是2.7，打开setup.py文件，是支持python2.7及以上版本的，
+
+再查看我本地，也是python2.7，看来和python版本无关。继续找原因，看到报错里提到了setuptools，难道是setuptools版本问题，
+
+于是更新了setuptools版本：
+
+# pip install --upgrade setuptools
+
+再重新执行以下命令：
+
+# pip install setup.py
+
+安装成功。
+
+后话：
+
+尽管kubernetes的python库安装成功了，但执行一个引用kubernetes的脚本时，又报错了：
+
+脚本运行到from kubernetes import client，watch时，报错没有该library，但事实上library已经存在了，难道又需要更新，
+
+试着更新了一下：
+
+# pip install --upgrade kubernetes
+
+更新完毕，再去执行上面的脚本，问题解决了。
+
+本文仅记录自己平时工作中遇到的问题及解决办法，没有经过进一步提炼整理，可能有不科学的地方，仅供参考。
+

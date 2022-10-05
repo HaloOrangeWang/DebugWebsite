@@ -1,0 +1,31 @@
+NO.1：
+
+You have 15 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.
+Run 'python manage.py migrate' to apply them.
+
+解决：执行python manage.py migrate  同步更改数据库表或字段
+
+NO.2:
+
+安装数据库 ModuleNotFoundError: No module named 'ConfigParser'
+
+解决：因为python2和python3的ConfigParser有大小写的区别，修改后就没有问题了。
+
+NO.3:
+
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module. Did you install mysqlclient?
+
+解决：django默认数据库sqlite3切换到mysql的错误
+
+1、pip3 install pymysql
+
+2、在项目文件夹中__init__.py增加以下内容：
+
+import pymysql
+pymysql.install_as_MySQLdb()
+3、重新加载
+
+python3 manage.py makemigrations
+
+python3 manage.py migrate
+

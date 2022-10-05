@@ -1,0 +1,28 @@
+IntelliJIdea2019.3打开原项目报mysql版本报错：
+
+Error opening zip file or JAR manifest missing : /C:/Users/flycat/.IntelliJIdea2019.3/config/plugins/mysql-explain/lib/mysql-explain-agent-jar-with-dependencies.jar
+
+查看MYSQL版本，原来是5.1.40，直接调整为8.0.19解决方法：
+<mysql.version>8.0.19</mysql.version>
+
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>${mysql.version}</version>
+    <scope>runtime</scope>
+</dependency>
+
+依然报错，进一步分析，MYSQL8的连接串是
+com.mysql.cj.jdbc.Driver，
+V5的是com.mysql.jdbc.Driver
+且需要在URL中加入
+
+&useSSL=false&&serverTimezone=CST
+
+type: com.alibaba.druid.pool.DruidDataSource
+url: jdbc:mysql://localhost:3306/smartfactory?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&&serverTimezone=CST
+username: root
+password: 
+connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000;password=${spring.datasource.password}
+driverClassName: com.mysql.cj.jdbc.Driver
+

@@ -1,0 +1,16 @@
+执行命令 python manage.py makemigrations时抛出以下错误
+
+问题原因：MySQLdb只支持Python2.*，还不支持3.* ，但是在settings中配置的数据库为MySql，所以执行时会报错
+
+解决方法1：若想继续使用MySql数据库，则可用PyMySQL代替，安装命令为 pip install PyMySQL
+
+在settings.py同级目录中的_init_.py文件中加入代码(只需更改此次，所创建的应用不需再设置，如果只在应用下的_init_.py文件中更改，则只适用该应用)
+
+import pymysql
+
+pymysql.install_as_MySQLdb()
+
+再次执行：
+
+解决方法2：安装mysqlclient,可用命令pip install mysqlclient
+

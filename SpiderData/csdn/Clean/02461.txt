@@ -1,0 +1,42 @@
+环境：python3.8.5 + lxml4.6.3
+
+编辑器：PyCharm
+
+1. 首先使用解释器环境导入模块看看：from lxml import etree
+
+可以正常读取HTML代码，而且还可以自动匹配提示，如下：
+
+还有一种导入方式：
+
+同样可以正常解析代码，而且自动匹配提示
+
+2. 虚拟环境导入模块：from lxml import etree
+
+有一个报错信息，我万万没想到的是程序居然可以运行。（不过没有自动匹配提示）
+
+错误提示是:Cannot find reference 'etree' in '__init__.py' ，于是我想是不是虚拟环境中lxml库缺少某种依赖或者__init__.py文件中需要定义etree什么什么的。于是对比了解释器和虚拟环境中的lxml文件夹及__init__.py文件，没有任何区别，那百度吧
+
+首先声明：这不是一个程序错误！ 这不是一个程序错误！ 这不是一个程序错误！
+但是本着一个科学严谨（强迫症本强）的态度，必须要消除这个警告！！！
+这只是Pycharm 这个IDE的bug，不影响程序的运行。如果将程序在Sublime 或者spyder中运行就不会出现这种错误。
+
+好吧就这样，虚拟环境导入模块：from lxml import etree也没问题可以运行, 这是PyCharm的bug;（我试了在VS Code上可以运行）
+
+那在虚拟环境中以第二种方式导入模块呢？
+
+没毛病！还是可以正常运行
+
+我的环境是：python3.8.5 + lxml4.6.3，根据以上示例那么网上有人说的在python3.5之后的 lxml 模块中不能再直接引入etree模块是一个错误的说法（这只是Pycharm 这个IDE的bug？）
+
+在我的电脑上2种环境，2种导入方式都是木有问题的，老版本多少都有可能出点问题
+
+模块导入方式：
+
+1. from lxml import etree
+
+2. from lxml import html
+
+etree = html.etree
+
+有问题欢迎大家在下方评论留言！
+

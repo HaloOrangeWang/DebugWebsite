@@ -1,0 +1,66 @@
+登陆Login界面时候报错
+
+Internal Server Error: /login/
+Traceback (most recent call last):
+  File "/usr/local/python3/lib/python3.6/site-packages/django/core/handlers/exception.py", line 35, in inner
+    response = get_response(request)
+  File "/usr/local/python3/lib/python3.6/site-packages/django/core/handlers/base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/usr/local/python3/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/python/project/MyCrazyeyes/web/views.py", line 45, in login
+    return render(request, 'login.html')
+  File "/usr/local/python3/lib/python3.6/site-packages/django/shortcuts.py", line 36, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/usr/local/python3/lib/python3.6/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/usr/local/python3/lib/python3.6/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: login.html
+[03/Feb/2018 07:39:49] "GET /login/?next=/ HTTP/1.1" 500 76432
+
+在setting.py下DIRS如下所示
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+在setting.py重新设置下DIRS如下所示,则问题解决
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+#        'DIRS': [],
+        'DIRS': ["%s/%s" %(BASE_DIR,'templates'),],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+另外需要确保templates目录下确实是有login.html文件
+
+[python@qinhan templates]$ pwd
+/home/python/project/MyCrazyeyes/templates
+[python@qinhan templates]$ ls
+login.html
+[python@qinhan templates]$
+

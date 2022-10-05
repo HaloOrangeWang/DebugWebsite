@@ -1,0 +1,30 @@
+今天在玩Django,碰到了一个很坑爹的问题，但是意外的解决了，汗。
+
+用Django 搭建一个网站后台时，想用MySQL做数据库，但是 执行 python manage.py migrate(1.6版以下为python manage.py syncdb)却报错。起初错误提示：
+
+执行python manage.py syncdb时，报错：
+
+Error loading MySQLdb module: No module named 'MySQLdb'。
+
+看了网友很多的解决方案，有让用easy_install 安装的，有让手动安装配置MySQL配置文件的，等等试了很多竟都没有效果。
+
+突然想到是不是python 3.0以上是否支持MySQLdb，果然，看到了pymysql替代MySQLdb的解决办法。
+
+使用pymysql代替MySQLdb，因为两者的用法完全一致，步骤：
+
+安装pymsql
+
+$ pip install pymysql
+
+安装完毕，打开init.py,添加代码：
+
+$ import pymysql
+
+$ pymysql.install_as_MySQLdb()
+
+重新执行
+
+$ python manage.py migrate(1.6版以下为python manage.py syncdb)
+
+这样，应该就好了。
+

@@ -1,0 +1,52 @@
+【问题描述】
+
+在编写好 python 爬虫程序，准备部署到云服务器上时，遇到一个问题。
+
+scrapyd-deploy 1.0  -p caigou
+
+执行上述部署的命令时，提示：
+
+'scrapyd-deploy' 不是内部或外部命令，也不是可运行的程序
+
+或批处理文件。
+
+【解决办法】
+
+找到 Python 的安装路径，进入 Scripts 文件夹。
+
+找到 Python 的安装路径，进入 Scripts 文件夹。
+
+创建两个文件，scrapy.bat 和 scrapyd-deploy.bat （新建 txt 文本文档，然后更改后缀名为 .bat）
+
+如图：
+
+创建两个文件，scrapy.bat 和 scrapyd-deploy.bat （新建 txt 文本文档，然后更改后缀名为 .bat）
+
+如图：
+
+3.编辑 scrapy.bat （右键 —> 编辑），添加以下内容，保存。（注：路径改成自己电脑的路径）
+
+4.同样，编辑 scrapyd-deploy.bat ，添加以下内容，保存。（注：路径改成自己电脑的路径）
+
+两个文件保存之后，重新运行部署指令，成功。
+
+两个文件保存之后，重新运行部署指令，成功。
+
+在这里可能会出现一些问题，就是有人的 Python 路径并非全英文，路径中会有空格、或者中文，可能会报错。
+这个问题解决方法也很简单，就是在带有空格 / 中文的路径两边打双引号（英文双引号）即可，比如：
+@echo off
+
+"C:\用户\Smart Crane"\Anaconda3\python\python.exe "C:\用户\Smart Crane"\Anaconda3\Scripts\scrapyd-deploy %*
+
+在这里可能会出现一些问题，就是有人的 Python 路径并非全英文，路径中会有空格、或者中文，可能会报错。
+
+这个问题解决方法也很简单，就是在带有空格 / 中文的路径两边打双引号（英文双引号）即可，比如：
+
+@echo off
+
+"C:\用户\Smart Crane"\Anaconda3\python\python.exe "C:\用户\Smart Crane"\Anaconda3\Scripts\scrapyd-deploy %*
+
+7.再次执行命令，成功
+
+参考文章：https://blog.csdn.net/wenxuhonghe/article/details/84453693
+

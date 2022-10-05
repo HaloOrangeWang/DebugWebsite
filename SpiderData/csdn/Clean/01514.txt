@@ -1,0 +1,41 @@
+
+python报错记录
+
+import minpack2
+
+from scipy.optimize import minpack2
+ https://www.cnpython.com/qa/54224
+
+Can’t pickle local object
+
+报错：Can’t pickle local object ‘main..full_extract’
+ 原因：多进程中调用了嵌套函数或者内嵌函数，pickle对传入对象的要求是不能是内部类，也不能是lambda函数
+ 解决办法：将内嵌函数使用@wraps装饰
+ 参考：https://www.cnblogs.com/dylanchu/p/11275817.html
+
+多进程日志print混乱
+
+原因：print是线程安全，print是自动添加换行的，可能这个添加换行的时候不是线程安全的
+ 解决办法：自己添加换行
+
+使用偏置函数
+
+import functools
+print = functools.partial(print, end='')
+
+但是这样的话，还需要你自己在每次行末尾添加换行符。
+
+还可以再自己直接重新定义一下 print() 函数解决上面的问题
+
+# 原先的print函数
+_print = print
+
+# 定义新的print函数
+def print(text):
+    '''
+    使输出有序进行，不出现多线程同一时间输出导致错乱的问题。
+    '''
+    _print(text + '\n', end='')
+
+参考：https://www.cnblogs.com/ercilan/p/14245761.html
+

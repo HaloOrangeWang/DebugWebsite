@@ -1,0 +1,24 @@
+错误如下：
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xaf in position 91: illegal multibyte sequence
+
+配置文件如下：
+
+python代码如下：
+
+from configparser import RawConfigParser
+basedir = os.path.abspath(os.path.dirname(__file__))
+cfgpath = os.path.join(basedir, 'config.ini')
+
+解决办法：
+
+cf.read(cfgpath,encoding='utf-8')
+
+修改之后，可以正常读取配置文件了
+
+mysql+mysqlconnector://XXXX:XXXX@10.2.1.92/autotest?charset=utf8
+
+参考文档：
+
+使用包configparser，出现UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 155: illegal mu
+

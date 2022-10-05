@@ -1,0 +1,77 @@
+　　公司项目中有主备CDN存在,由于阿里云以及腾讯云的预热功能不支持自动（一般是云函数），所以就根据云厂商给的脚本稍作更改，手动传入数据来进行预热。
+
+　　由于之前部署在centos7.7系统python2.7.5上，脚本可以正常运行，由于某些原因，机器要进行下线，导致必须迁移脚本。为了节省成本，决定复用线上环境的机器，结果在pip安装模块时，模块安装一直报错，最后经过新旧两台服务器对比解决了pip安装模块报错的问题。
+
+　　为了防止因为项目环境版本比较老，再次出现这个问题，这里做一个记录。
+
+
+1.机器信息
+
+主机名
+
+系统版本
+
+Pyhton版本
+
+Pip版本
+
+cn-gc-bastion
+
+Centos7.7
+
+2.7.5
+
+8.1.2
+
+cn-yuu-login02
+
+Centos7.8
+
+2.7.5
+
+20.3.4
+
+
+2.报错现象
+
+　　在新部署机器上使用python执行脚本,会告知没有安装oos2模块。
+
+　　使用pip安装oss2会有如下报错
+
+　　这时，不管怎么安装setuptools_rust都会显示没有这个模块。
+
+
+3.解决办法
+
+　　对比了2台机器的setuptools版本,发现新机器版本非常老，升级后就可以安装oss2模块了。
+
+　　cn-gc-bastion
+
+　　cn-yuu-login02
+
+　　接下来升级cn-yuu-login02的setuptools版本，结果发现版本报错
+
+　　需要将PIP版本也进行升级
+
+　　再次安装setuptools就可以了
+
+　　在安装oss2即可
+
+
+4.脚本执行
+
+　　安装oss2只是其中一个模块，在执行脚本的时候还是会报错，因为该刷新CDN的脚本中需要使用腾讯云和阿里云的SDK模块。
+
+　　以下还要安装3个模块。
+
+pip install qcloud_cos
+pip install tencentcloud-sdk-python
+pip install aliyun-python-sdk-cdn
+
+　　其中qcloud_cos要下载包安装,pip安装的包可能无法使用，并有如下报错。
+
+　　使用安装包安装解决问题(使用安装包的安装方式前，要卸载pip的qcloud_cos的安装)
+
+wget https://files.pythonhosted.org/packages/ec/ee/0f314f3e4d97c6b08193422e2436f5fc0af75523d2a7f29e587b73a2b65b/qcloud_cos-3.3.6.tar.gz
+python setup.py install
+

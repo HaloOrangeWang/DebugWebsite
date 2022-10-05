@@ -1,0 +1,22 @@
+File "PyInstaller/hooks/rthooks/pyi_rth__tkinter.py", line 20, in <module>
+FileNotFoundError: Tcl data directory "/var/folders/b4/81qkbbg1389dgqlzqxb0ldmh0000gn/T/_MEID0quL9/tcl" not found.
+[3585] Failed to execute script pyi_rth__tkinter
+
+解决办法：
+
+显示包的信息：pip show pyinstaller
+
+找到Python包的安装目录，然后找到文件PyInstaller/hooks/hook-_tkinter.py
+
+在文件中增加（具体行数找到 path_to_tcl = bins[0][1] 下面的if判断修改）
+
+and 'Python' not in path_to_tcl
+
+PyInstaller/hooks/hook-_tkinter.py
+154   def _find_tcl_tk(hook_api):
+       ···省略代码···
+187   # _tkinter depends on Tcl/Tk compiled as frameworks.
+188   path_to_tcl = bins[0][1]
+190   # if 'Library/Frameworks' in path_to_tcl: （修改成下面这句）
+191   if 'Library/Frameworks' in path_to_tcl and 'Python' not in path_to_tcl:
+

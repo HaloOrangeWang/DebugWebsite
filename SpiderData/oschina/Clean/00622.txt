@@ -1,0 +1,25 @@
+把系统的python版本从默认的2切换到3后，使用pip3安装依赖报错，如下：
+
+Traceback (most recent call last):
+  File "/usr/bin/pip3", line 9, in <module>
+    from pip import main
+ImportError: cannot import name 'main'
+
+解决办法：
+
+解决：pip文件在usr/bin目录下，cd进去，进行以下修改
+
+把下面的三行
+
+from pip import main
+if __name__ == '__main__':
+    sys.exit(main())
+
+换成下面的三行
+
+from pip import __main__
+if __name__ == '__main__':
+    sys.exit(__main__._main())
+
+然后问题就解决了。
+

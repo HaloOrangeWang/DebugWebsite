@@ -1,0 +1,38 @@
+前提是已经安装了openssl
+
+
+问题
+
+当我在python3虚拟环境中导入ssl模块时报错，报错如下：
+
+
+解决办法如下：
+
+1.首先进入Python-3.6.3目录，就是你解压后安装python3.6的目录文件。
+
+2. cd 到  Modules 目录里,找到Setup和Setup.dist文件，将下面几行注释去掉。
+
+Setup下更改
+
+Setup下更改
+
+vim Setup   （大概在51%的位置）
+
+vim Setup   （大概在51%的位置）
+
+Setup.dist下的更改
+
+Setup.dist下的更改
+
+vim Setup.dist  （大概在50%的位置）
+
+vim Setup.dist  （大概在50%的位置）
+
+3.编译安装
+
+4.删除旧的软连接，创建新的软连接（很重要）
+
+5、删除之前的虚拟环境，重新创建一个新的虚拟环境，导入ssl包就ok了
+
+若用到uwsgi，且需要import ssl，则需要把之前uwsgi卸载，重新编译安装
+

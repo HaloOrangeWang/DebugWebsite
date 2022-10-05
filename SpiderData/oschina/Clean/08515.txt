@@ -1,0 +1,23 @@
+写了个list,发现出不来，报错
+
+flutter: Another exception was thrown: RenderBox was not laid out: _RenderScrollSemantics#81b3a relayoutBoundary=up3 NEEDS-PAINT
+flutter: Another exception was thrown: 'package:flutter/src/rendering/shifted_box.dart': Failed assertion: line 314 pos 12: 'child.hasSize': is not true.
+flutter: Another exception was thrown: NoSuchMethodError: The method '<=' was called on null.
+flutter: Another exception was thrown: NoSuchMethodError: The getter 'visible' was called on null.
+
+搜了搜发现是Column或Row里面要加个Flexible来包裹里面的内容： https://github.com/flutter/flutter/issues/21628
+
+Column(
+    children: <Widget>[
+        Flexible(
+           child: ListView(
+              children: <Widget>[
+                 ListTitle(leading:Icon(Icons.code),title:Text('hahaha'))
+              ],
+           ),
+        )
+    ],
+)
+
+解决了，但不知道具体是为何🤦‍♀️
+

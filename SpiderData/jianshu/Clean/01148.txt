@@ -1,0 +1,22 @@
+报错信息：
+
+我这里直接删去这行代码就可以解决了，然后在网上查了一下这行代码是什么意思：
+
+解释如下：
+
+这个在unix类的操作系统才有意义。
+
+“”#!/usr/bin/python”是告诉操作系统执行这个脚本的时候，调用/usr/bin下的python解释器；
+
+“#!/usr/bin/env python”这种用法是为了防止操作系统用户没有将python装在默认的/usr/bin路径里。当系统看到这一行的时候，首先会到env设置里查找python的安装路径，再调用对应路径下的解释器程序完成操作。
+
+在windows中设置了环境变量后可以直接“hello.py”
+
+或者这样解释：
+
+加上#!/usr/bin/env python, 这个py就处于了可执行模式下, (当然是针对linux类的操作系统),  这个hint, 告诉操作系统要使用哪个python解释器来执行这个py. 在linux上执行一下命令 /usr/bin/env python ,就知道这行其实是call一下python解释器.  这种写法比#! /usr/bin/python要好, 后者是hard coding 了python的路径.
+
+参考文献：
+
+https://www.cnblogs.com/littleebeer/p/3352897.html
+

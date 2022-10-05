@@ -1,0 +1,24 @@
+在查找资料中发现出现这个原因是因为mysql 5.7 版本及以上版本会出现
+
+在使用group by函数时，有些字段不允许被合并，因此报错
+
+查阅资料发现：
+
+mysql 5.7版本默认的sql配置是:sql_mode="ONLY_FULL_GROUP_BY"
+
+查看sql_mode的语句如下
+
+select @@GLOBAL.sql_mode;
+
+解决方案：
+
+解决方案1：使用函数：ANY_VALUE()包含报错字段
+
+如
+
+select ANY_VALUE(字段) from 表 group by ...
+
+解决方案2：修改my.cnf文件，修改sql-mode后重启
+
+考虑到修改配置文件情况下影响可能有点大，于是我没有选择第二种方案
+

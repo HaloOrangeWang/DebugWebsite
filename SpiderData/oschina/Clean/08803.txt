@@ -1,0 +1,23 @@
+这是我的初始报错的代码：
+
+1 create procedure search_sc (student_no varchar(6))
+2     begin
+3         select sc.* 
+4         from sc
+5         where sno= student_no
+6     end;
+
+会报这个错误，“Error Code: 1064. You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'end' at line 6问题”
+
+解决后：
+
+delimiter //
+create procedure search_sc (student_no varchar(6))    
+    begin
+        select sc.* 
+        from sc
+        where sno= student_no;
+    end //
+
+原来是因为mysql解释器根据‘；’来结束读取命令执行命令，在多个‘；’号时，解释器不知到在哪一句结束读取命令执行命令，而delimiter的作用是，将sql结束读取命令并执行命令的标志，替换成delimiter后的标志（在本文是‘//’），这样只有当‘//’出现之后，mysql解释器才会执行这段语句。
+

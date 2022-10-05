@@ -1,0 +1,20 @@
+我在win10下安装好ananconda,创建好虚拟环境，但是在安装pytorch时下载速度特别慢，
+
+等了好长时间然后就报错了，cudatoolkit和pytorch都没有安装上，连接中断了。
+
+解决方法：更换清华的镜像源
+
+1.在命令行中输入（我没有添加环境变量，用的anaconda prompt）：conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+
+然后打开用户目录下的 “.condarc” 文件，将-defaults删除（只要有第一个地址就可以，后面三个是我尝试好几次遗留的没有删除）
+
+然后去pytorch官网，根据Python和CUDA选择对应的版本进行选择，得到命令行
+
+复制命令，将-c pytorch删掉，-c pytorch参数指定了conda获取pytorch的途径，在此指定为conda自带的pytorch仓库
+
+然后安装完成。
+
+测试是否已安装成功
+
+输入python,import torch 若不报错则安装成功，输入torch.cuda.is_avaiable(),若显示true,则可以使用gpu,false的话只能使用cpu
+

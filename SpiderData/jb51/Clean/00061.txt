@@ -1,0 +1,60 @@
+错误一：
+
+gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -fPIC -DUSE__THREAD -DHAVE_SYNC_SYNCHRONIZE -I/usr/include/ffi -I/usr/include/libffi -I/usr/include/python2.7 -c c/_cffi_backend.c -o build/temp.linux-x86_64-2.7/c/_cffi_backend.o
+
+c/_cffi_backend.c:15:17: fatal error: ffi.h: No such file or directory
+
+compilation terminated.
+
+error: command 'gcc' failed with exit status 1
+
+原因：
+
+缺少头文件和静态库包
+
+解决方法：
+
+sudo apt-get install libffi-dev
+
+错误二：
+
+gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -fPIC -I/usr/include/python2.7 -c build/temp.linux-x86_64-2.7/_openssl.c -o build/temp.linux-x86_64-2.7/build/temp.linux-x86_64-2.7/_openssl.o -Wconversion -Wno-error=sign-conversion
+
+build/temp.linux-x86_64-2.7/_openssl.c:28:20: fatal error: Python.h: No such file or directory
+
+compilation terminated.
+
+error: command 'gcc' failed with exit status 1
+
+原因：
+
+缺少Python的头文件和静态库包
+
+解决方法：
+
+sudo apt-get install python-dev
+
+补充知识：windows 中 pip 安装库时出现 cryptography 报错 解决方案
+
+如果在安装程序中，系统提示有cryptography 的报错，并提示有类似C:\Users\Administrator\AppData\Roaming\pip
+
+这种路径提示信息，那么是你的 pip 源出现了问题。
+
+首先，打开该路径文件。一般这种文件的类型是隐藏文件，在win10的页面工具栏中有相应的显示文件的选项，
+
+而在win7中在工具——文件夹选项中。之后输入你的 pip 路径例如：C:\Users\Administrator\AppData\Roaming\pip
+
+最后，打开 pip.ini 文件 在里面写入
+
+[global]
+
+timeout = 6000
+
+index-url = https://pypi.mirrors.ustc.edu.cn/simple
+
+trusted-host = pip.mirrors.ustc.edu.cn
+
+不行的话，试试更新pip,在执行上面步骤。
+
+以上这篇解决Python安装cryptography报错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

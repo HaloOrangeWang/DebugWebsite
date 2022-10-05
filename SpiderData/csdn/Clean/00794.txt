@@ -1,0 +1,15 @@
+在用thrift通信的时候, python写的客户端, 发现运行不起来, 报错Invalid method name "xxx"
+
+我很纳闷,因为thrift自动生成了函数代码, 名称绝对没打错, 参数也对,为什么就不行?
+
+后来我发现
+
+16    transport = TTransport.TBufferedTransport(transport)
+  17     protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  18 
+  19     client = Client(protocol)
+ 
+ 这几行代码可能有问题. 查看服务器代码,发现服务器用的是TFramedTransport,, 这种是帧传输,可以设置包的定长,我用的是TBufferedTansport, 出现错误,
+
+改正以后发现可以通信了
+

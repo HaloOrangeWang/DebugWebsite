@@ -1,0 +1,136 @@
+1、搭建ambari 时遇见的问题
+
+[root@hadoop-master ~]# yum -y install ambari-server
+
+Loaded plugins: fastestmirror, langpacks
+
+Loading mirror speeds from cached hostfile
+
+Resolving Dependencies
+
+--> Running transaction check
+
+---> Package ambari-server.x86_64 0:2.7.3.0-139 will be installed
+
+--> Processing Dependency: postgresql-server >= 8.1 for package: ambari-server-2.7.3.0-139.x86_64
+
+--> Finished Dependency Resolution
+
+Error: Package: ambari-server-2.7.3.0-139.x86_64 (ambari-2.7.3.0)
+
+Requires: postgresql-server >= 8.1
+
+You could try using --skip-broken to work around the problem
+
+** Found 4 pre-existing rpmdb problem(s), 'yum check' output follows:
+
+bea-stax-api-1.2.0-9.el7.noarch has missing requires of jpackage-utils
+
+bea-stax-api-1.2.0-9.el7.noarch has missing requires of jpackage-utils
+
+stax2-api-3.1.1-10.el7.noarch has missing requires of jpackage-utils
+
+tomcat-servlet-3.0-api-7.0.76-7.el7_5.noarch has missing requires of jpackage-utils
+
+根据 下面四行所说 缺少 jpackage-utils 。转回本地源
+
+yum -y install jpackage-utils
+
+Error: Package: ambari-server-2.7.3.0-139.x86_64 (ambari-2.7.3.0)
+
+Requires: postgresql-server >= 8.1
+
+说明postgresql 版本过低 或者没有安装
+
+先 yum-y update postgresql-server
+
+根据反馈选择 安装还是升级
+
+2、搭建hdp过程中修改了各节点主机名，导致在进行主机确认时，无法识别
+
+解决办法：
+
+重新安装ambari，将ambari相关的文件，程序都删除了（除了源码包），否则认证的时候无法成功
+
+1、 通过ambari将集群中的所用组件都关闭
+
+2、 关闭ambari-server，ambari-agent
+
+3、清除浏览器的缓存
+
+4，yum删除所有Ambari组件
+
+5、删除除源码包外的所有ambari相关文件
+
+6、清理数据库
+
+3、在对主机进行检查认证时(常规报错)
+
+EOF occurred in violation of protocol (_ssl.c:618)
+
+ERROR 2020-07-09 10:35:24,213 NetUtil.py:97 - SSLError: Failed to connect. Please check openssl library versions.
+
+ambari openssl 版本问题：SSLError: Failed to connect. Please check openssl library versions.
+
+1.检查os openssl版本，如果低于 openssl-1.0.1e-16.el6.x86_64 版本，请更新。
+
+[root@node-1 ~]# rpm -qa | grep openssl
+
+openssl-1.0.1e-57.el6.x86_64
+
+openssl-devel-1.0.1e-57.el6.x86_64
+
+更新openssl
+
+[root@node-1 ~]# yum -y update openssl
+
+重启ambari-server
+
+ambari-server restart
+
+2.若不行，
+
+编辑 /etc/python/cert-verification.cfg 配置文件，将 [https] 节的 verify 项设为禁用：
+
+vim  /etc/python/cert-verification.cfg
+
+verify=disable
+
+修改/etc/ambari-agent/conf/ambari-agent.ini，在
+
+vim /etc/ambari-agent/conf/ambari-agent.ini
+
+[security]添加下面内容
+
+ssl_verify_cert=0 force_https_protocol=PROTOCOL_TLSv1_2
+
+重启ambari-agent
+
+ambari-agent restart
+
+3、安装服务时报错
+
+javax.net.ssl.SSLHandshakeException: Client requested protocol TLSv1 not enabled or not supported
+
+搭建的java jre配置问题
+
+vim $JAVA_HOME/jre/lib/security/java.security
+
+禁用、删除3DES_EDE_CBC即可，无需添加 TLSv1
+
+修改完成后重启JAVA进程 （不行的话就重启服务器）
+
+5、安装HDFS client报错
+
+排查发现缺少依赖包：
+
+解决办法：安装依赖包
+
+http://mirror.centos.org/centos/7/os/x86_64/Packages/libtirpc-0.2.4-0.16.el7.x86_64.rpm
+
+http://mirror.centos.org/centos/7/os/x86_64/Packages/libtirpc-devel-0.2.4-0.16.el7.x86_64.rpm
+
+rpm -ivh libtirpc-0.2.4-0.16.el7.x86_64.rpm libtirpc-devel-0.2.4-0.16.el7.x86_64.rpm
+
+报错 查看 /var/log/ambari-server/ambari-server.log日志
+

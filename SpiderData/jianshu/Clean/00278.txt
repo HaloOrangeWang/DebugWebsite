@@ -1,0 +1,38 @@
+Oracle报错ORA-00904: 标识符无效
+
+一般情况下，标识符错误是因为：语句中的列名在表中不存在，修改sql语句或者修改列名即可。
+
+特殊情况：
+
+正常建表语句如下：
+
+create table student(
+
+id int,
+
+name varchar2(100)
+
+);
+
+但是如果建表语句写成了：
+
+create table student(
+
+"id" int,
+
+"name" varchar2(100)
+
+)
+
+若给列名加了双引号，表的列名查看时仍然为：id,name。 但是，若使用如下查询语句则会报错：
+
+select id,name from student;
+
+ORA-00904:标识符无效
+
+这种情况查询语句应该为：
+
+select "id","name" from student t where "name" = "xxx";
+
+作为查询条件时必须是双引号，单引号不报错但是查询结果为空。
+

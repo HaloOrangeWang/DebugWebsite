@@ -1,0 +1,86 @@
+python终端用pip list出现这个错误Fatal error in launcher:
+
+只要终端用到pip的东西，都在前面加python -m，比如python -m pip list
+
+好了，完美解决！
+
+补充知识：python安装exe打包库命令pip install pyinstaller报错，使用pip国内镜像解决方法
+
+python安装exe打包库命令pip install pyinstaller报红出错，
+
+使用pip国内镜像解决方法：
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyinstaller
+
+运行后发现还是有黄字报错，使用提示命令升级python -m pip install --upgrade pip
+
+还是有报错，不要怕，继续使用国内镜像升级命令：
+
+python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
+
+升级成功，我们打
+
+pyinstaller -v
+
+看到3.6，显示出来打包exe库的版本号，就成功了。
+
+pyinstaller start.py
+
+如果成功的话，会在当前目录生成一个build和dist的文件夹，大家打开文件夹dist可以看到与start同名的目录，start文件夹即是项目打包生成的文件夹，打开start文件夹里面有个与start同名的start.exe即是启动文件。
+
+----------------------------------------------------------
+
+本文参考了-- 江 coder在cnblogs分享的文章，感谢前辈的分享：
+
+用pip管理工具安装库文件时，默认使用国外的源文件，因此在国内的下载速度会比较慢，可能只有50KB/s。幸好，国内的一些顶级科研机构已经给我们准备好了各种镜像，下载速度可达2MB/s。
+
+其中，比较常用的国内镜像包括：
+
+（1）阿里云 http://mirrors.aliyun.com/pypi/simple/
+
+（2）豆瓣http://pypi.douban.com/simple/
+
+（3）清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
+
+（4）中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/
+
+（5）华中科技大学http://pypi.hustunique.com/
+
+注意：新版ubuntu要求使用https源。
+
+设置方法：（以清华镜像为例，其它镜像同理）
+
+（1）临时使用：
+
+可以在使用pip的时候，加上参数-i和镜像地址(如
+
+https://pypi.tuna.tsinghua.edu.cn/simple)，
+
+例如：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pandas，这样就会从清华镜像安装pandas库。
+
+（2）永久修改，一劳永逸：
+
+（a）Linux下，修改 ~/.pip/pip.conf (没有就创建一个文件夹及文件。文件夹要加“.”，表示是隐藏文件夹)
+
+内容如下：
+
+[global]
+
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+
+[install]
+
+trusted-host = https://pypi.tuna.tsinghua.edu.cn
+
+(b) windows下，直接在user目录中创建一个pip目录，如：C:\Users\xx\pip，然后新建文件pip.ini，即 %HOMEPATH%\pip\pip.ini，在pip.ini文件中输入以下内容（以豆瓣镜像为例）：
+
+[global]
+
+index-url = http://pypi.douban.com/simple
+
+[install]
+
+trusted-host = pypi.douban.com
+
+以上这篇python 解决Fatal error in launcher:错误问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持。
+

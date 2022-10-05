@@ -1,0 +1,41 @@
+
+1. 出现莫名其妙的 app01
+
+我项目中的app名字并不是app01，可是运行python manage.py makemigrations的时候总是提示app01不是已安装的app
+
+Applying admin.0003_auto_20180701_0233...Traceback (most recent call last):   FiApplying admin.0003_auto_20180701_0233...Traceback (most recent call last):   Field ...
+
+解决办法：
+
+找到自己的python环境下的site-packages/django/contrib/admin/migrations，把里面的py文件全删掉即可。
+
+
+2. 使用了自定义的auth表，结果建表的时候提示admin找不到某个字段
+
+类似以下报错...
+
+django.core.exceptions.FieldDoesNotExist: model has no field named <id>
+
+解决办法：
+
+找到自己的python环境下的site-packages/django/contrib/admin/migrations，把里面的py文件全删掉即可。
+
+
+3. 点击页面的按钮绑定AJAX提交数据但是后端收不到任何数据
+
+这种情况一般是form表单中使用了 <button>提交</button>按钮，但是<button>< button/>按钮中没有明确指定type="button"。
+
+解决办法：
+
+使用AJAX提交数据的时候，提交数据的按钮可以使用如下方式：
+
+1. 使用最保险的input标签， 并且指定type类型为button
+
+2. 既然使用ajax提交数据就没必要再写form标签。
+
+直接用div包裹获取用户输入的input标签即可。
+
+3. 使用button按钮的时候，明确指定type类型为button， type一定不能省！！！
+
+<button type="button">提交</button>
+

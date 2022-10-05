@@ -1,0 +1,134 @@
+问题一：
+
+先装了火狐46.0.1（D:\Tool\FireFox），感觉有些地方不行，在另外一个路径下安装了火狐52.0.1(D:\Tool\FireFox52)验证后感觉有问题,之后卸载了火狐52.0.1，结果原来可以运行登陆程序，报错。
+报错内容：
+
+Traceback (most recent call last):
+File "D:\Tool\selenium\code\demo-6080登陆.py", line 3, in <module>
+dr=webdriver.Firefox()
+File "D:\Tool\selenium\Python\lib\site-packages\selenium\webdriver\firefox\webdriver.py", line 55, in __init__
+self.binary = firefox_binary or capabilities.get("binary", FirefoxBinary())
+File "D:\Tool\selenium\Python\lib\site-packages\selenium\webdriver\firefox\firefox_binary.py", line 50, in __init__
+"binary = FirefoxBinary('/path/to/binary')\ndriver = webdriver.Firefox(firefox_binary=binary)")
+Exception: Failed to find firefox binary. You can set it by specifying the path to 'firefox_binary':
+
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+
+binary = FirefoxBinary('/path/to/binary')
+driver = webdriver.Firefox(firefox_binary=binary)
+
+解决方法：
+1. 卸载所有的火狐浏览器，不用重启电脑，然后重新安装火狐46.0.1版本，路径：D:\Tool\FireFox ，再次运行程序，就OK了
+报错原因：
+猜测同时装过火狐46 和火狐52版本，把一些信息给修改了，导致selenium不知道找不到对应的路径
+
+问题二：
+
+安装完Python，用cmd运行Python时报错
+报错内容：
+‘python’不是内部或外部命令，也不是可运行的程序或批处理文件。
+解决方法：
+
+这是因为Windows会根据一个Path的环境变量设定的路径去查找python.exe，如果没找到，就会报错。如果在安装时漏掉了勾选Add python.exe to Path，那就要手动把python.exe所在的路径D:\Python27添加到Path中。
+如果你不知道怎么修改环境变量，建议把Python安装程序重新运行一遍，记得勾上Add python.exe to Path。
+
+PS:1）安装Python 时一定要安装pip和Add python.exe to path。默认Add Python.exe to path 不安装。
+
+2）安装路径最好是英文
+
+问题三：(这部分转载上海悠悠博客：http://www.cnblogs.com/yoyoketang/p/6111585.html）
+
+selenium版本安装后启动Firefox出现异常，报错。
+
+报错内容：'geckodriver' executable needs to be in PATH
+
+报错原因：selenium3不默认支持火狐浏览器，需要安装geckodriver.exe驱动，并把路径添加到环境变量中.selenium2默认支持火狐浏览器，不需要安装驱动
+
+解决方法：selenium3降级为selenium2
+
+1)检查pip环境
+
+打开cmd,输入pip ，等待一会儿不要急，如果出现提示:Did not provide a command 说明pip环境有问题，临时解决办法，输入pip时候加上后缀pip.exe就可以了。下图是正确的显示方式：
+
+2）pip查看selenium版本号
+
+cmd中输入：pip show selenium,查看selenium版本号，如果是selenium3就要降级，如果不是就后续的操作不要继续了
+
+3）pip降级selenium
+
+为了避免与之前安装的selenium版本冲突，先找到selenium3.0目录：python\Lib\site-packages目录
+
+把里面selenium开头的文件全部删除就可以了。python所有的第三方包都在这个目录下面。
+
+打开cmd，输入
+
+pip install selenium==2.53.6（注意是两个==，中间不要留空格，这里推荐2.53.6的版本）
+
+>>pip install selenium==2.53.6
+
+4）升级pip版本
+
+a.在使用pip过程中如果出现下方红色区域字样，就是说pip版本过低了，建议升级
+
+b.如何升级pip呢？看最后一句话：python -m pip install --upgrade pip
+
+c.把上面对应的提示照着敲一遍就可以了
+
+执行后，一定要重启电脑（卸载了火狐浏览器，一定要重启电脑，不然不起作用）
+
+问题四：
+
+在cmd中输入pip后，报错：Did not provide a command
+
+正确的样子：
+
+解决方法：在cmd中输入pip.exe即可
+
+原因：环境变量的PATHEXT中缺少.EXE的文件名，输入的内容【;.EXE】注意是英文
+
+问题五:
+
+安装setuptools（不支持64位）时，遇到的坑
+
+1）因为setuptools不支持64位，所以通过ez_setup.py来安装，下载下来放在selenium\python中，执行ez_setup.py 报错：
+
+ImportError: No module named six
+
+要先去安装pip中six这部分，去官方下载【get-pip.py】
+
+2）下载【get-pip.py】，放在selenium\python中
+
+在cmd-》D:\Tool\selenium\Python-》python get-pip.py 记得联网，自动执行
+
+然后执行D:\Tool\selenium\Python-》python ez_setup.py 记得联网，自动执行
+
+PS：如何判断是否安装成功setuptools
+
+方法一：
+
+打开Python目录的script文件夹查看 ，有easy_install.exe就成功
+
+方法二：新打开一个命令提示符，输入easy_install 报【error: No urls, filenames, or requirements specified (see --help)】 成功
+
+问题五：如何验证安装成功selenium：
+
+在IDLE(Python GUI中输入【from selenium import webdriver】-》回车，没任何错误提示代表成功
+
+如果报如下错误，代表安装selenium失败：
+
+Traceback (most recent call last):
+
+File "<pyshell#1>", line 1, in <module>
+
+from selenium import webdriver
+
+ImportError: No module named selenium
+
+问题六：py代码执行错误
+
+新增一个py代码，test.py
+
+在shell中可以运行shell命令，在Python命令行中可以运行Python代码。
+
+“python test.py”是一个shell命令，而不是Python代码，所以你应该在shell中运行它，但不是在Python命令行
+

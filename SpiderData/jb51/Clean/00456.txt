@@ -1,0 +1,88 @@
+
+python编码格式导致csv读取错误
+
+本文记录python小白我今天遇到的这两个问题（csv.reader和pandas.csv_read）：
+
+pandas模块“CParserError: Error tokenizing data. C error: Expected 1 fields in line 4, saw 2”错误
+
+csv模块“line contains NULL byte”错误
+
+今天处理数据时疏忽了，而且还偷懒把数据复制到xlsx保存后，直接修改文件后缀成.csv准备用来读取。之后运行算法要读数据的时候果然问题来了。
+
+import pandas as pd
+path = 'water30.csv'
+df=pd.read_csv(path)
+
+注：后两行可写作df=pd.read_csv('water30.csv')。
+
+但由于read_csv本身有好多参数（虽然这里不用）, 故写成path习惯好些。
+
+这样会报错CParserError: Error tokenizing data. C error: Expected 1 fields in line 4, saw 2
+
+我在网上查了好多种解决办法，由于read_csv的参数很多，所以各有其词，我这里遇到的应该也只是其中一种，久寻无果。直到我看到这里说看了模块_csv.c的代码后，发现文件里不能有 “\0”, 所以csv文件不可以是unicode编码的，可以是ANSI。
+
+针对我直接改后缀名的结果是，点击那个.csv打开时就已经提示我：
+
+也就是这里改后缀并没有把文件格式弄好。所以我选择“另存为”改选了文件格式为
+
+之后，读取就不会报错了。
+
+注：有个疑问没有解决，就是那个我“直接改后缀得到的那个.csv”我用记事本打开查看了一下，编码就是ANSI啊。那我就不知道为什么报错了……不过问题倒是暂时解决了。
+
+现在读取到的格式为
+
+是个结构体。
+
+另外，对于：csv模块“line contains NULL byte”错误。和上面出现问题原因和解决方案是一样的，比如
+
+import csv
+csvfile=file('water30.csv','rb')
+reader = csv.reader(csvfile)
+for line in reader:
+     print line
+csvfile.close()
+
+报错：Error: line contains NULL byte
+
+修正后，读入的数据格式为list，如下
+
+[‘1’, ‘2’, ‘2’, ‘1’, ‘2’]
+[‘1’, ‘1’, ‘1’, ‘2’, ‘2’]
+[‘1’, ‘2’, ‘1’, ‘1’, ‘1’]
+[‘1’, ‘1’, ‘1’, ‘1’, ‘2’]
+[‘1’, ‘1’, ‘1’, ‘2’, ‘2’]
+[‘1’, ‘1’, ‘1’, ‘2’, ‘2’]
+[‘0.697’, ‘0.744’, ‘0.634’, ‘0.403’, ‘0.481’]
+[‘0.46’, ‘0.376’, ‘0.264’, ‘0.237’, ‘0.149’]
+[‘1’, ‘1’, ‘1’, ‘1’, ‘1’]
+
+
+pandas读取csv常见错误及解决
+
+
+1）第一种错误
+
+错误提示：
+
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 121, saw 2
+
+解决方法：
+
+import pandas as pd
+data = pd.read_csv(inputfile, encoding='utf-8',header=None,sep = '\t')
+
+
+2）第二种错误
+
+错误提示：
+
+pandas.errors.ParserError: Error tokenizing data. C error: EOF inside string starting at line 15945
+
+解决方法：
+
+import pandas as pd
+import csv
+df = pd.read_csv(csvfile, quoting=csv.QUOTE_NONE, encoding='utf-8')
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

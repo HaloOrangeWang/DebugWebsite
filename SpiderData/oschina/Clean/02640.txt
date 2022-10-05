@@ -1,0 +1,47 @@
+Models.py #创建数据表 from django.db import models from django.utils import timezone from tinymce.models import HTMLField Create your models here. class Post(models.Model): title = models.CharField(max_length = 200,verbose_name=u'标题')#标题 slug = models.CharField(max_length=200,verbose_name=u'文章网址')#文章网址 # body = models.TextField()#文章内容 tags = models.CharField(max_length=100,verbose_name=u'标签') body = HTMLField(verbose_name=u'文章内容') pub_date = models.DateTimeField(default = timezone.now)#发表时间  #pub_date 以timezone.now的方式让其自动产生时间 在执行需要pytz模块支撑
+ class Meta:
+     db_table = '博客'
+     ordering = ['pub_date']#按照发表时间排序显示顺序依据
+     def __str__(self):#设置此类所提供的数据项，显示文章标题
+         return self.title
+
+Models.py #创建数据表
+
+from django.db import models from django.utils import timezone from tinymce.models import HTMLField
+
+
+Create your models here.
+
+class Post(models.Model): title = models.CharField(max_length = 200,verbose_name=u'标题')#标题 slug = models.CharField(max_length=200,verbose_name=u'文章网址')#文章网址 # body = models.TextField()#文章内容 tags = models.CharField(max_length=100,verbose_name=u'标签') body = HTMLField(verbose_name=u'文章内容') pub_date = models.DateTimeField(default = timezone.now)#发表时间
+
+#pub_date 以timezone.now的方式让其自动产生时间 在执行需要pytz模块支撑
+ class Meta:
+     db_table = '博客'
+     ordering = ['pub_date']#按照发表时间排序显示顺序依据
+     def __str__(self):#设置此类所提供的数据项，显示文章标题
+         return self.title
+
+settings.py#设置数据库连接 DATABASES = { 'default': { 'ENGINE': 'django.db.backends.mysql', # 数据库引擎 'NAME': 'django', # 数据库名 'USER': 'root', # 账号 'PASSWORD': '', # 密码 'HOST': '127.0.0.1', # HOST 'POST': 3306, # 端口 } }
+
+settings.py#设置数据库连接
+
+DATABASES = { 'default': { 'ENGINE': 'django.db.backends.mysql', # 数据库引擎 'NAME': 'django', # 数据库名 'USER': 'root', # 账号 'PASSWORD': '', # 密码 'HOST': '127.0.0.1', # HOST 'POST': 3306, # 端口 } }
+
+安装pymysql和降低django版本(mysql和django对应版本有要求) 在命令行输入 pip install pymysql pip install django==2.0
+
+安装pymysql和降低django版本(mysql和django对应版本有要求)
+
+在命令行输入 pip install pymysql pip install django==2.0
+
+在__ init.py __文件中加入这两句话(我是在项目下和APP下都加了) import pymysql pymysql.install_as_MySQLdb()
+
+在__ init.py __文件中加入这两句话(我是在项目下和APP下都加了)
+
+import pymysql pymysql.install_as_MySQLdb()
+
+数据表迁移 python manage.py makemigrations python manage.py migrate
+
+数据表迁移
+
+python manage.py makemigrations python manage.py migrate
+

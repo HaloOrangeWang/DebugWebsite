@@ -1,0 +1,30 @@
+如题,在控制台运行python manage.py startapp sales 建立一个应用报错异常
+
+1.应用名不能包含下划线等字符 所以app-demo 不能作为应用名被定义
+
+2.manage.py 报错 这时我们要打开manage.py文件
+
+修改前:
+
+if name == "main":
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangodeom.setting")
+
+from django.core.management import execute_from_command_line
+
+execute_from_command_line(sys.argv)
+
+修改后：
+
+把os里面的setting去掉,djangodeom是你的django的项目名
+
+if name == "main":
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangodeom")
+
+from django.core.management import execute_from_command_line
+
+execute_from_command_line(sys.argv)
+
+到此这篇关于关于django python manage.py startapp 应用名出错异常原因解析的文章就介绍到这了,更多相关django python manage.py startapp 应用名出错异常内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

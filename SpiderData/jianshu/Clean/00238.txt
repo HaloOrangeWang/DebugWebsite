@@ -1,0 +1,63 @@
+
+问题1：flutter doctor -v  报错
+
+
+①总是报错：Android: cmdline-tools component is missing
+
+解决方法：setting => sdkmanager => sdktools 选中四个tools进行安装
+
+再次运行 flutter doctor -v 成功
+
+若不成功，则重新配置一下flutter android sdk,并检查flutter的环境配置信息
+
+flutter配置android sdk位置：命令行操作
+
+$flutter config --android-sdk ~/work/Andoird/sdk
+
+这里的“~/work/Andoird/sdk”是你电脑里的Android的SDK路径
+
+
+②总是报错：CocoaPods not installed
+
+这个问题我解决了很久，明明已经按照文档使用
+
+sudo gem install cocoapods
+
+或
+
+gem install cocoapods
+
+命令了，但是还是报错：Error installing cocoapods
+
+当提示：Error installing cocoapods时，代表安装失败，此时大多数是因为版本问题，要么降低cocoapods的版本安装，要么升级ruby版本。
+
+可以通过
+
+ruby --version
+
+查看下当前ruby版本。
+
+推荐升级ruby，用新版本总是好的。我个人使用的是mac，通过brew来进行管理ruby。
+
+brew如何安装ruby这个就自己百度了，记得安装好ruby后，设置环境变量为brew安装的ruby版本，不然还是会应用成mac自带的低版本ruby，还是会安装失败。
+
+升级好ruby后，再次使用：
+
+gem install cocoapods
+
+进行安装，然后设置好环境变量，国内的flutter镜像后，重启生效后，再次运行
+
+flutter doctor -v
+
+就可以了。
+
+
+问题2：创建第一个flutter应用是，项目名取了含大写字母时，总是报错：must be a valid Dart package name
+
+解决：项目名全小写即可！
+
+
+问题3：Unresolved reference: FlutterActivity
+
+创建第一个flutter项目后，MainActivity继承的FlutterActivity总是报红，无法正常运行，此时需要再当前AndroidStudio上操作：File =》Open 选择当前项目下对应的android文件打开（选择在当前窗口打开），此时会重新downloading所以的依赖包，这应该是创建flutter存在的bug，总是要重新这样操作一遍才会下载需要的依赖包
+

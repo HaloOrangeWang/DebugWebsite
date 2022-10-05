@@ -1,0 +1,24 @@
+一般默认安装最新的版本（目前是7.0.8），但是通过测试发现这个版本会报错（ImportError: MagickWand shared library not found.）所以建议安装 im6版本
+
+im6的安装
+
+前面没有需要注意的，到了这一步需要勾选第5个框
+
+安装完成后需要配置系统环境变量
+
+Lastly you have to set MAGICK_HOME environment variable to the path of ImageMagick ( C:\Program Files\ImageMagick-6.9.3-Q16).
+
+安装后运行出现的错误总结
+
+error1：ImportError: MagickWand shared library not found.
+
+the first is ImageMagick(32bit or 64bit) must be accord with the python(32bit or 64bit), even in the 64bit OS. If not, there will be a ImageMagick not installed mistake.  
+The second is that it need the Ghostscriptotherwise ImageMagick wouldn’t work properly.
+
+
+error2：Imagemagick Convert PDF to JPEG: FailedToExecuteCommand `“gswin32c.exe” / PDFDelegateFailed
+
+You need to install Ghostscript in order to rasterize vector files (PDF, EPS, PS, etc.) with ImageMagick. IM will shell out to Ghostscript when doing these manipulations (you can see it if you use the -verbose tag in your IM invocation). You could also use Ghostscript by itself to rasterize vector files.
+
+您需要安装 Ghostscript 才能使用ImageMagick栅格化矢量文件（PDF，EPS，PS等）。在进行这些操作时，IM会向Ghostscript发出声明（如果在IM调用中使用 -verbose 标记，则可以看到它）。您也可以单独使用Ghostscript来栅格化矢量文件。
+

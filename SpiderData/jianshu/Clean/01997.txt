@@ -1,0 +1,37 @@
+首先贴一张报错截图
+
+def executeSQLQmark(cursor, query, params=None):
+    """
+    Execute a python 2.5 (sqlite3) style query.
+
+@param cursor: A sqlite cursor
+    @param query: The query to execute
+    @param params: An optional list of parameters to the query
+    """
+    if params is None:
+        return cursor.execute(query)
+
+return cursor.execute(query, params)
+
+if sqlite.version_info[0] > 1:
+    executeSQL = executeSQLQmark
+else:
+    executeSQL = executeSQLPyFormat
+
+不会Python，自动忽略。大致是没有得到安装包的名字，所以报错的。然后用google搜索一下报错，有个差不多的。
+
+地址：https://bugzilla.redhat.com/show_bug.cgi?id=699041
+
+解决方式为：
+
+原文部分截图：
+
+
+解决方法
+
+ls -l /var/lib/yum/history   #查看一下这个目录下的文件，有一个类似这个history-2019-08-22.sqlite的文件。
+
+然后移除此文件与journal文件，重新安装包，可以了。
+
+大致猜想是缓存导致，或者之前有yum安装包，但是手动kill掉了。数据保存在这个history目录下。
+

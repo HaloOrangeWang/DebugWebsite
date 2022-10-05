@@ -1,0 +1,98 @@
+
+报错现象
+
+在使用 django 创建 超级用户的时候提示报错
+
+Password (again):  ytyt521521
+Traceback (most recent call last):
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\backends\utils.py", line 64, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\backends\mysql\base.py", line 112, in execute
+    return self.cursor.execute(query, args)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\MySQLdb\cursors.py", line 206, in execute
+    res = self._query(query)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\MySQLdb\cursors.py", line 312, in _query
+    db.query(q)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\MySQLdb\connections.py", line 224, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.DataError: (1406, "Data too long for column 'gender' at row 1")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\PyCharm 2018.2.5\helpers\pycharm\django_manage.py", line 52, in <module>
+    run_command()
+  File "D:\PyCharm 2018.2.5\helpers\pycharm\django_manage.py", line 46, in run_command
+    run_module(manage_file, None, '__main__', True)
+  File "c:\python36\Lib\runpy.py", line 205, in run_module
+    return _run_module_code(code, init_globals, run_name, mod_spec)
+  File "c:\python36\Lib\runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "c:\python36\Lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "C:/Users/Python/PycharmProjects/MxOnline\manage.py", line 10, in <module>
+    execute_from_command_line(sys.argv)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\core\management\__init__.py", line 353, in execute_from_command_line
+    utility.execute()
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\core\management\__init__.py", line 345, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\core\management\base.py", line 348, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\contrib\auth\management\commands\createsuperuser.py", line 52, in execute
+    return super(Command, self).execute(*args, **options)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\core\management\base.py", line 399, in execute
+    output = self.handle(*args, **options)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\contrib\auth\management\commands\createsuperuser.py", line 173, in handle
+    self.UserModel._default_manager.db_manager(database).create_superuser(**user_data)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\contrib\auth\models.py", line 165, in create_superuser
+    return self._create_user(username, email, password, **extra_fields)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\contrib\auth\models.py", line 148, in _create_user
+    user.save(using=self._db)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\contrib\auth\base_user.py", line 74, in save
+    super(AbstractBaseUser, self).save(*args, **kwargs)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\models\base.py", line 708, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\models\base.py", line 736, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\models\base.py", line 820, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\models\base.py", line 859, in _do_insert
+    using=using, raw=raw)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\models\manager.py", line 122, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\models\query.py", line 1039, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\models\sql\compiler.py", line 1060, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\backends\utils.py", line 64, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\utils.py", line 95, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\backends\utils.py", line 64, in execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\django\db\backends\mysql\base.py", line 112, in execute
+    return self.cursor.execute(query, args)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\MySQLdb\cursors.py", line 206, in execute
+    res = self._query(query)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\MySQLdb\cursors.py", line 312, in _query
+    db.query(q)
+  File "C:\Users\Python\Envs\testvir2\lib\site-packages\MySQLdb\connections.py", line 224, in query
+    _mysql.connection.query(self, query)
+django.db.utils.DataError: (1406, "Data too long for column 'gender' at row 1")
+
+
+分析报错
+
+没有具体的跳转, 但是文本是 gender 的问题因此可以断定是 gender 的长度问题
+
+找到 所含 gender 的字段, 发现 长度确实有点小. female 是 6 位 超出了.因此报错
+
+
+报错处理
+
+更改 长度 为 10 然后 记得上传表更改之后再重新创建即可
+

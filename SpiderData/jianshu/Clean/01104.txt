@@ -1,0 +1,35 @@
+故障表现如下：
+
+TypeError: unhashable type list
+TypeError: unhashable type dict
+TypeError: unhashable type set
+
+原因：
+
+出现这种异常通常是因为在使用set()过程中，set()传递进来的不是可哈希的元素。
+
+解决：
+
+将
+
+self.manager.add_new_url(new_urls)
+
+修改为：
+
+for ele in new_urls:
+    self.manager.add_new_url(ele)
+
+可哈希的元素有：int、float、str、tuple
+
+不可哈希的元素有：list、set、dict
+
+为什么 list 是不可哈希的，而 tuple 是可哈希的：
+
+（1）因为 list 是可变的在它的生命期内，你可以在任意时间改变其内的元素值。
+
+（2）所谓元素可不可哈希，意味着是否使用 hash 进行索引
+
+（3）list 不使用 hash 进行元素的索引，自然它对存储的元素没有可哈希的要求；而 set 使用 hash 值进行索引。
+
+参考：https://blog.csdn.net/lanchunhui/article/details/50955238
+

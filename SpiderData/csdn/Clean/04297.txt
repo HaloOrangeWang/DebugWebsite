@@ -1,0 +1,26 @@
+
+1. 变量命名要避python内置函数的名字
+
+初学python，很容易犯这样的错误，即直接用set, list, tuple, dict, str, int, complex, float等作为变量名。这样会导致这些内置函数：set(), list(), tuple()等等无法执行。
+ 例如下例，使用tuple作为变量名，再执行tuple()语句时，会报错 ‘tuple’ object is not callable
+ 
+ 原因如下：
+
+
+作用域优先级：
+
+在执行python代码时，你用的每一个变量，都需要寻找，寻找的过程遵循一定的优先级规则，下面按优先级从大到小排序
+
+局部作用域
+
+嵌套作用域
+
+全局作用域
+
+内置作用域
+
+上面所演示的代码里，tuple=(1,2,3) 发生在全局作用域中，因此当使用tuple()转换list类型数据时，优先在全局作用域中查找tuple，如果好不到才会去内置作用域中寻找，内置函数存在与内置作用域。
+
+参考文献：
+ [1] https://blog.csdn.net/KWSY2008/article/details/102939776
+

@@ -1,0 +1,42 @@
+>>> from selenium.webdriver import Firefox
+
+>>> driver = Firefox ()
+
+执行脚本报错：
+
+Traceback (most recent call last):
+
+File "/Users/xxx/Documents/selenium_py/inittest/test.py", line 3, in <module>
+
+dr = webdriver.Firefox()
+
+File "/Library/Python/2.7/site-packages/selenium/webdriver/firefox/webdriver.py", line 144, in __init__
+
+self.service.start()
+
+File "/Library/Python/2.7/site-packages/selenium/webdriver/common/service.py", line 81, in start
+
+os.path.basename(self.path), self.start_error_message)
+
+selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable needs to be in PATH.
+
+[Finished in 0.1s with exit code 1]
+
+原因是使用的firefox版本是76.0，对于较高版本的firefox浏览器，需下载对应的驱动geckodriver。将下载的驱动放到自己需要的目录下。驱动地址：https://www.selenium.dev/documentation/en/webdriver/driver_requirements/#quick-reference
+
+修改原脚本如下所示：
+
+>>> from selenium.webdriver import Firefox
+
+#添加path后执行
+
+>>> driver = Firefox ()
+
+或加驱动位置：
+
+>>> from selenium.webdriver import Firefox
+
+#将具体的驱动位置作为入参
+
+>>> Firefox(executable_path='/usr/local/bin/geckodriver')
+

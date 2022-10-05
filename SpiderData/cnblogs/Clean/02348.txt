@@ -1,0 +1,52 @@
+安装某主题依赖 nodejieba 库，该库又依赖 windows-build-tools 和 node-gyp
+
+git bash shell 下 cnpm install -g windows-build-tools 报错
+
+返回信息说 最好使用 powershell 而且还是以管理员身份运行。 这里搜一下ps的路径
+
+start 进去上面的路径，右键以管理员身份运行，然后重新安装 cnpm install -g windows-build-tools
+
+结果卡在这里半天不动，无赖按下 Ctrl + C 中断，这里我是已经装好了python 了的
+
+重新来一遍，结果直接报错了，猜想可能是因为之前装了存在缓存的影响
+
+这里把 windows-build-tools 卸载了，清掉上次安装失败的残余重新来。
+
+结果还是不行，不过给了提示，原因残余还在
+
+这里手动进去 node_modules里将windows-build-tools删除， 删完之后再来，结果还是不行
+
+上网查了一下资料，看到官网给出的安装方式
+
+https://www.npmjs.com/package/windows-build-tools
+
+基本是一样的啊，难道因为我电脑没有安装 visual studio 的缘故?
+
+不过总感觉python在安装过程中，如果没有就会在线下载并安装， visual studio应该也可以，不服气的我 不断的把
+
+node_modules下的windows-build-tools删除，并执行 npm install -g  windows-build-tools
+
+结果TMD竟然装成功了，也许就是要死磕一下
+
+总结一下: 不断重试是因为猜库在国外，网络不稳定导致中断，另一方面一定不要用cnpm安装，用npm，慢就慢点，至少还是能装上官方给的新版
+
+上面问题的补充，发现visual studio 确实和python一样会被下载下来，如下图是保存位置
+
+进入该目录，手动运行报错了，原来是缺少.NET Framework 4.6
+
+进入提示给出的网址安装.NET环境 很尴尬的是笔记本的操作系统win7 32位不支持安装4.6
+
+不过查阅官方文档，好像可以通过安装SP1补丁包解决该问题
+
+https://support.microsoft.com/zh-cn/help/15090/windows-7-install-service-pack-1-sp1
+
+接着安装 node-gyp 卡了就等会，实在不行就中断重来，国外网速慢正常现象
+
+http://www.codes51.com/itwd/4216068.html
+
+安装 nodejeba的 mamboer/lunr.js  各种报错，先是 上图出现的平台不支持，后面不管敲什么命令都出现平台不支持，重启一下系统就不会有此问题了
+
+在各种报错的不断尝试下，最终成功了，总结一下: 还是尽量使用cnpm，容易成功， 然后安装 mamboer/lunr.js 最好在 hexo blog目录里安装，因为--save
+
+cnpm 和 npm安装的包不再同一个位置，所以先cnpm重新把依赖包安装了
+

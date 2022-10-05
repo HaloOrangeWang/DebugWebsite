@@ -1,0 +1,134 @@
+基本思路：
+
+首先我们要明确问题出在supervisor上还是启动的程序上，可以用ps -ef | grep supervisord查看是否启动，在用ps查看自己的进程有没有启动；
+
+确认下启动的supervisor配置文件是哪个，有的是/etc/supervisor/supervisord.conf，有的是/etc/supervisord.conf，以自己的为准，不要弄混；
+
+推荐使用apt-get安装，其次是pip ，最后才是yum。不要问为什么，踩坑踩得。另外，尽量用supervisord 3.x以上的版本，2.x版本出问题概率大；
+
+supervisord的日志在 /var/log/supervisor/supervisord.log，启动失败一般能再这里找到有用的信息
+
+常用命令
+
+启动守护进程：supervisord -c /etc/supervisor/supervisord.conf
+
+重载配置：supervisorctl reload
+
+具体报错分析
+
+下面是三种常见的通用报错：
+
+第一类：
+
+报错信息：
+
+error: <class 'socket.error'>, [Errno 2] No such file or directory: file: <string> line: 1
+
+解决办法：
+
+这个可能有多种原因，可能是已经启动过了也可能是没权限，解决步骤如下：
+
+1. 先要确认是否已经启动过了：’ps -ef | grep supervisord’
+
+2. 如果有的话先kill掉
+
+3. 运行下面命令：
+
+sudo touch /var/run/supervisor.sock
+
+sudo chmod 777 /var/run/supervisor.sock
+
+4. 再尝试重新启动：supervisord -c /etc/supervisord.conf(如果没有文件找个别人的配置拷贝过来或者运行echo_supervisord_conf > /etc/supervisord.conf)
+
+第二类：
+
+报错信息：
+
+Error: .ini file does not include supervisorctl section
+
+解决办法：
+
+又是一个权限问题的，步骤：
+
+1. 先确保supervisord.conf中有[supervisord]，[supervisorctl]有这两个基本模块，还有[program:XXX]自己程序的配置（可以在supervisord.conf也可以在/etc/supervisor/*.ini中）
+
+2. 最关键的两个命令：chmod +x /usr/bin/supervisord
+
+chmod +x /usr/bin/supervisorctl
+
+chmod +x /etc/supervisord.conf主要是把把相关文件都授权了
+
+3. 把supervisord杀掉后再次启动supervisord
+
+第三类：
+
+报错信息：
+
+Exited too quickly (process log may have details)
+
+如果前面的问题都解决了，但还是会遇到这个问题，恭喜你已经离胜利很近了，起码supervisord本身已经没什么问题了^_^
+
+解决办法：
+
+1. 先确认[program:XXX]中自己的程序的command=<启动命令>和 directory=<运行命令的路径>没有问题，python是不是用的自己要的环境的python（比如虚拟环境的），log文件的文件夹是不是已经创建（没创建的话supervisor没权限生成log文件），以及改log文件是不是授权给所有用户了（可参考前面的解决办法chmod +x aaaaa.log）
+
+2. 确保用上面的配置中的command在指定路径可以直接运行不会报错，这时候一般就不会有什么问题了。这时候tail你自己的log文件一般就能看到log信息，启动失败报错的信息也会在你的log文件中，照着解决后supervisorctl reload就好了。
+
+3. 如果上面的命令确保可以跑，但还是没法正常运行，也看不到自己程序的报错（不然你就能根据报错解决问题了），那么恭喜，你遇到了跟我一样的情况。我的解决办法很诡异，尝试把[program:XXX]中的名字换成了一个跟启动命令不一样的另一个名字（不要太短），reload之后居然就可以跑了。。。。嗯，很不合常理，但是对我来说确实管用了。
+
+---------------------
+
+作者：kkevinyang
+
+来源：CSDN
+
+原文：https://blog.csdn.net/kkevinyang/article/details/80539940
+
+版权声明：本文为博主原创文章，转载请附上博文链接！
+
+运行命令：
+
+supervisord -c /etc/supervisord.conf  //启动supervisor
+
+supervisorctl //打开命令行
+
+[root @iZ2365j7l5bZ  bin]# supervisorctl status
+
+bandwidth                        RUNNING   pid  2423 , uptime  0 : 06 : 35
+
+[root @iZ2365j7l5bZ  bin]# supervisorctl help
+
+default  commands (type help <topic>):
+
+=====================================
+
+add    clear  fg        open  quit    remove  restart   start   stop  update
+
+avail  exit   maintail  pid   reload  reread  shutdown  status  tail  version
+
+ctl中： help //查看命令
+
+ctl中： status //查看状态
+
+另外有一个坑需要注意：如果修改了 /etc/supervisord.conf ,需要执行 supervisorctl reload 来重新加载配置文件，否则不会生效。。。
+
+查看應用端口號佔用情況：netstat -ltnp
+
+啟動supervisor：/usr/bin/supervisord -c /etc/supervisor/supervisord.conf   ==  service supervisor start
+
+？？？：ps -ef|grep supervisor
+
+？？？：history
+
+sytemctl enable supervisor ----开机自启动
+
+在这个目录/usr/lib/systemd/system
+
+echo ''>supervisor.service ----建立文件----仿照cat zabbix-agent.service
+
+解决方法：
+
+find / -name supervisor.sock
+
+unlink /***/supervisor.sock
+

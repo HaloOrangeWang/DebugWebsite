@@ -1,0 +1,22 @@
+直接上代码：
+
+import urllib.request
+import urllib.parse
+import http.cookiejar
+def handle_cookie():
+    cookiejar = cookielib.CookieJar()
+    handler = urllib.request.HTTPCookieProcessor(cookiejar = cookiejar)
+    opener = urllib.request.build_opener(handler,urllib.request.HTTPHandler(debuglevel = 1))
+    s = opener.open('http://www.doban.com')
+    print(s.read(100))
+    s.close
+
+if __name__=='__main__':
+    handle_cookie()
+
+正确的代码在下面，找不同就可以了
+
+cookiejar = http.cookiejar.CookieJar()
+
+问题就这样被解决了，两个 版本还是有不少区别的
+

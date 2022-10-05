@@ -1,0 +1,56 @@
+想要写分类器对图片进行分类，用到了CNN。然而，在运行程序时，一直报错：
+
+ValueError: Negative dimension size caused by subtracting 5 from 1 for ‘conv2d_1/convolution' (op: ‘Conv2D') with input shapes: [?,1,28,28], [5,5,28,30].
+
+这部分提到的代码是这样的,这是我的分类器的输入层：
+
+model.add(Conv2D(30,(5, 5), input_shape=(1, 28, 28), activation='relu',padding="valid"))
+
+问题出在input_shape上，报错的大意就是我的输入的维度是错误的。
+
+百思不得其解，在Stackoverflow上找到了答案：
+
+Keras的图片处理文档中给出：
+
+dim_ordering: One of {“th”, “tf”}. “tf” mode means that the images should have shape (samples, height, width, channels), “th” mode means that the images should have shape (samples, channels, height, width). It defaults to the image_dim_ordering value found in your Keras config file at ~/.keras/keras.json. If you never set it, then it will be “tf”.
+
+翻译过来意思就是：关于图片的维度顺序有两种类型，分别是“th”和”tf“，它们的差别如下：
+
+图片维序类型为 th 时（dim_ordering='th'）： 输入数据格式为[samples][channels][rows][cols]；
+
+# 图片维序类型为 tf 时（dim_ordering='tf'）： 输入数据格式为[samples][rows][cols][channels]；
+
+在Keras里默认的是“tf”顺序，如果想要改为“th”顺序，需要手动在前面加上如下代码：
+
+from keras import backend as K
+
+K.set_image_dim_ordering('th')
+
+现在回头看我的输入维度顺序，显然是用了th的格式，
+
+model.add(Conv2D(30,(5, 5), input_shape=(1, 28, 28), activation='relu',padding="valid"))
+
+所以，程序一定会报错。
+
+于是在建立模型前加入了前面提到的代码。
+
+至此，该问题解决。
+
+补充知识：Keras一维卷积维度报错
+
+在使用Keras维度报错的时候很有可能是因为在池化层出错。卷积层里面的维度一般都是3维数据，但是在池化是如果设置是这样的，那么输出的就是二维数据：
+
+model.add(Conv1D(filters=23, kernel_size=4, activation='relu'))
+
+model.add(AveragePooling1D())
+
+如果下面接的还是卷积层的话，这样的池化输出是会报错的，这个时候就需要让池化层的输出为3维，这样设置就可以了：
+
+model.add(Conv1D(filters=23, kernel_size=4, activation='relu'))
+
+model.add(AveragePooling1D(2, strides=2))
+
+另外，在卷积层后跟着全连接层的话，中间一般是要加flatten层，使数据输出为全连接层能接受的2维，否则的话可能网络结果是错的。
+
+以上这篇解决Keras中CNN输入维度报错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

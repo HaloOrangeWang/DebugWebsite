@@ -1,0 +1,32 @@
+使用pip命令之后报错，错误信息如下图：
+
+提示egg_info文件错误
+
+解决原理：
+
+我在装载python3.6的机器上同时也安装了python2.7(软件需要)，使用python 3的pip来安装python 2的git包，当然会报错。
+
+解决代码：
+
+wget https://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11-py2.7.egg  --no-check-certificate  #下载python2.7的setuptools
+
+chmod +x setuptools-0.6c11-py2.7.egg  #将前面报错提到的egg文件变为可执行文件
+
+sh setuptools-0.6c11-py2.7.egg
+
+wget https://pypi.python.org/packages/source/p/pip/pip-1.3.1.tar.gz --no-check-certificate  #下载python2.7的pip
+
+tar zxvf pip-1.3.1.tar.gz  #解压
+
+cd pip-1.3.1
+
+python setup.py install  #安装
+
+#此时如果输入pip命令，很可能还会调用python3的pip，需要手动把python2的pip重命名为pip2
+
+mv pip pip2
+
+pip2 install git+https://github.com/hall-lab/svtyper.git  #再调用pip2命令进行下载就不会报错啦
+
+就这玩意儿整了一上午，心累。。。希望以后解决问题的效率能提高叭。。。
+

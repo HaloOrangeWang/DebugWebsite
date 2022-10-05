@@ -1,0 +1,48 @@
+Python是一种解释型、面向对象、动态数据类型的高级程序设计语言。
+
+Python由Guido van Rossum于1989年底发明，第一个公开发行版发行于1991年。
+
+像Perl语言一样, Python 源代码同样遵循 GPL(GNU General Public License)协议。
+
+Python的3.0版本，常被称为Python 3000，或简称Py3k。相对于Python的早期版本，这是一个较大的升级。为了不带入过多的累赘，Python 3.0在设计的时候没有考虑向下兼容。
+
+下面给大家分享示例代码，给大家介绍python 3.0 模拟用户登录功能并实现三次错误锁定，具体代码如下所示：
+
+# -*- coding:utf-8 -*-
+#需求模拟用户登录，超过三次错误锁定不允许登陆
+count = 0
+#realname passwd
+Real_Username = "test"
+Real_Password = "test"
+#读取黑名单的内容
+f = open('black_user','r')
+lock_file = f.read()
+f.close()
+Username = input('请输入用户名:')
+#判断输入用户是否在黑名单内，如果在则不允许输入密码
+for i in range(1):
+  if lock_file == Username:
+    print('对不起，您的用户已锁定，暂时不允许使用！')
+    exit()
+  else:
+    continue
+#尝试输入密码并对输入次数进行计数
+for i in range(3):
+  Password = input("请输入密码:")
+  if Username == Real_Username and Password == Real_Password:
+    print("登录成功")
+    break
+  else:
+    print("登录失败")
+  count += 1
+#如果输入三次错误密码，则提示用户名锁定，并将用户名拉黑
+if count == 3:
+  print("对不起，您输入的密码错误次数已经达到3次，您的用户名将被锁定")
+  f = open("black_user","w")
+  f.write("%s"%Username)
+  f.close()
+
+总结
+
+以上所述是小编给大家介绍的python 3.0 模拟用户登录功能并实现三次错误锁定，希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+

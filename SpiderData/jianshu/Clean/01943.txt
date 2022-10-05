@@ -1,0 +1,42 @@
+launch命令roslaunch mbot_description display_mbot_base_urdf.launch
+
+报错：
+
+ERROR: cannot launch node of type [joint_state_publisher/joint_state_publisher_gui]: can't locate node [joint_state_publisher_gui] in package [joint_state_publisher]
+
+注意这里的错误是说在joint_state_publisher  里找不到joint_state_publisher_gui
+
+解决方法：
+
+1、复制文件，从lib到share
+
+这个joint_state_publisher_gui指的是一个python文件，这个在joint_state_publisher_gui这个文件夹下面，名字相同。
+
+执行下面的两行代码：
+
+（1）roscd joint_state_publisher
+
+（2）sudo cp ../../lib/joint_state_publisher_gui/joint_state_publisher_gui ./
+
+第一条，直接定位到 share 文件夹下面的 joint_state_publisher。
+
+第二条，从 lib 下的 joint_state_publisher_gui，将同名文件 joint_state_publisher_gui（python文件）复制到 lib 下面的 joint_state_publisher。
+
+这里与网上查到的操作不同，要仔细看自己的错误到底是什么。
+
+注意：
+
+如果没有！！安装：sudo apt-get install ros-kinetic-joint-state-publisher-gui
+
+如果 ROS 版本不同，修改相应名称即可。如果安装找不到这个包，则可能需要先sudo apt update一下。
+
+==========================
+
+2、仍未显示
+
+此时，执行上面的 launch 命令，就不会报错了，但是有可能还是不会显示。执行以下两个操作：
+
+（1）将Fixed Frame 改为 base_link，这个Fixed Frame指的是 Displays|Global Options 下面的第一行，右侧的值改为 base_link（原来为 map）
+
+（2）点击下方的 Add 按钮添加 RobotModel
+

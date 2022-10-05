@@ -1,0 +1,7 @@
+解决方案:
+将出错的函数变量__pyx_t_5numpy_int32_t*，改成int*(见红色字体)。接着，为了保证gpu_nms.cpp不再由gpu_nms.pyx自动生成，需要将setup.py中ext_modules数组下的nms/gpu_nms.pyx改为nms/gpu_nms.cpp。
+
+error:
+
+_nms((&(__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int32_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_keep.diminfo[0].strides))), (&__pyx_v_num_out), (&(*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float32_t , __pyx_pybuffernd_sorted_dets.rcbuffer->pybuffer.buf, __pyx_t_12, __pyx_pybuffernd_sorted_dets.diminfo[0].strides, __pyx_t_13, __pyx_pybuffernd_sorted_dets.diminfo[1].strides))), __pyx_v_boxes_num, __pyx_v_boxes_dim, __pyx_t_14, __pyx_v_device_id);
+

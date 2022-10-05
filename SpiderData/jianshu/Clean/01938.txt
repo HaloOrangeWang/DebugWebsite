@@ -1,0 +1,34 @@
+我在使用pygal调用国别码、绘制世界地图的时候，遇到了两个问题，
+
+一是使用下方语句调用国别码的时候
+
+from pygal.i18n import COUNTRIES
+
+出现了如下报错：
+
+ModuleNotFoundError: No module named 'pygal.i18n'
+
+二是使用下方语句绘制世界地图的时候
+
+import pygal
+wm = pygal.Worldmap()
+
+出现了如下报错
+
+AttributeError: module 'pygal' has no attribute 'Worldmap'
+
+这是为什么呢？
+
+对于我的第一个报错，事实上，pygal.i18n 已经不存在了，现在已经更改成了 pygal_maps_world ，需要单独通过pip下载，我使用的是Python3，因此需要在终端使用 pip3 指令进行安装：
+
+pip3 install pygal_maps_world
+
+安装成功之后，就可以正常调用国别码了。
+
+而对于绘制世界地图的指令，也就是我遇到的第二个报错，语句相应地更改模块名称：
+
+import pygal.maps.world
+wm = pygal.maps.world.World()
+
+修改之后，就可以正常绘制地图了。
+

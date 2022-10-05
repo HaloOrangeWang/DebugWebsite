@@ -1,0 +1,216 @@
+
+Python的异常处理
+
+Python的异常处理try的基本用法。
+
+方法一 ：try..except
+
+把通常的语句放在 try 代码块中，将错误处理器代码放置在 except 代码块中。
+
+try:        # 尝试运行以下代码
+    result = 4 / 0
+    print(result)
+except:        # 捕获到异常执行以下代码
+    print('程序异常')
+
+运行结果：程序异常
+
+通过上面可以看到，如果没有出现异常，它只运行try下的代码；出现异常，它就运行了except的代码。
+
+如果明确知道报的的是ZeroDivisionError异常的话，那可以这样写：
+
+try:
+    x = 4 / 0
+    print(x)
+except ZeroDivisionError:        # 捕获到ZeroDivisionError，执行代码
+    print('不能除零')
+except:                            # 如果出现其它错误，执行代码
+    print('其它错误')
+
+运行结果：不能除零
+
+如果想看捕获的异常详细信息，可以：
+
+try:
+    x = 4 / 0
+    print(x)
+except ZeroDivisionError as ze:        # 捕获到ZeroDivisionError，执行代码
+    print('出现异常',ze)
+
+运行结果：出现异常 division by zero
+
+方法二：try...else语句
+
+else语句：在try语句中的代码没有任何异常的情况下，再执行else语句下的代码。
+
+try:
+    x = 4 / 0
+    print(x)
+except ZeroDivisionError:        # 捕获到ZeroDivisionError，执行代码
+    print('不能除零')
+except:                            # 出现其它错误，执行代码
+    print('其它错误')
+else:                            # 如果try执行没有出现异常，再执行else中的代码
+    print('没有异常')
+
+运行结果：不能除零
+
+方法五：try...finally语句
+
+finally语句：不管上面有没有异常，都要执行finally语句的代码，通常是做一些必须要释放的资源的代码，最典型的就是文件操作和数据库操作。
+
+f = open('data.txt')
+try:
+    print(f.read())
+except:
+    print('文件操作错误')    # 文件始终是打开的，可能后面再读取的时候就会遇到错误，这种情况下适合用finally
+finally:                        # 不管上面有没有出现异常，都要执行finally下的代码
+    f.close()
+
+运行结果：文件操作错误
+
+方法六：抛出异常
+
+def method():
+    raise NotImplementedError('该方法代码还未实现')
+    # 设设定默认的报错
+method()
+
+运行结果：
+
+Traceback (most recent call last):
+  File "D:/python/lianxi/add.py", line 17, in <module>
+    method()
+  File "D:/python/lianxi/add.py", line 15, in method
+    raise NotImplementedError('该方法代码还未实现')
+NotImplementedError: 该方法代码还未实现
+
+raise语句是抛出一个指定的异常。
+
+
+Python调试常见报错及解决
+
+问题一：TabError: inconsistent use of tabs and spaces in indentation
+
+C:\Users\tl>python C:\Users\tl\Desktop\test.py
+  File "C:\Users\tl\Desktop\test.py", line 7
+    num1 = 4
+           ^
+TabError: inconsistent use of tabs and spaces in indentation
+
+直接定义值的方式不正确
+
+问题二：IndentationError: unexpected indent
+
+C:\Users\tl>python C:\Users\tl\Desktop\test.py
+  File "C:\Users\tl\Desktop\test.py", line 11
+    print compareNum
+                   ^
+IndentationError: unexpected indent
+
+该行缩进不正确
+
+问题三：SyntaxError: Missing parentheses in call to 'print'. Did you mean print(compareNum)?
+
+C:\Users\tl>python C:\Users\tl\Desktop\test.py
+  File "C:\Users\tl\Desktop\test.py", line 11
+    print compareNum
+                   ^
+SyntaxError: Missing parentheses in call to 'print'. Did you mean print(compareNum)?
+
+Print后面没有加括号
+
+问题四：SyntaxError: Non-ASCII character '\xe4' in file
+
+/Users/alice/venv/bin/python /Users/alice/PycharmProjects/first/venv/tensorflow1.py
+  File "/Users/alice/PycharmProjects/first/venv/tensorflow1.py", line 5
+SyntaxError: Non-ASCII character '\xe4' in file /Users/alice/PycharmProjects/first/venv/tensorflow1.py on line 5, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+
+Process finished with exit code 1
+
+使用了中文编码或者字符，解决方法：在Python源文件的最开始一行，加入一句：# coding=UTF-8（等号换为”:“也可以）
+
+问题五：SyntaxError: EOL while scanning string literal
+
+File "/Users/alice/PycharmProjects/untitled/createdataconnectsql.py", line 17
+    sql = "SELECT * FROM idCard
+                              ^
+SyntaxError: EOL while scanning string literal
+
+idCard后面少了引号
+
+问题六：SyntaxError: unexpected EOF while parsing
+
+File "/Users/alice/PycharmProjects/untitled/createdataconnectsql.py", line 35
+    
+               ^
+SyntaxError: unexpected EOF while parsing
+
+少了部分函数，检查代码发现原try函数后面少了except，加上后即可
+
+try:
+   # 执行SQL语句
+   cursor.execute(sql)
+   # 获取所有记录列表
+   results = cursor.fetchall()
+   for row in results:
+      fname = row[0]
+      lname = row[1]
+      age = row[2]
+      sex = row[3]
+      income = row[4]
+      # 打印结果
+      print ("fname=%s,lname=%s,age=%s,sex=%s,income=%s")
+except:
+   print ("Error: unable to fecth data")
+
+问题七：TypeError: bad operand type for unary +: 'str'
+
+检查代码发现是因为/的位置不对，放在了'的外面
+
+image.save('/Users/alice/Documents/CreatFontDemo/photo'+row[0]+/'等比例缩小.JPG', 'jpeg')
+
+修改为'里面就不报错了
+
+image.save('/Users/alice/Documents/CreatFontDemo/photo'+row[0]+'/等比例缩小.JPG', 'jpeg')
+
+问题八：TypeError: %c requires int or char
+TypeError: %d format: a number is required, not str
+
+Traceback (most recent call last):
+  File "/Users/litan/PycharmProjects/untitled2/test.py", line 3, in <module>
+    print ('%s and %c are fruit! '%(a,b) )
+TypeError: %c requires int or char
+
+或者：
+
+Traceback (most recent call last):
+  File "/Users/litan/PycharmProjects/untitled2/test.py", line 3, in <module>
+    print ('%s and %d are fruit! '%(a,b) )
+TypeError: %d format: a number is required, not str
+
+检查代码发现是因为变量引用的方式不对，%c 改成 %s就可以了
+
+a="apple"
+b="banana"
+print ('%s and %s are fruit! '%(a,b) )
+
+问题九：TypeError: 'int' object is not subscriptable
+
+Traceback (most recent call last):
+  File "/Users/alice/PycharmProjects/Mypython/renren.py", line 5, in <module>
+    if m[0]==m[-1]:
+TypeError: 'int' object is not subscriptable
+
+分析原因是subscriptable表示可以有下标，当不可以有下标的对象比如int使用了下标，就会报错，那么需要将原本的int转化为支持的类型
+
+for m in range(1,10):
+    m="%d" % m
+    # 或者m=str(m)均可
+    if m[0]==m[-1]:
+        print(m)
+
+问题十：requests.exceptions.ConnectionError: HTTPConnectionPool(host='test.com', port=80)
+
+这个可能是服务器或网络不通，可以尝试看浏览器里是否可访问
+

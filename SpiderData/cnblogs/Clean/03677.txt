@@ -1,0 +1,83 @@
+py2exe的使用方法参考《py2exe使用方法》。
+
+注：程序可以在解释器中正常运行，一切问题都出在打包过程中。
+
+问题1：
+
+现象：RuntimeError: maximum recursion depth exceeded in comparison.
+
+原因：Python递归报错。Python中默认的最大递归深度是989，当尝试递归第990时便出现递归深度超限的错误。
+
+解决：在setup.exe中手动设置递归调用深度为10000000，代码如下：
+
+import sys
+sys.setrecursionlimit(10000000)
+
+问题2：
+
+现象： import _tkinter ImportError: DLL load failed: %1 不是有效的 Win32 应用程序。
+
+原因：python解释器版本与tkinter版本不一致。可能是安装了多个python解释器，或者tkinter不是用pip安装、导致其版本与python解释器版本不一致。（本次遇到的情况属于后者）
+
+解决：安装对应版本的python解释器（2.7.10）
+
+问题3：
+
+现象： [Errno 2] No such file or directory: 'libopenblas.IPBC74C7KURV7CB2PKT5Z5FNR3SIBV4J.gfortran-win_amd64.dll'
+
+解决：在setup.py的setup-options中，dll_excludes下添加 'libopenblas.JKAMQ5EVHIVCPXP2XZJB2RQPIN47S32M.gfortran-win32.dll' ，排除这个dll文件
+
+至此，已经可以打包完成，但打包后的exe无法运行。
+
+问题4：
+
+现象：运行exe时弹出命令行窗口报错，之后在log中发现报错原因： ImportError: No module named mpl_toolkits.
+
+尝试：中间尝试过在setup.py的setup-options中添加"includes"或"packages"指令，打包时就指定必须导入这个模块。这样的结果就是，打包过程中就出现上述报错，无法完成打包。下文“引申”中的两种方法也尝试过了，都无法解决问题。
+
+解决：仔细查看程序，发现其实不需要用到mpl_toolkits包，于是注释掉mpl_toolkits的导入。
+
+引申：搜索发现这种问题还是比较普遍的，主要的解决方式有两种，以后再出现这个错误时可以尝试这些解决方法（这次的问题这两个方法都无法解决）：
+
+认为原因在于py2exe无法识别运行时的动态导入，解决办法是在文件头就import相关模块（也有人建议，在这个办法的基础上，import部分结束之后，显式地调用一次这个模块，比如xxxx.__version__）
+
+【原地址：https://bytes.com/topic/python/answers/168576-help-py2exe-error-no-module-named-decimal】
+
+【原地址：https://bytes.com/topic/python/answers/168576-help-py2exe-error-no-module-named-decimal】
+
+认为原因在于py2exe无法识别egg文件。他的解决办法是： 我发现python的Lib/site-packages下安装的是egg文件，beautifulsoup4-4.4.0-py2.7.egg。用winrar将其解压，把bs4目录直接放到Lib/site-packages下，再打包并执行，一切正常。问题解决。
+
+【原地址：https://www.cnblogs.com/simplestupid/p/4716658.html】
+
+【原地址：https://www.cnblogs.com/simplestupid/p/4716658.html】
+
+问题5：
+
+现象：RuntimeError: Could not find the matplotlib data files.
+
+原因：matplotlib运行时缺失一些必要的文件。
+
+解决：在setup.py的setup-options-includes中添加
+
+"matplotlib.backends",
+"matplotlib.figure",
+"matplotlib.backends.backend_tkagg"
+
+在setup.py的setup中添加
+
+问题6：
+
+现象：OMP: warning #178:Function GetModuleHandleEx failed:   OMP: System error #126: 找不到模块
+
+解决：在setup.py的setup-options中，取消 "bundle_files":1，不再将所有文件打包到一个exe中。
+
+引申：这个问题出现于用py2exe打包、含numpy包，且把所有文件打包到一个exe中的时候。值得参考的解决方法是： 在setup.py的setup-options中excludes("scipy"和)"numpy"，并将它们的整个包文件夹复制到dist目录中，并将该目录添加到python main.py顶部的系统路径中 。
+
+【原地址（关于此报错的一些讨论）：https://stackoverflow.com/questions/22412984/omp-warning-when-numpy-1-8-0-is-packaged-with-py2exe】
+
+【原地址（关于此报错的一些讨论）：https://stackoverflow.com/questions/22412984/omp-warning-when-numpy-1-8-0-is-packaged-with-py2exe】
+
+【原地址（关于此报错的一些讨论）：https://stackoverflow.com/questions/22412984/omp-warning-when-numpy-1-8-0-is-packaged-with-py2exe】
+
+附：最终的setup.py
+

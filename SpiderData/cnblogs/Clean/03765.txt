@@ -1,0 +1,38 @@
+解决yum安装报错Protected multilib versions
+
+例如：安装zlib时候报错（其它类同）
+
+yum install -y zlib zlib-devel
+
+Protected multilib versions: zlib-1.2.7-17.el7.x86_64 != zlib-1.2.7-15.el7.i68612
+
+原因是因为多个库不能共存，不过更新的话也并不行，但是可以在安装命令后面加上
+
+--setopt=protected_multilib=false
+
+完整命令就是
+yum install -y zlib zlib-devel --setopt=protected_multilib=false
+
+centos7首次安装pycharm出现，设定路由时出现下面错误提示，就是上层路由指定到下层路由，没有设定好：
+
+RuntimeError: maximum recursion depth exceeded while calling a Python object
+
+使用django自带的user认证，把user存入session需要user.username，否则会报错
+
+报错：Object of type LoginUser is not JSON serializable
+
+错误：File "/usr/lib64/python2.7/_strptime.py", line 328, in _strptime
+data_string[found.end():])
+ValueError: unconverted data remains:
+
+第一种：读取的信息带有换行符"\n" ，需要把换行符去掉
+
+错误：Could not retrieve mirrorlist http://mirrorlist.centos.org/?release=7&arch=x86_64&repo=os&infra=stock error was 14: curl#6 - "Could not resolve host: mirrorlist.centos.org; Unknown error"
+
+错误：使用navicat连接mysql8.0数据库时，提示1251-client does not support authentication protocol requested by server;consider upgrading mysql client
+
+错误：uwsgi no python application found
+
+第一种：
+有可能是引的urls.py有问题，导致一直循环，检查代码是否有import urls.py，重复引入路由
+

@@ -1,0 +1,38 @@
+
+Python报错： Using TensorFlow backend
+
+
+环境：
+
+系统：win10
+	pycharm2017
+
+
+问题描述
+
+导入keras库运行时，Python总是出现Using TnesorFlow backend报错。
+
+
+解决过程
+
+网上有多种解决方案，下面列举并说明效果。
+	
+	**1.导入os头文件，并如下设置**
+		import os
+		os.environ['KERAS_BACKEND']='tensorflow'		
+	
+	结果：失败
+	
+	**2.重新安装tensorflow**
+			conda uninstall tensorflow
+			conda install tensorflow
+	
+	结果：失败
+
+**3.从tensorflow中导入keras**
+		from tensorflow import keras
+	
+	结果：成功
+
+说明：tensorflow 2.0 已经将tf.keras作为高级API，可以使用。
+

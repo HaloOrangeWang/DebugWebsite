@@ -1,0 +1,14 @@
+前两天在一台linux服务器安装python3.6的时候报了如下错误：
+ python3.6: error while loading shared libraries: libpython3.6m.so.1.0:cannot open shared object file: No such file or directory
+ 使用命令ldd /usr/local/Python-3.6/bin/python3检查其动态链接发现确实缺少了这个；
+ 使用如下方法解决：
+ 1、进入解压后的编译目录
+ [root@www root]# cd /root/test/Python-3.6.5
+ 2、拷贝文件到lib库；
+
+[root@www Python-3.6.5]#  cp libpython3.6m.so.1.0 /usr/local/lib64/
+[root@www Python-3.6.5]#  cp libpython3.6m.so.1.0 /usr/lib/ 
+[root@www Python-3.6.5]#  cp libpython3.6m.so.1.0 /usr/lib64/
+
+如此便可以解决了
+

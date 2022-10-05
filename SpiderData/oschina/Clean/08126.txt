@@ -1,0 +1,111 @@
+在开发中，有时，我们花了几个小时写的 JS 代码，在游览器调试一看，控制台一堆红，瞬间一万头草泥马奔腾而来。至此，本文主要记录 JS 常见的一些报错类型，以及常见的报错信息，分析其报错原因，并给予处理方法。并且将介绍几种捕获异常的方法。
+
+
+常见的错误类型
+
+RangeError：标记一个错误，当设置的数值超出相应的范围触发。比如，new Array(-20)。
+
+ReferenceError：引用类型错误，当一个不存在的变量被引用时发生的错误。比如：console.log(a)。
+
+SyntaxError：语法错误。比如 if(true) {。
+
+TypeError：类型错误，表示值的类型非预期类型时发生的错误。
+
+
+常见的错误
+
+RangeError: Maximum call stack size exceeded
+
+含义：超出了最大的堆栈大小
+
+为什么报错?
+
+在使用递归时消耗大量堆栈，导致游览器抛出错误，因为游览器给分配的内存不是无限的。
+
+举个栗子
+
+function pow(x, n) { return x * pow(x, n - 1);}pow(10,5);
+
+处理办法
+
+使用递归的时候，设定一个条件来终止递归，否则会无限循环，直到用尽调用堆栈空间为止。
+
+function pow(x, n) { if (n == 1) return x; return x * pow(x, n - 1); }pow(10,5);
+
+ReferenceError: "x" is not defined
+
+含义：“x”未定义
+
+为什么报错？
+
+当你引用一个没有定义的变量时，抛出一个ReferenceError; 当你使用变量的时候，这个变量必须要声明，或者你可以确保它在你当前的脚本或作用域 (scope) 中可用。
+
+举个栗子
+
+// 变量未声明console.log(a);fn();// 错误的作用域 function sum() { let number1 = 20,number2 = 30; return number1 + number2;}console.log(number1);
+
+处理办法
+
+1. 变量使用var|let|const声明
+
+2. 提升变量的作用域
+
+// 变量未声明let a;function fn() {};console.log(a);fn();// 错误的作用域let number1 = 20, number2 = 30;function sum() { return number1 + number2;}console.log(number1);
+
+SyntaxError: Identifier 'x' has already been declared
+
+含义: 标识符已声明
+
+为什么报错？
+
+某个变量名称已经作为参数出现了，又在使用let再次声明。
+
+举个栗子
+
+// let 重复声明let a = 0;let a = 2;// 在函数中参数已经出现，函数里使用let重新声明function fn(arg) { let arg = [];}
+
+SyntaxError: Invalid or unexpected token
+
+含义：捕获无效或意外的标记
+
+为什么报错？
+
+代码中有非法的字符或者缺少必要的标识符号，比如减号 ( - ) 与连接符 ( – ) ，或者是英文双引号 ( " ) 与中文双引号 ( “ )。
+
+举个栗子
+
+// 遗漏的字符let str = 'string;let colors = ['#000', #333', '#666'];// 使用特殊字符let str1 = 'string";let str2 = 5#5;// 错配字符(使用中文引号字符)let str3 = ‘string’;
+
+处理办法
+
+检查是否有特殊字符或者是否遗漏一些字符。
+
+SyntaxError: Unexpected end of input
+
+含义：意外的终止输入
+
+为什么报错？
+
+代码中某些地方的括号或引号不匹配缺失，缺少()、[]、{}等。
+
+举个栗子
+
+// 缺少括号if(true)let obj = {id: 1let arr = [1,2,3// 缺少结束符号(function () { console.log('hello world');}()
+
+处理办法
+
+检查是否有特殊字符或者是否遗漏一些字符,括号需要配对出现。
+
+TypeError: Cannot read property 'x' of undefined
+TypeError: Cannot set property 'x' of undefined
+
+含义：无法读取属性‘x’, 无法设置属性 'x'
+
+为什么报错？
+
+访问或设置未定义(undefined)或null值的属性时会发生这种报错。
+
+举个栗子
+
+// undefinedlet a = undefined;a.id; // 读取a.id = 1; // 设置// nulllet b = null;b.id; // 读取b.id = 2.........
+

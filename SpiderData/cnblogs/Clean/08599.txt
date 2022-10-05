@@ -1,0 +1,21 @@
+You are using pip version 7.1.0, however version 20.2.4 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.　　
+
+如上，提示让升级pip所以就按照提示升级了
+
+随后导致报错
+
+查了查问题原因是：Python 2.6站点程序包中有一个不支持Python 2.6的pip版本，也就是不支持这样升级了，python3不影响
+
+找到问题了，就解决当前问题
+
+$ yum remove python-pip
+
+$ cd /usr/local/src
+$ wget https://bootstrap.pypa.io/2.6/get-pip.py
+$ python get-pip.py
+
+$ pip -V
+
+还原后解决了问题
+

@@ -1,0 +1,16 @@
+官方用例很简单，用起来就是一直调不起来报错Flutter Image picker is already active, null exception
+
+这个报错信息太简单了，看不出来什么，大概就是Flutter Image picker已经调起了但是没显示，应该是调起了但因为别的原因失败了。debug详细log里能看到一些信息。最后直接把官方提供的example跑起来可以了。
+
+其实需要的不只是dart代码。还需要在AndroidManifest.xml中加入读写权限
+
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+还需要将example里android/app/src/main/res/drawable-anydpi/ic_back_arrow.xml的文件copy到.android对应目录下，实例代码里用了。如果注释掉的话就不用了
+
+backButtonDrawable: "ic_back_arrow",
+
+总算起来了，不过log里还是打了一堆错误日志，应该是读取所有相册图片的时候某些图片有问题
+

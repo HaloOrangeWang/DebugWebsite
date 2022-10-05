@@ -1,0 +1,25 @@
+Java调用Python脚本无法得到运行结果
+ 主要介绍本人在使用Java的Runtime.getRuntime().exec()方法执行Python脚本时无法得到运行结果的原因。
+
+1.Python程序在本人pycharm中正常运行，但是在Java中运行结果为空。
+ 通过
+ Process pr=Runtime.getRuntime().exec(args1);
+ int res=pr.waitFor();
+ 这两行代码 查看到res的值是1，说明运行Python文件出错了。
+
+2.尝试在cmd中执行这个Python文件，发现了**错误原因是ImportError: No module named xxx
+ ；原来是因为我导入了项目中的Python文件；在pycharm中会默认搜索项目路径，能够找到这个本地的Python文件，但是在cmd中却无法搜索；因此会出错。
+
+3.而Runtime.getRuntime().exec()方法就是利用cmd去执行python脚本，所以会报错。
+
+解决方法
+ 在执行的Python文件的最上方加入
+
+import sys
+import os
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
+
+将项目路径添加到搜索路径中。 这是在java中调用Python就能正常运行了
+

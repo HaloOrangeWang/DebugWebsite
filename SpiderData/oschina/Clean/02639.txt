@@ -1,0 +1,314 @@
+
+1、背景
+
+一台计算节点故障宕机导致该计算节点不能继续工作，先将其移出集群，节点恢复后再重新加入集群发现报错ResourceProviderCreationFailed: Failed to create resource provider
+
+
+2、报错信息
+
+# vim nova-compute.log
+2019-07-16 16:27:55.441 1166754 ERROR nova.scheduler.client.report [req-c50f65e8-ffd8-4a10-8d5e-0ec8d408a3c8 - - - - -] [req-9e5aad63-21d1-4297-be27-92ba9b8bfe9f] Failed to create resource provider record in placement API for UUID 4d
+9ed4b4-f3a2-4e5d-9d8e-2f657a844a04. Got 409: {"errors": [{"status": 409, "request_id": "req-9e5aad63-21d1-4297-be27-92ba9b8bfe9f", "detail": "There was a conflict when trying to complete your request.\n\n Conflicting resource provide
+r name: bdc2 already exists.  ", "title": "Conflict"}]}.
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager [req-c50f65e8-ffd8-4a10-8d5e-0ec8d408a3c8 - - - - -] Error updating resources for node bdc2.: ResourceProviderCreationFailed: Failed to create resource provider bdc2
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager Traceback (most recent call last):
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/compute/manager.py", line 7426, in update_available_resource_for_node
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     rt.update_available_resource(context, nodename)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/compute/resource_tracker.py", line 688, in update_available_resource
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     self._update_available_resource(context, resources)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/oslo_concurrency/lockutils.py", line 274, in inner
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     return f(*args, **kwargs)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/compute/resource_tracker.py", line 712, in _update_available_resource
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     self._init_compute_node(context, resources)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/compute/resource_tracker.py", line 561, in _init_compute_node
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     self._update(context, cn)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/compute/resource_tracker.py", line 886, in _update
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     inv_data,
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/scheduler/client/__init__.py", line 68, in set_inventory_for_provider
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     parent_provider_uuid=parent_provider_uuid,
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/scheduler/client/__init__.py", line 37, in __run_method
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     return getattr(self.instance, __name)(*args, **kwargs)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/scheduler/client/report.py", line 1104, in set_inventory_for_provider
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     parent_provider_uuid=parent_provider_uuid)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/scheduler/client/report.py", line 665, in _ensure_resource_provider
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     parent_provider_uuid=parent_provider_uuid)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/scheduler/client/report.py", line 64, in wrapper
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     return f(self, *a, **k)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager   File "/usr/lib/python2.7/site-packages/nova/scheduler/client/report.py", line 612, in _create_resource_provider
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager     raise exception.ResourceProviderCreationFailed(name=name)
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager ResourceProviderCreationFailed: Failed to create resource provider bdc2
+2019-07-16 16:27:55.442 1166754 ERROR nova.compute.manager
+
+
+3、处理过程
+
+
+3.1、问题一 uuid冲突
+
+具体报错信息，重点看到Conflicting resource provider name: bdc2 already exists. 移除bdc2的时候，确定nova库中的service和computer-node都清除了，包括元数据也delete了，但是这里还是有元数据信息
+
+发现cell库中并没有删除
+
+# nova-manage cell_v2 list_hosts                          
+/usr/lib/python2.7/site-packages/oslo_db/sqlalchemy/enginefacade.py:332: NotSupportedWarning: Configuration option(s) ['use_tpool'] not supported
+  exception.NotSupportedWarning
++-----------+--------------------------------------+----------+
+| Cell Name |              Cell UUID               | Hostname |
++-----------+--------------------------------------+----------+
+|   cell1   | df0d7c04-52b3-454d-a295-4f4ad836526b |   bdc1   |
+|   cell1   | df0d7c04-52b3-454d-a295-4f4ad836526b |   bdc2   |
+|   cell1   | df0d7c04-52b3-454d-a295-4f4ad836526b |   bdc3   |
+|   cell1   | df0d7c04-52b3-454d-a295-4f4ad836526b |   bdc4   |
+|   cell1   | df0d7c04-52b3-454d-a295-4f4ad836526b |   bdc5   |
+|   cell1   | df0d7c04-52b3-454d-a295-4f4ad836526b |   bdc6   |
+|   cell1   | df0d7c04-52b3-454d-a295-4f4ad836526b |   bdc7   |
+|   cell1   | df0d7c04-52b3-454d-a295-4f4ad836526b |   bdc8   |
++-----------+--------------------------------------+----------+
+
+于是手动删除再添加,发现报错并没有改变
+
+# su -s /bin/sh -c "nova-manage cell_v2 delete_host --cell_uuid df0d7c04-52b3-454d-a295-4f4ad836526b --host bdc2 " nova
+# su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
+/usr/lib/python2.7/site-packages/oslo_db/sqlalchemy/enginefacade.py:332: NotSupportedWarning: Configuration option(s) ['use_tpool'] not supported
+  exception.NotSupportedWarning
+Found 2 cell mappings.
+Skipping cell0 since it does not contain hosts.
+Getting compute nodes from cell 'cell1': df0d7c04-52b3-454d-a295-4f4ad836526b
+Found 0 unmapped computes in cell: df0d7c04-52b3-454d-a295-4f4ad836526b
+
+报错中提示的uuid为4d9ed4b4-f3a2-4e5d-9d8e-2f657a844a04和bdc2冲突，检查元数据库，除了nova库，还有nova_api库
+
+MariaDB [nova_api]> select uuid,name from resource_providers where name='bdc2';
++--------------------------------------+------+
+| uuid                                 | name |
++--------------------------------------+------+
+| e131e7c4-f7db-4889-8c34-e750e7b129da | bdc2 |
++--------------------------------------+------+
+
+MariaDB [nova_api]>  select uuid,host from nova.compute_nodes where host='bdc2';
++--------------------------------------+------+
+| uuid                                 | host |
++--------------------------------------+------+
+| 4d9ed4b4-f3a2-4e5d-9d8e-2f657a844a04 | bdc2 |
++--------------------------------------+------+
+
+看到症结所在，确实uuid冲突了，e131e7c4-f7db-4889-8c34-e750e7b129da应该是旧bdc2的uuid 手动更新表resource_providers中的uuid
+
+MariaDB [nova_api]> update resource_providers set uuid='4d9ed4b4-f3a2-4e5d-9d8e-2f657a844a04' where name='bdc2' and uuid='e131e7c4-f7db-4889-8c34-e750e7b129da';
+
+
+3.2、问题二 分配冲突
+
+到这里冲突的问题解决了，但是新增的计算节点还是有异常，创建的新云主机居然不在这台新计算节点上创建，但是可以迁移一个小资源的云主机，不能迁移大资源占用的云主机 nova-compute的日志一直在刷warning
+
+2019-07-16 19:10:02.684 1192779 WARNING nova.compute.resource_tracker 
+[req-7c022b9b-7659-4a4d-9b53-30366a7fd150 - - - - -] Instance 6446a84d-cdfd-4cfe-bcd2-2d1d75db229f has been moved to another host bdc3(bdc3). There are allocations remaining against the source host that might need to be removed: {u'resources': {u'VCPU': 8, u'MEMORY_MB': 16384, u'DISK_GB': 50}}.
+2019-07-16 19:10:02.738 1192779 WARNING nova.compute.resource_tracker [req-7c022b9b-7659-4a4d-9b53-30366a7fd150 - - - - -] Instance e0d8d6df-4b48-402b-aa33-97c4a6166c5b has been moved to another host bdc6(bdc6). There are allocations remaining against the source host that might need to be removed: {u'resources': {u'VCPU': 6, u'MEMORY_MB': 12288, u'DISK_GB': 50}}.
+2019-07-16 19:10:02.791 1192779 WARNING nova.compute.resource_tracker [req-7c022b9b-7659-4a4d-9b53-30366a7fd150 - - - - -] Instance 9d860729-597a-4420-bb8f-e9415587d808 has been moved to another host bdc3(bdc3). There are allocations remaining against the source host that might need to be removed: {u'resources': {u'VCPU': 4, u'MEMORY_MB': 8192, u'DISK_GB': 50}}.
+2019-07-16 19:10:02.860 1192779 WARNING nova.compute.resource_tracker [req-7c022b9b-7659-4a4d-9b53-30366a7fd150 - - - - -] Instance 8e42328d-fd1c-4abc-acac-5c6e09623af6 has been moved to another host bdc5(bdc5). There are allocations remaining against the source host that might need to be removed: {u'resources': {u'VCPU': 8, u'MEMORY_MB': 16384, u'DISK_GB': 50}}.
+2019-07-16 19:10:02.912 1192779 WARNING nova.compute.resource_tracker [req-7c022b9b-7659-4a4d-9b53-30366a7fd150 - - - - -] Instance 1d59e7db-bf1b-478c-a6bd-10287365cb65 has been moved to another host bdc3(bdc3). There are allocations remaining against the source host that might need to be removed: {u'resources': {u'VCPU': 8, u'MEMORY_MB': 16384, u'DISK_GB': 50}}.
+2019-07-16 19:10:02.960 1192779 INFO nova.compute.resource_tracker [req-7c022b9b-7659-4a4d-9b53-30366a7fd150 - - - - -] Instance 61223c2d-0b0c-4729-85e6-741c88e6e476 has allocations against this compute host but is not found in the database.
+2019-07-16 19:10:03.014 1192779 WARNING nova.compute.resource_tracker [req-7c022b9b-7659-4a4d-9b53-30366a7fd150 - - - - -] Instance 50f71a07-306d-4d2c-8f4a-6eaa11fbd233 has been moved to another host bdc6(bdc6). There are allocations remaining against the source host that might need to be removed: {u'resources': {u'VCPU': 8, u'MEMORY_MB': 16384, u'DISK_GB': 50}}.: InstanceNotFound_Remote: Instance 61223c2d-0b0c-4729-85e6-741c88e6e476 could not be found.
+2019-07-16 19:10:03.068 1192779 WARNING nova.compute.resource_tracker [req-7c022b9b-7659-4a4d-9b53-30366a7fd150 - - - - -] Instance 0e7c21d4-a5fb-4059-aa47-bad47700e827 has been moved to another host bdc1(bdc1). There are allocations remaining against the source host that might need to be removed: {u'resources': {u'VCPU': 8, u'MEMORY_MB': 16384, u'DISK_GB': 50}}.: InstanceNotFound_Remote: Instance 61223c2d-0b0c-4729-85e6-741c88e6e476 could not be found.
+2019-07-16 19:10:03.069 1192779 INFO nova.compute.resource_tracker [req-7c022b9b-7659-4a4d-9b53-30366a7fd150 - - - - -] Final resource view: name=bdc2 phys_ram=131037MB used_ram=512MB phys_disk=115480GB used_disk=0GB total_vcpus=24 used_vcpus=0 pci_stats=[]
+
+Warning信息说明当前计算节点上有几个实例信息与其它节点上的信息冲突，查看元数据库
+
+MariaDB [nova_api]> select * from allocations where resource_provider_id=7;
++---------------------+------------+------+----------------------+--------------------------------------+-------------------+-------+
+| created_at          | updated_at | id   | resource_provider_id | consumer_id                          | resource_class_id | used  |
++---------------------+------------+------+----------------------+--------------------------------------+-------------------+-------+
+| 2019-07-09 09:10:27 | NULL       | 1471 |                    7 | 9d860729-597a-4420-bb8f-e9415587d808 |                 0 |     4 |
+| 2019-07-08 14:58:36 | NULL       | 1444 |                    7 | 61223c2d-0b0c-4729-85e6-741c88e6e476 |                 0 |     6 |
+| 2019-07-09 10:09:33 | NULL       | 1510 |                    7 | e0d8d6df-4b48-402b-aa33-97c4a6166c5b |                 0 |     6 |
+| 2019-07-09 09:18:30 | NULL       | 1477 |                    7 | 1d59e7db-bf1b-478c-a6bd-10287365cb65 |                 0 |     8 |
+| 2019-07-09 09:26:26 | NULL       | 1483 |                    7 | 6446a84d-cdfd-4cfe-bcd2-2d1d75db229f |                 0 |     8 |
+| 2019-07-09 09:36:40 | NULL       | 1486 |                    7 | 0e7c21d4-a5fb-4059-aa47-bad47700e827 |                 0 |     8 |
+| 2019-07-09 09:46:02 | NULL       | 1492 |                    7 | 8e42328d-fd1c-4abc-acac-5c6e09623af6 |                 0 |     8 |
+| 2019-07-09 10:02:57 | NULL       | 1504 |                    7 | 50f71a07-306d-4d2c-8f4a-6eaa11fbd233 |                 0 |     8 |
+| 2019-07-09 09:10:27 | NULL       | 1472 |                    7 | 9d860729-597a-4420-bb8f-e9415587d808 |                 1 |  8192 |
+| 2019-07-08 14:58:36 | NULL       | 1445 |                    7 | 61223c2d-0b0c-4729-85e6-741c88e6e476 |                 1 | 12288 |
+| 2019-07-09 10:09:33 | NULL       | 1511 |                    7 | e0d8d6df-4b48-402b-aa33-97c4a6166c5b |                 1 | 12288 |
+| 2019-07-09 09:18:30 | NULL       | 1478 |                    7 | 1d59e7db-bf1b-478c-a6bd-10287365cb65 |                 1 | 16384 |
+| 2019-07-09 09:26:26 | NULL       | 1484 |                    7 | 6446a84d-cdfd-4cfe-bcd2-2d1d75db229f |                 1 | 16384 |
+| 2019-07-09 09:36:40 | NULL       | 1487 |                    7 | 0e7c21d4-a5fb-4059-aa47-bad47700e827 |                 1 | 16384 |
+| 2019-07-09 09:46:02 | NULL       | 1493 |                    7 | 8e42328d-fd1c-4abc-acac-5c6e09623af6 |                 1 | 16384 |
+| 2019-07-09 10:02:57 | NULL       | 1505 |                    7 | 50f71a07-306d-4d2c-8f4a-6eaa11fbd233 |                 1 | 16384 |
+| 2019-07-08 14:58:36 | NULL       | 1446 |                    7 | 61223c2d-0b0c-4729-85e6-741c88e6e476 |                 2 |    50 |
+| 2019-07-09 09:10:27 | NULL       | 1473 |                    7 | 9d860729-597a-4420-bb8f-e9415587d808 |                 2 |    50 |
+| 2019-07-09 09:18:30 | NULL       | 1479 |                    7 | 1d59e7db-bf1b-478c-a6bd-10287365cb65 |                 2 |    50 |
+| 2019-07-09 09:26:26 | NULL       | 1485 |                    7 | 6446a84d-cdfd-4cfe-bcd2-2d1d75db229f |                 2 |    50 |
+| 2019-07-09 09:36:40 | NULL       | 1488 |                    7 | 0e7c21d4-a5fb-4059-aa47-bad47700e827 |                 2 |    50 |
+| 2019-07-09 09:46:02 | NULL       | 1494 |                    7 | 8e42328d-fd1c-4abc-acac-5c6e09623af6 |                 2 |    50 |
+| 2019-07-09 10:02:57 | NULL       | 1506 |                    7 | 50f71a07-306d-4d2c-8f4a-6eaa11fbd233 |                 2 |    50 |
+| 2019-07-09 10:09:33 | NULL       | 1512 |                    7 | e0d8d6df-4b48-402b-aa33-97c4a6166c5b |                 2 |    50 |
++---------------------+------------+------+----------------------+--------------------------------------+-------------------+-------+
+24 rows in set (0.00 sec)
+
+MariaDB [nova_api]> select * from allocations where consumer_id='9d860729-597a-4420-bb8f-e9415587d808';
++---------------------+------------+------+----------------------+--------------------------------------+-------------------+------+
+| created_at          | updated_at | id   | resource_provider_id | consumer_id                          | resource_class_id | used |
++---------------------+------------+------+----------------------+--------------------------------------+-------------------+------+
+| 2019-07-09 09:10:27 | NULL       | 1468 |                    6 | 9d860729-597a-4420-bb8f-e9415587d808 |                 0 |    4 |
+| 2019-07-09 09:10:27 | NULL       | 1469 |                    6 | 9d860729-597a-4420-bb8f-e9415587d808 |                 1 | 8192 |
+| 2019-07-09 09:10:27 | NULL       | 1470 |                    6 | 9d860729-597a-4420-bb8f-e9415587d808 |                 2 |   50 |
+| 2019-07-09 09:10:27 | NULL       | 1471 |                    7 | 9d860729-597a-4420-bb8f-e9415587d808 |                 0 |    4 |
+| 2019-07-09 09:10:27 | NULL       | 1472 |                    7 | 9d860729-597a-4420-bb8f-e9415587d808 |                 1 | 8192 |
+| 2019-07-09 09:10:27 | NULL       | 1473 |                    7 | 9d860729-597a-4420-bb8f-e9415587d808 |                 2 |   50 |
++---------------------+------------+------+----------------------+--------------------------------------+-------------------+------+
+
+可以看到resource_provider_id为7也就是新增的bdc2上有资源分配信息，摘出其中一个实例id查看发现它不仅在7也在6上，联想到先前旧节点上的实例疏散，新增节点是改了uuid继承了旧节点的信息，所以日志会报冲突Warining。并且 (8192+12288+12288+16384+16384+16384+16384+16384)/1024=112G
+
+内存资源占了112G，即将达到当前机器的内存上限，所以创建云主机不会优先选择这个节点，迁移也只能迁移小的
+
+既然已经修改了元数据，那就走到黑，继续清除
+
+MariaDB [nova_api]> delete from allocations where resource_provider_id=7;
+Query OK, 24 rows affected (0.00 sec)
+
+MariaDB [nova_api]> select * from allocations where resource_provider_id=7;
+Empty set (0.00 sec)
+
+
+4、验证
+
+创建三个需要大资源的虚拟机，发现都创建在了bdc2上，并且nova-compute日志中没有刷类似的Warning,说明问题解决。
+
+
+5、备注
+
+OpenStack基础组件的有数据的元数据表
+
+MariaDB [nova_api]> SELECT table_name,table_rows FROM information_schema.tables WHERE TABLE_SCHEMA = 'nova' and table_rows<>0 ORDER BY table_rows DESC; 
++--------------------------+------------+
+| table_name               | table_rows |
++--------------------------+------------+
+| instance_actions_events  |       2335 |
+| instance_system_metadata |       2324 |
+| instance_actions         |       1959 |
+| virtual_interfaces       |        474 |
+| block_device_mapping     |        451 |
+| instance_info_caches     |        267 |
+| instances                |        267 |
+| instance_id_mappings     |        260 |
+| instance_faults          |        217 |
+| instance_extra           |        206 |
+| migrations               |        122 |
+| s3_images                |         17 |
+| services                 |         13 |
+| compute_nodes            |          8 |
+| security_groups          |          6 |
++--------------------------+------------+
+15 rows in set (0.00 sec)
+
+MariaDB [nova_api]> SELECT table_name,table_rows FROM information_schema.tables WHERE TABLE_SCHEMA = 'nova_api' and table_rows<>0 ORDER BY table_rows DESC; 
++--------------------+------------+
+| table_name         | table_rows |
++--------------------+------------+
+| consumers          |        339 |
+| instance_mappings  |        283 |
+| request_specs      |        213 |
+| allocations        |        195 |
+| traits             |        164 |
+| quotas             |         57 |
+| inventories        |         23 |
+| flavors            |          9 |
+| projects           |          8 |
+| key_pairs          |          8 |
+| users              |          8 |
+| resource_providers |          8 |
+| host_mappings      |          8 |
+| cell_mappings      |          2 |
++--------------------+------------+
+14 rows in set (0.01 sec)
+
+MariaDB [nova_api]> SELECT table_name,table_rows FROM information_schema.tables WHERE TABLE_SCHEMA = 'nova_cell0' and table_rows<>0 ORDER BY table_rows DESC; 
++--------------------------+------------+
+| table_name               | table_rows |
++--------------------------+------------+
+| instance_system_metadata |        112 |
+| instance_id_mappings     |         16 |
+| block_device_mapping     |         16 |
+| instance_faults          |         16 |
+| instance_extra           |         16 |
+| instances                |         16 |
+| instance_info_caches     |         16 |
+| s3_images                |          2 |
++--------------------------+------------+
+MariaDB [nova_api]> SELECT table_name,table_rows FROM information_schema.tables WHERE TABLE_SCHEMA = 'cinder' and table_rows<>0 ORDER BY table_rows DESC; 
++------------------------+------------+
+| table_name             | table_rows |
++------------------------+------------+
+| reservations           |        573 |
+| volume_admin_metadata  |        478 |
+| volume_attachment      |        451 |
+| volumes                |        200 |
+| volume_glance_metadata |         64 |
+| quotas                 |         21 |
+| quota_usages           |         15 |
+| quota_classes          |          6 |
+| services               |          2 |
+| workers                |          1 |
++------------------------+------------+
+10 rows in set (0.07 sec)
+
+MariaDB [nova_api]> SELECT table_name,table_rows FROM information_schema.tables WHERE TABLE_SCHEMA = 'glance' and table_rows<>0 ORDER BY table_rows DESC; 
++------------------+------------+
+| table_name       | table_rows |
++------------------+------------+
+| images           |         19 |
+| image_locations  |         19 |
+| image_properties |          9 |
+| alembic_version  |          1 |
++------------------+------------+
+4 rows in set (0.03 sec)
+
+MariaDB [nova_api]> SELECT table_name,table_rows FROM information_schema.tables WHERE TABLE_SCHEMA = 'keystone' and table_rows<>0 ORDER BY table_rows DESC; 
++-----------------+------------+
+| table_name      | table_rows |
++-----------------+------------+
+| endpoint        |         18 |
+| assignment      |         17 |
+| user            |         14 |
+| password        |         14 |
+| local_user      |         14 |
+| project         |         12 |
+| service         |          6 |
+| migrate_version |          4 |
+| role            |          2 |
++-----------------+------------+
+9 rows in set (0.08 sec)
+
+MariaDB [nova_api]> SELECT table_name,table_rows FROM information_schema.tables WHERE TABLE_SCHEMA = 'neutron' and table_rows<>0 ORDER BY table_rows DESC; 
++---------------------------+------------+
+| table_name                | table_rows |
++---------------------------+------------+
+| ml2_vxlan_allocations     |       1000 |
+| standardattributes        |        149 |
+| ports                     |         69 |
+| ipamallocations           |         69 |
+| ipallocations             |         69 |
+| ml2_port_bindings         |         69 |
+| portsecuritybindings      |         69 |
+| securitygroupportbindings |         68 |
+| ml2_port_binding_levels   |         66 |
+| securitygrouprules        |         59 |
+| quotas                    |         56 |
+| quotausages               |         17 |
+| agents                    |         11 |
+| default_security_group    |          8 |
+| segmenthostmappings       |          8 |
+| securitygroups            |          8 |
+| allowedaddresspairs       |          4 |
+| provisioningblocks        |          4 |
+| alembic_version           |          2 |
++---------------------------+------------+
+19 rows in set (0.18 sec)
+
+
+6、总结
+
+1、元数据操作非常危险，尽量不动或者少动，如果要动，先备份数据库;
+2、删除不掉的云主机和卷，不要直接修改元数据的deleted字段，这是自欺欺人的办法，只是dashboard上看不到而已，实际资源并不释放而且后端存储中还存在文件；
+3、硬件操作要小心，总之任何危险的操作都要再三确认。
+

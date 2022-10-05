@@ -1,0 +1,46 @@
+环境背景，windows server 2012 R2，python版本3.7.0
+
+问题1：
+
+源码安装，启动一直卡在result_worker starting...
+
+解决：
+
+用pip install pyspider，然后pip list看到pyspider已经安装成功，pyspider all报错，如下图
+
+如何排查：
+
+这一步是环境的问题，如果有高手指导最好，如果没有，先按照常规的方法，用dos执行pip install pyspider安装。以后熟悉了再下源码安装。
+
+问题2：
+
+如上图，关键字报错，把提示报错的所有async改成async_，启动后如下图
+
+问题3：
+
+如上图，报错domaincontroller
+
+解决：
+
+见参考链接，修改'domaincontroller': NeedAuthController(app),
+
+为
+
+'http_authenticator':{
+
+'HTTPAuthenticator':NeedAuthController(app),
+
+},
+
+启动即可。
+
+问题排查：
+
+网上搜Deprecated  domaincontroller，找到参考链接。
+
+非常感谢Qixn高手一路的指导，在此把这次填坑过程写出来，希望能让后来的人可以少走弯路。
+
+参考链接：
+
+https://blog.csdn.net/qq_37253540/article/details/88196994
+

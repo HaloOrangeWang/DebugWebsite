@@ -1,0 +1,32 @@
+问题描述如下，报没有找到mysql_config环境变量
+
+$ pip install mysql-python
+
+Collecting MySQL-python==1.2.5 (from -r requirement (line 16))
+ Downloading MySQL-python-1.2.5.zip (108kB)
+100% |################################| 112kB 56kB/s 
+Complete output from command python setup.py egg_info:
+sh: mysql_config: command not found
+Traceback (most recent call last):
+ File "<string>", line 1, in <module>
+ File "/tmp/pip-build-HVEeJz/MySQL-python/setup.py", line 17, in <module>
+ metadata, options = get_config()
+ File "setup_posix.py", line 43, in get_config
+ libs = mysql_config("libs_r")
+ File "setup_posix.py", line 25, in mysql_config
+ raise EnvironmentError("%s not found" % (mysql_config.path,))
+EnvironmentError: mysql_config not found
+
+----------------------------------------
+Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-build-HVEeJz/MySQL-python/
+
+解决：
+
+因为相关依赖没有安装
+
+Ubuntu/Debian
+
+sudo apt-get install libmysqlclient-dev
+
+以上这篇解决Ubuntu pip 安装 mysql-python包出错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

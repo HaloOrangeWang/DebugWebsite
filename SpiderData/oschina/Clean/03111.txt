@@ -1,0 +1,132 @@
+【背景】
+
+　　今天我把算把自己的python基础平台从python-3.6.2升级到python-3.7.2，在我安装完python-3.7.2之后，打算在此基础之上安装
+
+　　mysqlclient的时候报错了；
+
+pip3 install mysqlclient
+Collecting mysqlclient
+  Downloading https://files.pythonhosted.org/packages/de/d7/919042fb7ed78a89e21c4e43d5daed90d5df18ec183bae3de493a7d9e3ed/mysqlclient-1.4.1.tar.gz (85kB)
+    100% |████████████████████████████████| 92kB 33kB/s 
+Installing collected packages: mysqlclient
+  Running setup.py install for mysqlclient ... error
+    Complete output from command /Library/Frameworks/Python.framework/Versions/3.7/bin/python3.7 -u -c "import setuptools, tokenize;__file__='/private/tmp/pip-install-27wftw10/mysqlclient/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /private/tmp/pip-record-678j2sqk/install-record.txt --single-version-externally-managed --compile:
+    running install
+    running build
+    running build_py
+    creating build
+    creating build/lib.macosx-10.9-x86_64-3.7
+    creating build/lib.macosx-10.9-x86_64-3.7/MySQLdb
+    copying MySQLdb/__init__.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb
+    copying MySQLdb/_exceptions.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb
+    copying MySQLdb/compat.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb
+    copying MySQLdb/connections.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb
+    copying MySQLdb/converters.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb
+    copying MySQLdb/cursors.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb
+    copying MySQLdb/release.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb
+    copying MySQLdb/times.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb
+    creating build/lib.macosx-10.9-x86_64-3.7/MySQLdb/constants
+    copying MySQLdb/constants/__init__.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb/constants
+    copying MySQLdb/constants/CLIENT.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb/constants
+    copying MySQLdb/constants/CR.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb/constants
+    copying MySQLdb/constants/ER.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb/constants
+    copying MySQLdb/constants/FIELD_TYPE.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb/constants
+    copying MySQLdb/constants/FLAG.py -> build/lib.macosx-10.9-x86_64-3.7/MySQLdb/constants
+    running build_ext
+    building 'MySQLdb._mysql' extension
+    creating build/temp.macosx-10.9-x86_64-3.7
+    creating build/temp.macosx-10.9-x86_64-3.7/MySQLdb
+    gcc -Wno-unused-result -Wsign-compare -Wunreachable-code -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -arch x86_64 -g -Dversion_info=(1,4,1,'final',0) -D__version__=1.4.1 -I/usr/local/homebrew/Cellar/mysql/8.0.12/include/mysql -I/Library/Frameworks/Python.framework/Versions/3.7/include/python3.7m -c MySQLdb/_mysql.c -o build/temp.macosx-10.9-x86_64-3.7/MySQLdb/_mysql.o
+    gcc -bundle -undefined dynamic_lookup -arch x86_64 -g build/temp.macosx-10.9-x86_64-3.7/MySQLdb/_mysql.o -L/usr/local/homebrew/Cellar/mysql/8.0.12/lib -lmysqlclient -lssl -lcrypto -o build/lib.macosx-10.9-x86_64-3.7/MySQLdb/_mysql.cpython-37m-darwin.so
+    ld: library not found for -lssl
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+    error: command 'gcc' failed with exit status 1
+    
+    ----------------------------------------
+Command "/Library/Frameworks/Python.framework/Versions/3.7/bin/python3.7 -u -c "import setuptools, tokenize;__file__='/private/tmp/pip-install-27wftw10/mysqlclient/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /private/tmp/pip-record-678j2sqk/install-record.txt --single-version-externally-managed --compile" failed with error code 1 in /private/tmp/pip-install-27wftw10/mysqlclient/
+You are using pip version 18.1, however version 19.0.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+【问题分析】
+
+　　从上面的内容可以看出安装过程中加载不了目标库文件 lssl ，而这个是openssl的软件包中的内容、我把上面日志中关键的几行摘下来
+
+ld: library not found for -lssl
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+    error: command 'gcc' failed with exit status 1
+
+　　
+
+　　这下就冤有头债有主了、我只要告诉gcc库文件和连接文件都在哪里就行了、由于我是用homebrew进行包管理的、info一下就会有答案了
+
+brew config openssl
+Usage: brew config
+
+Show Homebrew and system configuration useful for debugging. If you file
+a bug report, you will likely be asked for this information if you do not
+provide it.
+
+-v, --verbose                    Make some output more verbose.
+    -d, --debug                      Display any debugging information.
+    -h, --help                       Show this message.
+
+Error: Invalid usage
+JianglexingdeMacBook-Pro:~ jianglexing$ brew info openssl
+openssl: stable 1.0.2p [keg-only]
+SSL/TLS cryptography library
+https://openssl.org/
+/usr/local/homebrew/Cellar/openssl/1.0.2n (1,784 files, 12.3MB)
+  Built from source on 2018-01-07 at 11:30:02
+/usr/local/homebrew/Cellar/openssl/1.0.2o_2 (1,784 files, 12.3MB)
+  Built from source on 2018-08-13 at 13:12:02
+/usr/local/homebrew/Cellar/openssl/1.0.2p (1,785 files, 12.3MB)
+  Built from source on 2018-08-23 at 14:05:54
+From: https://github.com/Homebrew/homebrew-core/blob/master/Formula/openssl.rb
+==> Dependencies
+Build: makedepend ✔
+==> Options
+--without-test
+    Skip build-time tests (not recommended)
+==> Caveats
+A CA file has been bootstrapped using certificates from the SystemRoots
+keychain. To add additional certificates (e.g. the certificates added in
+the System keychain), place .pem files in
+  /usr/local/homebrew/etc/openssl/certs
+
+and run
+  /usr/local/homebrew/opt/openssl/bin/c_rehash
+
+openssl is keg-only, which means it was not symlinked into /usr/local/homebrew,
+because Apple has deprecated use of OpenSSL in favor of its own TLS and crypto libraries.
+
+If you need to have openssl first in your PATH run:
+  echo 'export PATH="/usr/local/homebrew/opt/openssl/bin:$PATH"' >> ~/.bash_profile
+
+For compilers to find openssl you may need to set:
+  export LDFLAGS="-L/usr/local/homebrew/opt/openssl/lib"
+  export CPPFLAGS="-I/usr/local/homebrew/opt/openssl/include"
+
+For pkg-config to find openssl you may need to set:
+  export PKG_CONFIG_PATH="/usr/local/homebrew/opt/openssl/lib/pkgconfig"
+
+　　我还是把上面日志中关键的信息摘一下吧；现在问题的解决方案就非常的清楚了，把下面的那两个export运行一下
+
+For compilers to find openssl you may need to set:
+  export LDFLAGS="-L/usr/local/homebrew/opt/openssl/lib"
+  export CPPFLAGS="-I/usr/local/homebrew/opt/openssl/include"
+
+【解决问题】
+
+export LDFLAGS="-L/usr/local/homebrew/opt/openssl/lib"export CPPFLAGS="-I/usr/local/homebrew/opt/openssl/include"
+
+pip3 install mysqlclient
+Collecting mysqlclient
+  Using cached https://files.pythonhosted.org/packages/de/d7/919042fb7ed78a89e21c4e43d5daed90d5df18ec183bae3de493a7d9e3ed/mysqlclient-1.4.1.tar.gz
+Installing collected packages: mysqlclient
+  Running setup.py install for mysqlclient ... done
+Successfully installed mysqlclient-1.4.1
+You are using pip version 18.1, however version 19.0.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+---
+

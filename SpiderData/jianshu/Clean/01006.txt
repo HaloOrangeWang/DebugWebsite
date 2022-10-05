@@ -1,0 +1,25 @@
+
+Python 报错：_io.TextIOWrapper' object is not callable
+
+翻译为：io.TextIOWrapper 对象不可调用
+
+elif info_list[2] == 'set' and info_list[3] == 'age':
+     RESULT[info_list[1]]['age'] == info_list[-1]
+     print("Update {} {} success!".format(info_list[1], info_list[3]))
+     logTime = datetime.now().strftime("%Y-%m-%d %T")
+     with open('log/action.log', 'a+') as ActionLog:
+        ActionLog.write('{}: admin {} update user {} age {}\n.'.format(logTime,USERINFO[0], info_list[1], info_list[-1]))
+        
+fd = open('data/Table_date.file', 'w')
+fd.write(json.dumps(RESULT))
+fd.close()
+
+原本是赋值的，我写多一个等号，变成判断了
+
+== : 判断
+
+= ：赋值
+
+把 RESULT[info_list[1]]['age'] == info_list[-1] 改成 
+RESULT[info_list[1]]['age'] = info_list[-1]
+

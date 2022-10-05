@@ -1,0 +1,240 @@
+目录
+
+一.Python 异常处理简介
+
+二.Python 异常捕获方式
+
+1.捕获所有异常
+2.捕获指定异常
+3.捕获多个异常
+4.万能的异常捕获
+5.异常中的 else
+6.异常中的 finally
+7.raise 主动触发异常
+
+1.捕获所有异常
+
+2.捕获指定异常
+
+3.捕获多个异常
+
+4.万能的异常捕获
+
+5.异常中的 else
+
+6.异常中的 finally
+
+7.raise 主动触发异常
+
+三.猜你喜欢
+
+零基础 Python 学习路线推荐 : Python 学习目录 >> Python 基础入门
+
+在 Python 开发中，代码书写时难免有疏忽或者意向不到的 bug ，导致程序 run 的过程中有可能会直接崩溃；
+
+然后对于程序猿而言，程序因 bug 崩溃是家常便饭，为了增加程序的健壮性，防止程序崩溃，我们可以对程序的有可能发生崩溃的代码增加异常处理，以达到程序稳健运行的目的。
+
+
+一.Python 异常处理简介
+
+一般情况，Python 无法正常处理程序时，就是会产生异常造成程序崩溃，举个例子：
+
+1.大家都知道分母不能为 0，如果分母为 0，程序必然崩溃；
+
+2.假如 Python 文件读写 中，我们讲解了文件的读写操作，如果我们对一个不存在的文件读取内容，程序必然也会崩溃；
+
+对于以上的各种异常情况，我们可以通过 try…except…解决，那么具体有哪些异常能捕获呢？如下所示：
+
+1.BaseException — 所有异常的基类
+
+2.SystemExit — 解释器请求退出
+
+3.KeyboardInterrupt — 用户中断执行(通常是输入^C)
+
+4.Exception — 常规错误的基类
+
+5.StopIteration — 迭代器没有更多的值
+
+6.GeneratorExit — 生成器(generator)发生异常来通知退出
+
+7.StandardError — 所有的内建标准异常的基类
+
+8.ArithmeticError — 所有数值计算错误的基类
+
+9.FloatingPointError — 浮点计算错误
+
+10.OverflowError — 数值运算超出最大限制
+
+11.ZeroDivisionError — 除(或取模)零 (所有数据类型)
+
+12.AssertionError — 断言语句失败
+
+13.AttributeError — 对象没有这个属性
+
+14.EOFError — 没有内建输入,到达 EOF 标记
+
+15.EnvironmentError — 操作系统错误的基类
+
+16.IOError — 输入/输出操作失败
+
+17.OSError — 操作系统错误
+
+18.WindowsError — 系统调用失败
+
+19.ImportError — 导入模块/对象失败
+
+20.LookupError — 无效数据查询的基类
+
+21.IndexError — 列中没有此索引(index)
+
+22.KeyError — 映射中没有这个键
+
+23.MemoryError — 内存溢出错误(对于 Python 解释器不是致命的)
+
+24.NameError — 未声明/初始化对象 (没有属性)
+
+25.UnboundLocalError — 访问未初始化的本地变量
+
+26.ReferenceError — 弱引用(Weak reference)试图访问已经垃圾回收了的对象
+
+27.RuntimeError — 一般的运行时错误
+
+28.NotImplementedError — 尚未实现的方法
+
+29.SyntaxError — Python 语法错误
+
+30.IndentationError — 缩进错误
+
+31.TabError — Tab 和空格混用
+
+32.SystemError — 一般的解释器系统错误
+
+33.TypeError — 对类型无效的操作
+
+34.ValueError — 传入无效的参数
+
+35.UnicodeError — Unicode 相关的错误
+
+36.UnicodeDecodeError — Unicode 解码时的错误
+
+37.UnicodeEncodeError — Unicode 编码时错误
+
+38.UnicodeTranslateError — Unicode 转换时错误
+
+39.Warning — 警告的基类
+
+40.DeprecationWarning — 关于被弃用的特征的警告
+
+41.FutureWarning — 关于构造将来语义会有改变的警告
+
+42.OverflowWarning — 旧的关于自动提升为长整型(long)的警告
+
+43.PendingDeprecationWarning — 关于特性将会被废弃的警告
+
+44.RuntimeWarning — 可疑的运行时行为(runtime behavior)的警告
+
+45.SyntaxWarning — 可疑的语法的警告
+
+46.UserWarning — 用户代码生成的警告[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-QaPnrCEr-1622213823637)(blob:https://www.codersrc.com/d6c5ed6d-6da0-4e59-bd44-380ff6d8db5d “Python 异常处理-猿说编程”)]
+
+
+二.Python 异常捕获方式
+
+
+1.捕获所有异常
+
+示例代码：
+
+
+2.捕获指定异常
+
+示例代码：
+
+
+3.捕获多个异常
+
+该种异常处理语法的规则是：
+
+a.执行 try 下的语句，如果引发异常，则执行过程会跳到第一个 except 语句。
+
+b.如果第一个 except 中定义的异常名与引发的异常匹配，则执行该 except 中的语句。
+
+c.如果引发的异常不匹配第一个 except，则会搜索第二个 except，允许编写的 except 数量没有限制。
+
+d.如果所有的 except 都不匹配，则异常会传递到下一个调用本代码的最高层 try 代码中。
+
+示例代码:
+
+
+4.万能的异常捕获
+
+示例代码：
+
+​
+
+
+5.异常中的 else
+
+如果判断完没有异常之后还想做其他事，就可以使用下面这样的 else 语句，注意：是在 try 中没有异常情况下，才会执行 else 之后的代码。
+
+示例代码：
+
+
+6.异常中的finally
+
+try…finally…语句无论是否发生异常都将会执行最后的代码。
+
+示例代码：
+
+
+7.raise主动触发异常
+
+可以使用 raise 语句自己触发异常,语法如下：
+
+语句中 Exception 是异常的类型（例如，IOError ）参数标准异常中任一种，args 是自已提供的异常参数。最后一个参数是可选的（在实践中很少使用），如果存在，是跟踪异常对象；示例代码如下：
+
+在 Python 开发中，为了增加程序的健壮性，异常处理 try…except… 是必须掌握的内容.
+
+
+三.猜你喜欢
+
+Python for 循环
+
+Python 字符串
+
+Python 列表 list
+
+Python 元组 tuple
+
+Python 字典 dict
+
+Python 条件推导式
+
+Python 列表推导式
+
+Python 字典推导式
+
+Python 函数声明和调用
+
+Python 不定长参数 *argc/**kargcs
+
+Python 匿名函数 lambda
+
+Python return 逻辑判断表达式
+
+Python 字符串/列表/元组/字典之间的相互转换
+
+Python 局部变量和全局变量
+
+Python type 函数和 isinstance 函数区别
+
+Python is 和 == 区别
+
+Python 可变数据类型和不可变数据类型
+
+Python 浅拷贝和深拷贝
+
+未经允许不得转载：猿说编程 » Python 异常处理
+
+本文由博客 - 猿说编程 猿说编程 发布！
+

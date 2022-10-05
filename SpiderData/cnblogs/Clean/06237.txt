@@ -1,0 +1,84 @@
+这个错误发生在django数据迁移的时候,(在第一次数据迁移以后，才设置AUTH_USER_MODEL自定义用户模型，就会报这个错)
+
+django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency account.0001_initial on database 'default'.
+
+===================解决方案一 ================
+
+首先 , 检查配置文件中的 INSTALLED_APPS 是否被注释,将它释放,再次执行还报错,试试第二种方案
+
+=================bug三=======================
+
+写项目,以后一定记得严谨些, 一个项目对应一个专有的虚拟环境.
+
+有时候也可能是你使用的虚拟环境的问题, 你需要确认, 这是否是该项目专有的虚拟环境, 就是说该even文件是否在你的项目中体现;
+
+原因: 按照方案二删完后, pycharm对于虚拟环境中新生成的文件,无法正常刷新出来,需要你重启pycharm,得到刷新
+
+=================xadmin的报错问题=================
+
+pip 安装的2.0.1版本xadmin(我试验的时候就是会出错) 有很大几率出错
+
+解决方案:
+
+手动下载 https://codeload.github.com/sshwsfc/xadmin/zip/django2
+
+解压后, pip install -r requirements.txt,然后将解压后的文件中的xadmin文件复制到项目的根目录下。
+
+在setting.py文件中，添加xadmin文件到注册表,后面都是正常流程了
+
+=================pillow模块=================
+
+若数据库中使用ImageField属性定义字段,需要安装pillow模块
+
+==============ubuntu下安装python-ldap=================
+
+https://www.cnblogs.com/zhaoyunlong/p/10510631.html
+
+今天安装一个python-ldap  和ldap交互的模块
+
+首先安装的时候会提示我们
+
+compilation terminated.
+    error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+
+这就是典型的 缺少依赖
+
+首先安装
+
+sudo apt-get install libldap2-dev
+
+然后再安装
+
+sudo apt-get install libsasl2-dev
+
+然后就可以继续安装你的python-ldap模块了
+
+======= windows下安装django-auth-ldap========
+
+pip install django-auth-ldap 时往往会出现如下错误,这是因为缺少系统插件
+
+error: Microsoft Visual C++ 14.0 is required
+
+解决方案：
+
+百度网盘下载：https://pan.baidu.com/s/1pOocz2C6_6SBQ3fgA3D7Aw 密码：4e98
+
+下载 visualcppbuildtools+full.exe 程序, 安装Visual
+
+安装完毕后,按照如下步骤安装
+
+# 根据电脑配置,下载python-ldap,例如我的是win10系统64位,python版本为36,则下载python_ldap-3.2.0-cp36-cp36m-win_amd64.whl
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#python-ldap
+
+pip install python_ldap-3.2.0-cp36-cp36m-win_amd64.whl
+
+pip install django==1.11.3
+pip install django-auth==0.1.9
+pip install django-auth-ldap==1.7.0
+
+pip install -r  文件绝对路径\requirements.txt
+
+==============Git的多SSH Key解决方案=============
+
+https://www.jianshu.com/p/95e00370fa2c
+

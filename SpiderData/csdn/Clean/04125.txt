@@ -1,0 +1,14 @@
+在python2.7下，将字符串写入到文件时会出现"UnicodeEncodeError: 'ascii' codec can't encode character u'\xa0' in position"的错误,原因是由于python基于ASCII处理字符的，当出现不属于ASCII的字符时，会出现错误信息。
+
+解决方法：
+
+指定文件字符集为utf-8
+
+在文件头部加入以下代码：
+
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding('utf-8')
+

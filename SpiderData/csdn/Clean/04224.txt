@@ -1,0 +1,46 @@
+
+排查解决Python的FileNotFoundError报错问题
+
+
+排查1：文件名与文件类型
+
+原因：在代码中插入了错误的文件名，比如将readme.md错误的拼写为readwe.md或是readme.txt。
+
+解决方案：仔细核对文件名称
+
+
+排查2：python字符串的转义
+
+原因：在打开文件的字符串中，未免会涉及类似于C:\User\Desktop的地址字符串信息，而与python字符串中的转义功能冲突，如\n表示换行。
+
+解决方案：使用r"C:\User\Desktop"或C:\\User\\Desktop的字符串，避免python对字符串的转义。
+
+
+排查3：相对路径的问题
+
+原因：在python运行过程中，相对路径是该进程运行时指向的文件夹，并以该文件夹作为根节点的文件树，也就是说使用相对路径的方式打开文件，只能访问其根节点之下的文件。
+
+解决方案：使用os库中提供的os.path.abspath() 方法查看python运行的绝对路径，与需要打开的文件目录进行比较。使用os.path.abspath('..')的方式返回父节点的绝对路径。如下图所示，如果python是运行在Folder2中，其打开file1时只需要open(r"file1","r")，但是如果需要打开File3，就需要open(os.path.abspath('..')+r'Folder3//File3',"r")的方式打开。其中os.path.abspath('..')返回的字符串信息是"...\\Folder1"。
+
+
+排查4：系统的问题
+
+在Windows系统中，文件路径是由符号\来表示的，而在Linux中是由符号/来表示。如果代码需要在不同的系统上运行，需要注意修改。
+
+
+排查5：Python运行位置
+
+如果是此类问题的话，可以在文件的头部加入下面的代码
+
+import sys
+sys.path.append("../your/target/path/")
+
+加入上面的代码，可以将文件的位置省略。如将open("../your/target/path/file.txt")省略为open("file.txt)即可。
+
+
+排查6： 路径中存在中文（感谢@深情小智）
+
+重命名项目/目标文件夹。
+
+我将陆续记录遇到的该报错的解决方案。
+

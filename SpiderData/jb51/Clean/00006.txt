@@ -1,0 +1,38 @@
+最近，在终端启动Python时，报了一个错误：
+
+Failed calling sys.__interactivehook__
+Traceback (most recent call last):
+ File "d:\ProgramData\Anaconda3\lib\site.py", line 439, in register_readline
+  readline.read_history_file(history)
+ File "d:\ProgramData\Anaconda3\lib\site-packages\pyreadline\rlmain.py", line 165, in read_history_file
+  self.mode._history.read_history_file(filename)
+ File "d:\ProgramData\Anaconda3\lib\site-packages\pyreadline\lineeditor\history.py", line 82, in read_history_file
+  for line in open(filename, 'r'):
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xa7 in position 2167: illegal multibyte sequence
+
+原因是Python的终端历史文件中包含中文，但不能正确使用gbk解码。查看了Python历史文件（系统用户目录下的.python_history），其编码方式为“utf-8”，而”history.py”中读取历史文件时使用的编码方式为“gbk”，所以会报错。
+
+解决方法
+
+在history.py中使用`for line in open(filename, 'r')`来打开文件并读取每一行，使用的是默认的编码方式。需要根据不同文件的编码方式传入相应的参数值。
+
+1. 首先检测出要打开的文件的编码方式。
+
+在类中定义一个私有方法_get_encoding，作用是检测文件的编码方式，并返回。（需要导入chardet包）
+
+def _get_encoding(self, filename=None):
+  	if filename is None:
+  		return
+
+with open(filename, 'rb') as f:
+  		return chardet.detect(f.read())['encoding']
+
+2. 修改历史文件内容的读取
+
+encoding = self._get_encoding(filename)
+      
+for line in open(filename, 'r', encoding=encoding):
+self.add_history(lineobj.ReadLineTextBuff(ensure_unicode(line.rstrip())))
+
+以上就是在终端启动Python时报错的解决方案的详细内容，更多关于终端启动python报错的资料请关注脚本之家其它相关文章！
+

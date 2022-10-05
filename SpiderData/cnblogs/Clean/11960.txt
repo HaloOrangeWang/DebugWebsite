@@ -1,0 +1,28 @@
+MacOS升级到Monterey 12.0.1后，忽然发现原来工作正常的python3请求华为restconf API报错失败，提示 ssl.SSLError: [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1129) ，mac自带的curl也与huawei API握手失败，提示 curl: (35) error:06FFF089:digital envelope routines:CRYPTO_internal:bad key length 。
+
+mac平台上默认使用的是libressl而不是openssl，ssl版本信息：LibreSSL 2.8.3，curl版本信息：curl 7.77.0 (x86_64-apple-darwin21.0) libcurl/7.77.0 (SecureTransport) LibreSSL/2.8.3 zlib/1.2.11 nghttp2/1.42.0。
+
+抓包查看ssl握手过程，发现curl和python3的表现还不太一样。
+
+上图是curl的握手过程，可以看到已经完成了key exchnge，但是客户端不知什么原因主动关闭了连接，之后是服务端报错。
+
+上图是python3调用http.client.HTTPSConnection库的握手交互，可以看到刚刚发出client hello，服务端就直接报错。
+
+同样是python3，在linux上就毫无问题，mac上的python3与其他https网站握手也没问题。对比linux上和mac上握手抓包可以看到，mac发出的client hello中多出一些字段，与华为技术沟通后表示，huawei的restconf API不支持tls1.3协议，他认为这是握手失败的原因。
+
+可以看到linux上ssl虽然也支持tls1.3，但是握手过程中没有这个supported_versions的extension，尝试在python中设置禁止tls1.3，测试结果握手成功。
+
+解决方法如下：
+
+使用urllib3或者request库的也可以参考这里修改context。
+
+以上办法在python3.2以后版本中支持，python3.2以前的版本也可以使用下面的办法：
+
+ctx = _create_unverified_context(ssl.PROTOCOL_TLSv1_2)
+
+这个常量已经在python3.6版本后删除了，只能使用前面的办法。
+
+遗憾的是，curl失败的问题还没找到解决办法，看网上也很多人在等待苹果修复。
+
+如果觉得本文对您有帮助，请扫描后面的二维码给予捐赠，您的支持是作者继续写出更好文章的动力！
+

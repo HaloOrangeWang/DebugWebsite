@@ -1,0 +1,76 @@
+将adb.exe 复制一份到uiautomatorviewer.bat 目录下
+
+修改uiautomatorviewer.bat文件最后一行（改binddir=%prog_dir%为自己的platform-tools本地路径）
+
+//设置自动化相关参数
+
+DesiredCapabilities capabilities = new DesiredCapabilities();
+
+capabilities.setCapability(CapabilityType.BROWSER_NAME, "");
+
+capabilities.setCapability("automationName","Appium");
+
+capabilities.setCapability("platformName", "Android");
+
+capabilities.setCapability("deviceName", "Pixel_XL_API_25");// Galaxy_Nexus_API_25
+
+capabilities.setCapability("noReset", true);
+
+capabilities.setCapability("avdReadyTimeout", 300000);
+
+capabilities.setCapability("sessionOverride", true);
+
+//设置安卓系统版本
+
+capabilities.setCapability("platformVersion", "7.1.1");
+
+//设置apk路径
+
+capabilities.setCapability("app", app.getAbsolutePath());
+
+//设置app的主包名和主类名
+
+capabilities.setCapability("appPackage", "com.example.android.contactmanager");
+
+capabilities.setCapability("appActivity", ".ContactManager");
+
+//初始化
+
+driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+
+driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+
+}
+
+@Test
+
+public void addContact(){
+
+WebElement el = driver.findElement(By.name("Add Contact"));
+
+el.click();
+
+List<WebElement> textFieldsList = driver.findElementsByClassName("android.widget.EditText");
+
+textFieldsList.get(0).sendKeys("feimaoyuzhubaobao");
+
+textFieldsList.get(2).sendKeys("forever together");
+
+driver.swipe(100, 500, 100, 100, 2);
+
+driver.findElementByName("Save").click();
+
+}
+
+@After
+
+public void tearDown() throws Exception {
+
+driver.quit();
+
+}
+
+找到appium的安装目录下的adb.js文件，windows版本的目录如下：Appium\node_modules\appium\node_modules\appium-adb\lib
+
+网上还有如下的修改解决办法：以下我未试验。
+

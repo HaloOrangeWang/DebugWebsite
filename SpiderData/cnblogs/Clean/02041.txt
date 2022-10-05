@@ -1,0 +1,22 @@
+error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools": http://landinghub.visualstudio.com/visual-cpp-build-tools
+
+进入该网址http://www.lfd.uci.edu/~gohlke/pythonlibs/#twisted
+
+下载twisted对应版本的whl文件   Twisted-17.1.0-cp36-cp36m-win_amd64.whl ，cp后面是python版本，amd64代表64位，
+
+运行 pip install  下载目录\ Twisted-17.1.0-cp36-cp36m-win_amd64.whl
+
+本以为搞定了，没想到然后接着又出现问题：
+
+Twisted-17.1.0-cp36-cp36m-win_amd64.whl is not a supported wheel on this platform.   。不支持？？？
+
+解决方法：在cmd后中输入
+python
+import pip
+print(pip.pep425tags.get_supported())
+可以获取到pip支持的文件名还有版本，比如说：
+
+可以发现上面下载的文件名格式是不支持的，把文件名修改为：tensorflow-1.7.0-cp36-cp36m-win32.whl再使用pip安装即可成功。
+
+然后接着安装scrapy框架
+

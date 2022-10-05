@@ -1,0 +1,42 @@
+安装：pip3 install pygexf
+
+引用: import gexf   或 from gexf import Gexf    (用来测试一下是否安装成功，如果你是python 3.0以上版本，那么看一下出现问题的解决办法。)
+
+ps: 如果找不到自己python安装在什么地方了。。。可以用下面的方法查看。
+
+import sys
+
+print(sys.path)
+
+问题1：No module named'_gexf'
+
+打开python下site-packages 文件夹，找到gexf文件夹，对文件夹内的__init__.py进行修改,将所有的__gext之前加’.’（加一个 “点” ）
+
+问题2：TabError: inconsistent use of tabs and spaces in indentation
+
+空格和tab空格位置不统一问题，打开_gexf.py文件，重新将代码格式重排一下即可解决。
+
+问题3：except Exception, e:
+
+由于是python 2.0版本的，与3.0版本在编写格式上的不同，所以报错，这里 打开_gexf.py文件 修改成   except Exception as e:  解决。
+
+同理还有一些print的问题，给print把括号加上  print() 即可。
+
+问题4 ：ModuleNotFoundError: No module named 'lxml'
+
+pip3 install lxml   解决
+
+问题5：AttributeError: 'dict' object has no attribute 'iteritems'  错误提示。
+
+是由于python3.5以后，iteritems  变为  items。
+
+所有都改为：
+
+for id, value in self._nodesAttributes.items()
+
+问题6：TypeError: write() argument must be str, not bytes
+
+原因为：Python3给open函数添加了名为encoding的新参数，而这个新参数的默认值却是‘utf-8’。这样在文件句柄上进行read和write操作时，系统就要求开发者必须传入包含Unicode字符的实例，而不接受包含二进制数据的bytes实例。
+
+解决方法：使用二进制写入模式（‘wb’）来开启待操作文件，而不能像原来那样，采用字符写入模式（‘w’）。
+

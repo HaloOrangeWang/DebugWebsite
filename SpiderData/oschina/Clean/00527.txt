@@ -1,0 +1,20 @@
+　　上周selenium+phantomjs+python3简单爬取一个网站，往数据库写数据遇到以下两个问题，记录一下：　　
+
+
+　　报错一：Data truncated for column 'update_time' at row 1
+
+　　抓网站英文版的时候，因为一个标题太长报错，title字段类型为varchar默认的255，改为2048或者按照实际改小一点。问题解决。
+
+
+　　报错二：You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near
+
+　　虽然上面改了，在同一处还是报错，现在错误是“You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AGREEMENT\nAMONG THE SHAREHOLDERS OF\nMEDIA EAGLE LIMITED;\nAND\n(2) DISCLOSEABLE TR' at line 1”原始insert语句如下：
+
+sql = "REPLACE INTO crawl_record (`type`, `title`, `create_time`, `update_time`) VALUES ('%s', '%s', '%s', '%s')"
+
+　　near后面的一串是要被插入的标题，可见这个标题不仅长，里面还有特殊字符。sql语句使用的单引号，是无效的，改为双引号，改为双引号，最好每个字段用英文下的波浪线``包起来，以免字段设置了关键字。sql改为：
+
+sql = 'REPLACE INTO crawl_record (`type`, `title`, `create_time`, `update_time`) VALUES ("%s", "%s", "%s", "%s")'
+
+　　爬取数据，存储数据，各种坑。爬取的时候一定要先一页页的爬取没问题后，再翻页批量爬取，此时可能还会有坑；存数据的时候，一定按标准书写sql，若爬取重要数据，众多数据，数据库表设计一定要让公式DB过一下，降低各种无厘头的错误~
+

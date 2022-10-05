@@ -1,0 +1,28 @@
+简短概述就是 用户名/.local/share/Odoo 对于该文件夹 py没权限
+
+简短概述就是 用户名/.local/share/Odoo 对于该文件夹 py没权限
+
+试了试在子系统中直接apt安装odoo环境, 然后在终端里以root身份运行的很快乐, 可是在pycharm中使用该环境, 运行源码, 然后建库时报错
+
+Database creation error: relation "ir_model" does not exist LINE 1: SELECT * FROM ir_model WHERE state='manual' ^
+
+试了试在子系统中直接apt安装odoo环境, 然后在终端里以root身份运行的很快乐, 可是在pycharm中使用该环境, 运行源码, 然后建库时报错
+
+Database creation error: relation "ir_model" does not exist LINE 1: SELECT * FROM ir_model WHERE state='manual' ^
+
+看了看log窗口没抛异常啊 兄弟, 搞了老长时间, 终于, 终于, 当我使用ps aux 查看当前有多少odoo进程时, 发现一堆没结束的进程, 真是*了狗了, 然后全部kill, 原因就是pycharm中, 当你点击stop时吗并不会结束进程
+
+解决方法: 在edit run/debug configurations 中把Run with Python console 打勾就ODK了
+
+看了看log窗口没抛异常啊 兄弟, 搞了老长时间, 终于, 终于, 当我使用ps aux 查看当前有多少odoo进程时, 发现一堆没结束的进程, 真是*了狗了, 然后全部kill, 原因就是pycharm中, 当你点击stop时吗并不会结束进程
+
+解决方法: 在edit run/debug configurations 中把Run with Python console 打勾就ODK了
+
+然后再建库发现log窗口报错了, 啥啥文件夹他被permission denied 了, sudo chmod 777 给权限就完了
+
+然后再建库发现log窗口报错了, 啥啥文件夹他被permission denied 了, sudo chmod 777 给权限就完了
+
+问题解决
+
+问题解决
+

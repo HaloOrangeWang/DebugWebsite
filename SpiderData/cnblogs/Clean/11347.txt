@@ -1,0 +1,54 @@
+在我使用pycharm导包时，总是报pip版本的问题
+
+后来我根据提示用命令：python -m -pip install --upgrade pip 升级pip
+
+结果一直报下面错误：
+
+Exception:
+Traceback (most recent call last):
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\basecommand.py", line 215, in main
+    status = self.run(options, args)
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\commands\install.py", line 342, in run
+    prefix=options.prefix_path,
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\req\req_set.py", line 784, in install
+    **kwargs
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\req\req_install.py", line 851, in install
+    self.move_wheel_files(self.source_dir, root=root, prefix=prefix)
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\req\req_install.py", line 1064, in move_wheel_files
+    isolated=self.isolated,
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\wheel.py", line 462, in move_wheel_files
+    generated.extend(maker.make(spec))
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\_vendor\distlib\scripts.py", line 372, in make
+    self._make_script(entry, filenames, options=options)
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\_vendor\distlib\scripts.py", line 276, in _make_script
+    self._write_script(scriptnames, shebang, script, filenames, ext)
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\_vendor\distlib\scripts.py", line 212, in _write_script
+    launcher = self._get_launcher('t')
+  File "E:\pycharm file\venv\lib\site-packages\pip-9.0.1-py3.5.egg\pi
+p\_vendor\distlib\scripts.py", line 351, in _get_launcher
+    result = finder(distlib_package).find(name).bytes
+AttributeError: 'NoneType' object has no attribute 'bytes'
+
+后来我将升级命令改为：python -m pip install -U --force-reinstall pip     完成pip升级
+
+注意：更新pip之后，Pycharm安装package出现如下报错：
+
+在查找很多方法后都没有解决，所以更新时，要谨慎，最终，我选择降级pip版本为9.0.3
+
+降级命令：
+
+python -m pip install --upgrade pip==9.0.3
+
+再次尝试安装包，没有出错
+
+转载：https://blog.csdn.net/weixin_43817064/article/details/90447871
+

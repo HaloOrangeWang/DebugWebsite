@@ -1,0 +1,79 @@
+
+安装完，检查cobbler：cobbler check发现这个问题ImportError: No module named yaml
+
+具体报错如下：
+
+[root@www localdisk]# cobbler check
+
+Traceback (most recent call last):
+
+File "/usr/bin/cobbler", line 18, in <module>
+
+import cobbler.cli as app
+
+File "/usr/lib/python2.7/site-packages/cobbler/cli.py", line 31, in <module>
+
+import utils
+
+File "/usr/lib/python2.7/site-packages/cobbler/utils.py", line 41, in <module>
+
+import yaml
+
+ImportError: No module named yaml
+
+解决方法：
+
+1.安装pip：包名python2-pip-8.1.2-6.el7.noarch.rpm
+
+2.安装组件pip   install   pyyaml
+
+
+之后检查cobbler check发现报错：ImportError: No module named simplejson
+
+解决：缺少一个依赖组件simplejson，那就去安装
+
+yum   -y   install   python-simplejson (要是没有就去下载rpm安装包)
+
+或者直接用命令行下载
+
+wget 
+ 
+https://pypi.python.org/packages/source/s/simplejson/simplejson-3.5.2.tar.gz#md5=10ff73aa857b01472a51acb4848fcf8b
+ --no-check-certificate
+
+之后解压，切换到有 setup.py 文件的地方，用python setup.py install
+
+like  this
+
+
+之后再执行cobbler check发现报错：
+
+
+cobblerd does not appear to be running/accessible: error(111, 'Connection refused')
+
+解决方法：重启三连
+
+systemctl restart httpd
+
+systemctl restart cobblerd
+
+systemctl restart rsyncd
+
+
+之后再执行cobbler check发现报错：
+
+
+ProtocolError: <ProtocolError for 127.0.0.1:80/cobbler_api: 401 Unauthorized>
+
+那，看这上面的报错的提示没，明确的说了要么你的selinux没关，要么你的httpd没起来
+
+1.检查selinux
+
+getenforce ------当前状态是否为disable
+
+2.查看httpd状态，发现没有报错，看下配置文件 /etc/httpd/conf/httpd.conf，发现是自己之前做了反向代理，注释，重启服务就可以了
+
+效果：cobbler check
+
+要是显示这个，哈哈哈没问题了
+

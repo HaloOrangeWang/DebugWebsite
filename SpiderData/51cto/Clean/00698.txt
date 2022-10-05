@@ -1,0 +1,94 @@
+刚才打开一个别人的测试库，用root登陆了的，sqlplus / as sysdba竟然报错，奇怪，于是在自己的VM中模拟该过程。
+
+新建了一个test用户：
+
+[test@liu bin]# ./sqlplus
+
+Error 6 initializing SQL*Plus
+
+Message file sp1<lang>.msb not found
+
+SP2-0750: You may need to set ORACLE_HOME to your Oracle software directory
+
+需要设置ORACLE_HOME环境变量。
+
+[test@liu bin]# export ORACLE_HOME=/opt/oracle/102
+
+执行：
+
+[test@liu bin]# ./sqlplus
+
+sqlplus: error while loading shared libraries: libsqlplus.so: cannot open shared object file: No such file or directory
+
+晕。。。看样子是动态链接库没找到，但设置了LD_LIBRARY_PATH等都没有用，查了下，可能是$ORACLE_HOME的权限问题，于是执行：
+
+chmod -R a+rX /opt/ora10/
+
+此时可以执行了。
+
+再次执行：
+
+[test@liu bin]# ./sqlplus / as sysdba
+
+SQL*Plus: Release 10.2.0.1.0 - Production on Tue Jul 9 04:20:47 2013
+
+Copyright (c) 1982, 2005, Oracle.  All rights reserved.
+
+ERROR:
+
+ORA-12162: TNS:net service name is incorrectly specified
+
+与之前提到的问题相同。
+
+设置ORACLE_SID，执行。
+
+[test@liu bin]# export ORACLE_SID=bisal
+
+[test@liu bin]# ./sqlplus / as sysdba
+
+SQL*Plus: Release 10.2.0.1.0 - Production on Tue Jul 9 04:21:08 2013
+
+Copyright (c) 1982, 2005, Oracle.  All rights reserved.
+
+ERROR:
+
+ORA-01031: insufficient privileges
+
+那个报错没了，说明可能与没设置ORACLE_SID有关。下面解决这个问题。
+
+原/etd/group：
+
+oinstall:x:501:
+
+添加test到oinstall组：
+
+oinstall:x:501:test
+
+此时还提示权限问题。但用sqlplus /nolog，然后conn a/b可以登录。
+
+。。。
+
+原来是用户组的问题，test用户需要加到dba，因为sqlplus / as sysdba默认是SYS权限，使用/usr/sbin/usermod -a -G dba test，再执行：
+
+[test@liu admin]$ sqlplus / as sysdba
+
+SQL*Plus: Release 10.2.0.1.0 - Production on Tue Jul 9 05:10:31 2013
+
+Copyright (c) 1982, 2005, Oracle.  All rights reserved.
+
+Connected to:
+
+Oracle Database 10g Enterprise Edition Release 10.2.0.1.0 - Production
+
+With the Partitioning, OLAP and Data Mining options
+
+一切都是那么顺其自然的。。。
+
+注意：
+
+这里sqlnet.ora并没有设置：SQLNET_AUTHENTICATION_SERVICES= (NTS)
+
+仅有：NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT)
+
+​​​​
+

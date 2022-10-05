@@ -1,0 +1,20 @@
+遇到问题：
+
+最近PIP安装软件总是报错，报错提示如下：
+
+1.WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectTimeoutError(<pip._vendor.urllib3.connection.VerifiedHTTPSConnection object at 0x000001E6D75D4220>, 'Connection to files.pythonhosted.org timed out.
+
+2.ERROR: Could not install packages due to an EnvironmentError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Max retries exceeded with url: /packages/91/d2/30ecd905746d1fee4004daae3f0051bf4b305bee1fe578bd7d1ea712d571/Pillow-7.2.0-cp38-cp38-win_amd64.whl (Caused by ConnectTimeoutError(<pip._vendor.urllib3.connection.VerifiedHTTPSConnection object at 0x000001E6D75D4970>, 'Connection to files.pythonhosted.org timed out. (connect timeout=15)'))
+
+如图：
+
+解决办法:
+
+以管理员身份运行cmd，cd至python Scripts目录，我的安装在"D:\Program Files\Python38\Scripts",将pip install xxx命令调整如下即可：
+
+pip install xxx  -i http://pypi.douban.com/simple --trusted-host pypi.douban.com，xxx为要安装的软件，如：
+
+安装pillow软件：pip install pillow -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+安装robotframework-ride软件：pip install robotframework-ride  -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+

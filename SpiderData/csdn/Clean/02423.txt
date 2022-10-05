@@ -1,0 +1,28 @@
+场景：jenkins执行windows命令,若退出代码不为0 ,则jenkins会将构建标记为失败，所以需要加上exit 0表示执行完成退出
+
+解决方法：在bat脚本最后一行加上exit 0
+
+使用Jenkins定时跑接口测试用例，明明所有的用例都执行成功了，但是还是会触发执行失败时的邮件通知，查看Jenkins控制台日志，也可能是此原因导致的。
+
+
+'python' 不是内部或外部命令，也不是可运行的程序
+
+jenkin集成python项目，立即构建后，发现未执行成功，查看Console Output 提示：'Python' 不是内部或外部命令，也不是可运行的程序
+
+1.在 Windows 提示符下运行是没有问题。
+
+2.把Jenkins项目配置中 python main.py   修改成python可执行文件全路径：D:\Python35\python.exe main.py ，再次构建也没有问题。
+
+这是因为 Jenkins 缺少环境配置。
+
+
+解决方法：
+
+配置构建执行状态：
+
+1.回到 Jenkins 首页，点击 “构建执行状态”或“Build Executor Status” ,右则会列出本机信息。
+
+2.点击本机设置按钮，配置 Python 的 path 环境变量。同时还需要添加浏览器驱动文件所在目录。
+
+3.最后一定要记得保存哦。
+

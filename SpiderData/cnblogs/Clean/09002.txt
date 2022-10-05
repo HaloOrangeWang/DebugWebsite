@@ -1,0 +1,16 @@
+我们在测试一些功能的时候要注意模块名不能和内置模块名重复，下面的AttributeError就是hashlib的文件名和内置的模块名重复导致的；改掉自己写的.py文件名即可。
+
+AttributeError: partially initialized module 'hashlib' has no attribute 'md5' (most likely due to a circular import)
+
+我们可以看到报错：django.core.exceptions.ImproperlyConfigured: WSGI application 'DRF.wsgi.application' could not be loaded; Error importing module.
+
+我们遇到报错要先注意下报错点，然后再去进一步推理报错的原因；比如这个报错是Django项目报错的，pycharm提示的很明显就是rest_framework 注册位置写错了，应该在INSTALLED_APPS 的 应用程序里注册。
+
+报错提示：ImportError: rest_framework doesn't look like a module path
+
+在写后端接口，迁移数据库的时候遇到E04错误
+
+这里是因为要使用 django默认的认证系统（AbstractUser）在生成迁移文件之前，要先在settings文件里面做一个配置
+
+配置这里之后，就能接触，错误中的，冲突问题，迁移文件时，不会默认生成“ auth_user” 这张表而是生成 我们指定的这个模型类对应的表(看一下我的)。就不会冲突报错了。
+

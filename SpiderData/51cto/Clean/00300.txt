@@ -1,0 +1,119 @@
+
+1.Python单字统计分离信息数据报错
+
+
+（1）缩进错误
+
+Python 3.5.3 (v3.5.3:1880cb95a742, Jan 16 2017, 15:51:26) [MSC v.1900 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>>   txt=open("/test.save.data/0000000000001/data.txt").read()
+  File "<stdin>", line 1
+    txt=open("/test.save.data/0000000000001/data.txt").read()
+    ^
+IndentationError: unexpected indentZ
+
+以上发生错误信息为：IndentationError: unexpected indent，该错误信息参照我之前写的《Python基础小常识（十）》得到，该错误的意思是IndentationError 缩进错误，为什么呢？错误如下所示：
+
+因此将缩进修改正确，再次运行，又发生了错误。
+
+
+（2）文件不存在错误
+
+>>> txt=open("/test.save.data/0000000000001/data.txt").read()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: '/test.save.data/0000000000001/data.txt'
+
+以上错误为： FileNotFoundError:表示文件不存在，说明路径错误或者文件名称写错了。那重新进行检查，发现是我路径和文件名称都写错了。
+
+
+（3）文件名称修改后获取数据
+
+>>> txt=open("C:\\Users\\jhinno\\Desktop\\test.save.data\\0000000000001\\命运.txt").read()
+>>>print(txt)
+
+得到文件如下所示：
+
+
+（4）for循环报错处理
+
+>>> for  ch  in "，。？ ： "  :
+... txt=txt.replace(ch," " )
+  File "<stdin>", line 2
+    txt=txt.replace(ch," " )
+      ^
+IndentationError: expected an indented block
+
+以上错误为 IndentationError: ，通过查找得出IndentationError 缩进错误，错误了第二次，以上第一次出现过该错误。修改后程序正常通过。其中，for结尾需要加冒号，还需要按Tab键进行缩进
+
+>>> txt=open("C:\\Users\\jhinno\\Desktop\\test.save.data\\0000000000001\\命运.txt").read()
+>>> for  ch  in "，。？ ： "  :
+	txt=txt.replace(ch," " )
+
+
+（5）标点符号去除处理
+
+txt=txt.replace(ch," " )
+
+
+（6）最终完整代码单个字出现频次的词频统计
+
+>>> txt=open("C:\\Users\\jhinno\\Desktop\\test.save.data\\0000000000001\\命运.txt").read()
+>>> for  ch  in "，。？ ： "  :
+	txt=txt.replace(ch,"")
+
+>>> txt=txt.replace(ch," " )
+>>> d={}
+>>> for ch in txt:
+	d[ch]=d.get(ch,0)+1
+
+>>> ls=list(d.items())
+>>> ls.sort(key=lambda x:x[1],reverse=True)
+>>> a,b=ls[0]
+>>> print("{}:{}".format(a,b))
+的:2557
+
+
+2.Python进行单字统计排行前10的信息数据报错
+
+（1）序列中没有索引报错
+
+>>> txt=open("C:\\Users\\jhinno\\Desktop\\test.save.data\\0000000000001\\命运.txt").read()
+>>> for ch in txt:
+	txt=txt.replace(ch,"")
+
+>>> d={}
+>>> for ch in txt:
+	d[ch]=d.get(ch,0)+1
+
+>>> ls=list(d.items())
+>>> 
+>>> ls.sort(key=lambda x:x[1],reverse=True)
+>>> for i in range(10):
+	print(str(ls[i])[2],end="")
+
+Traceback (most recent call last):
+  File "<pyshell#42>", line 2, in <module>
+    print(str(ls[i])[2],end="")
+IndexError: list index out of range
+>>>
+
+以上报错信息的原因是：**IndexError 序列中没有此索引(index)，**解决办法是：for ch in ‘\n’:
+
+>>> txt=open("C:\\Users\\jhinno\\Desktop\\test.save.data\\0000000000001\\命运.txt").read()
+>>> for ch in '\n':
+	txt=txt.replace(ch,"")
+
+>>> d={}
+>>> for ch in txt:
+	d[ch]=d.get(ch,0)+1
+
+>>> ls=list(d.items())
+>>> ls.sort(key=lambda x:x[1],reverse=True)
+>>> for i in range(10):
+	print(str(ls[i])[2],end="")
+
+，的"一我了。是不有
+
+因此，逗号使用最多，其次是助词“的”的使用频次最高。
+

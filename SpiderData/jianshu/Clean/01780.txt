@@ -1,0 +1,434 @@
+最近学习微生物宏基因组分箱（binning），按官方文档安装metaWRAP，踩了一堆坑，记录一下报错及解决方法：
+
+1. metaWRAP安装
+
+安装教程及下载地址：GitHub - bxlab/metaWRAP: MetaWRAP - a flexible pipeline for genome-resolved metagenomic data analysis
+
+作者推荐使用Conda/Mamba安装，不推荐使用bioconda及docker，于是找了个包含conda的docker镜像，开始了漫漫长路的第一步：
+
+（1）conda安装软件
+
+conda create -y -n metawrap-envpython=2.7source activate metawrap-envconda config --add channels defaults
+
+conda config --add channels conda-forge
+
+conda config --add channels bioconda
+
+conda config --add channels ursky
+
+conda install-y -c ursky metawrap-mg
+
+conda install-y blas=2.5=mkl
+
+装完大概5GB大小，提交到了docker hub上：
+
+docker push raser216/metawrap:v1.0.0
+
+本以为大功告成，结果随之而来的是一系列的报错……
+
+（2）安装libtbb2库
+
+运行到quant_bins，才发现少了个依赖库没装，导致salmon软件统计基因丰度时报错：
+
+salmon: errorwhileloading shared libraries: libtbb.so.2
+
+解决方法：
+
+#安装libtbb2库
+
+apt-getinstalllibtbb2
+
+（3）安装libGL.so.1
+
+bin_refinement步骤figures目录下无图片，python绘图程序报错：
+
+ImportError: Failed to import any qt binding
+
+#python2.7 已安装matplotlib，但无法导入
+
+import matplotlib
+
+import matplotlib.pyplot as plt
+
+ImportError: libGL.so.1: cannot open sharedobjectfile: No suchfileor directory
+
+解决方法：安装libGL.so.1依赖。
+
+apt-get -y update
+
+apt-getinstall-y libgl1-mesa-glx
+
+#安装后，python2可以导入该模块，不再报错
+
+python 2.7import matplotlib.pyplot as plt
+
+（4）prokka安装失败，报错
+
+prokka无法使用，安装失败：
+
+可能原因：metawrap安装的perl版本不符合prokka要求 （metawrap不支持perl 5.26？）。
+
+prokka -h
+
+Can't locate Bio/Root/Version.pm in @INC (you may need to install the Bio::Root::Version module) (@INC contains: /opt/conda/envs/metawrap-env/bin/../perl5 /opt/conda/envs/metawrap-env/lib/site_perl/5.26.2//x86_64-linux-thread-multi /opt/conda/envs/metawrap-env/lib/site_perl/5.26.2/ /opt/conda/envs/metawrap-env/lib/site_perl/5.26.2/x86_64-linux-thread-multi /opt/conda/envs/metawrap-env/lib/site_perl/5.26.2 /opt/conda/envs/metawrap-env/lib/5.26.2/x86_64-linux-thread-multi /opt/conda/envs/metawrap-env/lib/5.26.2 .) at /opt/conda/envs/metawrap-env/bin/prokka line 32.BEGIN failed--compilation aborted at /opt/conda/envs/metawrap-env/bin/prokka line32.
+
+解决方法：在当前metawrap 环境中用conda重装prokka-1.13。
+
+conda create -n prokka-test prokka=1.13minced=0.3.0parallel=20180522blast=2.12.0source activate prokka-test
+
+2.conda报错
+
+（1）无法进入conda环境
+
+无法在shell脚本中通过source activate metawrap-env进入conda环境，报错：
+
+/opt/conda/envs/metawrap-env/etc/conda/activate.d/activate-binutils_linux-64.sh: line65: ADDR2LINE: unbound variable
+
+解决方法：通过dockerfile进入conda环境，并把安装软件的路径加到环境变量中：
+
+cat metawrap_v1.dockerfile
+
+#dockerfile内容如下
+
+FROM raser216/metawrap:v1.0.0RUN echo"source activate metawrap-env"> ~/.bashrc
+
+ENV PATH /opt/conda/envs/metawrap-env/bin:$PATH
+
+3.数据库路径及版本
+
+metaWRAP中调用的比对软件（kraken、BLAST等）的数据库可以外置，但数据库外置的路径需要在config中写明：
+
+#config文件路径whichconfig-metawrap/opt/conda/envs/metawrap-env/bin/config-metawrap
+
+#用sed -i更改为各数据库真实路径
+
+kraken_database=/database/kraken_database/kraken_newdb2/axel_dowload
+
+nt_database=/database/newdownload3
+
+tax_database=/database/metawrap_database/ncbi_taxonomysed-i"s#~/KRAKEN_DB#$kraken_database#g"/opt/conda/envs/metawrap-env/bin/config-metawrapsed-i"s#~/NCBI_NT_DB#$nt_database#g"/opt/conda/envs/metawrap-env/bin/config-metawrapsed-i"s#~/NCBI_TAX_DB#$tax_database#g"/opt/conda/envs/metawrap-env/bin/config-metawrap
+
+该文件必须有写权限，否则bin_refinement步骤报错：
+
+#bin_refinement步骤报错
+
+You donot seem to have permission to edit the checkm configfilelocated at /opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/DATA_CONFIG
+
+解决方法：改变config文件权限，不再报错。
+
+chmod777/opt/conda/envs/metawrap-env/bin/config-metawrap
+
+4. kraken软件报错
+
+kraken是个直接对测序reads（fastq）进行物种注释的软件，目前有两个主版本，1代（kraken）耗内存极高（>100GB），2代（kraken2）改良了很多（35GB左右就行）。
+
+（1）注释行导致的报错
+
+kraken.sh脚本路径在/opt/conda/envs/metawrap-env/bin/metawrap-modules/，该脚本第123-125行的注释信息直接写在行后，导致kraken.sh运行报错（错误信息未记录）:
+
+123 awk '{ printf("%s",$0); n++; if(n%4==0) { printf("\n");} else { printf("\t\t");} }' |\ #combine paired end reads onto one line    124 shuf | head -n $depth | sed 's/\t\t/\n/g' | \ #shuffle reads, select top N reads, and then restore tabulation
+
+125 awk -F"\t" '{print $1 > "'"${out}/tmp_1.fastq"'"; print $2 > "'"${out}/tmp_2.fastq"'"}' #separate reads into F and R files
+
+解决方法：把注释行全部换到新行
+
+123 # combine paired end reads onto one line, then    124 # shuffle reads, select top N reads, and then restore tabulation, then   125# separate reads into F and R files126 awk '{ printf("%s",$0); n++; if(n%4==0) { printf("\n");} else { printf("\t\t");} }' |\   127 shuf | head -n $depth | sed 's/\t\t/\n/g' | \
+
+128 awk -F"\t" '{print $1 > "'"${out}/tmp_1.fastq"'"; print $2 > "'"${out}/tmp_2.fastq"'"}'
+
+（2） 脚本无权限报错
+
+注意kraken.sh脚本权限应为可执行，否则使用时报错：
+
+/opt/conda/envs/metawrap-env/bin/metawrap: line69: /opt/conda/envs/metawrap-env/bin/metawrap-modules/kraken.sh: Permission denied
+
+解决方法：修改脚本权限为775，不再报错。
+
+chmod775kraken.shls-l kraken.sh-rwxrwxr-x1root root8.9K Sep2220:12kraken.sh
+
+（3）python注释脚本报错
+
+python脚本kraken2_translate.py，字典names_map遇到未知key，报KeyError错误。
+
+Something went wrong with running kraken-translate... Exiting.
+
+Traceback (most recent call last):
+
+File "/opt/conda/envs/metawrap-env/bin/metawrap-scripts/kraken2_translate.py", line120,in    main()
+
+File "/opt/conda/envs/metawrap-env/bin/metawrap-scripts/kraken2_translate.py", line114,in main
+
+translate_kraken2_annotations(annotation_file=kraken_file, kraken2_db=database_location, output=output_file)
+
+File "/opt/conda/envs/metawrap-env/bin/metawrap-scripts/kraken2_translate.py", line98,in translate_kraken2_annotations
+
+taxonomy = get_full_name(taxid, names_map, ranks_map)
+
+File "/opt/conda/envs/metawrap-env/bin/metawrap-scripts/kraken2_translate.py", line30,in get_full_name
+
+name = names_map[taxid]
+
+KeyError: '1054037'
+
+解决方法：修改字典获取值的方式，改为dict.get()函数，并加入None值判断。
+
+vi/opt/conda/envs/metawrap-env/bin/metawrap-scripts/kraken2_translate.py
+
+#修改get_full_name函数，使key不存在时names_map不报错：
+
+fortaxidin taxid_lineage:
+
+#name = names_map[taxid]
+
+name = names_map.get(taxid)
+
+ifname == None:
+
+name ="unknown"        names_lineage.append(name)
+
+（4）找不到taxonomy数据库报错
+
+下载的NCBI taxonomy数据库需要放到下载的kraken数据库目录下，否则报错：
+
+Traceback (most recent calllast):
+
+File "/opt/conda/envs/metawrap-env/bin/metawrap-scripts/kraken2_translate.py", line120,in    main()
+
+File "/opt/conda/envs/metawrap-env/bin/metawrap-scripts/kraken2_translate.py", line114,in main
+
+translate_kraken2_annotations(annotation_file=kraken_file, kraken2_db=database_location, output=output_file)
+
+File "/opt/conda/envs/metawrap-env/bin/metawrap-scripts/kraken2_translate.py", line87,in translate_kraken2_annotations
+
+names_map, ranks_map = load_kraken_db_metadata(kraken2_db)
+
+File "/opt/conda/envs/metawrap-env/bin/metawrap-scripts/kraken2_translate.py", line50,in load_kraken_db_metadata
+
+with open(names_path) as input:
+
+IOError: [Errno 2] No suchfileor directory:'/database/kraken_database/kraken_newdb2/axel_dowload/taxonomy/names.dmp'
+
+解决方法：把taxonomy数据库复制到kraken数据库目录下。
+
+（5）kraken软件与数据库版本不相符，报错
+
+此前用过kraken2（2代软件），服务器上已经下载了2代所需的（巨大的）数据库，不想再下一次kraken（1代软件）数据库，于是试了试2代的数据库能否兼容1代软件，果然不行，报错：
+
+kraken: database ("/database/kraken_database/kraken_newdb2/axel_dowload") does not contain necessaryfiledatabase.kdb
+
+遂考虑更新metaWRAP中的kraken版本，结果发现，默认安装的metaWRAP不支持kraken2，需要更新到最新的1.3.2版本：
+
+解决方法：更新metaWRAP版本至1.3.2。
+
+condainstall-y -c ursky metawrap-mg=1.3.2#更新后需要重新修改config文件权限，及其中的内容chmod777/opt/conda/envs/metawrap-env/bin/config-metawrap
+
+5.checkM软件报错
+
+（1）py换行符报错
+
+checkM是用于检测基因组拼接组装完整性的软件，bin_refinement会用到，直接报错：
+
+Traceback (most recent calllast):
+
+File "/opt/conda/envs/metawrap-env/bin/checkm", line36,in    from checkm import main
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/main.py", line25,in    from checkm.defaultValues import DefaultValues
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/defaultValues.py", line26,in    class DefaultValues():
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/defaultValues.py", line29,in DefaultValues
+
+__DBM = DBManager()
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/checkmData.py", line114,in __init__
+
+if not self.setRoot():
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/checkmData.py", line140,in setRoot
+
+path = self.confirmPath(path=path)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/checkmData.py", line162,in confirmPath
+
+path = raw_input("Where should CheckM store it's data?\n" \
+
+EOFError: EOF when reading a line
+
+解决方法：修改checkmData.py文件raw_input()函数参数。
+
+该py脚本所在路径：/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/
+
+报错原因：第162行的raw_input()函数加了“\”作为换行符，python没识别
+
+162path = raw_input("Where should CheckM store it's data?\n" \163Please specify a location or type'abort'to stop trying: \n")
+
+解决方法：删除该换行符。
+
+162path = raw_input("Where should CheckM store it's data?\nPlease specify a location or type 'abort' to stop trying: \n")
+
+（2）找不到数据库报错
+
+第一次运行checkM时，会被要求选择数据库位置，所以最好是在安装后就运行一下checkm data setRoot，先设置好数据库路径：
+
+checkm data setRoot******************************************************************************* [CheckM - data] Checkfor database updates. [setRoot]*******************************************************************************Where should CheckM store it's data?Please specify a location or type'abort' to stop trying: /checkm_database
+
+Path [/checkm_database] exists and you have permission towriteto this folder.
+
+否则，checkM找不到数据库，会显示以下信息：
+
+It seems that the CheckM data folder has not been set yet or has been removed. Running: 'checkm data setRoot'.
+
+You do not seem to have permission to edit the checkm config file
+
+located at /opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/DATA_CONFIG
+
+Please try again with updated privileges.
+
+Unexpected error: <type 'exceptions.TypeError'>
+
+（3）tmpdir路径过长，报错
+
+******************************************************************************* [CheckM - tree] Placing binsin reference genome tree.*******************************************************************************  Identifying marker genes in8bins with32 threads:
+
+Process SyncManager-1:
+
+Traceback (most recent call last):
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/process.py", line267,in _bootstrap
+
+self.run()
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/process.py", line114,in run
+
+self._target(*self._args, **self._kwargs)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/managers.py", line550,in _run_server
+
+server = cls._Server(registry, address, authkey, serializer)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/managers.py", line162,in __init__
+
+self.listener = Listener(address=address, backlog=16)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/connection.py", line132,in __init__
+
+self._listener = SocketListener(address, family, backlog)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/connection.py", line256,in __init__
+
+self._socket.bind(address)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/socket.py", line228,in meth
+
+return getattr(self._sock,name)(*args)
+
+error: AF_UNIX path too longTraceback (most recent call last):
+
+File "/opt/conda/envs/metawrap-env/bin/checkm", line708,in    checkmParser.parseOptions(args)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/main.py", line1251,in parseOptions
+
+self.tree(options)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/main.py", line133,in tree
+
+options.bCalledGenes)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/site-packages/checkm/markerGeneFinder.py", line67,infind    binIdToModels = mp.Manager().dict()
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/__init__.py", line99,in Manager
+
+m.start()
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/managers.py", line528,in start
+
+self._address = reader.recv()
+
+EOFError
+
+解决方法：修改binning.sh等脚本中指定的checkm --tmpdir，指定一个绝对路径较短的临时文件存放目录。
+
+#该路径下这3个脚本都用到checkM，都需要改默认的--tmpdir
+
+cd /opt/conda/envs/metawrap-env/bin/metawrap-modulesgrepcheckm *sh|awk-F":"'{print $1}'|sort|uniqbin_refinement.shbinning.shreassemble_bins.sh#以binning.sh为例
+
+#在checkm命令前加一行，新建一个较短的tmp目录，用于存放checkM的tmp文件mkdir-p /tmp/$(basename${1}).tmp
+
+#修改checkm的--tmpdir61checkm lineage_wf -x fa ${1} ${1}.checkm -t $threads --tmpdir /tmp/$(basename${1}).tmp --pplacer_threads $p_threads62if[[ ! -s ${1}.checkm/storage/bin_stats_ext.tsv ]];thenerror"Something went wrong with running CheckM. Exiting...";fi#运行完毕后删除该tmp目录rm-r /tmp/$(basename${1}).tmp
+
+#其余两个脚本同样需要修改对应checkm行#bin_refinement.sh脚本修改
+
+if[ ! -d /tmp/$(basename${bin_set}) ];thenmkdir-p /tmp/$(basename${bin_set}).tmp;fiif["$quick"=="true"];then        comm "Note: running with --reduced_tree option"        checkm lineage_wf -x fa $bin_set ${bin_set}.checkm -t $threads --tmpdir /tmp/$(basename${bin_set}).tmp --pplacer_threads $p_threads --reduced_treeelse        checkm lineage_wf -x fa $bin_set ${bin_set}.checkm -t $threads --tmpdir /tmp/$(basename${bin_set}).tmp --pplacer_threads $p_threadsfiif[[ ! -s ${bin_set}.checkm/storage/bin_stats_ext.tsv ]];thenerror"Something went wrong with running CheckM. Exiting...";fi${SOFT}/summarize_checkm.py ${bin_set}.checkm/storage/bin_stats_ext.tsv $bin_set | (read -r; printf"%s\n""$REPLY";sort) > ${bin_set}.statsif[[ $? -ne0]];thenerror"Cannot make checkm summary file. Exiting.";firm-r ${bin_set}.checkm;rm-r /tmp/$(basename ${bin_set}).tmpmkdir-p /tmp/binsO.tmpif["$quick"=="true"];then        checkm lineage_wf -x fa binsO binsO.checkm -t $threads --tmpdir /tmp/binsO.tmp --pplacer_threads $p_threads --reduced_treeelse        checkm lineage_wf -x fa binsO binsO.checkm -t $threads --tmpdir /tmp/binsO.tmp --pplacer_threads $p_threadsfiif[[ ! -s binsO.checkm/storage/bin_stats_ext.tsv ]];thenerror"Something went wrong with running CheckM. Exiting...";firm-r /tmp/binsO.tmp
+
+#reassemble_bins.sh脚本修改mkdir-p /tmp/$(basename ${out}).tmp
+
+checkm lineage_wf -x fa ${out}/reassembled_bins ${out}/reassembled_bins.checkm -t $threads --tmpdir /tmp/$(basename${out}).tmp --pplacer_threads $p_threadsif[[ ! -s ${out}/reassembled_bins.checkm/storage/bin_stats_ext.tsv ]];thenerror"Something went wrong with running CheckM. Exiting...";fi${SOFT}/summarize_checkm.py ${out}/reassembled_bins.checkm/storage/bin_stats_ext.tsv | (read -r; printf"%s\n""$REPLY";sort) > ${out}/reassembled_bins.statsif[[ $? -ne0]];thenerror"Cannot make checkm summary file. Exiting.";firm-r /tmp/$(basename ${out}).tmpmkdir-p /tmp/$(basename ${out}).tmp
+
+checkm lineage_wf -x fa ${out}/reassembled_bins ${out}/reassembled_bins.checkm -t $threads --tmpdir /tmp/$(basename${out}).tmp --pplacer_threads $p_threadsif[[ ! -s ${out}/reassembled_bins.checkm/storage/bin_stats_ext.tsv ]];thenerror"Something went wrong with running CheckM. Exiting...";firm-r /tmp/$(basename${out}).tmp
+
+该错误会连带导致bin_refinement报错（因为checkM未正确运行，无对应统计结果）：
+
+Traceback (most recent calllast):
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/util.py", line277,in _run_finalizers
+
+finalizer()
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/multiprocessing/util.py", line207,in __call__
+
+res = self._callback(*self._args, **self._kwargs)
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/shutil.py", line266,in rmtree
+
+onerror(os.remove, fullname, sys.exc_info())
+
+File "/opt/conda/envs/metawrap-env/lib/python2.7/shutil.py", line264,in rmtree
+
+os.remove(fullname)
+
+OSError: [Errno 16] Device or resource busy:'binsO.tmp/pymp-REeR36/.nfs9061e516f4bd263400000b82'mv: cannotstat'binning_results.eps': No suchfile or directorymv: cannotstat'binning_results.eps': No suchfileor directory
+
+6.BLAST报错
+
+blobology步骤，BLAST版本与已下载的nt数据库（下载的是version 5，最新版数据库）版本不符，报错：
+
+BLAST Database error: Error: Not a valid version4database.
+
+解决方法：更新BLAST版本。
+
+#下载并解压新版BLAST软件wgethttps://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.12.0+-x64-linux.tar.gztar-xzvf ncbi-blast-2.12.0+-x64-linux.tar.gz
+
+#替换掉conda镜像中的BLASTmkdir/opt/conda/envs/metawrap-env/bin/bakforiin$(ls);domv/opt/conda/envs/metawrap-env/bin/$i /opt/conda/envs/metawrap-env/bin/bak;cp$i /opt/conda/envs/metawrap-env/bin;done
+
+7.prokka报错
+
+（1）不识别blast版本，报错
+
+prokka软件用于注释组装好的基因组，是一个perl脚本，对软件blastp及makeblastdb的要求为版本大于2.8及以上，但此处判断条件有点问题，识别不了我的blast 2.12.0（认为版本2.12小于2.8……）。
+
+不懂perl语言，没法优化，只好把MINVER都改成了2.1：
+
+'blastp'=> {
+
+GETVER  =>"blastp -version",
+
+REGEXP  => qr/blastp:\s+($BIDEC)/,
+
+MINVER  =>"2.1",
+
+NEEDED  =>1,
+
+},
+
+'makeblastdb'=> {
+
+GETVER  =>"makeblastdb -version",
+
+REGEXP  => qr/makeblastdb:\s+($BIDEC)/,
+
+MINVER  =>"2.1",
+
+NEEDED  =>0,  # onlyif--proteins used
+
+},
+

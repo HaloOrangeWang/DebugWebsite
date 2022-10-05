@@ -1,0 +1,19 @@
+
+在python文件开头加上以下一段代码，即可解决中文编码问题，屡试不爽
+
+1、在arcmap中可以这样解决
+
+2、如果使用脚本工具的话，完成以下几个内容即可：
+
+（1）在py 文件最前面指定编码
+
+# -- coding:cp936 –
+
+（2）文件保存的编码必须以ANSI，即系统默认编码保存，使用UTF-8编码的中文不会被系统默认编码（cp936）所识别。
+
+（3）为了避免出现其他问题，建议在中文字符串前加u。如：u"中文"。不加u，if判断语句就会是false。
+
+field_names = [i.name for i in arcpy.ListFields(f)]
+if u"要素代码" in field_names:
+    arcpy.CalculateField_management(f, u"要素代码", '"{}"'.format(YSDM), "VB")
+

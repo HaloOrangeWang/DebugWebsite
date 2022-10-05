@@ -1,0 +1,42 @@
+selenium定位一组元素，批量操作循环点击的时候会报错：Element not found in the cache - perhaps the page has changed since it was looked up
+
+实现目标：批量点击标题，获取每个页面的url地址
+
+代码如下：
+
+运行结果：
+
+http://www.cnblogs.com/yoyoketang/p/7259993.html
+
+Traceback (most recent call last):
+
+selenium.common.exceptions.StaleElementReferenceException: Message: Element not found in the cache - perhaps the page has changed since it was looked up
+
+这里不少人就会问了：
+
+由于第一次点击后，页面刷新了，我们可以手工点击的时候，注意观察页面，页面是有刷新动作的。
+
+页面刷新后元素的属性是没变，但是element却变了，所有之前定位的元素element都过期了。
+
+如何实现，这个才是本篇重点要讲的。
+
+1.当页面上有点击行为的时候，页面是会刷新的，为了模拟页面刷新后查看元素是不是会变，我们可以用refresh刷新页面，然后查看刷新前后元素的变化。
+
+运行结果：
+
+[<selenium.webdriver.remote.webelement.WebElement (session="36801e98-3a57-41b1-a58e-021fe925fd57", element="{88a2f797-3833-4ea4-a734-72c5c59800ff}")>, <selenium.webdriver.remote.webelement.WebElement (session="36801e98-3a57-41b1-a58e-021fe925fd57", element="{529248de-6ca0-43d9-8747-34d7dad28c6c}")>,
+
+...后面太长省略了]
+
+2.很明显element里面的值发生了变化，所以第一次点击是可以点的，点完之后，页面刷新了，然后页面上的元素已经发生变化了，第二次循环的时候还是用刷新前的元素去定位点击的，自然就会报错了。
+
+1.针对页面刷新后，之前的元素失效问题，在for循环体里面可以重新定位一次，覆盖掉之前旧的就行了。
+
+2.第一次获取全部元素后，通过len函数获取总个数
+
+3.for循环的时候不要循环定位元素的list对象,换成range函数去循环
+
+4.参考代码如下：
+
+运行结果：
+

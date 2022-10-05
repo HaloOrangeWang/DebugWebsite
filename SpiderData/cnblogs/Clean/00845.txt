@@ -1,0 +1,36 @@
+把前年写的重新理了理，觉得可读性不好，把错误和代码逻辑分开来写。这里就放错误和解决办法。
+
+一、报错：error10013
+
+原因一：端口被占，默认端口是8000，酷狗的默认端口也是8000， 
+ 解决办法： 
+ 1. 把酷狗关掉。 
+ 2. 端口改成其他，如8080，即每次执行的时候在最后加上8080就好了。eg：python manage.py runserver 8080(推荐使用) 
+ 3. 如果不是酷狗，先输入netstat -aon|findstr "8000"（查看所有端口|查看指定端口是被什么给占用了）,找到如图最后一个位置即占用的那个进程，然后使用tasklist|findstr "3108"（关闭进程，如果知道是什么程序，即使用taskkill /f /t /im）将其关掉。
+
+二、报错： 
+  
+ You have unapplied migrations; your app may not work properly until they are applied. 
+ Run 'python manage.py migrate' to apply them. 
+  
+ 解决：新起一个DOS窗口，执行python manage.py migrate
+
+三、报错：页面出现page not found(404) 
+ 原因：没有对应的app项目（你输入的url有误，缺了app_name，或是没有在urls.py里填上对应的路由和函数） 
+ 解决：输入完整的路由，或是在urls.py的urlpatterns的列表里加上该app对应的路由。
+
+四、报错：UnicodeDecodeError: ‘ascii’ codec can’t decode byte 0xe3 in position 7: ordinal not in range(128) 
+ 原因：python的str默认是ascii编码，和unicode编码冲突。 
+ 解决：
+
+1）. 在代码的最前端加上
+
+2）. 但是听说1已经不推荐使用了，推荐使用以下方式 ：xxx.decode(“utf-8”)，或者在你需要使用中文的地方前面加上u.Python2默认的字符串编码是str。 
+ 参考来源：https://www.zybuluo.com/zwenqiang/note/21851 
+ 3）. 修改源代码：找到打开D:\Anaconda2\Lib\mimetypes.py（我使用的是anaconda集成环境，如果你是原python的话，同样在python的Lib目录下），在254行左右有句default_encoding = sys.getdefaultencoding()，在它前面加上这句：
+
+如图：
+
+五、报错：You are trying to add a non-nullable field 'email' to usermodel without a default; we can't do that (the database needs something to populate existing rows).f 
+ 原因：非空字段的问题，需要你设一个默认值。
+

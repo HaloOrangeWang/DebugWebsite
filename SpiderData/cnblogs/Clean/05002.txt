@@ -1,0 +1,148 @@
+python3.7启动pyspider时报错的问题
+
+
+python3.7启动pyspider时报错的问题
+
+2019年04月22日 08:40:42 沙雨 阅读数 490更多
+分类专栏：  spider
+
+2019年04月22日 08:40:42 沙雨 阅读数 490更多
+分类专栏：  spider
+
+分类专栏：  spider
+
+版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。
+本文链接：https://blog.csdn.net/weixin_41698864/article/details/89444910
+
+版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。
+本文链接：https://blog.csdn.net/weixin_41698864/article/details/89444910
+
+本文链接：https://blog.csdn.net/weixin_41698864/article/details/89444910
+
+关键字问题
+
+最后一句出现
+
+File “D:\installed\Python\Lib\site-packages\pyspider\run.py”, line 231
+
+async=True, get_object=False, no_input=False):
+
+SyntaxError: invalid syntax
+
+原因是：python3.7中async是关键字
+
+解决办法是将这个关键字替换掉。主要有两个文件：D:\installed\Python\Lib\site-packages\pyspider\run.py      和   D:\installed\Python\Lib\site-packages\pyspider\fetcher\tornado_fetcher.py
+
+在替换是要注意：只替换名为async 的变量或参数名。不要图省事选择“全部替换”
+
+替换保存后再次运行“pyspider  all”
+
+这时spider只启动到“scheduler xmlrpc listening on 127.0.0.1:23333”就停止了
+
+继续替换PYTHON_HOME\Lib\site-packages\pyspider\webui\app.py中的async
+
+再次启动
+
+又报错：ValueError: Invalid configuration:
+
+-Deprecated option ‘domaincontroller’: use ‘http_authenticator.domain_controller’ instead.
+
+解决办法：打开PYTHON_HOME\Lib\site-packages\pyspider\webui\webdav.py文件，修改第209行
+
+把 ‘domaincontroller’: NeedAuthController(app)
+
+修改为：
+
+‘http_authenticator’:{
+
+‘HTTPAuthenticator’:NeedAuthController(app),
+
+},
+
+保存文件
+
+再次运行，成功
+
+这是我遇到的，然后网上居然没有特别明显的解决，费劲千辛万苦才查到，这是WsgiDAV发布了版本 pre-release 3.x导致的，所以只要把版本降下来就好了。
+
+将wsgidav替换为2.4.1
+
+•# python -m pip install wsgidav==2.4.1
+ 直接pip install wsgidav-2.4.1就会卸载3.0.0装2.4.1
+
+然后运行 pyspider all  发现居然可以了。上一张成功的图片。
+
+
+6、如果是在windows环境下，系统会提示 FutureWarning: timeout is not supported on your platform. warnings.warn(“timeout is not supported on your platform.”, FutureWarning)，忽略即可。
+
+
+pyspider_安装与启动
+
+pyspider
+
+官方文档：http://docs.pyspider.org/en/latest/Quickstart/
+
+1、安装
+
+（1）pip install pycurl
+（2）pip install pyspider
+
+2、pyspider命令启动错误，出现"SyntaxError:invalid syntax"报错。
+
+（1） 原因：async在Python 3.7中已成为关键字，
+（2） 解决方法：
+
+
+pyspider
+
+官方文档：http://docs.pyspider.org/en/latest/Quickstart/
+
+
+1、安装
+
+（1）pip install pycurl
+
+（2）pip install pyspider
+
+
+2、pyspider命令启动错误，出现"SyntaxError:invalid syntax"报错。
+
+（1） 原因：async在Python 3.7中已成为关键字，
+
+（2） 解决方法：
+
+A、打开pyspider文件夹（在python路径下python位置\Lib\site-packages\pyspider）
+B、修改下列python文件中的async为shark（全部替换），pycharm中用ctrl+r快捷键可以进行替换。
+	run.py
+	fetcher\tornado_fetcher.py
+	webui\app.py
+
+
+3、pyspider命令启动错误，出现"ValueError: Invalid configuration"报错。
+
+（1）原因：WsgiDAV发布了版本 pre-release 3.x导致
+
+（2）解决方法：
+
+1
+
+
+4、pyspider命令启动错误，出现"phantomjs"报错。
+
+（1）原因：未安装phantomjs
+
+（2）解决方法：
+
+1
+
+2
+
+3
+
+
+5、命令窗口输入pyspider；浏览器输入：http://localhost:5000/
+
+（1）命令窗口输入pyspider，出现如下界面，即🆗。
+
+（2）浏览器输入：http://localhost:5000/ ，出现如下界面，即🆗。
+

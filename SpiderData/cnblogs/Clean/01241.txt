@@ -1,0 +1,18 @@
+好久没用python了...今天随便pip安装个库突然报错：
+
+Exception:
+‘’ (most recent call last):
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\compat\__init__.py", line 73, in console_to_str
+    return s.decode('utf_8') # return s.decode(sys.__stdout__.encoding)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position 121: invalid start byte
+
+网上一查找到解决方法：
+
+导致这一问题的原因是路径出现中文，解决：将出问题的这个文件File "C:\ProgramData\Anaconda3\lib\site-packages\pip\compat\__init__.py"，即__init__.py用Notepad++打开，使用管理员权限即可修改，找到异常的行数line73，修改如下（注释掉的是源代码）：
+
+因Windows系统是GBK编码，所以使用的编码改为gbk。
+
+修改保存，然后安装成功了:)
+
+参考：https://www.cnblogs.com/Owen-ET/p/6897578.html
+

@@ -1,0 +1,112 @@
+
+前言
+
+更多内容，请访问我的 个人博客。
+
+
+Python3报错
+
+我们在写程序的时候最喜闻乐见的就是程序打印出我们想要的结果。
+
+最怕的就是程序没有按照我们预先设想的样子运行，完了还爆出一堆的错误信息。
+
+本章要介绍的就是python中的报错信息。报错信息有很多种，这里介绍两种比较常见的报错信息：
+
+语法错误
+
+逻辑异常
+
+
+语法错误
+
+我们先来看看什么是语法错误。还记得我们之前讲的for循环语句，必须要带冒号，如果不带冒号，就会报语法错误。
+
+list = ['苹果', '西瓜', '葡萄']
+for lt in list
+    print(lt)
+
+for lt in list
+                 ^
+SyntaxError: invalid syntax
+
+如果循环语句中没有缩进，也会报语法错误。
+
+list = ['苹果', '西瓜', '葡萄']
+for lt in list:
+print(lt)
+
+print(lt)
+        ^
+IndentationError: expected an indented block
+
+报错信息中写的很清楚，按照提示修改就可以了。
+
+
+逻辑异常
+
+在语法正确的情况下，如果程序中出现逻辑错误，那么也是会报错的，这类错误就是逻辑异常。
+
+比如计算1/0，我们知道0是不能作为除数的，这属于逻辑错误，程序就会报异常。
+
+a = 1 / 0
+print(a)
+
+a = 1 / 0
+ZeroDivisionError: division by zero
+
+再比如这个例子，程序就会报异常，说b这个玩意儿没有定义，不知道是啥。
+
+a = 1 / b
+print(a)
+
+a = 1 / b
+NameError: name 'b' is not defined
+
+
+异常处理
+
+有的时候我们怀疑某段代码可能会报错，或者说是担心会报错，但是又不希望程序会因此断掉。这时候我们就可以用try语句捕获异常信息。
+
+try:
+    1/0
+except:
+    print('程序报错了')
+
+print('无论1/0对不对，我都不希望程序中止')
+
+正如上面这个例子，虽然1/0是逻辑错误，但是程序并不会报错，程序会依次输出这两句话，然后程序正常退出。
+
+我们也可以根据报错信息的不同做分类处理。
+
+try:
+    a/0
+except ZeroDivisionError:
+    print('0不能作为被除数')
+except NameError:
+    print('变量没有被定义')
+
+正如上面这个例子，我们可以分别捕获 0不能作为被除数 和 变量没有被定义 这两类异常信息。
+
+当然，我们也可以加上else语句，当try里的内容一点错误也没有时，执行else里的代码。
+
+try:
+    a/0
+except ZeroDivisionError:
+    print('0不能作为被除数')
+except NameError:
+    print('变量没有被定义')
+else:
+    print('没有任何报错')
+
+
+练习题
+
+尝试给下列代码添加上try语句，并分别捕获 ZeroDivisionError 、NameError 异常。
+
+x = int(input("请输入一个整数: "))
+
+y = 1 / x
+print(x + "的倒数是：" + y)
+
+关注公众号：潘高陪你学编程，回复020，获取习题答案。
+

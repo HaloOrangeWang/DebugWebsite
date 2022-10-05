@@ -1,0 +1,19 @@
+最近在使用高德的交通态势数据接口获取数据，由于获取到的数据缺乏连续性，所以需要对数据进行处理，我的数据文件使用json的格式来保存的，在用python对数据文件进行读取时，出现了这样的报错问题
+
+UnicodeDecodeError: 
+'gbk' codec can't decode byte 0x80 in position 205: illegal multibyte sequence
+
+gbk编码无法位置205中的字节0x80:非法的多字节序列
+
+解决办法：
+
+将原来的读取代码
+
+open(json_filename)
+
+修改编码格式为
+
+open(json_filename,'r',encoding='UTF-8')
+
+便可以正常运行了
+

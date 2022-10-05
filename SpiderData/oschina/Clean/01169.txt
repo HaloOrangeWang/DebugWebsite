@@ -1,0 +1,21 @@
+C:\....\Anaconda3\envs\py35\lib\site-packages\h5py\__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+ from ._conv import register_converters as _register_converters
+
+使用Anaconda安装的Python3.5环境，导入TensorFlow时出现如下错误：
+
+<<<import tensorflow as tf
+C:\。..\Anaconda3\envs\py35\lib\site-packages\h5py\__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+
+解决办法：安装Microsoft Visual C++ 2015 Redistributable Update 3 。不再报错。
+
+--------------------------------------------分--------------------------------------------割--------------------------------------------线--------------------------------------
+
+啊这个不是导入失败，应该是字符格式。输出字符的时候，会在行前有一个b，比如b'Hello TensorFlow!'
+
+在打印行加上.decode()就可以解决了，如下：
+
+print(sess.run(hello).decode())
+
+Hello TensorFlow!　
+

@@ -1,0 +1,43 @@
+具体代码如下所示：
+
+from numpy import *
+import operator
+
+a = random.rand(4, 4)
+print(a)
+
+具体报错内容如下所示：
+
+参考资料：https://github.com/numpy/numpy/wiki/FMod-Bug-on-Windows
+
+Sebastian Berg edited this page on 8 Nov · 6 revisions
+
+There is a Bug with fmod on windows, see https://tinyurl.com/y3dm3h86
+
+To prevent unexpected runtime behavior, opencv contains a Check for this:
+
+See Pull Request https://github.com/numpy/numpy/pull/17553
+
+
+Workaround
+
+This is a windows issue and has to be fixed by Microsoft, however, a fix has not arrived for several weeks now.
+
+Pinning against NumPy 1.19.3 should help (it uses a newer OpenBLAS version, but this caused other problems). This can be achieved using e.g. with pip install numpy==1.19.3 or similar depending on your setup. To be clear: The only difference between NumPy 1.19.3 and 1.19.4 is the OpenBLAS version it ships.
+
+Pinning against NumPy 1.19.3 should help (it uses a newer OpenBLAS version, but this caused other problems). This can be achieved using e.g. with pip install numpy==1.19.3 or similar depending on your setup. To be clear: The only difference between NumPy 1.19.3 and 1.19.4 is the OpenBLAS version it ships.
+
+32bit Python does not have these issues
+
+32bit Python does not have these issues
+
+In principle you could revert the buggy windows update or deactivate the _win_os_check in NumPy (if you are lucky, your code is unaffected by the bug).
+
+In principle you could revert the buggy windows update or deactivate the _win_os_check in NumPy (if you are lucky, your code is unaffected by the bug).
+
+原因：是1.19.4版本有问题，需要安装1.19.3版本
+
+更换版本后使用 import numpy
+
+numpy.__version__ 可以查看该版本号
+

@@ -1,0 +1,42 @@
+当前环境：
+
+系统：MacBook Pro Catalina 10.15.2
+
+python: 3.7.3
+
+集成环境：Pycharm
+
+import matplotlib as plt的时候 出现
+
+This application failed to start because it could not find or load the Qt Platforms的报错
+
+尝试解决方法：
+
+在stackoverflow上看了高分答案说
+
+pip install opencv-python-headless
+
+pip install opencv-python==4.0.0.21
+
+就能完美的解决问题 事实上也有很多人遇到这个问题用这个解决方法解决了
+
+当时我没有用opencv这个库 所以参考价值不高 即使都装了也没有解决我的问题
+
+所以继续搜索答案 当看到有网友说Qt Platforms的问题可能是PyQt的问题
+
+但是我查看了python环境下安装的package 都没有安装PyQt
+
+所以我就想先安装PyQt 根据自己电脑版本 安装了PyQt5
+
+安装命名: pip install pyqt5
+
+安装好PyQt5和依赖包PyQt5-Sip之后 再去运行 python 结果不报错了！问题解决了！
+
+期间可能警告：Attribute Qt::AA_EnableHighDpiScaling must be set before QCoreApplication is created.
+
+这个是matplotlib版本过低的问题 只需要更新matplotlib到最新版本即可
+
+更新命令：pip install -U matplotlib
+
+问题完美解决了！
+

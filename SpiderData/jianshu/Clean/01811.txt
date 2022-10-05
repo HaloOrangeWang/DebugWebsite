@@ -1,0 +1,32 @@
+最近在运行deeptools时出现一个错误，捯饬了半天，分享一下解决办法：
+
+报错信息如下：
+
+主要的报错信息是：ModuleNotFoundError: No module named 'pyBigWig'  #即找不到pyBigWig模块，于是就安装模块嘛，问题不大：
+
+Python -m pip install pyBigWig
+
+安装之后运行，还是报错如上面，找不到！！纳尼，明明已经安装好了呀，真头大。。。
+
+于是又重复如上操作安装操作，系统告诉我：
+
+Requirement already satisfied: pyBigWig in /home/****/software/python/python3.6/lib/python3.6/site-packages (0.3.18)          #其实在编译软件的时候，这些模块便已经安装在此了
+
+仔细一检查，发现路劲不一致。
+
+软件安装的模块跟系统调用不一致。那咋整，要不要重新来一遍，好复杂，不想重新来，因为其他的模块也要调用，于是捯饬出了一个简单的方法：
+
+cd /home/****/.local/lib/python3.6/site-packages     #打开系统调用库
+
+vi mypkpath.pth   #新建一个.pth文件，写入：
+
+/home/****/software/python/python3.6/lib/python3.6/site-packages/         #即已安装的模块所在文件路径
+
+保存，退出！
+
+再运行就OK 啦！
+
+欢迎大家交流心得~~~3QU!!!...........
+
+---------------------------------------------------------------------------------------------------------I am a line !----------------------------------------------------------------------------------------------
+

@@ -1,0 +1,10 @@
+问题：
+
+当脚本调用tail命令，会出现tail: cannot watch   No space left on device的报错，但是手动执行，没问题。
+
+解决：
+
+echo 16384 > /proc/sys/fs/inotify/max_user_watches
+
+echo 'echo 16384 > /proc/sys/fs/inotify/max_user_watches'   >> /etc/rc.local
+

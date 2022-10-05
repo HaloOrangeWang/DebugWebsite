@@ -1,0 +1,28 @@
+
+Python报错：‘unicodeescape’ codec can’t decode bytes in position 2-3: truncated \UXXXXXXXX escape
+
+
+问题原因
+
+
+在文件夹中复制地址时，​​文件夹中的地址是用 \ 来分隔不同文件夹的​​​，而​​Python识别地址时只能识别用 / 分隔的地址​​。
+
+
+解决方法
+
+
+1.在字符串前加上r或R，即：imread(r‘C:\Users\li735\PycharmProjects\untitled\abc.txt’) ，其中r或R在python中表示一个不转义的字符串。
+
+
+2.在“\”前加上”\”实现转义。即：imread(‘C:\Users\harchi\Desktop\图像处理\skeleton.bmp’)
+
+
+3.将“\”换为“/”，即：imread(‘C:/Users\harchi/Desktop/图像处理/skeleton.bmp’)
+
+
+最后：补充一下python字符串前缀的知识：
+
+1、在字符串前加上r或R表示该字符串是非转义的原始字符串。
+
+2、在字符串前加上u或U表示该字符串是unicode字符串。
+

@@ -1,0 +1,30 @@
+查看uwsgi.log
+
+解决第一个报错，注意操作的先后顺序：
+
+1.卸载uwsgi
+
+pip uninstall uwsgi
+
+#注意此时卸载，pip会有缓存留在系统里
+
+2.安装pcre支持库
+
+yum install pcre pcre-devel pcre-static
+
+3.继续安装uwsgi，不走pip缓存
+
+pip install uwsgi -I --no-cache-dir
+
+#启动uwsgi，已经没有“!!! no internal routing support, rebuild with pcre support !!!”报错了
+
+解决第二个报错：
+
+需要在你的uwsgi.ini文件中module指定项目下面的wsgi：
+
+module=xxx.wsgi
+
+#注：xxx为项目名称，startproject那个项目名称，这个错误解决后，下面的访问错误自然而然的就解决了！
+
+附：我的uwsgi.ini配置文件
+

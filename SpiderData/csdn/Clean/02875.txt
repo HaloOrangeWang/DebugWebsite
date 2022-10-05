@@ -1,0 +1,174 @@
+
+一、try
+
+try:
+    print('try...')
+    r = 10 / 0
+    print('result:', r)
+except ZeroDivisionError as e:
+    print('except:', e)
+finally:
+    print('finally...')
+print('END')
+
+输出结果：
+
+try...
+except: division by zero
+finally...
+END
+
+当我们认为某些代码可能会出错时，就可以用try来运行这段代码，如果执行出错，则后续代码不会继续执行，而是直接跳转至错误处理代码，即except语句块，执行完except后，如果有finally语句块，则执行finally语句块，至此，执行完毕。
+
+如果没有错误发生，所以except语句块不会被执行，但是finally如果有，则一定会被执行（可以没有finally语句）。
+
+Python的错误其实也是class，所有的错误类型都继承自BaseException，所以在使用except时需要注意的是，它不但捕获该类型的错误，还把其子类也“一网打尽”。
+
+常见的错误类型和继承关系
+
+
+二、调用栈
+
+如果错误没有被捕获，它就会一直往上抛，最后被Python解释器捕获，打印一个错误信息，然后程序退出。
+
+# err.py:
+def f3(s):
+    return 10 / int(s)
+def f2(s):
+    return f3(s) * 2
+def f1():
+    f2('0')
+f1()
+
+运行结果：
+
+Traceback (most recent call last):
+  File "C:\Users\user\Desktop\test1.py", line 10, in <module>
+    f1()
+  File "C:\Users\user\Desktop\test1.py", line 8, in f1
+    f2('0')
+  File "C:\Users\user\Desktop\test1.py", line 5, in f2
+    return f3(s) * 2
+  File "C:\Users\user\Desktop\test1.py", line 2, in f3
+    return 10 / int(s)
+ZeroDivisionError: division by zero
+
+我们可以看到，先打印f1,然后f2,最后f3。
+
+出错的时候，一定要分析错误的调用栈信息，才能定位错误的位置。
+
+
+三、记录错误
+
+Python内置的logging模块可以非常容易地记录错误信息：
+
+import logging
+def f3(s):
+    return 10 / int(s)
+def f2(s):
+    return f3(s) * 2
+def f1():
+    try:
+        f2('0')
+    except Exception as e:
+        logging.exception(e)
+f1()
+print("end")
+
+输出结果：
+
+ERROR:root:division by zero
+Traceback (most recent call last):
+  File "C:\Users\user\Desktop\test1.py", line 11, in f1
+    f2('0')
+  File "C:\Users\user\Desktop\test1.py", line 7, in f2
+    return f3(s) * 2
+  File "C:\Users\user\Desktop\test1.py", line 4, in f3
+    return 10 / int(s)
+ZeroDivisionError: division by zero
+end
+
+通过配置，logging还可以把错误记录到日志文件里，方便事后排查。
+
+
+四、抛出错误
+
+用raise语句抛出一个错误。
+
+# err_raise.py
+class FooError(ValueError):
+    pass
+def foo(s):
+    n = int(s)
+    if n==0:
+        raise FooError('invalid value: %s' % s)
+    return 10 / n
+
+foo(‘0’)
+
+执行，可以最后跟踪到我们自己定义的错误：
+
+$ python3 err_raise.py 
+Traceback (most recent call last):
+  File "err_throw.py", line 11, in <module>
+foo('0')
+  File "err_throw.py", line 8, in foo
+    raise FooError('invalid value: %s' % s)
+__main__.FooError: invalid value: 0
+
+还有一种抛出的方式：
+
+def foo(s):
+    n = int(s)
+    if n==0:
+        raise ValueError('invalid value: %s' % s)
+    return 10 / n
+
+def bar():
+    try:
+        foo('0')
+    except ValueError as e:
+        print('ValueError!')
+        raise
+bar()
+
+在bar()中，捕获到错误后，又把错误抛出了。
+好比一个员工处理不了一个问题时，就把问题抛给他的老板，如果他的老板也处理不了，就一直往上抛，最终会抛给CEO去处理。
+
+raise语句如果不带参数，就会把当前错误原样抛出。此外，在except中raise一个Error，还可以把一种类型的错误转化成另一种类型（逻辑合理即可）：
+
+try:
+    10 / 0
+except ZeroDivisionError:
+    raise ValueError('input error!')
+
+其它博客链接：
+
+变量和数据类型
+
+list和tuple
+
+条件语句和循环
+
+dict和set
+
+函数
+
+切片+迭代+生成器
+
+生成器和迭代器
+
+函数式编程
+
+模块
+
+面向对象编程
+
+面向对象高级编程
+
+定制类
+
+枚举类和元类
+
+错误及处理
+

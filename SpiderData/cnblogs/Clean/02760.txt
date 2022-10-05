@@ -1,0 +1,39 @@
+
+问题
+
+
+报错代码
+
+执行报错：
+
+File "t.py", line 3
+
+SyntaxError: Non-ASCII character '\xe4' in file t.py on line 3, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+
+这个python代码编码方式问题。
+
+默认情况下，python使用ascii对代码进行编码。如果遇到代码中含有中文的情况，由于中文不在ascii编码范围(0~255)，所以编码异常。
+
+
+解决办法
+
+在python文件开头添加
+
+将上面的例子代码修改成：
+
+执行就不会报错：
+
+你好
+
+
+与sys.getdefaultencoding() 的区别
+
+sys.getdefaultencoding() 的编码是对代码中字符串的编码。
+
+coding:utf-8 是对源代码文件的编码。
+
+
+参考
+
+https://www.python.org/dev/peps/pep-0263/
+

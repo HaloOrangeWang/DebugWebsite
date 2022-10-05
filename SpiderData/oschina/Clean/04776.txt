@@ -1,0 +1,37 @@
+错误
+
+[scrapy.core.downloader.tls] WARNING: Remote certificate is not valid for hostname
+
+其实这种情况下scrapy已经安装好了 可以使用 只是有部分功能 有影响就是其中提到的 service_identity模块。其实这个模块是已经安装了的。但是为什么还会报错呢。耗费了我两个小时 各种发帖 搜索。终于在一位大神那里找到了答案。
+
+原因是不知道因为什么原因导致本机上的service_identity模块太老旧，而你通过install安装的时候 不会更新到最新版本。
+
+pip3 install service_identity --force --upgrade
+
+下载和安装service_identity,地址为：https://pypi.python.org/pypi/service_identity#downloads，下载whl文件
+
+pip install service_identity-17.0.0-py2.py3-none-any.whl
+
+如果升级到最新版本以后，还有下面警告，则是由于service_identity依赖的版本号不一致问题
+
+root@debian:~# scrapy version
+:0: UserWarning: You do not have a working installation of the service_identity module: 'cannot import name 'opentype''.  Please install it from <https://pypi.python.org/pypi/service_identity> and make sure all of its dependencies are satisfied.  Without the service_identity module, Twisted can perform only rudimentary TLS client hostname verification.  Many valid certificate/hostname mappings may be rejected.
+Scrapy 1.5.0
+
+service_identity对应依赖
+
+service_identity==18.1.0
+pyasn1-modules==0.2.7
+pyasn1==0.4.7
+cryptography==2.8
+attrs==19.3.0
+cffi==1.13.2
+six==1.13.0
+pycparser==2.19
+
+参考：http://www.mamicode.com/info-detail-2162790.html
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

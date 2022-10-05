@@ -1,0 +1,30 @@
+报错：
+
+* What went wrong:
+
+A problem occurred configuring project ':fluttertoast'.
+
+> Could not resolve all artifacts for configuration ':fluttertoast:classpath'.
+
+> Could not download kotlin-compiler-embeddable-1.6.10.jar (org.jetbrains.kotlin:kotlin-compiler-embeddable:1.6.10)
+
+> Could not get resource 'https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/1.6.10/kotlin-compiler-embeddable-1.6.10.jar'.
+
+> SSL peer shut down incorrectly
+
+查看报错可知下载地址：https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/1.6.10/kotlin-compiler-embeddable-1.6.10.jar
+
+在通过下载地址下载jar后，
+
+Mac系统默认下载到：/Users/(用户名)/.gradle/caches/modules-2/files-2.1
+
+Windows系统默认下载到：C:\Users\(用户名)\.gradle\caches\modules-2\files-2.1
+
+文件夹生成的规律是根据依赖中的组织名称，classpath  "org.jetbrains.kotlin:kotlin-gradle-plugin"
+
+最终生成的文件夹名称，实际为该文件sha1加密后的名称
+
+可自行对下载后的jar包加密后，生成对应的文件夹，将jar包放入
+
+在Android Studio中，将项目重新Sync即可！！！
+

@@ -1,0 +1,80 @@
+启动Nacos报错解决
+
+nacos is starting;
+
+you can check the /Volumes/MXY/work/devtool/nacos/logs/start.out
+
+经过我去看这个目录下的文件
+
+nohup: /Users/xx/jdk/java/bin/java: No such file or directory
+
+查找原因：
+
+输入echo $JAVA_HOME结果为空，说明没有配置java环境变量
+
+解决方案
+
+从上面不难看得出，需要配置环境变量，上次我安装apollo也是这样。所以你以为可以安装启动jar就代表jdk没问题，其实错误的
+
+一、配置JAVA环境变量
+
+我这里是zsh命令，所以修改profile无效，我使用
+
+vi ~/.zshrc
+
+1
+
+添加如下配置
+
+if [ -f ~/.bash_profile ]; then
+       source ~/.bash_profile
+    fi
+    export  JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_271.jdk/Contents/Home
+    export PATH=\$JAVA_HOME/bin:\$PATH:.
+    export CLASSPATH=\$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
+
+执行
+
+sh startup.sh -m standalone
+
+就可以正常启动了
+
+查看日志logs ==> start.out
+
+如图
+
+代表Nacos正常启动
+
+
+要是还不行配置数据源康康
+
+在自己的数据库里面新建一个：nacos库如图：
+
+然后运行sql语句
+
+执行sql语句，也可以将文件夹拖到navercat里面去运行，结果为：
+
+到cofig文件夹下编辑application.properties
+
+#*************** Config Module Related Configurations ***************#
+### If use MySQL as datasource:
+ spring.datasource.platform=mysql
+
+## Count of DB:
+ db.num=1
+
+## Connect URL of DB:
+ db.url.0=jdbc:mysql://127.0.0.1:3306/nacos?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC&useSSL=true
+ db.user=root
+ db.password=14lhwtz13
+
+最后再启动
+
+sh startup.sh -m standalone
+
+访问
+
+http://localhost:8848/nacos/index.html#/login
+
+用户名密码都为 nacos
+

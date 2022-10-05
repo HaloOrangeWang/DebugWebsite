@@ -1,0 +1,443 @@
+数据库报错：Access denied for user 'root'@'localhost' (using password: YES”
+
+解决：就是密码错了
+
+安装 pyqt5-tools 不能打开 designer.exe ：
+
+解决：https://www.cnblogs.com/xiege/p/12886528.html
+
+未安装软件包 –nodeps
+
+符号有错误，- 复制的，，，
+
+linux系统mysql服务启动失败：
+
+解决：https://blog.csdn.net/qq_44868502/article/details/103837552
+
+Linux下mysql首次登录修改root密码：
+
+解决：https://blog.csdn.net/liuzhixiong_521/article/details/84333550
+
+pycharm 启动项目报错：这是pycharm没有读取到settings，用命令行启动完全可以
+
+解决：
+
+pycharm 环境变量中：
+
+PYTHONUNBUFFERED=1;DJANGO_SETTINGS_MODULE=linde.settings
+
+python3 manage.py runserver报错：找不到模块
+
+解决：因为用的虚拟环境，所以，启动命令要用python而不是python3，虚拟环境的python解释器并没有加入到环境变量中。其实两个都试试。
+
+django找不到迁移文件类似的文件，报错
+
+解决：重装环境，或删除这个文件
+
+pymssql：sql语句，中文参数前面不需要 N，直接传就好。
+
+报错：no len
+
+解决：queryset不是queryset
+
+公私钥连接服务器：
+
+finalshell连接失败：暂不支持此私钥格式,请参考以下方法解决: 1.转换成PEM格式私钥 ssh-keygen -p -m PEM -f 私钥路径 2.生成PEM格式的私钥 生成时增加 -m PEM参数 ssh-keygen -m PEM -t rsa -C "注释"
+
+解决：转换格式：puttygen
+
+https://www.cnblogs.com/5201351/p/13055631.html
+
+安装pyodbc-4.0.30 没有sql.h
+
+yum install unixODBC-devel
+
+gcc：
+
+yum -y install gcc
+
+yum install python-devel
+
+yum install gcc libffi-devel python-devel openssl-devel
+
+yum install -y libffi-devel python-devel openssl-devel
+
+json传输数据：数据类型是准确的
+
+django ORM filter 不区分大小写：
+
+解决：
+
+以上查出来的结果中包含了name等于”ON”, “On”, “oN”的所有对象，也就是说，不区分字母的大小写。但是我印象里，我以前的查询都是区分的啊？那么问题出在哪？
+
+
+对于是否应该大小写敏感，Django 并没有提供设置方法，这完全取决于后端的数据库对大小写如何处理。mysql规则中，utf8_general_ci 不区分大小写，utf8-bin、utf8_general_cs 区分大小写。
+
+安装shutil
+
+requests 发送json数据报错：
+
+
+The browser (or proxy) sent a request that this server could not understand.
+
+解决：
+
+数据：json.dumps()
+
+错误：
+
+分组查询，指定字段没有效果。
+
+解决：必须 使用聚合函数。
+
+flask报错：
+
+
+"AssertionError: View function mapping is overwriting an existing endpoint function"
+
+问题：AssertionError: View function mapping is overwriting an existing endpoint function"
+
+解决：这个异常信息，就说明定义了多个同名的视图函数，只需要改成不同的函数名即可。
+
+gunicorn 启动报错：
+
+解决：查看具体报错
+
+gunicorn -c gunicorn.py manage:app --preload
+
+Docker容器做端口映射报错
+
+docker: Error response from daemon: driver failed programming external connectivity on endpoint lamp3 (46b7917c940f7358948e55ec2df69a4dec2c6c7071b002bd374e8dbf0d40022c): (iptables failed: iptables --wait -t nat -A DOCKER -p tcp -d 0/0 --dport 86 -j DNAT --to-destination 172.17.0.2:80 ! -i docker0: iptables: No chain/target/match by that name.
+
+解决方法
+
+docker服务启动时定义的自定义链DOCKER被清除
+
+重启即可systemctl restart docker
+
+
+Python 问题 SyntaxError: Non-ASCII character '\xe9' in file
+
+解决：#coding=utf-8
+
+
+uwsgi 启动错误：端口占用
+
+socket=:8000 http=:8000。
+
+注意：以上两种方式启动不能混用
+
+
+urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='139.224.2.127', port=8000): Read timed out. (read timeout=10)
+
+解决：
+
+阿里云要用本地地址要用内网地址
+
+docker 容器内：127.0.0.1
+
+docker 容器外访问docker容器内 局域网地址，内网地址，公网地址
+
+uwsgi 配置问题：
+
+
+uwsgi ModuleNotFoundError: No module named 'flask'
+
+
+no request plugin is loaded, you will not be able to manage requests.
+
+
+SyntaxError: Non-ASCII character '\xe7' in file car-training.py on line 7, but no encod
+
+
+no app loaded. going in full dynamic mode ubuntu
+
+安装 uwsgi-plugin-python3
+
+配置文件加入：
+
+注意：查看python软连接，应指向 python3.6
+
+报错：unavailable modifier requested: 80
+
+nginx中uwsgi的配置有问题：调用接口的时候我直接使用127.0.0.1:5000/这个地址粗暴的调用导致的，后面配置了nginx，使用了域名调用就毛问题啦
+
+
+django：注意必要的时候一定要用 order_by
+
+
+auto_now = True 自动更新，不起作用。
+
+
+前端可以不填值：blank = True
+
+
+auto_now=True自动更新，有一个条件，就是要通过django的model层。
+
+
+如create或是save方法。
+
+
+如果是filter之后update方法，则直接调用的是sql，不会通过model层，所以不会自动更新此时间。
+
+
+官方解释：
+
+解决办法：
+
+强制改成save()或是update时，带上时间。
+
+如下：
+
+DateTimeField.auto_now
+
+最后修改时间，字段会被“强制”更新到当前时间,无法在程序中手动为字段赋值。如果使用django再带的admin管理器,那么该字段在admin中是只读的。
+
+DateTimeField.auto_now_add
+
+创建时的时间,以后修改对象时,字段的值也不会再更新。无法在程序中手动为字段赋值。在admin中字段也会成为只读的。
+
+场景：add_time 字段，默认为创建时间，也需要在某些更新时，重设时间；但是，某些更新时，不能更新时间。一个订单，计划中状态时，是创建时间；已完成状态时，需要更新时间；所以，这时候倾向于用 auto_now ,但是，在一些逻辑中改了某些数据时，并不希望时间改变，因为某个数据更改并不足以改变时间。如果用 auto_now，会被强制更新时间，导致逻辑混乱。所以，使用 default=timezone.now，在需要改变时间的时候，手动赋值，数据生成时，默认为创建时间。
+
+
+django-aps 定时任务报错：Run time of job was missed!
+
+解决：
+
+实现定时任务一定要，异常处理，打印报错信息。定时任务内部执行逻辑出错。
+
+
+bug：if account:
+
+
+如果account是数字，那就是false了，所以，如果预期字符串，先转str。
+
+sqlserver 连接池链接失败，报错：
+
+原来没用数据库链接池好用，换成连接池了，连不上了，究其原因：
+
+参数填写不完整，原来有个参数：tds_version="7.0" ！！！（kwargs）
+
+不要小看这个参数，完整之后，链接正常了！！！
+
+错误：corrupted double-linked list
+
+可能原因，sqlserver数据库连接池，实现的时候，self.conn 导致把唯一连接池对象的 self.conn 属性赋值，每次使用后都要释放连接，导致每次请求结束都释放了 连接池对象的 self.conn ，或者取代了 当前请求的 self.conn ，导致错误，引用了不存在的链接。
+
+不是上面的原因，不敢奶了，，，
+
+gunicorn启动，gevent模块 换成了  eventlet模式
+
+还是不行，，，
+
+gunicorn 启动命令：
+
+关于 preload 参数：
+
+启动命令不使用 preload 参数：
+
+不行，，，
+
+使用 gc模块 定时清理内存，不行，，，
+
+取消 mssql 连接池，使用原生连接对象，问题解决。
+
+启动容器报错：Container is not running
+
+说明启动命令或者参数有问题，导致不能启动，比如 mysql容器，必须指定root密码参数才可以启动成功。
+
+创建新分支，需要在服务器 git pull 才能看到
+
+日志文件删除后，重新创建，无法使用
+
+解决：日志文件是自动生成的
+
+pipenv换源：pipenv.project.SourceNotFound:
+
+url不要有空格。。。
+
+
+找回密码：发送邮件的邮箱需要提供。最好是 qq 邮箱
+
+
+准备工作
+
+以qq邮箱为例
+
+1 设置--账户--开启POP3/SMTP服务，开启后会获得授权码。
+
+2 邮件服务器的信息
+
+　　需要邮件服务器的地址和端口，一般在邮箱的帮助中可以查询到；QQ邮箱：服务器地址为:smtp.qq.com，邮箱端口为:465
+
+
+需要的信息：
+
+邮箱账号，授权码，邮箱服务器地址，邮箱端口
+
+
+pipenv install 报错：
+
+解决：
+
+安装：
+
+importlib-metadata==0.12
+
+删除当前虚拟环境，重新 pipenv install
+
+C:\Users\WangLin\Desktop\EL\el_app\src\el_lib\hp_utils.py
+
+nginx : error.log access.log 文件打不开
+
+解决：删除这两个文件重启容器
+
+nginx报错：
+
+js 找不到
+
+解决：更改 vue 中，js 路径即可
+
+403
+
+解决：index.html找不到，路径地址错了
+
+nginx容器前端文件目录必须为： /usr/share/nginx/html
+
+html下面是各种文件：js，css，index.html 等。
+
+
+/root/kafka_2.10-0.10.1.1/bin/kafka-run-class.sh: line 258: exec: java: not found
+
+解决：
+
+kafka 启动报错：
+
+报错：
+
+OpenJDK 64-Bit Server VM warning: If the number of processors is expected to increase from one, then you should configure the number of parallel GC threads appropriately using -XX:ParallelGCThreads=N
+
+OpenJDK 64-Bit Server VM warning: INFO: os::commit_memory(0x00000000c0000000, 1073741824, 0) failed; error='Cannot allocate memory' (errno=12)
+
+改启动脚本核心数
+
+OpenJDK 64-Bit Server VM warning: INFO: os::commit_memory(0x00000000c0000000, 1073741824, 0) failed; error='Cannot allocate memory' (errno=12)
+
+改启动脚本内存
+
+解决：export KAFKA_HEAP_OPTS="-Xmx256M -Xms120M -XX:ParallelGCThreads=1"
+
+
+pipenv 安装依赖报错：Warning: Your dependencies could not be resolved. You likely have a mismatch in you...
+
+解决：运行：
+
+orm分组查询查取结果不对
+
+解决：用SQL语句
+
+
+字典等容器类型使用不当，字典套字典，造成不该出现在内部字典中的数据出现在了字典中
+
+解决：深浅拷贝，每次给字典中的key赋值为一个字典，然而，这个字典从来就没换过，只是定义了一个，然后一直用，造成报错。深拷贝解决。重新定义赋值。
+
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte..
+
+说明编码错误
+
+例子：DRF返回二进制流文件，文件编码不对，xlwt存储为utf8:
+
+解压zip，乱码：
+
+unzip -O CP936 xxx.zip
+
+pandas报错：ValueError: If using all scalar values, you must pass an index
+
+字典转为DataFrame，字典中的value至少有一个有索引，长度才可以，所有值都没有索引，无法确定长度而报错。
+
+
+nginx报错
+
+502 Bad Gateway nginx
+
+查看 /var/log/nginx/error.log:
+
+2021/03/01 06:50:12 [error] 21#21: *1 connect() failed (113: No route to host) while connecting to upstream, client: 172.17.0.1, server: 127.0.0.1, request: "POST /api/v1/carresult/ HTTP/1.1", upstream: "uwsgi://192.168.1.2:5002", host: "139.224.27.127:5001"
+
+原因：端口未开放 5002
+
+解决：开放5002端口即可
+
+
+npm install 安装过程报错
+
+解决：cnpm install  或者  换安装源
+
+config["performance"] = {  "maxEntrypointSize": 10000000,  "maxAssetSize": 30000000 }
+
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB)
+
+{
+
+"resource": "/c:/Users/WangLin/Desktop/EL/el_plat_web/src/components/ratio_info.vue",
+
+"owner": "generated_diagnostic_collection_name#0",
+
+"severity": 8,
+
+"message": "[vue/valid-v-for]\nCustom elements in iteration require 'v-bind:key' directives.",
+
+"source": "eslint-plugin-vue",
+
+"startLineNumber": 121,
+
+"startColumn": 9,
+
+"endLineNumber": 124,
+
+"endColumn": 81
+
+}
+
+{
+
+"resource": "/c:/Users/WangLin/Desktop/EL/el_plat_web/src/components/ratio_info.vue",
+
+"owner": "generated_diagnostic_collection_name#0",
+
+"severity": 8,
+
+"message": "[vue/no-v-for-template-key]\n'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

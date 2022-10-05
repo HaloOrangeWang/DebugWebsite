@@ -1,0 +1,64 @@
+python3.6 使用 gensim 报错ModuleNotFoundError: No module named '_bz2'
+
+In [1]: import gensim
+---------------------------------------------------------------------------
+ModuleNotFoundError                       Traceback (most recent call last)
+......
+......
+ModuleNotFoundError: No module named '_bz2'
+
+In [2]:
+
+linux下使用官方source release安装会出现这个问题,所以要先安装依赖，再重新编译
+
+也可以将缺少的文件手动放到环境中
+
+
+方式一
+
+liunx下安装
+
+ubantu
+
+sudo apt-get install libbz2-dev
+
+centos
+
+sudo yum install bzip2-devel
+
+进入python3的安装目录,重新编译python3
+
+./configure
+make && make install
+
+再次使用就可以了
+
+In [1]: from gensim import corpora
+
+In [2]:
+
+
+方式二
+
+从网上找下bz2的so文件。
+
+比如我的python3.6 lib-dynload目录在/usr/local/lib/python3.6/lib-dynload
+
+从网上找下bz2的so文件复制到lib-dynload文件下，也可以从其他同版本的python复制过来
+
+我编译安装后新增了_bz2.cpython-36m-x86_64-linux-gnu.so（从数量上看还有一些其他的so文件，没能统计到）
+
+提供下我刚编译生成的so文件，不行网上再找找吧
+
+本人安装环境centos6.8 python3.6.8
+
+链接：https://pan.baidu.com/s/1HYCSlt7djZqgNL27I3crIg
+
+提取码：jd4x
+
+顺便列出python3安装编译前常用依赖
+
+yum -y install gcc python36-devel bzip2-devel sqlite-devel openssl-devel readline-devel xz-devel xz-devel tk-devel gdbm-devel libffi-devel
+
+python3 编译安装前把以上全部安装下，减少之后安装包报错
+

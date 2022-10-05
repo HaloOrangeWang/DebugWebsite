@@ -1,0 +1,22 @@
+问题：
+
+用spark-submit以yarn-client方式提交任务，在集群的某些节点上的任务出现连接超时的错误，排查过各种情况后，确定在防火墙配置上出现问题。
+
+原因：
+
+我猜测是python程序启动后，作为Server，hadoop中资源调度是以java程序作为Client端访问，
+
+Python启动的Server端需要接受localhost的client访问。
+
+当你从一台linux主机向自身发送数据包时,实际上的数据包是通过虚拟的lo接口来发送接受的,而不会通过你的物理网卡 eth0/eth1....，此时防火墙就要允许来自本地lo接口的数据包，需要加入以下配置允许Python Server接受来自本地lo接口的数据包，然后解决该问题。
+
+任务的部分报错日志
+
+参考地址：
+
+http://stackoverflow.com/questions/15659132/connection-refused-between-a-python-server-and-a-java-client
+
+http://stackoverflow.com/questions/26297551/connecting-python-and-java-via-sockets/38605208#38605208
+
+http://www.zybang.com/question/9ab66451988eb2768194817f25a0b7a9.html
+

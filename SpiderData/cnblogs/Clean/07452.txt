@@ -1,0 +1,64 @@
+我将在此处记录在jenkins中遇到的各种小问题
+
+
+jenkins shell脚本变量加载问题
+
+问题：jenkins进行构建时，shell脚本中总有一些命令报错找不到，但是在命令行却又正常
+
+原因：这是因为bash有多种模式，不同模式加载的环境变量不同。（详见：https://blog.csdn.net/hudashi/article/details/82464995）
+
+解决：可使用 login模式
+
+
+jenkins shell中python执行中文乱码问题
+
+问题：以下命令curl得到一串带有中文的json，python的作用是美化json格式：
+
+curl "http://xxx/xxx/xxx" | python -m json.tool
+
+报错：UnicodeEncodeError: 'ascii' codec can't encode characters in position 35-40: ordinal not in range(128)
+
+原因：虽然 LANG="en_US.UTF-8" 这个变量决定着系统默认语言，但是python并不会加载此变量，python会加载 $PYTHONIOENCODING
+
+解决：在jenkins的shell脚本中加上：
+
+
+如何自定义jenkins BUILD NUMBER
+
+配置：
+
+将需要配置的内容作为变量引入，在shell脚本处将变量写入一个文件
+
+
+配置item分组权限配置
+
+安装插件 Role-based Authorization Strategy
+
+全局安全配置 --> Role-Based Strategy
+
+在此处配置具体的权限划分
+
+
+Role-based Authorization Strategy插件导致的启动失败
+
+当我重启tomcat时，显示如下页面，网上有人说是更新了这个插件导致的。
+
+解决方案：
+
+删掉 /root/.jenkins/config.xml 里的  <authorizationStrategy ...  重新启动。
+
+注：请先备份配置文件与相关目录，防止数据丢失。
+
+
+pipeline 僵尸作业
+
+有一个pipeline一直处于running状态 abort无效，输出日志 Click here to forcibly terminate running steps。
+
+解决方案：
+
+到jenkins主目录下删掉该项目的build下对应的build_number目录。
+
+我的是多分支流水线，删除目录为 /root/.jenkins/jobs/hello2/branches/production/builds/4
+
+再重启服务。
+

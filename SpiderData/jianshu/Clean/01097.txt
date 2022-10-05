@@ -1,0 +1,218 @@
+
+1. 项目结构：参见图片左侧的“FOLDERS”下方；
+
+
+1.1 主函数入口文件为《run_test.py》
+
+主要的问题就在于没有将从《get_data.py》文件调用get_data_for_json函数取得的返回值data转换成json格式，所以我在后面ctrl+B调试的时候，会返回一个400，也就是请求体格式不正确，多方查资料才知道是python获取到的返回值data是一个字典，而非json，然而我的接口传参的方式是application/json格式，所以这里添加了一条转化格式的语句：data_json = json.dumps(data)，同时将后面的(method,url,data,header)改成了(method,url,data_json,header) 以对应。修改后的代码如下：
+
+#coding:utf-8
+#主流程封装文件《run_test.py》
+import json
+import sys
+sys.path.append("D:\\djangostudy\\pdrcInterface")  #将项目所在路径添加到系统路径中
+import data_config     #引入《data_config》文件中的 global_var类，用于获取excel用例文件的各个字段在sheet表中的位置
+from base.runmethod import RunMethod  #引入base文件夹下《runmethod.py》文件的 RunMethod类，用于获取 Post和 get方法
+from data.get_data import GetData  #引入base文件夹下《get_data.py》文件的GetData类，获取各具体字段值
+
+class RunTest:  
+    def __init__(self):
+        self.run_method = RunMethod()   #实例化，以便后面代码调用RunMethod()类中的所有方法
+        self.data = GetData()     #实例化，以便后面代码调用GetData()类中的所有方法
+
+#程序执行的主入口
+    def go_on_run(self):
+        res = None
+        #10
+        rows_count = self.data.get_case_lines()  #调用《get_data.py》文件下的get_case_lines函数
+        for i in range(1,rows_count):
+            #name = self.data.get_request_name(i)
+            url = self.data.get_request_url(i)    #调用《get_data.py》文件下的get_request_url函数
+            method = self.data.get_request_method(i)   #调用《get_data.py》文件下的get_request_method函数
+            is_run = self.data.get_is_run(i)    #调用《get_data.py》文件下的get_is_run函数
+            # 获取请求参数
+            data = self.data.get_data_for_json(i)   #调用《get_data.py》文件下的get_data_for_json函数
+            data_json = json.dumps(data)   #将获取到的函数返回值data转换成json格式
+            header = self.data.is_header(i)   #调用《get_data.py》文件下的is_header函数
+
+if is_run:
+                #执行顺序不能错，必须是跟runmethod一致：method,url,data=None,header=None               
+                #print("request_name:",interface_name)
+                print("URL:",url)
+                print("Method:",method)
+                print("Params:",data_json,'\n')
+                res = self.run_method.run_main(method,url,data_json,header) #调用《runmethod.py》文件下的run_main函数
+                res_json = json.dumps(res,ensure_ascii=False,indent=2)              
+                print("Response:",res_json)
+                print("*"*100+"分割线"+"*"*100,'\n')
+
+if __name__ == '__main__':
+    run = RunTest()
+    Result = run.go_on_run()
+    print(Result,'\n')
+
+调用结果：
+
+
+1.2 调用的文件1：《runmethod.py》
+
+代码如下：
+
+#coding:utf-8
+#被调用文件《runmethod.py》，该文件的作用是封装 post、get基类
+
+import requests
+
+class RunMethod:
+    def post_main(self,url,data,header=None):
+        res = None
+        if header != "None":            
+            res = requests.post(url=url,data=data,headers=header).json()
+        else:
+            res = requests.post(url=url,data=data).json()
+        return res
+
+
+1.3 调用的文件2：《get_data.py》
+
+这里有一个header值，一开始调用的是return data_config.get_header_value()，也就是去调用《data_config.py》文件下的get_header_value函数，去动态获取header的值，但是不知道为什么没有调用成功，主函数运行的时候，结果返回的是None，目前还没有弄明白，后续再研究。后来指定了一个 header值，暂时跑通了。
+
+代码如下：
+
+#coding:utf-8
+import sys
+sys.path.append("D:\\djangostudy\\pdrcInterface")
+import data_config
+from util.operation_excel import OperationExcel  #引入util文件加下《operation_excel.py》文件下的 OperationExcel 类
+from util.operation_json import OperationJson  #引入util文件加下《operation_json.py》文件下的 OperationJson 类
+
+class GetData:
+    """docstring for GetData"""
+    def __init__(self):
+        self.opera_excel = OperationExcel()  #实例化，以便后面代码调用 OperationExcel()类中的所有方法
+
+#去获取excel的行数，就是我们的case数
+    def get_case_lines(self):
+        return self.opera_excel.get_lines()  #调用《operation_excel.py》文件下的get_lines()函数
+
+#获取是否执行
+    def get_is_run(self,row):
+        flag = None
+        col = int(data_config.get_run())  #通过《data_config.py》文件下的get_run方法获取get_run字段在sheet表中的位置值
+        run_model = self.opera_excel.get_cell_value(row,col)  #调用《operation_excel.py》文件下的 get_cell_value()函数
+        if run_model == 'yes':
+            flag = True
+        else:
+            flag = False
+        return flag
+
+# 判断是否携带header
+    def is_header(self,row):
+        col = int(data_config.get_header())
+        header = self.opera_excel.get_cell_value(row,col)  #调用《operation_excel.py》文件下的 get_cell_value()函数
+        #给定header的值 
+        header_value = {"Content-Type":"application/json"}  # 这里指定了 header 的值
+        if header == 'yes':
+            #return data_config.get_header_value()
+            return header_value
+        else:
+            return None
+
+#获取请求方式
+    def get_request_method(self,row):
+        col = int(data_config.get_runway())
+        request_method = self.opera_excel.get_cell_value(row,col)  #调用《operation_excel.py》文件下的 get_cell_value()函数
+        return request_method
+
+# 获取url
+    def get_request_url(self,row):
+        col = int(data_config.get_url())    
+        url = self.opera_excel.get_cell_value(row,col)  #调用《operation_excel.py》文件下的 get_cell_value()函数
+        return url
+
+#获取请求数据
+    def get_request_data(self,row):
+        col = int(data_config.get_data())
+        data = self.opera_excel.get_cell_value(row,col)  #调用《operation_excel.py》文件下的 get_cell_value()函数
+        if data == '':
+            return None
+        return data
+
+# 通过获取关键字拿到data数据
+    def get_data_for_json(self,row):
+        opera_json = OperationJson()
+        request_data = opera_json.get_data(self.get_request_data(row))  #调用《operation_json.py》文件下的 get_data()函数
+        return request_data
+
+# 获取预期结果
+    def get_expect_data(self,row):
+        col = int(data.get_expect())
+        edxpect = self.opera_excel.get_cell_value(row,col)  #调用《operation_excel.py》文件下的 get_cell_value()函数
+        if expect == '':
+            return None
+        return expect
+
+
+1.4 调用的文件3：《data_config.py》
+
+#coding:utf-8
+
+class global_var:
+    """case_id"""
+    Id = '0'
+    request_name = '1'
+    url = '2'
+    run = '3'
+    request_way = '4'
+    header = '5'
+    case_depend = '6'
+    data_depend = '7'
+    field_depend = '8'
+    data = '9'
+    expect = '10'
+    result = '11'
+
+# 获取 caseid
+def get_id():
+    return global_var.Id
+
+def get_request_name():
+    return global_var.request_name
+
+#获取url
+def get_url():
+    return global_var.url
+
+#是否运行
+def get_run():
+    return global_var.run
+
+#获取运行方式
+def get_runway():
+    return global_var.request_way
+
+def get_header():
+    return global_var.header
+
+def get_case_depend():
+    return global_var.case_depend
+
+def get_data_depend():
+    return global_var.data_depend
+
+def get_field_depend():
+    return global_var.field_depend
+
+def get_data():
+    return global_var.data
+
+def get_expect():
+    return global_var.expect
+
+def get_result():
+    return global_var.result
+
+#获取header
+def get_header_value():
+    header_value = {"Content-Type":"application/json"}
+

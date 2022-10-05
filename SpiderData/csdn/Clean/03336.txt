@@ -1,0 +1,56 @@
+TCP聊天服务器套接字v1.4
+
+所有版本记录:
+ v1.0 : TCP聊天服务器套接字|PyQt5+socket(TCP端口映射+端口放行)+logging+Thread(含日志,html)+anaconda打包32位exe(3.4万字)|python高阶
+ v1.1 : python TCP套接字服务器v1.1-新增服务端命令功能及修改bug(socket+PyQt5)
+ 
+ v1.2 : python TCP服务器v1.2 - 服务端新增用户登录注册(json, md5加密)
+ v1.3 : python TCP服务器v1.3 - 服务器抗压测试及关闭套接字处理
+
+
+连接服务器异常情况处理
+
+class Socket():
+	...
+    def socket_connect(self):
+        if hasattr(self, "_socc"):
+            self.retry() #socket多次连接不同地址会出现 `OSError: [WinError 10022] 提供了一个无效的参数.`
+        else:
+            self._socc = True
+        try:
+            self.socket.connect(self.addr)
+        except socket.gaierror:
+            return f"获取地址信息失败.请确保{self.addr[0]}是有效地址或ipv4/ipv6"
+        except socket.timeout:
+            return f"连接超时({TIMEOUT}s).服务器[{self.addr[0]}:{self.addr[1]}]连接失败."
+        except OverflowError:
+            return f"输入的端口号为{self.addr[1]},端口号必须在0~65535间."
+        except ConnectionResetError:
+            pass
+        except OSError as e:
+            if int(self.addr[1]) == 0:
+                return "[WinError 10049] 在其上下文中，该请求的地址无效"
+            return str(e.args[1]).rstrip('。')
+        except TypeError:
+            return f"网络地址格式错误: 格式[ip:port] port必须为整型变量0~65535间."
+        except:
+            logging.exception(msg=str())
+        else:
+            return True
+
+def connect(self, ip = None,port:int=0000, show=lambda: None):
+        if ip is None:
+            assert hasattr(self,"addr"), "ip address is empty."
+        else:
+            self.addr = (ip, port)
+
+result = self.socket_connect()
+        if result is True:
+                show("[{}]: 连接成功".format(get_time()))
+                s._connect = True
+                return True
+        else:
+            show(f"[{get_time()}]: {result}")
+            s._connect = False
+            return False
+

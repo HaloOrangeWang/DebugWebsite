@@ -1,0 +1,80 @@
+
+错误信息
+
+UnicodeDecodeError: ‘utf-8' codec can't decode byte 0xce in position ***
+
+
+解决方案
+
+命令行中先输入
+
+chcp 65001
+
+再输入打包命令。
+
+pyinstaller -F xxx.py
+
+补充：pyinstaller打包python程序时遇到递归超界和字符编码错误的问题与解决方法
+
+打包命令:pyinstaller -F xx.py
+
+-F一定要加上，其含义是生成独立的可执行文件
+
+
+问题一：超过递归深度
+
+由于python文件中可能存在递归运算，实际执行时没什么问题，但打包时报错，错误信息如下
+
+RecursionError: maximum recursion depth exceeded
+
+大体意思就是说递归深度超过程序允许的界限了，最大是1000.
+
+在执行完成后虽然报错，但是与xx.py文件同级目录下会生成一个xx.spec文件，打开这个文件，xx.py第一行是字符编码，在代码的第二三行加入下面两句代码。
+
+然后执行下面代码(千万不要再去执行原来的打包命令)
+
+pyinstaller xx.spec
+
+import sys
+sys.setrecursionlimit(6000)
+
+
+问题二：打包时报告编码错误
+
+错误信息如下：
+
+UnicodeDecodeError: ‘utf-8' codec can't decode byte 0xce in position 121: invalid start byte
+
+可能有点蒙圈，明明代码中进行了代码声明为什么还报错，不要慌，在dos窗口(windows+R,输入cmd)输入打包命令之前先输入下面的命令，执行回车
+
+chcp 65001
+
+然后再输入打包命令。如果开始因为递归出错，修改spec文件后又出现编码错误，此时打包命令仍然执行
+
+pyinstaller xx.spec
+
+
+问题三：原代码中存在的文件读取路径，打包后报错，找不到路径
+
+原来代码如下:
+
+使用abspath获取路径行不通，在程序运行时不会出错，打包时要替换为下面获取路径的代码
+
+import os
+path1 = os.path.dirname(os.path.abspath(__file__))
+path2 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+替换为
+
+import os
+import sys
+path1 = os.path.dirname(os.path.realpath(sys.executable))
+path2 = os.path.dirname(os.path.dirname(os.path.realpath(sys.executable)))
+
+
+问题四：打包时没问题，生成exe闪退，也看不到报错信息。
+
+解决方法：打开一个dos窗口，将exe文件拖拽到dos窗口内，然后回车执行。
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

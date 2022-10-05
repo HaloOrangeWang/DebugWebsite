@@ -1,0 +1,74 @@
+
+概述
+
+Python 中的OS 模块提供了与操作系统交互的功能。
+
+os.makedirs()方法用于递归创建目录。这意味着在创建子目录时，如果中间级目录的缺少的话，那么os.makedirs()方法将创建它们。
+
+存在问题：当我们使用时，常遇到的一个问题是，如果目录已经存在了，那么该方法会抛出异常错误，这是我们不想看到的。
+
+本文将介绍该方法的参数，同时讲述如何避免问题的产生。
+
+
+语法介绍
+
+语法：os.makedirs(path, mode = 0o777, exist_ok = False)
+
+参数：
+
+·path：表示文件系统路径的类路径对象。字符串或字节。
+
+·mode（可选）：表示新创建目录模式的整数值。如果省略此参数，则使用默认值 Oo777。
+
+·exist_ok（可选）：默认值 是False 。如果目标目录已经存在，如果其值为 False 则引发 OSError 否则不会。而如果值为True 则保持目录不变。
+
+
+代码1
+
+使用 os.makedirs() 方法创建目录
+
+import os
+directory = "abcd"
+parent_dir = "/home/ltl/jianshu/"
+path = os.path.join(parent_dir, directory)
+os.makedirs(path)
+print("Directory '%s' created" %directory)
+
+使用以上代码，我们可以创建一个文件夹，其路径如下：
+
+"/home/ltl/jianshu/abcd"
+
+即使中间目录jianshu不存在，依然可以创建。
+
+但如果再次运行该代码，将会抛出以下错误：
+
+Traceback (most recent call last):
+
+File "/home/ltl/.local/lib/python3.7/site-packages/IPython/core/interactiveshell.py", line 3441, in run_code
+
+exec(code_obj, self.user_global_ns, self.user_ns)
+
+File "<ipython-input-111-8c34b04f6727>", line 5, in <module> os.makedirs(path)
+
+File "/usr/lib/python3.7/os.py", line 221, in makedirs
+
+mkdir(name, mode)
+
+FileExistsError: [Errno 17] File exists: '/home/ltl/jianshu/abcd'
+
+错误的意思是说文件路径已经存在，因此，我们的代码需要做以下修改
+
+
+代码2
+
+import os
+directory = "abcd"
+parent_dir = "/home/ltl/jianshu/"
+path = os.path.join(parent_dir, directory)
+os.makedirs(path, exist_ok=True)  # 将exist_ok修改为True
+print("Directory '%s' created" %directory)
+
+这里我们将exist_ok从False修改为True
+
+将不会再有报错。
+

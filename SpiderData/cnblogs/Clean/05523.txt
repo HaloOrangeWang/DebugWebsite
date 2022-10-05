@@ -1,0 +1,16 @@
+解析： 这个错误就是 方法只需要传一个参数，但是你传了两个参数，第一个参数是self ,不用传数据，
+
+错误代码：
+
+分析：
+
+json.dumps 的源码：
+
+从源码中看到，obj 后有个单独的,是命名关键字参数，表示后面的参数只接收指定参数名的参数，即  skipkeys = False, 而不能是任意的参数。
+
+所以 json.dumps的无指定参数只能有1个。
+
+参考：
+
+https://blog.csdn.net/anthea_luo/article/details/101557246
+

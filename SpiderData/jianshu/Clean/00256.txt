@@ -1,0 +1,32 @@
+1编辑docker配置文件
+
+vi /etc/docker/daemon.json
+
+2. 重启docker服务发现报错
+
+service restart docker
+
+启动docker服务报错如下图所示
+
+查看报错信息可知daemon.json配置失败
+
+journalctl -xe
+
+将daemon.json中多余的空格去掉
+
+错误
+
+{
+
+"registry-mirrors" : [" https://url "],"insecure-registries" : [ "10.10.102.75"]
+
+}
+
+{
+
+"registry-mirrors":["https://url"],"insecure-registries":["10.10.102.75"]
+
+}
+
+重新启动服务就成功了
+

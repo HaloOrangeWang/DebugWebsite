@@ -1,0 +1,26 @@
+python连接oracle数据，用cx_oracle连接数据库，报了标题中的错误，百度后大概定位原因是因为python，cx_oracle和oracle客户端的位数不一致。
+
+我电脑操作系统的位数是64位
+
+python的版本信息如下：
+
+oracle客户端为： instantclient_11_2是32位的客户端
+
+oracle服务端版本信息为：
+
+发现报错的原因：
+
+instantclient版本为32位，需更换成64位。
+
+解决步骤：
+
+1. 重新下载 instantclient 64位， 下载链接：http://jvniu.jb51.net:81/201708/tools/instantclientx64_jb51.rar
+
+2.下载完成后，解压得到 文件夹 instantclient_11_2
+
+3.重新安装新下载的客户端 （即在环境变量中重新配置新的客户端路径）
+
+4.把oracle客户端的安装文件中以.dll结尾的文件复制到python的安装目录中
+
+5.重新启动pycharm，就发现不报错
+

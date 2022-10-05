@@ -1,0 +1,25 @@
+1:  自定义日志文件.py----------几个文件需要创建日志，就需要重新定义几份
+
+#1 定义一个日志文件 创建一个操作日志对象logger
+
+file_1 = logging.FileHandler('text_1.log', 'a', encoding='utf-8')  # text_1.log 定义日志文件名
+
+fmt = logging.Formatter(fmt="%(asctime)s - %(name)s - %(levelname)s -%(module)s:  %(message)s") # 定义创建时间，哪个文件，错误level，··
+file_1 .setFormatter(fmt)   # 建立执行
+
+# 定义日志  
+logger1 = logging.Logger('s1', level=logging.ERROR) # 设置日志
+logger1.addHandler(file_1 )
+
+2：将定义好的定义日志导入需要存放报错的文件,并且使用traceback模块具体化报错地点：
+
+3：直接定义logging(不推荐)，需要创建多个日志文件:
+
+4：Django里指定任意日志文件位置:
+
+# 取执行文件全局绝对路径（不管在哪里启动Django都会取到这个路径） 红色的字体表示自定义名称
+ path= os.path.abspath(os.path.dirname(__file__))
+
+# 拼接路径
+ files_path = path + "/keywords_logging/文件名.log"  # 路径+设定的日志文件名
+

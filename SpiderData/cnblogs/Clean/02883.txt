@@ -1,0 +1,27 @@
+原文链接：https://blog.csdn.net/s740556472/article/details/82889758
+
+前言
+在写python程序读取配置文件的时候，遇到了一个错误，记录下解决方案。
+
+错误如下：
+
+代码详情
+读取read_ini.ini时由于我的ini文件中内容如下:
+
+当代码运行到 ip_128 = cf.get(‘cmd’,‘10.10.111.1’)这行，抛出了ConfigParser.InterpolationSyntaxError: ‘%’ must be followed by ‘%’ or ‘(’, found: "%&’"的错误。
+大致意思是，因为ini的内容中包含了%号这种特殊符号。
+
+解决方案
+换一种方式进行读取配置文件
+原本代码：cf= configparser.ConfigParser()
+
+替换成：
+cf = configparser.RawConfigParser()
+
+报错解决！
+--------------------- 
+作者：sy_y 
+来源：CSDN 
+原文：https://blog.csdn.net/s740556472/article/details/82889758 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

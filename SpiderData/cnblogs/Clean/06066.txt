@@ -1,0 +1,27 @@
+上篇博客提到了爬取动态数据，但是在构造request_url时，其中的url我用的浏览器的网址，但是经过运行发现，有时可以运行成功，有时
+
+request_url = "http://tool.manmanbuy.com/history.aspx?DA=1&action=gethistory&url={0}&bjid=&spbh=&cxid=&zkid=&w=951&token={1}".format(url, token)
+data = requests.get(request_url)
+history_price = json.loads(data.text)['datePrice']
+
+Traceback (most recent call last):
+File “D:/spider/product.py”, line 4, in 
+res = json.loads(file.text)
+File “C:\Users\DELL\AppData\Local\Programs\Python\Python37-32\lib\json_init_.py”, line 348, in loads
+return _default_decoder.decode(s)
+File “C:\Users\DELL\AppData\Local\Programs\Python\Python37-32\lib\json\decoder.py”, line 337, in decode
+obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+File “C:\Users\DELL\AppData\Local\Programs\Python\Python37-32\lib\json\decoder.py”, line 355, in raw_decode
+raise JSONDecodeError(“Expecting value”, s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+会在第三行代码报错，也就是json.loads()位置。
+
+原因：
+
+　　request_url不正确，使用浏览器中的网址作为url是不太规范的，所以我们尽量找到request_url中url部分的生成机制，构造出正确的request_url吧！
+
+我在网页的源代码中，找到了url的生成机制，以及在div中找到了生成的url。
+
+这样就能通过获取这个位置的url来构造request_url啦！
+

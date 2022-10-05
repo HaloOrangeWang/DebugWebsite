@@ -1,0 +1,28 @@
+本人新手，在一次新建测试项目后编写导入webdriver模块：
+
+from selenium import webdriver
+
+发现在webdriver下面标红波浪线，且本来需要调用其他模块的时候居然也调用不起来：
+
+from selenium.webdriver.support import expected_conditions as EC
+
+反复确认发现并没有写错，之后去百度找答案
+
+有类似的问题提出的解决方案就是路径不能包含中文，然后我就去看了下自己的文件路径，也没有包含中文路径
+
+我又对比了新建的测试项目和之前的有什么区别
+
+最后发现我的文件夹名称中间有个“_”  号，尝试着去掉这个符号，再重新打开PyCharm，打开对应文件
+
+在去输入：
+
+from selenium import webdriver
+
+from selenium.webdriver.support import expected_conditions as EC
+
+发现都没有标红报错。
+
+总结：最外层的文件名最好不要加这个小短号，路径中也不要有中文。
+
+个人今天遇到的坑分享下，希望对你有帮助
+

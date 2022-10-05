@@ -1,0 +1,52 @@
+
+前言
+
+python第三方库xlrd读取.xlsx格式的Excel文件时报错，报错信息如下：
+
+
+报错原因：
+
+①查看本机安装的python第三方库xlrd的版本：
+
+②可以看到当前xlrd库的版本号为2.0.1；且xlrd 2.0.1版本仅支持读取.xls 格式的Excel文件。不支持读取.xlsx格式的Excel文件。
+
+
+解决办法：
+
+
+方法一：
+
+①如果不想降低第三方库xlrd（2.0.1 ）的版本，可以直接修改Excel文件的格式为.xls格式即可。
+
+再次运行读取Excel的代码，这个问题得到解决。
+
+②如果还是不行的话，可以尝试在修改了Excel文件格式为.xls格式后，在终端中运行以下命令：
+
+再次运行读取Excel的代码，这个问题得到解决。
+
+
+方法二：
+
+①降低第三方库xlrd的版本至1.2.0。
+
+②使用 xlrd.open_workbook 打开已存在的Excel文件时，如果添加参数 formatting_info=True 则会读取.xlsx格式的Excel文件报错。如下：
+
+【注意】
+
+　　　　 formatting_info 参数默认为False，且当该参数为False时xlrd读取数据可以节约内存；（Excel文件底部空行，空单元格都是存在格式信息但是没有数据，该参数为False时直接会被当成空对待，即这将会裁剪任何底部、右边的空的表格）
+
+　　　　 formatting_info 参数为True时，xlrd读取Excel数据时会读取Excel文件中各种格式的信息。
+
+③使用 xlrd.open_workbook 打开已存在的Excel文件时，不添加参数 formatting_info （默认值为False）或者添加 formatting_info=False 参数，读取.xlsx格式的Excel文件数据成功
+
+④1.2.0版本的xlrd除了可以读取.xlsx格式的Excel文件，依然还可以读取.xls格式的Excel文件。
+
+
+总结
+
+①虽然可以通过降低xlrd版本的方法实现对.xlsx格式的Excel文件的读取，但是一般都是采用最新的2.0.1版本的xlrd读取.xls格式的Excel文件。
+
+②读取.xlsx格式的Excel文件采用python第三方库openpyxl。查看该博客：python第三方库openpyxl详解
+
+去期待陌生，去拥抱惊喜。
+

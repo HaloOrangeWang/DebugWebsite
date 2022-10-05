@@ -1,0 +1,22 @@
+
+[Python错误]NameError: name ‘name’ is not defined
+
+1、今天第一次用Python函数if name’main’:竟然报错了，百思不解，于是从网上查阅，发现错误原因是_name_两端是双下划线，不是只有一个。
+ 2、main两端也是双下划线，如果只写一个，不会报错，但是if name’main‘:里面的方法不会被执行。
+ 3、输入if name’main’这行代码的快捷方式是：在python代码编辑器PyCharm CE中输入main然后按键盘上的tab键 ，即可自动带出完整的代码，简单快捷还降低出错率。
+ 4、**if name’main’:代码作用：**
+
+一个python的文件有两种使用的方法，第一是直接作为脚本执行，第二是import到其他的python脚本中被调用（模块重用）执行。因此if name == ‘main’: 的作用就是控制这两种情况执行代码的过程，在if name == ‘main’: 下的代码只有在第一种情况下（即文件作为脚本直接执行）才会被执行，而import到其他脚本中是不会被执行的。
+
+举个例子，下面在test.py中写入如下代码：
+ 1 print “I’m the first.”
+ 2 if name==“main”:
+ 3 print “I’m the second.”
+
+并直接执行test.py，结果如下图，可以成功print两行字符串。即，if name==“main”: 语句之前和之后的代码都被执行。
+
+然后在同一文件夹新建名称为import_test.py的脚本，只输入如代码：
+ import test，执行import_test.py脚本，输出结果如下：
+ 
+ 只输出了第一行字符串。即，if name==“main”: 之前的语句被执行，之后的没有被执行。
+

@@ -1,0 +1,118 @@
+
+Centos7安装python3.7
+
+由于python2和python3在很大程度上有些不同，因为需要，就以决定安装python3.x的版本，但由于Centos上自安装的就是pyhton2.6.所以在安装python3.7的时候，最好不要将原有的python删除，否则可能导致yum不可用。请根据个人实际情况来进行安装。
+ 下面是安装中的具体步骤，以及遇到的一些问题，可供大家参考。
+
+
+1.获取python3.7源码包
+
+# mkdir /usr/local/python3.7
+# cd /usr/local/python3.7
+# wget https://www.python.org/ftp/python/3.7.1/Python-3.7.1.tgz
+
+
+2.解压文件
+
+# gunzip Python-3.7.1.tgz
+    # tar xf Python-3.7.1.tar
+
+
+3.切换目录，进行编译和安装
+
+
+1）安装python3.7的依赖环境。
+
+# yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel
+
+
+2）编译，安装
+
+# cd Python-3.7.1/
+ # ./configure --prefix=/usr/local/python3.7
+ # make
+ # make install
+
+
+注意
+
+在进行编译和安装的过程中可能会出现下面的错误
+
+ModuleNotFoundError: No module named '_ctypes'
+
+这个错误的原因是因为没有libffi-devel依赖包，安装之后继续make&&make install即可
+
+# yum install libffi-devel
+# make && make install
+
+在make和make install如果还出现下面的错误
+
+Requirement already up-to-date: setuptools in /usr/local/python3.7/lib/python3.7/site-packages (39.0.1)
+Requirement already up-to-date: pip in /usr/local/python3.7/lib/python3.7/site-packages (10.0.1)
+
+原因是在提示我们需要升级pip。使用下面的命令之后继续make && make install即可
+
+# python -m pip install --upgrade pip
+  # make&&make install
+
+出现下面的提示表示python安装完成
+
+Successfully installed pip-10.0.1
+
+
+使python使用第三方库
+
+python能够使用第三方库，需要安装响应的环境
+
+
+1.安装setuptools
+
+
+1）下载setuptools
+
+# wget --no-check-certificate  https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz#md5=c607dd118eae682c44ed146367a17e26
+
+
+2）解压文件
+
+# tar -zxvf setuptools-19.6.tar.gz
+
+
+3）进入文件 使用python进行编译，安装
+
+# cd setuptools-19.6/ | python3 setup.py build| python3 setup.py install
+
+出现下面的内容表示安装完成
+
+Finished processing dependencies for setuptools==19.6
+
+如果之前没有安装环境，这里就会报错，需要安装响应的软件依赖包
+
+
+2.安装pip
+
+
+1）下载pip-18.1
+
+# wget https://files.pythonhosted.org/packages/45/ae/8a0ad77defb7cc903f09e551d88b443304a9bd6e6f124e75c0fbbf6de8f7/pip-18.1.tar.gz
+
+
+2）解压文件
+
+# tar -zxvf pip-18.1.tar.gz
+
+
+3）进入文件，python编译，安装
+
+# cd pip-18.1/
+# python3 setup.py build
+# python3 setup.py install
+
+出现下面内容表示安装完成
+
+Finished processing dependencies for pip==18.1
+
+可参考文档：https://pypi.org/project/pip/
+
+上面就是在安装python3.7时候的具体步骤和见到的出错信息，仅供大家参考！
+

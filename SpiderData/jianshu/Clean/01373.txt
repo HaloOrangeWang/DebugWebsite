@@ -1,0 +1,32 @@
+  利用python的nmap模块进行端口扫描，发现执行下面代码时报错了。
+
+>>> nm = nmap.PortScanner()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: module 'nmap' has no attribute 'PortScanner'
+
+  检查发现python安装了两个模块，网上搜索了一番，说只需要安装python-nmap模块，不需要nmap这个模块，得把nmap模块卸载。
+
+C:\windows\system32>python -m pip list | find "nmap"
+nmap               0.0.1
+python-nmap        0.6.1
+
+C:\windows\system32>python -m pip uninstall nmap
+Found existing installation: nmap 0.0.1
+Uninstalling nmap-0.0.1:
+  Would remove:
+    c:\python\python36\lib\site-packages\nmap-0.0.1.dist-info\*
+    c:\python\python36\lib\site-packages\nmap\*
+  Would not remove (might be manually added):
+    c:\python\python36\lib\site-packages\nmap\test.py
+    c:\python\python36\lib\site-packages\nmap\test_nmap.py
+Proceed (y/n)? y
+  Successfully uninstalled nmap-0.0.1
+
+C:\windows\system32>python -m pip list | find "nmap"
+python-nmap        0.6.1
+
+C:\windows\system32>
+
+  卸载nmap模块后，发现依然报错，再搜索一番，发现得把上面两个模块都先卸载掉，再重新安装python-nmap模块，果然，这样操作后，就正常了。
+

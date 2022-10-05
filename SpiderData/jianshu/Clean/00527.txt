@@ -1,0 +1,23 @@
+
+概述
+
+iOS 中 JSEngine 加载 JS 后，报错：SyntaxError: JSON Parse error: Unexpected EOF
+
+
+原因
+
+通过分析代码发现，出错的地方是：JSON.parse(params);
+
+native 代码触发 js 的逻辑：
+
+[NSString stringWithFormat:@"keyEvent('%@', '%@')", key, paramStr];，其中 paramStr 为长度为零的字符串
+
+
+解决方案
+
+传入的参数不为空
+
+js 代码内部做个判断
+
+两个方案二选一
+

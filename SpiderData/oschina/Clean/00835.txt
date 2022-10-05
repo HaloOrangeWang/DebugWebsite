@@ -1,0 +1,34 @@
+安装用到的一个项目报下面的错误
+
+npm ERR! command failed
+ npm ERR! command C:\Windows\system32\cmd.exe /d /s /c node-gyp rebuild
+ npm ERR! gyp info it worked if it ends with ok
+ npm ERR! gyp info using node-gyp@3.8.0
+ npm ERR! gyp info using node@16.14.2 | win32 | x64
+ npm ERR! gyp ERR! configure error
+ npm ERR! gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.
+
+经查需要安装下依赖
+
+npm install --global --production windows-build-tools
+
+在powershell运行，继续报
+
+npm ERR! gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.
+
+尝试手动运行Python2.exe安装时勾选将python.exe加入path
+
+安装成功后，继续在powershell运行npm install --global --production windows-build-tools
+
+继续报
+
+npm ERR! gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.
+
+改为用管理员方式运行cmd，不再报python env的问题，报错信息改为
+
+npm ERR! gyp ERR! cwd D:\project\BI\avue-data\node_modules\node-sass
+
+在node modules下寻找node-sass，未找到node-sass，手动安装node-sass，安装成功后，再npm install
+
+成功
+

@@ -1,0 +1,53 @@
+具体错误详细如下：
+
+Making install in py
+/usr/local/bin/python setup.py build
+running build
+running build_py
+running build_ext
+/Library/Developer/CommandLineTools/usr/bin/make  install-exec-hook
+/usr/local/bin/python setup.py install --root=/ --prefix=/usr
+running install
+running build
+running build_py
+running build_ext
+running install_lib
+creating /usr/lib/python2.7/site-packages
+error: could not create '/usr/lib/python2.7/site-packages': Operation not permitted
+make[4]: *** [install-exec-hook] Error 1
+make[3]: *** [install-exec-am] Error 2
+make[2]: *** [install-am] Error 2
+make[1]: *** [install-recursive] Error 1
+make: *** [install-recursive] Error 1
+
+　说明site-packages没有找到准确的位置，我们来看一下python2.7的具体位置在哪里？
+
+#输入命令python
+python
+
+Python 2.7.15 (default, Oct  2 2018, 11:47:18)
+[GCC 4.2.1 Compatible Apple LLVM 10.0.0 (clang-1000.11.45.2)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import site;site.getsitepackages()
+['/usr/local/Cellar/python@2/2.7.15_1/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages', '/usr/local/Cellar/python@2/2.7.15_1/Frameworks/Python.framework/Versions/2.7/lib/site-python']
+>>>
+
+　　位置：/usr/local/Cellar/python@2/2.7.15_1/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
+
+也可以自定义位置比如：/Users/xiaoyueya/work/python-path
+
+xiaoyueya@xiaoyueyadeMacBook-Pro  ~/work/python-path/lib/python2.7/site-packages  
+pwd
+/Users/xiaoyueya/work/python-path/lib/python2.7/site-packages
+
+　　然后开始修改编译脚本的
+
+--prefix=/Users/xiaoyueya/work/python-path/
+
+　　自定义一下pythonPath：
+
+xiaoyueya@xiaoyueyadeMacBook-Pro  ~/work/python-path  echo $PYTHONPATH
+:/Users/xiaoyueya/work/python-path
+
+　　
+

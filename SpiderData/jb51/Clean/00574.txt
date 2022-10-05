@@ -1,0 +1,173 @@
+
+前言
+
+Tenacity是一个 Apache 2.0授权的通用重试库，用 Python 编写，用于简化向几乎所有内容添加重试行为的任务。它起源于一个重新尝试的分支，可惜这个分支已经不复存在了。
+
+使用Tenacity可以用来进行测试用例的重跑，爬虫脚本的重跑，以及抢票的失败重抢等等。。。可以使用的场景也是比较多。
+
+
+使用
+
+首先安装Tenacity
+
+pip install Tenacity
+
+无限重试
+
+第一个重试案例,因为一直是抛出异常错误，所以无限进行重试执行
+
+from tenacity import retry
+
+@retry()
+def test_retry():
+	print('失败重试中')
+ raise Exception
+ 
+test_retry()
+
+成功则停止
+
+我们来优化成功一次后程序则终止，否则继续重试。
+
+from tenacity import retry
+import random
+
+@retry()
+def test_retry():
+ if random.randint(0,10) > 1:
+  print('失败重试中')
+  raise Exception
+ else:
+  print('成功')
+
+test_retry()
+
+重试次数
+
+毕竟一直重试需要消耗很多资源，所以我们可以设置一些重试的次数，比如在失败多少次后停止重试,不管有没有成功。
+
+from tenacity import retry,stop_after_attempt
+import random
+
+@retry(stop=stop_after_attempt(7))
+def test_retry():
+ # if random.randint(0,10) > 1:
+  print('失败重试中')
+  raise Exception
+ # else:
+ #  print('成功')
+
+test_retry()
+
+重试时间
+
+也可以设置执行的时间
+
+from tenacity import retry,stop_after_attempt,stop_after_delay
+import random
+from time import sleep
+@retry(stop=stop_after_delay(3))
+def test_retry():
+ # if random.randint(0,10) > 1:
+  sleep(1)
+  print('失败重试中')
+  raise Exception
+ # else:
+ #  print('成功')
+
+test_retry()
+
+条件组合
+
+甚至可以使用多个组合条件进行停止,哪个条件先触发则执行哪个
+
+from tenacity import retry,stop_after_attempt,stop_after_delay
+import random
+from time import sleep
+@retry(stop=stop_after_delay(3) | stop_after_attempt(2))
+def test_retry():
+ # if random.randint(0,10) > 1:
+  sleep(1)
+  print('失败重试中')
+  raise Exception
+ # else:
+ #  print('成功')
+
+test_retry()
+
+重试间隔
+
+重试之间的间隔时间太短，所以让我们在重试之间等待2秒钟
+
+from tenacity import retry,stop_after_attempt,stop_after_delay,wait_fixed
+import random
+import time
+@retry(wait=wait_fixed(2))
+def test_retry():
+ # if random.randint(0,10) > 1:
+  print('失败重试中')
+  print(time.ctime())
+  raise Exception
+ # else:
+ #  print('成功')
+
+test_retry()
+
+重试随机间隔
+
+我们还可以设置一些等待时间范围
+
+from tenacity import retry,stop_after_attempt,stop_after_delay,wait_fixed,wait_random
+import random
+import time
+@retry(wait=wait_random(min=1,max=2))
+def test_retry():
+ # if random.randint(0,10) > 1:
+  print('失败重试中')
+  print(time.ctime())
+  raise Exception
+ # else:
+ #  print('成功')
+
+test_retry()
+
+重试前日志
+
+在执行之前打印日志
+
+from tenacity import retry,stop_after_attempt,before_log
+import logging
+import sys
+
+logging.basicConfig(stream=sys.stderr,level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+@retry(stop=stop_after_attempt(3),before=before_log(logger,logging.DEBUG))
+def test_retry():
+ print('失败重试中')
+ raise Exception('Fail')
+
+test_retry()
+
+重试后日志
+
+那么相同的，可以在执行失败后打印日志
+
+from tenacity import retry,stop_after_attempt,after_log
+import logging
+import sys
+
+logging.basicConfig(stream=sys.stderr,level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+@retry(stop=stop_after_attempt(3),after=after_log(logger,logging.DEBUG))
+def test_retry():
+ print('失败重试中')
+ raise Exception('Fail')
+
+test_retry()
+
+基本常用的功能就这些了，如果有需要深入了解的可以访问github地址：https://github.com/jd/tenacity
+
+到此这篇关于关于Python错误重试方法总结的文章就介绍到这了,更多相关Python错误重试方法内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

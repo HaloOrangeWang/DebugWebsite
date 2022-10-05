@@ -1,0 +1,164 @@
+新手刚刚学Python的时候无疑最害怕遇见BUG。在此受到了大大的挫败感！So，今天把从教多年，所遇见的十大报错以及解决方法总结出来啦！
+
+
+1. 类型错误（TypeError）
+
+在程序中使用不正确或不受支持的对象类型时，会引发该错误。如果尝试调用不可调用的对象或通过非迭代标识符进行迭代，也会引发此错误。
+ 报错示例:
+
+age=21
+print("我的年龄是"+age)
+
+错误原因：在使用“+”做拼接的时候，必须使用字符串，或者把数字用str()函数转化成字符串
+ 报错信息：TypeError:can only concatenate str(not"int")to str
+
+
+2. 语法错误（SyntaxError）
+
+语法错误的原因包含下列三种：
+
+无效语法（invalid syntax）
+ 标点符号遗漏，中英文符号混用，拼写错误，变量名或者函数名使用了关键字。，特别是循环、判断语句后面，忘记加冒号了。
+
+报错示例:
+
+print( 'hello'， 'python')
+
+错误原因：逗号为中文逗号
+报错信息：SyntaxError: invalid character inidentifier
+
+标识符中有无效字符（invalid character in identifier）
+ 代码中出现了无法识别的字符，检查一下是否有多余字符或者中文字符。 报错示例: result = (1024+(512*2)/128
+ 错误原因：圆括号没有成对出现
+ 报错信息：SyntaxError:unexpected EOF whileparsing
+
+标识符中有无效字符（invalid character in identifier）
+ 代码中出现了无法识别的字符，检查一下是否有多余字符或者中文字符。
+
+报错示例:
+
+result = (1024+(512*2)/128
+
+错误原因：圆括号没有成对出现
+ 报错信息：SyntaxError:unexpected EOF whileparsing
+
+检查到不完整的字符串（EOL while scanning string litera）
+ 很多情况下是由于字符串两边的引号不统一。 报错示例: if name =="M"
+print("hello_python")
+ 错误原因：忘记在if/elif/else/while/for/def/class等语句末尾添加冒号
+ 报错信息：SyntaxError:invalid syntax
+
+检查到不完整的字符串（EOL while scanning string litera）
+ 很多情况下是由于字符串两边的引号不统一。
+
+报错示例:
+
+if name =="M"
+print("hello_python")
+
+错误原因：忘记在if/elif/else/while/for/def/class等语句末尾添加冒号
+ 报错信息：SyntaxError:invalid syntax
+
+
+3. Tab和空格混用（TabError）
+
+此类报错是由于同时使用制表符和空格进行编码导致的，Tab键本质上是制表符并且一个Tab等价于四个空格键，而非缩进符。由于不同文本编辑器中制表符代表的空格宽度不一，建议使用空格。
+
+
+4. 属性错误（AttributeError）
+
+特性引用和赋值失败时会引发属性错误。
+ 此类错误的原因是尝试访问未知的对象属性，换句话说就是找不到对应对象的属性。可以检查类中构造函数__init__（）是否写正确，左右两边各两条下划线。
+
+
+5. 索引错误（IndexError）
+
+索引是项目在数组或列表中的位置，当我们尝试从列表中访问元素或从列表中不存在的索引中访问元组时，就会发生这种异常。
+ 例如，有一个包含10个元素的列表，索引在0到9之间，如果试图访问索引10或11或更多的元素，就会产生IndexError。
+ 报错示例：
+
+a = [11,22,33]
+print(a[3])
+
+错误原因：列表a中不存在第4个索引，列表的索引【下标】从0开始编号
+ 报错信息：IndexError: string index out of range
+
+
+6. 键错误（KeyError）
+
+在读取字典中的key和value时，如 果key不存在，就会触发KeyError错误。
+ 报错示例：
+
+d = {'a':1,'b':2}
+print(d['y'])
+
+错误原因：键‘y’不存在
+ 报错信息：KeyError: ‘y’
+
+
+7. 变量名错误（NameErro）
+
+变量名错误是最普通也是最常会遇到的内建报错类型，经常会出现在Python变量命名上，如果找不到变量就会引发NameError。关于变量名的规则，需要牢记以下几条：
+
+变量名只能包含字母、数字和下划线，不可用数字开头；
+
+变量名不能包含空格，但可使用下划线来分隔其中的单词；
+
+不要将Python关键字和函数名用作变量名，如print；
+
+变量名应既简短又具有描述性；
+
+慎用小写字母l和大写字母O，因为容易被错看成数字1和0。
+
+出现变量名错误，可以查看变量是否赋值，是否存在大小写不统一或者变量名写错了的情况，找到后加以修正。
+ 报错示例：
+
+message = "Hello!"
+print(mesage)
+
+错误原因：变量名拼写错误，误将massage拼写为masge
+ 报错信息：NameError: name ‘mesage’ is not defined
+
+
+8. 缩进错误（IndentationError）
+
+在Python中，所有代码都是通过正确的空格排列的。所以，无论是多出来空格，还是缺少空格，整个代码都不会运行，并且仅返回一个错误函数。
+ Python代码遵循PEP8空白规范，每一级缩进使用4个空格（Tab）。
+ 报错示例：
+
+a=1
+b=2
+if a<b:
+print a
+
+更正：
+
+a=1
+b=2
+if a<b:
+	print a
+
+
+9. 文件报错(IOError)：
+
+一般常见于打开不存在文件时会引发IOError错误，如果修改打开文件也会报类似的错误。
+
+import pandas as pd
+df=pd.read_csv(r"../Data/ss.csv")
+
+错误原因：不能访问到ss.csv，可以尝试把修改或者复制到当前运行目录
+ 报错信息：FileNotFoundError Traceback(most recent call last)
+
+
+10. 值错误（ValueError）:
+
+传给对象的参数类型不正确，像是给int()函数传入了字符串数据类型的参数。
+
+import numpy as np
+ary=np.array([1.0,1.1],[1.0,1.0],[0,0],[0,1.2])
+
+错误原因：创建二维的里面数组里面的数组也必须是二维的，例如 np.array([[1,1],[2,2]])
+ 报错信息：ValueError only 2 non-keyword arguments accepted
+
+有遇见你的BUG吗？调整心态，不要慌张，有报错是正常的，查看报错的提示根据提示查看对应的代码进行修改。希望对大家有帮助~更多报错解决方案查看
+

@@ -1,0 +1,45 @@
+安装xorg
+
+测试xorg
+
+startx
+
+提示如下报错
+
+Cannot run in framebuffer mode. Please specify busIDs for all framebuffer devices
+
+
+解决方案：安装显卡驱动
+
+intel 显卡
+
+pkg install xf86-video-intel
+
+nvidia显卡
+
+安装nvidia显卡驱动需开启linux支持，修改/etc/rc.conf。
+
+ee /etc/rc.conf
+
+添加：linux_enable=“YES”
+
+此处可以通过重启电脑来加载linux支持，不想重启电脑的话，可以通过下面的命令来加载linux支持。
+
+kldload linux64
+
+可以通过此命令查看加载情况：
+
+kldstat
+
+安装Nvidia显卡驱动（如果是ati显卡，有一个xf86-video-ati包是ati显卡的驱动，你可以用pkg install -y xf86-video-ati试试）
+
+pkg install nvidia-driver //安装nvidia显卡驱动
+
+要想使freebsd开机能自动装载显卡驱动，需要修改/boot/loader.conf文件。
+
+ee /boot/loader.conf
+
+添加下面一行代码：
+
+nvidia_load=“YES”
+

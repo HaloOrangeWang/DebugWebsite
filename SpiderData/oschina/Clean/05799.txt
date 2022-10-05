@@ -1,0 +1,31 @@
+迫于 Unity 总是在 Windows 下崩溃，并直接导致系统重启（估计是内存泄漏），新买了一台笔记本。（终于可以在 Linux 桌面上进行开发啦，爽~
+
+电脑是华为新出的 16.1 寸第三方 Linux 版，官方美其名曰科技尝鲜版，相比 win10 版本省 300 元。
+
+拿到手第一件事当然是重装系统啦，装上自己熟悉的 Manjaro + Gnome。这里有个小插曲，旧的 Manjaro 镜像进不了 live，重写一个最新版的镜像就好。
+
+接下来就是安装 Unity Hub 和 Unity Editor，Hub 是容易装的，但是想找到指定版本的 Editor 不是很容易。比如我司使用的 18.4.3f1 下载地址在：18.4.3f1。
+
+接下来就是 pull 代码，启动 Unity，play。
+
+如果遇到 Firebase python 代码类型断言报错，直接去改一下就好，Manjaro 的 python 版本可能比较高。
+
+接下来就是 tolua 的问题：
+
+DllNotFoundException: tolua
+LuaInterface.LuaStatePtr.LuaNewState () (at Assets/ToLua/Core/LuaStatePtr.cs:78)
+LuaInterface.LuaState..ctor () (at Assets/ToLua/Core/LuaState.cs:114)
+HelloWorld.Awake () (at Assets/ToLua/Examples/01_HelloWorld/HelloWorld.cs:9)
+
+Emmm，我一个后端是真的不知道发生了什么。好在作者有回答这个问题：tolua。
+
+将 tolua_runtime 的代码拉下来，然后编译即可。
+
+sh build_ubuntu.sh
+
+把编译生成的 ubuntu 文件夹丢进项目里，完工。
+
+从运行的效果来看，Linux 比 Win10 表现要好一些，至少不会突然崩溃啦。
+
+最后吐槽一下 Gnome，偶尔也会出现内存泄漏，不过懒得重装 xfce4 了，先这样凑合用吧。
+

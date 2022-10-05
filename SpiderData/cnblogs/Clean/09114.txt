@@ -1,0 +1,10 @@
+问题: 最近在做mmdetection相关的东西, 想用ssd跑下voc2007数据集, 在我未对.\configs\pascal_voc\ssd300_voc0712.py做任何改动的情况下调用 python .\tools\browse_dataset.py .\configs\pascal_voc\ssd300_voc0712.py 命令浏览下数据集, 直接报错AttributeError: 'ConfigDict' object has no attribute 'pipeline'
+
+并且mmdetection 2.5, 2.6的情况下都试了, 报错相同 -- 因为两个版本的.\configs\pascal_voc\ssd300_voc0712.py 一模一样, 用其他的几个文件如faster_rcnn_r50_fpn_1x_voc0712p4.py的那个也是报一样的错
+
+解决: 这是 官方文件中的bug, 是因为pascal_voc下这几个配置文件都调用了.\configs\_base_\voc0712.py, 而错误就发生在 .\configs\_base_\voc0712.py, 标红的那一块(左图35,36,37行, 其实就是把这三行删掉), 改成右图.
+
+另外在改好了voc0712.py后ssd300_voc0712.py也需要依照右图再改一次, 因为 ssd300_voc0712.py 以跟左图一样的形式又写了一遍
+
+reference:https://blog.csdn.net/tycoer/article/details/109507124
+

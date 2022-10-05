@@ -1,0 +1,40 @@
+执行一个Python脚本的时候，报“IndentationError: unindent does not match any outer indentation level" 错误，搜索了一下相关资料，遇到这个错误，是因为新的Python语法中是不支持的代码对齐中，混用TAB和空格的。
+
+# python get_mssql_job_info.py
+
+File "get_mssql_job_info.py", line 29
+
+db_sub_conn = pymssql.connect(host=row[1],
+
+^
+
+IndentationError: unindent does not match any outer indentation level
+
+如上所示，可以使用Notepad++打开脚本，勾选“显示空格与制表符”，此时你会看到代码对齐使用了制表符与空格
+
+我用空格替换了制表符后，发现还是报这个错误，最后发现报错行上面注释的地方也要注意代码对齐，而我代码里面上面的'''使用制表符， 下面的'''使用空格。所以这里也必须一致
+
+解决方法：
+
+1： 使用工具pycharm  有个快捷键 CTRL+ALT+L格式化代码。
+
+2： 在Notepad++的首先项里面，可以勾选“替换为空格”，如下所示，不同版本的Notepad++，可能设置选项有所出入。这样可以避免使用Tab+空格键时出现这种情况。
+
+后面我又遇到了下面“IndentationError: unexpected indent”这个错误：
+
+# python get_mssql_job_info.py
+
+File "get_mssql_job_info.py", line 37
+
+sub_cursor =db_sub_conn.cursor(as_dict=True)
+
+^
+
+IndentationError: unexpected indent
+
+结果也是发现注释也必须和代码对齐
+
+正确的对齐方式如下：
+
+虽然是一个小小的问题，还是折射出对Python代码对齐理解的一些细节问题的疏忽。
+

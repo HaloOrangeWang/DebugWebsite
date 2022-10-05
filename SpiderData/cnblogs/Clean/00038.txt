@@ -1,0 +1,91 @@
+Python 中强制缩进，，  IndentationError: unexpected indent   缩进错误
+
+这类错误非常常见，一般都是由于tab在不同的平台上占用长度不同导致，有些事程序员自己直接使用空格或其他来顶替tab。 
+解决办法非常简单，在所在平台上使用标准的tab进行缩进，就OK了。
+
+编码错误，可以通过指定字符集解决 ： encoding = “utf-8”
+
+文件不可读，可能是文件打开模式不对
+
+局部作用域引用错误，可能原因是 a变量为局部变量，未定义，不可修改
+
+缺少wx模块，缺啥装啥...
+
+sudo apt-get install python-wxtools
+
+没法解析Python的头文件，解决方法:
+
+#先更新下源
+sudo apt-get update
+
+#安装python-dev
+sudo apt-get install python-dev
+
+python版本问题，不兼容，python3版本的换成range()函数就行了。
+
+解决方法：import time
+
+解决方法： from datetime import datetime
+
+编码错误，基本是由中文引起的（中文路径、中文编码）
+
+原因之一：当前路径名取了一个“ flask ”（当前文件名为flask）
+
+Python3以后删除了has_key()方法！python2中可以。
+
+解决方法：
+
+if adict.has_key(key1):  
+#改为
+if key1 in adict:
+
+map(function, iterable, ......)
+
+Python 2.x 返回列表。
+
+Python 3.x 返回迭代器。 只用将iterator 转换成 list 即可， 比如  list(map())
+
+不能直接用int进行迭代
+
+参考：https://segmentfault.com/q/1010000011234516，https://blog.csdn.net/yeizisn/article/details/53069775
+
+报错代码：
+
+list(map(frozenset, C1)) # 对每一个元素 frozenset
+
+问题在于：map这个函数的第二个参数要求可以迭代，C1里面的元素也得可以迭代。C1这个列表的每个元素都是int，不可迭代，应该也是list才行；
+
+http://www.runoob.com/python/python-func-map.html
+
+解决代码：
+
+C1.append([item])  #注意！！！item一定要加中括号，代表列表； 不然C1的元素是int，int是不可迭代的；执行list(map(frozenset, C1))会报错。
+
+一般是参数的名称出现错误
+
+错误出现在tkinter，为combobox添加选择事件
+
+解决方法： 为函数添加参数*args
+
+原因：python2有cPickle，但是在python3下，是没有cPickle的；
+
+解决办法：将cPickle改为pickle即可
+
+# argument 1 是指第一个参数
+# 它的意思是第一个参数不应该是str，所以查一下这个函数的几个参数就好了
+# 其实是因为缺少第一个参数
+
+filename = QFileDialog.getOpenFileName(None, 'Open File','/')  #第三个参数是默认打开路径，如果为空则打开当前路径
+
+#  from sklearn.lda import LDA 这是sklearn0.16的写法，之后的版本没有了lda  可以查一下sklearn各个版本的API
+#  参考链接： https://stackoverflow.com/questions/46775155/no-module-named-sklearn-lda
+#  为了代码的最少更改，可以如下解决：
+
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+
+#   参考链接：http://leonzhan.iteye.com/blog/1720315
+#   上述链接中说：这种错误是指一个tuple值赋给一个tuple变量时，变量个数不够造成的。如：
+#   a, b = (1, 2, 3)
+
+未完待续...................................................................................................................................................................................................................................................................................
+

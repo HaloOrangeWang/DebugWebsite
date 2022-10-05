@@ -1,0 +1,39 @@
+首先，我的mongo已经安装成功，在终端我输入mongod和sudo mongod均报错：
+
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] MongoDB starting : pid=49498 port=27017 dbpath=/data/db 64-bit host=jkx.local
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] db version v3.4.9
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] git version: 876ebee8c7dd0e2d992f36a848ff4dc50ee6603e
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.2l  25 May 2017
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] allocator: system
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] modules: none
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] build environment:
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten]     distarch: x86_64
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten]     target_arch: x86_64
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] options: {}
+2017-10-24T16:20:15.976+0800 I STORAGE  [initandlisten] exception in initAndListen: 98 Unable to lock file: /data/db/mongod.lock Resource temporarily unavailable. Is a mongod instance already running?, terminating
+2017-10-24T16:20:15.976+0800 I NETWORK  [initandlisten] shutdown: going to close listening sockets...
+2017-10-24T16:20:15.976+0800 I NETWORK  [initandlisten] shutdown: going to flush diaglog...
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] now exiting
+2017-10-24T16:20:15.976+0800 I CONTROL  [initandlisten] shutting down with code:100
+
+其中一段Unable to lock file: /data/db/mongod.lock Resource temporarily unavailable. Is a mongod instance already running?, terminating 表示 资源被锁不可用。
+
+我首先尝试输入sudo mongod，继续同样报错，于是退出终端，在进程中杀掉全部的mongo进程。
+
+再次输入mongod,报错，再次输入sudu mongod，出现如下界面：
+
+2017-10-24T16:47:06.083+0800 I CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+2017-10-24T16:47:06.083+0800 I CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+2017-10-24T16:47:06.083+0800 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.
+2017-10-24T16:47:06.084+0800 I CONTROL  [initandlisten]
+2017-10-24T16:47:06.099+0800 I FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/data/db/diagnostic.data'
+2017-10-24T16:47:06.108+0800 I NETWORK  [thread1] waiting for connections on port 27017
+
+然后在网上搜索结果，最终解法是，保持该窗口不变，重新开一个，输入mongo，成功！
+
+然而，别人并没有这种 waiting for...... 的情况，最终在stackoverflow上找到答案，其实这是因为你的mongo启动过，有隐藏的进程，你可以再开窗口，或者就是重启电脑即可。
+
+参考1
+
+参考2
+

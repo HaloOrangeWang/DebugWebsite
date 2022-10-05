@@ -1,0 +1,46 @@
+supervisor的错误日志如下：
+
+Traceback (most recent call last):
+  File "/home/himalayas/owengine/owprice/server.py", line 10, in <module>
+    import action
+  File "/home/himalayas/owengine/owprice/action/__init__.py", line 2, in <module>
+    from owprice import owPriceHandler
+  File "/home/himalayas/owengine/owprice/action/owprice.py", line 11, in <module>
+    from cjson import decode as json_decode
+  File "build/bdist.linux-x86_64/egg/cjson.py", line 7, in <module>
+  File "build/bdist.linux-x86_64/egg/cjson.py", line 4, in __bootstrap__
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 945, in resource_filename
+    self, resource_name
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 1633, in get_resource_filename
+    self._extract_resource(manager, self._eager_to_zip(name))
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 1661, in _extract_resource
+    self.egg_name, self._parts(zip_path)
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 1025, in get_cache_path
+    self.extraction_error()
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 991, in extraction_error
+    raise err
+pkg_resources.ExtractionError: Can't extract file(s) to egg cache
+
+The following error occurred while trying to extract file(s) to the Python egg
+cache:
+
+[Errno 13] Permission denied: '/root/.python-eggs'
+
+The Python egg cache directory is currently set to:
+
+/root/.python-eggs
+
+Perhaps your account does not have write access to this directory?  You can
+change the cache directory by setting the PYTHON_EGG_CACHE environment
+variable to point to an accessible directory.
+
+解决方法：
+
+去掉/home/himalayas/.python-eggs 这个目录用户组合other的x权限。
+
+drwxr-xr-x   5 himalayas himalayas  4096 Aug 14 15:43 .python-eggs
+
+drwxr--r--   5 himalayas himalayas  4096 Aug 14 15:43 .python-eggs
+
+对程序启动没有影响，只是一个warning，但是对于supervisor来说对这个warning太敏感，所以导致使用supervisor启动的时候会启动不起来。
+

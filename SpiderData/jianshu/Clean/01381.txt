@@ -1,0 +1,17 @@
+request.get("https://xxxxxx.com",verify=False)
+
+对于requests库中我们访问带有加密的https协议时通常会ssl报错,我们一般会在后面加上verify=False取消SSL验证即可，但是昨天博主遇到了加上这个还会报错
+
+Python requests 移除SSL认证，控制台输出InsecureRequestWarning取消方法。
+
+InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+
+InsecureRequestWarning)
+
+解决办法：
+
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+# 禁用安全请求警告
+加在requests.get()前面
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+

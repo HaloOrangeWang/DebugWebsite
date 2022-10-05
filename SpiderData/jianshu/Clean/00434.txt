@@ -1,0 +1,185 @@
+seata1.2版本整合nacos踩坑案例
+
+坑1
+
+pom文件排除不一致！
+
+本人学习seata是通过B站的尚硅谷的springcloud教学视频来的，视频中周阳老师用的版本是0.9的版本。而自己用的是1.2版本。也是因为自己偷懒，直接复制了老师的pom文件，也没有看官网的版本介绍导致的
+
+这里是周阳老师的排除seata包的关键地方。我自己直接把0.9.0改为了1.2.0
+
+<dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>seata-all</artifactId>
+                    <groupId>io.seata</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-all</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+
+自己当时的改动如下
+
+<dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>seata-all</artifactId>
+                    <groupId>io.seata</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-all</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+结果启动项目就出现如下错误 not support register type: null
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'globalTransactionScanner' defined in class path resource [com/alibaba/cloud/seata/GlobalTransactionAutoConfiguration.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [io.seata.spring.annotation.GlobalTransactionScanner]: Factory method 'globalTransactionScanner' threw exception; nested exception is io.seata.common.exception.NotSupportYetException: not support register type: null
+    at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:656) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:484) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1338) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1177) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:557) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.context.support.PostProcessorRegistrationDelegate.registerBeanPostProcessors(PostProcessorRegistrationDelegate.java:228) ~[spring-context-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.context.support.AbstractApplicationContext.registerBeanPostProcessors(AbstractApplicationContext.java:722) ~[spring-context-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:535) ~[spring-context-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141) ~[spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:315) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at com.hanlin.springcloud.SeataOrderMainApp2001.main(SeataOrderMainApp2001.java:21) [classes/:na]
+
+然后自己就断点进入了seata源码：
+
+com.alibaba.cloud.seata.GlobalTransactionAutoConfiguration#globalTransactionScanner
+
+发现tx-service-group为null，但是自己明明在yml文件里给配置了为：my_test_tx_group
+
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: my_test_tx_group
+  enable-auto-data-source-proxy: true
+  service:
+    vgroup-mapping:
+      my_test_tx_group: default
+    grouplist:
+      default: 127.0.0.1:8091
+    enable-degrade: false
+    disable-global-transaction: false
+  config:
+    type: nacos
+    nacos:
+      namespace:
+      serverAddr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      userName: ""
+      password: ""
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server  
+      server-addr: 127.0.0.1:8848
+      namespace:
+      userName: ""
+      password: ""
+
+那这里为什么没有读取到？真是百思不得其解，后面在检查配置文件的时候发现，seata这里的配置信息，按住Crtl，不能点进去，配置文件这里按住Crtl不能点击进入，大部分都是没有引入jar包。后面也是网上找一些相关资料，发现1.2版本的引入方式是这样的。好吧，是我自己的锅！
+
+<dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.seata</groupId>
+                    <artifactId>seata-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-spring-boot-starter</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+修改完pom文件后，启动项目，发现坑2！
+
+坑2
+
+主要错误：
+
+java.lang.ClassNotFoundException: 
+io.seata.spring.annotation.datasource.SeataAutoDataSourceProxyCreator
+
+java.lang.IllegalStateException: Failed to introspect Class [io.seata.spring.boot.autoconfigure.SeataAutoConfiguration] from ClassLoader [sun.misc.Launcher$AppClassLoader@18b4aac2]
+    at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:481) ~[spring-core-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.util.ReflectionUtils.doWithMethods(ReflectionUtils.java:358) ~[spring-core-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.util.ReflectionUtils.getUniqueDeclaredMethods(ReflectionUtils.java:414) ~[spring-core-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.lambda$getTypeForFactoryMethod$2(AbstractAutowireCapableBeanFactory.java:743) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1660) ~[na:1.8.0_161]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.getTypeForFactoryMethod(AbstractAutowireCapableBeanFactory.java:742) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.determineTargetType(AbstractAutowireCapableBeanFactory.java:681) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.predictBeanType(AbstractAutowireCapableBeanFactory.java:649) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.AbstractBeanFactory.isFactoryBean(AbstractBeanFactory.java:1604) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.doGetBeanNamesForType(DefaultListableBeanFactory.java:520) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBeanNamesForType(DefaultListableBeanFactory.java:491) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBeansOfType(DefaultListableBeanFactory.java:613) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBeansOfType(DefaultListableBeanFactory.java:605) ~[spring-beans-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.context.support.AbstractApplicationContext.getBeansOfType(AbstractApplicationContext.java:1242) ~[spring-context-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.getExitCodeFromMappedException(SpringApplication.java:869) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.getExitCodeFromException(SpringApplication.java:857) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.handleExitCode(SpringApplication.java:844) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.handleRunFailure(SpringApplication.java:795) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:325) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215) [spring-boot-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+    at com.hanlin.springcloud.SeataOrderMainApp2001.main(SeataOrderMainApp2001.java:21) [classes/:na]
+Caused by: java.lang.NoClassDefFoundError: io/seata/spring/annotation/datasource/SeataAutoDataSourceProxyCreator
+    at java.lang.Class.getDeclaredMethods0(Native Method) ~[na:1.8.0_161]
+    at java.lang.Class.privateGetDeclaredMethods(Class.java:2701) ~[na:1.8.0_161]
+    at java.lang.Class.getDeclaredMethods(Class.java:1975) ~[na:1.8.0_161]
+    at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:463) ~[spring-core-5.2.2.RELEASE.jar:5.2.2.RELEASE]
+    ... 21 common frames omitted
+Caused by: java.lang.ClassNotFoundException: io.seata.spring.annotation.datasource.SeataAutoDataSourceProxyCreator
+    at java.net.URLClassLoader.findClass(URLClassLoader.java:381) ~[na:1.8.0_161]
+    at java.lang.ClassLoader.loadClass(ClassLoader.java:424) ~[na:1.8.0_161]
+    at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338) ~[na:1.8.0_161]
+    at java.lang.ClassLoader.loadClass(ClassLoader.java:357) ~[na:1.8.0_161]
+    ... 25 common frames omitted
+
+看到报错，心理一惊，怎么有类找不到，难道是刚才的引入的方式不对。在这里作者是真的找了一个多小时，看了N多帖子和博客，还是没有解决。。。o(╥﹏╥)o，最后也是无意中，在看GitHub上的wiki时，发现上面有个版本介绍。
+
+我们项目的最外层的父类pom文件引入的版本是2.1.0版本，对比着上面的版本号，我们不难发现我们这个版本是不支持seata1.2版本的
+
+最后修改父类pom文件的spring-cloud-alibaba-dependencies版本号为2.2.1.RELEASE
+
+<dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>2.2.1.RELEASE</version>
+
+<!--如果需要使用seata1.2版本以上的，这里的alibabab-dependencies版本需要改变！！！巨坑啊，搞了一晚上。。。-->
+                <!-- <version>2.1.0.RELEASE</version>-->
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+最后启动项目，成功启动！seata服务端也打印日志如下：
+

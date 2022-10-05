@@ -1,0 +1,34 @@
+前言
+
+最近在linux连接mysql /usr/local/mysql/bin/mysql -uroot -p
+
+输入密码出现Access denied for user 'root'@'localhost'(using password: YES)错误。下面话不多说了，来一起看看详细的解决方法吧
+
+解决办法：
+
+1.先停止mysql 服务
+
+service mysqld stop
+
+2.进入mysql安装目录bin/ 使用safe模式，进行重启：
+
+./mysqld_safe --skip-grant-tables
+
+3.使用root账户，无密码登录，修改root用户密码
+
+mysql -u root 
+use mysql
+update user set password=PASSWORD("你的密码") where User = 'root';
+
+4.重启mysql，正常登录
+
+service mysqld restart 重启
+
+/usr/local/mysql/bin/mysql -uroot -p  然后输入刚才重置的密码
+
+完成，连接成功！
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作具有一定的参考学习价值，如果有疑问大家可以留言交流，谢谢大家对脚本之家的支持。
+

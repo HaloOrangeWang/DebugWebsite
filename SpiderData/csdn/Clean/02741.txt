@@ -1,0 +1,368 @@
+
+1 语法错误
+
+Python 的语法错误或者称之为解析错，是初学者经常碰到的，如下实例
+
+>>> while True print('Hello world')
+  File "<stdin>", line 1, in ?
+    while True print('Hello world')
+                  ^
+SyntaxError: invalid syntax
+
+这个例子中，函数 print() 被检查到有错误，是它前面缺少了一个冒号 : 。
+ 语法分析器指出了出错的一行，并且在最先找到的错误的位置标记了一个小小的箭头。
+
+
+2 标准警告
+
+Warning：警告的基类
+
+DeprecationWarning：关于被弃用的特征的警告
+
+FutureWarning：关于构造将来语义会有改变的警告
+
+UserWarning：用户代码生成的警告
+
+PendingDeprecationWarning：关于特性将会被废弃的警告
+
+RuntimeWarning：可疑的运行时行为(runtime behavior)的警告
+
+SyntaxWarning：可疑语法的警告
+
+ImportWarning：用于在导入模块过程中触发的警告
+
+UnicodeWarning：与Unicode相关的警告
+
+BytesWarning：与字节或字节码相关的警告
+
+ResourceWarning：与资源使用相关的警告
+
+如果需要忽略警告，加入如下代码即可。
+
+>>> import warnings 
+>>> warnings.filterwarnings('ignore')
+
+
+3 异常处理
+
+即便 Python 程序的语法是正确的，在运行它的时候，也有可能发生错误。运行期检测到的错误被称为异常。计算机语言针对可能出现的错误定义了异常类型，某种错误引发对应的异常时，异常处理程序将被启动，从而恢复程序的正常运行。大多数的异常都不会被程序处理，都以错误信息的形式展现。
+
+常见的异常处理汇总：
+
+try-except 语句 捕获(接收)异常通知,把异常流程变为正常流程
+ try-finally 语句 执行必须要执行的语句.
+ raise 语句 发送异常通知,同时进入异常流程
+ assert 语句 发送AssertionError异常
+
+
+3.1 Python 标准异常
+
+BaseException：所有异常的 基类
+
+Exception：常规异常的 基类
+
+StandardError：所有的内建标准异常的基类
+
+ArithmeticError：所有数值计算异常的基类
+
+FloatingPointError：浮点计算异常
+
+OverflowError：数值运算超出最大限制
+
+ZeroDivisionError：除数为零
+
+AssertionError：断言语句（assert）失败
+
+AttributeError：尝试访问未知的对象属性
+
+EOFError：没有内建输入，到达EOF标记
+
+EnvironmentError：操作系统异常的基类
+
+IOError：输入/输出操作失败
+
+OSError：操作系统产生的异常（例如打开一个不存在的文件）
+
+WindowsError：系统调用失败
+
+ImportError：导入模块失败的时候
+
+KeyboardInterrupt：用户中断执行
+
+LookupError：无效数据查询的基类
+
+IndexError：索引超出序列的范围
+
+KeyError：字典中查找一个不存在的关键字
+
+MemoryError：内存溢出（可通过删除对象释放内存）
+
+NameError：尝试访问一个不存在的变量
+
+UnboundLocalError：访问未初始化的本地变量
+
+ReferenceError：弱引用试图访问已经垃圾回收了的对象
+
+RuntimeError：一般的运行时异常
+
+NotImplementedError：尚未实现的方法
+
+SyntaxError：语法错误导致的异常
+
+IndentationError：缩进错误导致的异常
+
+TabError：Tab和空格混用
+
+SystemError：一般的解释器系统异常
+
+TypeError：不同类型间的无效操作
+
+ValueError：传入无效的参数
+
+UnicodeError：Unicode相关的异常
+
+UnicodeDecodeError：Unicode解码时的异常
+
+UnicodeEncodeError：Unicode编码错误导致的异常
+
+UnicodeTranslateError：Unicode转换错误导致的异常
+
+异常体系内部有层次关系，Python异常体系中的部分关系如下所示：
+
+
+3.2 try - except 语句
+
+异常捕捉可以使用 try/except 语句。
+ 
+ try 语句按照如下方式工作：
+
+首先，执行try子句（在关键字try和关键字except之间的语句）
+
+如果没有异常发生，忽略except子句，try子句执行后结束。
+
+如果在执行try子句的过程中发生了异常，那么try子句余下的部分将被忽略。如果异常的类型和except之后的名称相符，那么对应的except子句将被执行。最后执行try语句之后的代码。
+
+如果一个异常没有与任何的except匹配，那么这个异常将会传递给上层的try中。
+
+【例子】
+
+try:
+    f = open('test.txt')
+    print(f.read())
+    f.close()
+except OSError as error:
+    print('打开文件出错\n原因是：' + str(error))
+# 打开文件出错
+# 原因是：[Errno 2] No such file or directory: 'test.txt'
+
+一个try语句可能包含多个except子句，分别来处理不同的特定的异常。最多只有一个分支会被执行。
+
+【例子】
+
+try:
+    int("abc")
+    s = 1 + '1'
+    f = open('test.txt')
+    print(f.read())
+    f.close()
+except OSError as error:
+    print('打开文件出错\n原因是：' + str(error))
+except TypeError as error:
+    print('类型出错\n原因是：' + str(error))
+except ValueError as error:
+    print('数值出错\n原因是：' + str(error))
+# 数值出错
+# 原因是：invalid literal for int() with base 10: 'abc'
+
+【例子】一个 except 子句可以同时处理多个异常，这些异常将被放在一个括号里成为一个元组。
+
+try:
+    s = 1 + '1'
+    int("abc")
+    f = open('test.txt')
+    print(f.read())
+    f.close()
+except (OSError, TypeError, ValueError) as error:
+    print('出错了！\n原因是：' + str(error))
+# 出错了！
+# 原因是：unsupported operand type(s) for +: 'int' and 'str'
+
+
+3.3 try - except - else 语句
+
+try - except 语句还有一个可选的 else 子句，如果使用这个子句，那么必须放在所有的 except 子句之后。else 子句将在 try 子句没有发生任何异常的时候执行。
+
+使用except而不带任何异常类型，这不是一个很好的方式，我们不能通过该程序识别出具体的异常信息，因为它捕获所有的异常。
+
+【例子】
+
+try:
+    fh = open("testfile", "w")
+    fh.write("这是一个测试文件，用于测试异常!!")
+except IOError:
+    print("Error: 没有找到文件或读取文件失败")
+else:
+    print("内容写入文件成功")
+    fh.close()
+# 内容写入文件成功
+
+注意：else语句的存在必须以except语句的存在为前提，在没有except语句的try语句中使用else语句，会引发语法错误。
+
+
+3.4 try - except - else - finally 语句
+
+try-finally 语句无论是否发生异常都将执行最后的代码。
+
+try:
+    检测范围
+except Exception[as reason]:
+    出现异常后的处理代码
+finally:
+    无论如何都会被执行的代码
+
+不管try子句里面有没有发生异常，finally子句都会执行。
+ 如果一个异常在try子句里被抛出，而又没有任何的except把它截住，那么这个异常会在finally子句执行后被抛出。
+
+【例子】
+
+def divide(x, y):
+    try:
+        result = x / y
+        print("result is", result)
+    except ZeroDivisionError:
+        print("division by zero!")
+    finally:
+        print("executing finally clause")
+divide(2, 1)
+# result is 2.0
+# executing finally clause
+divide(2, 0)
+# division by zero!
+# executing finally clause
+divide("2", "1")
+# executing finally clause
+# TypeError: unsupported operand type(s) for /: 'str' and 'str'
+
+
+3.5 raise语句 – 抛出异常
+
+Python 使用 raise 语句抛出一个指定的异常。
+ raise语法格式如下：
+
+raise [Exception [, args [, traceback]]]
+
+Python 使用raise语句抛出一个指定的异常。
+ 【例子】
+
+try:
+    raise NameError('HiThere')
+except NameError:
+    print('An exception flew by!')    
+# An exception flew by!
+
+
+3.6 assert语句 – 断言
+
+Python assert（断言）用于判断一个表达式，在表达式条件为 false 的时候触发异常。
+ 断言可以在条件不满足程序运行的情况下直接返回错误，而不必等待程序运行后出现崩溃的情况，例如我们的代码只能在 Linux 系统下运行，可以先判断当前系统是否符合条件。
+ 语法格式如下：
+
+assert expression
+
+等价于：
+
+if not expression:
+ raise AssertionError
+
+assert 后面也可以紧跟参数:
+
+assert expression [, arguments]
+
+【例子】
+
+>>> assert 1==1    # 条件为 true 正常执行
+>>> assert 1==2    # 条件为 false 触发异常
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AssertionError
+
+# 以下实例判断当前系统是否为 Linux，如果不满足条件则直接触发异常，不必执行接下来的代码：
+>>> import sys
+>>> assert ('linux' in sys.platform), "该代码只能在 Linux 下执行"
+
+
+3.7 用户自定义异常
+
+你可以通过创建一个新的异常类来拥有自己的异常。异常类继承自 Exception 类，可以直接继承，或者间接继承，例如:
+
+>>> class MyError(Exception):
+        def __init__(self, value):
+            self.value = value
+        def __str__(self):
+            return repr(self.value)  
+            
+>>> try:
+        raise MyError(2*2)
+    except MyError as e:
+        print('My exception occurred, value:', e.value)   
+My exception occurred, value: 4
+
+>>> raise MyError('oops!')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+__main__.MyError: 'oops!'
+
+大多数的异常的名字都以"Error"结尾，就跟标准的异常命名一样。
+
+练习题：
+ 1、猜数字游戏
+ 题目描述:
+ 电脑产生一个零到100之间的随机数字，然后让用户来猜，如果用户猜的数字比这个数字大，提示太大，否则提示太小，当用户正好猜中电脑会提示，“恭喜你猜到了这个数是…”。在用户每次猜测之前程序会输出用户是第几次猜测，如果用户输入的根本不是一个数字，程序会告诉用户"输入无效"。
+ (尝试使用try catch异常处理结构对输入情况进行处理)
+ 获取随机数采用random模块。
+
+# your code here
+import numpy as np
+
+if __name__=="__main__":
+    print("猜测一个0-100之间的整数：")
+    num = np.random.randint(100)
+    count = 0
+    flag = True
+    while flag:
+        count += 1
+        try:
+            guess = int(input("第"+str(count)+"次猜，请输入一个整形数字:"))
+            if guess < num:
+                print("太小了")
+            elif guess > num:
+                print("太大了")
+            else:
+                print("恭喜你猜到了这个数是"+str(num))
+                flag = False
+        except:
+            pass
+            print("输入无效")
+
+猜测一个0-100之间的整数：
+第1次猜，请输入一个整形数字:50
+太大了
+第2次猜，请输入一个整形数字:25
+太大了
+第3次猜，请输入一个整形数字:12
+太大了
+第4次猜，请输入一个整形数字:6
+太小了
+第5次猜，请输入一个整形数字:9
+恭喜你猜到了这个数是9
+
+参考资料
+
+https://www.runoob.com/python3/python3-errors-execptions.html
+
+https://github.com/datawhalechina/team-learning-program
+
+Datawhale
+
+Datawhale是一个专注于数据科学与AI领域的开源组织，汇集了众多领域院校和知名企业的优秀学习者，聚合了一群有开源精神和探索精神的团队成员。Datawhale以“for the learner，和学习者一起成长”为愿景，鼓励真实地展现自我、开放包容、互信互助、敢于试错和勇于担当。同时Datawhale 用开源的理念去探索开源内容、开源学习和开源方案，赋能人才培养，助力人才成长，建立起人与人，人与知识，人与企业和人与未来的联结。
+

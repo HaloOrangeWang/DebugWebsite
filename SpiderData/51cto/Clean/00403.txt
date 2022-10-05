@@ -1,0 +1,64 @@
+
+
+Python 3.6 版本 Pytesseract 图像验证码识别
+
+中间还有一个坑，就是需要配置pytesseract的环境变量。
+
+这个TESSDATA_PREFIX需要自己创建。
+
+搞定了这个环境变量，再整以下的
+
+本文首先先说下问题，在代码中引入Pytesseract块时，总是出现错误 
+ 程序代码很简单如下：
+
+结果呢，肯定是报错，而且这个错误死活过不去
+
+7
+
+下面解决问题，你所需要的准备工作，Window下图像识别想用Python处理的
+
+真的是跳了所有的坑，不管是中文CSDN的解释还是StackOverflow英文上面的，首先要确保：
+
+1、安装Pillow，命令pip install Pillow，安装完毕会在Python文件夹下Lib\site-packages\pytesseract这个文件夹，里面有pytesseract.py文件
+
+2、确保，确保，确保 安装了 Tesseract-OCR 这个好像没有64、32的区别
+本人Python用的64位，安装这个OCR时候，看到用的是32位版本的最后没问题，安装后，自动生成环境变量，查看自己环境变量里是否有tesseract的路径
+
+3、如果如果上两步你完成了，那么你可以找一个图片测试了，cmd中输入tesseract，会出现下面提示，就没问题了
+
+3、如果如果上两步你完成了，那么你可以找一个图片测试了，cmd中输入tesseract，会出现下面提示，就没问题了
+
+4、你甚至可以在D盘找一个图片，然后测试一下这个工具强大的功能，比如识别一个验证码图片上的数字,图片路径为D:/pic.gif 
+ 测试图片如下：
+
+4、你甚至可以在D盘找一个图片，然后测试一下这个工具强大的功能，比如识别一个验证码图片上的数字,图片路径为D:/pic.gif 
+ 测试图片如下：
+
+5、在cmd命令中输入命令 tesseract d:/pic.gif result 
+ 什么意思呢？就是将当前图片识别出的结果，放到result.txt文件中，路径是当前路径，结果完美，没问题！！！
+
+5、在cmd命令中输入命令 tesseract d:/pic.gif result 
+ 什么意思呢？就是将当前图片识别出的结果，放到result.txt文件中，路径是当前路径，结果完美，没问题！！！
+
+
+以上都说明没问题啊，但是但是问题来了，我在Pycharm中为什么就一直执行失败，
+
+1.提示subprocess问题，我查着了各种 “火坑“，有的说包不兼容，有的说subprocess.py文件路径有问题，你的Python路径”/“ 和”\“双反斜杠有问题，有的说pytesseract有问题，最终结果就是 
+ cmd可以运行，PyCharm运行有问题，呵呵呵呵呵呵呵呵哒
+
+2、有的人说环境变量好的，为什么Pycharm执行不了报错？？
+
+
+我就尝试着打开pytesseract.py的文件，找到tesseract这个环境变量设置的地方，修改路径为：
+
+tesseract_cmd = ‘D:\Program Files\Tesseract-OCR\tesseract.exe’ 
+ 环境变量tesseract在系统Path中 也是这个路径，这下总可以了吧，点开，结果还是错误，错误原因还是这个！！！！！！
+
+
+我是郁闷的，我试着更改环境变量设置的地方，修改路径为：
+
+
+tesseract_cmd = ‘D:/Program Files/Tesseract-OCR/tesseract.exe’ 有些人甚至没明白看出来区别，对就是斜杠方向
+
+试着运行了一把，大功告成，此时此刻我的内心是崩溃的！！！！！！,总算成功了
+

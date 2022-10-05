@@ -1,0 +1,219 @@
+#!/usr/bin/env python
+ # -- conding:utf-8 --
+
+import  模块 
+ 四个方法:
+
+import time 是指 import time 模块:
+ 这个模块可以是 python 自带,也可以是自己安装的, 如 numpy 模块,就是需要自己安装;
+
+1、 improt  time
+
+In [17]: import time                    // 可以print 当地时间:
+ print(time.localtime())
+ time.struct_time(tm_year=2019, tm_mon=7, tm_mday=1, tm_hour=13, tm_min=48, tm_sec=55, tm_wday=0, tm_yday=182, tm_isdst=0)
+
+2、improt  time  as t        //  as 后面可以自定义,表示把time缩写成 t.
+ In [2]: import time as t
+ print(t.localtime())
+ time.struct_time(tm_year=2019, tm_mon=7, tm_mday=1, tm_hour=13, tm_min=52, tm_sec=0, tm_wday=0, tm_yday=182, tm_isdst=0)
+
+3、from time  import time,localtime      // 只 import 自己想要的功能, 中间用逗号隔开.
+ from time import time,localtime
+ print(localtime())
+ time.struct_time(tm_year=2019, tm_mon=7, tm_mday=1, tm_hour=13, tm_min=56, tm_sec=12, tm_wday=0, tm_yday=182, tm_isdst=0)
+
+4、form time  import  *                  // 输入模块的所有功能
+ from time import *
+
+In [11]: tim
+ %%time    %%timeit  %time     %timeit   time      timezone
+
+In [13]: print(time())
+ 1561960733.32
+
+In [14]: print(clock())
+
+自建模块:
+
+[root@fenye2019 ~]# cat m1.py
+ #!/usr/bin/env python
+ # --* conding:utf-8 -*-
+ def printdata(data):
+     print('I am m1')
+     print(data)
+     
+ 调用: 
+ improt m1
+ 或者
+ from m1  import  printdata
+ m1.printdata('python')
+
+import m1
+
+In [6]: m1.printdata('python')
+ I am m1
+ python
+
+注释: linux 使用import 导入模块/总是错误:        ImportError: No module named numpy
+
+需要修改其包的路径:          // site-apckages
+ 首先查看包/模块的位置,      // 通过 sys 模块里的 path 功能来实现:
+ import  sys
+ sys.path
+ '/usr/lib64/python2.7/site-packages/gtk-2.0',
+  '/usr/lib/python2.7/site-packages',
+  '/usr/lib/python2.7/site-packages/cloud_init-0.7.6-py2.7.egg',
+  '/usr/lib/python2.7/site-packages/IPython/extensions',
+ 临时修改:   通过 path 功能下的 append 属性来增加
+ sys.path.
+ sys.path.append   sys.path.extend   sys.path.insert   sys.path.remove   sys.path.sort
+ sys.path.count    sys.path.index    sys.path.pop      sys.path.reverse
+
+sys.path.append('/usr/lib/python2.7/site-packages')
+
+永久修改:
+ [root@fenye2019 ~]# tail /etc/profile
+ export PYTHONPATH=/usr/lib64/python2.7/site-packages:/usr/lib/python2.7/site-packages/IPython/extensions
+ [root@fenye2019 ~]# source  /etc/profile
+
+再次手动写一个模块,计算五年的复利本息的模块:
+ [root@fenye2019 ~]# cat balance.py
+ #!/usr/bin/env python
+ # --*conding:utf-8 -*-
+ d=float(input('Please enter what is your initial balance: \n'))
+ p=float(input('Please input what is the interest rate (as a number): \n'))
+ d=float(d+d*(p/100))
+ year=1
+ while year<=5:
+     d=float(d+d*p/100)
+     print('Your new balance after year:',year,'is',d)
+     year=year+1
+ print('your final year is',d)
+
+运行:
+ import balance
+ Please enter what is your initial balance: 
+ 50000                    // 手动输入本金:   
+ Please input what is the interest rate (as a number): 
+ 2.4                      // 手动输入银行利息:
+ ('Your new balance after year:', 1, 'is', 52428.8)
+ ('Your new balance after year:', 2, 'is', 53687.0912)
+ ('Your new balance after year:', 3, 'is', 54975.581388800005)
+ ('Your new balance after year:', 4, 'is', 56294.9953421312)
+ ('Your new balance after year:', 5, 'is', 57646.07523034235)
+ ('your final year is', 57646.07523034235)
+
+continue &&  break
+
+continue    重复输入
+ break       跳出本次循环,执行循环下面的内容
+
+pass     // 表示空字符,什么也不做.
+
+break    //表示退出本次循环,执行循环外的内容:
+ 如: 当b = 1, 相当于忽略 break 后面的循环内的那部分代码,
+ 直接运行 循环之外的 语句;
+
+while True:
+     b = input('please input number: ')
+     if b == '1':
+         break
+     else:
+         pass
+     print('to run ......')
+ print('flnish run')
+
+python 10.py
+ please input number: 3
+ to run ......
+ please input number: 4
+ to run ......
+ please input number: 1
+ flnish run
+
+continue        // 忽略 continue 后面的代码,然后重新开始循环:
+ 一般用户重新输入字符:
+
+while True:
+     b = input('Please input number: ')
+     if b == '1':
+         continue
+     else:
+         pass
+     print('to run ......')
+ print('flnish run')
+
+python 10.py
+ please input number: 2
+ jixunyunx......
+ please input number: 1
+ please input number: 1
+
+try  异常处理
+
+file = open('fenye','r')        //文件不存在则会报错
+
+IOError: [Errno 2] No such file or directory: 'fenye'
+
+加上try 后                 //  输出的错误可以写"自定义的内容"
+
+try:
+     file = open('fenye',r)
+ except Exception as e:
+     print(e)
+ #    print('there is no file name as eeeee')          // 这样自定义内容也可以,直接打印内容也可以。
+
+[Errno 2] No such file or directory: 'fenye'
+
+扩展后如下:  
+ 判断这个文件是否存在并查看,不存在则由用户选择是否创建:
+ 第一次运行时,文件不存在存在,则执行except 里面的语句,由用户选择是否创建,选择 y ,则创建这个文件,并退出:
+ 第二次运行时,文件已存在,则直接执行最后一个else里的语句:
+
+try:
+     file = open('fenye',r+)           //第二次运行写入文件内容需要些权限 w.
+ except Exception as e:
+     print('There is not file named as fenye')
+     response = raw_input('do you want to create new file: ')
+     if response == 'y':
+         file = open('fenye','w')
+     else:
+         pass
+ else:                                         //此处的else同 try 平行:
+     file.write('my name is fenye')
+     file.close()
+
+cat fenye
+ my name is fenye
+
+再次扩展: 
+ 假设用户输入的是 n ,或者是大写的 Y/N ,或者是 yes/no   Yes/No 这样的,也或者是其他字符如何判断:
+
+try:
+    ...:     file = open('fenye.txt','r+')
+    ...: except Exception as e:
+    ...:     print('There is not file named as fenye.txt')
+    ...:     response = raw_input('do you want to create new file[Yes/No]: ')
+    ...:     re = response.lower()
+    ...:     if re == 'y' or re == 'yes':
+    ...:         file = open('fenye.txt','w')
+    ...:     elif re == 'n' or re == 'no':
+    ...:         exit
+    ...:     else:
+    ...:         print('Please input [Yes/No] ......')
+    ...: else:
+    ...:     file.write('my name is fenye')
+    ...:     file.close()
+
+There is not file named as fenye.txt
+ do you want to create new file[Yes/No]: 
+ Please input [Yes/No] ......
+
+There is not file named as fenye.txt
+ do you want to create new file[Yes/No]: y
+
+In [8]: ls
+
+1.sh*  fenye.txt
+

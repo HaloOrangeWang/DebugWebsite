@@ -1,0 +1,40 @@
+最近遇到了一个困扰许久的问题
+
+因项目上一个功能接口使用了wss协议   所以尝试用python来请求验证接口正确性
+
+通用代码如下:
+
+from websocket import create_connection
+
+wss_url = "wss://.........."
+
+wss = create_connection(wss_url, timeout=10,sslopt={"cert_reqs": ssl.CERT_NONE})
+
+if wss.status == 101:
+
+　　print("connect ok")
+
+因为是内网测试环境    网站的证书不是合法的   导致在请求时
+
+接口报错:
+
+[SSL: CERTIFICATE_VERIFY_FAILED]
+
+找了很多帖子,几乎都是告诉你关掉证书就好了
+
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
+
+但是搞了很久,都还是被这个错误([SSL: CERTIFICATE_VERIFY_FAILED])挡在门外.最后在https://blog.csdn.net/yuezhuo_752/article/details/84375733
+
+发现了一行神奇的代码
+
+ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+
+经过尝试,最后我的代码也成功关闭了验证大功告成,
+
+代码如下:
+
+wss = create_connection(wss_url, timeout=10,sslopt={"cert_reqs": ssl.CERT_NONE})
+

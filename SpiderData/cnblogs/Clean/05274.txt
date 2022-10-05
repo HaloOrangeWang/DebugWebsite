@@ -1,0 +1,26 @@
+chineseocr为GitHub上的一个开源项目，主要使用yolos，crnn等深度学习框架训练好后的模型使用。测试结果发现，不管是针对文本文件、表格文件、还是场景图，如身份证火车票，识别效果都比较好。项目本身提供了docker环境，但是第一次运行会出现几个问题。下面一一解决。
+
+一、.第一次运行app.py时报错，报错内容
+
+'ascii' codec can't decode byte 0xe6 in position 854: ordinal not in range(128)
+
+此为Linux环境问题，不支持中文。执行
+
+export LANG=C.UTF-8 LC_ALL=C.UTF-8
+
+二、报错具体内容忘记了，跟cv2有关。只需要把cv2卸载了，再重新安装最新4.0以上版本的即可
+
+pip uninstall opencv-python
+
+pip install opencv-python
+
+查看cv2版本是否是4.0及以上版本
+
+到此，运行app.py没问题
+
+三、docker里面的chineseocr项目 和 直接从GitHub上拉去下来的代码中的models略有不同。如果需要运行 GitHub 上面的代码，则必须把docker里面项目的models文件夹替换GitHub下面的models文件夹，否则会报错。
+
+项目地址：
+
+https://github.com/chineseocr/chineseocr
+

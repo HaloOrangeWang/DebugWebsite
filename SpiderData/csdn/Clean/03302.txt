@@ -1,0 +1,75 @@
+在使用 Python 的过程中，偶尔会碰到这样的错误。
+
+IOError: [Errno 32] Broken pipe
+
+
+文章目录
+
+问题原因
+
+解决方法
+
+方法1：捕获异常方法2：忽略信号恢复默认信号方法3：send函数最后一个参数加 MSG_NOSIGNAL 标记
+
+方法1：捕获异常
+
+方法2：忽略信号
+
+恢复默认信号
+
+方法3：send函数最后一个参数加 MSG_NOSIGNAL 标记
+
+
+问题原因
+
+这个 Broken pipe 本质是 IOError 错误，是 Linux 系统层面的机制导致，一般发生在读写文件IO和网络Socket IO的时候。
+
+对应的 Linux 系统错误是 EPIPE，摘自【参考2】的一段话：
+
+Macro: int EPIPE “Broken pipe.” There is no process reading from the other end of a pipe. Every library function that returns this error code also generates a SIGPIPE signal; this signal terminates the program if not handled or blocked. Thus, your program will never actually see EPIPE unless it has handled or blocked SIGPIPE.
+
+由此，我们可以知道这个错误是由系统 SIGPIPE 信号引起的，信号是 Linux 的一种进程间通信的机制，例如 ctrl+c 就会发送 SIGINT 信号来结束进程，或者使用 kill 命令。
+
+$ kill <pid>
+
+那么 SIGPIPE 信号是由什么来引发的呢？Linux 系统中还有个常见的 Pipe 管道机制，多个命令的组合就会使用到管道。
+
+python <filename>.py | head
+
+管道存在上游发送数据的进程，下游读取数据的进程，在下游不再需要读取上游数据的时候，就会发送 SIGPIPE 信号给上游进程。
+
+什么时候会出现下游不再需要读取上游数据了呢？例如示例中的 head 命令，只需要读够足够的行数，就可以告诉上游我已经不需要再读取了，就会发送 SIGPIPE 信号给上游进程。
+
+当这个上游进程是 Python 程序的时候，就会出现 IOError: [Errno 32] Broken pipe 这样的错误。
+
+
+解决方法
+
+一般来说，Broken Pipe 是可以忽略的，就是说忽略 SIGPIPE 信号即可。在 Python 中有两种方式可以实现。
+
+
+方法1：捕获异常
+
+import sys, errno
+try:
+    ### IO operation ###
+except IOError as e:
+    if e.errno == errno.EPIPE:
+        ### Handle error ###
+
+
+方法2：忽略信号
+
+import signal
+signal.signal(signal.SIGPIPE, signal.STG_IIGN)  # 忽略SIGPIPE信号
+
+
+恢复默认信号
+
+# signal.signal(signal.SIGPIPE, signal.SIG_DFL)  # 恢复默认信号
+
+
+方法3：send函数最后一个参数加 MSG_NOSIGNAL 标记
+
+socket_client.send(data, MSG_NOSIGNAL)
+

@@ -1,0 +1,347 @@
+属于个人记录型，比较乱。小伙伴们打开后可以CTRL+F寻找你报错的关键字，节省时间
+
+
+1 报错 #TypeError: ‘key’ is an invalid keyword argument for print()
+
+def _cmp(x, y):
+    if x > y:
+        return -1
+    if x < y:
+        return 1
+    return 0
+
+print(sorted([1, 3, 9, 5, 0]), key=_cmp)
+
+#处理方法：
+ print(sorted([1, 3, 9, 5, 0]), key = _cmp )
+ 将key= _cmp 删除key=
+ print(sorted([1, 3, 9, 5, 0]), _cmp)
+
+def _cmp(x, y):
+    if x > y:
+        return -1
+    if x < y:
+        return 1
+    return 0
+
+print(sorted([1, 3, 9, 5, 0]), _cmp)
+
+#解释：
+ 原因是：Python帮助文档中对sorted方法的讲解：
+ sorted(iterable[,cmp,[,key[,reverse=True]]])
+ 作用：返回一个经过排序的列表。
+ 第一个参数是一个iterable，返回值是一个对iterable中元素进行排序后的列表(list)。
+ 可选的参数有三个，cmp、key和reverse。
+
+1)cmp指定一个定制的比较函数，这个函数接收两个参数（iterable的元素），如果第一个参数小于第二个参数，返回一个负数；如果第一个参数等于第二个参数，返回零；如果第一个参数大于第二个参数，返回一个正数。默认值为None。
+ 2)key指定一个接收一个参数的函数，这个函数用于从每个元素中提取一个用于比较的关键字。默认值为None。
+ 3)reverse是一个布尔值。如果设置为True，列表元素将被倒序排列。
+ key参数的值应该是一个函数，这个函数接收一个参数并且返回一个用于比较的关键字。对复杂对象的比较通常是使用对象的切片作为关键字。
+
+例如：
+
+students = [('john', 'A', 15), ('jane', 'B', 12), ('dave', 'B', 10)]
+sorted(students, key=lambda s: s[2]) #按年龄排序
+ [('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
+
+
+2 使用urllib时报错 urllib2.urlerror, e：SyntaxError: invalid syntax
+
+#处理方法：
+
+将
+
+except  urllib3.URLError, e:
+
+改为
+
+except urllib.error.URLError as e:
+
+#解释：
+ except urllib3.URLError, e:
+ 上面这条语法是Python2.7里面的语法，还有就是新版本没有urllib2库了
+ 网上的一些爬虫实例比较老的爬虫语句里会出现，需要注意
+
+
+3 新建项目后，写代码后运行报错
+
+Configuration is still incorrect. Do you want to edit it again?
+ pycharm 提示如下图
+ 
+ #处理方法：
+ pycharm-file-Settings-Poject-interpreter-选择python的目录
+
+#解释：
+ 这个工程没有配置python解释器
+
+
+4 运行报错
+
+DeprecationWarning: loop argument is deprecated
+ DeprecationWarning: Application.make_handler(…) is deprecated
+
+@asyncio.coroutine
+def init(loop):
+    app = web.Application(loop=loop)
+    # app = web.Application()
+    app.router.add_route('GET', '/', index)
+    srv = yield from loop.create_server(app.make_handler(), '127.0.0.1', 9000)
+    # srv = yield from loop.create_server(app(), '127.0.0.1', 9000)
+    logging.info('server started at http://127.0.0.1:9000...')
+
+#处理方法：
+
+如下图
+ 第一个错误改为注释里的语句
+ 第二个错误pychram已经给出解释，删除app后面的语句即可
+
+@asyncio.coroutine
+def init(loop):
+    app = web.Application()
+    app.router.add_route('GET', '/', index)
+    srv = yield from loop.create_server(app(), '127.0.0.1', 9000)
+    logging.info('server started at http://127.0.0.1:9000...')
+
+#解释：
+ 好像是版本问题，不能确定
+
+
+5 运行时提示读取list报错
+
+‘list’ object cannot be interpreted as an integer
+ 提示如下图；
+
+#处理方法：
+
+如下图
+ 将错误代码
+
+for j in range(Profit):
+
+改为注释里的
+
+for j in list(range(1, 5)):
+
+这段代码是未完成的，大家只能参考
+
+#解释：
+ 使用range 函数直接遍历list或者遍历list位置是不行的
+
+
+6 ‘<=’ not supported between instances of ‘str’ and ‘int’
+
+提示如下图：
+ 
+ #处理方法：
+
+score = input("请输入分数：")
+if score >= 90:
+    print("A")
+elif 60 < score < 89:
+    print("B")
+else:
+    print("C")
+
+将score从str转换为int即可
+
+score = input("请输入分数：")
+score = int(score)	//将score从str转换为int
+if score >= 90:
+    print("A")
+elif 60 < score < 89:
+    print("B")
+else:
+    print("C")
+
+#解释：
+ input()返回的数据类型是str，不支持和int进行比较，更简洁的办法是输入的时候直接定义为
+
+score = int(input("请输入分数："))
+
+
+7 NameError: name ‘reduce’ is not defined
+
+提示如下图：
+
+源代码如下：
+
+Tn = 0
+Sn = []
+
+n = int(input('n = '))
+a = int(input('a = '))
+for count in range(n):
+    Tn = Tn + a
+    a = a * 10
+    Sn.append(Tn)
+    print(Tn)
+
+Sn = reduce(lambda x, y: x + y, Sn)
+print("计算的和为：", Sn)
+
+#处理方法：
+ 前面添加引用函数“from functools import reduce”
+
+from functools import reduce
+
+Tn = 0
+Sn = []
+
+n = int(input('n = '))
+a = int(input('a = '))
+for count in range(n):
+    Tn = Tn + a
+    a = a * 10
+    Sn.append(Tn)
+    print(Tn)
+
+Sn = reduce(lambda x, y: x + y, Sn)
+print("计算的和为：", Sn)
+
+解释：
+ 网上看的大多数教程是Python2的教程，而实际使用是Python3
+ reduce函数在Python3版本被移除了，不属于内建函数了，因为放进functools模块，所以需要导出
+
+
+8 FileNotFoundError: [Errno 2] No such file or directory: ‘D:\Python\Unittest\resultHtmlFile/2019-08-2715-59-13test_result.html’
+
+提示如下
+ 
+ 源代码如下：
+
+"执行测试用例，verbosity=2参数是测试结果显示复杂度，这里是具体到每一条执行结果"
+    # runner = unittest.TextTestRunner(verbosity=2)
+    now = time.strftime("%Y-%m-%d%H-%M-%S")
+    test_dir = os.path.dirname(os.path.realpath(__file__))
+    test_dir1 = test_dir + "\\resultHtmlFile"
+    # path = os.path.abspath()
+    filename = test_dir1 + '/' + now + 'test_result.html'
+    fp = open(filename, "wb")
+    runner = HTMLTestRunner(stream=fp, title=u"MathTest测试报告", description=u"用例执行情况")
+    runner.run(suite)
+    fp.close()
+
+处理方法：
+ 参照截图，发现网上的参考代码，目录那里多了一个“/“，删掉，再运行
+ 对源代码比较麻烦的地方，修改了下
+
+# runner = unittest.TextTestRunner(verbosity=2)
+    time = time.strftime("%Y%m%d%H%M%S")
+    path = os.path.dirname(os.path.realpath(__file__))
+    filename = path + '\\' + time + 'test_result.html'
+    fp = open(filename, "wb")
+    runner = HTMLTestRunner(stream=fp, title=u"MathTest测试报告", description=u"用例执行情况")
+    runner.run(suite)
+    fp.close()
+
+
+8. TypeError: ‘method’ object is not subscriptable
+
+一般原因，函数调用方法没有加()导致
+ 
+ 错误代码：
+
+def home_page(request):
+    return render(request, 'home.html', {
+        "new_item_text": request.POST.get["item_text", " "],
+    })
+
+处理方法：
+ 讲函数调用的地方加上括号request.POST.get["item_text", ""]改为request.POST.get("item_text", " ")
+
+def home_page(request):
+    return render(request, 'home.html', {
+        "new_item_text": request.POST.get["item_text", " "],
+    })
+
+
+9. except Exception, e: ^ SyntaxError: invalid syntax
+
+File "/usr/local/dnomovie/webuser/models.py", line 43
+    except Exception, e:
+                    ^
+SyntaxError: invalid syntax
+
+**原因：**Python2和Python3写法不一样了
+
+except Exception, e:
+	return no_picture
+
+改为
+
+except Exception as e:
+	return no_picture
+
+
+10. ModuleNotFoundError: No module named ‘models’
+
+通常是缺库，不是不是缺库就检查下下面的原因
+
+File "/usr/local/dnomovie/webuser/admin.py", line 3, in <module>
+    import models
+ModuleNotFoundError: No module named 'models'
+
+原因：
+ 仔细检查了下是import层级问题，同目录下不能直接import
+
+import models
+
+改为
+
+# xxx为上级目录
+import xxx.models
+
+
+11. DeprecationWarning: “@coroutine” decorator is deprecated since Python 3.8, use “async def” instead
+
+@asyncio.coroutine
+def init(loop):
+    app = web.Application(loop=loop)
+    app.router.add_route('GET', '/', index)
+    srv = yield from loop.create_server(app.make_handler(), '127.0.0.1', 9000)
+    logging.info('server started at http://127.0.0.1:9000...')
+    return srv
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(init(loop))
+loop.run_forever
+
+原因：
+ 报错说的很清楚，3.8版本这方法停用了，需要从新写
+
+改动：
+
+# 装饰器去掉，用async def代替
+# @asyncio.coroutine
+async def init(loop):
+    app = web.Application(loop=loop)
+    app.router.add_route('GET', '/', index)
+    # yield from 替换为await
+    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 9000)
+    logging.info('server started at http://127.0.0.1:9000...')
+    return srv
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(init(loop))
+loop.run_forever
+
+
+12. “TypeError: addTest() missing 1 required positional argument: ‘test’”
+
+原因：
+
+# unittest.TestSuite忘了家括号
+suite = unittest.TestSuite()
+
+if __name__ == "__main__":
+    suite = unittest.TestSuite()
+    ## 添加单个用例
+    # suite.addTest(TestNews("LatestNews"))
+    ## 添加一个测试类
+    loader = unittest.TestLoader()
+    suite.addTest(loader.loadTestsFromTestCase(TestNews))
+    suite.addTest(loader.loadTestsFromModule(TestNews))
+
+runner = runner.TextTestRunner(verbosity=2)
+runner.run(suite)
+

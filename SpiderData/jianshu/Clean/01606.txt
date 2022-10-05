@@ -1,0 +1,34 @@
+Centos 中安装 mysqlclient
+
+/opt/python36/bin/pip3.6 install mysqlclient
+
+https://files.pythonhosted.org/packages/d0/97/7326248ac8d5049968bf4ec708a5d3d4806e412a42e74160d7f266a3e03a/mysqlclient-1.4.6.tar.gz
+    ERROR: Command errored out with exit status 1:
+     command: /usr/bin/python -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-ro9ycM/mysqlclient/setup.py'"'"'; __file__='"'"'/tmp/pip-install-ro9ycM/mysqlclient/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base pip-egg-info
+         cwd: /tmp/pip-install-ro9ycM/mysqlclient/
+    Complete output (12 lines):
+    sh: mysql_config: 
+    sh: mariadb_config: 
+    sh: mysql_config: 
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-install-ro9ycM/mysqlclient/setup.py", line 16, in <module>
+        metadata, options = get_config()
+      File "setup_posix.py", line 61, in get_config
+        libs = mysql_config("libs")
+      File "setup_posix.py", line 29, in mysql_config
+        raise EnvironmentError("%s not found" % (_mysql_config_path,))
+    EnvironmentError: mysql_config not found
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+
+原因： mysqlclient 依赖于 mysql-devel 和 python-devel
+
+检查系统中是否已经安装mariadb相关包，先卸载
+
+yum remove MariaDB-common-10.2.10-1.el7.centos.x86_64
+
+再重新安装mysql-devel,python-devel
+
+yum install mysql-devel && yum install python-devel
+

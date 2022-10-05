@@ -1,0 +1,16 @@
+环境 ubuntu 16.04, anaconda3, python 2.7
+
+将pytorch升级为0.4.1后，import torch报错
+
+undefined symbol: _ZN4thpp10THCSTensorIlEC1EP8THCStateP14THCSLongTensor
+
+在谷歌中查了一下，好像是anaconda的pytorch频道的包有问题，解决链接https://github.com/pytorch/pytorch/issues/2091#issuecomment-315227119
+
+然后又报错
+
+torch/lib/libshm.so: undefined symbol: _ZTI24THRefcountedMapAllocator
+
+在谷歌中查了一下，似乎是因为什么旧的共享包没有删除掉，要重新安装anaconda，解决链接https://github.com/pytorch/pytorch/issues/10234
+
+那损失有点大了，于是又重新安装回0.4.0，问题没有了。
+

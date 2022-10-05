@@ -1,0 +1,37 @@
+
+Python tkinter 打包出现exe导致Failed to obtain/convert traceback!
+
+防盗声明：本文唯一地址：https://blog.csdn.net/weixin_44331765/article/details/121180723
+ 转发请带源地址。
+ 本文只提供一种原因，不排除还有其他原因，只是为大家提供一个 解决思路
+
+
+盗贼统计
+
+盗贼1，竟然还收费：网址：https://www.it115.cn/b/thread-61062-1-1.html
+
+
+问题描述
+
+python 3.9
+windows 10
+打包执行的命令
+pyinstaller -D -w -i xx.ico main.py
+
+使用pyinstaller打包exe完成后点击exe文件出现错误
+ Failed to obtain/convert traceback!，
+ 具体情况如图所示：
+
+
+问题原因
+
+经过排查，发现打包执行的命令没有问题，问题在于初始化时数据库没有导入数据造成的。数据为空值造成的。把对应的数据库值填充完毕就行了。
+ 总结：问题在于代码种没有处理好异常。
+
+
+解决问题
+
+处理对应的代码异常（包括有可能发生异常的地方都要处理）
+
+填充数据库
+

@@ -1,0 +1,24 @@
+
+一、问题描述
+
+在mac上pip install lightgbm后报错如下：
+
+OSError: dlopen(…/anaconda/envs/python3/lib/python3.6/site-packages/lightgbm/lib_lightgbm.so, 6): Library not loaded: /usr/local/opt/gcc/lib/gcc/7/libgomp.1.dylib
+
+Referenced from: …/anaconda/envs/python3/lib/python3.6/site-packages/lightgbm/lib_lightgbm.so
+
+
+二、解决方案
+
+通过pip安装的lightgbm只能安装相关的python文件，有一些文件是缺失的，lightgbm 依赖于 OpenMP，所以也需要安装OpenMP，需要通过以下命令安装：brew install open-mpi。
+
+
+注意事项：关于brew
+
+brew（全称“Homebrew”） 是Mac OSX上的包管理工具，常用来管理自己电脑上的各类软件包。常用命令：
+
+
+Reference
+
+[1] ​​Mac上的包管理神器HomeBrew​​
+

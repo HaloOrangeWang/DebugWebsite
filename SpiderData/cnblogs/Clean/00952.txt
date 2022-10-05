@@ -1,0 +1,30 @@
+今天在部署代码到线上的时候，发生一个编码问题，然后调试半天，调试结果如下：
+
+"{}".format(u'\u2014'.encode("utf8"))
+
+在某些情况下能顺利执行，有些情况会报异常：
+
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe2 in position 0: ordinal not in range(128)
+
+首先怀疑是不是Python版本的问题，然后使用线上环境相同的Python版本和Python库环境开启Python命令行终端，执行发现没有异常。所以暂时排除版本和安装包的差异问题。
+
+然后我把这个语句放到项目中的另外一个文件中，执行居然没有报异常，所以差异应该是在这两个文件中，仔细检查发现报错代码文件中有一个import语句：
+
+from __future__ import unicode_literals
+
+这个语句是项目初始化时自动生成的，但是一直不知道是做什么用的，试着注释掉运行，然后就不报错了，所以问题定位是这个import语句的问题，那么这个语句到底是做什么用的？
+
+官方文档中描述是为了让Python2代码迁移到Python3更方便一些，因为在Python3中所有的字符串都是unicode类型，而在Python2中字符串是str和unicode都存在，所以为了在迁移到Python3上更方便一下，在Python2中加入unicode_literals将所有现有的默认字符串类型变成unicode类型（例如字符串常量，内建函数返回的字符串类型），以此来提前适应Python3的特性。
+
+http://python-future.org/unicode_literals.html
+
+在调试中由于使用了MySQLdb.escape_string()函数，这个函数不支持unicode类型，传入的参数和返回的结果都是非unicode类型，所以需要转码为utf8类型，但是在使用了unicode_literals的情况下，
+
+"{}".format(MySQLdb.escape_string(u'\u2014'.encode("utf8")))
+
+需要改为
+
+from __future__ import unicode_literals
+
+"{}".format(MySQLdb.escape_string(u'\u2014'.encode("utf8")).decode("utf8"))
+

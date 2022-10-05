@@ -1,0 +1,76 @@
+
+报错：
+
+Cannot find ./catalina.sh
+The file is absent or does not have execute permission
+This file is needed to run this program
+
+原因：
+
+没有给bin目录下的文件授权可执行权限：
+
+解决方法：
+
+chmod +x bin/*.sh
+
+
+
+报错Neither the JAVA_HOME nor the JRE_HOME environment variable is defined：
+
+解决方法如下：
+
+tomcat启动脚本文件： startup.sh,     startup.sh会加载 catalina.sh ,    catalina.sh会加载setclasspath.sh
+
+Linux：  export JAVA_HOME=绝对路径       Windows：   set
+
+可以直接添加到第二行：
+
+#!/bin/sh
+export JAVA_HOME=/usr/local/java1.8
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+
+成功
+
+[root@hadoop1 apache-tomcat-8.0.43]# sudo  bin/startup.sh 
+/home/report/apache-tomcat-8.0.43/bin/catalina.sh:行143: -Xmx1024m: 未找到命令
+Using CATALINA_BASE: /home/report/apache-tomcat-8.0.43
+Using CATALINA_HOME: /home/report/apache-tomcat-8.0.43
+Using CATALINA_TMPDIR: /home/report/apache-tomcat-8.0.43/temp
+Using JRE_HOME: /home/jdk-10.0.1
+Using CLASSPATH: /home/report/apache-tomcat-8.0.43/bin/bootstrap.jar:/home/report/apache-tomcat-8.0.43/bin/tomcat-juli.jar
+Tomcat started.
+
+以上是在catalina.sh文件中添加的。依然存在问题，就是关闭指令运行报错 shutdown.sh
+
+[root@hadoop1 apache-tomcat-8.0.43]# sudo bin/shutdown.sh
+
+/home/report/apache-tomcat-8.0.43/bin/catalina.sh:行143: -Xmx1024m: 未找到命令
+Using CATALINA_BASE: /home/report/apache-tomcat-8.0.43
+Using CATALINA_HOME: /home/report/apache-tomcat-8.0.43
+Using CATALINA_TMPDIR: /home/report/apache-tomcat-8.0.43/temp
+Using JRE_HOME: /home/jdk-10.0.1
+Using CLASSPATH: /home/report/apache-tomcat-8.0.43/bin/bootstrap.jar:/home/report/apache-tomcat-8.0.43/bin/tomcat-juli.jar
+
+./catalina.sh: 1: eval: usrjjdk-10.0.1re/bin/java: not found
+
+还是显示找不到，而且路径 usrjdk-10.0.1jre莫名奇妙少了 '/'  。
+
+解决方法：
+
+把刚刚修改的 export JAVA_HOME环境变量改写到 setclasspath.sh里面，把原先的 catalina.sh export那个删除掉
+
+成功解决:
+
+[root@hadoop1 apache-tomcat-8.0.43]# sudo  bin/shutdown.sh 
+/home/report/apache-tomcat-8.0.43/bin/catalina.sh:行143: -Xmx1024m: 未找到命令
+Using CATALINA_BASE: /home/report/apache-tomcat-8.0.43
+Using CATALINA_HOME: /home/report/apache-tomcat-8.0.43
+Using CATALINA_TMPDIR: /home/report/apache-tomcat-8.0.43/temp
+Using JRE_HOME: /home/jdk-10.0.1
+Using CLASSPATH: /home/report/apache-tomcat-8.0.43/bin/bootstrap.jar:/home/report/apache-tomcat-8.0.43/bin/tomcat-juli.jar
+

@@ -1,0 +1,24 @@
+最近给业务线安装python的扩展numpy,scripy,scikit-learn时，遇到了一堆报错，也走了一些弯路，费了好长时间，最好发现竟然是一个很简单的问题。
+
+系统环境：Centos 6.5
+
+Python: 2.7
+
+pip install numpy 很顺利，没有报错
+
+pip install scipy 一堆报错，报错大致如下
+
+Installing scipy on redhat with error “no lapack/blas resources found”
+
+然后就开始百度，说是手动安装 lapack,atlas包
+
+下载了源码包，按照文档开始编译，编译 atlas竟然一堆报错，截图如下
+
+尝试了所能找到的方法，依然报错
+
+偶然间看到一篇文章，如是说
+
+scikit-learn 的安装必须要几个包的支持， 一个是lapack, nose 和atlas ,不过安装需要配置好几个小时，还很容易出错，所以后来想了其他方法。我只是装个scipy, 没必要把整个atlas 包都装上，只需要下载相应的支持就可以，相应的支持就是 devel包，blas-devel lapack-devel atlas-devel，于是赶紧下载
+
+之后
+

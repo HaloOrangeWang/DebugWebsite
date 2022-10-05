@@ -1,0 +1,24 @@
+应用中使用存储过程报错。
+
+报错信息：
+
+A query was run and no Result Maps were found for the Mapped Statement。
+
+错误截图：
+
+系统框架：springmvc+mybatis
+
+问题原因：
+
+没有设置返回值类型。
+
+解决方案：
+
+看看mybatis的配置文件，漏了一项：resultType属性值
+
+原来的配置是：<select id="idCard" parameterType="String">
+
+修改之后的配置<select id="idCard" resultType="java.lang.Integer" parameterType="String">
+
+mybatis中不管什么查询，都必须返回resultType或者resultMap的值，否则就会报错的。
+

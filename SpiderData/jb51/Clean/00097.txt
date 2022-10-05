@@ -1,0 +1,122 @@
+
+一. 问题：
+
+在写调用谷歌翻译接口的脚本时，老是报错，我使用的的是googletrans这个模块中Translator的translate方法，程序运行以后会报访问超时错误:
+
+Traceback (most recent call last): File "E:/PycharmProjects/MyProject/Translate/translate_test.py", line 3, in <module> result=translator.translate('안녕하세요.') File "D:\python3\lib\site-packages\googletrans\client.py", line 182, in translate data = self._translate(text, dest, src, kwargs) File "D:\python3\lib\site-packages\googletrans\client.py", line 78, in _translate token = self.token_acquirer.do(text) File "D:\python3\lib\site-packages\googletrans\gtoken.py", line 194, in do self._update() File "D:\python3\lib\site-packages\googletrans\gtoken.py", line 54, in _update r = self.client.get(self.host) File "D:\python3\lib\site-packages\httpx\_client.py", line 763, in get timeout=timeout, File "D:\python3\lib\site-packages\httpx\_client.py", line 601, in request request, auth=auth, allow_redirects=allow_redirects, timeout=timeout, File "D:\python3\lib\site-packages\httpx\_client.py", line 621, in send request, auth=auth, timeout=timeout, allow_redirects=allow_redirects, File "D:\python3\lib\site-packages\httpx\_client.py", line 648, in send_handling_redirects request, auth=auth, timeout=timeout, history=history File "D:\python3\lib\site-packages\httpx\_client.py", line 684, in send_handling_auth response = self.send_single_request(request, timeout) File "D:\python3\lib\site-packages\httpx\_client.py", line 719, in send_single_request timeout=timeout.as_dict(), File "D:\python3\lib\site-packages\httpcore\_sync\connection_pool.py", line 153, in request method, url, headers=headers, stream=stream, timeout=timeout File "D:\python3\lib\site-packages\httpcore\_sync\connection.py", line 65, in request self.socket = self._open_socket(timeout) File "D:\python3\lib\site-packages\httpcore\_sync\connection.py", line 86, in _open_socket hostname, port, ssl_context, timeout File "D:\python3\lib\site-packages\httpcore\_backends\sync.py", line 139, in open_tcp_stream return SyncSocketStream(sock=sock) File "D:\python3\lib\contextlib.py", line 130, in __exit__ self.gen.throw(type, value, traceback) File "D:\python3\lib\site-packages\httpcore\_exceptions.py", line 12, in map_exceptions raise to_exc(exc) from None httpcore._exceptions.ConnectTimeout: timed out
+
+
+二. 解决方法：
+
+
+1.寻找解决方法
+
+经过多方资料查找，最后才知道google翻译对接口进行了更新，之前用的googletrans已经不能用了。但是网上大神已经开发出了新的方法
+
+https://github.com/lushan88a/google_trans_new
+
+在此道一声感谢！
+
+
+2.使用解决方法
+
+在cmd中输入以下指令即可。
+
+pip install google_trans_new
+
+
+三. 代码（优化）
+
+from google_trans_new import google_translator
+from multiprocessing.dummy import Pool as ThreadPool
+import time
+import re
+"""
+此版本调用最新版google_trans_new
+使用多线程访问谷歌翻译接口
+能够翻译len(text)>5000的文本
+"""
+class Translate(object):
+ def __init__(self):
+ 	#初始化翻译文本路径以及翻译目标语言
+  self.txt_file='./test.txt'
+  self.aim_language='zh-CN'
+  
+	#读入要翻译的文本文件
+ def read_txt(self):
+  with open(self.txt_file, 'r',encoding='utf-8')as f:
+   txt = f.readlines()
+  return txt
+	
+	#进行文本处理，此为优化
+ def cut_text(self,text):
+  #如果只是一行，就切割成5000字一次来翻译
+  if len(text)==1:
+   str_text = ''.join(text).strip()
+   #筛选是一行但是文本长度大于5000
+   if len(str_text)>5000:
+    #使用正则表达式切割超长文本为5000一段的短文本
+    result = re.findall('.{5000}', str_text)
+    return result
+   else:
+    #如果文本为一行但是这一行文本长度小于5000，则直接返回text
+    return text
+   """
+   如果不止一行，加以判断
+    (1)每行字符数都小于5000
+   （2）有的行字符数小于5000，有的行字符数大于5000
+   """
+  else:
+   result = []
+   for line in text:
+    #第（1）种情况
+    if len(line)<5000:
+     result.append(line)
+    else:
+     # 第（2）种情况，切割以后，追加到列表中
+     cut_str=re.findall('.{5000}', line)
+     result.extend(cut_str)
+   return result
+
+def translate(self,text):
+  if text:
+   aim_lang = self.aim_language
+   try:
+	   t = google_translator(timeout=10)
+	   translate_text = t.translate(text, aim_lang)
+	   print(translate_text)
+	   return translate_text
+   except Exception as e:
+    print(e)
+
+def main():
+ time1=time.time()
+ #开启八条线程
+ pool = ThreadPool(8)
+ trans = Translate()
+ txt = trans.read_txt()
+ texts = trans.cut_text(txt)
+ try:
+  pool.map(trans.translate, texts)
+ except Exception as e:
+  raise e
+ pool.close()
+ pool.join()
+ time2 = time.time()
+ print("一共翻译了 {} 个句子，消耗了 {:.2f} s".format(len(texts),time2 - time1))
+
+if __name__ == "__main__" :
+ main()
+
+测试文本我放在了：http://xiazai.jb51.net/202012/yuanma/test.rar
+
+可自行下载。
+
+
+四. 运行结果
+
+
+五. 总结
+
+本篇首先解决了调用googletrans模块的报错问题，然后使用新的google翻译模块编写了代码，并且解决了我这篇文章中翻译文本长度不能大于5000的问题。
+

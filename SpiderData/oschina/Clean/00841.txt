@@ -1,0 +1,91 @@
+今天，用Python写文件，发现中国人真不容易，任何编程问题都需要比老外多学一套应对编码的方法。JSP写完了吗？中文编码问题考虑一下；servlet中的url，转发的文本，都有可能与什么gb2312，isoxxxx，utf-8，unicode，ascii扯上关系。以至于，我们每每遇到运行异常，都会“一朝被蛇咬十年怕井绳”般思考“是不是又是编码导致的”。
+
+在python里，编码问题依然是个恶心的问题。之前在VS for Python的IDE环境下，已经饱尝中文编码之苦，貌似VS for Python的源文件不支持除ascii以外的其他编码格式，如果我强行另存，直接导致解释器运行异常。直到转到PyDev for Eclipse才算解决。
+
+今天，用Python写文件，里面是从网上自动爬取的数据，直接报错“UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128)”。
+
+为什么会报错“UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128)”？本文就来研究一下这个问题。
+
+字符串在Python内部的表示是unicode编码，因此，在做编码转换时，通常需要以unicode作为中间编码，即先将其他编码的字符串解码（decode）成unicode，再从unicode编码（encode）成另一种编码。
+
+decode的作用是将其他编码的字符串转换成unicode编码，如str1.decode('gb2312')，表示将gb2312编码的字符串str1转换成unicode编码。
+
+encode的作用是将unicode编码转换成其他编码的字符串，如str2.encode('gb2312')，表示将unicode编码的字符串str2转换成gb2312编码。
+
+因此，转码的时候一定要先搞明白，字符串str是什么编码，然后decode成unicode，然后再encode成其他编码
+
+代码中字符串的默认编码与代码文件本身的编码一致。
+
+如：s='中文'
+
+如果是在utf8的文件中，该字符串就是utf8编码，如果是在gb2312的文件中，则其编码为gb2312。这种情况下，要进行编码转换，都需要先用decode方法将其转换成unicode编码，再使用encode方法将其转换成其他编码。通常，在没有指定特定的编码方式时，都是使用的系统默认编码创建的代码文件。
+
+如果字符串是这样定义：s=u'中文'
+
+则该字符串的编码就被指定为unicode了，即python的内部编码，而与代码文件本身的编码无关。因此，对于这种情况做编码转换，只需要直接使用encode方法将其转换成指定编码即可。
+
+如果一个字符串已经是unicode了，再进行解码则将出错，因此通常要对其编码方式是否为unicode进行判断：
+
+isinstance(s, unicode)  #用来判断是否为unicode
+
+用非unicode编码形式的str来encode会报错
+
+如何获得系统的默认编码？
+
+#!/usr/bin/env python
+#coding=utf-8
+import sys
+print sys.getdefaultencoding()
+
+该段程序在英文WindowsXP上输出为：ascii
+
+在某些IDE中，字符串的输出总是出现乱码，甚至错误，其实是由于IDE的结果输出控制台自身不能显示字符串的编码，而不是程序本身的问题。
+
+如在UliPad中运行如下代码：
+
+s=u"中文"
+
+print s
+
+会提示：UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128)。这是因为UliPad在英文WindowsXP上的控制台信息输出窗口是按照ascii编码输出的（英文系统的默认编码是ascii），而上面代码中的字符串是Unicode编码的，所以输出时产生了错误。
+
+将最后一句改为：print s.encode('gb2312')
+
+则能正确输出“中文”两个字。
+
+若最后一句改为：print s.encode('utf8')
+
+则输出：\xe4\xb8\xad\xe6\x96\x87，这是控制台信息输出窗口按照ascii编码输出utf8编码的字符串的结果。
+
+unicode(str,'gb2312')与str.decode('gb2312')是一样的，都是将gb2312编码的str转为unicode编码
+
+使用str.__class__可以查看str的编码形式
+
+原理说了半天，最后来个包治百病的吧：）
+
+复制代码 代码如下:
+
+#!/usr/bin/env python 
+#coding=utf-8 
+s="中文"
+
+if isinstance(s, unicode): 
+#s=u"中文" 
+print s.encode('gb2312') 
+else: 
+#s="中文" 
+print s.decode('utf-8').encode('gb2312')
+
+-----------------------------------------------------------------------------------------------------------------
+
+我在所有要写入的字符串后面都加入.encode('utf8')
+
+数字可以直接用str（）
+
+当然源文件头是
+
+#coding:utf-8
+#import sys   
+#reload(sys) #
+#sys.setdefaultencoding('utf-8')
+

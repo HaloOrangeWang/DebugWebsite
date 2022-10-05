@@ -1,0 +1,201 @@
+
+工作中在进行iOS Appium自动化测试的时候，遇到了环境配置、兼容使用问题，这里做个总结，以避免后续踩着这些坑。
+
+问题1. 提示no module “appium”
+
+解决：第1步，在终端输入命令
+
+cd /usr/local/bin
+
+pip3 install Appium-Python-Client
+
+因为appium默认装在了python2上
+
+第2步，新建项目时要勾选
+
+Inherit global site-packages和Make available to all projects。
+
+问题2. 获取udid的两种方法：
+
+一种方法是iOS手机连接iTunes，查看摘要；另一种方法是打开Xcode，选择add simulator，可以查看到udid。
+
+问题3. 提示AssertionError: Message: An unknown server-side error occurred while processing the command.
+
+Original error: Unknown device or simulator UDID: '***'
+
+解决：brew install libimobiledevice –HEAD
+
+如果在执行此命令时提示 /usr/local/share/man/man5 /usr/local/share/man/man7，则需要修改所有者权限，那么需要按如下命令操作：
+
+sudo chown –R cy /usr/local/share/man/man5
+
+sudo chown –R cy /usr/local/share/man/man7
+
+问题4. 修改环境变量，把终端弄挂了；
+
+解决：打开终端，选择Shell->新建命令，输入mkdir disabled_shell_files，运行命令；打开一个新的终端。重复刚才的步骤，然后在弹出的对话框里面输入mv .profile .bash_history .bash_profile .bashrc .inputrc disabled_shell_files，点击运行。再打开一个新的终端，你会看到终端恢复正常了。
+
+问题5. brew update时连接不上github
+
+解决：修改etc/hosts，尾部添加github的ip地址，如192.30.255.112；
+
+可以在http://tool.chinaz.com/dns?type=1&host=github.com&ip= 查询ip地址
+
+问题6. 如何查看app的bundle id
+
+解决： 步骤1.真机连接电脑；步骤2.Xcode->Product->Destination->Add Additional Simulators…，在Devices菜单栏可以看到手机上所有的app bundle id。
+
+问题7. 安装appium-doctor报错
+
+npm install -g appium -doctor
+
+internal/modules/cjs/loader.js:611
+
+throw err;
+
+^
+
+Error: Cannot find module 'semver'
+
+at Function.Module._resolveFilename (internal/modules/cjs/loader.js:609:15)
+
+at Function.Module._load (internal/modules/cjs/loader.js:535:25)
+
+at Module.require (internal/modules/cjs/loader.js:663:17)
+
+at require (internal/modules/cjs/helpers.js:20:18)
+
+at Object.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/unsupported.js:2:14)
+
+at Module._compile (internal/modules/cjs/loader.js:734:30)
+
+at Object.Module._extensions..js (internal/modules/cjs/loader.js:745:10)
+
+at Module.load (internal/modules/cjs/loader.js:626:32)
+
+at tryModuleLoad (internal/modules/cjs/loader.js:566:12)
+
+at Function.Module._load (internal/modules/cjs/loader.js:558:3)
+
+解决：
+
+brew uninstall node.js
+
+把/usr/local/lib下的node和node_modules文件都删除了
+
+再执行以下代码
+
+sudo rm /usr/local/bin/npm
+
+sudo rm /usr/local/share/man/man1/node.1
+
+sudo rm /usr/local/lib/dtrace/node.d
+
+sudo rm -rf ~/.npm
+
+sudo rm -rf ~/.node-gyp
+
+sudo rm /opt/local/bin/node
+
+sudo rm /opt/local/include/node
+
+sudo rm -rf /opt/local/lib/node_modules
+
+问题8. 启动app，Pycharm运行时提示找不到HTMLtestrunner模块，需要在网上下载py文件http://tungwaiyip.info/software/HTMLTestRunner.html，并放到python的site-packages文件下
+
+问题9. Pycharm里from appium时报错，提示找不到appium模块
+
+解决：确保已安装appium模块，pip3 install appium-python-client，然后Pycharm->new project，再在Pycharm->preferences…，project Interpreter选项中，点击+，搜索appium-python-client，下载package；
+
+这时在pycharm里再输入from appium就能自动匹配，不报错了。
+
+问题10. 提示Error running 'xxx': Cannot run program "/Users/xx/PycharmProjects/xxx/venv/bin/python" (in directory "/Users/xx/xxtest/xxx/test_case"): error=2, No such file or directory
+
+解决：
+
+1).只创建project，在prefrence for new project菜单，找到Project Interpreter选项，在地址目录中会提示地址无效，这时点击Add添加按钮，重新定位到python的路径
+
+2).设置之后，再创建项目文件，iostest—xxx—test_case和test_report,在test_case下创建py文件，再执行就不报错了。
+
+问题11.  ModuleNotFoundError: No module named 'StringIO'
+
+解决：在HTMLTestRunner.py 中修改import StringIO为from io import StringIO，将python2的写法改为python3的。
+
+问题12．Appium昨天能运行，今天不能启动
+
+解决：最终发现下图所示的sever选错了，正确应为如下所选中的选项
+
+问题13. ios与android不同，定位元素时候，name方法应该为
+
+driver.find_element_by_accessibility_id(‘ ’)
+
+问题14.  运行报错selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not create simulator with name 'appiumTest-iPad', device type id 'iPad' and runtime id '12.1'. Reason: 'simct…
+
+解决：需要把在appium desk上的desired_caps中的bundleid添加到py文件里。
+
+问题15. Pycharm上run时报错，提示python interpreter的路径is not empty
+
+解决：在新建new project的窗口中，除了填写项目名称之外，千万别忘记打开第二个选项的右三角，“Project Interpreter:New Virtualenv environment”来设置运行时的编译环境；
+
+如果在创建项目-脚本之后再去设置，会一直报错。
+
+问题16. HTMLTestRunner报错
+
+HTMLTestRunner 是 Python 标准库中unittest 模块的一个扩展。使用它可以生成易于使用的 HTML 测试报告。
+
+首先在http://tungwaiyip.info/software/HTMLTestRunner.html下载HTMLTestRunner.py文件，然后在Mac终端执行命令python3，接着输入以下命令：
+
+import sys
+
+sys.path
+
+得到下图所示的路径
+
+最后，把下载的文件复制到第2步高亮显示的路径下，那么pycharm中就可以import HTMLTestRunner。
+
+由于python2和python3的写法不同，如果上述还会报错，则需要修改HTMLTestRunner.py文件。
+
+第1步，HTMLTestRunner.py文件中按下面进行修改：
+
+1）  python3中模块io取代了StringIO
+
+94行 import StringIO
+
+改为 import io
+
+2）  所有和StringIO相关的都要更改
+
+540行 self.outputBuffer = StringIO.StringIO()
+
+改为 self.outputBuffer = io.StringIO()
+
+3）  python3没有has_key()方法，所以要更改如下代码
+
+if not rmap.has_key(cls)
+
+改为 if not cls in rmap
+
+4）  python3的decode和python2不同，更改
+
+769行 uo = o.decode(‘latin-1’)
+
+改为 uo = e
+
+779行 ue = e.decode(‘latin-1’)
+
+改为 ue = e
+
+5）  python3的print()方法和python2也有区别，更改
+
+634行 print>>sys.stderr,’\nTime Elapsed=%s’ %(self.stopTime-self.startTime)
+
+改为 print(sys.stderr,’\nTime Elapsed=%s’ %(self.stopTime-self.startTime))
+
+6）  再次运行HTMLTestRunner.py文件就OK了；
+
+第2步，suite.py文件中修改：
+
+由于报错中提及from . import case和from . import util，将这两行所在的代码注释掉，再次运行suite.py文件也OK了
+
+第3步，重新运行testcase.py文件，一份简洁明了的HTML形式的测试报告结果就可见了！
+

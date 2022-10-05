@@ -1,0 +1,51 @@
+
+fetch 报错 Failed to execute 'fetch' on 'Window': Request with GET/HEAD method cannot have body.
+
+翻译过来就是 无法在window上执行fetch：使用get/head方法请求不能有body
+
+错误代码：src/api/index.js
+
+import Fetch from '../fetch/index'
+import jk from './jk'
+export default {
+  verifycodeApi: params => Fetch(jk.verifycode, {method: 'get',body: params})
+}
+
+这里的get方法中，接受参数用了body，所以报错。
+
+解决方案：
+
+在封装的fetch.js中
+
+const Fetch = (url, option = {}) => {
+  // 格式化get请求的数据(fetch的get请求需要需要将参数拼接到url后面)
+  if (option.method === 'get') {
+    if (option.data) {
+      url = url + formatUrl(option.data)
+    }
+  }
+
+// 对非get类请求头和请求体做处理
+  if (option.method === 'post' || option.method === 'put' || option.method === 'delete') {
+    option.headers['Content-Type'] = option.headers['Content-Type'] || 'application/json'
+    option.body = qs.stringify(option.body)
+    // option.body = JSON.stringify(option.body)
+  }
+
+delete option.data
+}
+
+重点是标橙色的代码，这里是为了给get方法创建一个data的属性，在拼接完url以后，最后用delete删除这个data的属性
+
+那么，在src/api/index.js
+
+// api文件存放接口文件夹
+import Fetch from '../fetch/index'
+import jk from './jk'
+export default {
+  manageloginApi: params => Fetch(jk.managelogin, {method: 'post', body: params}),
+  verifycodeApi: params => Fetch(jk.verifycode, {method: 'get', data: params})
+}
+
+就可以用data属性存放get传过来的参数，避免了body传参的报错
+

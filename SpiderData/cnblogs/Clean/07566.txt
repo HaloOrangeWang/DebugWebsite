@@ -1,0 +1,50 @@
+
+错误提示
+
+突然使用python直接使用pip install xx时，出现报错：
+
+Could not fetch URL https://pypi.org/simple/pymysql/: There was a problem confirming the ssl certificate: HTTPSConnectio
+nPool(host='pypi.org', port=443): Max retries exceeded with url: /simple/pymysql/ (Caused by SSLError(SSLError(1, '[SSL:
+ CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)'),)) - skipping
+
+报错内容如下：
+
+报错内容如下：
+
+
+解决过程
+
+一开始以为是ide环境出了问题，后来在终端，在虚拟环境测试都会报错。
+
+1. 重装python　　无效
+
+2.重装pip　　　　无效
+
+python -m pip uninstall pip
+
+C:\Python36\Scripts>easy_install.exe -i http://mirrors.aliyun.com/pypi/simple/ pip
+
+3.添加--trusted-host　　有效
+
+但是每次安装增加此参数，比较麻烦
+
+pip install pymysql -i http://pypi.tuna.tsinghua.edu.cn/simple/ --trusted-host pypi.tuna.tsinghua.edu.cn
+
+4.创建pip配置pip.ini。　　有效
+
+（1）在系统目录C:\Users\用户\AppData\Roaming新建pip文件夹；
+
+（2）在pip文件夹下新建pip.ini文件，并写入如下配置：
+
+5.关闭Fiddler
+
+看到这里真的是崩溃，开启它之后运行python会自动改变端口，造成ssl错误。
+
+不多解释了，关掉就好，说多了都是泪。
+
+顺便说一下：开启Fiddler后，对requests模块也会产生ssl认证的报错。
+
+之前没发现这个原因时，就靠如下方法对付：
+
+　　
+

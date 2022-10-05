@@ -1,0 +1,76 @@
+
+CentOS6升级Python2.6到3.7，错误处理[No module named '_ctypes']
+
+因开发需要，在CentOS 6 服务器将Python2进行升级到Python3。由于工作中内网的限制，这里使用的是手动安装的方式进行。
+
+
+一、查看当前python版本
+
+[python@VM000001564 ~]$ python -V
+Python 2.6.6
+
+
+二、官网下载Python稳定版本（当前3.7.2）进行安装
+
+这里下载软件使用python用户，安装使用root用户进行
+
+# 下载步骤（python用户）
+[python@VM000001564 ~]$ wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz
+[python@VM000001564 ~]$ tar -xzvf Python-3.7.2.tgz
+[python@VM000001564 ~]$ cd Python-3.7.2
+
+# 安装步骤（root用户）
+[root@VM000001564 Python-3.7.2]# ./configure
+[root@VM000001564 Python-3.7.2]# make && make install
+
+
+三、安装后进行后验证版本
+
+[python@VM000001564 Python-3.7.2]$ python3 -V
+Python 3.7.2
+
+
+四、设置3.7.2为默认版本
+
+默认还是2.6.6为默认版本，需要将3.7.2进行设置
+
+[root@VM000001564 Python-3.7.2]# ls -al /usr/bin | grep python
+-rwxr-xr-x.  1 root root      11232 Oct 16  2014 abrt-action-analyze-python
+-rwxr-xr-x.  2 root root       9032 Jan 22  2014 python
+lrwxrwxrwx.  1 root root          6 Oct 27  2014 python2 -> python
+-rwxr-xr-x.  2 root root       9032 Jan 22  2014 python2.6
+
+将原来 python 的软链接备份：
+
+# mv /usr/bin/python /usr/bin/python.bak
+
+将 python 链接至 python3：
+
+# ln -s /usr/local/bin/python3 /usr/bin/python
+
+
+五、安装中遇到的问题
+
+ModuleNotFoundError: No module named '_ctypes'
+
+因为3.7版本用到外部模块_ctypes，需要一个新的包libffi-devel，安装此包之后再次进行安装步骤即可。
+
+yum install libffi-devel -y
+make install
+
+若在安装前移除了/usr/bin下python的文件链接依赖，此时yum无法正常使用，需要自己下载相关软件包安装，为节省读者时间，放上链接。
+
+CentOS 7 下载此版本
+
+wget http://mirror.centos.org/centos/7/os/x86_64/Packages/libffi-devel-3.0.13-18.el7.x86_64.rpm
+rpm -ivh libffi-devel-3.0.13-18.el7.x86_64.rpm
+
+CentOS 6 下载此版本
+
+wget http://mirror.centos.org/centos/6/os/x86_64/Packages/libffi-devel-3.0.5-3.2.el6.x86_64.rpm
+rpm -ivh  libffi-devel-3.0.5-3.2.el6.x86_64.rpm
+
+安装此包之后再次进行重新编译，安装步骤即可，切记。
+
+更多干货、原文地址：http://www.osheep.cn/4792.html
+

@@ -1,0 +1,23 @@
+今天启动eclipse后，昨天运行正常的gradle项目报错，无法进行编译，错误信息如下：
+
+Unable to start the daemon process.
+This problem might be caused by incorrect configuration of the daemon.
+For example, an unrecognized jvm option is used.
+Please refer to the user guide chapter on the daemon at http://gradle.org/docs/2.2.1/userguide/gradle_daemon.html
+Please read the following process output to find out more:
+-----------------------
+Error occurred during initialization of VM
+Could not reserve enough space for object heap
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+
+Could not fetch model of type 'EclipseProject' using Gradle distribution 'https://services.gradle.org/distributions/gradle-2.2.1-bin.zip'.
+
+按照字面意思，貌似内存不足，所有需要配置gradle内存，步骤如下
+
+1、定位到目录 C:\Users\<username>\.gradle
+
+2、创建文件gradle.properties ；内容：org.gradle.jvmargs=-Xmx512m
+
+3、保存后重启eclipse就可以进行正常编译
+

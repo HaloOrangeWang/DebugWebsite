@@ -1,0 +1,16 @@
+
+django 报错:django.db.utils.OperationalError: no such table: main.auth_user__old
+
+在Djangotutorial 中,admin页面中修改后,查看 历史 时报错. Django version:2.1 python version:3.7 这两种版本没有问题. 问题出在sqlite3 中. 参考: stackoverflow 中关于此问题的讨论, 成功的解决方案: 在 Lib\site-packages\django\db\backends\sqlite3\schema.py中,修改如下:
+
+def __enter__(self):
+        # Some SQLite schema alterations need foreign key constraints to be
+        # disabled. Enforce it here for the duration of the transaction.
+
+self.connection.disable_constraint_checking()
+        self.connection.cursor().execute('PRAGMA foreign_keys = 0')  ## 自己加的
+        self.connection.cursor().execute('PRAGMA legacy_alter_table = ON') # 自己加的
+        return super().__enter__()
+
+注意,修改后这个shcema.py并没有生效, 我把 db.sqlite3文件删除,在重新 python manage.py makemigrations,python manage.py migrate. 重新生成数据库文件后,OK.
+

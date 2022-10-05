@@ -1,0 +1,270 @@
+当前spark任务都是运行在yarn上，所以不用启动长进程worker，也没有master的HA问题，所以主要的问题在任务执行层面。
+
+作业故障分类
+故障主要分为版本，内存和权限三方面。 
+- 各种版本不一致 
+- 各种内存溢出 
+- 其他问题
+
+版本不一致
+1）java版本不一致
+报错：java.lang.UnsupportedClassVersionError: com/immomo/recommend/RedisDao: Unsupported major.minor version 52.0
+处理：该问题一般是spark的java版本与作业编译的java版本不一致，建议将本地java版本改为与spark一致的版本（目前集群是1.7.0_71）。
+1
+2
+2）scala版本不一致 
+报错：
+
+java.lang.NoSuchMethodError: scala.reflect.api.JavaUniverse.runtimeMirror(Ljava/lang/ClassLoader;)Lscala/reflect/api/
+    JavaMirrors JavaMirror;
+1
+2
+处理：该报错就是本地使用的scala版本与集群的不一致，建议把本地scala版本替换为集群版本scala 2.11.8
+1
+3） 本地jar包跟hdfs远程的不一致 
+报错： 
+local class incompatible: stream classdesc serialVersionID = -6965587383804958479374, local class serialVersionID = -2231952633394736947
+
+4） spark版本不一致 
+报错： 
+Exception in thread "main" java.lang.NoSuchMethodError: org.apache.spark.SparkContext.assertNotStopped()at org.apache.spark.sql.SparkSession.<init>(SparkSession.scala:80) 
+处理：检查bash和spark-env.sh中的SPARK_HOME，看是不是目标版本，如果不是就修改。这个问题在spark新老版本迁移中可能出现。
+
+5) hive metastore与spark的编译hive版本不一致（spark sql 插入语句失败） 
+报错： 
+Caused by: org.apache.hadoop.hive.ql.metadata.HiveException: Unable to alter table. Invalid method name: 'alter_table_with_cascade' 
+Caused by: org.apache.thrift.TApplicationException: Invalid method name: 'alter_table_with_cascade' 
+解决方法：任务启动加参数 –conf spark.sql.hive.metastore.version=”0.14.0” –conf spark.sql.hive.metastore.jars=maven 
+在hdfs上创建文件，并在SPARK_HOME/conf/hive-site.xml设置对应参数：hive.exec.stagingdir值为/tmp/hive/spark-${user.name}
+
+该参数权限设置为777 
+这个maven涉及包有~/.m2 ~/.ivy2的jar文件 
+参考：https://discourse.looker.com/t/fixing-spark-default-metastore-and-hive-metastore-mismatch-issues-prior-to-looker-3-44/2123
+
+内存问题
+1）GC开销超过限制 
+报错： 
+java.lang.OutOfMemoryError: GC overhead limit exceeded at scala.collection.immutable.HashMap.scala.collection.immutable.HashMap makeHashTrieMap(HashMap.scala:175) 
+处理：分为两个角度，一是是检查代码，减少不必要的冗余，重用的RDD要序列化缓存，减少shuffle数据，加大并行度；二从参数配置看，加大executor内存，增加shuffle buffer缓存，但有时候也因为job写的太低效而出现无效。
+
+2）空指针异常 
+报错： 
+java.lang.NullPointerException at com.immomo.recommend.recommend_molive anonfun 1.apply(recommend_molive.scala:83) 
+处理：该问题一般是代码中的，检查数组，对象内容是否可能为空；尤其是表数据，能有字段的值为null，但没有处理null，出现这个错误。
+
+3）kyro 缓存溢出 
+报错： 
+java.lang.OutOfMemoryError: Java heap space at com.esotericsoftware.kryo.io.Output.require(Output.java:168) 
+处理：该报错堆栈可以看到是kyro请求空间，结果不够出现溢出，因为kyro序列化器能序列化的单个对象最大限制为spark.kryoserializer.buffer.max定义，这个值最大为2g。所以建议优先检查代码中的大对象，想办法裁剪对象大小，如果不行再考虑增大spark.kryoserializer.buffer.max数值。
+
+4）driver端数据溢出 
+报错： 
+Job aborted due to stage failure: Total size of serialized results of 334502 tasks (1024.0 MB) is bigger than spark.driver.maxResultSize (1024.0 MB) 
+处理：对于collect和一些操作，driver会接收各task执行后的数据，spark.driver.maxResultSize参数控制接收数据大小，建议先检查代码，避免或减少take，collect操作，如果不成功再考虑增大该参数。
+
+5）container内存不足被kill 
+报错： 
+Job aborted due to stage failure ExecutorLostFailure (executor 2101 exited caused by one of the running tasks) Reason: Container marked as failed: container_1491814332016_46280_01_009179 on host 
+处理：1、增大分区数，使用 set spark.sql.shuffle.partitions=1000(或更大) 
+2、调整代码，减少数据读取量
+
+5）单个分区数据空间超过2G 
+报错： 
+java.lang.IllegalArgumentException: Size exceeds Integer.MAX_VALUE 
+at sun.nio.ch.FileChannelImpl.map(FileChannelImpl.java:828) 
+at org.apache.spark.storage.DiskStore$$anonfun$getBytes$2.apply(DiskStore.scala:103) at org.apache.spark.storage.DiskStore$$anonfun$getBytes$2.apply(DiskStore.scala:91) 
+at org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:1307) 
+at org.apache.spark.storage.DiskStore.getBytes(DiskStore.scala:105) 
+at org.apache.spark.storage.BlockManager.org$apache$spark$storage$BlockManager$$doGetLocalBytes(BlockManager.scala:496) at org.apache.spark.storage.BlockManager$$anonfun$getLocalBytes$2.apply(BlockManager.scala:474) 
+at org.apache.spark.storage.BlockManager$$anonfun$getLocalBytes$2.apply(BlockManager.scala:474) 
+at scala.Option.map(Option.scala:146) 
+处理：该问题是分区数据存储的时候出现报错，因为单个分区上限是2G，超过该限制则报错，解决方法是调大分区，使用repartition或对含有shuffle算子指定一个大分区即可。
+
+不仅如此，shuffle 过程fetch block的最大size也是2G。此外还有多项与2G有关的limitation需要注意
+
+其他问题
+1）代码不规范 
+报错： 
+org.apache.spark.SparkException: This RDD lacks a SparkContext. It could happen in the following cases: 
+(1) RDD transformations and actions are NOT invoked by the driver, but inside of other transformations; for example, rdd1.map(x => rdd2.values.count() * x) is invalid because the values transformation and count action cannot be performed inside of the rdd1.map transformation. For more information, see SPARK-5063. 
+处理：这个报错是因为RDD的transformation中嵌套transformation或action，导致计算失败，可以先从报错那一行找到嵌套的trans或action操作，把这个操作拿出来运算。
+
+2）磁盘临时文件空间不足 
+报错： 
+java.io.IOException: No space left on device 
+处理：在shuffle过程中，中间文件都放在/tmp目录，当shuffle文件达到磁盘空间上限，就报错。解决方法可以增大executor个数，分担压力，如果仍不可以的话就联系平台同学配置spark-default.conf中设置spark.local.dir（默认是/tmp）为磁盘空间足够的目录即可解决。在yarn模式则配置LOCAL_DIRS。
+
+3）文件没有访问权限 
+报错： 
+Caused by: org.apache.hadoop.ipc.RemoteException(org.apache.hadoop.security.AccessControlException): Permission denied: user=dm, access=EXECUTE, inode="/user/hadoop/.sparkStaging/application_1480755301936_1884":hadoop:supergroup:drwx------ 
+处理：查看这个job是什么用户执行，要确定任务执行的权限，一般是使用其他组件调用，导致执行用户变化，导致没有文件权限。
+
+4）yarn cluster模式使用SQL找不到表 
+报错： 
+org.apache.spark.sql.AnalysisException: Table or view not found: 
+at org.apache.spark.sql.catalyst.analysis.package$AnalysisErrorAt.failAnalysis(package.scala:42) 
+at org.apache.spark.sql.catalyst.analysis.Analyzer$ResolveRelations$.getTable(Analyzer.scala:306) 
+处理： 在提交代码参数中增加 –files */hive-site.xml，参数，表示提交代码时提交hive相关配置信息。
+
+5) 参数提交顺序不当，导致job不能提交到yarn 
+有同学submit任务参数顺序不当，导致参数没有传递成功，一般–class参数放后面，–master –conf之类参数在前面
+
+6) 系统存在多版本python情况下执行bin/pyspark报错 
+报错： 
+`pyenv: python2.7: command not found
+
+The python2.7' command exists in these Python versions: 
+2.7.7 
+2.7.8 
+处理：手动指定使用的python版本，如执行: pyenv shell 2.7.8
+
+7) jdbc连接hiveserver2出错 
+报错： 
+ExecuteStatement failed: out of sequence response 或者Read a negative frame size (-2147418110)! 
+处理方法：参考HIVE-10410的patch
+
+8）使用spark集群模式，报表找不到(用户错位，导致权限报错) 
+报错： 
+pyspark.sql.utils.AnalysisException: u'Table or view not found:online.ml_molive_user_anchor_attr; line 1 pos 33' 
+处理方法：–files /opt/spark2/conf/hive-site.xml
+
+9) 使用spark sql查询报错文件找不到 
+报错： 
+java.io.IOException not a file: hdfs:// **** java.sql.SQLException 
+处理：设置参数即可，SET mapred.input.dir.recursive=true; SET hive.mapred.supports.subdirectories=true;
+
+10) 账户拆分，导致执行spark sql没权限
+报错：
+`py4j.protocol.Py4JJavaError: An error occurred while calling o205.sql.
+java.lang.RuntimeException: java.lang.RuntimeException: java.io.IOException: Permission denied 
+……. 
+Caused by: java.io.IOException: Permission denied 
+at java.io.UnixFileSystem.createFileExclusively(Native Method) 
+at java.io.File.createNewFile(File.java:1006) 
+at java.io.File.createTempFile(File.java:1989) 
+at org.apache.hadoop.hive.ql.session.SessionState.createTempFile(SessionState.java:818) 
+at org.apache.hadoop.hive.ql.session.SessionState.start(SessionState.java:513)` 
+解决方法：查询得知是参数hive.exec.local.scratchdir对应的路径没有权限，刷权限后解决。
+11) Container marked as failed 
+问题：
+
+scheduler.TaskSetManager: Lost task 53.0 in stage 2.2 (TID 440, bigdata38.webmedia.int): ExecutorLostFailure (executor 9 exited caused by one of the running tasks) Reason: Container marked as failed: container_e50_1490337980512_0006_01_000010 on host: bigdata38.webmedia.int. Exit status: 143. Diagnostics: Container killed on request. Exit code is 143
+
+ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
+
+org.apache.spark.rpc.RpcTimeoutException: Futures timed out after [20 seconds]. This timeout is controlled by spark.executor.heartbeatInterval
+1
+2
+3
+4
+5
+（以上是分析不同进程日志汇总得到）
+
+问题原因：虽然以上报错不能直接看出原因，但大概率与内存相关，因为作业内存不足，导致GC，GC可能导致executor与AM通信超时，故AM认为executor挂了，会发停止的signal。 
+解决：1、增加硬件资源 2、增大作业并发度，加大executor通信超时时间spark.executor.heartbeatInterval
+
+12）java.lang.NoSuchMethodError: javax.ws.rs.core.Application.getProperties()Ljava/util/Map; 
+复现过程：spark 2.2.1 运行SparkThriftserver，点击查看executor后没有数据信息。 
+报错：
+
+第一次点击查看exevutor页面报如下错误：
+java.lang.NoSuchMethodError: javax.ws.rs.core.Application.getProperties()Ljava/util/Map;
+        at org.glassfish.jersey.server.ApplicationHandler.<init>(ApplicationHandler.java:331)
+        at org.glassfish.jersey.servlet.WebComponent.<init>(WebComponent.java:392)
+        at org.glassfish.jersey.servlet.ServletContainer.init(ServletContainer.java:177)
+        at org.glassfish.jersey.servlet.ServletContainer.init(ServletContainer.java:369)
+        at javax.servlet.GenericServlet.init(GenericServlet.java:244)
+        at org.spark_project.jetty.servlet.ServletHolder.initServlet(ServletHolder.java:640)
+        at org.spark_project.jetty.servlet.ServletHolder.getServlet(ServletHolder.java:496)
+        at org.spark_project.jetty.servlet.ServletHolder.ensureInstance(ServletHolder.java:788)
+        at org.spark_project.jetty.servlet.ServletHolder.prepare(ServletHolder.java:773)
+        at org.spark_project.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:578)
+        at org.spark_project.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1180)
+        at org.spark_project.jetty.servlet.ServletHandler.doScope(ServletHandler.java:511)
+        at org.spark_project.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1112)
+        at org.spark_project.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141)
+        at org.spark_project.jetty.server.handler.gzip.GzipHandler.handle(GzipHandler.java:461)
+        at org.spark_project.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:213)
+        at org.spark_project.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:134)
+        at org.spark_project.jetty.server.Server.handle(Server.java:524)
+        .....
+
+第二次点击查看executor的tab  
+17/12/04 12:48:36 WARN ServletHandler: /api/v1/applications/application_1511942712793_0065/allexecutors
+java.lang.NullPointerException
+    at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:388)
+    at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:341)
+    at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:228)
+    at org.spark_project.jetty.servlet.ServletHolder.handle(ServletHolder.java:845)
+    at org.spark_project.jetty.servlet.ServletHandlerCachedChain.doFilter(ServletHandler.java:1689)
+    at org.apache.hadoop.yarn.server.webproxy.amfilter.AmIpFilter.doFilter(AmIpFilter.java:159)
+    at org.spark_project.jetty.servlet.ServletHandlerCachedChain.doFilter(ServletHandler.java:1676)
+    at org.spark_project.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:581)
+    .........
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+解决方法：报错是因为 Application#getProperties() 方法属于JAX-RS 2协议（javax.ws.rs-api-2.0.1.jar），而不是JAX-RS 1（jsr311-api.jar），所以项目中可能jar包版本冲突导致。 
+于是查找$SPARK_HOME/jars下的包，把jsr311-api-1.1.1.jar删掉就解决以上问题。
+
+(以上均为工作中遇见过的问题，分享出来，后面持续更新…)
+
+参考： 
+spark 2.x yarn errors and some solution
+
+13） spark因为输入小文件过多导致task数目很大，作业效率下降。
+
+使用 newAPIHadoopFile API完成数据输入，选择org.apache.hadoop.mapreduce.lib.input.CombineTextInputFormat类可以将多个小文件合并生成一个Split（一个split对应一个patition，一个partition对应一个task），从而减小task数目
+
+参考：spark输入小文件合并
+
+14)Spark 读取Hbase 映射到Hive中的外部表报 
+报错：
+
+1）java.lang.NoSuchMethodError: org.apache.hadoop.hive.serde2.lazy.LazySim
+java.lang.NoSuchMethodError: 
+2）org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe.initSerdeParams(Lorg/apache/hadoop/conf/Configuration;Ljava/util/Properties;Ljava/lang/String;)Lorg/apache/hadoop/hive/serde2/lazy/LazySimpleSerDe$SerDeParameters;
+1
+2
+3
+spark执行hive引入的hbase外部表，需要在spark的jars中加入hbase相关的包，除了包含hbase*的包，还需要htrace-core-2.04.jar、hive-serde-*.jar
+
+加入进入后还要引入hbase-site.xml到$SPARK_HOME/conf中 
+参考：spark sql读hbase数据
+--------------------- 
+作者：xwc35047 
+来源：CSDN 
+原文：https://blog.csdn.net/xwc35047/article/details/53933265 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

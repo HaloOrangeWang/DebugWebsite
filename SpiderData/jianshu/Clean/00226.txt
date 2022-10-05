@@ -1,0 +1,22 @@
+最近项目部署到服务器上，运行项目mysql报错:1 of select list is not in group by clause and contains nonaggregated  column "type.typename" which is not functionally dependent on column in group by clause ; this is incompatible with sql_mode=only_full_group_by。
+
+当时还以为数据库表有什么问题，仔细查看了一下没什么问题，然后把sql语句在navicat premium软件执行，结果还是报错，如下图所示:
+
+仔细研读报错信息，大概意思是group by 引起的，sql_mode是only_full_group_by。百度搜索了错误信息才明白报错的原因，
+
+MySQL5.7.5及以上版本有功能依赖检测功能，sql_mode默认开启了only_full_group_by模式，在该模式下MySQL将拒绝选择列表，HAVING条件或ORDER BY列表的查询引用在GROUP BY 字句中既未命名的非集合列，也不在功能上依赖他们。举个栗子说明select name,type from animal group by type;这个语句是合法的，可以查询到结果，而select name,age from animal group by type这个语句就是不合法的。总结就是select语句中的列必须在group by 语句中出现。
+
+解决方法
+
+1、使用select @@global.sql_mode语句查询有哪些模式，然后用set @@global.sql_mode=去掉only_full_group_by之后的模式。这种方法只在当前适用，当mysql重启后还是会报错。
+
+2、找到mysql启动用到的配置文件，Windows下是my.ini，Linux下是my.cnf或mysql.cnf。
+
+可以使用mysql    --help  |  grep  'my.cnf'  查看MySQL默认读取my.cnf的目录。
+
+编辑配置文件，在最后面加上如下语句:
+
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+
+保存退出，然后重启mysql就可以了。这个方法亲测可用，可以永久解决这个问题。
+

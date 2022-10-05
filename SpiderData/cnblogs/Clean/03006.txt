@@ -1,0 +1,30 @@
+今天在使用Python文件处理写网络上爬取的文件的时候，遇到了错误：UnicodeEncodeError: ‘gbk’ codec can’t encode character ‘\xa0’ in position … 这个问题。
+
+代码：
+
+import urllib.request  #等价与from urllib import request
+
+出现错误：
+
+查看response响应的类型 <class 'http.client.HTTPResponse'>
+
+Traceback (most recent call last):
+
+File "C:\Users\PINPIN\Desktop\docx\url_test.py", line 6, in <module>
+
+f1.write(page_contect.decode('utf-8'))
+
+UnicodeEncodeError: 'gbk' codec can't encode character '\xbb' in position 29150: illegal multibyte sequence
+
+出现问题的原因：在windows下面，新文件的默认编码是gbk，这样的话，python解释器会用gbk编码去解析我们的爬取的网络数据流，然而数据流此时已经是decode过的unicode编码，这样的话就会导致解析不了。
+
+解决的办法：改变目标文件的编码即可
+
+在打开文件时，指定文件编码格式：encode=’utf-8’
+
+with open(r'C:\Users\PINPIN\Desktop\docx\123.txt','w+',encode=’utf-8’) as f1:
+
+另外：网络数据流的编码，比如获取网页，网络数据流的编码就是网页的编码。需要使用decode解码成unicode编码。否则也会报错哦：TypeError: write() argument must be str, not bytes
+
+f1.write(page_contect.decode('utf-8'))所以在这里需要进行解码decode('utf-8')
+

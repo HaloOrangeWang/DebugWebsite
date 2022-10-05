@@ -1,0 +1,34 @@
+背景
+
+Python项目部署到新的服务器，服务器部署了同样的开发环境，可是项目却启动失败，报错：AttributeError: 'backports.zoneinfo.ZoneInfo' object has no attribute 'localize'
+
+错误
+
+AttributeError: 'backports.zoneinfo.ZoneInfo' object has no attribute 'localize'，如下图
+
+开发环境
+
+Python=3.7.5
+
+pytz~=2019.2
+
+PyQt5~=5.13.0
+
+原因
+
+backports.zoneinfo.ZoneInfo对象需要用到TZlocal这个模块，但是最新的TZlocal模块中已经将localize这个方法删除了，而在pip安装依赖模块时，会自动下载最新的版本模块，所以系统报错。
+
+解决方法
+
+将TZlocal模块版本更新为2.1即可
+
+pip install tzlocal==2.1 -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+pip install tzlocal==2.1 -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+测试
+
+TZlocal，版本最新
+
+TZlocal，版本2.1
+

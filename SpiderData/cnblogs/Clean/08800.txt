@@ -1,0 +1,39 @@
+
+Outline
+
+运行环境：
+
+准备打一个服务，Flask+celery，但是在执行时报错：
+
+File "D:\ProgramData\Anaconda3\envs\gazh\lib\site-packages\kombu\transport\redis.py", line 815
+    def _connparams(self, async=False, _r210_options=(
+                              ^
+SyntaxError: invalid syntax
+
+
+问题原因
+
+网上查了下，感觉内容千篇一律基本都是复制粘贴这些内容~：
+
+我查了好久才知道，这是由于async在python3.7已经是关键字，但是celery4.2版本没有更新导致的。此问题将在下一个发布版本修复。
+目前只能将celery文件中的async命名为其他变量名或者换一个python3.6的编辑器，替换要替换多处，因此最好是换一个python3.6的编辑器。
+
+问题原因是变量名冲突；
+
+解决方案两个：1、改python版本； 2、改变量名
+
+由于我只是在Windows做测试，后续要放在Linux server上，所以图省事不换python版本了，直接改源码里的变量名。
+
+
+解决
+
+直接点击上图中redis.py，进入文件；
+
+Ctrl + R 进行变量名替换
+
+把全部rsync 替换为 rsyncs
+
+再去执行脚本就不报错了
+
+（这个方法治标不治本，只是临时应急，开发环境的话还是要从根本解决）
+

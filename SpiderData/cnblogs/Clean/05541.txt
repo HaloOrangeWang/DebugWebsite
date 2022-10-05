@@ -1,0 +1,17 @@
+假如你的文件路径名是这样的，例如：test.csv
+
+只要它是小文件（大文件采用分块读取，后续会补上文件分块读取的相关博客），你的内存扛得住，那就直接
+
+1 import pandas as pd
+2 test = pd.read_csv('test.csv', encoding='utf-8')
+
+假如你的文件路径名包含了中文，例如：测试.csv
+
+那么你就需要这样子
+
+1 import pandas as pd
+2 file = open('测试.csv', encoding='utf-8')
+3 data = pd.read_csv(file)
+
+直接使用潘大师读取会报错。。切记
+

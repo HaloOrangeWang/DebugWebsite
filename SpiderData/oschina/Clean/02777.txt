@@ -1,0 +1,40 @@
+=======在使用ubuntu14.04，安装devstack的时候报错./stack.sh: line 463: generate-subunit: command not found
+
+2016-10-29 14:38:49.689 | + sudo DEBIAN_FRONTEND=noninteractive http_proxy= https_proxy= no_proxy= apt-get --option Dpkg::Options::=--force-confold --assume-yes purge python-pip
+2016-10-29 14:38:49.701 | Reading package lists...
+2016-10-29 14:38:49.953 | Building dependency tree...
+2016-10-29 14:38:49.954 | Reading state information...
+2016-10-29 14:38:50.277 | Package 'python-pip' is not installed, so not removed
+2016-10-29 14:38:50.277 | 0 upgraded, 0 newly installed, 0 to remove and 44 not upgraded.
+2016-10-29 14:38:50.280 | + install_get_pip
+2016-10-29 14:38:50.280 | + [[ ! -r /opt/stack/devstack/files/get-pip.py ]]
+2016-10-29 14:38:50.280 | + [[ -r /opt/stack/devstack/files/get-pip.py.downloaded ]]
+2016-10-29 14:38:50.280 | + sudo -H -E python /opt/stack/devstack/files/get-pip.py -c /opt/stack/devstack/tools/cap-pip.txt
+2016-10-29 14:38:50.299 |   File "/opt/stack/devstack/files/get-pip.py", line 8358
+2016-10-29 14:38:50.301 |     nPHZ1#C8JE9^4W#;@8N+k6c=b6z(UEHQ_r;9QZLHra}%+o59t84
+2016-10-29 14:38:50.301 |                                                       ^
+2016-10-29 14:38:50.301 | SyntaxError: EOF while scanning triple-quoted string literal
+2016-10-29 14:38:50.306 | ++ err_trap
+2016-10-29 14:38:50.306 | ++ local r=1
+2016-10-29 14:38:50.308 | stack.sh failed: full log in /opt/stack/logs/stack.sh.log.2016-10-29-223720
+2016-10-29 14:38:50.309 | Error on exit
+2016-10-29 14:38:50.312 | ./stack.sh: line 463: generate-subunit: command not found
+
+　网上有个方案是=====在运行./stack.sh之前，执行下面的命令　
+
+sudo apt-get install python-pip
+sudo pip install --upgrade pip
+sudo pip install -U os-testr
+
+　　可是依然不能解决问题，还出现了一大堆问题。
+
+还有一个方案是：
+
+在stackrc中添加两段：
+
+#add http proxy and https proxy haibo
+export http_proxy=''  
+export https_proxy=''
+
+　　
+

@@ -1,0 +1,84 @@
+demo如下：
+
+from retrying import retry
+
+def retry_error(exception):
+
+return isinstance(exception, NameError)
+
+# return isinstance(exception, Exception)
+
+@retry(retry_on_exception=retry_error, stop_max_attempt_number=3)
+
+def demo_():
+
+print('重试')
+
+print(a)
+
+if __name__ == '__main__':
+
+demo_()
+
+运行如图：
+
+定义了一个demo_函数，里面打印的变量a，没有被赋值，会导致报“NameError: name 'a' is not defined”错误，但是观察上述截图，发现代码运行了3次以后才抛出异常。这就借用了retrying里面的失败重试机制，定义了retry_error函数去捕获NameError异常，其实也可以偷懒直接去捕获Exception。用retry_on_result去传入一个函数对象，stop_max_attempt_number控制次数。
+
+以上参考博客：https://www.cnblogs.com/du-jun/p/12256281.html
+
+自己实现了一个失败重试装饰器的demo：
+
+#def retry(**kw):#def wrapper(func):#def _wrapper(*args, **kwargs):#raise_ex = 0#for _ in range(kw['retry_num']):#print(f"第{_}次操作")#try:#return func(*args, **kwargs)#except Exception as e:#raise_ex += 1#if raise_ex == kw['retry_num']:#raise e#
+
+#return _wrapper#
+
+#return wrapper#
+
+#
+
+#@retry(retry_num=3)#def demo():#print('a')#print(a)## raise NameError#
+
+#
+
+#if __name__ == '__main__':#demo()
+
+def retry(loop_num=2):defwrapper(func):def _wrapper(*args, **kwargs):
+
+raise_ex=0for _ inrange(loop_num):print(f"第{_}次操作")try:return func(*args, **kwargs)exceptException as e:
+
+raise_ex+= 1
+
+if raise_ex ==loop_num:raiseereturn_wrapperreturnwrapper
+
+@retry(loop_num=3)defdemo():print('a')print(a)#raise NameError
+
+if __name__ == '__main__':
+
+demo()
+
+效果如图：
+
+增加等待时间：
+
+importtimedef retry(loop_num=2, wait_time=1):""":param loop_num: 循环次数，默认2次
+
+:param wait_time: 等待时间，默认1s
+
+:return:"""
+
+defwrapper(func):def _wrapper(*args, **kwargs):
+
+raise_ex=0for i in range(1, loop_num + 1):print(f"第{i}次操作")try:
+
+func(*args, **kwargs)exceptException as e:
+
+time.sleep(wait_time)
+
+raise_ex+= 1
+
+if raise_ex ==loop_num:raiseereturn_wrapperreturnwrapper
+
+@retry()defdemo_():print('开始重试')print(a)if __name__ == '__main__':
+
+demo_()
+

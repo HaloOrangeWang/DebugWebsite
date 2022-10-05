@@ -1,0 +1,389 @@
+常见错误1：错误地将表达式作为函数的默认参数
+
+在Python中，我们可以为函数的某个参数设置默认值，使该参数成为可选参数。虽然这是一个很好的语言特性，但是当默认值是可变类型时，也会导致一些令人困惑的情况。我们来看看下面这个Python函数定义：
+
+>>> def foo(bar=[]):    # bar是可选参数，如果没有提供bar的值，则默认为[]，
+...  bar.append("baz")  # 但是稍后我们会看到这行代码会出现问题。
+...  return bar
+
+Python程序员常犯的一个错误，就是想当然地认为：在每次调用函数时，如果没有为可选参数传入值，那么这个可选参数就会被设置为指定的默认值。在上面的代码中，你们可能觉得重复调用foo()函数应该会一直返回'baz'，因为你们默认每次foo()函数执行时（没有指定bar变量的值），bar变量都被设置为[]（也就是，一个新的空列表）。
+
+但是，实际运行结果却是这样的：
+
+>>> foo()
+["baz"]
+>>> foo()
+["baz", "baz"]
+>>> foo()
+["baz", "baz", "baz"]
+
+很奇怪吧？为什么每次调用foo()函数时，都会把"baz"这个默认值添加到已有的列表中，而不是重新创建一个新的空列表呢？
+
+答案就是，可选参数默认值的设置在Python中只会被执行一次，也就是定义该函数的时候。因此，只有当foo()函数被定义时，bar参数才会被初始化为默认值（也就是，一个空列表），但是之后每次foo()函数被调用时，都会继续使用bar参数原先初始化生成的那个列表。
+
+当然，一个常见的解决办法就是：
+
+>>> def foo(bar=None):
+...  if bar is None:  # or if not bar:
+...    bar = []
+...  bar.append("baz")
+...  return bar
+...
+>>> foo()
+["baz"]
+>>> foo()
+["baz"]
+>>> foo()
+["baz"]
+
+常见问题2：错误地使用类变量
+
+我们来看下面这个例子：
+
+>>> class A(object):
+...   x = 1
+...
+>>> class B(A):
+...   pass
+...
+>>> class C(A):
+...   pass
+...
+>>> print A.x, B.x, C.x
+1 1 1
+
+这个结果很正常。
+
+>>> B.x = 2
+>>> print A.x, B.x, C.x
+1 2 1
+
+嗯，结果和预计的一样。
+
+>>> A.x = 3
+>>> print A.x, B.x, C.x
+3 2 3
+
+在Python语言中，类变量是以字典的形式进行处理的，并且遵循方法解析顺序（Method Resolution Order，MRO）。因此，在上面的代码中，由于类C中并没有x这个属性，解释器将会查找它的基类（base class，尽管Python支持多重继承，但是在这个例子中，C的基类只有A）。换句话说，C并不没有独立于A、真正属于自己的x属性。所以，引用C.x实际上就是引用了A.x。如果没有处理好这里的关系，就会导致示例中出现的这个问题。
+
+常见错误3：错误地指定异常代码块（exception block）的参数
+
+请看下面这段代码：
+
+>>> try:
+...   l = ["a", "b"]
+...   int(l[2])
+... except ValueError, IndexError: # To catch both exceptions, right?
+...   pass
+...
+Traceback (most recent call last):
+ File "<stdin>"</stdin>, line 3, in <module>
+IndexError: list index out of range
+
+这段代码的问题在于，except语句并不支持以这种方式指定异常。在Python 2.x中，需要使用变量e将异常绑定至可选的第二个参数中，才能进一步查看异常的情况。因此，在上述代码中，except语句并没有捕获IndexError异常；而是将出现的异常绑定到了一个名为IndexError的参数中。
+
+要想在except语句中正确地捕获多个异常，则应将第一个参数指定为元组，然后在元组中写下希望捕获的异常类型。另外，为了提高可移植性，请使用as关键词，Python 2和Python 3均支持这种用法。
+
+>>> try:
+...   l = ["a", "b"]
+...   int(l[2])
+... except (ValueError, IndexError) as e: 
+...   pass
+...
+>>>
+
+常见错误4：错误理解Python中的变量名解析
+
+Python中的变量名解析遵循所谓的LEGB原则，也就是“L：本地作用域；E：上一层结构中def或lambda的本地作用域；G：全局作用域；B：内置作用域”（Local，Enclosing，Global，Builtin），按顺序查找。看上去是不是很简单？不过，事实上这个原则的生效方式还是有着一些特殊之处。说到这点，我们就不得不提下面这个常见的Python编程错误。请看下面的代码：
+
+>>> x = 10
+>>> def foo():
+...   x += 1
+...   print x
+...
+>>> foo()
+Traceback (most recent call last):
+ File "<stdin>"</stdin>, line 1, in <module>
+ File "<stdin>"</stdin>, line 2, in foo
+UnboundLocalError: local variable 'x' referenced before assignment
+
+出了什么问题？
+
+上述错误的出现，是因为当你在某个作用域内为变量赋值时，该变量被Python解释器自动视作该作用域的本地变量，并会取代任何上一层作用域中相同名称的变量。
+
+正是因为这样，才会出现一开始好好的代码，在某个函数内部添加了一个赋值语句之后却出现了UnboundLocalError，难怪会让许多人吃惊。
+
+在使用列表时，Python程序员尤其容易陷入这个圈套。
+
+请看下面这个代码示例：
+
+>>> lst = [1, 2, 3]
+>>> def foo1():
+...   lst.append(5)  # 这里没问题
+...
+>>> foo1()
+>>> lst
+[1, 2, 3, 5]
+
+>>> lst = [1, 2, 3]
+>>> def foo2():
+...   lst += [5]   # ... 但这里就不对了!
+...
+>>> foo2()
+Traceback (most recent call last):
+ File "<stdin>"</stdin>, line 1, in <module>
+ File "<stdin>"</stdin>, line 2, in foo
+UnboundLocalError: local variable 'lst' referenced before assignment
+
+呃？为什么函数foo1运行正常，foo2却出现了错误？
+
+答案与上一个示例相同，但是却更难捉摸清楚。foo1函数并没有为lst变量进行赋值，但是foo2却有赋值。我们知道，lst += [5]只是lst = lst + [5]的简写，从中我们就可以看出，foo2函数在尝试为lst赋值（因此，被Python解释器认为是函数本地作用域的变量）。但是，我们希望为lst赋的值却又是基于lst变量本身（这时，也被认为是函数本地作用域内的变量），也就是说该变量还没有被定义。这才出现了错误。
+
+常见错误5：在遍历列表时更改列表
+
+下面这段代码的问题应该算是十分明显：
+
+>>> odd = lambda x : bool(x % 2)
+>>> numbers = [n for n in range(10)]
+>>> for i in range(len(numbers)):
+...   if odd(numbers[i]):
+...     del numbers[i] # BAD: Deleting item from a list while iterating over it
+...
+Traceback (most recent call last):
+   File "<stdin>"</stdin>, line 2, in <module>
+IndexError: list index out of range
+
+在遍历列表或数组的同时从中删除元素，是任何经验丰富的Python开发人员都会注意的问题。但是尽管上面的示例十分明显，资深开发人员在编写更为复杂代码的时候，也很可能会无意之下犯同样的错误。
+
+幸运的是，Python语言融合了许多优雅的编程范式，如果使用得当，可以极大地简化代码。简化代码还有一个好处，就是不容易出现在遍历列表时删除元素这个错误。能够做到这点的一个编程范式就是列表解析式。而且，列表解析式在避免这个问题方面尤其有用，下面用列表解析式重新实现上面代码的功能：
+
+>>> odd = lambda x : bool(x % 2)
+>>> numbers = [n for n in range(10)]
+>>> numbers[:] = [n for n in numbers if not odd(n)] # ahh, the beauty of it all
+>>> numbers
+[0, 2, 4, 6, 8]
+
+常见错误6：不理解Python在闭包中如何绑定变量
+
+请看下面这段代码：
+
+>>> def create_multipliers():
+...   return [lambda x : i * x for i in range(5)]
+>>> for multiplier in create_multipliers():
+...   print multiplier(2)
+...
+
+你可能觉得输出结果应该是这样的：
+
+但是，实际的输出结果却是：
+
+吓了一跳吧！
+
+这个结果的出现，主要是因为Python中的迟绑定（late binding ）机制，即闭包中变量的值只有在内部函数被调用时才会进行查询。因此，在上面的代码中，每次create_multipliers()所返回的函数被调用时，都会在附近的作用域中查询变量i的值（而到那时，循环已经结束，所以变量i最后被赋予的值为4）。
+
+要解决这个常见Python问题的方法中，需要使用一些hack技巧：
+
+>>> def create_multipliers():
+...   return [lambda x, i=i : i * x for i in range(5)]
+...
+>>> for multiplier in create_multipliers():
+...   print multiplier(2)
+...
+0
+2
+4
+6
+8
+
+请注意！我们在这里利用了默认参数来实现这个lambda匿名函数。有人可能认为这样做很优雅，有人会觉得很巧妙，还有人会嗤之以鼻。但是，如果你是一名Python程序员，不管怎样你都应该要了解这种解决方法。
+
+常见错误7：模块之间出现循环依赖（circular dependencies）
+
+假设你有两个文件，分别是a.py和b.py，二者相互引用，如下所示：
+
+a.py文件中的代码:
+
+import b
+
+def f():
+  return b.x
+
+print f()
+b.py文件中的代码：
+
+import a
+
+x = 1
+
+def g():
+  print a.f()
+
+首先，我们尝试导入a.py模块：
+
+代码运行正常。也许这出乎了你的意料。毕竟，我们这里存在循环引用这个问题，想必应该是会出现问题的，难道不是吗？
+
+答案是，仅仅存在循环引用的情况本身并不会导致问题。如果一个模块已经被引用了，Python可以做到不再次进行引用。但是如果每个模块试图访问其他模块定义的函数或变量的时机不对，那么你就很可能陷入困境。
+
+那么回到我们的示例，当我们导入a.py模块时，它在引用b.py模块时是不会出现问题的，因为b.py模块在被引用时，并不需要访问在a.py模块中定义的任何变量或函数。b.py模块中对a模块唯一的引用，就是调用了a模块的foo()函数。但是那个函数调用发生在g()函数当中，而a.py或b.py模块中都没有调用g()函数。所以，不会出现问题。
+
+但是，如果我们试着导入b.py模块呢（即之前没有引用a.py模块的前提下）：
+
+>>> import b
+Traceback (most recent call last):
+   File "<stdin>"</stdin>, line 1, in <module>
+   File "b.py", line 1, in <module>
+  import a
+   File "a.py", line 6, in <module>
+ print f()
+   File "a.py", line 4, in f
+ return b.x
+AttributeError: 'module' object has no attribute 'x'
+
+糟糕。情况不太妙！这里的问题是，在导入b.py的过程中，它试图引用a.py模块，而a.py模块接着又要调用foo()函数，这个foo()函数接着又试图去访问b.x变量。但是这个时候，b.x变量还没有被定义，所以才出现了AttributeError异常。
+
+解决这个问题有一种非常简单的方法，就是简单地修改下b.py模块，在g()函数内部才引用a.py：
+
+x = 1
+
+def g():
+  import a # This will be evaluated only when g() is called
+  print a.f()
+
+现在我们再导入b.py模块的话，就不会出现任何问题了：
+
+>>> import b
+>>> b.g()
+1 # Printed a first time since module 'a' calls 'print f()' at the end
+1 # Printed a second time, this one is our call to 'g'
+
+常见错误8：模块命名与Python标准库模块名冲突
+
+Python语言的一大优势，就是其本身自带的强大标准库。但是，正因为如此，如果你不去刻意注意的话，你也是有可能为自己的模块取一个和Python自带标准库模块相同的名字（例如，如果你的代码中有一个模块叫email.py，那么这就会与Python标准库中同名的模块相冲突。）
+
+这很可能会给你带来难缠的问题。举个例子，在导入模块A的时候，假如该模块A试图引用Python标准库中的模块B，但却因为你已经有了一个同名模块B，模块A会错误地引用你自己代码中的模块B，而不是Python标准库中的模块B。这也是导致一些严重错误的原因。
+
+因此，Python程序员要格外注意，避免使用与Python标准库模块相同的名称。毕竟，修改自己模块的名称比提出PEP提议修改上游模块名称且让提议通过，要来得容易的多。
+
+常见错误9：未能解决Python 2与Python 3之间的差异
+
+假设有下面这段代码：
+
+import sys
+
+def bar(i):
+  if i == 1:
+    raise KeyError(1)
+  if i == 2:
+    raise ValueError(2)
+
+def bad():
+  e = None
+  try:
+    bar(int(sys.argv[1]))
+  except KeyError as e:
+    print('key error')
+  except ValueError as e:
+    print('value error')
+  print(e)
+
+bad()
+
+如果是Python 2，那么代码运行正常：
+
+$ python foo.py 1
+key error
+1
+$ python foo.py 2
+value error
+2
+
+但是现在，我们换成Python 3再运行一遍：
+
+$ python3 foo.py 1
+key error
+Traceback (most recent call last):
+ File "foo.py", line 19, in <module>
+  bad()
+ File "foo.py", line 17, in bad
+  print(e)
+UnboundLocalError: local variable 'e' referenced before assignment
+
+这到底是怎么回事？这里的“问题”是，在Python 3中，异常对象在except代码块作用域之外是无法访问的。（这么设计的原因在于，如果不这样的话，堆栈帧中就会一直保留它的引用循环，直到垃圾回收器运行，将引用从内存中清除。）
+
+避免这个问题的一种方法，就是在except代码块的作用域之外，维持一个对异常对象的引用（reference），这样异常对象就可以访问了。下面这段代码就使用了这种方法，因此在Python 2和Python 3中的输出结果是一致的：
+
+import sys
+
+def bar(i):
+  if i == 1:
+    raise KeyError(1)
+  if i == 2:
+    raise ValueError(2)
+
+def good():
+  exception = None
+  try:
+    bar(int(sys.argv[1]))
+  except KeyError as e:
+    exception = e
+    print('key error')
+  except ValueError as e:
+    exception = e
+    print('value error')
+  print(exception)
+
+good()
+
+在Python 3下运行代码：
+
+$ python3 foo.py 1
+key error
+1
+$ python3 foo.py 2
+value error
+2
+
+太棒了！
+
+常见错误10：错误使用del方法
+
+假设你在mod.py的文件中编写了下面的代码：
+
+import foo
+
+class Bar(object):
+    ...
+  def __del__(self):
+    foo.cleanup(self.myhandle)
+之后，你在another_mod.py文件中进行如下操作：
+
+import mod
+mybar = mod.Bar()
+
+如果你运行another_mod.py模块的话，将会出现AttributeError异常。
+
+为什么？因为当解释器结束运行的时候，该模块的全局变量都会被设置为None。因此，在上述示例中，当__del__方法被调用之前，foo已经被设置成了None。
+
+要想解决这个有点棘手的Python编程问题，其中一个办法就是使用atexit.register()方法。这样的话，当你的程序执行完成之后（即正常退出程序的情况下），你所指定的处理程序就会在解释器关闭之前运行。
+
+应用了上面这种方法，修改后的mod.py文件可能会是这样子的：
+
+import foo
+import atexit
+
+def cleanup(handle):
+  foo.cleanup(handle)
+
+class Bar(object):
+  def __init__(self):
+    ...
+    atexit.register(cleanup, self.myhandle)
+
+这种实现支持在程序正常终止时干净利落地调用任何必要的清理功能。很明显，上述示例中将会由foo.cleanup函数来决定如何处理self.myhandle所绑定的对象。
+
+综述
+
+Python是一门强大而又灵活的编程语言，提供的许多编程机制和范式可以极大地提高工作效率。但是与任何软件工具或语言一样，如果对该语言的能力理解有限或无法欣赏，那么有时候自己反而会被阻碍，而不是受益了。正如一句谚语所说，“自以为知道够多，但实则会给自己或别人带来危险。
+
+不断地熟悉Python语言的一些细微之处，尤其是本文中提到的10大常见错误，将会帮助你有效地使用这门语言，同时也能避免犯一些比较常见的错误。
+

@@ -1,0 +1,64 @@
+
+报错问题:
+
+
+问题一:(1050代码)
+
+django.db.utils.InternalError: (1050, "Table 'app01_group' already exists")
+
+解决办法:
+
+python manage.py migrate app名 --fake
+
+
+问题二:(1146代码)
+
+django.db.utils.ProgrammingError: (1146, "Table 'anec.app01_usergroup' doesn't exist")
+
+问题解析:
+
+在数据库中删除了一张表，重新执行python manage.py migrate时出错，提示不存在这张表。
+
+分析原因:
+
+主要是因为django一般在第一次迁移的时候新建表，后面的都不会新建表，而是只检查字段等等的变化，所以我们既然已经删除了这张表，django检查这张表的字段变化的时候就自然报错了。
+
+解决办法:
+
+解决办法仍然是执行python manage.py makemigrations和python manage.py migrate，只不过在执行这个之前，把第一次执行迁移创建表的那个记录删除掉，否则它检测到已经执行过第一次了，那么它后面就不会创建表了。
+
+问题详解 转至 :http://www.bubuko.com/infodetail-2576217.html
+
+
+问题3 同表双外键
+
+报错信息:
+
+“ HINT: Add or change a related_name argument to the definition for 'AnswersModel.author' or 'AnswersModel.relay_to'.”
+
+解决:
+
+class AnswersModel(models.Model):
+   author = models.ForeignKey(FrontUserModel,null=True,related_name='answers_user')
+   relay_to = models.ForeignKey(FrontUserModel,null=True,related_name='relay_to_user')
+
+解释:
+当模型执行迁移时会报：HINT: Add or change a related_name argument to the definition for 'AnswersModel.author' or 'AnswersModel.relay_to错误。
+原因是因为author 和relay_to字段指向同一个模型的外键反向关联名称产生了冲突。
+FrontUserModel模型对author的反向关联名称为AnswersModel_set() 。
+FrontUserModel模型对relay_to的反向关联名称为AnswersModel_set()。
+因此，需要给外键增加related_name属性，自定义关联名称。
+
+
+问题4 (1045):
+
+错误描述：
+
+从SQLLITE数据库换为MYSQL数据库，执行 python manage.py migrate 命令时，报错：
+
+django.db.utils.OperationalError: (1045, "Access denied for user 'ODBC'@'localhost' (using password)
+
+原因说明及解决方案：
+
+django setting.py文件中设置的database用户名或者密码错了，修改一下就可以
+

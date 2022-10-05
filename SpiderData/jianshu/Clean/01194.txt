@@ -1,0 +1,80 @@
+(venv) D:\PycharmProjects\fastapi_code>pip install orjson
+Collecting orjson
+  Using cached orjson-3.3.1.tar.gz (655 kB)
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+    Preparing wheel metadata ... error
+    ERROR: Command errored out with exit status 1:
+     command: 'd:\pycharmprojects\fastapi_code\venv\scripts\python.exe' 'd:\pycharmprojects\fastapi_code\venv\lib\site-packages\pip\_vendor\pep517\
+_in_process.py' prepare_metadata_for_build_wheel 'C:\Users\GASCOG~1\AppData\Local\Temp\tmp4dn1u6lp'
+         cwd: C:\Users\Gascognya\AppData\Local\Temp\pip-install-uri88ald\orjson
+    Complete output (6 lines):
+    
+    Cargo, the Rust package manager, is not installed or is not on PATH.
+    This package requires Rust and Cargo to compile extensions. Install it through
+    the system's package manager or via https://rustup.rs/
+    
+    Checking for Rust toolchain....
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: 'd:\pycharmprojects\fastapi_code\venv\scripts\python.exe' 'd:\pycharmprojects\fastapi_code\venv\lib\
+site-packages\pip\_vendor\pep517\_in_process.py' prepare_metadata_for_build_wheel 'C:\Users\GASCOG~1\AppData\Local\Temp\tmp4dn1u6lp' Check the logs
+ for full command output.
+
+(venv) D:\PycharmProjects\fastapi_code>
+
+Cargo, the Rust package manager
+
+This package requires Rust and Cargo to compile extensions
+
+
+这个python包，是需要rust来扩展编译的
+
+
+安装rust后紧接着报错
+
+Complete output (13 lines):
+    maturin failed
+      Caused by: Cargo metadata failed. Do you have cargo in your PATH?
+      Caused by: Error during execution of `cargo metadata`: error: failed to run `rustc` to learn about target-specific information
+    
+    Caused by:
+      process didn't exit successfully: `rustc - --crate-name ___ --print=file-names -Z mutable-noalias --crate-type bin --crate-type rlib --crate-
+type dylib --crate-type cdylib --crate-type staticlib --crate-type proc-macro --print=sysroot --print=cfg` (exit code: 1)
+      --- stderr
+      error: the option `Z` is only accepted on the nightly compiler
+    
+    
+    Checking for Rust toolchain....
+
+How do I setup rust toolchain for orjson python library build in an alpine docker image?
+
+
+输入两条命令
+
+rustup toolchain add nightly
+
+rustup default nightly
+
+
+原本报错的地方没再报错，但后面又出现了新的错误
+
+Running maturin pep517 build-wheel -i python --manylinux=off --strip=on
+
+Error: Command '['maturin', 'pep517', 'build-wheel', '-i', 'python', '--manylinux=off', '--strip=on']' returned non-zero exit status 1.
+
+注意maturin
+
+pip install maturin
+
+
+安装后依旧不行
+
+https://github.com/readthedocs/readthedocs.org/issues/7313
+
+虽然不想往这方面考虑，但我认为可能是python版本的问题。我现在用的是3.9.0。
+
+现在尝试用3.8.5来试试
+
+
+别用Beta版本
+

@@ -1,0 +1,24 @@
+报错信息如下：
+
+我这是使用flask上传文件时候报错的，使用了8000端口，这种情况就是端口占用，通过命令找出来吧
+
+如图：
+
+C:\Users\Administrator>taskkill /pid 15652/F
+
+成功: 已终止 PID 为 15652的进程。
+
+第一条命令找出8000端口对应的PID进程为15652，第二条命令找出进程对应的详细信息，可以看到这个进程对应的是酷狗服务，因为酷狗这个进程不太重要，所以我们用taskkill pid的方式把它关掉，关掉就可以运行Django程序了，可能酷狗还会有其它进程会重启这个服务，把酷狗的其它进程一起关掉就可以了
+
+由于酷狗经常占用8000端口，我们一开酷狗Django就运行不了了，这时我们也可以考虑更改Django运行端口
+
+python manage.py runserver 8000
+
+或者
+
+python manage.py runserver 0.0.0.0:8000
+
+在pycharm中可以直接在Edit Configuration中的Port中直接指定
+
+我直接修改flask代码端口为8001，ok
+

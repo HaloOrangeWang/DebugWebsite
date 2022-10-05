@@ -1,0 +1,70 @@
+搜索了以下，错误原因是PIL的jpg图片支持组件没有安装
+
+1、先删除安装的PIL
+
+$ rm -rf /usr/lib64/python2.6/site-packages/PIL
+
+$ rm -rf /usr/lib64/python2.6/site-packages/PIL
+
+$ rm /usr/lib64/python2.6/site-packages/PIL.pth
+
+$ rm /usr/lib64/python2.6/site-packages/PIL.pth
+
+我64位服务器，如果32位就是在 /us/lib/python2.6/site-packages/
+
+2、安装JPEG和FREETYPE2库
+
+debain & ubuntu
+
+debain & ubuntu
+
+$ apt-get install libjpeg-dev
+
+$ apt-get install libjpeg-dev
+
+$ apt-get install libfreetype6-dev
+
+$ apt-get install libfreetype6-dev
+
+centos
+
+centos
+
+yum install libjpeg-devel
+
+yum install libjpeg-devel
+
+我centos yum并没有找到freetype2库，下载地址：http://sourceforge.net/projects/freetype/files/freetype2/
+
+tar zxvf freetype-2.4.8.tar.gz
+
+tar zxvf freetype-2.4.8.tar.gz
+
+cd freetype-2.4.8
+
+cd freetype-2.4.8
+
+make
+
+make
+
+make install
+
+make install
+
+3、编译PIL
+
+$ cd Imaging-1.1.7
+
+$ cd Imaging-1.1.7
+
+$ python setup.py build_ext –i
+
+$ python setup.py build_ext –i
+
+看下最后的信息，如果前面都安装成功，JPEG support ok, FREETYPE2 support ok
+
+4、安装
+
+$ python setup.py install
+

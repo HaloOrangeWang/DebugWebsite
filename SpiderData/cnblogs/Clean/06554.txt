@@ -1,0 +1,18 @@
+可能是定位出了问题，比如下面这段代码，我用link_text的方式来定位，就会报上述错误，换了xpath就可以了，我这个xpath直接复制的浏览器提供的，可以自己写。
+
+这个报错跟浏览器也有一定关系，换Chrome浏览器，用link_text定位就不会报错了。
+
+driver = webdriver.Firefox()
+
+driver.implicitly_wait(10)
+
+driver.get("http://www.baidu.com")
+
+# 鼠标悬停至"设置连接
+
+# link = driver.find_element_by_link_text('设置')
+
+link = driver.find_element_by_xpath('/html/body/div[1]/div[1]/div/div[3]/a[8]')
+
+ActionChains(driver).move_to_element(link).perform()
+

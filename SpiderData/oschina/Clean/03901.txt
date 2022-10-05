@@ -1,0 +1,98 @@
+
+工作的环境版本如下：
+
+
+【Django version】: 2.1
+
+
+【celery version】：4.4.0rc2
+
+
+【python version】: 3.7
+
+
+【Redis version】：3.2.1
+
+
+启动celery没有报错，但是执行队列任务的时候就爆出下的错误：
+
+C:\Users\Circle\Desktop\circle\dailyfresh>celery -A celery_tasks.tasks worker -l info
+
+-------------- celery@DESKTOP-9T9MK4N v4.4.0rc2 (cliffs)
+---- **** -----
+--- * ***  * -- Windows-10-10.0.18362-SP0 2019-07-07 18:30:46
+-- * - **** ---
+- ** ---------- [config]
+- ** ---------- .> app:         celery_tasks.tasks:0x3f1dbd0
+- ** ---------- .> transport:   redis://127.0.0.1:6379/0
+- ** ---------- .> results:     disabled://
+- *** --- * --- .> concurrency: 6 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** -----
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+
+[tasks]
+  . celery_tasks.tasks.send_register_active_email
+
+[2019-07-07 18:30:46,878: INFO/MainProcess] Connected to redis://127.0.0.1:6379/0
+[2019-07-07 18:30:46,895: INFO/MainProcess] mingle: searching for neighbors
+[2019-07-07 18:30:47,095: INFO/SpawnPoolWorker-1] child process 13392 calling self.run()
+[2019-07-07 18:30:47,107: INFO/SpawnPoolWorker-2] child process 14868 calling self.run()
+[2019-07-07 18:30:47,120: INFO/SpawnPoolWorker-3] child process 9888 calling self.run()
+[2019-07-07 18:30:47,142: INFO/SpawnPoolWorker-4] child process 2376 calling self.run()
+[2019-07-07 18:30:47,163: INFO/SpawnPoolWorker-5] child process 11940 calling self.run()
+[2019-07-07 18:30:47,281: INFO/SpawnPoolWorker-6] child process 13064 calling self.run()
+[2019-07-07 18:30:47,913: INFO/MainProcess] mingle: all alone
+[2019-07-07 18:30:47,920: INFO/MainProcess] celery@DESKTOP-9T9MK4N ready.
+[2019-07-07 18:32:59,122: INFO/MainProcess] Received task: celery_tasks.tasks.send_register_active_email[3a441c20-162b-441c-902c-d479b8450115]
+[2019-07-07 18:32:59,129: ERROR/MainProcess] Task handler raised error: ValueError('not enough values to unpack (expected 3, got 0)')
+Traceback (most recent call last):
+  File "c:\users\circle\appdata\local\programs\python\python37-32\lib\site-packages\billiard\pool.py", line 358, in workloop
+    result = (True, prepare_result(fun(*args, **kwargs)))
+  File "c:\users\circle\appdata\local\programs\python\python37-32\lib\site-packages\celery\app\trace.py", line 546, in _fast_trace_task
+    tasks, accept, hostname = _loc
+ValueError: not enough values to unpack (expected 3, got 0)
+
+
+一顿乱找之后，发现有人说在win10上运行celery4.x版本就会出现这个问题，解决办法是安装一个eventlet
+
+pip install eventlet
+
+
+再次启动celery执行任务：
+
+celery -A celery_tasks.tasks worker -l info -P eventlet
+
+
+再次执行任务也没有报错
+
+C:\Users\Circle\Desktop\circle\dailyfresh>celery -A celery_tasks.tasks worker -l info -P eventlet
+-------------- celery@DESKTOP-9T9MK4N v4.4.0rc2 (cliffs)
+--- * ***  * -- Windows-10-10.0.18362-SP0 2019-07-07 18:44:33
+-- * - **** ---
+- ** ---------- [config]
+- ** ---------- .> app:         celery_tasks.tasks:0x472d2f0
+- ** ---------- .> transport:   redis://127.0.0.1:6379/0
+- ** ---------- .> results:     disabled://
+- *** --- * --- .> concurrency: 6 (eventlet)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** -----
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+
+[tasks]
+  . celery_tasks.tasks.send_register_active_email
+
+[2019-07-07 18:44:33,452: INFO/MainProcess] Connected to redis://127.0.0.1:6379/0
+[2019-07-07 18:44:33,470: INFO/MainProcess] mingle: searching for neighbors
+[2019-07-07 18:44:34,509: INFO/MainProcess] mingle: all alone
+[2019-07-07 18:44:34,519: INFO/MainProcess] pidbox: Connected to redis://127.0.0.1:6379/0.
+# 这下面爆了一个警告，但是不要在意，大概意思是你的DEBUG是调试模式，调试导致内存泄漏，请不要在生产环境中使用此设置!
+[2019-07-07 18:44:34,523: WARNING/MainProcess] c:\users\circle\appdata\local\programs\python\python37-32\lib\site-packages\celery\fixups\django.py:202: UserWarning: Usi
+ng settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2019-07-07 18:44:34,523: INFO/MainProcess] celery@DESKTOP-9T9MK4N ready.
+[2019-07-07 18:44:50,818: INFO/MainProcess] Received task: celery_tasks.tasks.send_register_active_email[ec83170e-05d5-412c-89e6-77699ade9f07]
+[2019-07-07 18:44:57,435: INFO/MainProcess] Task celery_tasks.tasks.send_register_active_email[ec83170e-05d5-412c-89e6-77699ade9f07] succeeded in 6.625s: None
+

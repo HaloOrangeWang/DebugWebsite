@@ -1,0 +1,43 @@
+今天利用anaconda3安装tensorflow以及caffe,主要参考博客
+
+现在电脑环境:
+
+ubuntu16.04
+
+cuda8.0
+
+cudnn6.0
+
+anaconda3
+
+1. from scipy.misc import imread,imresize 报错
+
+提示错误ImportError: cannot import name imread
+
+但是import scipy的时候 显示正确。
+
+解决方案：pip install  Pillow.
+
+2.  libcublas.so.9.0: cannot open shared object file: No such file or directory
+原因:新版本的tensorflow(1.5之后)不支持CUDA8.0.要么降tennsorflow版本,要么生cuda版本
+
+pip install tensorflow-gpu==1.4  来选择安装特定版本tensorflow
+
+3. swig/python detected a memory leak of type 'int64_t *', no destructor found”
+
+原因:tensorflow1.3版本自身bug
+
+解决方案:安装tensorflow1.4
+
+4.anaconda 安装caffe出问题
+
+原因:不知道怎么改makefile.config
+
+解决方案:按照博客方案老老实实用电脑自带python安装
+
+5. caffe安装完进行test时报错:libcublas.so.8.0: cannot open shared object file: No such file or directory
+原因:cuda8.0的库找不到,没有共享
+解决方案:按照博客方案,输入以下命令即可
+
+sudo cp /usr/local/cuda-8.0/lib64/libcurand.so.8.0 /usr/local/lib/libcurand.so.8.0 && sudo ldconfig
+

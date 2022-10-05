@@ -1,0 +1,47 @@
+使用pandas读取xml文件报错
+
+“ Unsupported format, or corrupt file: Expected BOF record; found b'<?xml ve' ”
+
+
+解决办法：
+
+转换文件格式，使用excel打开xml文件 选择：文件—>另存为---->弹框
+
+保存以后，再次用pandas读取对应格式的文件读取即可
+
+补充：
+
+在jupyter中读取CSV文件时出现‘utf-8' codec can't decode byte 0xd5 in position 0: invalid continuation byte解决方法
+
+导入 import pandas as pd
+
+使用pd.read_csv()读csv文件时，出现如下错误：
+
+UnicodeDecodeError: ‘utf-8' codec can't decode byte 0xd5 in position 0: invalid continuation byte
+
+
+出现原因：
+
+CSV文件不是UTF-8进行编码，而是用gbk进行编码的。jupyter-notebook使用的Python解释器的系统编码默认使用UTF-8.
+
+
+解决方式有两种
+
+
+第一种：
+
+1.找到使用的csv文件--->鼠标右键--->打开方式---->选择记事本
+
+2.打开文件选择“文件”----->"另存为“，我们可以看到默认编码是：ANSI，选择UTF-8重新保存一份，再使用pd.read_csv()打开就不会保存了
+
+
+第二种：
+
+使用pd.read()读取CSV文件时，进行编码
+
+pd.read(filename,encoding='gbk')
+
+比如：
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

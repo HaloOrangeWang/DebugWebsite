@@ -1,0 +1,22 @@
+学习《Linux编程第四版》时遇到问题：
+
+报错：
+
+错误：‘sem_union’的存储大小未知
+
+原因：
+
+Linux 2.6版内核union sem_union 联合体已被注释
+
+解决方法：
+
+重新定义sem_union
+
+union semun
+{
+    int val;
+    struct semid_ds *buf;
+    unsigned short *array;
+    struct seminfo *__buf;
+};
+

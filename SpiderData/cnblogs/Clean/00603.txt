@@ -1,0 +1,60 @@
+我们都知道django项目可以通过修改settings.py文件中的DATABASES这个对象，使用不同的数据库。
+
+如图所示，我们想连接远程的mysql,修改settings.py的配置
+
+然后我们在终端启动项目python manage.py runserver
+
+不料发生报错，这个错很明显就是无法连接远程的mysql
+
+下面我们就开始来解决这个问题
+
+首先，我们通过xshell登陆远程的服务器
+
+然后进入 /etc/mysql/my.cnf
+
+然后修改my.cnf 这个文件的内容，保存退出
+
+重启一下mysql
+
+然后回到我们的django项目中，重新启动一下项目，发现还是报之前那个错误，别急，我们还有一个东西没有设置。
+
+授权任意主机登陆
+
+我们现在回到服务器上面，登陆mysql
+
+终端命令为mysql -u root -p123456,-p后面紧跟着是你的密码，不能有空格
+
+grant all privileges on *.* to 'root'@'%' identified by 'password' with grant option;
+
+grant all privileges on *.* to 'root'@'%' identified by 'password' with grant option;
+
+我们只需改一个地方
+
+password： mysql 密码
+
+授权成功后，我们还需要刷新权限信息flush privileges;
+
+现在搞了这么多我们又回到django,重新运行django项目，python manage.py runserver 发现还是报原来那个错，后来想了想，
+
+因为我用的是阿里云服务器，其中阿里云服务器有一个叫做安全组的东西。
+
+我们可以看到红色框框的那句话： 安全组未设置任何自定义放行规则，会导致无法访问实例端口，若需访问请添加安全组规则放行对应的端口。
+
+因为我们mysql用的是3306这个端口，并没有在安全组找到，所以我们先配一个。
+
+好，到现在我们可以大胆地运行我们的django项目了
+
+并没有报错，成功地运行了，真happy。。。
+
+我们来验证一下是不是真的连上了远程服务器
+
+我们先查询一下我们django项目的表有没有数据
+
+然后我们通过python manage.py shell，手动添加一个，然后在远程服务器查询是否有添加成功，
+
+如果添加成功，说明我们本地的django项目已经连上了远程的服务器。
+
+我们已经成功添加一条数据到TestModel中，现在我们在服务器上查询是否有这条数据。
+
+很明显我们刚才添加的数据已经存在了，说明大功告成，我们本地的django项目已经连上了远程的服务器。
+

@@ -1,0 +1,30 @@
+1.根据提示一开始查询是否是前端请求数据有误:
+
+发现没有错误,返回的request.data中有spu_id和name值
+
+2.但是报错显示
+
+class SPUSpecsViewSerializer(serializers.ModelSerializer):
+
+spu = serializers.StringRelatedField(read_only=True)
+
+class Meta:
+        model = SPUSpecification
+        fields = ('id', 'name', 'spu_id', 'spu')
+
+3.但是在models模型类中查看,发现原来模型类对象并不处在spu_id字段
+
+4.所以推测可能是因为在序列化器中未定义spu_id字段,所以无法和表中信息相对应,所以在序列化器中加入spu_id的定义:
+
+class SPUSpecsViewSerializer(serializers.ModelSerializer):
+
+spu = serializers.StringRelatedField(read_only=True)
+
+spu_id = serializers.IntegerField()
+
+class Meta:
+        model = SPUSpecification
+        fields = ('id', 'name', 'spu_id', 'spu')
+
+5.问题解决
+

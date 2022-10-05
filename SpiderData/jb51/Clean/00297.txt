@@ -1,0 +1,28 @@
+
+问题
+
+jupyter notebook读入csv数据时出现错误
+
+“SyntaxError: (unicode error) ‘unicodeescape' codec can't decode bytes in position 2-3: truncated \UX”
+
+
+解决方法
+
+将文件路径中'C:\Users\huangyanli\Desktop\churn.csv'的“\”改为“\\”就可以了。
+
+完美解决问题。
+
+补充：Jupyter notebook 导出的csv 文件是乱码的解决方案
+
+本人使用的是Jupyter notebook 编辑器做数据分析的，API 是pyspark,有时候需要把 pyspark DataFrame 转成 pandas Dataframe,然后转成CSV 文件去汇报工作，发现有中文导出的时候是乱码，问了运维的同事的他们已经设置成了UTF-8 的模式，我在代码里也设置了UTF-8 .后来发现是CSV的问题，先将CSV用txt记事本打开，然后选择ANSI编码方式。
+
+另存为，点编码这里，这里的编码有这么几种选择，最后用excel去打开就可以了。
+
+
+pyspark 导出代码:
+
+aa1 = aa.toPandas()
+aa1.to_csv('output_file.csv')
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

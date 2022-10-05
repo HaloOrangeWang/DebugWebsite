@@ -1,0 +1,48 @@
+一、安装opencv
+
+　　借鉴的这篇博客已经写得很清楚了--------https://blog.csdn.net/u011321546/article/details/79499598       ，这里我只是记录一下自己的安装过程
+
+　　按理说这里安装opencv应该有两种办法，一种方法是python的pip安装，另外一种方法是直接在Pycharm里安装，但是尝试后发现第二种方法发现有错，如下图。
+
+　　
+
+　　出错原因是“试着从系统终端运行这个命令”，所以我们只能用第一种方法pip安装。
+
+　　在安装opencv之前要先安装pip，安装pip方法如下：
+
+　　进入Python安装目录下的Scripts路径，执行  easy_install-3.6.exe  pip             （因为我的python版本是3.6的），执行了这条命令后，pip就安装成功了，pip的功能如下：
+
+　　
+
+　　安装完pip后，接着安装opencv（其他模块安装也类似如下这种方法）：
+
+　　进入Python安装目录下的Scripts路径，执行   pip install opencv-python
+
+　　
+
+　　这里要查看安装的opencv的版本话需要在，需要在命令行终端（或python自带的IDLE中）运行如下代码即可查看：
+
+　　import cv2
+
+　　cv2.__version__
+
+　　效果如下，可以知道我的opencv版本为3.4.0
+
+　　
+
+二、pycharm导入cv2有问题的解决办法
+
+　　pip安装好opencv后，可是在pycharm里导入cv2还是会报错，这是为什么呢？我也百度了好一会儿才找到解决方法，这里参考博客：https://blog.csdn.net/Eclipsesy/article/details/77686807      这篇博客很好解决了我的问题，但是博客里的方法最后一处感觉有点多余，只需要第一步即可解决问题。
+
+　　解决办法：
+
+　　要确定pycharm里的环境变量是否包含python的环境lib，查看方法如下图所示：
+
+　　点击Show All，在点击红色圈查看pycahrm的查找路径，最后看黄色圈的路径是否加进去。注意：只有黄色圈部分路径加进去了（site-packages这个文件夹必须包含进去），Pycahrm才能正确导入cv2。
+
+补：pip安装成功第三方库后，pycharm导入第三方库却失败的解决办法
+
+　　可能是python虚拟环境要设置成存在的环境，而不是新产生的环境（我是在导入pywin32模块时始终无法导入，但是把这个虚拟环境改成已存在的环境后，Pycharm就可以成功导入pywin32模块了，真的是很神奇的一件事儿）
+
+　　
+

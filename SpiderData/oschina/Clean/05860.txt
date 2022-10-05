@@ -1,0 +1,32 @@
+使用Ambari Api 进行删除service 报错
+
+curl -s -u admin:admin -H "X-Requested-By: Ambari" -X DELETE
+
+http://***:8080/api/v1/clusters/cluster/services/MONGODB
+
+错误
+
+{
+
+"status" : 500,
+
+"message" : "org.apache.ambari.server.controller.spi.SystemException: An internal system exception occurred: Cannot remove MONGODB. Desired state STARTED is not removable.  Service must be stopped or disabled."
+
+}
+
+只能通过数据库里进行删除，比如服务是MONGODB ，删除脚本如下
+
+delete from servicedesiredstate where service_name like '%MONGODB%';
+
+delete from hostcomponentstate where component_name like '%MONGODB%';
+
+delete from hostcomponentdesiredstate where component_name like '%MONGODB%';
+
+delete from servicecomponentdesiredstate where component_name like '%MONGODB%';
+
+delete from clusterservices where service_name like 'MONGODB';
+
+重启服务
+
+Ambari-server restart
+

@@ -1,0 +1,125 @@
+
+一、断言 基础知识
+
+测试用例三要素：输入、执行条件、预期输出
+
+预期输出就要靠断言来实现，简单来讲就是实际结果和期望结果去对比，符合预期那就测试pass，不符合预期那就测试 failed
+
+
+1.断言语法
+
+pytest与unittest不同，pytest使用的是python自带的assert关键字来进行断言，unittest使用的是自己的断言，需要用self来调用
+
+assert关键字后面可以接一个表达式，只要表达式的最终结果为True，那么断言通过，用例执行成功，否则用例执行失败
+
+常用格式：
+
+assert xx ：判断 xx 为真
+
+assert not xx ：判断 xx 不为真
+
+assert a in b ：判断 b 包含 a
+
+assert a == b ：判断 a 等于 b
+
+assert a != b ：判断 a 不等于 b
+
+assert a > b ：判断 a 大于 b（<, >=, <=等等）
+
+
+2.自定义断言失败信息
+
+第一种：不做任何处理，默认报错信息，如 assert "1" == '23' 失败后，报告：AssertionError: assert '1' == '23'
+
+第二种：自定义报错信息，如：assert "1" == '23', '1 难道不等于 23 么？'  失败后报告： AssertionError: 1 难道不等于 23 么？
+
+
+二、异常断言
+
+
+1.异常断言 pytest.raises
+
+pytest.raises 作为上下文管理器，当其管理的执行代码抛出我们指定类型的异常时，可以异常捕获为一个异常对象，不会报错，继续执行后续代码
+
+pytest.raises只会捕获指定的异常类型，遇到其他类型异常或者没有报错，都会直接报错造成用例执行失败
+
+应用场景：在一些代码块或者函数会引发意料之中的异常，导致程序无法运行时，使用 raises 捕获匹配到的异常，代码可以继续正常运行
+
+执行结果：用例通过
+
+执行过程：执行代码报属性错误 --> 异常管理器捕获到，并生成异常实例 e  -->  继续执行管理器外其他代码
+
+异常对象常用属性：type、typename、value、traceback
+
+注意：异常管理的执行代码没有出现预言的异常的话，会报错，用例执行失败
+
+
+2.异常断言 正则匹配
+
+pytest.raises上下文管理器，支持正则表达式，match参数即为正则表达式，表示的是re.search()
+
+正则匹配的是异常实例的value，如果异常类型匹配，且异常信息value和 re.search('表达式') 也匹配，则表示出现了预期内的异常
+
+执行结果：通过
+
+
+三、 pytest使用xfail处理失败
+
+xfail意味将测试用例标记为预期失败，常用于对尚未实现的功能或尚未修复的错误进行测试
+
+当测试被标记为预期失败（用装饰器pytest.mark.xfail标记）：
+
+无异常，通过，测试报告中则展示为xpass
+
+预期异常，失败，测试报告中则展示为xfail
+
+其他异常，失败，测试报告中则展示为failled
+
+
+1.xfail基础语法
+
+@pytest.mark.xfail(condition=None, *, reason=None, raises=None, run=True, strict=False)
+
+参数
+
+condition（bool或str）– （True/False或条件字符串）将测试函数标记为 xfail的条件。如果是 bool，还必须指定后面的reason。
+
+reason ( str) – 测试函数被标记为 xfail 的原因描述，报错后会显示出来，相当于自定义异常提示
+
+raises ( Type [ Exception ] ) – 预期为由测试函数引发的子类异常如ValueError，TypeError等；其他异常不通过测试。
+
+run ( bool ) –是否实际执行测试函数。如果False，该函数将始终 xfail 并且不会被执行
+
+strict( bool ) - 默认False，如果通过测试结果为xpassed。如果是True，即使用例无报错，测试结果也是failed，可以在pytest.ini配置文件中指定xfail_strict，对全局用xfail的用例生效。如果配置文件和用例中都有，以用例中的为准
+
+
+2.检查断言装饰器
+
+@pytest.mark.xfail(raises='异常类型')
+
+检查是否有异常，常见情况有以下三种：
+
+总结：
+
+with pytest.raise 对于故意测试异常代码的情况，使用可能会更好
+
+@pytest.mark.xfail 对于检查未修复的错误（即，可能会发生异常），使用检查断言可能会更好
+
+
+3.reason自定义报错信息
+
+
+4.condition用法
+
+两种用法：
+
+举例：
+
+condition为：sys.platform == "win32"
+
+条件成立：该用例xfail才会生效，无报错则 XPASS,有报错则XFAIL
+
+条件不成立：就是没有xfail管理的普通用例
+
+>>参考小菠萝<<
+

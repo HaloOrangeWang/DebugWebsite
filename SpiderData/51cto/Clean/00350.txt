@@ -1,0 +1,63 @@
+
+文章目录
+
+​​前言​​
+
+​​一、updatexml报错​​
+
+​​二、updatexml报错记忆​​
+
+union注入是最简单方便的,但是要求页面必须有显示位,没有就没法利用.
+
+所以当页面没有显示位时,我们需要用其他方法来获取数据.因此我们可以使用报错注入: 有些网站在开发调试阶段开启了报错提示信息,如果没有关闭,就有可能存在报错注入.
+
+报错注入函数:
+
+floor函数
+
+extractvalue报错
+
+updatexml报错
+
+今天我在这里先记录一下对于updatexml报错函数的学习
+
+基本格式: ​​?id=1 and updatexml(1,(payload),1)​​
+
+举例: ​​?id=1 and updatexml(1, (concat(0x7e,(select @@version),0x7e)),1)​​
+
+在这里我们以sql-labs第五关进行操作：
+
+payload：
+
+可以看到是没有显示位的，因此不能进行联合查询注入-我们选择报错注入
+
+判断注入点
+
+当and 1=1 or and 1=2 时都显示不变
+
+因此输入：​​?id=1 '​​判断
+
+确定注入类型为字符型注入
+
+回显
+
+爆数据库
+
+爆表名
+
+爆用户名
+
+爆密码
+
+操作一遍大家可以发现其实语法并不难，很便于记住：
+
+在回显中以及爆数据库这两步只需要改变/payload/即可
+
+爆表名虽然有一丢多：​​?id=1 ' union select updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema ='security' limit 0,1),0x7e),1) --+​​
+
+那么爆用户名以及密码基本不需要怎么改变：
+
+同样这两步也只需要改变/payload/
+
+其实这个多敲几遍也就记住了 --.–
+

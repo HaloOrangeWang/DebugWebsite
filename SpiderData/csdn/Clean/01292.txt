@@ -1,0 +1,70 @@
+
+案例背景
+
+因项目需要，环境中需要部署Pypi环境，安装Python的许多环境包，需要以下包：
+ $ pip3 install flask
+ $ pip3 install numpy
+ $ pip3 install opencv-python
+ $ pip3 install scipy
+ $ pip3 install matplotlib
+ $ pip3 install pandas
+ $ pip3 install tensorflow==1.6
+ 但所部署环境为内网主机，无法联网，离线安装这些安装包又因依赖关系复杂，操作困难
+
+
+实现方式
+
+
+1、本地内网配置IPv4转发实现访问Python仓库
+
+仓库地址1：http://pypi.doubanio.com/simple
+ 仓库地址2：http://mirrors.aliyun.com/pypi/simple/
+ 将以上仓库地址将入路由转发，且在host文件中配置静态解析。ping测试域名通即可。
+
+
+2、安装时报错：
+
+案例1：
+ [root@JCJK sysconfig]# /home/qc/python3/bin/pip3 install --upgrade pip
+ Retrying (Retry(total=4, connect=None, read=None, redirect=None)) after connection broken by ‘NewConnectionError(’<pip._vendor.requests.packages.urllib3.connection.VerifiedHTTPSConnection object at 0x7fbe3db777f0>: Failed to establish a new connection: [Errno -2] 未知的名称或服务’,)’: /simple/pip/
+ Retrying (Retry(total=3, connect=None, read=None, redirect=None)) after connection broken by ‘NewConnectionError(’<pip._vendor.requests.packages.urllib3.connection.VerifiedHTTPSConnection object at 0x7fbe3db77710>: Failed to establish a new connection: [Errno -2] 未知的名称或服务’,)’: /simple/pip/
+ Retrying (Retry(total=2, connect=None, read=None, redirect=None)) after connection broken by ‘NewConnectionError(’<pip._vendor.requests.packages.urllib3.connection.VerifiedHTTPSConnection object at 0x7fbe3db779b0>: Failed to establish a new connection: [Errno -2] 未知的名称或服务’,)’: /simple/pip/
+ ^COperation cancelled by user
+ 以上报错：还是网络不通，静态路由配置错误；请确保ping测试连通正常后再次尝试；
+ 案例2：
+ root@JCJK sysconfig]# /home/qc/python3/bin/pip3 install --upgrade pip -i http://pypi.doubanio.com/simple
+ The repository located at pypi.doubanio.com is not a trusted or secure host and is being ignored. If this repository is available via HTTPS it is recommended to use HTTPS instead, otherwise you may silence this warning and allow it anyways with ‘–trusted-host pypi.doubanio.com’.
+ Requirement already up-to-date: pip in /home/qc/python3/lib/python3.6/site-packages
+ 以上报错：是因域名与系统之间的信任问题，可按照说明后加–trusted-host pypi.doubanio.com
+ 案例3：
+ [root@JCJK sysconfig]# /home/qc/python3/bin/pip3 install numpy -i http://pypi.doubanio.com/simple
+ Collecting numpy
+ The repository located at pypi.doubanio.com is not a trusted or secure host and is being ignored. If this repository is available via HTTPS it is recommended to use HTTPS instead, otherwise you may silence this warning and allow it anyways with ‘–trusted-host pypi.doubanio.com’.
+ Could not find a version that satisfies the requirement numpy (from versions: )
+ No matching distribution found for numpy
+ 以上报错，可能是Python仓库问题，请切换到阿里仓库尝试
+ 案例4：
+ [root@JCJK sysconfig]# /home/qc/python3/bin/pip3 install numpy -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+ Collecting numpy
+ Retrying (Retry(total=4, connect=None, read=None, redirect=None)) after connection broken by ‘ConnectTimeoutError(<pip._vendor.requests.packages.urllib3.connection.HTTPConnection object at 0x7ff43f32ec88>, ‘Connection to proxy.*** timed out. (connect timeout=15)’)’: http://mirrors.aliyun.com/pypi/simple/numpy/
+ Retrying (Retry(total=3, connect=None, read=None, redirect=None)) after connection broken by ‘ConnectTimeoutError(<pip._vendor.requests.packages.urllib3.connection.HTTPConnection object at 0x7ff440586748>, ‘Connection to proxy.**** timed out. (connect timeout=15)’)’: http://mirrors.aliyun.com/pypi/simple/numpy/
+ Retrying (Retry(total=2, connect=None, read=None, redirect=None)) after connection broken by ‘ConnectTimeoutError(<pip._vendor.requests.packages.urllib3.connection.HTTPConnection object at 0x7ff4405f27f0>, ‘Connection to proxy.**** timed out. (connect timeout=15)’)’: http://mirrors.aliyun.com/pypi/simple/numpy/
+ ^COperation cancelled by user
+ CCCCTraceback (most recent call last):
+ File “/home/qc/python3/lib/python3.6/site-packages/pip/_vendor/requests/packages/urllib3/connection.py”, line 142, in _new_conn
+ (self.host, self.port), self.timeout, **extra_kw)
+ File “/home/qc/python3/lib/python3.6/site-packages/pip/_vendor/requests/packages/urllib3/util/connection.py”, line 75, in create_connection
+ for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+ File “/home/qc/python3/lib/python3.6/socket.py”, line 745, in getaddrinfo
+ for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+ 以上报错是因本地之前配置了代理问题，可去/etc/yum.conf中注释掉相关配置，unset http_proxy删除代理环境变量；注释掉/etc/profile中相关dialing配置
+
+
+3、安装Python包
+
+# /home/qc/python3/bin/pip3  install numpy -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+
+说明：其中，-i参数用来指定仓库， --trusted-host添加信任关系
+ 
+ 如上图所示，成功完成软件安装。
+

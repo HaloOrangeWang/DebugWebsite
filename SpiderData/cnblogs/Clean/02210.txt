@@ -1,0 +1,29 @@
+
+Aasible中cryptography兼容性报错解决办法
+
+
+1 Ansible中使用ansible --version查看版本，报错信息如下：
+
+ERROR! Unexpected Exception, this is probably a bug: (cryptography 0.8.2 (/usr/lib64/python2.7/site-packages), Requirement.parse('cryptography>=1.1'))
+the full traceback was:
+
+
+2 分析报错原因：
+
+最后一句Requirement.parse('cryptography>=1.1'))，得知cryptography的版本过低，需要升级，安装cryptography需要通过pip安装，所以需要先安装pip。
+
+
+3 pip安装
+
+
+4 安装wheel
+
+
+5 安装cryptography
+
+下载：wget https://files.pythonhosted.org/packages/87/e6/915a482dbfef98bbdce6be1e31825f591fc67038d4ee09864c1d2c3db371/cryptography-2.3.1-cp27-cp27mu-manylinux1_x86_64.whl
+安装：pip install cryptography-2.3.1-cp27-cp27mu-manylinux1_x86_64.whl
+
+
+6. 测试是否还有问题
+

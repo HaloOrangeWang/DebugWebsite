@@ -1,0 +1,9 @@
+  近期，本人在根据某些使用python调用gdal.Warp函数对影像进行RPC校正的教程对遥感影像进行了RPC校正实验，发现有些时候python调用gdal的RPC结果与envi等专业软件的RPC结果相差了很多像素。
+    经调式gdal.py发现，问题在于gdal.Warp函数的transformerOptions参数设置导致调用gdal后无法使用设置的dem数据，而造成RPC校正的偏差。
+   具体如下：
+   教程中transformerOptions的参数直接设置为dem数据的路径，例如下图：
+ 
+   这种做法会让python调用gdal时，无法使用transformerOptions参数，但又不会报错。
+   gdal本身的transformerOptions参数解释为‘NAME=VALUE’。NAME有很多种，若使用dem数据，则NAME是RPC_DEM。而且python的gdal.py中transformerOptions模块是一个循环函数，在图中的demfile不能直接设置为一个字符串。
+   根据以上问题，则只需将dem的输入设置为字典并写做‘NAME=VALUE’的形式即可，如下图：
+

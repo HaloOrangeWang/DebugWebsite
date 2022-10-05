@@ -1,0 +1,25 @@
+Python 报错：TypeError: file must have 'read' and 'readline' attributes
+
+在运行序列化（pickle）相关功能时报错：TypeError: file must have 'read' and 'readline' attributes
+
+上代码：
+
+>>> fp = open("a.txt","r+")
+>>> import pickle
+>>> pickle.load("fp")#提示报错
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: file must have 'read' and 'readline' attributes
+
+原因分析：在load()方法里的参数写错了，多了一个“”，去掉即可
+
+解决：
+
+改成如下方法即可
+
+>>> fp = open("a.txt","rb+")
+>>> import pickle
+>>> pickle.load(fp)#序列化打印结果
+['apple', 'mango', 'carrot']
+

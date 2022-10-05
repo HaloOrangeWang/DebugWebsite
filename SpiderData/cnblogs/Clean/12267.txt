@@ -1,0 +1,19 @@
+
+报错
+
+使用python第三方库stanfordcorenlp，调用StanfordCoreNLP接口处理中文时报错
+
+调试时发现报错是因为被处理的文本中含有 %
+
+
+解决
+
+处理含有%的文本会报错是因为StanfordCoreNLP内部对 % 和 + 做了特殊处理，将 % 和 + 分别替换为 %25 和 %2B 即可正常使用。
+
+这个替换可以在调用时先对要处理的文本做好替换，也可以直接修改stanfordcorenlp源码，一劳永逸。
+
+
+参考
+
+https://blog.csdn.net/l18848956739/article/details/87605125
+

@@ -1,0 +1,45 @@
+这个上传按钮，使用 Choose File，失败不知道为什么。。。
+
+Name:
+Choose File
+Source:
+Selenium2Library <test library>
+Arguments:
+[ locator | file_path ]
+
+然后说用AutoItLibrary pip安装报错，下载安装报错（python3.7）坑。
+
+然后说试试 python+selenium来解决，but它会自己新开浏览器。。。。坑  （可以这样开浏览器把图片上传好了再关闭浏览器 再在RF打开浏览器操作，感觉很low）
+
+然后说试试python+pywin32终于成功
+
+1 #coding:utf-8
+ 2 import os
+ 3 import win32gui
+ 4 import win32con
+ 5 
+ 6 def upload(fileAddr):
+ 7 
+ 8     wndtitle = u"打开"   # 进程名（就是那个窗体名称）
+ 9     wndclass = '#32770' #这个用SPY++找出来 什么类名
+10     wnd = win32gui.FindWindow(wndclass, wndtitle) #获取这个窗体的句柄，不懂什么是句柄 感觉是个id吧
+11     print("上传窗口句柄:%s"%wnd)
+12 
+13     Ind = win32gui.GetDlgItem(wnd,1148) #通过窗体句柄和控件ID，找到输入框的句柄
+14     print("输入框句柄:%s"%Ind)
+15 
+16     win32gui.SendMessage(Ind,win32con.WM_SETTEXT,None,fileAddr) #给这个输入框发送text
+17 
+18     Bnd = win32gui.GetDlgItem(wnd,1) #取打开按钮的句柄
+19     print("打开按钮句柄:%s"%Bnd)
+20 
+21     win32gui.SendMessage(Bnd,win32con.BM_CLICK,None,None) #点【打开】按钮
+
+句柄什么鬼：
+
+句柄（handle），有多种意义，其中第一种是指程序设计，第二种是指Windows编程。现在大部分都是指程序设计/程序开发这类。
+第一种解释：句柄是一种特殊的智能指针 。当一个应用程序要引用其他系统（如数据库、操作系统）所管理的内存块或对象时，就要使用句柄。
+第二种解释：整个Windows编程的基础。一个句柄是指使用的一个唯一的整数值，即一个4字节(64位程序中为8字节)长的数值，来标识应用程序中的不同对象和同类中的不同的实例，
+诸如，一个窗口，按钮，图标，滚动条，输出设备，控件或者文件等。应用程序能够通过句柄访问相应的对象的信息，但是句柄不是指针，程序不能利用句柄来直接阅读文件中的信息。
+如果句柄不在I/O文件中，它是毫无用处的。 句柄是Windows用来标志应用程序中建立的或是使用的唯一整数，Windows大量使用了句柄来标识对象。
+

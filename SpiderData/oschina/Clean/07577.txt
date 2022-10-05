@@ -1,0 +1,34 @@
+最近想把部分python数据分析的代码从win系统迁移到MAC上，有部分图片上涉及中文显示，迁移到MAC上warning:
+
+UserWarning: 
+findfont: Font family [u'sans-serif'] not found. Falling back to Bitstream Vera Sans
+(prop.get_family(), self.defaultFamily[fontext]))
+
+然后中文字体各种方块，我本来的字体设置代码是这样的：
+
+def plot_para():#设置画图参数及相关配置,如透明度,中文显示
+    mpl.rcParams['font.sans-serif']='SimHei'
+    mpl.rcParams['font.family']='sans-serif'
+    mpl.rcParams['axes.unicode_minus']=False
+
+网上给出了各种解决方案，总结下来无外乎下面两种：
+
+1.安装对应字体，比如我的是微软雅黑
+
+2.将simhei.ttf拷贝到matplotlib的ttf文件夹下并删除缓存文件夹
+
+很遗憾这两种对我都不work,从stackoverflow查找到了下面比较笨重的解决方案，算是暂时解决了问题。
+
+def plot_para():#设置画图参数及相关配置,如透明度,中文啥啥的
+    mpl.rcParams['axes.unicode_minus']=False  
+    #手动设置字体路径
+    return FontProperties(fname='/Users/wanghongbo8/Library/Fonts/msyh.ttf')  
+#在设置绘图的部分指定FontProperties，比如
+plt.ylabel(u'T+4有效与T+1有效 GMV 比值',FontProperties=plot_para())
+
+至此mac绘图中文显示无误，但是这个方法比较笨，在涉及中文的部分都要手动指定fontproperties,当然可以通过函数重载来解决，却也有点高射炮打蚊子的意味，报错的源码位于matplotlib的：
+
+matplotlib/font_manager.py:1236行
+
+看到此问题的朋友有能力可以深究一下原因，我个人如果解决了会更新此文。
+

@@ -1,0 +1,227 @@
+异常BaseException
+所有内置异常的基类。它不是直接由用户定义的类继承（为此使用Exception）。如果 str()或者unicode()是在这个类的一个实例上被调用，返回实例的参数表示形式，或者当没有参数时，返回空字符串。
+
+新版本2.5。
+
+args
+给异常构造函数的元组元组。一些内置异常（如IOError）期望一定数量的参数，并为此元组的元素分配特殊含义，而其他异常通常仅使用单个字符串给出错误消息。
+
+异常Exception
+所有内置的非系统退出的异常都是从这个类派生出来的。所有用户定义的异常也应该从此类派生。
+
+更改版本2.5：更改为继承BaseException。
+
+异常StandardError
+该基类除了所有内置例外StopIteration， GeneratorExit，KeyboardInterrupt和SystemExit。 StandardError本身源于Exception。
+
+异常ArithmeticError
+对于那些内置异常的基类时引发的各种算术错误：OverflowError，ZeroDivisionError， FloatingPointError。
+
+异常BufferError
+当无法执行缓冲区相关操作时引发。
+
+异常LookupError
+当映射或序列上使用的键或索引无效时引发异常的基类：IndexError，KeyError。这可以直接提出来codecs.lookup()。
+
+异常EnvironmentError
+对于可以在Python的系统外发生异常的基类： IOError，OSError。当使用2元组创建此类型的异常时，第一个项目在实例的errno属性上可用（假定为错误编号），第二个项目可用于该 strerror属性（通常是关联的错误消息）。元组本身也可以在args属性上使用。
+
+新版本1.5.2。
+
+当EnvironmentError使用3元组实例化异常时，前两个项目如上所述，而第三个项目在该filename属性上可用 。但是，为了向后兼容，该 args属性仅包含前两个构造函数参数的2元组。
+
+该filename属性是None使用3个参数以外的其他异常创建的。的errno和strerror属性也None当实例与其他大于2个或3个参数创建。在最后一种情况下，args将逐个构造函数的参数包含为元组。
+
+以下异常是实际引发的异常。
+
+异常AssertionError
+当assert声明失败时提起。
+
+异常AttributeError
+属性引用（请参阅属性引用）或赋值失败时引发。（当一个对象根本不支持属性引用或属性赋值时，会TypeError被提出。）
+
+异常EOFError
+当其中一个内置函数（input()或raw_input()）在没有读取任何数据的情况下触发文件结束条件（EOF）时引发。（注：在 file.read()和file.readline()方法时，他们打EOF返回一个空字符串。）
+
+异常FloatingPointError
+当浮点操作失败时触发。这个异常总是定义的，但是只有当Python配置了该--with-fpectl选项，或者WANT_SIGFPE_HANDLER在pyconfig.h文件中定义了符号时，才能引发此异常 。
+
+异常GeneratorExit
+当发电机的close()方法被调用时提起。它直接继承BaseException而不是，StandardError 因为它在技术上不是错误。
+
+新版本2.5。
+
+在版本2.6中更改：更改为继承BaseException。
+
+异常IOError
+当I / O操作（如print语句，内置 open()函数或文件对象的方法）因I / O相关原因（例如“未找到文件”或“磁盘已满”）而失败时引发。
+
+此类衍生EnvironmentError。有关异常实例属性的更多信息，请参阅上面的讨论。
+
+在版本2.6中更改：更改socket.error为使用此作为基类。
+
+异常ImportError
+当import语句找不到模块定义或找不到要导入的名称时引发。from ... import
+
+异常IndexError
+当序列下标超出范围时提起。（Slice索引被静默地截断以落在允许的范围内;如果索引不是一个纯整数， TypeError则会被提升。）
+
+异常KeyError
+当在现有密钥集中找不到映射（字典）键时引发。
+
+异常KeyboardInterrupt
+当用户点击中断键（正常Control-C或 Delete）时触发。在执行期间，定期检查中断。当内置函数input()或raw_input()正在等待输入时，键入的中断也会引发此异常。异常继承 BaseException而不被意外地捕获Exception并因此阻止解释器退出的代码被捕获 。
+
+更改版本2.5：更改为继承BaseException。
+
+异常MemoryError
+当操作内存不足时提起，但情况可能仍然会被抢救（通过删除某些对象）。相关联的值是一个字符串，指示什么样的（内部）操作用完了内存。请注意，由于底层内存管理架构（C的malloc()功能），解释器可能并不总是能够从这种情况中完全恢复; 但是它引发了一个异常，以便可以打印堆栈跟踪，以防万一出现程序的原因。
+
+异常NameError
+当找不到本地或全球名称时提起。这仅适用于不合格的名称。相关联的值是一个错误消息，其中包含无法找到的名称。
+
+异常NotImplementedError
+这个异常来源于RuntimeError。在用户定义的基类中，当抽象方法需要派生类覆盖该方法时，抽象方法应引发此异常。
+
+新版本1.5.2。
+
+异常OSError
+这个异常来源于EnvironmentError。当函数返回与系统相关的错误（不是非法参数类型或其他偶然错误）时引发。的errno属性是从一个数字错误代码errno，并且strerror属性是相应的字符串，如将被C函数被打印perror()。请参阅模块errno，其中包含由底层操作系统定义的错误代码的名称。
+
+对于涉及文件系统路径（例如chdir()或 unlink()）的异常，异常实例将包含第三个属性 filename，即传递给该函数的文件名。
+
+新版本1.5.2。
+
+异常OverflowError
+当算术运算的结果太大而不能被表示时提升。对于长整型（这不会 MemoryError放弃）而且对于大多数具有纯整数的操作，这不会返回长整数。由于在C中缺少浮点异常处理的标准化，大多数浮点运算也没有被检查。
+
+异常ReferenceError
+当由weakref.proxy()函数创建的弱引用代理在垃圾回收之后用于访问指称对象的属性时，引发异常 。有关弱引用的更多信息，请参阅该weakref模块。
+
+2.2版中的新功能：以前被称为weakref.ReferenceError异常。
+
+异常RuntimeError
+当检测到不属于任何其他类别的错误时引发。相关联的值是一个字符串，表示正确的错误。
+
+异常StopIteration
+由迭代器的next()方法引发，表明没有其他值。这是从而Exception不是StandardError，因为这不被认为是其正常应用程序中的错误。
+
+版本2.2中新增。
+
+异常SyntaxError
+解析器遇到语法错误时引发。这可能发生在 import语句，exec语句，调用内置函数eval()或input()读取初始脚本或标准输入（也可交互式）时。
+
+这个类的实例有属性filename，lineno， offset并且text为的细节更容易获得。 str() 的异常实例仅返回消息。
+
+异常IndentationError
+与错误缩进相关的语法错误的基类。这是一个子类SyntaxError。
+
+异常TabError
+缩进时引发的标签和空格不一致。这是一个子类IndentationError。
+
+异常SystemError
+当翻译发现内部错误时，提出了这种情况，但情况并不那么严重，导致它放弃了所有的希望。相关联的值是一个字符串，表示出现错误（低级别）。
+
+您应该向Python解释器的作者或维护者报告。确保报告Python解释器的版本（sys.version它也是在交互式Python会话开始时打印的），确切的错误消息（异常关联值）以及触发错误的程序源可能的可能。
+
+异常SystemExit
+该异常由sys.exit()函数引发。当它不被处理时，Python解释器退出; 不打印堆栈追溯。如果关联值为纯整数，则指定系统退出状态（传递给C的exit()函数）; 如果是None，退出状态为零; 如果有其他类型（如字符串），则打印对象的值，退出状态为一。
+
+实例具有code设置为建议的退出状态或错误消息（默认为None）的属性。此外，这种异常直接来自于BaseException而不是StandardError，因为它在技术上不是错误。
+
+调用sys.exit()被转换为异常，以便清理处理程序（finally语句的子句try）可以被执行，并且调试器可以执行脚本而不会失去控制的风险。os._exit()如果绝对有必要立即退出（例如，在调用后的子进程os.fork()）中，则可以使用该函数。
+
+唯一的例外来自继承BaseException，而不是StandardError 或Exception使得它不会意外地被映入代码捕获 Exception。这允许异常正常传播并导致解释器退出。
+
+更改版本2.5：更改为继承BaseException。
+
+异常TypeError
+当操作或功能应用于不适当类型的对象时提起。关联值是一个字符串，提供有关类型不匹配的详细信息。
+
+异常UnboundLocalError
+当引用函数或方法中的局部变量时引用，但没有值绑定到该变量。这是一个子类 NameError。
+
+2.0版新功能
+
+异常UnicodeError
+当与Unicode相关的编码或解码错误发生时引发。它是一个子类ValueError。
+
+UnicodeError具有描述编码或解码错误的属性。例如，err.object[err.start:err.end]给出编解码器失败的特定无效输入。
+
+encoding
+引起错误的编码的名称。
+
+reason
+描述特定编解码器错误的字符串。
+
+object
+编解码器正在尝试编码或解码的对象。
+
+start
+第一个无效数据索引object。
+
+end
+上次无效数据后的索引object。
+
+2.0版新功能
+
+异常UnicodeEncodeError
+在编码期间发生Unicode相关错误时引发。它是一个子类 UnicodeError。
+
+2.3版新功能
+
+异常UnicodeDecodeError
+在解码过程中发生Unicode相关错误时引发。它是一个子类 UnicodeError。
+
+2.3版新功能
+
+异常UnicodeTranslateError
+在翻译期间发生Unicode相关错误时引发。它是一个子类UnicodeError。
+
+2.3版新功能
+
+异常ValueError
+当内置操作或函数接收到具有正确类型但不正确值的参数时引发，并且情况未被更精确的异常描述，例如IndexError。
+
+异常VMSError
+仅适用于VMS。发生VMS特定错误时引发。
+
+异常WindowsError
+当出现特定于Windows的错误或错误号不对应于某个errno值时引发。该winerror和 strerror值是从的返回值创建 GetLastError()并FormatMessage()从Windows平台的API函数。该errno值将值映射winerror到相应的errno.h值。这是一个子类OSError。
+
+2.0版新功能
+
+以前的版本将GetLastError()代码放入errno。
+
+异常ZeroDivisionError
+当分割或模运算的第二个参数为零时提升。关联值是指示操作数的类型和操作的字符串。
+
+以下例外被用作警告类别; warnings 有关详细信息，请参阅该模块。
+
+异常Warning
+警告类别的基类。
+
+异常UserWarning
+用户代码生成的警告的基类。
+
+异常DeprecationWarning
+关于已弃用功能的警告的基类。
+
+异常PendingDeprecationWarning
+关于将来不推荐使用的功能的警告的基类。
+
+异常SyntaxWarning
+关于可疑语法的警告的基类。
+
+异常RuntimeWarning
+关于可疑运行时行为的警告的基类。
+
+异常FutureWarning
+关于将来会在语义上改变的构造的警告的基类。
+
+异常ImportWarning
+关于模块进口中可能出现的错误的警告的基础类。
+
+异常UnicodeWarning
+与Unicode有关的警告的基类。
+

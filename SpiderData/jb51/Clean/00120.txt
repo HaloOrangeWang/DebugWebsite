@@ -1,0 +1,139 @@
+Pyinstaller 打包.py生成.exe的方法和报错总结
+
+简介
+
+有时候自己写了个python脚本觉得挺好用想要分享给小伙伴，但是每次都要帮他们的电脑装个python环境。虽然说装一下也快，但是相对来说效率还是不高，要是能将python的**.py文件转化为.exe**,那么世界将变得更美好。这篇文章我将简单的介绍如何使用Pyinstaller来打包我们的python脚本。
+
+安装 Pyinstaller
+
+pyinstaller的官网为：http://www.pyinstaller.org/
+
+如果有什么问题一般都能够在这里找到解答。
+
+安装 pyinstaller还是非常的方便的，只需要一句话:
+
+pip install pyinstaller
+
+就OK了
+
+打包 Python脚本
+
+关于打包其实也很简单，也只需要一句话：
+
+pyinstaller yourprogram.py
+
+当然pyinstaller命令的语法是：
+
+pyinstaller [options] script [script ...] | spec文件
+
+在运行 pyinstaller命令后在yourprogram.py同一个目录下会产生一个文件两个文件夹：
+
+yourprogram.spec文件，该文件中写了一些配置，可以打开进行修改，下一次可以直接打包该文件，不用打包yourprogram.py了。
+
+build文件夹，包含一些日志文件和工作文件
+
+dist文件夹，包含可执行文件
+
+1. 控制台窗口选项
+
+-c, --console, --nowindowed 打包程序运行时，打开标准i / o控制台窗口（默认） 
+-w, --windowed, --noconsole 打包程序运行时，不打开标准i / o控制台窗口（默认）
+
+2. 软件图标选项
+
+-i FILE.ico , --icon FILE.ico 为你的程序添加一个图标
+
+3. 版本信息选项
+
+--version-file FILE.txt 可以将您的版本信息添加到你的软件当中
+
+这个FILE.txt的文件内容为：
+
+# UTF-8
+#
+VSVersionInfo(
+ ffi=FixedFileInfo(
+  # filevers and prodvers should be always a tuple with four items: (1, 2, 3, 4)
+  # Set not needed items to zero 0.
+  filevers=(10, 0, 17134, 1),
+  prodvers=(10, 0, 17134, 1),
+  # Contains a bitmask that specifies the valid bits 'flags'r
+  mask=0x3f,
+  # Contains a bitmask that specifies the Boolean attributes of the file.
+  flags=0x0,
+  # The operating system for which this file was designed.
+  # 0x4 - NT and there is no need to change it.
+  OS=0x40004,
+  # The general type of file.
+  # 0x1 - the file is an application.
+  fileType=0x1,
+  # The function of the file.
+  # 0x0 - the function is not defined for this fileType
+  subtype=0x0,
+  # Creation date and time stamp.
+  date=(0, 0)
+  ),
+ kids=[
+  StringFileInfo(
+   [
+   StringTable(
+    u'040904B0',
+    [StringStruct(u'CompanyName', u'Microsoft Corporation'),
+    StringStruct(u'FileDescription', u'Windows Command Processor'),
+    StringStruct(u'FileVersion', u'10.0.17134.1 (WinBuild.160101.0800)'),
+    StringStruct(u'InternalName', u'cmd'),
+    StringStruct(u'LegalCopyright', u'© Microsoft Corporation. All rights reserved.'),
+    StringStruct(u'OriginalFilename', u'Cmd.Exe'),
+    StringStruct(u'ProductName', u'Microsoft® Windows® Operating System'),
+    StringStruct(u'ProductVersion', u'10.0.17134.1')])
+   ]),
+  VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
+ ]
+)
+
+4. 生成结果选项
+
+-D，--onedir 这会创建一个包含可执行文件的单文件夹包（默认）
+-F，--onefile 这个只会创建一个可执行文件
+--specpath DIR 用于存储生成的spec文件的文件夹（默认值：当前目录）
+-n NAME， --name NAME 应用程序的名称（默认值：第一个脚本的名称）
+
+以上四个就是常用的参数，可以根据自己的需求进行设置。
+
+例子
+
+下面这个是我打包一个“自动更新桌面的脚本”的命令：
+
+G:\PyinstallerTest\Auto_Wallpaper>pyinstaller -F -i G:\PyinstallerTest\Auto_Wallpaper\icon\moon.ico --version-file=version.txt Auto_Wallpaper_of_Moon.py
+
+执行后就能够成功的将**.py脚本转化为.exe**可执行文件。
+
+错误总结
+
+在这里我会总结我在使用pyinstaller过程中出现的错误和解决方法
+
+1. AttributeError: ‘str' object has no attribute ‘items'
+
+错误内容截取：
+
+for real_module_name, six_module_name in real_to_six_module_name.items():
+AttributeError: 'str' object has no attribute 'items'
+
+解决方法：
+
+你需要更新一下你的setuptools
+
+pip install --upgrade setuptools
+
+2. 打包后运行.exe程序调试闪退
+
+有时候将.py文件打包成.exe文件后，不一定能够正常运行。但是点.exe后程序一闪而退，就不知道问题出在哪里。
+
+解决方法：
+
+在cmd行里面运行你的.exe文件
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作具有一定的参考学习价值，谢谢大家对脚本之家的支持。如果你想了解更多相关内容请查看下面相关链接
+

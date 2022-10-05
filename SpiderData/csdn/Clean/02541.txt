@@ -1,0 +1,63 @@
+按照Autodock Vina官方Python版本安装教程，我试图在我的Windows 10笔记本上安装Python版本的Autodock Vina，以便使用Python脚本进行分子对接。
+
+使用conda安装：
+
+conda install -c ccsb-scripps vina
+
+报错。
+
+使用pip安装：
+
+pip install vina
+
+报错。
+
+使用Anaconda提供的安装脚本安装：
+
+# To install this package with conda run one of the following:
+conda install -c bioconda autodock-vina
+conda install -c bioconda/label/cf201901 autodock-vina
+
+报错。
+ 不过这一次报错有比较可读的错误日志：
+
+conda install -c bioconda autodock-vina
+Collecting package metadata (current_repodata.json): done
+Solving environment: failed with initial frozen solve. Retrying with flexible solve.
+Collecting package metadata (repodata.json): done
+Solving environment: failed with initial frozen solve. Retrying with flexible solve.
+
+PackagesNotFoundError: The following packages are not available from current channels:
+
+- autodock-vina
+
+Current channels:
+
+- https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/win-64
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/noarch
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/win-64
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/noarch
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/win-64
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/noarch
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r/win-64
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r/noarch
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro/win-64
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro/noarch
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2/win-64
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2/noarch
+
+To search for alternate channels that may provide the conda package you're
+looking for, navigate to
+
+https://anaconda.org
+
+and use the search bar at the top of the page.
+
+其中清华大学TUNA开源镜像站的长串地址后面的“win-64”字样，引起了我的注意。遂至开源镜像站的这个目录下查看：
+ 而把win-64改成linux-64后：
+
+Oh my tuna! 原来Autodock Vina甚至是bioconda根本没有Windows版本的Python安装方案！
+ Anaconda也声明只提供Linux与Mac OS版本：
+ 大概只能回头用虚拟机安装并运行Autodock Vina的Python脚本了。
+ QAQ
+

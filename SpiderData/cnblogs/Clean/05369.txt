@@ -1,0 +1,74 @@
+经过前期的调研，我准备使用PyQT+PyAV+PyAudio+pillow。期间也尝试过使用ffmpeg-python，但最后还是选择了av这个更底层，自由度更大的库来完成音视频的处理。
+
+========================
+
+问题1，win= QWidget()执行为什么会失败
+
+答案： 在此之前，先要执行mapp = QApplication(sys.argv)
+
+========================
+
+问题2，为什么win.show()能启动对话框，但是一直转圈，卡住
+
+答案：在此之后要执行sys.exit(mapp.exec_())
+
+========================
+
+问题3，为什么安装Eric，总是遇到问题
+
+答案：python的安装路径里，不要有中文。另外按照说明把python、pip以及pyQT的路径加到环境变量PATH里
+
+========================
+
+问题4：Python3 多线程问题：ModuleNotFoundError: No module named 'thread'
+
+答案： python3 导入thread报错，把thread改为_thread就好了。比如：import _thread as thread
+
+========================
+
+问题5：为什么PIL库老是安装失败？
+
+答案：pil库在python3下不支持，安装pillow即可
+
+========================
+
+问题6：av库安装老是失败
+
+答案：先安装conda，安装方法见：https://www.cnblogs.com/lsdb/p/9121033.html
+
+然后用命令：
+
+conda install av -c conda-forge
+
+然后就能安装成功
+
+========================
+
+问题7：“'module' object is not callable”提示是什么意思？
+
+答案：此处错误提示我们命名程序文件名称的时候注意避免和导入模块名称一样
+
+========================
+
+问题8：用pyAudio播放Numpy的音频数据卡顿？
+
+答案：不能直接播放Numpy数据，而是要播放bytes的对象才行。
+
+不能 stream.write(pcm)
+
+而是 stream.write(pcm.tobytes())
+
+这里的pcm是一个numpy对象
+
+========================
+
+问题9：用PyAV完成视频解码之后，如何完成视频分辨率的转换？
+
+答案：用reformay函数来完成转换，比如：
+
+frame_show= VideoFrame.reformat(width=XShow_width, height=XShow_height)
+
+也可以完成颜色空间的转换
+
+视频播放器在github上的链接是：https://github.com/dongjiawei316/AV_player.git
+

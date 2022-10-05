@@ -1,0 +1,12 @@
+如遇到es报错 timeout 参数问题
+
+elasticsearch.exceptions.RequestError: TransportError(400, 'parse_exception', 'failed to parse setting [timeout] with value [10] as a time value: unit is missing or unrecognized')
+
+result = es.search(index='aaa*', body=body, ignore_unavailable=True, timeout=10)
+
+上面代码会报错
+
+应该改成
+
+result = es.search(index='aaa*', body=body, ignore_unavailable=True, timeout='10s')
+

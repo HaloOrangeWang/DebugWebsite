@@ -1,0 +1,25 @@
+
+系统环境
+
+os: ubuntu 16.04
+mysql: Server version: 5.7.18-0ubuntu0.16.04.1 (Ubuntu)
+
+
+Python pip install mysql-python 时报错情况
+
+...
+    raise EnvironmentError("%s not found" % (mysql_config.path,))
+EnvironmentError: mysql_config not found
+Complete output from command python setup.py egg_info:
+sh: mysql_config: not found
+
+
+结论: 安装libmysqlclient-dev库。
+
+sudo apt-get install libmysqlclient-dev
+
+
+参考：
+
+pip install mysql-python fails with EnvironmentError: mysql_config not found
+

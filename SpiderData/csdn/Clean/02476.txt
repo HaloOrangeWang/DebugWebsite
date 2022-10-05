@@ -1,0 +1,31 @@
+
+问题描述：
+
+如图，打包的exe文件双击运行之后报错如下：
+
+（如果不知道如何让双击exe后现实报错信息，见这篇博客：python 打包成可执行文件双击运行闪退终极解决方案）
+
+
+探索过程：
+
+找了很多解决方案，都做了尝试但是还是不能解决我的问题，常见相同类型报错的解决方案如下，可能有些人是可以通过这种方式来解决的：
+
+解决pyinstaller 打包后运行exe程序出现的"ModuleNotFindError"_yczha的博客-CSDN博客
+
+python - Error when executing compiled file " No module named 'scipy._lib.messagestream' "after using pyinstaller - Stack Overflow
+
+但是通过艰辛耗时巨久的检索尝试了很多别人的解决方案还是不管用，最终发现了是本地使用了多个版本的python，在打包的时候没有区分好，使用了错误的python版本中的pyinstaller导致的！！！
+
+
+真正原因分析：
+
+本地使用了多个版本的python，在打包的时候使用了错误的python版本，即不是该程序使用的python，中的pyinstaller，导致打包的时候没有将程序中的一些包模块打包进.exe 中，所以程序运行的时候会报错无法运行！！
+
+附，本地多版本python，如何使用特定版本的python的pyinstaller：
+
+有尝试在待打包的.py文件目录下的cmd中直接制定python版本 再使用pyinstaller指令，但是报错No module named pyinstaller，但是实际上是有包的。最终使用以下方法成功打包：
+
+1、去python目录下script，其中有pyinstaller.exe，在此目录中打开cmd
+
+4、输入pyinstaller打包的指令就好啦 （具体参数根据自己的需要来使用，注意对于被打包的,py文件要制定绝对路径，具体打包不会的可以参见Python生成.exe文件亲测实践教程(初级+进阶，含资源文件程序的打包）
+

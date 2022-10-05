@@ -1,0 +1,37 @@
+(1)vscode在调试python文件时提示如下信息：
+
+conda : 无法将“conda”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+
+解决办法：
+
+没有添加系统变量，所以系统根本识别不了conda命令，找不到位置。
+
+添加以下系统变量即可正常运行：
+
+添加对应Anaconda环境变量到用户变量中：（以自己的安装路径为准）
+
+D:\Anaconda
+
+D:\Anaconda\Scripts
+
+D:\Anaconda\Library\bin
+
+如果重启vscode调试后还是报错并提示下面的信息：
+
+PS D:\Python> D:/Anaconda/Scripts/activate PS D:\Python> conda activate base CommandNotFoundError: Your shell has not been properly configured to use 'conda activate'. If your shell is Bash or a Bourne variant, enable conda for the current user with $ echo ". D:\Anaconda/etc/profile.d/conda.sh" >> ~/.bashrc or, for all users, enable conda with $ sudo ln -s D:\Anaconda/etc/profile.d/conda.sh /etc/profile.d/conda.sh The options above will permanently enable the 'conda' command, but they do NOT put conda's base (root) environment on PATH. To do so, run $ conda activate in your terminal, or to put the base environment on PATH permanently, run $ echo "conda activate" >> ~/.bashrc Previous to conda 4.4, the recommended way to activate conda was to modify PATH in your ~/.bashrc file. You should manually remove the line that looks like export PATH="D:\Anaconda/bin:$PATH" ^^^ The above line should NO LONGER be in your ~/.bashrc file! ^^^
+
+这是按照之前的方法在做一遍，不过这次是把之前那三个路径添加到系统变量的path下！
+
+(2)vscode切换虚拟环境报错无法加载文件 E:\Python_project\shop_env\Scripts\Activate.ps1，因为在此系统上禁止运行 脚本:
+
+解决方法如下：
+
+Windows+x打开面板，选择以管理员身份运行PowerShell，输入： set-executionpolicy remotesigned，接下来输入“y”表示执行。
+
+(3) VScode中还是出错？
+
+因为默认此处是PowerShell，选成cmd，即可！
+
+
+愿你一寸一寸地攻城略地，一点一点地焕然一新
+

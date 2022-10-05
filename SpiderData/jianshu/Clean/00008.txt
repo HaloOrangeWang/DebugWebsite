@@ -1,0 +1,74 @@
+python高级语法
+
+待拆分类别：
+
+类的使用
+
+内存的使用
+
+简易语法的使用
+
+三元表达式在else处使用pass或者continue
+
+报错：Syntax Error
+
+https://cloud.tencent.com/developer/ask/187566
+
+总之，
+
+想写：x=A if condition==True else pass
+
+不如：if condition==True: x=A
+
+使用torch基于npy创建自己的数据集
+
+报错：TypeError: object.__new__() takes exactly one argument (the type to instantiate)
+
+原来代码是：
+
+class Mydata(Data.Dataset):
+    def __init_(self,xpath,ypath):
+        self.x = np.load(xpath)
+        self.y = np.load(ypath)
+
+应该改为：
+
+class MyDataset(Dataset):
+    def __init__(self,xdata,ydata):
+        self.xdata = np.load(xdata) 
+        self.ydata = np.load(ydata)
+
+注意，传入的参数a应该使用self.a定义。
+
+dataloader载入数据集时报错：
+
+TypeError: 'module' object is not callable
+
+原来是：
+
+import torch.utils.data as Data
+train_loader = Data.dataloader(略)
+
+改为：
+
+from torch.utils.data import DataLoader, Dataset
+train_loader = DataLoader(略)
+
+错误同此link
+
+数据类型错误
+
+input type (torch.cuda.DoubleTensor) and weight type (torch.cuda.FloatTensor) should be the same
+
+https://blog.csdn.net/weixin_38314865/article/details/103130389
+
+目前：
+
+def transform(x):
+    x = x.transpose(0,2,1)
+    return torch.from_numpy(x).type(torch.FloatTensor)
+def target_transform(y):
+    return torch.from_numpy(y)[:,0].type(torch.int64)
+
+x为FloatTensor，label为torch.int64。
+

@@ -1,0 +1,40 @@
+CentOS7.6 装完后运行python脚本报错
+
+# python dingding.py 123
+
+import request
+
+ImportError: No module named 'request'
+
+解决：
+
+wget --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-1.4.2.tar.gz
+
+tar xf setuptools-1.4.2.tar.gz
+
+cd setuptools-1.4.2
+
+python setup.py install
+
+cd ..
+
+wget --no-check-certificate https://pypi.python.org/packages/source/p/pip/pip-6.0.7.tar.gz
+
+tar xf pip-6.0.7.tar.gz
+
+cd pip-6.0.7
+
+python setup.py install
+
+安装requests模块
+
+pip install requests
+
+报错
+
+ImportError: No module named 'requests.packages.urllib3'
+
+解决
+
+# pip install --upgrade --force-reinstall 'requests==2.6.0' urllib3
+

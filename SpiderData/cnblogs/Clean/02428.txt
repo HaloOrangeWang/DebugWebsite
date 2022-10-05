@@ -1,0 +1,34 @@
+web.by问题总结
+
+0x01 起因：
+
+今天再做公众号的时候遇到web.py的端口号问题，顺便总结了一下
+
+0X02进入主题：
+
+1:首先安装python， 按照所需的型号下载；
+
+　　2：下载web.py
+
+　　　    http://webpy.org/static/web.py-0.37.tar.gz
+
+3：打开cmd，切换到你下载web.py的文件夹下输入命令   python setup.py install ，这样就安装好了web.py
+
+4：根据公众号的步骤编写python命令
+
+　　
+
+　　   5：因为公众号只支持80端口而web.py默认的端口号是：8080这就很尴尬了
+
+6：如果你是在window情况下可以直接再cmd中找到你的mian.py ,直接执行python main.py 80，如果报错就两种情况：1  权限不够；2   80端口被占
+
+7：打开cmd命令行输入netstat -ano | findstr ":80 "如果80端口被占用就可以看到是那个进程占用了当前的端口；
+
+8：再输入netsh http show servicestate找到你的进程ID，打开任务管理器关闭当前进程，或者相信自己的技术的话可以给这个进程换一个端口号
+
+9：打开cmd  python main.py 80
+
+10:
+
+在浏览器输入你自己的IP（腾讯云），出现上图所示，就说明你自己的web应用搭建好了
+

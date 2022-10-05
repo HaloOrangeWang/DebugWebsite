@@ -1,0 +1,22 @@
+
+报错信息
+
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.4.0 or newer is required; you have 0.10.0.
+
+
+原因
+
+原因是 MySQLclient 目前只支持到 Python3.4，你使用了更高版本的 python
+
+
+处理方式一
+
+在setting.py同文件夹下的_init_.py加入以下内容
+
+mport pymysql
+
+pymysql.version_info = (1, 4, 13, "final", 0)   # 指定版本
+pymysql.install_as_MySQLdb()
+
+　　
+

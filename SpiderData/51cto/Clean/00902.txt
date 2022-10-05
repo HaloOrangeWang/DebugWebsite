@@ -1,0 +1,6 @@
+写了一个循环检测端口的程序，循环的次数多了，会报Errno 9: Bad file descriptor in python socket错误。程序如下：
+
+socket连接超时时间为10s，超时之后重试3次，3次依然连接不到或是超时，则抛错。这个函数加入到多线程，多个主机时就会报Errno 9: Bad file descriptor in python socket错误。查找了材料，都说是s.close()在循环里面是主线问题的主要原因，不管s.close()在循环中的那个位置都会出现这个错误。后修改了这段代码如下：
+
+把初始化socket提进循环中，经测试2000台服务器的端口不在出错，运行测试了一天没有问题。
+

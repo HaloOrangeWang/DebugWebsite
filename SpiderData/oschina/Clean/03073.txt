@@ -1,0 +1,52 @@
+1、Exception in thread "main" java.io.FileNotFoundException: File /wordcount/mapper.py does not exist.　#  文件不存在
+
+　　hadoop2.7之后streaming文件的路径在$HADOOP_HOME/share/tools/lib
+
+　　我执行hdfs dfs -ls /wordcount/ 返回我的两个文件，并且我都给了777的权限，它依旧报错。
+
+解决办法　　
+
+　　需要在文件路径前面加上“hdfs:///” 声明文件路径，就可以顺利运行了。
+
+　　执行命令：
+
+hadoop jar /opt/hadoop-2.7.5/share/hadoop/tools/lib/hadoop-streaming-2.7.5.jar \
+-files hdfs:///wordcount/mapper.py,hdfs:///wordcount/reducer.py \
+-mapper "python mapper.py" \
+-reducer "python reducer.py" \
+-input /wordcount/data/pg* \
+-output /wordcount/output/
+
+2、Name node is in safe mode.
+
+这是因为在分布式文件系统启动的时候，开始的时候会有安全模式，当分布式文件系统处于安全模式的情况下，文件系统中的内容不允许修改也不允许删除，直到安全模式结束。安全模式主要是为了系统启动的时候检查各个DataNode上数据块的有效性，同时根据策略必要的复制或者删除部分数据块。运行期通过命令也可以进入安全模式。在实践过程中，系统启动的时候去修改和删除文件也会有安全模式不允许修改的出错提示，只需要等待一会儿即可。
+
+　　可以通过以下命令来手动离开安全模式：
+
+hadoop dfsadmin -safemode leave
+
+用户可以通过dfsadmin -safemode value 来操作安全模式，参数value的说明如下：
+enter - 进入安全模式
+leave - 强制NameNode离开安全模式
+get - 返回安全模式是否开启的信息
+wait - 等待，一直到安全模式结束。
+
+3、org.apache.hadoop.yarn.exceptions.InvalidResourceRequestException: Invalid resource&
+
+这是由于yarn-site.xml文件中的配置的可用内存太小，我刚开始配的1024M，所以不行。
+
+<property>
+        <name>yarn.scheduler.maximum-allocation-mb</name>
+        <value>2048</value>
+        <discription>每个节点可用内存,单位MB,默认8182MB</discription>
+   </property>
+
+<property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>2048</value>
+   </property>
+
+以上就是我在学习使用python实现wordcount程序在hadoop平台上分布式计算时遇到的问题，刚开始什么都不懂，一点小问题几个小时都没搞出来。
+
+不过遇到问题，解决问题，在这个过程中就已经学会了很多东西。
+

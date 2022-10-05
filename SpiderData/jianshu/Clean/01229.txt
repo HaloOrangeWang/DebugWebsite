@@ -1,0 +1,107 @@
+
+前言
+
+在做一个使用matplotlib画函数图像的作业的时候遇到了一个问题。如题所示的报错让我纳闷了很久。然而在一个随意的更改之后竟然解决了问题，于是我稍微探究了一下问题所在。
+
+
+问题的出现
+
+我的报错代码如下：
+
+import matplotlib.pyplot as plt
+
+from numpy import*
+
+from math import*
+
+plt.figure(figsize=(6,6))
+
+wh=hh=6/2
+
+t=arange(0,4*pi,0.01)
+
+plt.plot([0,0],[-3,3],'-r')
+
+plt.plot([-3,3],[0,0],'-r')
+
+x=(wh/2*((cos(5/2*t)**3)+sin(t))*cos(t))
+
+y=(hh/2*(cos(5/2*t)**3+sin(t))*sin(t))
+
+plt.plot(x,y,'-b')
+
+plt.show()
+
+如上所示是一个比较简单的过程，运行之后会出现如下的报错：
+
+x=(wh/2*((cos(5/2*t)**3)+sin(t))*cos(t))
+
+TypeError: only size-1 arrays can be converted to Python scalars
+
+当时我怎么也没想懂到底问题出在了哪里。
+
+
+问题的解决
+
+首先说结论，把from math import*去掉就可以了。
+
+再来看分析：
+
+在这个问题之中其他部分没什么用，有用的只是这几句。
+
+from numpy import*
+
+from math import*
+
+t=arange(0,4*pi,0.01)
+
+x=(wh/2*(cos(5/2*t)**3+sin(t))*cos(t))
+
+y=(hh/2*(cos(5/2*t)**3+sin(t))*sin(t))
+
+血的教训告诉大家from xxx import*真的不能随便乱用。
+
+我在上一篇的时候其实有特意留意了一下import*可能会出问题这件事但是没太在意，结果就遇到了问题。
+
+from xxx import*虽然可以省去写前缀之苦，但是有一方面的问题在于当函数重名时就会出现指代不明。
+
+这个用法的弊端好像不止这一点，据我查看到的资料它与普通的import实现方式完全不同，有兴趣可以另行查找。
+
+我在这里使用了两次，为了避免之后缺点啥东西同时全部引入了numpy和math。
+
+这个t在使用了numpy里的函数arange之后生成的是numpy的ndarray对象，也就是n维数组。
+
+而类型为array的里面数据要处理需要使用numpy里的函数。
+
+我们要画的函数图像里用到了cos(x)和sin(x)，numpy里面有，所以我们需要使用numpy里的。
+
+而由于我之前引入了math和numpy，在这里自动使用了math的cos(x)和sin(x)，遂报错。
+
+虽然直接不引入math就可以解决问题了，因为pi和sin(x) cos(x)都是numpy里有的（我太菜了之前不知道||），
+
+但是为了证明这个想法有根据，我做了如下尝试：
+
+修改成这样
+
+import numpy as np
+
+from math import*
+
+x=(wh/2*((np.cos(5/2*t)**3)+np.sin(t))*np.cos(t))
+
+把这几个函数前面加上np.表明使用numpy里的函数，不出现报错。
+
+from numpy import arange
+
+from math import*
+
+而不在其中引入numpy的cos(x)与sin(x)仍然出现报错。
+
+所以我认为我的推测是有一定道理的。
+
+顺便，我的一个疑问：为什么进行幂操作不需要也使用numpy里的power函数，而是**就可以了呢？
+
+这只是我今天遇到的TypeError: only size-1 arrays can be converted to Python scalars这个报错的一种可能形式，不过这种报错本质上都是与数组的处理有关系，这是一个大的方向。
+
+在此记录一下我的debug思考过程。
+

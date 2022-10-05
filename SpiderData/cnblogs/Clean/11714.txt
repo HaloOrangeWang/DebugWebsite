@@ -1,0 +1,53 @@
+
+问题概述
+
+在Django中，默认的数据库时SQLite3。
+
+可能会出现sqlite版本问题的报错，具体如下
+
+起初我直接在django的project下面开了个cmd窗口，python python manage.py runserver打开服务，就出现了如上报错。
+
+因为有以前的东西在，所以不想降级找麻烦，参照runoob上的Windows 上安装 SQLite 的方法装了最新的SQLite，但是依然不行。
+
+
+先查一下
+
+貌似这是个老问题，其实网上一搜有好多相关内容，基本上的方法有：
+
+django降级
+
+sqlite升级
+
+改掉django包里sqlite3中判断版本的函数
+
+前两种方法都是在linux下操作的，我linux上面的程序是没碰到这个报错的。
+
+报错发生在PC上，系统是win10，anaconda环境，（最近梯子出问题了，百度了半天并没有找到相关解答）。
+
+emmm…… 这不是个大问题，能绕过不管，不影响干活，不过自己探索了一下，发现了anaconda的shell和cmd的一点点区别，水平有限终究不知道原因，所以记录一下~
+
+
+打不过就先绕路
+
+用 anaconda的shell，其实就没问题了，django使用的sqlite3就是conda里的。
+
+虽然没解决，至少可以干活~
+
+
+还是想研究一下——cmd和conda shell运行的对比
+
+来看下对比图，
+
+看图说话，清楚看出两边用的python和sqlite都是一样的，但是读取sqlite3版本号结果就是不一样。
+
+django判断sqlite的版本源码就是红框的Database.sqlite_version_info：
+
+所以才有django.core.exceptions.ImproperlyConfigured: SQLite 3.8.3 or later is required (found 3.8.2).的报错
+
+
+最后
+
+水平有限还是不是很懂为什么cmd没调用正确的sqlite…… anaconda已经在环境变量了呀……
+
+最近工作比较多，没太多时间去查资料了，只能先放放了，或者碰到大佬来解答一下~~~
+

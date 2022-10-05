@@ -1,0 +1,21 @@
+PYthon报错：UnboundLocalError: local variable 'xxx' referenced before assignment
+
+level_b1 = 0
+def diagnose_b1(moduleNode, symList, Graph):
+     level_b1 += 1
+     return level_b1
+
+错误提示：此段代码执行报错，提示：UnboundLocalError: local variable 'level_b1' referenced before assignment，也就是说level_b1变量在使用前没有定义，但是我声明了 全局变量了呀。
+
+错误原因：python的函数中的局部变量和全局变量同名时，如果你在函数内部对变量进行赋值修改等操作，该变量就会被Python解释器认为是局部变量。在修改之前对该变量的引用自然就会出现没定义这样的错误了。
+
+解决方式：如果确定要引用全局变量，并且要对它修改，必须加上global关键字。👇👇👇
+
+若是只读就不用加此关键字。
+
+level_b1 = 0
+def diagnose_b1(moduleNode, symList, Graph):
+     global level_b1
+     level_b1 += 1
+     return level_b1
+

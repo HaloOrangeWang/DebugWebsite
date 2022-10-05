@@ -1,0 +1,86 @@
+本地调试正常，上了生成环境就报错
+
+cn.hutool.extra.mail.MailException: MessagingException: Could not connect to SMTP host: smtp.qq.com, port: 465
+        at cn.hutool.extra.mail.Mail.send(Mail.java:358)
+        at cn.hutool.extra.mail.MailUtil.send(MailUtil.java:395)
+        at cn.hutool.extra.mail.MailUtil.send(MailUtil.java:191)
+        at cn.hutool.extra.mail.MailUtil.send(MailUtil.java:173)
+        at cn.hutool.extra.mail.MailUtil.send(MailUtil.java:158)
+        at com.ztfsec.webcrawler.jinluopan.job.SpiderJob.sendMail(SpiderJob.java:297)
+        at com.ztfsec.webcrawler.jinluopan.job.SpiderJob.export(SpiderJob.java:174)
+        at com.ztfsec.webcrawler.jinluopan.job.SpiderJob.executeInternal(SpiderJob.java:103)
+        at org.springframework.scheduling.quartz.QuartzJobBean.execute(QuartzJobBean.java:75)
+        at org.quartz.core.JobRunShell.run(JobRunShell.java:202)
+        at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:573)Caused by: javax.mail.MessagingException: Could not connect to SMTP host: smtp.qq.com, port: 465
+        at com.sun.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:1961)
+        at com.sun.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:654)
+        at javax.mail.Service.connect(Service.java:317)
+        at javax.mail.Service.connect(Service.java:176)
+        at javax.mail.Service.connect(Service.java:125)
+        at javax.mail.Transport.send0(Transport.java:194)
+        at javax.mail.Transport.send(Transport.java:124)
+        at cn.hutool.extra.mail.Mail.doSend(Mail.java:372)
+        at cn.hutool.extra.mail.Mail.send(Mail.java:356)
+        ... 10 common frames omitted
+Caused by: javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)
+        at sun.security.ssl.HandshakeContext.<init>(HandshakeContext.java:171)
+        at sun.security.ssl.ClientHandshakeContext.<init>(ClientHandshakeContext.java:98)
+        at sun.security.ssl.TransportContext.kickstart(TransportContext.java:220)
+        at sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:428)
+        at com.sun.mail.util.SocketFetcher.configureSSLSocket(SocketFetcher.java:549)
+        at com.sun.mail.util.SocketFetcher.createSocket(SocketFetcher.java:354)
+        at com.sun.mail.util.SocketFetcher.getSocket(SocketFetcher.java:211)
+        at com.sun.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:1927)
+        ... 18 common frames omitted
+2022-03-14 15:44:51.086 [quartzScheduler_Worker-1] ERROR org.quartz.core.ErrorLogger:2407 - Job (DEFAULT.com.ztfsec.webcrawler.jinluopan.job.SpiderJob threw an exception.
+org.quartz.SchedulerException: Job threw an unhandled exception.
+        at org.quartz.core.JobRunShell.run(JobRunShell.java:213)
+        at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:573)
+Caused by: cn.hutool.extra.mail.MailException: MessagingException: Could not connect to SMTP host: smtp.qq.com, port: 465
+        at cn.hutool.extra.mail.Mail.send(Mail.java:358)
+        at cn.hutool.extra.mail.MailUtil.send(MailUtil.java:395)
+        at cn.hutool.extra.mail.MailUtil.send(MailUtil.java:191)
+        at cn.hutool.extra.mail.MailUtil.send(MailUtil.java:173)
+        at cn.hutool.extra.mail.MailUtil.send(MailUtil.java:158)
+        at com.ztfsec.webcrawler.jinluopan.job.SpiderJob.sendMail(SpiderJob.java:297)
+        at com.ztfsec.webcrawler.jinluopan.job.SpiderJob.export(SpiderJob.java:174)
+        at com.ztfsec.webcrawler.jinluopan.job.SpiderJob.executeInternal(SpiderJob.java:103)
+        at org.springframework.scheduling.quartz.QuartzJobBean.execute(QuartzJobBean.java:75)
+        at org.quartz.core.JobRunShell.run(JobRunShell.java:202)
+        ... 1 common frames omitted
+Caused by: javax.mail.MessagingException: Could not connect to SMTP host: smtp.qq.com, port: 465
+        at com.sun.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:1961)
+        at com.sun.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:654)
+        at javax.mail.Service.connect(Service.java:317)
+        at javax.mail.Service.connect(Service.java:176)
+        at javax.mail.Service.connect(Service.java:125)
+        at javax.mail.Transport.send0(Transport.java:194)
+        at javax.mail.Transport.send(Transport.java:124)
+        at cn.hutool.extra.mail.Mail.doSend(Mail.java:372)
+        at cn.hutool.extra.mail.Mail.send(Mail.java:356)
+        ... 10 common frames omitted
+Caused by: javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)
+        at sun.security.ssl.HandshakeContext.<init>(HandshakeContext.java:171)
+        at sun.security.ssl.ClientHandshakeContext.<init>(ClientHandshakeContext.java:98)
+        at sun.security.ssl.TransportContext.kickstart(TransportContext.java:220)
+        at sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:428)
+        at com.sun.mail.util.SocketFetcher.configureSSLSocket(SocketFetcher.java:549)
+        at com.sun.mail.util.SocketFetcher.createSocket(SocketFetcher.java:354)
+        at com.sun.mail.util.SocketFetcher.getSocket(SocketFetcher.java:211)
+        at com.sun.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:1927)
+        ... 18 common frames omitted
+
+找不到合适的协议，这个跟环境有关系，本地环境与生成不一样
+
+解决办法
+
+找到文件
+
+find / -name 'java.security'
+
+vim /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.292.b10-1.el7_9.x86_64/jre/lib/security/java.security
+
+删除SSLv3,TLSv1,TLSv1.1, 后，如下图
+
+保存后，在此发邮件，ok了
+

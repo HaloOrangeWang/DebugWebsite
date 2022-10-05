@@ -1,0 +1,29 @@
+具体报错信息：
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/dengfei/anaconda3/lib/python3.7/site-packages/pandas/io/parsers.py", line 676, in parser_f
+    return _read(filepath_or_buffer, kwds)
+  File "/home/dengfei/anaconda3/lib/python3.7/site-packages/pandas/io/parsers.py", line 448, in _read
+    parser = TextFileReader(fp_or_buf, **kwds)
+  File "/home/dengfei/anaconda3/lib/python3.7/site-packages/pandas/io/parsers.py", line 880, in __init__
+    self._make_engine(self.engine)
+  File "/home/dengfei/anaconda3/lib/python3.7/site-packages/pandas/io/parsers.py", line 1114, in _make_engine
+    self._engine = CParserWrapper(self.f, **self.options)
+  File "/home/dengfei/anaconda3/lib/python3.7/site-packages/pandas/io/parsers.py", line 1868, in __init__
+    ParserBase.__init__(self, kwds)
+  File "/home/dengfei/anaconda3/lib/python3.7/site-packages/pandas/io/parsers.py", line 1416, in __init__
+    "Passing negative integer to header is invalid. "
+ValueError: Passing negative integer to header is invalid. For no header, use header=None instead
+
+报错命令：
+
+pd.read_csv("a.txt",header=-1,sep="\s+")
+
+报错原因：
+ pandas升级了，不支持"header=-1"这种写法了，改为了：“header=None”
+
+解决方法：
+
+pd.read_csv("a.txt",header=None,sep="\s+")
+

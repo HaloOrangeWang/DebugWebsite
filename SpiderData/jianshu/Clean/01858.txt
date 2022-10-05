@@ -1,0 +1,42 @@
+在执行命令 pip install mysql  或者 pip install mysqldb时候，报错
+
+mysql_config: command not found
+
+Command "python setup.py egg_info" failed with error code 1 in /private/var/folders/v1/3z7bt9gs527g9x1r5r9ny1gw0000gn/T/pip-build-gAgOG7/MySQL-python/
+
+原因是因为：
+
+找不到mysql_config一般是由于通过lnmp.org或者其他方式安装mysql以后mysql_config是在/usr/local/mysql/bin/里面，这里面的文件不是在任意位置都可以访问的
+
+解决方法：执行以下命令后重试即可
+
+ln -s /usr/local/mysql/bin/mysql_config    /usr/local/bin/mysql_config
+
+将mysql_config链接到/usr/local/bin目录下
+
+接着import  MySql 又会报错，
+
+Traceback (most recent call last):
+
+File "/Users/fujunmin/files/python/selfPractise/youtube/flask/flaskFromScrach/app.py", line 10, in <module>
+
+from flask_mysqldb import MySQL
+
+File "/Users/fujunmin/anaconda/lib/python2.7/site-packages/flask_mysqldb/init.py", line 1, in <module>
+
+import MySQLdb
+
+File "/Users/fujunmin/anaconda/lib/python2.7/site-packages/MySQLdb/init.py", line 19, in <module>
+
+import _mysql
+
+ImportError: dlopen(/Users/fujunmin/anaconda/lib/python2.7/site-packages/_mysql.so, 2): Library not loaded: libmysqlclient.18.dylib
+
+Referenced from: /Users/fujunmin/anaconda/lib/python2.7/site-packages/_mysql.so
+
+Reason: image not found
+
+sudo ln -s /usr/local/mysql/lib/libmysqlclient.18.dylib /usr/local/lib/libmysqlclient.18.dylib
+
+含义是：在/usr/local/lib/libmysqlclient.18.dylib 创建一个/usr/local/mysql/lib/libmysqlclient.18.dylib的软连接
+

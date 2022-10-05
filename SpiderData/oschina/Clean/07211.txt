@@ -1,0 +1,115 @@
+在使用 Python + MySQLdb 部署项目的时候，执行计划任务报错
+
+OperationalError (2006, ‘MySQL server has gone away’)
+
+解决办法1: 原因是由于长时间的执行批量的MYSQL语句造成,修改/etc/my.cnf
+ 在[mysqld]段落加入wait_timeout=90000 示例文件内容如下:
+
+[mysqld]
+  datadir=/var/lib/mysql
+  socket=/var/lib/mysql/mysql.sock
+  # Default to using old password format for compatibility with mysql 3.x
+  # clients (those using the mysqlclient10 compatibility package).
+  old_passwords=1
+  # 修正 OperationalError: (2006, 'MySQL server has gone away') 错误
+  wait_timeout=100000
+
+其他省略…
+ 然后 重启mysql服务，再次访问问题页面，没有再出现如上问题，问题得到暂时解决
+
+解决办法2: 修改数据库连接代码 使用mysql ping来检查连接,实现超时自动重新连接
+
+#/usr/bin/env python
+  import MySQLdb
+  con=MySQLdb.Connect( host="foobar.com",
+                       port=3306,
+                       user="loginname",
+                       passwd="loginpassword",
+                       db="foobar")
+  con.ping(True)
+  cur=con.cursor()
+
+推荐使用第2种解决方法，从代码彻底解决!
+
+
+原因
+
+
+连接超时
+
+我出现问题就是这个原因.
+ 进入mysql,执行下面的命令:
+
+mysql> show global variables like '%timeout';
+
++----------------------------+----------+
+| Variable_name              | Value    |
++----------------------------+----------+
+| connect_timeout            | 10       |
+| delayed_insert_timeout     | 300      |
+| innodb_lock_wait_timeout   | 50       |
+| innodb_rollback_on_timeout | OFF      |
+| interactive_timeout        | 28800    |
+| lock_wait_timeout          | 31536000 |
+| net_read_timeout           | 30       |
+| net_write_timeout          | 60       |
+| slave_net_timeout          | 3600     |
+| wait_timeout               | 28800    |
++----------------------------+----------+
+
+wait_timeout 是28800秒，即mysql链接在无操作28800秒后被自动关闭
+
+
+解决方法
+
+
+立即生效
+
+执行下面的sql命令
+
+mysql> set global wait_timeout=60*60*30;
+
+该命令是将wait_timeout设置为30小时.
+ 用这种方法,修改完立即生效. 如果重启mysql, 又恢复原来的28800秒.
+
+
+永久生效
+
+该方法修改完之后, 需要重启mysql才能生效.
+ 编辑mysql配置文件my.cnf,添加或修改为下面这条命令.
+ (我的mysql配置文件路径: /etc/mysql/my.cnf )
+
+wait_timeout = 108000
+
+
+其他原因
+
+还有一些其他原因, 简单描述一下
+ 1: mysql服务关闭
+ 2: 数据包 过大
+ 解决方法: 修改 max_allowed_packet 的值, 方法同上.
+
+max_allowed_packet：包或任何生成的中间字符串的最大大小。包消息缓冲区初始化为net_buffer_length字节，需要时可以增加到max_allowed_packet的大小。
+ 如果表中包含BLOB列或长字符串，就必须增加该值。
+
+查看目前配置
+
+show VARIABLES like '%max_allowed_packet%';
+
+修改方法
+ 在my.cnf文件中增加如下参数（windows中是my.ini文件）
+
+max_allowed_packet = 10M
+
+或者在mysql 命令行中运行
+
+set global max_allowed_packet = 2*1024*1024*10
+
+参考：http://blog.51cto.com/luruoyu/788315
+ https://blog.csdn.net/win_turn/article/details/78196789?utm_source=copy
+ https://blog.csdn.net/shiyong1949/article/details/47085851
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

@@ -1,0 +1,120 @@
+最近在学习用Python爬虫，需要用到mysql来存储从网络上爬到的数据， 这里我也是借助了pymysql来操作mysql数据库，但是在实际写代码操作数据库的过程中遇到了好多坑（改到我怀疑人生。。。），这里记录下我排雷的过程，也供大家来参考，希望对你们有所帮助。
+
+
+错误代码1064处理
+
+这个错误可以说是我在编写整个代码的遇到的最大的错误，没有之一！这里为了说明这个错误的情况，我将原来的部分代码经过精简过来举例子。麻雀虽小，五脏俱全，话不多说，首先贴上我的渣渣代码(手动捂脸~)。
+
+import pymysql
+if __name__ == '__main__':
+	connect = pymysql.connect(host='***.***.***.***',user='****',passwd='***',port=3306,database='test',charset='utf8')
+	cursor = connect.cursor()
+	table_name = 'person'
+	values = 'id int primary key auto_increment, name varchar(20)'
+	cursor.execute('create table %s (%s)',(table_name, values))
+	cursor.close()
+	connect.close()
+
+这里请自行将上面星号的部分替换成自己的信息，首先将自己的MySQL主机地址，用户名和密码。
+
+运行上面的代码，程序运行错误，错误代码提示为1064，错误提示为
+
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''person' ('id int primary key auto_increment, name varchar(20)')' at line 1")
+
+上面的错误提示告诉我们在SQL语句的第一行出现了语法错误。
+
+最初是认为SQL拼写错误，仔细检查后拼写正确。后来经过查阅相关文档和资料，发现自己犯了一个非常恶心的一个错误，原因竟然是将一个用百分号误用成了逗号！竟然都没有语法错误，下面的程序我们使用mogrify函数可以输出待执行的完整SQL语句，来对比下：
+
+import pymysql
+if __name__ == '__main__':
+	 connect = pymysql.connect(host='***.***.***.***',user='****',passwd='***',port=3306,database='test',charset='utf8')
+ 	cursor = connect.cursor()
+ 	table_name = 'person'
+	values = 'id int primary key auto_increment, name varchar(20)，age int'
+ 	sql_1 = cursor.mogrify('create table %s (%s)', (table_name,values))
+ 	sql_2 = cursor.mogrify('create table %s (%s)'% (table_name,values))
+ 	print(sql_1)
+ 	print(sql_2)
+ 	cursor.close()
+	connect.close()
+
+执行上面的代码，我们可以看一下输出结果：
+
+create table 'person' ('id int primary key auto_increment, name varchar(20), age int')
+create table person (id int primary key auto_increment, name varchar(20), age int)
+
+对比上面的输出结果，我们可以发现上面的2个语句虽然没有都没有语法错误，但是构造出来的SQL语句大体上看也是差不多的，唯一的区别就在于：两者构造的SQL的引号的差别！！，通过第一种方式构造出来的SQL语句是带有引号的，第二种是没有引号的。很明显，可以在MySQL终端下运行的第二种SQL语句，没想到自己鼓捣了半天的错误竟然是引号的问题 (心里一万只草泥马在奔腾)。
+
+这里我根据自己的理解总结一下这两者的区别吧，不对的地方还请大佬们批评指正：
+
+1.对于上面的使用逗号作为分隔符的调用，构造出来的语句是直接将字符串替换掉SQL语句的占位符的，并且不会将引号去掉，会直接进行替换，这种做法会引起SQL语法错误，执行失败。
+
+2.对于上面使用百分号作为分隔符的调用，构造出来的语句是将字符串的内容替换掉占位符(这种方式最常见)，并不会将引号去掉，只将内容替换掉，这种做法会引起SQL语法错误，执行失败。
+
+
+错误代码1054处理
+
+解决了上面的错误，本来以为整个程序可以顺利执行。当执行到SQL的插入语句时，发现整个程序又无情地给了我一个大大的error，又是一个全新的错误（错误代码1054），为了能够比较清晰的说明错误情况，我还是给出一个简化的程序，同时又能说明情况。
+
+首先我们来一下示例中用到的person表的结构：
+
+下面我的示例代码
+
+import pymysql
+if __name__ == '__main__':
+	connect = pymysql.connect(host='***.***.***.***',user='****',passwd='***',port=3306,database='test',charset='utf8')
+	cursor = connect.cursor()
+	table_name = 'person'
+	values =  (23,'李明')
+	cursor.execute('insert into %s(age,name) values (%s, %s)' % (table_name, values[0], values[1]))
+	cursor.close()
+	connect.close()
+
+执行上面的代码，程序又报错了，错误代码提示为1054，错误提示为：
+
+pymysql.err.InternalError: (1054, "Unknown column '李明' in 'field list'")
+
+上面的错误提示没有什么我插入的值在field list 中不存在。什么鬼，这段代码这么简单，还会有错。又是搜索各种解决方法还是无解。最终还是通过pymysql中的mogrify函数还看一下构造的SQL语句，下面的代码可以查看我们实际构造的SQL到底是什么：
+
+import pymysql
+if __name__ == '__main__':
+	connect = pymysql.connect(host='***.***.***.***',port=3306,user='****',passwd='*****',database='test',charset='utf8')
+	cursor = connect.cursor()
+	table_name = 'person'
+	values= (23, '韩梅梅')
+	sen = cursor.mogrify('insert into %s(age, name) values(%s, %s)' % (table_name, values[0],values[1]))
+	print(sen)
+	cursor.close()
+	connect.close()
+
+上面的代码输出我们实际传给MySQL执行的SQL语句，程序的输出结果为：
+
+insert into person(age,name) values (23, 韩梅梅)
+
+程序的输出结果直觉看貌似是对的，没有任何错误，但是在MySQL的终端下会报相同的错误，同样找不到。后来经过恍然大悟，原来又是因为引号的问题，上面正确的SQL语句应该是
+
+insert into person(age,name) values (23, '韩梅梅')
+
+原来又是因为的错误才导致程序的错误。之所以出现上面的情况可以用上述解释错误1064的错误原因来解释：
+
+使用百分号来作为分隔符只会简单地将字符串的内容进行替换，而不会进行自动给字符串加上引号，因此上面构造的SQL语句是没有加引号的，而我们SQL语句中待插入的值是需要加引号的，因此引发1054的错误。
+
+经过上面的分析，我们可以给待在execute函数中给待插入的字符串手动加上引号来解决，下面贴上正确的代码：
+
+import pymysql
+if __name__ == '__main__':
+	connect = pymysql.connect(host='***.***.***.***',port=3306,user='****',passwd='*****',database='test',charset='utf8')
+	cursor = connect.cursor()
+	table_name = 'person'
+	values= (23, '韩梅梅')
+	sen = cursor.mogrify('insert into %s(age, name) values(%s, "%s")' % (table_name, values[0],values[1])) # 相比上面的错误代码，这里给姓名对应的占位符加上了引号
+	print(sen)
+	cursor.close()
+	connect.close()
+
+经过上面的调整，整个程序最终得以运行成功，数据可以正常存储。
+
+Tips：在这里我推荐大家如果在SQL执行不成功的时候可以用pymysql的mogrify函数来查看构造的SQL语句，以便快速查看SQL出错的地方，加快调试速度。
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

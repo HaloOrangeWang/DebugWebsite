@@ -1,0 +1,251 @@
+
+一、软件安装问题
+
+
+（1）ERROR: Failed building wheel for XXX
+
+1）问题描述：2020.09.09，安装BBKNN时，出现了ERROR: Failed building wheel for annoy
+
+Building wheels for collected packages: annoy
+  Building wheel for annoy (setup.py) ... error
+  ERROR: Command errored out with exit status 1:
+   command: 'D:\Anaconda3\python.exe' -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'C:\\Users\\WangYue\\AppData\\Local\\Temp\\pip-install-l6dexm5d\
+\annoy\\setup.py'"'"'; __file__='"'"'C:\\Users\\WangYue\\AppData\\Local\\Temp\\pip-install-l6dexm5d\\annoy\\setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', ope
+n)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' bdist_wheel -d 'C:\Users\WangYue\AppDat
+a\Local\Temp\pip-wheel-3kv114q5'
+       cwd: C:\Users\WangYue\AppData\Local\Temp\pip-install-l6dexm5d\annoy\
+  Complete output (10 lines):
+  running bdist_wheel
+  running build
+  running build_py
+  creating build
+  creating build\lib.win-amd64-3.8
+  creating build\lib.win-amd64-3.8\annoy
+  copying annoy\__init__.py -> build\lib.win-amd64-3.8\annoy
+  running build_ext
+  building 'annoy.annoylib' extension
+  error: Microsoft Visual C++ 14.0 is required. Get it with "Build Tools for Visual Studio": https://visualstudio.microsoft.com/downloads/
+  ----------------------------------------
+  ERROR: Failed building wheel for annoy
+  Running setup.py clean for annoy
+Failed to build annoy
+Installing collected packages: annoy, bbknn
+    Running setup.py install for annoy ... error
+    ERROR: Command errored out with exit status 1:
+     command: 'D:\Anaconda3\python.exe' -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'C:\\Users\\WangYue\\AppData\\Local\\Temp\\pip-install-l6dexm5
+d\\annoy\\setup.py'"'"'; __file__='"'"'C:\\Users\\WangYue\\AppData\\Local\\Temp\\pip-install-l6dexm5d\\annoy\\setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', o
+pen)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record 'C:\Users\WangYue\Ap
+pData\Local\Temp\pip-record-ytf4d7dj\install-record.txt' --single-version-externally-managed --compile --install-headers 'D:\Anaconda3\Include\annoy'
+         cwd: C:\Users\WangYue\AppData\Local\Temp\pip-install-l6dexm5d\annoy\
+    Complete output (10 lines):
+    running install
+    running build
+    running build_py
+    creating build
+    creating build\lib.win-amd64-3.8
+    creating build\lib.win-amd64-3.8\annoy
+    copying annoy\__init__.py -> build\lib.win-amd64-3.8\annoy
+    running build_ext
+    building 'annoy.annoylib' extension
+    error: Microsoft Visual C++ 14.0 is required. Get it with "Build Tools for Visual Studio": https://visualstudio.microsoft.com/downloads/
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: 'D:\Anaconda3\python.exe' -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'C:\\Users\\WangYue\\AppData\
+\Local\\Temp\\pip-install-l6dexm5d\\annoy\\setup.py'"'"'; __file__='"'"'C:\\Users\\WangYue\\AppData\\Local\\Temp\\pip-install-l6dexm5d\\annoy\\setup.py'"'"';f=ge
+tattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' inst
+all --record 'C:\Users\WangYue\AppData\Local\Temp\pip-record-ytf4d7dj\install-record.txt' --single-version-externally-managed --compile --install-headers 'D:\Ana
+conda3\Include\annoy' Check the logs for full command output.
+
+2）问题归类：ERROR: Failed building wheel for XXX
+
+3）解决方案：在Pythonlibs网站上下载对应的python包的wheel(.whl)文件，然后pip install .whl文件的绝对路径，或者cd到,whl文件的路径，然后pip install .whl文件。
+
+D:\PythonProject\scRNA_basic>pip install annoy-1.16.3-cp38-cp38-win_amd64.whl
+Processing d:\pythonproject\scrna_basic\annoy-1.16.3-cp38-cp38-win_amd64.whl
+Installing collected packages: annoy
+Successfully installed annoy-1.16.3
+
+再安装BBKNN，安装成功。
+
+D:\PythonProject\scRNA_basic>pip install bbknn
+Collecting bbknn
+  Using cached bbknn-1.3.12-py3-none-any.whl (8.1 kB)
+Requirement already satisfied: scikit-learn in d:\anaconda3\lib\site-packages (from bbknn) (0.23.2)
+Requirement already satisfied: scipy in d:\anaconda3\lib\site-packages (from bbknn) (1.5.0)
+Requirement already satisfied: packaging in d:\anaconda3\lib\site-packages (from bbknn) (20.4)
+Requirement already satisfied: numpy in d:\anaconda3\lib\site-packages (from bbknn) (1.18.5)
+Requirement already satisfied: umap-learn in d:\anaconda3\lib\site-packages (from bbknn) (0.4.6)
+Requirement already satisfied: annoy in d:\anaconda3\lib\site-packages (from bbknn) (1.16.3)
+Requirement already satisfied: Cython in d:\anaconda3\lib\site-packages (from bbknn) (0.29.21)
+Requirement already satisfied: threadpoolctl>=2.0.0 in d:\anaconda3\lib\site-packages (from scikit-learn->bbknn) (2.1.0)
+Requirement already satisfied: joblib>=0.11 in d:\anaconda3\lib\site-packages (from scikit-learn->bbknn) (0.16.0)
+Requirement already satisfied: six in d:\anaconda3\lib\site-packages (from packaging->bbknn) (1.15.0)
+Requirement already satisfied: pyparsing>=2.0.2 in d:\anaconda3\lib\site-packages (from packaging->bbknn) (2.4.7)
+Requirement already satisfied: numba!=0.47,>=0.46 in d:\anaconda3\lib\site-packages (from umap-learn->bbknn) (0.50.1)
+Requirement already satisfied: llvmlite<0.34,>=0.33.0.dev0 in d:\anaconda3\lib\site-packages (from numba!=0.47,>=0.46->umap-learn->bbknn) (0.33.0+1.g022ab0f)
+Requirement already satisfied: setuptools in d:\anaconda3\lib\site-packages (from numba!=0.47,>=0.46->umap-learn->bbknn) (49.2.0.post20200714)
+Installing collected packages: bbknn
+Successfully installed bbknn-1.3.12
+
+
+（2）Solving environment: failed with repodata from current_repodata.json, will retry with next repodata source.
+
+1）问题描述：2020.09.10，安装Stream时，出现了Solving environment: failed with repodata from current_repodata.json, will retry with next repodata source.
+
+(py-stream) wangyue@LAPTOP-FMOR2BIN:/mnt/d/tmp$ conda install numpy
+Collecting package metadata (current_repodata.json): done
+Solving environment: /
+The environment is inconsistent, please check the package plan carefully
+The following packages are causing the inconsistency:
+
+- <unknown>/linux-64::stream==0.4.1=py36r36hc99cbb1_0
+failed with initial frozen solve. Retrying with flexible solve.
+Solving environment: failed with repodata from current_repodata.json, will retry with next repodata source.
+Collecting package metadata (repodata.json): failed
+
+# >>>>>>>>>>>>>>>>>>>>>> ERROR REPORT <<<<<<<<<<<<<<<<<<<<<<
+
+Traceback (most recent call last):
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/exceptions.py", line 1079, in __call__
+        return func(*args, **kwargs)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/cli/main.py", line 84, in _main
+        exit_code = do_call(args, p)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/cli/conda_argparse.py", line 83, in do_call        return getattr(module, func_name)(args, parser)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/cli/main_install.py", line 20, in execute
+        install(args, parser, 'install')
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/cli/install.py", line 265, in install
+        should_retry_solve=(_should_retry_unfrozen or repodata_fn != repodata_fns[-1]),
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/solve.py", line 117, in solve_for_transaction
+        should_retry_solve)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/solve.py", line 158, in solve_for_diff        force_remove, should_retry_solve)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/solve.py", line 262, in solve_final_state
+        ssc = self._collect_all_metadata(ssc)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/common/io.py", line 88, in decorated
+        return f(*args, **kwds)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/solve.py", line 425, in _collect_all_metadata
+        index, r = self._prepare(prepared_specs)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/solve.py", line 1021, in _prepare
+        self.subdirs, prepared_specs, self._repodata_fn)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/index.py", line 228, in get_reduced_index
+        repodata_fn=repodata_fn)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/subdir_data.py", line 105, in query_all
+        result = tuple(concat(executor.map(subdir_query, channel_urls)))
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/concurrent/futures/_base.py", line 598, in result_iterator
+        yield fs.pop().result()
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/concurrent/futures/_base.py", line 435, in result
+        return self.__get_result()
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/concurrent/futures/_base.py", line 384, in __get_result
+        raise self._exception
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/concurrent/futures/thread.py", line 57, in run
+        result = self.fn(*self.args, **self.kwargs)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/subdir_data.py", line 98, in <lambda>
+        package_ref_or_match_spec))
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/subdir_data.py", line 110, in query
+        self.load()
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/subdir_data.py", line 174, in load
+        _internal_state = self._load()
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/subdir_data.py", line 276, in _load
+        _internal_state = self._process_raw_repodata_str(raw_repodata_str)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/site-packages/conda/core/subdir_data.py", line 349, in _process_raw_repodata_str
+        json_obj = json.loads(raw_repodata_str or '{}')
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/json/__init__.py", line 348, in loads
+        return _default_decoder.decode(s)
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/json/decoder.py", line 337, in decode
+        obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+      File "/mnt/d/Linux/software/anaconda/lib/python3.7/json/decoder.py", line 355, in raw_decode
+        raise JSONDecodeError("Expecting value", s, err.value) from None
+    json.decoder.JSONDecodeError: Expecting value: line 1645278 column 32 (char 47595349)
+
+`$ /mnt/d/Linux/software/anaconda/bin/conda install numpy`
+
+environment variables:
+                 CIO_TEST=<not set>
+        CMAKE_PREFIX_PATH=/mnt/d/Linux/software/anaconda/envs/py-
+                          stream:/mnt/d/Linux/software/anaconda/envs/py-
+                          stream/x86_64-conda_cos6-linux-gnu/sysroot/usr
+         CONDA_BACKUP_F90=/mnt/d/Linux/software/anaconda/envs/py-
+                          stream/bin/x86_64-conda_cos6-linux-gnu-gfortran
+        CONDA_BACKUP_HOST=x86_64-conda_cos6-linux-gnu
+     CONDA_BACKUP_LDFLAGS=-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,
+                          --disable-new-dtags -Wl,--gc-sections
+                          -Wl,-rpath,/mnt/d/Linux/software/anaconda/envs/py-stream/lib
+                          -L/mnt/d/Linux/software/anaconda/envs/py-stream/lib
+      CONDA_BUILD_SYSROOT=/mnt/d/Linux/software/anaconda/envs/py-stream/x86_64-conda_cos6-linux-
+                          gnu/sysroot
+        CONDA_DEFAULT_ENV=py-stream
+                CONDA_EXE=/mnt/d/Linux/software/anaconda/bin/conda
+             CONDA_PREFIX=/mnt/d/Linux/software/anaconda/envs/py-stream
+           CONDA_PREFIX_1=/mnt/d/Linux/software/anaconda
+    CONDA_PROMPT_MODIFIER=(py-stream)
+         CONDA_PYTHON_EXE=/mnt/d/Linux/software/anaconda/bin/python
+               CONDA_ROOT=/mnt/d/Linux/software/anaconda
+              CONDA_SHLVL=2
+           CURL_CA_BUNDLE=<not set>
+                     PATH=/mnt/d/Linux/software/anaconda/bin:/mnt/d/Linux/software/anaconda/envs
+                          /py-stream/bin:/mnt/d/Linux/software/anaconda/condabin:/usr/local/sbin
+                          :/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/ga
+                          mes:/mnt/c/Program Files/WindowsApps/CanonicalGroupLimited.Ubuntu18.04
+                          onWindows_1804.2020.824.0_x64__79rhkp1fndgsc:/mnt/c/Windows/system32:/
+                          mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/Win
+                          dowsPowerShell/v1.0:/mnt/c/Windows/System32/OpenSSH:/mnt/c/Program
+                          Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program
+                          Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/d/计算机软件/putty:/mnt/d/Anac
+                          onda3:/mnt/d/Anaconda3/Library/mingw-w64/bin:/mnt/d/Anaconda3/Library/
+                          usr/bin:/mnt/d/Anaconda3/Library/bin:/mnt/d/Anaconda3/Scripts:/mnt/c/U
+                          sers/WangYue/AppData/Local/Microsoft/WindowsApps:/snap/bin
+       REQUESTS_CA_BUNDLE=<not set>
+            SSL_CERT_FILE=<not set>
+
+active environment : py-stream
+    active env location : /mnt/d/Linux/software/anaconda/envs/py-stream
+            shell level : 2
+       user config file : /home/wangyue/.condarc
+ populated config files : /home/wangyue/.condarc
+          conda version : 4.8.4
+    conda-build version : 3.18.11
+         python version : 3.7.6.final.0
+       virtual packages : __glibc=2.27
+       base environment : /mnt/d/Linux/software/anaconda  (writable)
+           channel URLs : https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/linux-64
+                          https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/noarch
+                          https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/msys2/linux-64
+                          https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/msys2/noarch
+                          https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/linux-64
+                          https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/noarch
+                          https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/linux-64
+                          https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/noarch
+                          https://conda.anaconda.org/bioconda/linux-64
+                          https://conda.anaconda.org/bioconda/noarch
+                          https://conda.anaconda.org/r/linux-64
+                          https://conda.anaconda.org/r/noarch
+                          https://repo.anaconda.com/pkgs/main/linux-64
+                          https://repo.anaconda.com/pkgs/main/noarch
+                          https://repo.anaconda.com/pkgs/r/linux-64
+                          https://repo.anaconda.com/pkgs/r/noarch
+                          https://conda.anaconda.org/conda-forge/linux-64
+                          https://conda.anaconda.org/conda-forge/noarch
+                          https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/linux-64
+                          https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/noarch
+          package cache : /mnt/d/Linux/software/anaconda/pkgs
+                          /home/wangyue/.conda/pkgs
+       envs directories : /mnt/d/Linux/software/anaconda/envs
+                          /home/wangyue/.conda/envs
+               platform : linux-64
+             user-agent : conda/4.8.4 requests/2.22.0 CPython/3.7.6 Linux/4.4.0-18362-Microsoft ubuntu/18.04.5 glibc/2.27
+                UID:GID : 1000:1000
+             netrc file : None
+           offline mode : False
+
+An unexpected error has occurred. Conda has prepared the above report.
+
+If submitted, this report will be used by core maintainers to improve
+future releases of conda.
+Would you like conda to send this report to the core maintainers?
+
+[y/N]:
+
+2）比较特征的点是：1、在报错开头会提示，failed with repodata from current_repodata.json, will retry with next repodata source 2、报错的最后会询问是否上报，Would you like conda to send this report to the core maintainers? [y/N]。
+
+3）解决方案：
+
+conda clean -i
+

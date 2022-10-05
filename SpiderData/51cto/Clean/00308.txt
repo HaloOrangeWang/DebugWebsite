@@ -1,0 +1,44 @@
+今天在pycharm上debug时，突然跳出报错,我点进具体报错地方是这样的:
+
+把鼠标放上去,显示
+
+python vrision 3.4 does not support this syntax
+
+后来我把pycharm的编译器切换到py2.x版本的，发现就没这个报错了，我立马意识到，是Python3和Python2在某些语法上出现了不同，而上面这张图片有两个地方语法有变化:
+
+改变1:
+ python2.x的时候：
+
+try:
+    raise
+except Exception, e:
+    print (e)
+    return false
+
+现在python3.x的时候：
+
+try:
+   raise
+except Exception as e:
+   print (e)
+   return false
+
+改变2:
+ 在python2中，对raise语句支持以下三种形式：
+
+raise SomeException
+raise SomeException(args)
+raise SomeException, args
+
+而在python3中，raise语句支持以下两种形式：
+
+raise SomeException
+raise SomeException(args)
+
+所以，修改后是这样的:
+但是修正后debug还是出现了报错:
+
+ImportError: cannot import name 'compile_command'
+
+最后结合网友的经验才发现，从头到尾，包括前面无故的报错，是因为自己创建了名为code的package，而Python应该是自带code模块的，并且compile_command 是来自Python自带的code模块，我创建的package相当于和Python自带模块冲突了，导致import时出现了问题，所以大家在其模块以及package名时一定要注意！！！！
+

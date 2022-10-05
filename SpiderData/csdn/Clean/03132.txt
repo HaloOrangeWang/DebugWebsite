@@ -1,0 +1,196 @@
+
+文章目录
+
+一.Traceback介绍
+
+二.Traceback中常用函数
+
+1.traceback.print_tb2.traceback.print_exception3.traceback.print_exc4.traceback.format_exc
+
+1.traceback.print_tb
+
+2.traceback.print_exception
+
+3.traceback.print_exc
+
+4.traceback.format_exc
+
+
+一.Traceback介绍
+
+在日常开发中，我们会做一些基本的异常处理，但是有时候只能打印我们处理的结果或者将异常打印出来，不能直观的知道在哪个文件中的哪一行出错。
+
+def func(num1, num2):
+    try:
+        x = num1 * num2
+        y = num1 / num2
+        return x, y
+    except Exception as e:
+        print("错误信息：", e)
+
+func(1, 0)
+
+运行结果：
+ 
+ 而使用Python中traceback模块来进行处理可以直观异常信息：
+
+import traceback
+
+def func(num1, num2):
+    try:
+        x = num1 * num2
+        y = num1 / num2
+        return x, y
+    except:
+        traceback.print_exc()
+
+func(1, 0)
+
+运行结果：
+ 
+ 此错误输出包含诊断问题所需的所有信息。错误输出的最后一行一般会告诉你引发了什么类型的异常，以及关于该异常的一些相关信息。错误信息的前几行指出了引发异常的代码文件以及行数。
+
+Python官网中有关traceback介绍：
+ 该模块提供了一个标准接口，用于提取，格式和打印Python程序的堆栈痕迹。 它完全模仿了Python解释器在打印堆栈跟踪时的行为。 当您想在程序控制下打印堆栈迹线时，这非常有用，例如在解释器周围的“包装器”中。
+ Python中的traceback信息均来源于一个叫做traceback object的对象，而这个traceback object通常是通过函数sys.exc_info()来获取的。
+
+import sys
+
+def func1(num1, num2):
+        x = num1 * num2
+        y = num1 / num2
+        return x, y
+def func2():
+    func1(1, 0)
+
+if __name__ == '__main__':
+    try:
+        func2()
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print("exc_type:",exc_type)
+        print("exc_value:",exc_value)
+        print("exc_traceback:",exc_traceback)
+
+运行结果：
+ 
+ 由上可知，sys.exc_info()获取了当前处理的exception的相关信息，并返回一个元组，元组的第一个数据是异常的类型，第二个返回值是异常的value值，第三个就是我们要的traceback object.
+
+
+二.Traceback中常用函数
+
+
+1.traceback.print_tb
+
+作用：如果limit为正，则打印以limit来自traceback 对象tb的堆栈跟踪条目（从调用方的帧开始）。否则，打印最后一个abs（limit）条目。如果省略限制或无限制，则打印所有条目。如果文件被省略或无文件，则输出到sys.stderr；否则，它应该是一个打开的文件或类似文件的对象来接收输出。
+ 在3.5版更改:增加了负限制支持。
+
+import sys
+import traceback
+
+def func1(num1, num2):
+        x = num1 * num2
+        y = num1 / num2
+        return x, y
+def func2():
+    func1(1, 0)
+
+if __name__ == '__main__':
+    try:
+        func2()
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_tb(exc_traceback)
+
+运行结果：
+
+说明：traceback.print_tb(tb, limit=None, file=None)
+ 1.tb: 这个就是traceback object, 是我们通过sys.exc_info获取到的
+ 2.limit: 这个是限制stack trace层级的，如果不设或者为None，就会打印所有层级的stack trace
+ 3.file: 这个是设置打印的输出流的，可以为文件，也可以是stdout之类的file-like object。如果不设或为None，则输出到sys.stderr。
+
+
+2.traceback.print_exception
+
+import sys
+import traceback
+
+def func1(num1, num2):
+        x = num1 * num2
+        y = num1 / num2
+        return x, y
+def func2():
+    func1(1, 0)
+
+if __name__ == '__main__':
+    try:
+        func2()
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_exception(exc_type, exc_value, exc_traceback, limit=None, file=sys.stdout)
+
+运行结果：
+
+说明：traceback.print_exception(etype, value, tb, limit=None, file=None, chain=True)
+ 1.前三个参数正好是sys.exc_info()返回的三个值
+ 2.与print_tb相比，打印信息多了开头的"Traceback (most…)“信息以及最后一行的异常类型和value信息
+ 3.还有一个不同是当异常为SyntaxError时，会有”^"来指示语法错误的位置
+
+
+3.traceback.print_exc
+
+作用：print_exc是简化版的print_exception, 由于exception type, value和traceback object都可以通过sys.exc_info()获取，因此print_exc()就自动执行exc_info()来帮助获取这三个参数。
+ 所以traceback.print_exc(limit=None, file=None, chain=True)可将异常直接打印出来，同时可以将异常信息写入到文件中
+
+import traceback
+
+def func(num1, num2):
+    try:
+        x = num1 * num2
+        y = num1 / num2
+        return x, y
+    except:
+        traceback.print_exc(file=open('YFater.txt','w+'))
+
+func(1, 0)
+
+运行结果：
+ 
+ 或者创建内存文件对象：
+
+import traceback
+import io
+
+def func(num1, num2):
+    try:
+        x = num1 * num2
+        y = num1 / num2
+        return x, y
+    except:
+        fp = io.StringIO()  # 创建内存文件对象
+        traceback.print_exc(file=fp)
+        message = fp.getvalue()
+        print(message)
+func(1, 0)
+
+运行结果：
+
+
+4.traceback.format_exc
+
+作用：traceback.format_exc(limit=None, chain=True)返回的是一个字段串，效果与traceback.print_exc()一致，比如我们想通过logger将异常记录在log里，就可以使用format_exc
+
+import traceback
+
+def func(num1, num2):
+    try:
+        x = num1 * num2
+        y = num1 / num2
+        return x, y
+    except:
+        print(traceback.format_exc())
+
+func(1, 0)
+
+运行结果：
+

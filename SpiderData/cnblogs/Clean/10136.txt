@@ -1,0 +1,27 @@
+crontab中运行python程序出错，提示ImportError: No module named解决全过程
+
+将一个python脚本放入crontab执行时，提示如下错：
+
+ImportError: No module named hashlib
+
+但是在shell中直接执行时没有任何问题，google之后，得到线索是PYTHONPATH的问题，PYTHONPATH会决定python查找lib的路径。
+
+问题是：
+
+由于机器安装了2个不同版本的python, 才发觉是crontab执行时，调用的是低版本的python，引用的库的路径变了。
+
+crontab 中继承的环境变量貌似和shell 中的不一样
+
+解决办法是：
+
+crontab里执行时，直接把高版本python的全路径写上去，比如：
+
+python 的版本位置，可以用 which python 获得
+
+
+参考
+
+18. crontab任务中执行python报错: ImportError: No module named json - 简书]
+
+(4条消息) crontab中运行python程序出错，提示ImportError: No module named解决全过程_howard的技术之路-CSDN博客]
+

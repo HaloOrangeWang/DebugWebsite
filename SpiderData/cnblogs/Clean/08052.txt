@@ -1,0 +1,50 @@
+背景：安装了最新版本的Anaconda3.9后，在Pycharm中设置Python Interpreter为这个最新版本Anaconda文件下的python.exe后，控制台无法启动并报错TypeError: an integer is required (got type bytes)
+
+原因：电脑上的Anaconda的版本必须比Python小一位。比如Python版本为3.7，那Anaconda的版本只能是3.6，当Anaconda版本大于等于Python版本时，就会出现如上错误。
+
+解决方法：
+
+1、新安装与Anaconda版本匹配的Python版本
+
+2、换一个与当前Python版本匹配的Anaconda
+
+这里我用的是第二种方法，毕竟我不喜欢最新版本的东西，有可能出现BUG。
+
+修改步骤为：
+
+1、我的电脑上是Python3.7，所以我去Anaconda官网上找到并下载了3.6版本的Anaconda，然后添加两个环境变量：
+
+①、到该Anaconda根目录的Path
+
+②、到该Anaconda Scripts目录的Path
+
+2、这两个环境变量设置好后，就能在命令行窗口中通过指令：
+
+conda --version
+
+查看Anaconda的版本，并以此判断是否安装配置成功
+
+3、然后在Pycharm中设置Interpreter：
+
+File->Settings->Project:Test->Project Interpreter
+
+点击右边的设置按钮，选择Add
+
+在System Interpreter中设置Interpreter为之前安装的Anaconda文件中的python.exe。
+
+注意不要选第一个Virtualenv Environment，这项是用来配置虚拟环境的。
+
+这相当于一个default Interpreter（即我们运行程序时，如果不手动设置Interpreter，就默认用该Interpreter）；当然其他的Interpreter也可以继续使用，只需要我们在设置脚本运行环境时手动设置就可以。
+
+4、然后就可以看到Pycharm最下边状态栏一直显示Connecting to console...，这是Pycharm在预导入Anaconda的各种库，因为要导入的内容比较多，所以根据电脑好坏可能持续几十秒到十分钟，等它跑完，就配置完了。
+
+5、之后就可以正常使用Pycharm的各项内容了。
+
+其它在配置Anaconda与Python时遇到问题的解决方法：
+
+在安装Anaconda之前，有的已经安装过一个Python版本了，但是又不想删除这个Python版本，该怎么办呢？
+
+在已安装python3.7的环境基础上，安装Anaconda环境的完整教程
+
+Anaconda介绍、安装及使用教程
+

@@ -1,0 +1,16 @@
+测试用例用xmind导入testlink过程中报错：Fatal error in launcher: Unable to create process using
+
+今天在用xmind编写测试用例，编写完后，准备用把xmind中的内容导入到testlink中，但是报错了“Fatal error in launcher: Unable to create process using '"c:\users\45834\appdata\local\programs\python\python37\python.exe"  "C:\Users\45834\AppData\Local\Programs\Python\Python37\Scripts\xmind2testlink.exe" C:\Users\45834\Desktop\ceshi.xmind': ???????????”
+
+经以下步骤排查，终于把问题解决了，原来是之前安装xmind2testlink时，实在python37环境下安装的，上周在调试大数据测试工具presto时，环境变量调成了python38，所以爆出上面的错误。
+
+通过以下步骤修改：
+
+1.在路径“C:\Users\45834\AppData\Local\Programs\Python\Python38\Scripts”下找到pip.exe文件并用二进制编译工具打开，搜索找到python37改为python38。
+
+2.在路径“C:\Users\45834\AppData\Local\Programs\Python\Python38\Scripts”下重新安装xmind2testlink：pip install xmind2testlink -U ，安装成功。
+
+3.再次执行xmind文件转换为xml文件命令：xmind2testlink C:\Users\45834\Desktop\ceshi.xmind，执行成功生成ceshi.xml文件。
+
+4.把生成的xml文件导入testlink，完成任务。
+

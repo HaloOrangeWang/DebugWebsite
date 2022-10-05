@@ -1,0 +1,44 @@
+1：pycharm运行airtest脚本提示No module named 'airtest.core'
+解决：参照官网然后新建一个python项目，copy相同的代码进行运行就没问题了。
+
+1：pycharm运行airtest脚本提示No module named 'airtest.core'
+
+解决：参照官网然后新建一个python项目，copy相同的代码进行运行就没问题了。
+
+2:
+
+# -*- encoding=utf8 -*-
+__author__ = "christopher"
+from airtest.core.api import *
+
+# -*- encoding=utf8 -*-
+__author__ = "christopher"
+
+from airtest.core.api import *
+
+from poco.drivers.android.uiautomation import AndroidUiautomationPoco
+poco = AndroidUiautomationPoco(use_airtest_input=True, screenshot_each_action=False)
+
+poco(text="知乎").click()
+poco(name="com.zhihu.android:id/input").click()
+poco(name="com.zhihu.android:id/input").set_text('古剑奇谭三')
+poco(name='com.zhihu.android:id/magi_title')[1].click()
+poco.swipe([0.5, 0.8], [0.5, 0.2])
+
+运行这段代码，如果是Linux或者macOS的用户，请注意看运行结果是不是有报错，提示adb没有运行权限。这是因为随Poco安装的adb没有运行权限，需要给它添加权限，在终端执行命令：
+# chmod +x 报错信息中给出的adb地址
+
+chmod +x /Users/kingname/.local/share/virtualenvs/ZhihuSpider/lib/python3.7/site-packages/airtest/core/android/static/adb/mac/adb(实际执行时请换成你的地址)
+
+比如我的地址就是
+/Users/christopher/opt/anaconda3/lib/python3.7/site-packages/airtest/core/android/static/adb/mac/adb
+命令运行完成以后再次执行代码，可以发现手机已经执行操作了。
+
+运行这段代码，如果是Linux或者macOS的用户，请注意看运行结果是不是有报错，提示adb没有运行权限。这是因为随Poco安装的adb没有运行权限，需要给它添加权限，在终端执行命令：
+
+比如我的地址就是
+
+/Users/christopher/opt/anaconda3/lib/python3.7/site-packages/airtest/core/android/static/adb/mac/adb
+
+命令运行完成以后再次执行代码，可以发现手机已经执行操作了。
+

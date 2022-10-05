@@ -1,0 +1,28 @@
+转载请注明出处：https://blog.csdn.net/l1028386804/article/details/98966741
+
+Python3.X执行Python编写的生产者和消费者报错，报错信息如下：
+
+Traceback (most recent call last):
+  File "mykit_kafka_producer.py", line 9, in <module>
+    from kafka import KafkaProducer
+  File "/usr/local/lib/python3.7/site-packages/kafka/__init__.py", line 23, in <module>
+    from kafka.producer import KafkaProducer
+  File "/usr/local/lib/python3.7/site-packages/kafka/producer/__init__.py", line 4, in <module>
+    from .simple import SimpleProducer
+  File "/usr/local/lib/python3.7/site-packages/kafka/producer/simple.py", line 54
+    return '<SimpleProducer batch=%s>' % self.async
+                                                  ^
+SyntaxError: invalid syntax
+
+原因是：python3.7新增关键字：async、await；
+
+kafka-python 用到了关键字async，由此带来兼容性问题
+
+使用Python 3.6版本即可正常运行。
+
+附录：Python编写Kafka程序，需要在服务器执行如下命令安装相应的类库。
+
+pip install kafka
+pip install kafka-python
+pip install pykafka
+

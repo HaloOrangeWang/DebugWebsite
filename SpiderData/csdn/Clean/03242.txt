@@ -1,0 +1,36 @@
+python一般使用try…except…处理异常。try:          #可能会出现异常的代码，放在try下
+
+code1      #如果try内部任意一行代码出现异常，# 直接跳转至except，执行except下代码
+
+code2
+
+except:
+
+code3
+
+code4
+
+此方法只要有一个异常，程序就不继续执行了。当循环中出现异常时，如何跳过循环中的异常继续执行。比如当我move一个文件的时候，如果目标文件不存在，程序可跳过异常，继续执行，下面是一种可行的方法：import pandas as pd
+
+dates=range(20161010,20161114)
+
+pieces=[]
+
+for date in dates:
+
+try:
+
+data=pd.read_csv('A_stock/overview-push-%d/stock overview.csv' %date, encoding='gbk')
+
+pieces.append(data)
+
+except Exception as e:
+
+pass
+
+continue
+
+data=pd.concat(pieces)
+
+python学习网，免费的在线学习python平台，欢迎关注！
+

@@ -1,0 +1,42 @@
+问题描述：在创建数据用于预测时，定义一个定义的名称的张量数据时出现错误，错误提示真实的数据长度和设置参数recursive_seq_lens的值不相等。
+
+问题描述：在创建数据用于预测时，定义一个定义的名称的张量数据时出现错误，错误提示真实的数据长度和设置参数recursive_seq_lens的值不相等。
+
+报错信息：
+
+报错信息：
+
+<ipython-input-9-bc164656c591> in infer(use_cuda, inference_program, params_dirname)
+     19     job_id = fluid.create_lod_tensor([[10]], [[1]], place)
+     20     movie_id = fluid.create_lod_tensor([[783]], [[1]], place)
+---> 21     category_id = fluid.create_lod_tensor([[10, 8, 9]], [[1]], place)
+     22     movie_title = fluid.create_lod_tensor([[1069, 4140, 2923, 710, 988]], [[5]], place)
+     23
+
+/opt/conda/envs/py35-paddle1.0.0/lib/python3.5/site-packages/paddle/fluid/lod_tensor.py in create_lod_tensor(data, recursive_seq_lens, place)
+     74         assert [
+     75             new_recursive_seq_lens
+---> 76         ] == recursive_seq_lens, "data and recursive_seq_lens do not match"
+     77         flattened_data = np.concatenate(data, axis=0).astype("int64")
+     78         flattened_data = flattened_data.reshape([len(flattened_data), 1])
+
+AssertionError: data and recursive_seq_lens do not match
+
+问题复现：根据数据字典定义一个电影名称的列表，然后使用这个类别通过fluid.create_lod_tensor创建一个电影名称的张量数据，在执行创建时机出现以上的错误。错误代码如下：
+
+movie_id = fluid.create_lod_tensor([[783]], [[1]], place)
+category_id = fluid.create_lod_tensor([[10, 8, 9]], [[1]], place)
+movie_title = fluid.create_lod_tensor([[1069, 4140, 2923, 710, 988]], [[1]], place)
+
+解决问题：这个定义名称有五个单词，所以recursive_seq_lens参数的值应该是5，而不是1。正确代码如下：
+
+movie_id = fluid.create_lod_tensor([[783]], [[1]], place)
+category_id = fluid.create_lod_tensor([[10, 8, 9]], [[3]], place)
+movie_title = fluid.create_lod_tensor([[1069, 4140, 2923, 710, 988]], [[5]], place)
+
+问题拓展：对于创建张量的PaddlePaddle还提供了paddle.fluid.layers.create_tensor这个接口，这个这个接口跟fluid.create_lod_tensor不一样的是，这个接口在创建时没有赋值，只有当执行器执行run函数时，通过feed参数执行赋值。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

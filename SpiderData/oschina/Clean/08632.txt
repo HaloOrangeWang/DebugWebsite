@@ -1,0 +1,58 @@
+　　某台SqlServer数据库执行订阅发布的时候，报错：
+
+无法作为数据库主体执行，因为主体“dbo”不存在、无法模拟这种类型的主体，或您没有所需的权限。（源：MSSQLServer，错误号：15517）
+
+　　
+
+　　这种报错的原因是数据库的登录名都没有映射到这个数据库的dbo用户上。在企业管理器的图形界面看，就是在实例的登录名的属性窗口-用户映射：
+
+　　
+
+　　在数据库Parameter上没有和dbo映射，所以Parameter的订阅发布操作会报上述错误。
+
+　　“主体”这些对象可以通过系统表sys.database_principals和sys.server_principals查询，包括登录名、用户名、角色这些信息，前者是查询当前数据库的对象，后者是查询整个实例的对象。
+
+　　查询sys.server_principals：
+
+select * from sys.server_principals
+
+　　部分结果如图所示：
+
+　　
+
+　　sys.server_principals中的每个主体都有一个唯一标识sid，这个值在实例中是唯一的。sys.database_principals每条记录的sid值就对应sys.server_principals的sid。如果数据库的登录名要和Parameter的dbo用户进行了映射，则两个表中的sid应该相等。如果是通过备份还原方式从别的服务器上还原的数据库，则有可能导致sid不匹配。
+
+　　查询Parameter数据库dbo对应的sid：
+
+select name,sid from [Parameter].sys.database_principals where name='dbo'
+
+　　
+
+　　使用上面的sid值到server_principals中查询对应的登录名
+
+select name,sid from sys.server_principals where sid=0x0105000000000005150000007AABCEF72E958146CFF9AA6A1B090000
+
+　　
+
+　　查询结果为空。给数据库Parameter指定所有者：sa。
+
+ALTER AUTHORIZATION ON DATABASE::Parameter TO sa
+
+　　如果使用图形界面操作，在数据库的属性窗口-文件页面，添加“所有者”，如图所示：
+
+　　
+
+　　操作完重新查询Parameter数据库的dbo对应的sid，结果如下
+
+　　
+
+　　0x01是用户sa的sid
+
+select name,sid from sys.server_principals where sid=0x01
+
+　　
+
+　　这样映射好之后，再执行订阅发布就不会报上面的错误了。重新查看登录用户sa的用户映射，可以看到parameter数据库已经映射了用户dbo：
+
+　　
+

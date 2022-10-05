@@ -1,0 +1,241 @@
+有的bug，莫名其妙就好了…
+
+python3.9 报错 “AttributeError: 'HTMLParser' object has no attribute 'unescape'” 异常分析解决。
+
+
+一、问题描述
+
+安装 python3.9 版本后，pycharm 中切换 python3.9 版本，创建虚拟环境报错："AttributeError: 'HTMLParser' object has no attribute 'unescape'"。
+
+Executed command:
+
+C:\Users\脚本之家\AppData\Local\Temp\tmp41_yhcxspycharm-management\setuptools-40.8.0\setup.py install
+
+Error occurred:
+
+AttributeError: 'HTMLParser' object has no attribute 'unescape'
+
+Command output:
+
+Traceback (most recent call last):
+
+File "C:\Users\脚本之家\AppData\Local\Temp\tmp0mv4mj35pycharm-management\setuptools-40.8.0\setup.py", line 11, in <module>
+
+import setuptools
+
+File "C:\Users\脚本之家\AppData\Local\Temp\tmp0mv4mj35pycharm-management\setuptools-40.8.0\setuptools\__init__.py", line 20, in <module>
+
+from setuptools.dist import Distribution, Feature
+
+File "C:\Users\脚本之家\AppData\Local\Temp\tmp0mv4mj35pycharm-management\setuptools-40.8.0\setuptools\dist.py", line 35, in <module>
+
+from setuptools.depends import Require
+
+File "C:\Users\脚本之家\AppData\Local\Temp\tmp0mv4mj35pycharm-management\setuptools-40.8.0\setuptools\depends.py", line 7, in <module>
+
+from .py33compat import Bytecode
+
+File "C:\Users\脚本之家\AppData\Local\Temp\tmp0mv4mj35pycharm-management\setuptools-40.8.0\setuptools\py33compat.py", line 55, in <module>
+
+unescape = getattr(html, 'unescape', html_parser.HTMLParser().unescape)
+
+AttributeError: 'HTMLParser' object has no attribute 'unescape'
+
+查看官网 python3.9 的 changelog，发现 HTMLParser.unescape 属性被移除了，并且从 python3.4 开始就被弃用。
+
+pycharm 创建虚拟环境时，会使用到 setuptools。而 setuptools 中，刚好使用了这个属性，所以，导致了"AttributeError: 'HTMLParser' object has no attribute 'unescape'"异常。
+
+经过各种分析、尝试，问题最终得到解决。记录下过程，避免更多人踩坑。
+
+
+二、解决方法
+
+先给出解决方法，感兴趣的朋友，可以继续阅读后面的分析部分。
+
+解决这个问题，分两种情况：
+
+1. 不通过 pycharm 编辑器，直接使用 python 解释器。
+
+2. 在 pycharm 编辑器中使用 python 解释器。
+
+我是在 pycharm 中使用 python3.9 触发报错，所以这里也单独提出来讨论讨论。
+
+2.1、直接使用 python 解释器
+
+不通过 pycharm 编辑器，直接使用 python 解释器。比如，在 windows 的 cmd ，或 linux 下的命令行中使用 python。
+
+解决方法：更新 setuptools 版本。
+
+我以 python3.9 使用 setuptools 为例，测试如下。
+
+2.1.1、setuptools 低版本触发报错
+
+以 setuptools-40.8.0 为例，测试触发报错如下：
+
+第一步，使用 python3.9 下的 pip 卸载之前安装的 setuptools:
+
+E:\soft\python\python39\install>pip uninstall setuptools
+
+第二步，安装 setuptools-40.8.0：
+
+E:\soft\python\python39\install>pip install setuptools==40.8.0
+Collecting setuptools==40.8.0
+ Using cached setuptools-40.8.0-py2.py3-none-any.whl (575 kB)
+Installing collected packages: setuptools
+Successfully installed setuptools-40.8.0
+
+第三步，在 python3.9 中导入包触发报错：
+
+E:\soft\python\python39\install>python
+
+Python 3.9.0 (tags/v3.9.0:9cf6752, Oct 5 2020, 15:34:40) [MSC v.1927 64 bit (AMD64)] on win32
+
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> import setuptools
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "E:\soft\python\python39\install\lib\site-packages\setuptools\__init__.py", line 20, in <module>
+
+from setuptools.dist import Distribution, Feature
+
+File "E:\soft\python\python39\install\lib\site-packages\setuptools\dist.py", line 35, in <module>
+
+from setuptools.depends import Require
+
+File "E:\soft\python\python39\install\lib\site-packages\setuptools\depends.py", line 7, in <module>
+
+from .py33compat import Bytecode
+
+File "E:\soft\python\python39\install\lib\site-packages\setuptools\py33compat.py", line 55, in <module>
+
+unescape = getattr(html, 'unescape', html_parser.HTMLParser().unescape)
+
+AttributeError: 'HTMLParser' object has no attribute 'unescape'
+
+2.1.2、setuptools 高版本解决报错
+
+以 setuptools-49.2.1 为例，测试如下：
+
+第一步，卸载之前安装的 setuptools:
+
+E:\soft\python\python39\install>pip uninstall setuptools
+Found existing installation: setuptools 40.8.0
+Uninstalling setuptools-40.8.0:
+ Would remove:
+ e:\soft\python\python39\install\lib\site-packages\easy_install.py
+ e:\soft\python\python39\install\lib\site-packages\pkg_resources\*
+ e:\soft\python\python39\install\lib\site-packages\setuptools-40.8.0.dist-info\*
+ e:\soft\python\python39\install\lib\site-packages\setuptools\*
+ e:\soft\python\python39\install\scripts\easy_install-3.9.exe
+ e:\soft\python\python39\install\scripts\easy_install.exe
+Proceed (y/n)? y
+ Successfully uninstalled setuptools-40.8.0
+
+第二步，安装 setuptools==49.2.1:
+
+E:\soft\python\python39\install>pip install setuptools==49.2.1
+Collecting setuptools==49.2.1
+ Using cached setuptools-49.2.1-py3-none-any.whl (789 kB)
+Installing collected packages: setuptools
+Successfully installed setuptools-49.2.1
+
+第三步，在 python3.9 中导入包：
+
+E:\soft\python\python39\install>python
+Python 3.9.0 (tags/v3.9.0:9cf6752, Oct 5 2020, 15:34:40) [MSC v.1927 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import setuptools
+>>> setuptools.__version__
+'49.2.1'
+>>>
+
+目前最新版本，应该是到 setuptools-50.3.2 了 。
+
+2.2、在 pycharm 中使用 python 解释器
+
+在 pycharm 中创建 python3.9 虚拟环境报错，本质上也是使用了 setuptools 的低版本导致。
+
+我尝试过更新 setuptools 为更高的版本，但 pycharm 还是顽固的使用了 setuptools-40.8.0，如最开始的报错信息所示…
+
+我不知道是 pycharm 中的某些默认配置导致，还是 pycharm 的版本属性导致它使用了低版本的 setuptools，如果有朋友知道，欢迎告知。
+
+虽然，不知道 pycharm 中选择低版本 setuptools 的原因。这里，也简单提供两种解决方法吧~
+
+2.2.1、virtualenv 创建虚拟环境
+
+virtualenv 为应用提供隔离的 Python 运行环境，可以解决不同应用间多版本 python 的冲突问题。
+
+利用 virtualenv 创建虚拟环境后，pycharm 中创建虚拟环境时，选择已存在的虚拟环境，可以避开报错。
+
+第一步： 确认 python3.9 对应的 pip 工具。
+
+如果没有配环境变量，可以直接从安装路径下打开 cmd 工具。一般在 python 安装目录下的 Scripts 文件夹内。使用 pip -V 可以查看 pip 对应的 python 版本。
+
+E:\soft\python\python39\install>pip -V
+pip 20.2.4 from e:\soft\python\python39\install\lib\site-packages\pip (python 3.9)
+
+第二步： 安装 virtualenv。
+
+pip install virtualenv
+
+第三步： 创建虚拟环境。
+
+virtualenv 指令用于创建虚拟环境，后跟虚拟环境保存路径。
+
+virtualenv E:\soft\python\python39\env
+
+如果需要删除虚拟环境，直接删除对应文件夹即可。
+
+第四步： pycharm 中选择已存在的虚拟环境。
+
+"File --> Settings --> Python Interpreter"，进入对应界面。
+
+这里，需要选择到虚拟环境中的 python.exe，否则 OK 键为灰色，无法点击。
+
+通过该方法，可以在原本报错的 pycharm 中创建 python3.9 虚拟环境。
+
+2.2.2、pycharm 版本更换
+
+报错版本为：pycharm-community-2019.2.1。
+
+下载安装最新版本：pycharm-community-2020.2.3。
+
+点击运行要安装的 pycharm-community-2020.2.3.exe 文件，会自动检测，提示卸载已安装的pycharm。
+
+为避免其他问题，卸载过程中，可以选择删除旧版本配置等。
+
+经过测试，使用最新版本 pycharm 可以成功创建 python3.9 虚拟环境。
+
+为了验证是否为 pycharm 的版本兼容问题，我卸载最新版本，重新安装旧版本 pycharm 后，依然报错！我猜测是固定的 pycharm 版本，使用了固定的某些 setuptools 版本，导致了兼容性报错。
+
+我也怀疑过是系统中多个版本 python 的环境变量顺序，导致pycharm 找到了错误的依赖项。尝试在环境变量中将 python3.9 相关值移动到最前面，依然不能解决问题。
+
+看来，最新的 python 还是得配最新的 pycharm！编码界的爱情故事么…
+
+
+三、原因分析
+
+感兴趣的朋友，欢迎继续阅读。
+
+从 Traceback 报错日志中，可以看到，是在 setuptools-40.8.0\setuptools\py33compat.py 的55行， 执行 unescape = getattr(html, 'unescape', html_parser.HTMLParser().unescape) 时，抛出了 AttributeError: 'HTMLParser' object has no attribute 'unescape' 异常。
+
+可以肯定是由 setuptools 引起的报错。这里有一个关键的信息：py33compat.py 文件。
+
+pyXXcompat.py 是 setuptools 兼容 python 版本相关的文件。
+
+进入到 ..\Lib\site-packages\setuptools 查看 setuptools-40.8.0 的安装文件，可以看到，包含了 py27compat.py 、py31compat.py 、py33compat.py 。
+
+进入到 ..\Lib\site-packages\setuptools 查看 setuptools-49.2.1 的安装文件，可以看到，只包含了 py34compat.py 。
+
+而我们从 python3.9 的 changelog 中，可以知道 HTMLParser.unescape 属性被移除了，并且从 python3.4 开始就被弃用了。
+
+所以，从兼容 python3.4 开始，setuptools 中就放弃了使用 HTMLParser.unescape。
+
+因此，只要包含 py34compat.py 文件的 setuptools 版本，就能兼容 python3.9 版本。
+
+到此这篇关于关于pycharm 切换 python3.9 报错 ‘HTMLParser‘ object has no attribute ‘unescape‘ 的问题的文章就介绍到这了,更多相关pycharm 切换 python3.9 报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

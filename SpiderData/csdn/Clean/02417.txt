@@ -1,0 +1,13 @@
+问题描述：
+ 我制作了一个程序，主要程序为OSRR.py，import了另外两个文件ExcelA.py和ExcelB.py，当我在visual studio中运行时，程序可以正常执行，但我使用pyinstaller打包成一个独立的exe文件以后，运行会报错“importERROR”，但是后面没有提示导入哪个名称报错了，打包命令是：pyinstaller -F OSRR.py -p ExcelA.py -p ExcelB.py --hidden-import ExcelA --hidden-import ExcelB 报错如下图。
+
+解决问题过程：
+ 之前我没有新建这个ExcelB.py的时候，直接打包OSRR.py和Excel.py是可以正常打包的，新建了一个ExcelB并在OSRR.py中导入后出现报错，于是我将ExcelB.py中import的库，新建了一个项目导入后直接运行，也出现报错了，如下图。
+ 
+ 我在Test1.py中把所有import都删除了，然后一个一个试，发现是这一串代码的问题：
+ from pynput.keyboard import Key,Controller，但是我写的代码直接在VS中运行是没有任何报错的，可以正常跑下去。
+
+解决方法：
+ 网上找到了一篇文章介绍了原因和解决方法（很抱歉之前不会写博客，终于找到这个功能了后找不到那篇文章了，对不起原作者老哥了）。
+ 出现问题的原因是pynput版本问题导致，如果安装的是最新的1.7.3版本，打包使用会出现以上问题，使用“pip uninstall pynput”卸载该包，然后使用"pip install pynput==1.6.8"命令，安装1.6.8版本，安装完成后，无论是打包exe程序还是VS里直接运行，都没有任何报错了。
+

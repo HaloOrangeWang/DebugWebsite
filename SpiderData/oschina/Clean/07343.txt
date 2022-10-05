@@ -1,0 +1,53 @@
+UPDATE: 2015/12/06 Updated for Xcode 7 and Swift 2.
+
+
+报错内容：
+
+Type 'ViewController' does not conform to protocol 'UITableViewDataSource'
+
+
+复现步骤：
+
+(1) 在ViewController 键入UITableViewDataSource, UITableViewDelegate两个协议，让ViewController 继承这个两个协议
+
+(2) Xcode立即报错：Type 'ViewController' does not conform to protocol 'UITableViewDataSource'
+
+
+问题原因：
+
+在使用UITableViewDataSource, UITableViewDelegate两个协议时，必须要实现几个tableView方法
+
+
+解决办法：
+
+在ViewController中实现一下三个方法：
+
+当实现了前两个方法后，Xcode就不提示这个错误了。
+
+// 返回分组数
+func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    <#code#>
+}
+
+// 根据分组，返回每个分组的行数
+func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    <#code#>
+}
+
+// 根据分组，返回每个cell
+func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    <#code#>
+}
+
+引用极客学院的技术问答：
+
+当打入UITableViewDataSource，UITableViewDelegate两个协议时，一直提示 “type‘ViewController’ does not conform to protocol 'UITableViewDataSource'”希望教授一下，这俩协议应该如何用？
+
+极客学院-silence 03月27日 回答 #1楼 这两个协议分别都有几个方法，是必须继承的，如果你没有继承，就会提示这个问题，代表你没有实现这个协议
+
+
+参考：
+
+http://wenda.jikexueyuan.com/question/10160/
+ http://blog.csdn.net/mjbaishiyun/article/details/42580729
+

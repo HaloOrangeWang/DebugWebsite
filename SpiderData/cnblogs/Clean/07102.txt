@@ -1,0 +1,19 @@
+1、报错描述
+
+django中配置了mysql数据库，执行python manage.py makemigrations报错“django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required;”
+
+2、问题解决
+
+找到python安装目录下的base.py文件，目录参考：/home/用户名/.virtualenvs/项目名/lib/python3.5/site-packages/django/db/backends/mysql/base.py
+
+注视掉这两行：
+
+# if version < (1, 3, 3):
+       # raise ImproperlyConfigured("mysqlclient 1.3.3 or newer is required; you have %s" % Database.__version__)
+
+重新在项目manage.py路径下执行文件迁移命令：
+
+python manage.py makemigrations
+
+python manage.py migrate
+

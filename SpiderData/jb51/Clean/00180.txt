@@ -1,0 +1,73 @@
+记录一次报错解决方法：
+
+No converter found capable of converting from type [java.lang.String] to type [java.util.Map<java.lang.String, java.lang.String>]
+
+org.springframework.boot.context.properties.bind.BindException: Failed to bind properties under 'logging.level' to java.util.Map<java.lang.String, java.lang.String>
+ at org.springframework.boot.context.properties.bind.Binder.handleBindError(Binder.java:250)
+ at org.springframework.boot.context.properties.bind.Binder.bind(Binder.java:226)
+ at org.springframework.boot.context.properties.bind.Binder.bind(Binder.java:210)
+ at org.springframework.boot.context.properties.bind.Binder.bind(Binder.java:166)
+ at org.springframework.boot.context.logging.LoggingApplicationListener.setLogLevels(LoggingApplicationListener.java:307)
+ at org.springframework.boot.context.logging.LoggingApplicationListener.initializeFinalLoggingLevels(LoggingApplicationListener.java:290)
+ at org.springframework.boot.context.logging.LoggingApplicationListener.initialize(LoggingApplicationListener.java:238)
+ at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEnvironmentPreparedEvent(LoggingApplicationListener.java:200)
+ at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEvent(LoggingApplicationListener.java:173)
+ at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172)
+ at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165)
+ at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139)
+ at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:127)
+ at org.springframework.boot.context.event.EventPublishingRunListener.environmentPrepared(EventPublishingRunListener.java:74)
+ at org.springframework.boot.SpringApplicationRunListeners.environmentPrepared(SpringApplicationRunListeners.java:54)
+ at org.springframework.boot.SpringApplication.prepareEnvironment(SpringApplication.java:361)
+ at org.springframework.boot.SpringApplication.run(SpringApplication.java:320)
+ at org.springframework.boot.SpringApplication.run(SpringApplication.java:1258)
+ at org.springframework.boot.SpringApplication.run(SpringApplication.java:1246)
+Caused by: org.springframework.core.convert.ConverterNotFoundException: No converter found capable of converting from type [java.lang.String] to type [java.util.Map<java.lang.String, java.lang.String>]
+ at org.springframework.core.convert.support.GenericConversionService.handleConverterNotFound(GenericConversionService.java:321)
+ at org.springframework.core.convert.support.GenericConversionService.convert(GenericConversionService.java:194)
+ at org.springframework.boot.context.properties.bind.BindConverter$CompositeConversionService.convert(BindConverter.java:162)
+ at org.springframework.boot.context.properties.bind.BindConverter.convert(BindConverter.java:96)
+ at org.springframework.boot.context.properties.bind.BindConverter.convert(BindConverter.java:88)
+ at org.springframework.boot.context.properties.bind.MapBinder.bindAggregate(MapBinder.java:67)
+ at org.springframework.boot.context.properties.bind.AggregateBinder.bind(AggregateBinder.java:58)
+ at org.springframework.boot.context.properties.bind.Binder.lambda$bindAggregate$2(Binder.java:305)
+ at org.springframework.boot.context.properties.bind.Binder$Context.withIncreasedDepth(Binder.java:441)
+ at org.springframework.boot.context.properties.bind.Binder$Context.access$100(Binder.java:381)
+ at org.springframework.boot.context.properties.bind.Binder.bindAggregate(Binder.java:304)
+ at org.springframework.boot.context.properties.bind.Binder.bindObject(Binder.java:262)
+ at org.springframework.boot.context.properties.bind.Binder.bind(Binder.java:221)
+ ... 18 common frames omitted
+
+application.yml中的原配置如下：(spring boot版本2.0.4)
+
+logging:
+ path: ./logs/
+ level: debug
+
+报错后，spring boot切换回1.5.9发现没问题，因此去官网查找
+
+官网：https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-custom-log-levels
+
+看到这部分
+
+26.4 Log Levels
+
+All the supported logging systems can have the logger levels set in the Spring Environment (for example, in application.properties) by using logging.level.<logger-name>=<level> where level is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or OFF. The root logger can be configured by using logging.level.root.
+
+The following example shows potential logging settings in application.properties:
+
+logging.level.root=WARN
+logging.level.org.springframework.web=DEBUG
+logging.level.org.hibernate=ERROR
+
+看完这部分，将yml改为如下：
+
+logging:
+ path: ./logs/
+ level:
+ root: debug
+
+再次重启，问题解决
+
+以上这篇基于spring boot 日志(logback)报错的解决方式就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

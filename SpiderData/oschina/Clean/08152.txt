@@ -1,0 +1,38 @@
+今天有两台服务器都出现了Can't create a new thread报错。
+
+【故障处理过程】
+
+故障发生后登录服务器，检查mysql进程正常，但登录mysql报下面错误
+
+ERROR 1135 (HY000): Can't create a new thread (errno 11); if you are not out of available memory, you can consult the manual for a possible OS-dependent bug。
+
+重启mysql服务，执行没响应，kill -9 mysql进程，从errorlog中看到，停服务的命令由于无法创建新的thread导致执行失败
+
+【问题分析】
+
+这个报错不是mysql本身的问题，根本原因是由于操作系统CentOS 6.4 Linux 2.6.32 的max user processe的默认设置1024太小造成，当mysql线程数大于配置值时，就会出现Can't create a new thread报错。
+
+以其中一台服务器为例，操作系统版本是CentOS release 6.4（Linux version 2.6.32）
+
+配置文件/etc/security/limits.d/90-nproc.conf的默认设置soft limit 是1024
+
+这时mysql进程的Soft Limit也是1024
+
+【问题重现】
+
+在测试机器上将Max processes调整为1024，模拟并发1024以上个线程请求，会出现同样的报错
+
+动态修改mysql进程的系统资源限制后，报错消失
+
+echo -n "Max processes=2048:2048" > /proc/`pidof mysqld`/limits
+
+【解决办法】（针对CentOS 6.4 Linux version 2.6.32以上版本）
+
+1、动态修改mysql进程的系统资源限制（不需重启mysql服务即可生效）
+
+echo -n "Max processes=65535:65535" > /proc/`pidof mysqld`/limits
+
+2、修改/etc/security/limits.d/90-nproc.conf配置文件的配置（下次重启mysql服务生效）
+
+3、建议同时修改上面配置中用户打开最大文件数的限制nofile
+

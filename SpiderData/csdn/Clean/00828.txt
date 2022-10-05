@@ -1,0 +1,131 @@
+
+一、java如何调用python程序
+
+为了验证该方法可以运行python程序，我们先写一个简单的python脚本，代码如下：
+
+print("你好")
+
+输出“你好”两个字。
+
+下面来看看怎么用Runtime.getRuntime().exec()方法来调用python程序并输出该结果，java代码如下：
+
+public class py_text {
+
+public static void main(String[] args) {
+        try {
+            String[] arg = new String[] { "python", "D:\\college\\Python\\project\\java\\bb.py"};
+            proc = Runtime.getRuntime().exec(arg);
+            BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line = null;
+            while ((line = in.readLine()) != null) {
+                System.out.println(line);
+            }
+            in.close();
+            proc.waitFor();
+        } catch (IOException e){
+            e.printStackTrace();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
+}
+
+输出结果如下图所示：
+
+可以看到运行成功了，但有的朋友可能会问了，怎么在python程序中函数传递参数并执行出结果，下面我就举一例来说明一下。
+ 先写一个python的程序，代码如下：
+
+import sys;
+
+print("你好")
+
+def func(a,b):return a+b;
+
+if __name__ == '__main__':
+    a = []
+    for i in range(1, len(sys.argv)):
+        a.append((int(sys.argv[i])))
+    print(func(a[0], a[1]))
+
+其中sys.argv用于获取参数url1，url2等。而sys.argv[0]代表python程序名，从sys.argv[1]开始代表第一个参数，所以列表从1开始读取参数。
+ 以上代码实现一个两个数做加法的程序，下面看看在java中怎么传递函数参数，代码如下：
+
+public class py_text {
+
+public static void main(String[] args) {
+        Process proc;
+        int a = 10;
+        int b = 20;
+
+try {
+            String[] arg = new String[] { "python", "D:\\college\\Python\\project\\java\\bb.py", String.valueOf(a), String.valueOf(b) };
+            proc = Runtime.getRuntime().exec(arg);
+            BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line = null;
+            while ((line = in.readLine()) != null) {
+                System.out.println(line);
+            }
+            in.close();
+            proc.waitFor();
+        } catch (IOException e){
+            e.printStackTrace();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
+}
+}
+
+其中args是String[] { “python”,path,url1,url2 }; ，path是python程序所在的路径，url1是参数1，url2是参数2，以此类推。
+
+java程序向python传递了2个参数。分别是a=10；b=20。我们期望返回的结果是a+b=30。
+
+运行java程序，查看返回结果：
+
+返回成功！
+
+
+二、Java调用Python脚本无法得到运行结果
+
+介绍使用Java的Runtime.getRuntime().exec()方法执行Python脚本时无法得到运行结果的原因。
+
+Python程序在Pycharm中正常运行，但是在Java中运行结果为空。
+
+可以通过运行如下代码，查看返回值是否为1。如果是1，说明运行Python文件出错啦。
+
+proc = Runtime.getRuntime().exec(arg);
+int res=proc.waitFor();
+System.out.println(res);
+
+Runtime.getRuntime().exec()方法是利用cmd去执行Python脚本，所以会报错后我们可以去cmd运行python程序，查看报错的地方。
+
+
+三、用cmd打开Python
+
+cmd的中文名是命令提示符，在Windows系统里可以输入一串命令来进行操作。cmd调用Python文件的步骤如下：
+
+(1)打开cmd；
+
+(2)转到你要运行的文件所在的盘(例如：E盘)。输入：“e：”，然后键入“回车” ；
+
+(3)打开你要运行的文件所在的文件夹(例如：E:\ABC\123)。输入：“cd E:\ABC\123”， 然后键入“回车” ；
+
+(4)运行程序。 输入：“python ***.py”(程序文件的名字) ，然后键入“回车” 。
+
+
+四、用cmd运行Python文件报错
+
+用cmd运行Python文件后报错：
+
+解决方案：用cmd 执行命令pip install xxx(缺失的包，例如上图显示的“dateutil”)
+
+需要注意的是：对于缺失包dateutil，输入的命令应该为：
+
+pip3 install python-dateutil
+
+直接输入pip install dateutil会报错！
+
+当所有包导入完毕后，首先在cmd中运行，如果可以正常执行的话，在java中调用python程序也将没有问题！
+
+欢迎三连，转载请标明出处。
+

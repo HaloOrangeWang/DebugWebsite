@@ -1,0 +1,16 @@
+　　按照官方文档操作，但是windows下有些不同，它不认识单引号'，因此如果这样操作，就会报错：
+
+C:\Users\neusoft>curl localhost:9200/b1/b2/1 -d {"name":"fdafa"}
+{"error":"MapperParsingException[failed to parse]; nested: JsonParseException[Un
+recognized token 'fdafa': was expecting 'null', 'true', 'false' or NaN\n at [Sou
+rce: [B@1e6b986; line: 1, column: 13]]; ","status":400}
+
+　　此时，需要在{}周围添加双引号，json内部的双引号则转义
+
+C:\Users\neusoft>curl localhost:9200/b1/b2/1 -d "{\"name\":\"fdafa\"}"
+{"_index":"b1","_type":"b2","_id":"1","_version":1,"created":true}
+
+　　这样操作就正常了！
+
+　　在Linux下也会遇到同样的问题，有时候写的json也无法识别其中的参数，此时也需要经过转义才能使用。
+

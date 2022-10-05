@@ -1,0 +1,42 @@
+首先我看了一下,我的django的版本,目前应该是最新版3.0.6 搭配的Python3.7
+
+按照老师之前给的代码是这样的.
+
+这里制定外键关系就只需要这样写就可以了.
+
+可是在执行
+
+python manage.py makemigrations
+
+这条命令是报错了.
+
+我当时也是纳闷了,怎么哪里不对了,一看是Python源代码报错,所以就开始怀疑我的写法是不是不对,后面百度了一下.
+
+发现这样写是可以的,虽然还不知道是什么意思.但是能用,而且我把别人源代码拿过来同样报这样的错误,后来也是改了这里,就没有问题,我怀疑是我Django的版本太高了导致的.
+
+所以这样就解决问题了.
+
+然后用这个命令建表也是没问题的.
+
+python manage.py migrate
+
+下面这个黑框的错误,我也是找到了愿意.原因就是我的django版本太低了吧,居然说没有 secrets的模块没有,可这个模块应该是内置的啊.
+
+所以我直接升级了Anaconda3-2020.02-Windows-x86_64  把Python升级到了3.7  然后再安装django就没问题了.
+
+安装django命令  pip install django   (如果报错,请先添加环境变量)
+
+django是MTV的模型
+
+Model（模型）：和数据库相关的，负责业务对象与数据库的对象（ORM）
+
+Template（模板）：放所有的html文件
+
+　　　　　　　　模板语法：目的是将白变量（数据库的内容）如何巧妙的嵌入到html页面中
+
+View（视图）：负责业务逻辑，并在适当的时候调用Model和Template
+
+django-admin startproject  site01  建立工程项目
+
+django-admin startpapp  msdb   建立APP
+

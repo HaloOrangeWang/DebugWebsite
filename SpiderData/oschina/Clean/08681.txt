@@ -1,0 +1,12 @@
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sessionFactory' defined in ServletContext resource [/WEB-INF/config/coreContext.xml]: Invocation of init method failed; nested exception is org.hibernate.HibernateException: Errors in named queries: mainServiceRequest.listByAssociatedAndType, ServiceActivity.cancelActivity, GetIrregularClaimByCondition, SampleParameter.getSampleParameterCommonBySampleParameterId, backItem.cancelReserveLossByIds, OrgTaskNum.getHierarchyTasksNum, VPropertyRecallUserAlert.getPropertyPersonalRecallTaskAlert, Individual.countIndividualByPhoneNo, specialServeSurveyArea.getSpecialServesById,
+
+是由于weblogic本身的jar包和Hibernate的antlr-2.7.6.jar这个包冲突了，只要在startWeblogic.cmd里面的set CLASSPATH=%SAVE_CLASSPATH% 前后都加上
+
+set PRE_CLASSPATH=%DOMAIN_HOME%\lib\antlr-2.7.6.jar
+
+set CLASSPATH=%SAVE_CLASSPATH%
+
+set CLASSPATH=%PRE_CLASSPATH%;%SAVE_CLASSPATH%
+
+重新启动就OK了
+

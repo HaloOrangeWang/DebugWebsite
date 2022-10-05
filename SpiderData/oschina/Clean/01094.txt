@@ -1,0 +1,45 @@
+在使用zc.buildout构建项目时如果碰到‘AttributeError: '_NamespacePath' object has no attribute 'sort'’报错：
+
+An internal error occurred due to a bug in either zc.buildout or in a
+recipe being used:
+Traceback (most recent call last):
+  File "c:\python36\lib\site-packages\zc\buildout\buildout.py", line 2123, in main
+    getattr(buildout, command)(args)
+  File "c:\python36\lib\site-packages\zc\buildout\buildout.py", line 680, in install
+    [self[part]['recipe'] for part in install_parts]
+  File "c:\python36\lib\site-packages\zc\buildout\buildout.py", line 680, in <listcomp>
+    [self[part]['recipe'] for part in install_parts]
+  File "c:\python36\lib\site-packages\zc\buildout\buildout.py", line 1274, in __getitem__
+    options._initialize()
+  File "c:\python36\lib\site-packages\zc\buildout\buildout.py", line 1382, in _initialize
+    self.initialize()
+  File "c:\python36\lib\site-packages\zc\buildout\buildout.py", line 1388, in initialize
+    recipe_class = _install_and_load(reqs, 'zc.buildout', entry, buildout)
+  File "c:\python36\lib\site-packages\zc\buildout\buildout.py", line 1338, in _install_and_load
+    allow_hosts=buildout._allow_hosts
+  File "c:\python36\lib\site-packages\zc\buildout\easy_install.py", line 920, in install
+    return installer.install(specs, working_set)
+  File "c:\python36\lib\site-packages\zc\buildout\easy_install.py", line 673, in install
+    ws.add(dist)
+  File "c:\python36\lib\site-packages\pkg_resources\__init__.py", line 790, in add
+    self._added_new(dist)
+  File "c:\python36\lib\site-packages\pkg_resources\__init__.py", line 990, in _added_new
+    callback(dist)
+  File "c:\python36\lib\site-packages\pkg_resources\__init__.py", line 3047, in <lambda>
+    add_activation_listener(lambda dist: dist.activate(replace=True), existing=False)
+  File "c:\python36\lib\site-packages\pkg_resources\__init__.py", line 2574, in activate
+    fixup_namespace_packages(self.location)
+  File "c:\python36\lib\site-packages\pkg_resources\__init__.py", line 2162, in fixup_namespace_packages
+    subpath = _handle_ns(package, path_item)
+  File "c:\python36\lib\site-packages\pkg_resources\__init__.py", line 2091, in _handle_ns
+    _rebuild_mod_path(path, packageName, module)
+  File "c:\python36\lib\site-packages\pkg_resources\__init__.py", line 2120, in _rebuild_mod_path
+    orig_path.sort(key=position_in_sys_path)
+AttributeError: '_NamespacePath' object has no attribute 'sort'
+
+可以尝试升级一下setuptools来解决这个问题：
+
+pip3 install --upgrade setuptools
+
+　
+

@@ -1,0 +1,39 @@
+
+Python 中的编码问题
+
+在python中遇到编码问题主要来自于ASCII和gbk两个方面。win中python为unicode 编码而控制台一般为gbk编码
+
+
+ASCII
+
+对于ASCII来说，是由于这一编码系统的显示导致其无法编码中文和特殊字符，所以需要在开始声明 使用utf-8编码.或者在代码开头著名_*_ coding:utf-8 _*_.
+
+一些有用的命令，查询系统的代码情况：
+
+也可以利用系统模块来进行全局设置：
+
+
+gbk
+
+gbk不能解码的问题主要来自于控制台输出为gbk默认编码，所以需要将待输出的string先encode(‘gbk’)以符合控制台的输出,这时候某些在python中的以unicode编码的字符无法用gbk表示，就会造成无法输出\x 0x0x的字样.
+
+所以先要将unicode表示的字符串encode('gbk')交给print才能使用控制台默认编码gbk输出。
+
+保存文件的时候调用的是python内部的写模块，所以gbk不会报错，windows cmd输出才会报错。在进行网络编程时，将get或者post等响应指定编码是很重要的 response.encoding = 'utf-8'。
+
+一个编码解码的流程：
+
+字符|—–编码encode —->  |byte字节流|  ———-解码decode——–>|字符。
+
+其中编码和解码就是一种数据的转换方式，将字符转为一种字节的表示，包括ascii,gbk,unicode，不同编解码的规则就是不同的字符编码方案。
+
+注：python3 默认编码为unicode，但win系统不是，造成ptint输出使用系统默认编码而报错。
+
+一定要注意win系统的gbk编码不足以表示所有的字符，同时ascii编码也不够表示中文和特殊字符。接收字符的时候指定为unicode编码规避ascii问题，输出的时候根据系统来指定编码避免报错。
+
+可以用UnicodeEncodeError#来捕捉编码异常
+
+-   python 中变量默认是utf-8编码，输出就需要用对应的decode('utf-8')来解码，或者使用输出对应编码来encode('gbk'), 终端输出包含了对byte的解码过程。
+
+参考资料1,2,3,4
+

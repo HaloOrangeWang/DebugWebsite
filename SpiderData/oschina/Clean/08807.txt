@@ -1,0 +1,101 @@
+
+一、navicat等客户端登陆报错的原因
+
+使用mysql，多数我们还是喜欢用可视化的客户端登陆管理的，个人比较喜欢用navicat。一般装好服务器以后，习惯建一个远程的登陆帐号，在mysql8服务器上，用老方法创建的帐号，可以用mysql自己命令行正常登入，但是用navicat等软件登入却会提示错误
+
+原因是MySQL8的新特性，MySQL8默认使用 caching_sha2_password 身份验证机制。旧客户端不支持这种验证，当然就无法登入了。
+
+所以解决办法也很简单，只需要我们在服务器上用旧的认证机制（mysql_native_password）设置密码就可以了。旧模式不是MySQL8默认模式，所以需要在创建用户或者修改密码时，明确指定为mysql_native_password模式。
+
+首先我们试验下，用默认模式创建用户，
+
+执行 ALTER USER 'root'@'%' IDENTIFIED BY 'aaabbb'; 创建的记录是这样的
+
+这种情况下，客户端登入不会成功
+
+如果在创建/或者修改命令中 用WITH mysql_native_password 指明密码模式
+
+例如ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'aaabbb';
+
+执行后的用户记录如下，可见plugin被设置为了mysql_native_password
+
+此时再次测试，客户端就可以正常登入了。
+
+
+二、例:完整的创建一个远程管理员帐号
+
+1、创建一个可以远程登陆的root用户
+
+CREATE USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '新密码';
+
+注意@后面“%”允许远程登入，WITH mysql_native_password 修饰允许旧模式的客户端登入
+
+2、为账户开放权限
+
+grant all privileges on *.* to root@'%';
+
+flush privileges;
+
+
+三、例:创建一个普通用户并为其分配一个数据库
+
+这是开发中比较常见的需求，即给特定用户指定数据库内部的全部权限
+
+1、添加一般账户
+
+CREATE USER '用户名'@'%' IDENTIFIED WITH mysql_native_password BY '密码';
+
+2、创建新数据库
+
+CREATE DATABASE IF NOT EXISTS 数据库名;
+或者干脆
+CREATE DATABASE 数据库名;
+
+以前常常还要指定默认utf8字符集，现在MySQL 8.0的默认字符集是utf8mb4，所以默认即可。
+
+默认生成的数据库字符集是这样的
+
+3、新账户授权新数据库
+
+grant all privileges on 数据库名.* to 用户名@'%';
+
+为方便常常用户名和数据库名设为相同以便管理。
+
+
+附:其他常用的命令
+
+平时配置数据库少，很多命令不算熟悉，所以罗列起来，用的时候复制粘贴加修改是最方便的了。。。
+
+创建用户(WITH mysql_native_password 是可选的，为了适应客户端兼容性)
+CREATE USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '密码';
+设置/修改密码
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '密码';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '密码';
+alter user 'yzd'@'%' identified by 'aaa';
+清除密码
+ALTER USER 'root'@'localhost' IDENTIFIED BY '';
+UPDATE user SET authentication_string='' WHERE user='root';
+删除用户
+drop user 用户名@ localhost;
+Delete FROM mysql.user Where User="用户名" and Host=”localhost”;
+分配权限
+grant all privileges on *.* to root@'%';
+刷新权限
+flush privileges;
+创建数据库
+CREATE DATABASE IF NOT EXISTS yzd DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+查询数据库列表
+show databases;
+查询数据表列表
+show tables;
+查询用户列表
+select host,user,plugin,authentication_string from mysql.user;
+查询当前用户名
+select user();
+查询当前用户权限
+show grants;
+
+mysql8有很多新特性，密码丢失后找回的操作也和旧版不同了。这几天为恢复一个python项目后台库密码，折腾了不少时间，网上mysql5的手段反复试了都走不通。
+
+后来发现，MySQL8有另外的密码复位办法，继续探索中
+

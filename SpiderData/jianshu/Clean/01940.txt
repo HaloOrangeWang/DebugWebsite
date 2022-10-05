@@ -1,0 +1,36 @@
+
+
+问题解决如下：
+
+而且，pip install时，还是出现了这个错误：
+
+File"/usr/local/lib/python3.6/subprocess.py", line 418,in run output=stdout, stderr=stderr)
+
+subprocess.CalledProcessError: Command'('lsb_release', '-a')'returned non-zeroexitstatus 1.
+
+终端运行lsb_release -a则是报错：
+
+ModuleNotFoundError: Nomodulenamed'lsb_release'
+
+解决方案：
+
+找到lsb_release.py文件和CommandNotFound目录，把它们拷贝到报的错误中subprocess.py所在文件夹
+
+命令如下：
+
+sudo find / -name'lsb_release.py'
+
+# result:
+
+# /usr/share/pyshared/lsb_release.py
+
+# /usr/lib/python2.7/dist-packages/lsb_release.py
+
+# /usr/lib/python3/dist-packages/lsb_release.py
+
+python -V
+
+# Python 3.6.6
+
+sudo cp  /usr/lib/python3/dist-packages/lsb_release.py /usr/local/lib/python3.6/
+

@@ -1,0 +1,32 @@
+今天使用 Nginx 部署 Django应用。安装python库都显示成功安装。
+
+尝试启动 uwsgi 服务，竟然报错
+
+Traceback (most recent call last):
+  　　File "<stdin>", line 1, in <module>
+ImportError: No module named pymysql
+
+Traceback (most recent call last):
+  　　File "<stdin>", line 1, in <module>
+ImportError: No module named pymysql
+
+以为 python setup.py install 没安装成功，去python下的 site-packages 目录下看，确实有 PyMySQL-0.7.10-py2.7.egg ，
+
+怀疑安装时出错了，就重新 python setup.py install 装一遍，也显示安装成功，
+
+使用 pip list 也能看到 PyMySQL，确定这次不是安装出错的问题。
+
+结果还是一样的错误。
+
+怀疑是Python版本问题，换成Python2.7.10后，依旧是一样的错误。
+
+折腾了好久，最后才注意到一个问题：安装完以后，不关闭secureCRT窗口，直接进入Python，导入 pymysql 就没问题。关闭secureCRT窗口后重新进入，再导入就会报错。
+
+这才怀疑可能是权限问题。进入site-packages目录看了下  PyMySQL-0.7.10-py2.7.egg 的权限，确实没有任何执行权限，只有读的权限。因为是使用新建的用户来安装的，
+
+才出现这种无权限问题。
+
+解决方法：赋予 site-packages目录 或整个python目录 权限， sudo chmod -R 775 [目录路径]
+
+在 Linux下，对于自己新建的用户，要特别注意权限问题。
+

@@ -1,0 +1,30 @@
+我今天在学习Python用代理ip 访问网页的时候 报了以上错误 在网上找了几种方法不是崩溃就是报错 比如这种:
+
+html = response.read().decode('utf-8'，‘ignore’) 在这句话后面加 ‘ignore’ 感觉好暴力  但是崩溃了
+
+最后我想到直接用 ‘GBK’编码模式就好啦
+
+html = response.read().decode('GBK') 完美运行 没有报错
+
+最后附上完整代码：
+
+import urllib.request
+
+url = 'http://www.ip138.com'
+
+proxy_support = urllib.request.ProxyHandler({'http':'219.141.153.41:80'})
+
+opener = urllib.request.build_opener(proxy_support)
+opener.addheaders = [('User-Agent','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36')]
+
+urllib.request.install_opener(opener)
+
+response = urllib.request.urlopen(url)
+
+html = response.read().decode('GBK')
+
+print(html)
+————————————————
+版权声明：本文为CSDN博主「蜡笔小悠悠」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_40268727/java/article/details/81585669
+

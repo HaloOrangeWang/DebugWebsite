@@ -1,0 +1,129 @@
+python3中的各种报错
+
+
+1.python：ImportError: No module named coockielib
+
+怎麼 import
+
+in Python2:
+
+import cookielib
+
+in Python3:
+
+import http.cookiejar
+
+
+2.python 3.3.2报错：No module named 'urllib2'
+
+Python 3中urllib2用urllib.request替代
+
+
+3. pip安装无法获取地址的解决办法：使用国内镜像加速。
+
+>pip install requests -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+
+4. AttributeError: module 'urllib' has no attribute 'urlencode'
+
+要写成就行了
+
+urllib.parse.urlencode
+
+
+5.python3.x执行post请求时报错“POST data should be bytes or an iterable of bytes...”的解决方法
+
+urlencode语句后加encode(encoding='UTF8')
+
+data = urllib.parse.urlencode(formData).encode("utf-8")
+
+request = urllib.request.Request(url, data=data, headers=header)
+
+print(urllib.request.urlopen(request).read().decode("utf-8"))
+
+
+6.ImportError: No module named 'thread'
+
+"thread" is renamed to "_thread" in python3.
+
+
+7.NameError: name 'raw_input' is not defined
+
+raw_input是2.x版本的输入函数，在新版本环境下会报错，该函数未定义。在3.x版本中应该用input()代替raw_input()。
+
+
+8.VS注释与取消注释快捷键
+
+注释：先CTRL+K，然后CTRL+C
+
+取消注释：先CTRL+K，然后CTRL+U
+
+
+9.Python允许你在list或tuple前面加一个*号，把list或tuple的元素变成可变参数传进去
+
+
+例如
+
+
+*nums表示把nums这个list的所有元素作为可变参数传进去
+
+
+*args是可变参数，args接收的是一个tuple；
+
+
+**kw是关键字参数，kw接收的是一个dict。
+
+使用*args和**kw是Python的习惯写法，当然也可以用其他参数名，但最好使用习惯用法。
+
+使用命名关键字参数时，要特别注意，如果没有可变参数，就必须加一个*作为特殊分隔符。如果缺少*，Python解释器将无法识别位置参数和命名关键字参数
+
+对于任意函数，都可以通过类似func(*args, **kw)的形式调用它，无论它的参数是如何定义的。
+
+
+10.默认情况下，dict迭代的是key，如果要迭代value，可以用  for value in d.values(),如果要同时迭代key和value，可以用for k,v in d.items()
+
+
+11.如果一个函数中包含yield关键字，那么这个函数就会变成 generator
+
+
+12.凡是可作用于for循环的对象都是Iterable类型
+
+
+凡是可作用于next（）函数的对象都是Iterator类型，它们表示一个惰性计算的序列
+
+
+集合数据类型如list，dict，str等是Iterable但不是Iterator，不过可以通过iteration（）函数获得
+
+
+python的for循环本质上就是通过不断调用next（）函数实现的
+
+
+13.列表索引不仅仅可以是正数，也可以是负数
+
+最常见的如list[-1]，即为列表最后一位，当然如果你愿意也可以list[-2] list[-3]。。。
+
+例如:
+
+list = [0, 1, 2, 3, 4, 5, 6]
+
+索引可以是list[0] - list[6]，也可以是list[-1] - list[-7]
+
+[::-1]切片意思是从列表最后一位开始，步长为-1，即从[-1]开始，索引值每次累加-1，累加值为-7时结束,用一个函数来表示
+
+
+14.本机找不到pybot或pybot.bat这个文件
+
+自己创建这个文件试试！
+
+1.打开目录：C:\Python27\Scripts
+
+2.新建一个pybot.txt的文本
+
+3.文本内容输入：
+
+@Echo off
+
+python -m robot.run %*
+
+4.保存文件，修改文件后缀为.bat
+

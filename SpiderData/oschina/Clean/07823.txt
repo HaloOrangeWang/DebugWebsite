@@ -1,0 +1,19 @@
+
+虚拟机开启报错
+
+具体步骤如下：
+ 1、首先我们在win10桌面的左下角的菜单右键–设置。
+ 2、在窗口列表中我们选择 应用。
+ 3、在右边我们可以找到 程序和功能。
+ 4、接着在程序列表的右上角选择 启用或关闭Windows功能。
+ 5、在里面我们 取消勾选Hyper-V 这个功能选项，就是因为它被启用了。
+ 6、建议我们在powershell中使用bcdedit把Hyper-V禁用一下，代码如下：
+ bcdedit /set hypervisorlaunchtype off
+ （我的电脑取消勾选了Hyper-V 这个功能选项，但还是报错，在试了网上各种方法之后还是没用，最终在powershell中使用bcdedit把Hyper-V禁用之后就不报错了/(ㄒoㄒ)/~~）
+ 7、建议重启两次后，我们就可以打开我们的vmware的虚拟机了。
+ 上述就是win10提示您的主机不满足在启用Hyper-V或Device/Credential Guard的情况下运行VMware的详细解决方法，如果你也有遇到一样情况的话，可以参考上面的方法来进行解决吧。
+
+另外，如果出现VMware传输 (VMDB)错误14: Pipe connection has been broken
+ 
+ 也可以用以上方法尝试解决一下，特别是在powershell中使用bcdedit把Hyper-V禁用一下，我的虚拟机开启同时出现以上两个报错，但在powershell中使用bcdedit把Hyper-V禁用成功之后，两个报错都没有了。
+

@@ -1,0 +1,37 @@
+
+问题描述
+
+windows错误安装方法：
+
+pip3 install numpy
+
+这种情况下虽然安装成功，但是在import numpy时会出现如下错误。
+
+import numpy  
+** On entry to DGEBAL parameter number  3 had an illegal value  
+** On entry to DGEHRD  parameter number  2 had an illegal value 
+** On entry to DORGHR DORGQR parameter number  2 had an illegal value  
+** On entry to DHSEQR parameter number  4 had an illegal value
+...
+RuntimeError: The current Numpy installation ('...\\numpy\\__init__.py') fails to pass a sanity check due to a bug in the windows runtime.
+
+
+解决方法
+
+查了很多资料，最后得到的结果是：
+
+numpy==1.19.3; platform_system == “Windows”
+
+numpy==1.19.4; platform_system == “linux”
+ windows只能安装1.19.3，直接使用pip3 install命令安装的是最新的1.19.4版本，因此在安装时需要指定版本：
+
+先卸载已安装版本
+
+pip3 uninstall numpy
+
+安装1.19.3版本
+
+pip3 install numpy==1.19.3
+
+ok，问题解决。
+

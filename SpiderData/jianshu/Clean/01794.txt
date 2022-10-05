@@ -1,0 +1,41 @@
+
+安装 node-sass 的不成功
+
+昨天安装项目依赖的包，差不多都装好了，然后就卡在了node-sass上，各种报错。
+
+报错一、gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.
+
+然后安装了python，依旧不行。又有了下面的报错。
+
+报错二、
+
+在此解决方案中一次生成一个项目。若要启用并行生成，请添加“/m”开关。
+
+生成启动时间为 2019/3/13 10:16:36。
+
+MSBUILD : error MSB4132: 无法识别工具版本“2.0”。可用的工具版本为 "4.0"。
+
+本来也去搜索了解决这个问题的方法，说解决方案是下载 Python2.7，安装时，勾选将 Add Python.exe to PATH，即添加至环境变量，直至安装完毕；但之前安装完python，也手动添加了环境变量，就感觉这样解决不太好。
+
+成功解决问题：
+
+其实想想所有报错都是因为node-sass安装不成功导致的，不如直接去解决node-sass的安装问题，所以就去搜查了一波。
+
+首先应该明白的是，npm 安装 node-sass 依赖时，会从 github.com 上下载 .node 文件。
+
+大部分安装不成功的原因都源自这里，因为 github Releases 里的文件都托管在 s3.amazonaws.com 上面，由于国内网络环境的问题，这个网址在国内总是网络不稳定，这个下载时间可能会很长，甚至导致超时失败。而所以我们需要通过第三方服务器下载这个文件。
+
+直接进行安装node-sass，输入以下命令，使用淘宝镜像。
+
+<pre style="margin: 0px; padding: 0px; white-space: pre-wrap; overflow-wrap: break-word; font-family: "Courier New" !important; font-size: 12px !important;">npm i node-sass --sass_binary_site=https://npm.taobao.org/mirrors/node-sass/</pre>
+
+如果之前安装失败，再安装就不去下载了，怎么办呢？那就先卸载再安装：
+
+<pre style="margin: 0px; padding: 0px; white-space: pre-wrap; overflow-wrap: break-word; font-family: "Courier New" !important; font-size: 12px !important;">npm uninstall node-sass
+
+npm i node-sass --sass_binary_site=https://npm.taobao.org/mirrors/node-sass/</pre>
+
+此方式有效解决了自己的问题，也解决了同事安装的错误。
+
+网上其他的解决方案没有去实践，暂不记录。
+

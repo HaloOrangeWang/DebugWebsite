@@ -1,0 +1,14 @@
+在linux系统使用crontable执行计划python任务的时候报错，如下：
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 32-34: ordinal not in range(128)
+
+但是在手动执该python任务的时候却是正确的，最终解决方案为在python文件头上加上如下代码：
+
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding( "utf-8" )
+
+亲测，搞定
+

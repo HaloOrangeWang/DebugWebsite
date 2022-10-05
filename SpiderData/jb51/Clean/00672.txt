@@ -1,0 +1,195 @@
+一、从文件中读取数据
+
+#!/usr/bin/env python
+with open('pi') as file_object:
+  contents = file_object.read()
+  print(contents)
+ 
+===================================
+3.1415926
+ 5212533
+ 2324255
+
+1、逐行读取
+
+#!/usr/bin/env python
+filename = 'pi'
+with open(filename) as file_object:
+  for line in file_object:
+    print(line)
+ 
+===================================
+3.1415926
+ 5212533
+ 2324255
+
+#!/usr/bin/env python
+filename = 'pi'
+with open(filename) as file_object:
+  for line in file_object:
+    print(line.rstrip())
+==================
+3.1415926
+ 5212533
+ 2324255
+
+2、创建一个包含文件各行内容的列表
+
+#!/usr/bin/env python
+filename = 'pi'
+with open(filename) as file_object:
+  lines = file_object.readlines()   #readlines()方法是从文件中读取每一行，并将其存储在一个列表中
+for line in lines:
+  print(line.rstrip())
+==============================
+3.1415926
+ 5212533
+ 2324255
+
+3、使用文件内容
+
+#!/usr/bin/env python
+filename = 'pi'
+with open(filename) as file_object:
+  lines = file_object.readlines()
+pi_string = ''
+for line in lines:
+  pi_string += line.strip()
+print(pi_string)
+print(len(pi_string))
+========================================
+3.141592652125332324255
+23
+
+二、写入文件
+
+1、写入空文件
+
+#!/usr/bin/env python
+filename = 'programming.txt'
+with open(filename,'w') as file_object:
+  file_object.write("I love programming!")
+
+2、写入多行
+
+#!/usr/bin/env python
+filename = 'programming.txt'
+with open(filename,'w') as file_object:
+  file_object.write("I love programming!\n")
+  file_object.write("yes!\n")
+
+3、附加到文件
+
+#!/usr/bin/env python
+filename = 'pi'
+with open(filename,'a') as file_object:
+  file_object.write("I love programming!\n")
+  file_object.write("yes!\n")
+
+三、异常
+
+1、使用try-except代码块
+
+#!/usr/bin/env python
+ 
+try:
+  print(5/0)
+except ZeroDivisionError:
+  print("You cant divide by zero!")
+
+这里介绍下异常的有关内容。
+
+Python 异常处理
+
+python提供了两个非常重要的功能来处理python程序在运行中出现的异常和错误。你可以使用该功能来调试python程序。
+
+什么是异常？
+
+异常即是一个事件，该事件会在程序执行过程中发生，影响了程序的正常执行。
+
+一般情况下，在Python无法正常处理程序时就会发生一个异常。
+
+异常是Python对象，表示一个错误。
+
+当Python脚本发生异常时我们需要捕获处理它，否则程序会终止执行。
+
+异常处理
+
+捕捉异常可以使用try/except语句。
+
+try/except语句用来检测try语句块中的错误，从而让except语句捕获异常信息并处理。
+
+如果你不想在异常发生时结束你的程序，只需在try里捕获它。
+
+语法：
+
+以下为简单的try....except...else的语法：
+
+try:
+<语句>    #运行别的代码
+except <名字>：
+<语句>    #如果在try部份引发了'name'异常
+except <名字>，<数据>:
+<语句>    #如果引发了'name'异常，获得附加的数据
+else:
+<语句>    #如果没有异常发生
+
+try的工作原理是，当开始一个try语句后，python就在当前程序的上下文中作标记，这样当异常出现时就可以回到这里，try子句先执行，接下来会发生什么依赖于执行时是否出现异常。
+
+如果当try后的语句执行时发生异常，python就跳回到try并执行第一个匹配该异常的except子句，异常处理完毕，控制流就通过整个try语句（除非在处理异常时又引发新的异常）。
+
+如果在try后的语句里发生了异常，却没有匹配的except子句，异常将被递交到上层的try，或者到程序的最上层（这样将结束程序，并打印缺省的出错信息）。
+
+如果在try子句执行时没有发生异常，python将执行else语句后的语句（如果有else的话），然后控制流通过整个try语句。
+
+实例
+
+下面是简单的例子，它打开一个文件，在该文件中的内容写入内容，且并未发生异常：
+
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+try:
+  fh = open("testfile", "w")
+  fh.write("这是一个测试文件，用于测试异常!!")
+except IOError:
+  print "Error: 没有找到文件或读取文件失败"
+else:
+  print "内容写入文件成功"
+  fh.close()
+
+以上程序输出结果：
+
+$ python test.py 
+内容写入文件成功
+$ cat testfile    # 查看写入的内容
+这是一个测试文件，用于测试异常!!
+
+实例
+
+下面是简单的例子，它打开一个文件，在该文件中的内容写入内容，但文件没有写入权限，发生了异常：
+
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+try:
+  fh = open("testfile", "w")
+  fh.write("这是一个测试文件，用于测试异常!!")
+except IOError:
+  print "Error: 没有找到文件或读取文件失败"
+else:
+  print "内容写入文件成功"
+  fh.close()
+
+在执行代码前为了测试方便，我们可以先去掉 testfile 文件的写权限，命令如下：
+
+chmod -w testfile
+
+再执行以上代码：
+
+$ python test.py 
+Error: 没有找到文件或读取文件失败
+
+好了，先介绍这么多，本站有许多关于Python异常的文章，欢迎参阅。
+
+以上就是本文关于Python文件的读写和异常代码示例的全部内容，希望对大家有所帮助。感兴趣的朋友可以继续参阅本站：Python中enumerate函数代码解析、Python网络编程详解、python数据类型判断type与isinstance的区别实例解析等，有什么问题可以随时留言指出，感谢大家！
+

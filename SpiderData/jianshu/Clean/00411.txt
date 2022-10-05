@@ -1,0 +1,27 @@
+使用 mac 版本的 idea 打包使用打包命令 mvn clean package 总是报错：
+
+[ERROR] Could not create local repository at /Repository -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/LocalRepositoryNotAccessibleException
+
+在网上找了很多方法，都是讲maven的配置路径找不到。同样的问题在windows 系统没有问题，在mac上就有问题。 maven 配置也没有问题，配置各种路径也存在：
+
+
+解决方案
+
+Could not create local repository at /Repository
+
+无法创建本地仓库，去找 setting.xml 配置文件:
+
+<localRepository>/Repository</localRepository>
+
+修改成本地的仓库路径：
+
+<localRepository>/Users/opt/Repository</localRepository>
+
+如果觉得文章对你有帮助的话，请点个赞吧!
+

@@ -1,0 +1,132 @@
+这篇文章中，我将介绍3个常见的且你不想犯的Python错误。
+
+错误1：默认的可变对象
+
+Python中可变的对象是什么？可变对象是可以更改的对象，比如列表（list），集合（set）和字典（dict）。
+
+为了方便讨论，我们定一个简单且无用的函数：
+
+def add(x, y=[]):
+    y.append(x)
+    return y
+
+在这个add函数中，我们设置空列表 y 为默认的可变对象，调用add函数：
+
+def add(x, y=[]):
+    y.append(x)
+    return y
+
+print(add('halil'))
+print(add('yıldırım'))
+
+输出：
+
+['halil']
+['halil', 'yıldırım']
+
+由结果推断，默认值被改变了。第一次调用 add('halil')时，默认参数 y = ['halil']，并开始覆盖 add 函数的默认值。
+
+我们调用 __default__查看函数的默认值：
+
+def add(x, y=[]):
+    y.append(x)
+    return y
+
+add('halil')
+print(add.__defaults__)
+add('yıldırım')
+print(add.__defaults__)
+
+output:
+
+(['halil'],)
+(['halil', 'yıldırım'],)
+
+由结果可知，默认列表改变了。
+
+解决方法：默认的可变对象设置为None
+
+如下例子：
+
+def add(x, y=None):
+    if y is None:
+        y = list()
+        y.append(x)
+    else:
+        y.append(x)
+    return y
+
+print(add('halil'))
+print(add('yıldırım'))
+
+output：
+
+['halil']
+['yıldırım']
+
+由结果可知，默认对象没有改变
+
+错误2：复制
+
+首先定义一个字典：
+
+a = {'a': 5, 'b': 4, 'c': 8}
+
+利用赋值运算符复制字典 a ：
+
+a = {'a': 5, 'b': 4, 'c': 8}
+b = a
+
+删除字典 b 的第一个key值：
+
+del b['a']
+
+打印字典 a 和 b 的值：
+
+a = {'a': 5, 'b': 4, 'c': 8}
+b = a
+del b['a']
+print(b)
+print(a)
+
+output：
+
+{'b': 4, 'c': 8}
+{'b': 4, 'c': 8}
+
+由结果可知，删除字典b第一个元素的同时，也删除了字典a的第一个元素。这不是我们想要看到的，我们需要字典a不受影响。
+
+解决方法：copy函数
+
+使用copy函数，则能保证字典a不受影响，如下代码：
+
+import copy
+a = {'a': 5, 'b': 4, 'c': 8}
+b = copy.copy(a)
+del b['a']
+print(b)
+print(a)
+
+output：
+
+{'b': 4, 'c': 8}
+{'a': 5, 'b': 4, 'c': 8}
+
+错误3：文件命名
+
+如果你命名文件的名字与你所调用库的名字相同时，则会报错。如下代码：
+
+import random
+
+print(random.random())
+
+output：
+
+File "C:\Users\HalilibrahimYıldırım\Desktop\medium\Python\random.py", line 3, in <module>
+print(random.random())
+TypeError: 'module' object is not callable
+
+切记 ！永远不要命名文件与调用的库名相同。
+
+这三个常见错误，希望对您由所帮助。
+

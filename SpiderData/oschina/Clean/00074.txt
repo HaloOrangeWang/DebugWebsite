@@ -1,0 +1,24 @@
+首先 更新软件！ sudo apt-get update
+
+然后尝试安装mysqlclient，报错 后执行下面的步骤
+
+安装mysql驱动之 mysqlclient 出现的报错信息处理
+
+　　报错1： OSError: mysql_config not found     出现上面错误主要还是因为未安装python依赖
+
+　　　　　　解决：方法1    执行    sudo apt-get install python3.6-dev libmysqlclient-dev   这里需要指定python版本
+
+　　　　　　　　　方法2    执行   ln -s /usr/local/mysql/bin/mysql_config /usr/local/bin/mysql_config
+
+　　　　　　　　　　　　  将mysql_config链接到/usr/local/bin目录下
+
+　　　　　　　注意 ： 由于ubuntu默认安装了 python2.7 / python3.5 ,默认安装的依赖环境会是以这两个版本为基础的（mysql_config），所以不推荐使用  方法2
+
+　　报错2：   unable to execute 'i686-linux-gun-gcc' : No such file or directory
+
+　　　　　　 error: command 'i686-linux-gun-gcc' failed with exit status 1
+
+　　　　　　　解决：安装一下 gcc就可以了
+
+　　　　　　　　　　Ubuntu16.04下gcc安装   sudo apt-get build-dep gcc
+

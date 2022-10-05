@@ -1,0 +1,90 @@
+目前使用django、mysql进行学习，应用为《简易投票》网站，在学习过程中，遇到了中文乱码问题，现记录如下：
+
+系统情况：win8 ， mysql5.5， python2.7， django1.11
+
+最开始按照教程进行mysql数据库的配置，在character选项中，选择为第二项，也就是utf8编码。配置完成后，在ＣＭＤ中链接数据库服务器后，操作show variables like '%character%'显示编码正确-几乎全为utf8.确定以上信息后，在浏览器中访问web应用，能正常显示中文字符，但是不能点击'中文问题'进去查看详细‘中文选项’。利用指令操作，在mysql自带的mysql command line client(类似window自带CMD)中查询发现中文字符出现乱码。
+
+最开始按照教程进行mysql数据库的配置，在character选项中，选择为第二项，也就是utf8编码。配置完成后，在ＣＭＤ中链接数据库服务器后，操作show variables like '%character%'显示编码正确-几乎全为utf8.确定以上信息后，在浏览器中访问web应用，能正常显示中文字符，但是不能点击'中文问题'进去查看详细‘中文选项’。利用指令操作，在mysql自带的mysql command line client(类似window自带CMD)中查询发现中文字符出现乱码。
+
+在mysql command line client，也就是CMD中进行数据库一些编辑操作，发现无法插入中文字符--直接报错-incorrect string...
+
+查找资料，大多数建议将配置文件my.ini中的default-character-set=utf8改为default-character-set=gbk，其中利用show variables like '%character%'命令可以查看编码问题。之后发现可以利用insert into...插入中文字符，也可在CMD中进行查询，显示正确，没有出现乱码，浏览器显示正常，但是不能点击进去查看详细--报错unicodedecodeerror。  mysql> show variables like '%character%';
+ +--------------------------+---------------------------------------------------------+
+ | Variable_name            | Value                                                   |
+ +--------------------------+---------------------------------------------------------+
+ | character_set_client     | gbk                                                     |
+ | character_set_connection | gbk                                                     |
+ | character_set_database   | utf8                                                    |
+ | character_set_filesystem | binary                                                  |
+ | character_set_results    | gbk                                                     |
+ | character_set_server     | utf8                                                    |
+ | character_set_system     | utf8                                                    |
+ | character_sets_dir       | C:\Program Files\MySQL\MySQL Server 5.5\share\charsets\ |
+ +--------------------------+---------------------------------------------------------+
+ 8 rows in set (0.00 sec)
+
+在mysql command line client，也就是CMD中进行数据库一些编辑操作，发现无法插入中文字符--直接报错-incorrect string...
+
+查找资料，大多数建议将配置文件my.ini中的default-character-set=utf8改为default-character-set=gbk，其中利用show variables like '%character%'命令可以查看编码问题。之后发现可以利用insert into...插入中文字符，也可在CMD中进行查询，显示正确，没有出现乱码，浏览器显示正常，但是不能点击进去查看详细--报错unicodedecodeerror。  mysql> show variables like '%character%';
+ +--------------------------+---------------------------------------------------------+
+ | Variable_name            | Value                                                   |
+ +--------------------------+---------------------------------------------------------+
+ | character_set_client     | gbk                                                     |
+ | character_set_connection | gbk                                                     |
+ | character_set_database   | utf8                                                    |
+ | character_set_filesystem | binary                                                  |
+ | character_set_results    | gbk                                                     |
+ | character_set_server     | utf8                                                    |
+ | character_set_system     | utf8                                                    |
+ | character_sets_dir       | C:\Program Files\MySQL\MySQL Server 5.5\share\charsets\ |
+ +--------------------------+---------------------------------------------------------+
+ 8 rows in set (0.00 sec)
+
+查找资料，大多数建议将配置文件my.ini中的default-character-set=utf8改为default-character-set=gbk，其中利用show variables like '%character%'命令可以查看编码问题。之后发现可以利用insert into...插入中文字符，也可在CMD中进行查询，显示正确，没有出现乱码，浏览器显示正常，但是不能点击进去查看详细--报错unicodedecodeerror。
+
+mysql> show variables like '%character%';
+ +--------------------------+---------------------------------------------------------+
+ | Variable_name            | Value                                                   |
+ +--------------------------+---------------------------------------------------------+
+ | character_set_client     | gbk                                                     |
+ | character_set_connection | gbk                                                     |
+ | character_set_database   | utf8                                                    |
+ | character_set_filesystem | binary                                                  |
+ | character_set_results    | gbk                                                     |
+ | character_set_server     | utf8                                                    |
+ | character_set_system     | utf8                                                    |
+ | character_sets_dir       | C:\Program Files\MySQL\MySQL Server 5.5\share\charsets\ |
+ +--------------------------+---------------------------------------------------------+
+ 8 rows in set (0.00 sec)
+
+查看web应用的编码，将# -*- coding:utf-8 -*-全部改为gbk，再次运行，发现在cmd进行插入操作显示正确，在浏览器进行访问admin，点击中文问题时，还是出现上述错误--unicodedecodeerror。
+
+查看web应用的编码，将# -*- coding:utf-8 -*-全部改为gbk，再次运行，发现在cmd进行插入操作显示正确，在浏览器进行访问admin，点击中文问题时，还是出现上述错误--unicodedecodeerror。
+
+从上面1, 2, 3我们可以看出，涉及到的客户端、web应用及数据库连接，这三者有各自的编码问题。为了客户端显示中文字符，我们必须设置为gbk编码，不管客户端编码是gbk还是utf8（准备说是default-character-set=gbk/utf8），浏览器显示都正常，这表明数据库没问题，浏览器也是没有问题的。所以问题出现在我们的web应用上了。
+
+从上面1, 2, 3我们可以看出，涉及到的客户端、web应用及数据库连接，这三者有各自的编码问题。为了客户端显示中文字符，我们必须设置为gbk编码，不管客户端编码是gbk还是utf8（准备说是default-character-set=gbk/utf8），浏览器显示都正常，这表明数据库没问题，浏览器也是没有问题的。所以问题出现在我们的web应用上了。
+
+还是编码问题，继续百度问题，绝大部分还是提醒<q>写入字符集、数据库字符集、数据表字符集三者统一</q>，分别对应的是web应用，数据库，数据库，但是实际情况涉及到web应用、数据库及CMD这三者的编码问题，于是在CMD中启动python manage.py shell进行编码查询import sys-sys.getdefaultencoding() #ascii显示为ascii！并不是我们的utf8，于是，sys.setdefaultencoding('utf-8')，因为这个设置不能永久在web应用中生效，所以在manage.py中加入下面代码后，重启一起正常！这个时候不管default-character-set=gbk/utf8，其影响的是客户端显示是否乱码，但是不会影响到web应用显示及与数据库的链接。  #...
+ import sys 
+ reload(sys)
+ sys.setdefaultencoding('utf-8')
+ #...
+
+还是编码问题，继续百度问题，绝大部分还是提醒<q>写入字符集、数据库字符集、数据表字符集三者统一</q>，分别对应的是web应用，数据库，数据库，但是实际情况涉及到web应用、数据库及CMD这三者的编码问题，于是在CMD中启动python manage.py shell进行编码查询import sys-sys.getdefaultencoding() #ascii显示为ascii！并不是我们的utf8，于是，sys.setdefaultencoding('utf-8')，因为这个设置不能永久在web应用中生效，所以在manage.py中加入下面代码后，重启一起正常！这个时候不管default-character-set=gbk/utf8，其影响的是客户端显示是否乱码，但是不会影响到web应用显示及与数据库的链接。
+
+#...
+ import sys 
+ reload(sys)
+ sys.setdefaultencoding('utf-8')
+ #...
+
+
+注意
+
+说到底，还是应用、数据库编码、写入字符集这三者一定要统一，虽然在这里，为了在cmd client中显示中文及插入中文，将其编码设置为gbk，这个也是仅仅影响到客户端显示问题，对在浏览器中显示是没有影响的。
+
+现在回过头来看，报错unicodedecodeerror，应把问题集中在应用的编码上，虽然我们每个文件头部都有-*-conding:utf-8-*-，但是中文浏览器、数据库等，不一定全是utf8编码，他们之间的数据交换链接就会导致编码问题了，所以在web应用中加入上述第4条代码。
+
+在我们实际操作中，CMD中操纵数据库的机会不多吧，在其中插入数据更少了吧，所以最好还是全部统一为utf8编码吧。MySQLyog可视化软件可以正常显示。
+

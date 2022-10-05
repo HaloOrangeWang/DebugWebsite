@@ -1,0 +1,66 @@
+问题缘由
+
+某项目中使用python脚本方式将日志文件中的数据持续的转换格式输出到另一文件中以供其他日志分析应用使用。但是当后台运行采取重定向方式输出到某一文件时，发现并没有内容输出，命令如下：
+
+python xxx.py > xxx.log &
+
+测试发现，当前台直接输出到终端时正常，使用后台运行重定向的方式输出到文件中时无法输出。
+
+解决办法
+
+发现是在程序运行时，输出有缓存，只有当程序运行结束或者缓冲区满后才会输出。因为程序是一致在运行的所以不可能等待程序结束在输出。并且要求是有实时性的所以等缓冲区满输出的方式也不可取。
+
+所以采用在python运行时加上-u参数，如：
+
+python -u xxx.py > xxx.log &
+
+-u参数的意义是不使用缓冲的方式输入输出
+
+详细如下：
+
+Force stdin, stdout and stderr to be totally unbuffered. On systems where it matters, also put stdin, stdout and stderr in binary mode. Note that there is internal buffering in xreadlines(), readlines() and file-object iterators ("for line in sys.stdin”) which is not influenced by this option. To work around this, you will want to use "sys.stdin.readline()” inside a "while 1:” loop.
+
+补充知识：python中运行代码时没有报错但是也没有输出而且还有exit code 0的结束标志
+
+如下所示：
+
+f=open("passwd.txt",'r')
+
+print (f.read(4))
+
+f.close()
+
+这是想要执行的代码
+
+passwd.txt中的内容
+
+ntp:x:38:38::/etc/ntp:/sbin/nologin
+
+apache:x:48:48:Apache:/var/www:/sbin/nologin
+
+saslauth:x:498:76:Saslauthd user:/var/empty/saslauth:/sbin/nologin
+
+postfix:x:89:89::/var/spool/postfix:/sbin/nologin
+
+gdm:x:42:42::/var/lib/gdm:/sbin/nologin
+
+pulse:x:497:496:PulseAudio System Daemon:/var/run/pulse:/sbin/nologin
+
+但是输出的结果是
+
+Process finished with exit code 0
+
+后来排查发现原来是解释器的问题
+
+我之前使用的解释器是pycharm提供的虚拟解释器
+
+#####如何查看解释器
+
+点file?C>new projects
+
+如果选择的是2就是使用了pycharm提供的虚拟解释器，又因为passwd.txt文件不是在虚拟环境中的所以就没有输出。
+
+点击3然后选择你已经下载好的解释器即可。
+
+以上这篇python程序输出无内容的解决方式就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

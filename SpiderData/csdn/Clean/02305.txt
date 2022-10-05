@@ -1,0 +1,16 @@
+1、如本机已安装VS2019 BuildTools及其对应的VC++14库，则直接去 C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30133\include 目录下(*14.29.30133为版本号，根据自己安装的版本不一致可能会不同)复制stdint.h 文件到C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt 目录下；
+
+2、修改C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt\inttypes.h文件：将第14行的
+
+#include <stdint.h>
+
+修改为
+
+#include "stdint.h"
+
+3、在cmd中执行
+
+set CL=/FI"%VCINSTALLDIR%\\INCLUDE\\stdint.h" %CL%
+
+4、执行pip3 install pycrypto 或者 pip install pycrypto，即可安装。
+

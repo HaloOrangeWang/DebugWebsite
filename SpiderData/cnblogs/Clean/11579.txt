@@ -1,0 +1,19 @@
+
+错误描述：
+
+　　今天使用python连接mysql数据库进行数据添加时，出现报错”pymysql.err.OperationalError: (1054, "Unknown column 'aa' in 'field list'")“，经查询是由于pymysql在进行插入数据时，如果是vchar或string类型，需加单引号才能插入成功。
+
+
+解决方案：
+
+使用Python中的repr()函数修改sql语句：
+
+原sql语句：
+
+sql = "INSERT INTO student(name,sex,age,grade) VALUES ("+name+","+sex+","+age+","+grade+")"
+
+修改后的sql语句：
+
+sql_0="INSERT INTO student(name,sex,age,grade) VALUES (%s,%s,%s,%s)"
+sql=sql_0 % (repr(name), repr(sex),repr(age),repr(grade))
+

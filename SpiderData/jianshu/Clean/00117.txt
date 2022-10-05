@@ -1,0 +1,106 @@
+
+109.1 环境情况
+
+在集群中所有节点/opt/cloudera/anaconda3部署了Python3的安装包：
+
+[root@cdh02 ~]# /opt/cloudera/anaconda3/bin/python -V
+Python 3.6.5 :: Anaconda, Inc.
+[root@cdh02 ~]#
+
+全局变量：
+
+# added by Anaconda3 installer
+export PATH="/opt/cloudera/anaconda3/bin:$PATH"
+
+[root@cdh01 ~]# python -V
+Python 3.6.5 :: Anaconda, Inc.
+
+Spark配置Python3的环境：
+
+export PYSPARK_PYTHON=/opt/cloudera/anaconda3/bin/python
+export PYSPARK_DRIVER_PYTHON=/opt/cloudera/anaconda3/bin/python
+
+
+109.2 出现问题的情况
+
+问题一：报错如下：
+
+Impala-shell时无法正常连接Impala Daemon节点
+
+Impala-shell时无法正常连接Impala Daemon节点
+
+[root@cdh01 ~]# impala-shell -i cdh01.fayson.com:25003
+
+File "/opt/cloudera/parcels/CDH-5.14.2-1.cdh5.14.2.p0.3/bin/../lib/impala-shell/impala_shell.py", line 236
+    print "Query options (defaults shown in []):"
+                                                ^
+SyntaxError: invalid syntax
+[root@cdh01 ~]#
+
+Solr命令行创建Collection时
+
+[root@cdh01 solr-collection]# sh create.sh testcollection
+create solr collection
+Uploading configs from tmp/testcollection_configs/conf to cdh01.fayson.com:2181/solr. This may take up to a minute.
+Error: can't discover Solr URI. Please specify it explicitly via --solr.
+[root@cdh01 solr-collection]#
+
+创建Collection脚本如下：
+
+[root@cdh01 solr-test]# more solr-collection/create.sh 
+#!/bin/sh
+
+ZK="cdh01.fayson.com"
+COLLECTION=$1
+BASE=`pwd`
+SHARD=3
+REPLICA=1
+
+echo "create solr collection"
+rm -rf tmp/*
+solrctl --zk $ZK:2181/solr instancedir --generate tmp/${COLLECTION}_configs
+cp conf/schema.xml tmp/${COLLECTION}_configs/conf/
+solrctl --zk $ZK:2181/solr instancedir --create $COLLECTION tmp/${COLLECTION}_configs
+solrctl --zk $ZK:2181/solr collection --create $COLLECTION -s $SHARD -r $REPLICA
+solrctl --zk $ZK:2181/solr collection --list
+
+
+109.3 问题分析与解决
+
+1.分析问题
+
+分析一：在python2中print输出可以不加“()”，但是在Python3中print输出需要加”()”，所以是出现python2和python3语法不兼容问题
+
+分析二：使用solrctl命令创建Collection时,该脚本中调用curl命令判断solr server是否可用,通过分析solrctl命令实际调用/opt/cloudera/parcels/CDH/lib/solr/bin/solrctl.sh脚本
+
+[root@cdh01 solr-collection]# curl -i --retry 5 -s -L -k --negotiate -u : http://cdh02.fayson.com:8983/solr
+curl: option --negotiate: the installed libcurl version doesn't support this
+curl: try 'curl --help' or 'curl --manual' for more information
+[root@cdh01 solr-collection]#
+
+得出当前OS安装的libcurl不支持 curl增加--negotiate参数，该问题也是Python版本不兼容问题导致
+
+2.解决问题
+
+通过上面分析结论得出，均是Python3版本与Python2版本不兼容的问题，默认impala和Solr命令使用python2版本，所以需要将Python的全局环境变量删除，不配置python3的全局环境变量即可
+
+通过上面分析结论得出，均是Python3版本与Python2版本不兼容的问题，默认impala和Solr命令使用python2版本，所以需要将Python的全局环境变量删除，不配置python3的全局环境变量即可
+
+大数据视频推荐：
+
+腾讯课堂
+
+CSDN
+
+大数据语音推荐：
+
+企业级大数据技术应用
+
+大数据机器学习案例之推荐系统
+
+自然语言处理
+
+大数据基础
+
+人工智能：深度学习入门到精通
+

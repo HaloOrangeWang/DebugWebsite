@@ -1,0 +1,28 @@
+需求--------------
+
+代码笔记--------------
+
+"""
+在python中，除了代码执行出错python解释器会抛出异常以外
+咱们还可以根据应用程序特有的业务需求主动抛出异常
+
+python中提供了一个Exception异常类
+在开发时，如果满足特定业务需求时，希望抛出异常，可以
+1、创建一个Exception的对象
+2、使用raise关键字抛出异常
+"""
+def input_password():
+    mm=input("请输入密码：")
+    if len(mm)>=8 : #如果mm长度大于8，就直接返回值，不需要抛出异常
+        return mm
+    mmyc=Exception("密码长度不能少于8位") #创建一个异常对象,()里面添异常理由
+    raise mmyc #抛出异常
+
+"""主程序"""
+try:
+    print(f"密码为：{input_password()}") #因为密码不一定为8位所以可能会抛出异常，所以我们需要捕获异常
+except Exception as  wzyc :
+    print(f"未知异常：{wzyc}")
+
+运行结果-------------
+

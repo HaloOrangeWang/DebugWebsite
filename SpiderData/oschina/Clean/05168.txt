@@ -1,0 +1,97 @@
+1、在 untitled1108/ untiled1108/ settings.py里面配置数据库
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "test",
+        "USER": "root",
+        "PASSWORD": "123456",
+        "HOST": "127.0.0.1",
+        "PORT" : "3306" ,
+    }
+}
+
+2、执行python manage.py makemigrations报错
+
+E:\pycharmWorkspace\untitled1108>python manage.py makemigrations
+Traceback (most recent call last):
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\db\backends\mysql\base.py", line 15, in <module>
+    import MySQLdb as Database
+ModuleNotFoundError: No module named 'MySQLdb'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "manage.py", line 15, in <module>
+    execute_from_command_line(sys.argv)
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\core\management\__init__.py", line 371, in execute_from_command_line
+    utility.execute()
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\core\management\__init__.py", line 347, in execute
+    django.setup()
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\apps\registry.py", line 112, in populate
+    app_config.import_models()
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\apps\config.py", line 198, in import_models
+    self.models_module = import_module(models_module_name)
+  File "E:\Program Files\python3.6\lib\importlib\__init__.py", line 126, in impo
+rt_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\contrib\auth\models.py", line 2, in <module>
+    from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\contrib\auth\base_user.py", line 47, in <module>
+    class AbstractBaseUser(models.Model):
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\db\models\base.py", line 114, in __new__
+    new_class.add_to_class('_meta', Options(meta, app_label))
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\db\models\base.py", line 315, in add_to_class
+    value.contribute_to_class(cls, name)
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\db\models\options.py", line 205, in contribute_to_class
+    self.db_table = truncate_name(self.db_table, connection.ops.max_name_length(
+))
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\db\__init__.py", line 33, in __getattr__
+    return getattr(connections[DEFAULT_DB_ALIAS], item)
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\db\utils.py", line 202, in __getitem__
+    backend = load_backend(db['ENGINE'])
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\db\utils.py", line 110, in load_backend
+    return import_module('%s.base' % backend_name)
+  File "E:\Program Files\python3.6\lib\importlib\__init__.py", line 126, in impo
+rt_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "E:\Program Files\python3.6\lib\site-packages\django-2.0.13-py3.6.egg\dja
+ngo\db\backends\mysql\base.py", line 20, in <module>
+    ) from err
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module.
+Did you install mysqlclient?
+
+提示没有安装mysql db， 实际已经安装了pymsql
+
+3、解决办法， 在 untitled1108/ untitled1108/ __init__.py里面设置如下
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+配置后再执行就正常了
+
+E:\pycharmWorkspace\untitled1108>python manage.py makemigrations
+No changes detected
+

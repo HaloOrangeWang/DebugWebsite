@@ -1,0 +1,64 @@
+此次遇到的问题是在import pycurl 时报错
+
+pycurl:libcurl link-time version is older than compile-time version
+
+在网上看了很多解释和方法，但都没有很好的解决和分析这个问题，我先说下自己的过程
+
+1、安装的事centos7 ，默认安装的是python2.7，python3是后使用src安装的，同样先下载了curl-7.61的包和pycurl-7.43的包，应该都是最新的了
+
+2、先make && make install 了curl-7.61，至/usr/local下，然后python3 setup.py install安装了pycurl-7.43的包
+
+3、在Import pycurl时报错如上错误
+
+解决过程：
+
+查看过网上各类方法，都曾尝试都未能很好的解决，于是静下心来仔细读了下报错内容pycurl:libcurl link-time version is older than compile-time version
+
+英文一般，所以我读到的意思大概是libcurl连接的版本比目前编译版本要老，于是我对比了下如下两个文件夹的内容
+
+/usr/lib下ll libcur*
+
+和
+
+/usr/local/lib 下ll libcurl*
+
+内容分别如下
+
+libcurl.so.4->libcurl.so.4.3.0
+
+libcurl.so.4.3.0
+
+和
+
+libcurl.a
+
+libcurl.la
+
+libcurl.so->libcurl.so.4.5.0
+
+libcurl.so.4->libcurl.so.4.5.0
+
+licburl.4.5.0
+
+那么我想是否是因为安装pycurl时使用了/usr/lib下的libcurl.4.3.0导致的，于是先
+
+pip3 uninstall pycurl卸载了pycurl
+
+然后重新make && make install curl-7.61
+
+然后进入/usr/lib 将libcurl.so.4->libcurl.so.4.3.0
+
+删除然后通过ln -s 创建了
+
+libcurl.so->/usr/local/lib/libcurl.so.4.5.0
+
+libcurl.so.4->/usr/local/lib/libcurl.so.4.5
+
+然后重新python3 setup.py install 了pycurl
+
+再进入python3 import pycurl 正常了，总结下
+
+应该就是安装pycurl时使用了旧库导致的
+
+以上这篇解决python3 安装完Pycurl在import pycurl时报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

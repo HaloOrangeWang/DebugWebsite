@@ -1,0 +1,17 @@
+
+错误信息
+
+python3.6环境下引用exchangelib 4.6 版本,使用pyinstaller打包后报错：No timzone found with key UTC
+
+
+解决方案
+
+图片说明：在pyinstaller打包使用的spec文件中加入上述配置即可
+
+
+原因分析
+
+仔细查看报错信息会发下如下提示
+
+可以看到错误出在exchangelib\ewsdatetime.py文件中引入的backports.zoneinfo，查看exchangelib及backports.zoneinfo源码如下：
+

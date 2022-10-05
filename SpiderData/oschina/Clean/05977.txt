@@ -1,0 +1,58 @@
+最近在学webapi,用插件测试的时候都ok,自己写测试的时候发现ajax老报错，报错400，传值一直是null。
+
+但是明明如果在url加参数就ok，我真的一脸懵逼，百度了下好像delete方法会拦截啥啥啥的，今天早上终于找到解决方法了
+
+（ps:网上一堆解决方法都是java spring的，我恨QuQ
+
+先说解决方法：把ajax的data转换成json格式，然后在后台用动态类型接收，最后再转换下类型就ok惹。
+
+测试页面的ajax
+
+　　　　　var deleid = $('#Id').val();
+        $.ajax({
+            url: "/api/你的控制器地址",
+            async: true,
+            contentType: "application/json",
+            data: JSON.stringify({ id: deleid }),
+            type: 'delete',
+            success: function (data) {
+                console.log("success");
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+
+后台controller
+
+　　　　 public IHttpActionResult Delete(dynamic obj)
+        {
+            int newid = Convert.ToInt32(obj.id);
+          　....
+　　　　　　
+        }
+
+紫色的就是需要注意的地方~
+
+但是遇到一个问题，虽然前端测试可以了，后台调用就很麻烦很麻烦。
+
+总之如果是前端要用这个接口，就是页面ajax要用的话，就像本文这么写。
+
+如果是后端调用，那该怎么写就怎么写，比如像我原来要传id进去，那就直接public IHttpActionResult DeleteXX(int id){},不用动态类型参数了
+
+我又又又来更新了，
+
+只有需要传多个参数的才用本文这样写，如果只有一个参数并且是id，放在url没错的，信我！！
+
+　　$.ajax({
+            url: "/api/控制器/"+deleid,
+            async: true,
+            type: 'delete',
+            success: function (data) {
+                ...
+            },
+            error: function () {
+                ...
+            }
+        });
+

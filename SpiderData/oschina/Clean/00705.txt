@@ -1,0 +1,160 @@
+以下报错主要是由于TensorFlow升级1.0后与以前代码不兼容所致。主要转载自CIFAR-10训练例子报错解决，并修改了一些报错解决方法。
+
+AttributeError: ‘module’ object has noattribute ‘random_crop’ 解决方案： 将distorted_image= tf.image.random_crop(reshaped_image, [height, width])改为： distorted_image = tf.random_crop(reshaped_image,[height, width,3])
+
+AttributeError: ‘module’ object has noattribute ‘random_crop’
+
+解决方案：
+
+将distorted_image= tf.image.random_crop(reshaped_image, [height, width])改为：
+
+distorted_image = tf.random_crop(reshaped_image,[height, width,3])
+
+AttributeError: ‘module’object has no attribute ‘SummaryWriter’ 解决方案： tf.train.SummaryWriter改为：tf.summary.FileWriter
+
+AttributeError: ‘module’object has no attribute ‘SummaryWriter’
+
+解决方案：
+
+tf.train.SummaryWriter改为：tf.summary.FileWriter
+
+AttributeError: ‘module’object has no attribute ‘summaries’ 解决方案： tf.merge_all_summaries()改为：summary_op =tf.summary.merge_all()
+
+AttributeError: ‘module’object has no attribute ‘summaries’
+
+解决方案：
+
+tf.merge_all_summaries()改为：summary_op =tf.summary.merge_all()
+
+AttributeError: ‘module’ object hasno attribute ‘histogram_summary’ tf.histogram_summary()改为： tf.summary.histogram()
+
+AttributeError: ‘module’ object hasno attribute ‘histogram_summary’
+
+tf.histogram_summary()改为： tf.summary.histogram()
+
+AttributeError: ‘module’ object hasno attribute ‘scalar_summary’ tf.scalar_summary(l.op.name+ ’ (raw)’, l) 解决方案： tf.scalar_summary(‘images’,images)改为：tf.summary.scalar(‘images’, images) tf.image_summary(‘images’,images)改为：tf.summary.image(‘images’, images)
+
+AttributeError: ‘module’ object hasno attribute ‘scalar_summary’
+
+tf.scalar_summary(l.op.name+ ’ (raw)’, l)
+
+解决方案：
+
+tf.scalar_summary(‘images’,images)改为：tf.summary.scalar(‘images’, images)
+
+tf.image_summary(‘images’,images)改为：tf.summary.image(‘images’, images)
+
+ValueError: Only call softmax_cross_entropy_with_logits withnamed arguments (labels=…, logits=…, …) 解决方案： cifar10.loss(labels, logits) 改为：cifar10.loss(logits=logits,labels=labels) cross_entropy= tf.nn.softmax_cross_entropy_with_logits( 
+ ​ logits, dense_labels,name=’cross_entropy_per_example’) 改为： cross_entropy = tf.nn.softmax_cross_entropy_with_logits( 
+ ​ logits=logits, labels=dense_labels,name=’cross_entropy_per_example’)
+
+ValueError: Only call softmax_cross_entropy_with_logits withnamed arguments (labels=…, logits=…, …)
+
+解决方案：
+
+cifar10.loss(labels, logits) 改为：cifar10.loss(logits=logits,labels=labels)
+
+cross_entropy= tf.nn.softmax_cross_entropy_with_logits( 
+ ​ logits, dense_labels,name=’cross_entropy_per_example’)
+
+改为：
+
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits( 
+ ​ logits=logits, labels=dense_labels,name=’cross_entropy_per_example’)
+
+TypeError: Using a tf.Tensor as a Python bool isnot allowed. Use if t is not None: instead of if t: to test if a tensor isdefined, and use TensorFlow ops such as tf.cond to execute subgraphsconditioned on the value of a tensor. 解决方案： if grad: 改为 if grad is not None:
+
+TypeError: Using a tf.Tensor as a Python bool isnot allowed. Use if t is not None: instead of if t: to test if a tensor isdefined, and use TensorFlow ops such as tf.cond to execute subgraphsconditioned on the value of a tensor.
+
+解决方案：
+
+if grad: 改为 if grad is not None:
+
+ValueError: Shapes (2, 128, 1) and () are incompatible 解决方案： concated = tf.concat(1, [indices, sparse_labels])改为： concated= tf.concat([indices, sparse_labels], 1)
+
+ValueError: Shapes (2, 128, 1) and () are incompatible
+
+解决方案：
+
+concated = tf.concat(1, [indices, sparse_labels])改为：
+
+concated= tf.concat([indices, sparse_labels], 1)
+
+报错： File”/home/lily/work/Tensorflow/CIRFAR-10/tensorflow.cifar10-master/cifar10_input.py”,line 83, in read_cifar10 ​ result.key, value =reader.read(filename_queue) File”/usr/local/lib/python2.7/dist-packages/tensorflow/Python/ops/io_ops.py”,line 326, in read queue_ref = queue.queue_ref AttributeError: ‘str’ object hasno attribute ‘queue_ref’ 解决方案： 由于训练样本的路径需要修改，给cifar10_input.py中data_dir赋值为本地数据所在的文件夹
+
+报错：
+
+File”/home/lily/work/Tensorflow/CIRFAR-10/tensorflow.cifar10-master/cifar10_input.py”,line 83, in read_cifar10
+
+​ result.key, value =reader.read(filename_queue)
+
+File”/usr/local/lib/python2.7/dist-packages/tensorflow/Python/ops/io_ops.py”,line 326, in read
+
+queue_ref = queue.queue_ref
+
+AttributeError: ‘str’ object hasno attribute ‘queue_ref’
+
+解决方案：
+
+由于训练样本的路径需要修改，给cifar10_input.py中data_dir赋值为本地数据所在的文件夹
+
+AttributeError: ‘module’ object has no attribute ‘SummaryWriter’ tf.train.SummaryWriter改为：tf.summary.FileWriter
+
+AttributeError: ‘module’ object has no attribute ‘SummaryWriter’
+
+tf.train.SummaryWriter改为：tf.summary.FileWriter
+
+AttributeError: ‘module’ object has no attribute ‘summaries’ tf.merge_all_summaries()改为：summary_op = tf.summaries.merge_all()
+
+AttributeError: ‘module’ object has no attribute ‘summaries’
+
+tf.merge_all_summaries()改为：summary_op = tf.summaries.merge_all()
+
+AttributeError: ‘module’ object has no attribute ‘mul’ 解决方法:tf.mul, tf.sub and tf.neg are deprecated in favor of tf.multiply, tf.subtract and tf.negative.
+
+AttributeError: ‘module’ object has no attribute ‘mul’
+
+解决方法:tf.mul, tf.sub and tf.neg are deprecated in favor of tf.multiply, tf.subtract and tf.negative.
+
+主要 API 改进
+
+BusAdjacency 枚举被协议缓冲 DeviceLocality 代替。总线索引现在从 1 而不是 0 开始，同时，使用 bus_id==0，之前为 BUS_ANY。
+
+BusAdjacency 枚举被协议缓冲 DeviceLocality 代替。总线索引现在从 1 而不是 0 开始，同时，使用 bus_id==0，之前为 BUS_ANY。
+
+Env::FileExists 和 FileSystem::FileExists 现在返回 tensorflow::Status 而不是一个 bool。任何此函数的调用者都可以通过向调用添加.ok（）将返回转换为 bool。
+
+Env::FileExists 和 FileSystem::FileExists 现在返回 tensorflow::Status 而不是一个 bool。任何此函数的调用者都可以通过向调用添加.ok（）将返回转换为 bool。
+
+C API：TF_SessionWithGraph 类型更名为 TF_Session，其在 TensorFlow 的绑定语言中成为首选。原来的 TF_Session 已更名为 TF_DeprecatedSession。
+
+C API：TF_SessionWithGraph 类型更名为 TF_Session，其在 TensorFlow 的绑定语言中成为首选。原来的 TF_Session 已更名为 TF_DeprecatedSession。
+
+C API： TF_Port 被更名为 TF_Output。
+
+C API： TF_Port 被更名为 TF_Output。
+
+C API: 调用者保留提供给 TF_Run、 TF_SessionRun、TF_SetAttrTensor 等的 TF_Tensor 对象的所有权。
+
+C API: 调用者保留提供给 TF_Run、 TF_SessionRun、TF_SetAttrTensor 等的 TF_Tensor 对象的所有权。
+
+将 tf.image.per_image_whitening() 更名为 tf.image.per_image_standardization()。
+
+将 tf.image.per_image_whitening() 更名为 tf.image.per_image_standardization()。
+
+将 Summary protobuf 构造函数移动到了 tf.summary 子模块。
+
+将 Summary protobuf 构造函数移动到了 tf.summary 子模块。
+
+不再使用 histogram_summary、audio_summary、 scalar_summary，image_summary、merge_summary 和 merge_all_summaries。
+
+不再使用 histogram_summary、audio_summary、 scalar_summary，image_summary、merge_summary 和 merge_all_summaries。
+
+组合 batch_ 和常规版本的线性代数和 FFT 运算。常规运算现在也处理批处理。所有 batch_ python 接口已删除。
+
+组合 batch_ 和常规版本的线性代数和 FFT 运算。常规运算现在也处理批处理。所有 batch_ python 接口已删除。
+
+tf.all_variables，tf.VARIABLES 和 tf.initialize_all_variables 更名为 tf.global_variables，tf.GLOBAL_VARIABLES 和 tf.global_variables_initializer。
+
+tf.all_variables，tf.VARIABLES 和 tf.initialize_all_variables 更名为 tf.global_variables，tf.GLOBAL_VARIABLES 和 tf.global_variables_initializer。
+

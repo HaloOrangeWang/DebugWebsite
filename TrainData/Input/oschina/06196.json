@@ -1,0 +1,29 @@
+{
+    "err_msg": {
+        "text": "UnicodeDecodeError: 'ascii' codec can't decode byte 0xe9 in position 0: ordi...",
+        "lines": ["title"],
+        "weight": [1]
+    },
+    "scene": {
+        "text": "用Python处理中文字符串",
+        "lines": [1],
+        "weight": [1]
+    },
+    "solve": [
+        {
+            "text": "将Python的默认编码方式修改为utf-8",
+            "lines": [17],
+            "weight": [1]
+        },
+        {
+            "text": "在Python文件的前面加上如下代码：\n\nimport sys\ndefaultencoding = 'utf-8'\nif sys.getdefaultencoding() != defaultencoding:\n    reload(sys)\n    sys.setdefaultencoding(defaultencoding)",
+            "lines": [17, 19, 20, 21, 22, 23],
+            "weight": [1, 0.5, 0.5, 0.5, 0.5, 0.5]
+        },
+        {
+            "text": "在/usr/lib/python2.7/site-packages/目录下添加一个sitecustomize.py文件，内容如下：\n\nimport sys\nsys.setdefaultencoding('utf-8')",
+            "lines": [25, 27, 28],
+            "weight": [1, 1, 1]
+        }
+    ]  
+}

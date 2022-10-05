@@ -1,0 +1,70 @@
+在“开源图像标注工具labelme的安装使用及汉化”这篇博客中，使用pyinstaller将labelme项目的入口python文件main.py打包，生成了main.exe文件，可以在Windows操作系统中直接运行，得到labelme图像标注工具软件界面，生成exe的过程中，碰到了一些问题，有的解决了，有的还没有解决，希望对从事这方面工作的朋友有帮助，也希望熟悉这类问题的大神们帮着解决下还没有解决的问题。
+
+1 exe文件闪退问题
+
+将labelme在pycharm中运行，直接运行main.py文件，可以正常运行，能够得到labelme的标注软件界面，说明程序能够正常运行。然后，使用pyinstall工具，在cmd的命令行中利用pyinstaller -F E:/ python_workspace/labelme/main.py生成main.exe文件，命令键入之后，需要耐心等待1-2分钟，直到出现Building EXE from EXE-00.toc completed successfully出现，说明exe文件生成成功了。
+
+然后直接双击mian.exe，结果出现一个cmd窗口，很快就闪退了，labelme界面没有出现，cmd的报错信息也没有看到。
+
+为了看到报错信息，我在cmd中，cd到main.exe所在的目录，然后直接键入main.exe，这时候main.exe就会运行，下面就会显示报错信息。
+
+根据报错信息，可以看到，问题出在config/__init__.py文件上，软件启动需要读取default_config.yaml文件，这个文件就是在config目录下，生成exe文件之后，软件就找不到这个文件，我们去查看__init__.py的代码，找到一行代码，是读取default_config.yaml文件的。
+
+config_file = osp.join(here, 'default_config.yaml')
+
+此处的here是软件运行时的一个路径，os.path.join的路径，我们可以将这个路径写成绝对路径，比如我们直接将default_config.yaml文件放到d盘的labelme目录下，将以上代码修改为
+
+再次使用pyinstaller，生成main.exe文件。
+
+双击运行main.exe文件，可以进入labelme软件界面，闪退问题解决。
+
+2 图标未显示问题
+
+在icon中有一些图标，使用pycharm运行main.py可以正常显示图标，生成exe文件之后，图标都不能正常显示。
+
+main.exe运行结果
+
+在pycharm中的运行结果
+
+查资料可知，应该是pyinstaller的问题，在转换为exe文件的时候将图片数据丢失了。
+
+解决办法是使用base64来保存这些图标文件，这样在pyinstaller转化exe文件的时候，就不会存在处理图片的问题。这个方法，我没有通过实践测试，理论上是可行的，不过，我没有验证。
+
+网上也有一些介绍打包图标的博客，修改图标的路径，打包的时候可以直接将图标打包到可执行文件中，该方法也没有测试验证。
+
+3 某些机器不能运行的问题
+
+生成的main.exe文件和default_config.yaml文件，都放到labelme文件夹中，然后将labelme文件夹拷贝到d盘根目录下，在多台计算机上测试运行。
+
+3.1 双击运行main.exe
+
+都是在windows系统64位机器上测试的，有的机器能够正常运行，有的机器报错。报错信息是“此应用无法在你的电脑上运行，若要找到适用于你的电脑的版本，请咨询软件发布者。”尝试解决，在百度中查找相关报错信息，提示是兼容性问题，点击右键，选择属性，在兼容性中勾选兼容运行，依然报错。
+
+3.2 右键以管理员身份运行
+
+提示“windows找不到文件main.exe。请确定文件名是否正确后，再试一次。” ，在百度中查找windows找不到文件等信息，采取了一些方法，比如利用sfc /scannow命令，扫描修复系统，执行后，main.exe依然不能打开。
+
+3.3 在命令行运行
+
+在cmd中，cd到labelme路径下，直接键入main.exe，报错信息为16位程序不能运行，系统将main.exe看作了16位的程序，阻止了程序的运行。然后查找不支持16位应用程序的解决办法，点击开始菜单，点击运行，输入gpedit.msc。选择计算机配置，选择管理模板，点击windows组件，点击应用程序兼容性。双击防止访问16位应用程序，点击已禁止，点击确定。我使用的笔记本上面是win10系统家庭版，还不能运行gpedit.msc，还需要查找，先解决运行组策略的问题。在记事本中，输入一下内容：
+
+@echo off
+
+　　pushd "%~dp0"
+
+　　dir /b %systemroot%\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package~3*.mum >gp.txt
+
+　　dir /b  %systemroot%\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package~3*.mum >>gp.txt
+
+　　for /f %%i in ('findstr /i . gp.txt 2^>nul') do dism /online /norestart /add-package:"%systemroot%\servicing\Packages\%%i"
+
+　　pause
+
+说明：通过dir命令遍历系统盘servicing目录，寻找组策略的配置包，找到后写入到gp.txt文件，然后通过dism命令来安装组策略包。
+
+然后将文件另存为gpedit.bat文件，然后运行，这样就把组策略加入到系统中了。
+
+4 结语
+
+出现报错信息，可以采用多种方式运行程序，这样程序会呈现不一样的错误提示信息，有的错误提示信息很有用，比如闪退问题，在命令行运行，就会有一些有用的错误提示信息，最后exe不能运行的解决，也是在命令行运行，提示了16位程序的问题。通过测试不同的提示信息，找到解决方法。
+

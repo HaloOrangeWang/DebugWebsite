@@ -1,0 +1,262 @@
+本篇文章给大家带来的内容是关于python错误、异常和程序调试的方法介绍(附代码)，有一定的参考价值，有需要的朋友可以参考一下，希望对你有所帮助。
+
+异常是Python程序在运行过程中引发的错误，如果程序中引发了未进行处理的异常，程序就会由于异常而终止运行，只有为程序添加异常处理，才能使程序更“健壮”。
+
+Python对异常的处理，有它自己的语法形式,掌握如何在Python中处理异常和进行程序调试,主要内容有：列表项目
+
+列表项目
+
+语法错误；
+
+异常的概念；
+
+用try语句捕获异常；
+
+常见异常的处理；
+
+自定义异常；
+
+使用pdb调试Python程序。
+
+7.1　语法错误
+
+1．拼写错误
+
+即Python语言中的关键字写错，变量名、函数名拼写错误等。
+
+关键字拼写错误时会提示SyntaxError(语法错误)，而变量名、函数名拼写错误会在运行时给出NameError的错误提示.
+
+2．脚本程序不符合Python的语法规范
+
+例如如少了括号，冒号等符号，以及表达式书写错误等。
+
+3．缩进错误
+
+因为Python语法规定，以缩进作为程序的语法之一，这应该是Python语言独特的一面。一般来说Python标准的缩进是以4个空格作为一个缩进。当然，你可以依据自己的习惯，使用Tab也可以。但同一个程序或项目中应该统一使用同一种缩进风格。
+
+7.2　异常的处理
+
+异常是Python程序在运行过程中引发的错误。如果程序中引发了未进行处理的异常，脚本就会由于异常而终止运行。只有在程序中捕获这些异常，并进行相关的处理，才能使程序不会中断运行。
+
+7.2.1　异常处理的基本语法
+
+Python中使用try语句来处理异常，和Python中其他语句一样，try语句也要使用缩进结构，try语句也有一个可选的else语句块。一般的try语句基本形式如下。try:
+
+#可能产生异常的语句(块)
+
+except : #要处理的异常
+
+#异常处理语句
+
+except : #要处理的异常
+
+#异常处理语句
+
+else:
+
+#未触发异常，则执行该语句(块)
+
+finally:
+
+#始终执行该语，一般为了达到释放资源等目的
+
+在实际应用中可以根据程序的需要而使用部分语句，常见的形式有：
+
+形式一：try:
+
+except :
+
+举例：def testTry (index, flag=False):
+
+stulst = ["John","Jenny","Tom"]
+
+if flag: #flag为True时，捕获异常
+
+try:
+
+astu = stulst [index]
+
+except IndexError:
+
+print("IndexError")
+
+return "Try Test Finished!"
+
+else: #flag为False时，不捕获异常
+
+astu =stulst [index]
+
+return "No Try Test Finished!"
+
+print("Right params testing start...")
+
+print (testTry (1, True)) #不越界参数，捕获异常(正常)
+
+print (testTry (1, False)) #不越界参数，不捕获异常(正常)
+
+print("Error params testing start...")
+
+print (testTry (4, True)) #越界参数，捕获异常(正常)
+
+print (testTry (4, False)) #越界参数，不捕获异常(程序运行会中断)
+
+形式二：try:
+
+except < 异常名1>:
+
+finally:
+
+举例:def testTryFinally (index):
+
+stulst = ["John","Jenny", "Tom"]
+
+af = open ("my.txt", 'wt+')
+
+try:
+
+af.write(stulst[index])
+
+except:
+
+pass
+
+finally:
+
+af.close() #无论是否产生越界异常，都关闭文件
+
+print("File already had been closed!")
+
+print('No IndexError...')
+
+testTryFinally (1) #无越界异常，正常关闭文件
+
+print('IndexError...')
+
+testTryFinally (4) #有越界异常，正常关闭文件
+
+7.2.2　Python主要的内置异常及其处理
+
+在Python中常见的异常都已经预定义好了，在交互式环境中，用dir(__builtins__)命令，就会显示出所有的预定义异常。异常名描述AttributeError调用不存在的方法引发的异常
+
+EOFError遇到文件末尾引发的异常
+
+ImportError导入模块出错引发的异常
+
+IndexError列表越界引发的异常
+
+IOErrorI/O操作引发的异常，如打开文件出错等
+
+KeyError使用字典中不存在的关键字引发的异常
+
+NameError使用不存在的变量名引发的异常
+
+TabError语句块缩进不正确引发的异常
+
+ValueError搜索列表中不存在的值引发的异常
+
+ZeropisionError除数为零引发的异常
+
+except语句主要有以下几种用法：except: #捕获所有异常；
+
+except : #捕获指定异常；
+
+except (异常名1，异常名2): #捕获异常名1或者异常名2；
+
+except as : #捕获指定异常及其附加的数据；
+
+except(异常名1，异常名2)as ： #捕获异常名1或者异常名2及异常的附加数据。
+
+7.3　手工抛出异常
+
+为了程序的需要，程序员还可以自定义新的异常类型，例如对用户输入文本的长度有要求，则可以使用raise引发异常，以确保文本输入的长度符合要求。
+
+7.3.1　用raise手工抛出异常
+
+使用raise引发异常十分简单，raise有以下几种使用方式。
+
+raise　异常名
+
+raise　异常名，附加数据
+
+raise　类名
+
+使用raise可以抛出各种预定的异常，即使程序在运行时根本不会引发该异常。def testRaise2():
+
+for i in range (5):
+
+try:
+
+if i==2: #i==2抛出NameError异常
+
+raise NameError
+
+except NameError:
+
+print('Raise a NameError!')
+
+print (i)
+
+print('end...')
+
+testRaise2 ()
+
+运行结果:0
+
+1
+
+Raise a NameError!
+
+2
+
+3
+
+4
+
+end...
+
+7.3.2　assert语句
+
+assert语句的一般形式如下。assert , #其中异常附加数据是可选的
+
+assert语句是简化的raise语句，它引发异常的前提是其后面的条件测试为假。
+
+举例：def testAssert()：
+
+for i in range (3):
+
+try:
+
+assert i<2
+
+except AssertionError:
+
+print('Raise a AssertionError!')
+
+print (i)
+
+print('end...')
+
+testAssert()
+
+运行结果：0
+
+1
+
+Raise a AssertionError!
+
+2
+
+end...
+
+assert语句一般用于在程序开发时测试代码的有效性。比如某个变量的值必须在一定范围内，而运行时得到的值不符合要求，则引发该异常，对开发者予以提示。所以一般在程序开发中，不去捕获这个异常，而是让它中断程序。原因是程序中已经出现了问题，不应继续运行。
+
+assert语句并不是总是运行的，只有Python内置的一个特殊变量__debug__为True时才运行。要关闭程序中的assert语句就使用python-O(短画线，后接大写字母O)来运行程序。
+
+7.3.3　自定义异常类
+
+在Python中定义异常类不用从基础完全自己定义，只要通过继承Exception类来创建自己的异常类。异常类的定义和其他类没有区别，最简单的自定义异常类甚至可以只继承Exception类，类体为pass如：class MyError (Exception): #继承Exception类
+
+pass
+
+如果需要异常类带有一定的提示信息，也可以重载__init__和__str__这两个方法。【相关推荐：python视频教程】
+

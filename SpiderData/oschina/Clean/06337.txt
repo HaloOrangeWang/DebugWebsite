@@ -1,0 +1,50 @@
+在非salt-api的主机上测试api连通性，测试代码如下:
+
+#!/usr/bin/env python
+
+import pycurl
+import StringIO
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
+报错：
+
+Traceback (most recent call last):
+  File "salt_api.py", line 36, in <module>
+    api_login()
+  File "salt_api.py", line 24, in api_login
+    ch.perform()
+pycurl.error: (51, "SSL: certificate subject name 'localhost' does not match target host name 'localdomain'")
+
+方法一： 把测试的代码迁移到salt-api所在的机器，因为本地有认证需要的证书，
+
+When you post to (or access in any way) a https url, the SSL/TLS process starts with the server giving the client a certificate. The client expects the name in the certificate to be identical to the server name in the URL.
+In your case, you've installed a self-signed certificate. When you created a certificate signing request (CSR) with OpenSSL, you didn't specify a host name ('subject' in certificate-speak), so OpenSSL tied to autodetect the hostname. It found "localhost.localdomain", which is unfortunate, since that is a name that is used on all systems to reference the system itself. A proper domain name would have been better, but that's not the reason you're getting an SSL error.
+The error message appears because you're accessing the https page using an IP address (https://xx.xx.xx.xx/someurl), not the host name (https://localhost.localdomain/someurl). Since the certificate wasn't (and cannot be) issued to an IP address, SSL negotiation fails.
+Try using "localhost.localdomain" instead of the IP address. (And if that works, consider generating a new certificate issued to a proper hostname.)
+
+方法二： 在非salt-api所在机器上部署，需要作如下操作：
+
+pip install  PyOpenSSL
+
+否则会报错：
+
+'tls' __virtual__ returned False: PyOpenSSL version 0.10 or later must be installed before this module can be used.
+
+生成证书：
+
+(fourthgen) [root@test107 fourthgen]# salt-call tls.create_self_signed_cert  
+local:
+    Certificate "localhost" already exists
+    
+证书路径在：
+/etc/pki/tls/certs/localhost.crt
+/etc/pki/tls/private/localhost.key
+
+拷贝证书：
+cp /etc/pki/tls/certs/localhost.crt /etc/pki/tls/private/
+
+修改/etc/hosts,添加：
+10.10.32.102 localhost
+，将salt-api url改成“https://localhost:8000/login”
+

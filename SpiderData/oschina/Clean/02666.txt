@@ -1,0 +1,44 @@
+
+1.urllib2.URLError: <urlopen error unknown url type: https>
+
+python 出现'module' object has no attribute 'HTTPSHandler' 错误,是因为你编译python的时候没有把ssl模块编译进去，重新编译安装python,并把ssl模块包含进去就可以了
+ 
+ cd python源码目录/Modules
+ vi Setup.dst
+ 找到
+ 
+ # Socket module helper for SSL support; you must comment out the other
+ # socket line above, and possibly edit the SSL variable:
+ SSL=/usr/local/ssl
+ _ssl _ssl.c \
+ -DUSE_SSL -I$(SSL)/include -I$(SSL)/include/openssl \
+ -L$(SSL)/lib -lssl -lcrypto
+
+然后重新make即可
+
+
+2.安装openssl错误
+
+错误如下：
+
+坑爹的也谈不上有什么解法，这里我编译的是openssl-0.9.8g，死活编不过，后到openssl资料库去翻了会，想也没想换了个版本openssl-0.9.8n，顺利编过
+
+
+3.安装pip
+
+报错如下：
+
+其实发生这个问题是因为：虽然你已经把Python升级到了2.7版本，但是pip仍然是原来的，版本，仍然在原来python的site-package里面
+
+CentOS5环境下，默认是python2.4，site-package在
+
+很多模块都被安装在这里。直接打pip，还是使用的原来的pip。所以我们的思路就是：应该在新的Python中安装pip，这样才不会报错。
+
+这个问题遇到的人很多，但是解决的太少了，网上都是抄来抄去，都解决不了问题。最后还是在一外个国人的网站上找到了解决方案：
+
+使用新版本的python来运行这个脚本，这个会自动安装出来一个easy_install，然后使用这个新的easy_install来安装pip就可以了！
+
+安装生成的所有二进制文件，都是在你的PYTHON_HOME/bin/，因为我的是安装在/usr/local/python/，所以命令都在这里，以后再调用pip要使用绝对路径，或者做链接！
+
+2.7的模块是在以下目录
+

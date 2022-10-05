@@ -1,0 +1,143 @@
+执行下面代码时报错:
+
+List<String> centerList = WebConstants.SUPPORT_BIG_CENTERS_LIST;   // WebConstants.SUPPORT_BIG_CENTERS_LIST是Arrays.asList转化来的
+
+centerList.removeAll(WebConstants.SUPPORT_CENTERS_LIST);
+centerList.addAll(WebConstants.SUPPORT_CENTERS_LIST);
+
+最后一行报错：
+
+java.lang.UnsupportedOperationException: null
+    at java.util.AbstractList.add(AbstractList.java:148) ~[na:1.8.0_101]
+    at java.util.AbstractList.add(AbstractList.java:108) ~[na:1.8.0_101]
+    at java.util.AbstractCollection.addAll(AbstractCollection.java:344) ~[na:1.8.0_101]
+
+查看Arrays$ArrayList的源代码，如下(1.8版本)：
+
+private static class ArrayList<E> extends AbstractList<E>
+        implements RandomAccess, java.io.Serializable
+    {
+        private static final long serialVersionUID = -2764017481108945198L;
+        private final E[] a;
+
+ArrayList(E[] array) {
+            a = Objects.requireNonNull(array);
+        }
+
+@Override
+        public int size() {
+            return a.length;
+        }
+
+@Override
+        public Object[] toArray() {
+            return a.clone();
+        }
+
+@Override
+        @SuppressWarnings("unchecked")
+        public <T> T[] toArray(T[] a) {
+            int size = size();
+            if (a.length < size)
+                return Arrays.copyOf(this.a, size,
+                                     (Class<? extends T[]>) a.getClass());
+            System.arraycopy(this.a, 0, a, 0, size);
+            if (a.length > size)
+                a[size] = null;
+            return a;
+        }
+
+@Override
+        public E get(int index) {
+            return a[index];
+        }
+
+@Override
+        public E set(int index, E element) {
+            E oldValue = a[index];
+            a[index] = element;
+            return oldValue;
+        }
+
+@Override
+        public int indexOf(Object o) {
+            E[] a = this.a;
+            if (o == null) {
+                for (int i = 0; i < a.length; i++)
+                    if (a[i] == null)
+                        return i;
+            } else {
+                for (int i = 0; i < a.length; i++)
+                    if (o.equals(a[i]))
+                        return i;
+            }
+            return -1;
+        }
+
+@Override
+        public boolean contains(Object o) {
+            return indexOf(o) != -1;
+        }
+
+@Override
+        public Spliterator<E> spliterator() {
+            return Spliterators.spliterator(a, Spliterator.ORDERED);
+        }
+
+@Override
+        public void forEach(Consumer<? super E> action) {
+            Objects.requireNonNull(action);
+            for (E e : a) {
+                action.accept(e);
+            }
+        }
+
+@Override
+        public void replaceAll(UnaryOperator<E> operator) {
+            Objects.requireNonNull(operator);
+            E[] a = this.a;
+            for (int i = 0; i < a.length; i++) {
+                a[i] = operator.apply(a[i]);
+            }
+        }
+
+@Override
+        public void sort(Comparator<? super E> c) {
+            Arrays.sort(a, c);
+        }
+    }
+
+进入父类找下addAll方法:
+
+public boolean addAll(int index, Collection<? extends E> c) {
+        rangeCheckForAdd(index);
+        boolean modified = false;
+        for (E e : c) {
+            add(index++, e);
+            modified = true;
+        }
+        return modified;
+    }
+
+实现只存在于父类中，如下所示：
+
+public void add(int index, E element) {
+        throw new UnsupportedOperationException();
+    }
+
+父类AbstractList add方法直接抛出异常。
+
+所以问题就在这里，我们改下代码，如下就不报错了：
+
+List<String> centerList = new ArrayList<>();
+
+if (null != WebConstants.SUPPORT_BIG_CENTERS_LIST) {  //addAll的目标是null会报错
+ centerList.addAll(WebConstants.SUPPORT_BIG_CENTERS_LIST);
+ }
+ if (null != WebConstants.SUPPORT_CENTERS_LIST) {
+ centerList.removeAll(WebConstants.SUPPORT_CENTERS_LIST);
+ centerList.addAll(WebConstants.SUPPORT_CENTERS_LIST);
+ }
+
+它调用的就是arrayList的addAll方法了
+

@@ -1,0 +1,20 @@
+安装
+
+执行命令 pip3 install turtle
+
+报错
+
+定位报错：File"/private/var/folders/_6/5gy1lx5919j1hkv8jds4btfr0000gn/T/pip-install-tc1ubls2/turtle/setup.py", line 40
+
+pip在下载turtle 0.0.2包后，会解压到本地再安装，提示的错误在解压的setup.py文件里面。
+
+解决办法
+
+把turtle包下载到本地，手动解压，修改setup.py文件再安装
+
+打开setup.py文件，第40行修改为 except (ValueError, ve):（原来的是Python2的写法，没括号）
+
+进入到setup.py文件所在位置，执行命令 python setup.py install或系统管理员权限执行命令  sudo python setup.py install
+
+sudo（SwitchUer do）：linux系统管理指令
+

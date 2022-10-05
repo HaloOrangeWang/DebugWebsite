@@ -1,0 +1,64 @@
+
+python setup.py install 报错：error:[WinError 3]系统找不到指定的路径: 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\PlatformSDK\lib
+
+
+觉得有用的话,欢迎一起讨论相互学习~
+
+本文作者：BigTree
+
+本文链接：https://www.cnblogs.com/bigtreei/p/9914589.html
+
+版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+
+-感谢BigTree的分享，方法确实十分有效！！
+
+
+Outline
+
+在通过 setup.py 安装python模块时，遇到了以下报错：
+
+错误因素很多，在这里排除依赖原因；
+
+排除：pip install XXXXXXXXXXXXXX.whl
+
+Anaconda环境配置再三检查，没有问题；
+
+Microsoft Visual Studio 14.0 也有安装；
+
+
+解决
+
+网上寻找了各种解决方案（百度），无非Outline里提到的那四种；
+
+后来到 Google 上找到了解决方法：
+
+主要原因是自己 C++ 相关组件不完善导致的，按照上述方法操作后问题得到解决。
+
+
+step 1
+
+打开你的Visual Studio （我安装的是2015版本）：
+
+
+step2
+
+依次点击：
+
+文件-->新建-->项目-->Visual C++-->确定
+
+然后会自动跳出提示让你安装组件，点击安装就OK（安装时忘记截图）；
+
+安装时间可能会稍微长些。
+
+
+PS
+
+安装VS组件的时候记得要有VS的安装包哈！！载入VS.iso进入虚拟光驱~！！
+
+
+Step 3
+
+然后再执行 python setup.py install
+
+Everything is OK~~
+

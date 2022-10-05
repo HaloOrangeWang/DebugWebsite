@@ -1,0 +1,20 @@
+Arcgis连接HGDB报错：
+
+无法连接到数据库服务器来检索数据库列表；请检查服务器名称、用户名和密码信息，然后重试。
+
+登录用户不正确。
+
+查看数据库日志，提示未配置spatial_planning用户连接postgres数据库的pg_hba记录。
+
+新增pg_hba内容
+
+新增pg_hba内容
+
+vi $PGDATA/pg_hba.conf
+
+host  postgres  spatial_planning  0.0.0.0/0  md5
+
+2. 重新加载数据库
+
+3. 再次使用arcgis连接HGDB，可正常连接，问题解决。
+

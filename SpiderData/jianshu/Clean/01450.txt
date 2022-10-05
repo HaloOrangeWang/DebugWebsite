@@ -1,0 +1,40 @@
+记一次执行python shell报错
+
+在项目下面执行python manage.py shell，显示 No module named 'pymysql',然后直接弹出
+
+现在来分析问题：
+
+1.显示没有No module named 'pymysql'
+
+很显然，我虚拟环境Python中安装了pymysql，那就不是没有安装包的问题
+
+2.忽略项目环境执行打开Python shell
+
+当我import celery的时候，也显示没有安装该包
+
+3.上面2个步骤，可以看出要么就是我用的python环境有问题，要么就是我的python真的没有安装包
+
+4.首先确认用的是Python命令来源哪里,我这里是进入了虚拟环境的
+
+which python
+> python: aliased to /Library/Frameworks/Python.framework/Versions/3.6/bin/python3
+
+5.看看我虚拟环境中的python来自哪里
+
+打开pytharm里面settings找到自己使用虚拟环境的python路径
+
+6 跟上5得到的信息，和开始执行which python命令得到的值，是不一样的，我们可以得出，在项目的终端执行python manage.py shell 使用的不是我们虚拟环境中的python
+
+得出结果，我使用的python是系统的python,因为我系统Python没有下载过任何包，当然在import 的时候报错
+
+这里因为使用python的得到的系统的，那么有可能我们虚拟环境的Python名字叫其他名称，一般会python3，使用which python3，得到/Users/you_name/channel/bin/python3，那这样我们就找到了我们自己的虚拟环境中的python,只是名称变成了python3
+
+9.结果： python3 manage.py shell
+
+
+收获（可能只适合mac,之前linux没碰见过）
+
+1.下次出现这种问题，先查询python命令来源
+
+2.系统的python位置在 /Library/Frameworks/Python.framework/Versions/3.6/bin/python3
+

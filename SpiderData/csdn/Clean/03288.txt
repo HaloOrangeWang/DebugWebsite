@@ -1,0 +1,64 @@
+（1）通过try可以避免简单的错误
+
+data = input('请输入内容：')
+
+try :
+
+num = int(data)#如果该语句出现了错误，下面的语句不会被执行，会执行except的语句
+
+print(num)
+
+except IndexError as e:#出现异常会执行该语句，如果没有捕捉成功，则会执行下一句
+
+print(e)
+
+except Exception as e:#如果捕捉到上面出现的异常，就创建一个异常对象，e在这里表示一个异常 print(e)
+
+print(e)
+
+结果如图
+
+except后面输入的是捕捉的异常类型，输入的如果不是触发的错误类型，代码还是会报错的，例如这里出发的是ValueError，如果输入了IndexError，如图
+
+如果在except后面输入ValueError的话就能准确抓到异常了，也就是指定的错误要根据特定的Error捕捉，如果你不知道代码会出现什么错，这个时候就可以用Exception,
+
+它可以捕捉到任务错误错误。
+
+（2）完整的异常处理流程是这样的，如图
+
+如果try语句出现了错误，则会执行except语句，然后执行finally语句；如果try没有出现错误，则会执行else语句，然后执行finally语句
+
+（3）主动触发异常
+
+try:
+
+print('jibakai')
+
+'''
+
+将这个字符串传进Exception，创建了一个包含这个字符串的对象,
+
+也就是这个错误的字符串可以被捕捉到，如果出现了异常，会被传到
+
+下面语句那个e
+
+'''
+
+raise Exception('出错了......')
+
+except Exception as e:
+
+#封装了错误信息的对象
+
+print(e,'触发该异常')
+
+执行结果如图所示
+
+实际上EXception内部是有一个__str__方法，打印该对象便打印了传进去的字符串，如图
+
+（4）断言，就是简单的一个判断语句
+
+assert 2==2#语句成立，不会有异常
+
+assert 1==2#如果语句不成立，则会触发一个异常
+

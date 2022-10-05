@@ -1,0 +1,42 @@
+　　今日天气多云转晴，应近期甲方需求的变动，需要我扛上SQL，亲自上手优化一个系统中一年前开发的一个功能。
+
+　　首先：我了解了要优化的功能
+
+　　其次：我看了之前写的代码（包括SQL）
+
+　　最后：在我明白了我要怎么做的情况下，我的右手从鼠标瞬间移到了左手所在的十五寸笔记本电脑的键盘上，我的双手在我大脑的驱使下开始肆虐键盘，
+
+两分钟过后，everything is OK；
+
+好，打开web页面开始运行。万万没想到，报错了。点开日志，开始看，过了两秒钟，我的眼神死死的锁在了那一行报错的日志上，我清清楚楚的看了sqlException，
+
+我把报错的SQL放到pl/sql developer中，按下了F8，果然，报错了。这时我回想我刚刚做了什么骚操作，一秒之后，我想起来了，只是加了一个union和union后面
+
+的一个查询罢了，试着去掉刚刚加的SQL代码，哎，没问题啊，加上，哎，又有问题了。
+
+　　后来发现，居然union前面有一个order by在作祟，很久以前遇到过这样类似的问题，可现在却早已忘记，真是应了那句“用进废退”的生物进化理论，所以今天我
+
+将它写在这里，给自己记个笔记，也希望能帮助到遇到类似问题的朋友；
+
+　　通常在oracle中出现 select··········   +++········ order by 这样的语句的时候说明当前这条select 语句的结束，而且一个select语句中只允许出现一个order by语句，而且order by必须位于整个select语句的最后。也就是说你要在它后面加东西，除了select··········   +++········ order by；这样，加一个分号“；”（分号意味着整句SQL的结束），如果加其他的，就是违反了它的一个规则，
+
+当我这样写：
+
+select ····· from table where  ·····  order by union select········from table where  ·····
+
+或者这样写
+
+select ····· from table where  ······· order by union all selec t····· from table where  ·····
+
+就会报错
+
+所以我们在写法上面略施技巧即可决绝此类问题的出现，解决方法如下：
+
+select ··· from（select ··· from table where ···· order by ） union select ······ （select ··· from table where ·····） //union也可为union all
+
+select ··· from（select ··· from table where ····  union  select ··· from table where ·····） order by  　　　　　　　//union也可为union all
+
+OK，这个小问题已解决，
+
+　　天气转晴了
+

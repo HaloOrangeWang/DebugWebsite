@@ -1,0 +1,23 @@
+
+第一种方法
+
+OpenSSL.framework 从Github 下载好
+
+#import <openssl/rsa.h>
+#import <openssl/evp.h>
+#import <openssl/x509.h>
+
+程序编译没有报错，但是App启动以后，直接在launchpage页面crash了，百度 Google各种无果。
+
+
+第二种方法
+
+开始尝试.a静态库引入，然后在Header SearchPath修改路径，也可以，不过后面又引入不到了。
+
+对比了两种包文件的大小之后，又回来研究framework。
+
+
+然后
+
+在第一种方法基础上，我修改了Build Phases -> Link Binary With Librarises -> OpenSSL.framework status为optional，然后程序正常了。
+

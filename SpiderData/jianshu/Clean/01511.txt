@@ -1,0 +1,30 @@
+今天是第一次用python执行js语句，说实话，我本来认为，只要安装PyExecJS库就万事大吉了，可惜我还是高兴得太早了。我是照着这篇文章来练习的。但是一开始就掉入一个大大的坑中，差点没爬出来。
+
+代码运行过程是这样的
+
+import execjs.runtime_names
+import os
+print(execjs.get().name)
+os.environ["EXECJS_RUNTIME"] = "Node"
+print(execjs.get().name)
+node = execjs.get(execjs.runtime_names.Node)
+print(node.eval("1 + 2"))
+#运行结果
+JScript
+JScript
+Traceback (most recent call last):
+  File "C:/Users/Administrator/Desktop/pachongji/51.py", line 300, in <module>
+    node = execjs.get(execjs.runtime_names.Node)
+execjs._exceptions.RuntimeUnavailableError: Node.js (V8) runtime is not available on this system
+
+emmmm.....，报错了，而且结果也和预期的不一样，怎么办？问度娘呗。然后我才知道调用node.js需要先安装node.js，那就开始安装，下载安装包，运行安装，一路next,最后finish，ok，这下应该OK了。然而没什么用，再次运行代码仍是一样的报错，然后我又开始纠结，是我环境变量没弄对？还是node.js的调用方式不对？然后百度了一个小时，最后通过cmd中set命令的结果和os.environ的打印结果对比才发现，node.js的环境变量根本没加载到pycharm中。这就很尴尬了。凡是新装依赖软件或者改变环境变量的插件，都需要重启pycharm！重启pycharm！重启pycharm！重要的事说三遍。说多了都是泪啊。
+
+再次重新运行代码
+
+#运行结果
+Node.js (V8)
+Node.js (V8)
+3
+
+哎，写代码一定要注意细节啊，要不然浪费时间，浪费精力，最后还恨不得把自己锤死。。。
+

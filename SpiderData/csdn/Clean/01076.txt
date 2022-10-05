@@ -1,0 +1,53 @@
+在学习数据可视化的时候，调用了python中的ggplot包时，提示一下报错信息。
+
+
+报错信息
+
+AttributeError:'DataFrame' object has no attribute 'sort'
+
+查找资料发现，原来pandas在0.20.0以上的版本没有sort函数了，用的是sort_values和sort_index函数。
+
+
+解决方法一
+
+找到你ggplot包中的的stat_smooth.py模块，把sort改为sort_values。
+ 
+ 找到
+
+smoothed_data = smoothed_data.sort('x')
+
+改为
+
+smoothed_data = smoothed_data.sort_values('x')
+
+
+解决方法二
+
+找到ggplot包中的ggplot.py模块，把sort改为sort_values
+ 
+ 找到
+
+fill_levels = self.data[[fillcol_raw, fillcol]].sort(fillcol_raw)[fillcol].unique()
+
+改为
+
+fill_levels = self.data[[fillcol_raw, fillcol]].sort_values(fillcol_raw)[fillcol].unique()
+
+
+解决方法三
+
+直接把代码中的
+
+sort()
+
+改为
+
+sort_values()
+
+
+解决方法四
+
+如果以上的方法都解決不了，那就把pandas换为0.20.0一下的版本就可以了，比如0.19.2版本（最接近0.20.0）。
+
+另外，推荐在pycharm打开搜索修改，或者用notepad++等文本编辑器，因为可以直接搜索比较方面。
+

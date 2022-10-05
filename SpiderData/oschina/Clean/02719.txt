@@ -1,0 +1,44 @@
+背景：使用pyenv虚拟环境，安装requirments.txt文件中的安装包
+
+elasticsearch==7.10.1
+elasticsearch-dsl==7.3.0
+numpy==1.14.4
+tabula-py==1.0.0
+protobuf==3.3.0
+cryptography==2.2.2
+jieba==0.39
+PyJWT==1.6.1
+PyMySQL==0.7.11
+html5lib==0.9999999
+pyOpenSSL==0.15.1
+pypinyin==0.28.0
+redis==2.10.6
+requests==2.22.0
+six==1.11.0
+tornado==4.5.2
+urllib3==1.22
+Whoosh==2.7.4
+xlrd==1.1.0
+beautifulsoup4==4.6.0
+pandas==0.20.0
+eml-parser==1.3
+tensorflow==1.3.0
+facebook-scribe==2.0
+thrift==0.9.0
+
+本地pyenv虚拟环境路径为：
+
+/usr/local/var/pyenv/versions/your_name/lib/python2.7
+
+直接 pip install -r requirments.txt后，出现如下报错：
+
+AttributeError: 'module' object has no attribute 'SSL_ST_INIT'
+
+排查下来应该是安装上述requirments安装后，导致版本不兼容，卸载openssl，尝试重新安装，卸载及重装方式如下：
+
+rm -rf /usr/local/var/pyenv/versions/your_name/lib/python2.7/dist-packages/OpenSSL
+rm -rf /usr/local/var/pyenv/versions/homedo/lib/python2.7/site-packages/pyOpenSSL-0.15.1.dist-info
+pip install pyopenssl
+
+亲测可用。
+

@@ -1,0 +1,181 @@
+目录
+
+一、TypeError：类型错误，对象用来表示值的类型非预期类型时发生的错误
+
+二、AttributeError：属性错误，特性引用和赋值失败时会引发属性错误
+
+三、NameError：试图访问的变量名不存在
+
+四、SyntaxError：语法错误，代码形式错误
+
+五、KeyError：在读取字典中的key和value时，如果key不存在，就会触发KeyError错误
+
+六、IndexError：索引错误，使用的索引不存在，常索引超出序列范围，序列中没有此索引（index）
+
+七、IndentationError：缩进错误
+
+八、TabError：Tab和空格混用
+
+总结：
+
+系列文章目录
+
+
+一、TypeError：类型错误，对象用来表示值的类型非预期类型时发生的错误
+
+1）错误例子：
+
+age = 18
+print('我的年龄是'+age)
+
+报错信息：TypeError: can only concatenate str (not "int") to str（附：这里是类型错误，提示必须是一个字符串，不能是数字）
+
+2）解决方法：在使用“+”做拼接的时候，必须使用字符串，或者把数字转换成字符串；
+
+3）正确代码：
+
+age = 18
+print('我的年龄是'+str(age))
+
+
+二、AttributeError：属性错误，特性引用和赋值失败时会引发属性错误
+
+1）错误例子：
+
+nums = ('1','3','5')
+nums.append('7')
+print(nums)
+
+报错信息：AttributeError: 'tuple' object has no attribute 'append'（附：属性错误：元组对象没有“append”的属性，简单来说元组是不可变对象）
+
+2）解决办法：把元组装换成列表
+
+3）正确代码：
+
+nums = ('1','3','5')
+nums = list(nums)
+nums.append('7')
+print(nums)
+
+
+三、NameError：试图访问的变量名不存在
+
+1）错误例子：
+
+#例子一
+print(a)
+#例子二
+name = 'KUUUD'
+print('My name is ' + nane)
+
+报错信息：
+
+例子一：NameError: name 'a' is not defined（附：这里是变量‘a’没有定义）
+
+例子二：NameError: name 'nane' is not defined（附：这里同样是变量‘nane’没有定义，因为变量或函数名拼写错误也会报同样的错误）
+
+2）解决办法：只需根据报错信息，仔细检查下拼写，很快就能解决
+
+3）正确代码：
+
+#例子一
+a = 1
+print(a)
+#例子二
+name = 'KUUUD'
+print('My name is ' + name)
+
+
+四、SyntaxError：语法错误，代码形式错误
+
+1）错误例子：
+
+name = 'KUUUD'
+if name == 'KUUUD'
+    print('Hello')
+
+报错信息：SyntaxError: invalid syntax
+
+2）解决办法：当报错的时候，要注意回到错误信息的那一行，然后从下向上，慢慢查找，此处这个程序if语法忘了在判断语句后面加“：”，所以导致出错。
+
+3）正确代码：
+
+name = 'KUUUD'
+if name == 'KUUUD':
+    print('Hello')
+
+
+五、KeyError：在读取字典中的key和value时，如果key不存在，就会触发KeyError错误
+
+1）错误例子：
+
+dict = {'a':1, 'b':2, 'c':3}
+print(dict['d'])
+
+报错信息：KeyError: 'd'（附：表示没有为‘d’的key）
+
+2）解决办法：可以先测试下可以是否存在，然后再进行下一步的操作；
+
+3）正确代码：
+
+dict = {'a':1, 'b':2, 'c':3}
+if 'd' in dict:
+    print(dict['d'])
+else:
+    print('not exist')
+
+
+六、IndexError：索引错误，使用的索引不存在，常索引超出序列范围，序列中没有此索引（index）
+
+1）错误例子：
+
+list = [2,3,4,5,6]
+print(list[6])
+
+报错信息：IndexError: list index out of range（附：索引错误，列表索引超出了范围）
+
+2）解决办法：回头确定一下列表的长度，索引是要小于列表的长度的。上面的列表长度是5，而索引却要打印第六个，所以超出了列表的长度；
+
+
+七、IndentationError：缩进错误
+
+1）错误例子：
+
+a = 1
+b = 2
+if a<b:
+print(a)
+
+报错信息：IndentationError: expected an indented block（附：缩进有误，python的缩进非常严格，行首多个空格，少个空格都会报错）
+
+2）解决办法：熟悉python编码规则，如def，class，if，for，while等代码块都需要缩进
+
+
+八、TabError：Tab和空格混用
+
+1）报错信息：TabError：inconsistent use of tabs and spaces in indentation（附：相邻的两句代码的缩进需要统一使用tap或统一使用空格，不能混用）
+
+2）解决办法:
+
+1.在报错的行把鼠标放在第一个字母前，删除空格回到上一行，然后按回车就好了；
+
+2.不建议使用tab，因为回车之后默认是空格，在用tab就会报错了，实在要用tab的会就要把空格删掉在用；（附：tab键本质上是制表符，而不是缩进符，不同的文本编译器中制表符代表的空格宽度不一，如果代码需要跨平台或跨编译器读写，建议不要使用制表符（tab键））
+
+
+总结：
+
+本文简单向大家介绍了刚上手python时容易出现的代码报错，希望能帮到大家。
+
+欢迎大家留言一起讨论问题~~~
+
+
+系列文章目录
+
+第一章：python常见报错及解决方案
+
+第二章：编写python函数常用技巧代码（一）
+
+第三章：编写python函数常用技巧代码（二）
+
+第四章：python各种用法大全查询笔记
+

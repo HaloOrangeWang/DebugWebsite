@@ -1,0 +1,67 @@
+背景：java项目需要执行python命令，执行python文件
+
+通过Runtime执行命令行的方式
+
+Process proc = Runtime.getRuntime().exec(cmdStr); //执行py文件 cmdStr是完整的命令行字符串
+
+代码：
+
+String path = WaterPumpServiceImpl.class.getResource("/file/test(1).py").getPath();
+        if ("/".equals(String.valueOf(path.charAt(0)))) {
+            // 如果路径是以斜杠打头的要去掉开头斜杠
+            // 如：/C:/Work/IDEAWorkSpace/waterpump/target/classes/file/test(1).py 要把开头斜杠去掉才可以
+            path = path.substring(1);
+        }
+        // ★ 这里注意：cmdStr 是执行文件的命令，这个由于Windows和Linux系统的不同而有所不同
+        // String cmdStr = "python " + path; // 这里你有可能会出现 在cmd命令界面执行python是可以的 但是在idel中是报错的
+        // MyConstants.PYTHON_EXE 是 安装的python的python.exe的安装目录 如：C:\Users\86152\AppData\Local\Programs\Python\Python38\python.exe
+        String cmdStr = MyConstants.PYTHON_EXE + " " + path; // 如果上面 "python " + path报错 可用这行代替
+        System.out.println("================ python cmdStr =================" + cmdStr);
+
+Process proc = Runtime.getRuntime().exec(cmdStr); //执行py文件
+        // 获得执行结果的流
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream outerrStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        InputStream errStream = proc.getErrorStream();
+        InputStream stream = proc.getInputStream();
+        // 流读取与写入
+        int len = -1;
+        while ((len = errStream.read(buffer)) != -1) {
+            outerrStream.write(buffer, 0, len);
+        }
+        while ((len = stream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, len);
+        }
+        // 等待命令操作执行完成
+        proc.waitFor();
+        // 打印流信息
+        System.out.println(outStream.toString()); // 正常输出结果
+        System.out.println(outerrStream.toString()); // 异常输出结果
+
+问题 上面代码 第7行  ★标记处  String cmdStr = "python " + path;可能会报错
+
+如下：
+
+Caused by: java.io.IOException: CreateProcess error=2, 系统找不到指定的文件。
+    at java.lang.ProcessImpl.create(Native Method) ~[na:1.8.0_291]
+    at java.lang.ProcessImpl.<init>(ProcessImpl.java:453) ~[na:1.8.0_291]
+    at java.lang.ProcessImpl.start(ProcessImpl.java:140) ~[na:1.8.0_291]
+    at java.lang.ProcessBuilder.start(ProcessBuilder.java:1029) ~[na:1.8.0_291]
+    ... 55 common frames omitted
+
+原因：你的实际python.exe地址 与 idea记录的环境变量所指向地址不一致 导致idea根据它记录的错误的环境变量找不到python.exe文件
+
+场景：这种情况大多数出现在，项目创建后安装或者重装了python 导致环境变量所指的python.exe目录变更
+
+解决方法1：String cmdStr = "python " + path;中的python  改成python.exe的目录
+
+// MyConstants.PYTHON_EXE 是 安装的python的python.exe的安装目录 如：C:\Users\86152\AppData\Local\Programs\Python\Python38\python.exe
+        String cmdStr = MyConstants.PYTHON_EXE + " " + path; // 如果上面 "python " + path报错 可用这行代替
+
+解决方法2：String cmdStr = "python " + path;不变，修改idea中的环境变量地址
+
+将idel的Environment variables 里面的环境变量Path的值改一下，在末尾加上你的python文件夹地址，例如(注意分号隔开)：
+
+;C:\Users\86152\AppData\Local\Programs\Python\Python38
+

@@ -1,0 +1,15 @@
+
+一、问题描述：Python版本是3.6.3的，在Windows下使用matplotlib绘图可以，但是在ssh远程绘图的时候报错了，错误是：RuntimeError: Invalid DISPLAY variable。
+
+二、原因：matplotlib的默认backend是TkAgg，而FltAgg、GTK、GTKCairo、TkAgg、Wx和WxAgg这几个backend都要求有GUI图形界面，所以在ssh操作的时候会报错。
+
+三、解决办法：在导入matplotlib的时候指定不需要GUI的backend（Agg、Cairo、PS、PDF和SVG）。例如：
+
+import matplotlib.pyplot as plt
+
+import matplotlib.pyplot as plt
+
+plt.switch_backend('agg')
+
+plt.switch_backend('agg')
+

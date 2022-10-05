@@ -1,0 +1,23 @@
+eval()函数十分强大，它可以把list,tuple,dict和string相互转化。
+
+最近的项目中用到了eval，使用eval将string转化成list。其中有一组数据在转化时报错：NameError: name ‘null’ is not defined
+
+经过排查，发现string数据中包含‘null’,在转换时就会报上面的错误
+
+data = "[{"id":1,"value":null},{"id":2,"value":"国外"}]"
+
+result= eval(data)
+print(result)
+
+解决方法：
+
+使用replace,将字符串中的null替换掉！
+
+这样就能正常转换了
+
+下面介绍一下在数据转换中，json与eval的区别：
+
+1、json.loads与eval都能将s转成python中的对象，json.loads将json中的字符串转成unicode(types.UnicodeType)，eval转成了str(types.StringType)。
+
+2、json不认单引号，json中的字符串需要用双引号包起来
+

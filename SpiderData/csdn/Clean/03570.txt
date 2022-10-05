@@ -1,0 +1,7 @@
+在有Shebang，且Shebang正确的情况下，直接运行*.py程序出现如下错误：
+ “bash: ./wb_test.py: /usr/bin/python3^M: 解释器错误: 没有那个文件或目录”
+ 在排除Shebang写错（#! /usr/bin/python3）和*.py运行权限错误后，这类错误一般是由于*.py文件是从windows系统中传入到Linux系统而里产生的。若使用VI打开*.py文件，发现在每一行尾都有’^M’，则可以确定是此类错误。
+
+解决方法：
+ 在终端中输入命令：sed -i 's/\r$//' wb_test.py ，wb_test.py是你本意要运行的文件名。
+

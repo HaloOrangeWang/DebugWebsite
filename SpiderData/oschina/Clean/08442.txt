@@ -1,0 +1,54 @@
+
+
+maven不能创建servlet
+
+
+解决方案
+
+
+方案一
+
+在项目的iml进行指定根目录
+
+<sourceRoots>
+        <root url="file://$MODULE_DIR$/src/main/java" />
+  </sourceRoots>
+
+
+方案二
+
+
+成功解决
+
+
+maven创建servlet报错
+
+
+解决方案
+
+在pom.xml进行添加（在依赖下面添加dependencies ）
+
+<!-- JSTL -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <!-- Servlet核心包 -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <!--JSP -->
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+
+成功解决
+

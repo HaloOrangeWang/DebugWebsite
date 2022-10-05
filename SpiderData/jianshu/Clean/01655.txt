@@ -1,0 +1,146 @@
+最近在学习python，出师不利，安装 python-MySQLdb 就卡住了一下，记录下撒～
+
+
+前提
+
+安装 mysql   mysql下载
+
+
+遇到的问题
+
+使用命令行 pip install mysql-python 安装时，报错
+
+_mysql.c:44:10: fatal error: 'my_config.h' file not found
+    #include "my_config.h"
+             ^~~~~~~~~~~~~
+    1 error generated.
+    error: command 'cc' failed with exit status 1
+
+
+解决方法
+
+执行 $ brew install mysql-connector-c
+
+如果没有报错，则执行  pip install mysql-python 安装即可
+
+如果报错
+
+Error: Cannot install mysql-connector-c because conflicting formulae are installed.
+  mysql: because both install MySQL client libraries
+
+Please `brew unlink mysql` before continuing.
+
+执行
+
+$ brew unlink mysql
+Unlinking /usr/local/Cellar/mysql/8.0.12... 79 symlinks removed
+$ brew install mysql-connector-c
+
+mysql-connector-c安装成功！
+
+但是执行 $ sudo pip install mysql-python 还是报错
+
+重新连接到 mysql ，执行以下语句
+
+$ brew link --overwrite mysql
+Linking /usr/local/Cellar/mysql/8.0.12... 118 symlinks created
+
+最后执行 $ sudo pip install mysql-python
+
+搞定
+
+参考文章：mac安装mysql-python报错历程
+
+
+相关问题一
+
+
+遇到的问题：执行 brew install mysql-connector-c 报错
+
+EnvironmentError: mysql_config not found
+
+
+解决：
+
+执行以下语句：
+
+$ which mysql_config
+/usr/local/bin/mysql_config
+
+$ vim /usr/local/bin/mysql_config
+
+libs="$libs -l "
+修改为
+libs="$libs -lmysqlclient -lssl -lcrypto"
+
+执行 $ pip install MySQL-Python成功
+
+这个我自己是没有改的需要，因为我电脑里查出来就是修改后的，私以为有遇到相关问题的可以参考，至少没有误导人呐呐
+
+参考文章：Mac 下安装 MySQL-Python
+
+
+相关问题二
+
+
+遇到的问题：执行$ pip install MySQL-Python报错
+
+cc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386 -Wl,-F. build/temp.macosx-10.12-intel-2.7/_mysql.o -L/usr/local/Cellar/mysql/5.7.18_1/lib -lmysqlclient -lssl -lcrypto -o build/lib.macosx-10.12-intel-2.7/_mysql.so
+    ld: library not found for -lssl
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+    error: command 'cc' failed with exit status 1
+
+
+解决办法
+
+执行 xcode-select --install 安装Xcode，再尝试  $ pip install MySQL-Python 即可（Xcode 可能有点大，要稍等一下啦，iOS 开发表示笑而不语）
+
+参考文章：Mac安装MySQLdb（python-mysql）模块
+
+
+相关问题三
+
+
+遇到的问题：执行$ pip install MySQL-Python安装失败
+
+
+解决办法：
+
+下载 MySQL-python-1.2.4b4，或者官网下载地址MySQL-python-1.2.5
+
+解压之后找到 “site.cfg”，编辑器打开后找到 #mysql_config = /usr/local/bin/mysql_config，，把该行前面的 # 去掉，注意哈，这里面是电脑里的 mysql 安装地址。
+
+执行 xcode-select --install 安装 Command Line Tools，安装后看看成功没
+
+$ which gcc
+/usr/bin/gcc
+
+在解压后的安装包目录下，执行以下语句
+
+#python setup.py clean
+#python setup.py build
+#python setup.py install
+
+| 不行的话，在前面加 sudo 呃
+
+测试下吧
+
+#python
+>>>import MySQLdb
+
+如果还报错，在/Users/xxxx(xxx是你安装的目录下) 你ls -al 找一个叫.profile 隐藏的文件，在最后的末尾编辑追加一行， export DYLD_LIBRARY_PATH="/usr/local/mysql/lib"， 保存退出，然后重新进入到python中import一下MySQLdb
+
+参考文章：mac _mysql.c:44:10: fatal error: 'my_config.h' file not found解决方案
+
+参考文章：mac os x 10.8 安装python-mysqldb血泪史
+
+写在最后
+
+我尽力了，
+
+还是解决不了的话，
+
+就真的是 Python：从入门到放弃～
+
+卒～
+

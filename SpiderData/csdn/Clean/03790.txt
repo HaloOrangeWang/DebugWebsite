@@ -1,0 +1,202 @@
+
+文章目录
+
+异常信息
+
+捕获异常
+
+多重异常处理
+
+抛出异常
+
+内置异常类型
+
+自定义异常类型
+
+
+异常信息
+
+Python使用异常类来管理异常信息。当发生异常的时候，程序会抛出一个异常信息，自动根据代码的层次查找异常处理信息。当代码发生异常而没有指定处理异常的方法是，Traceback会打印发生异常时代码执行栈的情况。
+
+Traceback由三部分组成：
+
+信息头
+ 提醒使用者这是Traceback信息。
+
+出错位置
+ 显示出错位置，显示顺序和异常信息对象传播方向是相反的。
+
+异常信息
+ 显示异常类型，具体的异常信息。
+
+
+捕获异常
+
+语法：
+ try:
+     statements1
+ except ExceptionType:
+     statements2
+
+先运行statements1，若没有异常则不会运行statements2：
+
+否则把异常类型和ExceptionType比较，一致就执行statements2：
+ 
+ 捕获异常不一定要在异常发生的地方捕获，在异常对象传播的路径上捕获都可以。
+ 
+ 捕获异常的信息参数:
+ try:
+     statements1
+ except (ExceptionType) as Argument:
+     statements2
+
+
+多重异常处理
+
+上面只是一种异常的情况，对于多重异常，总结了3种方法。
+
+多次except
+
+多次except
+
+except后带括号
+
+except后带括号
+
+except后什么也不带
+
+except后什么也不带
+
+else：
+ try:
+     statements1
+ except ExceptionType:
+     statements2 
+ else:
+     statements3
+
+else语句的作用是如果statements1没有发生异常才会执行statements3。
+
+finally：
+ try:
+     statements1
+ except ExceptionType:
+     statements2 
+ finally:
+     statements3
+
+finally语句的作用是无论是否发生异常，都会执行statements3。
+
+（插播反爬信息 ）博主CSDN地址：https://wzlodq.blog.csdn.net/
+
+当然了，else和finally可以一起用。
+
+
+抛出异常
+
+除了代码错误自动抛出异常外，在Python中可以使用raise语句来主动抛出异常。
+ 语法：
+ raise_stmt ::= "raise" [expression ["," expression ["," expression]]]
+ raise语句后面可以接1~3个表达式，第一个第二个分别表示类型和值，第三个不填写，填写的话必须是一个traceback对象。
+
+3种常用写法：
+
+raise后接实例化对象
+
+raise后接异常类名
+
+raise后接异常类和类的初始化参数
+
+
+内置异常类型
+
+前面提到的好几种异常类型，实际上都是Python内置的异常类型。
+ 所有的异常都是继承BaseException，常用的内部异常都继承Exception。
+ 如下所示，+表示该类是上一层的子类，|用来对齐，比较常见的用注释标明了。
+
+BaseException
+ + SystemExit
+ + KeyboardInerrrput
+ + Exception
+ |  + GeneratonrExit
+ |  + StopIterration
+ |  + StandardError
+ |  |  + ArithmeticError
+ |  |  |  + FloatingPointError
+ |  |  |  + OverflowError
+ |  |  |  + ZeroDivisonErroe  # 被除数为0
+ |  |  + AssertionError
+ |  |  + AttributeError  # 访问对象不存在的属性
+ |  |  + EnvironmentError
+ |  |  |  + IOError  # 写不存在的文件或其他IO错误
+ |  |  |  + OSError
+ |  |  |  |  + WindowsError(Windows)
+ |  |  |  |  + VMSError(VMS)
+ |  |  + EOFError
+ |  |  + ImportError
+ |  |  + LookupError
+ |  |  |  + IndexError  # 访问不存在的列表元素
+ |  |  |  + KeyError  # 访问字典不存在的Key
+ |  |  + MemoryError
+ |  |  + NameError  # 访问不存在的变量名称
+ |  |  |  + UnboundLocalError
+ |  |  + ReferenceError
+ |  |  + RuntimeError
+ |  |  |  + NotImplementedError
+ |  |  + SyntaxError
+ |  |  |  + IndentationError
+ |  |  |  |  + TableError
+ |  |  + SystemError
+ |  |  + TypeError  # 类型使用了不支持的操作
+ |  |  + ValueError
+ |  |  + UnicodeError
+ |  |  |  |  + UnicodeDecodeError
+ |  |  |  |  + UnicodeEncodeError
+ |  |  |  |  + UnicodeTranslateError
+ + Warning
+ |  + DeprecationWarning
+ |  + PendingDeprecationWarning
+ |  + RuntimeWarning
+ |  + SyntaxWarning
+ |  + UserWarning
+ |  + FutureWarning
+ + ImportWarning
+ + UnicodeWarning
+
+
+自定义异常类型
+
+除了上述Python内置的异常类型外，我们也可以自定义异常类型。
+ 虽无强制，但一般会声明自定义的异常类继承Exception。
+
+一般参考Python内置类，定义一个总异常类，然后具体的每种异常继承自该类。
+ 例如一个计算机程序将内部错误分为用户输入错误和内部逻辑错误两部分：
+
+class BusiError(Exception):
+    """程序异常错误信息总类"""
+    pass
+class UserInputError(BusiError):
+    """用户输入信息错误"""
+    def __init__(self,value):
+        self.value=value
+class InnerdealError(BusiError):
+    """内部逻辑错误"""
+    def __init__(self,class_type):
+        self.class_type=class_type
+try:
+    print('statements1')
+except(BusiError) as e:
+    if type(e).__name__=="UserInputError":
+        print('statements2')
+    elif type(e).__name__=="InnerdealError":
+        print('statements3')
+
+这样当不知道statements1产生的具体异常时，可以使用BusiError基类来捕获对象，再根据对象类型的名字就可以知道具体是什么异常了。
+
+Python系列博客持续更新中
+
+原创不易，请勿转载（本不富裕的访问量雪上加霜 ）
+ 博主首页：https://wzlodq.blog.csdn.net/
+ 微信公众号：吾仄lo咚锵
+ 如果文章对你有帮助，记得一键三连❤
+

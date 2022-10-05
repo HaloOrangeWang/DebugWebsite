@@ -1,0 +1,140 @@
+最近爬一个电影票房的网站（url：http://58921.com/alltime），上面总票房里面其实是一张图片，那么我需要把图片识别成文字，来获取票房数据。
+
+我头脑里第一想到的解决方案就是要用tesseract3，别用2，经验来说3相比2，对中文的支持更好一点。
+
+然后，我开始使用pip安装一系列相关的库：
+
+$ pip install Pillow
+$ pip install pytesser3
+$ pip install pytesseract
+
+第一步，首先执行：
+
+$ pip install pillow
+
+出现报错：
+
+截图如下：
+
+我的第一反应是加个sudo，sudo pip install pillow来安装，出现同样报错，截图如下：
+
+其实是pip的版本低了，然后我尝试更新pip版本，使用如下命令：
+
+python -m pip install --upgrade pip
+
+出现报错：
+
+Could not fetch URL https://pypi.python.org/simple/pip/: There was a problem confirming the ssl certificate: [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:661) - skipping
+Requirement already up-to-date: pip in /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
+
+截图如下：
+
+还是不行！
+
+那么，换一种方式更新pip，命令如下：
+
+$ pip install -U pip
+
+还是出现报错：
+
+Could not fetch URL https://pypi.python.org/simple/pip/: There was a problem confirming the ssl certificate: [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:661) - skipping
+Requirement already up-to-date: pip in /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
+
+截图如下：
+
+再换一种更新pip，命令如下：
+
+curl https://bootstrap.pypa.io/get-pip.py | python
+
+注意一下后面，如果你是python3，那么：
+
+curl https://bootstrap.pypa.io/get-pip.py | python3
+
+终于可以了！
+
+最终解决方案参考至：
+
+https://github.com/pypa/pip/issues/5236
+
+然后安装pillow，命令如下：
+
+$ pip install pillow
+
+另外，建议使用pillow，PIL好多年前就停更了，现在pillow fork过来，然后一直在维护。
+
+现在可以使用最新的pip批量安装上述的库了。
+
+后来写了一个test.py，发现使用pytesseract.image_to_string()函数时，报下面的崩溃：
+
+截图如下：
+
+原因是：安装Tesseract-OCR后，其不会被默认添加至环境变量path中，已导致报错；
+
+解决这个问题可参考网址：
+
+https://stackoverflow.com/questions/35609773/oserror-errno-2-no-such-file-or-directory-using-pytesser
+
+解决方案：
+
+先需要在mac环境上安装tesseract这个库：
+
+$ brew install tesseract
+
+又报错了，如下：
+
+截图如下：
+
+之间我尝试更新brew，然后再brew install tesseract，没什么用；
+
+那么，按照报错提示执行下列命令：
+
+$ brew link tesseract
+
+出现下面报错：
+
+Linking /usr/local/Cellar/tesseract/3.05.01...
+Error: Could not symlink share/man/man5/unicharambigs.5
+/usr/local/share/man/man5 is not writable.
+
+截图如下：
+
+尝试解决brew link失败的问题，参考网址：
+
+https://blog.csdn.net/mingzznet/article/details/46659383
+
+根据它的报错提示，注意到了"/usr/local/share/man/man5 is not writable.”
+
+这个文件不可写，说明没权限，那么我把该文件加上当前用户的权限，执行下列命令：
+
+$ sudo chown ${USER} /usr/local/share/man/man5
+
+然后继续brew link tesseract，根据错误提示，执行相应语句，截图如下：
+
+进行下一步，参照网址：
+
+https://stackoverflow.com/questions/35609773/oserror-errno-2-no-such-file-or-directory-using-pytesser
+
+需要在代码里添加：
+
+pytesseract.pytesseract.tesseract_cmd = '<path-to-tesseract-bin>'
+
+命令行输入：
+
+$ which tesseract
+
+之前没有brew link成功，执行上述命令的结果应该是：
+
+tesseract not found
+
+现在成功了，结果是：
+
+/usr/local/bin/tesseract
+
+那么，在代码里添加：
+
+pytesseract.pytesseract.tesseract_cmd = '/usr/local/bin/tesseract'
+
+然后应该就没有pytesseract.image_to_string()报错的问题了。
+
+附代码：
+

@@ -1,0 +1,29 @@
+如下所示：
+
+Unresolved reference 'ERROR_CODE_INPUT_ERROR' less... (Ctrl+F1) 
+This inspection detects names that should resolve but don't. Due to dynamic dispatch and duck typing, this is possible in a limited but useful number of cases. Top-level and class-level items are supported better than instance items.
+
+问题描述
+
+pycharm显示无法引用到的这些类，即使这些类都在工程中，看看文件上方的import会发现对应的模块import不成功。
+
+分析
+
+既然这些类都在工程中，那么import不成功就是因为路径没对应，事实上是pycharm默认该项目的根目录为source目录，所以import使用绝对路径而不是相对路径的话，就会从项目的根目录中查找，而不是我们希望的其中的/src目录，所以import不成功。
+
+解决方法
+
+改成相对路径
+
+from ...package import *
+
+第一个.表示当前目录，后面的每一个'.'表示上一层目录。用相对目录可以保证import成功，但是不建议这种写法，因为如果当前这个文件要移动到其他包的话，就要改很多地方了，当然，使用相对路径表示可以随意更改包名，只要保证
+
+在pycharm中设置source路径
+
+file–>setting–>project:server–>project structure
+
+将放package的文件夹设置为source，这样import的模块类等，就是通过这些source文件夹作为根路径来查找，也就是在这些source文件夹中查找import的东西。
+
+以上这篇完美解决Pycharm无法导入包的问题 Unresolved reference就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

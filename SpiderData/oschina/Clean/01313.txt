@@ -1,0 +1,44 @@
+由于历史原因，Python有两个大的版本分支，Python2和Python3，又由于一些库只支持某个版本分支，所以需要在电脑上同时安装Python2和Python3，因此如何让两个版本的Python兼容，如何让脚本在对应的Python版本上运行，这个是值得总结的。
+
+对于Ubuntu 16.04 LTS版本来说，Python2（2.7.12）和Python3（3.5.2）默认同时安装，默认的python版本是2.7.12。
+
+当然你也可以用python2来调用。
+
+如果想调用python3，就用python3.
+
+对于Windows，就有点复杂了。因为不论python2还是python3，python可执行文件都叫python.exe，在cmd下输入python得到的版本号取决于环境变量里哪个版本的python路径更靠前，毕竟windows是按照顺序查找的。比如环境变量里的顺序是这样的：
+
+那么cmd下的python版本就是2.7.12。
+
+反之，则是python3的版本号。
+
+这就带来一个问题了，如果你想用python2运行一个脚本，一会你又想用python3运行另一个脚本，你怎么做？来回改环境变量显然很麻烦。
+
+网上很多办法比较简单粗暴，把两个python.exe改名啊，一个改成python2.exe，一个改成python3.exe。这样做固然可以，但修改可执行文件的方式，毕竟不是很好的方法。
+
+我仔细查找了一些python技术文档，发现另外一个我觉得比较好的解决办法。
+
+借用py的一个参数来调用不同版本的Python。py -2调用python2，py -3调用的是python3.
+
+当python脚本需要python2运行时，只需在脚本前加上，然后运行py xxx.py即可。
+
+#! python2
+
+当python脚本需要python3运行时，只需在脚本前加上，，然后运行py xxx.py即可。
+
+#! python3
+
+就这么简单。
+
+同时，这也完美解决了在pip在python2和python3共存的环境下报错，提示Fatal error in launcher: Unable to create process using '"'的问题。
+
+当需要python2的pip时，只需
+
+py -2 -m pip install xxx
+
+当需要python3的pip时，只需
+
+py -3 -m pip install xxx
+
+python2和python3的pip package就这样可以完美分开了。
+

@@ -1,0 +1,27 @@
+
+重装系统，安装python3.7.5之后，使用pip3 install ipython时出现了报错信息： Can't connect to HTTPS URL because the SSL module is not available
+
+1、cd 到Python-3.7.5目录下，重新编译安装
+
+2、查看自己的openssl的版本，并升级一下
+
+查看openssl的安装目录，我这里是/usr/local/openssl
+
+3、编译完成后先不要make，先修改Python源码包中ssl的参数，
+
+打开源码解压目录中的 Modules/Setup ,
+
+直接搜索 SSL= ，将SSL=后面的目录改为前面openssl的安装目录，并把下面三行的注释去掉。
+
+4、改完之后就在解压目录直接make就行了。
+
+5、 最后一步
+
+5、安装你想要的东西  pip3 install ipython
+
+借鉴：
+
+https://www.cnblogs.com/itbsl/p/11275728.html
+
+https://www.jb51.net/article/166688.htm
+

@@ -1,0 +1,10 @@
+自己把电脑升级到Mac最新系统后，导致pyenv下安装python报错，搜了一遍资料后，找到一种解决方法。
+
+CFLAGS="-I$(brew --prefix openssl)/include -I$(brew --prefix bzip2)/include -I$(brew --prefix readline)/include -I$(xcrun --show-sdk-path)/usr/include" LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix readline)/lib -L$(brew --prefix zlib)/lib -L$(brew --prefix bzip2)/lib" pyenv install --patch 3.8.0 < <(curl -sSL https://github.com/python/cpython/commit/8ea6353.patch\?full_index\=1)
+
+按照上述命令中安装的版本为3.8.0.
+
+如果pyenv下载源码太慢，可以自己从官网下载源码后放到～/.pyenv/cache/目录下。
+
+安装完成后的截图：
+

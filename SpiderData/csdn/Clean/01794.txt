@@ -1,0 +1,31 @@
+一. 问题：运行报错，找不到本地文件及模块、自定义模块，报错示例如下
+
+$/home/tops/bin/python xxx.py
+Traceback (most recent call last):
+  File "xxx.py", line 22, in <module>
+    from xxx.xxx import xxx
+ImportError: No module named xxx.xxx
+
+二. 原因：import模块默认会从PYTHONPATH里寻找，但是当前要import的文件路径不在PYTHONPATH里
+       附：PYTHONPATH是python搜索模块的路径，python解释器会根据PYTHONPATH下的路径寻找各个模块
+
+三. 解决：有三种方法，根据情况选择
+
+方法一
+ 命令窗口添加路径
+
+export PYTHONPATH=$PYTHONPATH:/home/admin/xxx
+
+附：该方法缺点，仅在当前窗口生效
+
+方法二
+ 执行命令时都添加路径
+
+export PYTHONPATH=$PYTHONPATH:/home/admin/xxx;python xxx.py >xxx.log 2>&1 &
+
+方法三
+ python中添加路径
+
+import sys
+  sys.path.append('/home/admin/xxx')
+

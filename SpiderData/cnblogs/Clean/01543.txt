@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "manage.py", line 24, in <module>
+    execute_from_command_line(sys.argv)
+  File "/usr/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 363, in execute_from_command_line
+    utility.execute()
+  File "/usr/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 307, in execute
+    settings.INSTALLED_APPS
+  File "/usr/local/lib/python2.7/site-packages/django/conf/__init__.py", line 56, in __getattr__
+    self._setup(name)
+  File "/usr/local/lib/python2.7/site-packages/django/conf/__init__.py", line 41, in _setup
+    self._wrapped = Settings(settings_module)
+  File "/usr/local/lib/python2.7/site-packages/django/conf/__init__.py", line 110, in __init__
+    mod = importlib.import_module(self.SETTINGS_MODULE)
+  File "/usr/local/Cellar/python@2/2.7.15_1/Frameworks/Python.framework/Versions/2.7/lib/python2.7/importlib/__init__.py", line 37, in import_module
+    __import__(name)
+  File "/Users/mac/PycharmProjects/ls/mall/mall/settings/dev.py", line 106
+SyntaxError: Non-ASCII character '\xe8' in file /Users/mac/PycharmProjects/ls/mall/mall/settings/dev.py on line 106, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+macdeMBP-2:mall mac$ python manage.py runserver
+Performing system checks...
+
+解决方法：
+
+因为是编码问题，需要在每个添加注释的.py文件中的第一行添加
+
+# -*- coding: utf-8 -*-
+
+即可解决此问题
+

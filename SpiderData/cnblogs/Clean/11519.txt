@@ -1,0 +1,30 @@
+
+问题1
+
+执行python3 deepstream-test5.py时，出现如下错误：
+
+Error while parsing config file: Key file contains key “net-scale-factor” in group “property” which has a value that cannot be interpreted. Failed to parse group property ** ERROR: <gst_nvinfer_parse_config_file:1260>: failed Adding elements to Pipeline
+
+如下图所示：
+
+执行python3 deepstream-test5.py时，出现如下错误：
+
+Error while parsing config file: Key file contains key “net-scale-factor” in group “property” which has a value that cannot be interpreted. Failed to parse group property ** ERROR: <gst_nvinfer_parse_config_file:1260>: failed Adding elements to Pipeline
+
+如下图所示：
+
+错误原因：
+
+解决方案①：dstest5_pgie_config.txt文件中 net-scale-factor=0.0039215697906911373，该参数赋值位数太多，硬件不支持这么庞大的数据位，故要将小数点后面的数据位删减掉。
+
+解决方案②：将network-mode的值替换位支持fp32浮点数运算的值('1' 代表int8， '0' 代表fp32， '1' 代表fp16)
+
+错误原因：
+
+解决方案①：dstest5_pgie_config.txt文件中 net-scale-factor=0.0039215697906911373，该参数赋值位数太多，硬件不支持这么庞大的数据位，故要将小数点后面的数据位删减掉。
+
+解决方案②：将network-mode的值替换位支持fp32浮点数运算的值('1' 代表int8， '0' 代表fp32， '1' 代表fp16)
+
+
+问题2
+

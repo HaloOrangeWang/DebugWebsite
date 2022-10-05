@@ -1,0 +1,18 @@
+在全新的环境中安装jupyter时出现错误：AttributeError: module 'enum' has no attribute 'IntFlag'，错误详情如下
+
+==> script messages <==
+Traceback (most recent call last):
+  File "/home/path/to/miniconda2/envs/py3/bin/jupyter-nbextension", line 4, in <module>
+    import re
+  File "/home/path/to/miniconda2/envs/py3/lib/python3.7/re.py", line 143, in <module>
+    class RegexFlag(enum.IntFlag):
+AttributeError: module 'enum' has no attribute 'IntFlag'
+
+同理，直接import re时也会出现同样错误，查询发现，是PYTHONPATH的设置错误，在.bashrc中存留有以前使用python2时留下的配置，导致python3不能找到正确的enum位置，注释掉bashrc中相关语句后，清空$PYTHONPATH变量即可：
+
+unset PYTHONPATH
+ #查看是否清空
+ echo $PYTHONPATH
+
+然后即可正常使用，PYTHONPATH是python2中多用的配置，使用python3和conda后一般不再需要
+

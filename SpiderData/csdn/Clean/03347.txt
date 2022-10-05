@@ -1,0 +1,19 @@
+
+1.出现如下错误：FileNotFoundError: Could not find module  (or one of its dependencies). Try using the full path with constructor syntax.
+
+(FairMOT) E:\project\c++\fairmot\x64\Release>python test_fairmot.py
+ Traceback (most recent call last):
+   File "test_fairmot.py", line 27, in <module>
+     lib_dll= ctypes.cdll.LoadLibrary(dll_path)
+   File "C:\install\anconda2020.11\envs\FairMOT\lib\ctypes\__init__.py", line 451, in LoadLibrary
+     return self._dlltype(name)
+   File "C:\install\anconda2020.11\envs\FairMOT\lib\ctypes\__init__.py", line 373, in __init__
+     self._handle = _dlopen(self._name, mode)
+ FileNotFoundError: Could not find module 'E:\project\c++\fairmot\x64\Release\fairmot.dll' (or one of its dependencies). Try using the full path with constructor syntax.
+
+报这个异常，首先检查路径是否正确，然后检查python的版本，一般使用python3.7一下的版本不会报错，python3.8会报错，报错的原因是python3.8对其进行了安全性检查，细节可以查看这篇文章（Python 3.8 上 ctypes 加载 DLL 库抛出异常 FileNotFoundError: Could not find module 'node.dll' - 一年又一年的博客），太坑
+
+还存在一种情况：
+
+dll的依赖需要都复制到工程中，如果缺少相应的依赖也是无法调用成功的，因此需要检查相应的环境
+

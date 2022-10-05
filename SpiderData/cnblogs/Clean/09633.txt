@@ -1,0 +1,27 @@
+1：首先我们先更新下python版本
+
+yum -y update python*
+
+2：其次我们在安装软件
+
+yum -y install dnf-data dnf-plugins-core libdnf-devel libdnf python2-dnf-plugin-migrate dnf-automatic
+
+这样就可以正常使用dnf命令了。
+
+如果后续出现如下问题时：
+
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe5 in position 4: ordinal not in range(128)
+
+那么按照如下进行操作：
+
+vim /etc/profile   #在文件的末尾添加如下两句话
+
+export LC_ALL="en_US.UTF-8"
+export LANG="zh_CN.GBK"
+
+然后重启profile生效，这样报错就解决了
+
+source /etc/profile
+
+OK
+

@@ -1,0 +1,29 @@
+问题：python项目导包出现错误
+ 
+ 命令行执行：
+
+cd A
+A> python main.py
+# Traceback (most recent call last):
+#   File "main.py", line 1, in <module>
+#     from A import func1
+# ModuleNotFoundError: No module named 'A'
+
+解决办法：在导入A中的方法前加以下几行代码，
+
+import os
+import sys
+dir_mytest = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, dir_mytest)
+
+from A import func1
+
+参考：python 导入自定义包-引包机制
+
+总结：
+ python的引包机制：
+ 在python中每一个.py文件为一个模块，包含__init__.py的目录为一个包。只要模块或者包所在的目录在sys.path中，就可以使用import 模块或import 包来使用。我们可以给每一个目录都加上__init__()方法，使得每一个文件夹都成为模块，层次结构清晰。
+
+如果需要导入的文件在同一目录：直接import XXX
+ 如果不在同一目录：需要将文件所在的目录通过sys.path.insert()加入到系统路径中
+

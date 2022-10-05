@@ -1,0 +1,65 @@
+报错提示如下：
+
+Running setup.py egg_info for package mysql-python
+
+sh: mysql_config: command not found
+
+Traceback (most recent call last):
+
+File "<string>", line 16, in <module>
+
+File "/tmp/pip-build/mysql-python/setup.py", line 18, in <module>
+
+metadata, options = get_config()
+
+File "setup_posix.py", line 43, in get_config
+
+libs = mysql_config("libs_r")
+
+File "setup_posix.py", line 25, in mysql_config
+
+raise EnvironmentError("%s not found" % (mysql_config.path,))
+
+EnvironmentError: mysql_config not found
+
+Complete output from command python setup.py egg_info:
+
+sh: mysql_config: command not found
+
+Traceback (most recent call last):
+
+File "<string>", line 16, in <module>
+
+File "/tmp/pip-build/mysql-python/setup.py", line 18, in <module>
+
+metadata, options = get_config()
+
+File "setup_posix.py", line 43, in get_config
+
+libs = mysql_config("libs_r")
+
+File "setup_posix.py", line 25, in mysql_config
+
+raise EnvironmentError("%s not found" % (mysql_config.path,))
+
+EnvironmentError: mysql_config not found
+
+Command python setup.py egg_info failed with error code 1 in /tmp/pip-build/mysql-python
+
+Storing complete log in /root/.pip/pip.log
+
+报错原因分析: 找不到mysql的配置脚本
+
+解决方案:
+第一步: # https://github.com/PyMySQL/mysqlclient-python
+  进入该链接,下载源码
+第二步: 修改 `setup_posix.py `
+在`setup_posix.py`内找到`mysql_config.path`
+将`mysql_config.path` 替换` /xxx/xxx(mysql安装路径/bin/mysql_config)`
+替换之后类似:   `f = popen("%s --%s" % ('/usr/local/mysql/bin/mysql_config', what))`
+第三步:手动安装mysqlclient-python
+`python setup.py install`
+第四步:
+`pip install Flask-MySQLdb`
+ 搞掂了!!!
+

@@ -1,0 +1,49 @@
+学习接口测试时,当我把配置文件xx.config和读取配置文件的模块read_config.py放在项目下的同一个包config里时,只需传入文件名xx.config即可实现对配置文件的读取. 但是当我在项目下另一个包里导入read_config.py后,再次传入要读取的配置文件名xx.config,却报错了!
+
+Traceback (most recent call last):
+  File "C:\Users\wangyi\AppData\Local\Programs\Python\Python36\lib\configparser.py", line 1138, in _unify_values
+    sectiondict = self._sections[section]
+KeyError: 'MOD'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:/develop/lemon/tool/read_excel.py", line 88, in <module>
+    button = ReadConfig().read_config('case.config','MOD','button')
+  File "C:\develop\lemon\config\read_config.py", line 18, in read_config
+    return cf.get(section,option)
+  File "C:\Users\wangyi\AppData\Local\Programs\Python\Python36\lib\configparser.py", line 781, in get
+    d = self._unify_values(section, vars)
+  File "C:\Users\wangyi\AppData\Local\Programs\Python\Python36\lib\configparser.py", line 1141, in _unify_values
+    raise NoSectionError(section)
+configparser.NoSectionError: No section: 'MOD'
+
+纠结了半天,始终找不出错误原因,想去百度一下,但是心想这么简单的问题难道我都解决不了还要去百度?那岂不是太没面子了呀! 我打开酷狗,放一首古琴曲, 试着让自己静下来,但窗外马路上的汽车鸣笛声让我静不下来,  突然发现, 会不会是路径有问题?
+
+read_config部分如下:
+
+class ReadConfig:
+    def read_config(self,file_name,section,option):
+        cf = configparser.ConfigParser()
+        cf.read(file_name,encoding='utf-8')
+        return cf.get(section,option)
+
+if __name__ == '__main__':
+    r = ReadConfig().read_config('case.config','MOD','button')
+    print(r)
+
+将寻找配置文件的路径改了一下,加了一行, 让你不管输入什么配置文件名都去config包里面去找:
+
+class ReadConfig:
+    def read_config(self,file_name,section,option):
+        file = os.path.abspath(os.path.join(os.getcwd(),'..','config',file_name))
+        cf = configparser.ConfigParser()
+        cf.read(file,encoding='utf-8')
+        return cf.get(section,option)
+
+if __name__ == '__main__':
+    r = ReadConfig().read_config('case.config','MOD','button')
+    print(r)
+
+大功告成, 哈
+

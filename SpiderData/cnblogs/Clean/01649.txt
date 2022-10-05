@@ -1,0 +1,54 @@
+1.alert弹框
+
+alert = driver.switch_to.alert()
+TypeError: 'Alert' object is not callable#对象不可调用
+
+对象不能用函数形式调用,就是不能callable。 此类错误一般是由于内部函数被用作变量名时发生。
+
+正确用法：alert作为@property使用。
+
+alert = driver.switch_to.alert
+
+2.进行file文件上传引入win32gui报错
+
+1）下载好pywin32
+
+2）设置PYTHONPATH为：D:\Python34\Lib\site-packages
+
+3）重启pycharm，重新导入即可。
+
+3.在做selenium web页面的跳转，当页面发生变化时，一定要注意等待时间的设置。
+   如果在执行过程中，出现元素不存在或者未找到，或者执行结束未报错，首先考虑是否进行等待时间的设置。
+
+若等待时间添加了，看是否该元素在iframe中，如果在，直接定位是定位不到的，必须切换到iframe，再定位。
+
+4.WebDriverException: Message: unknown error: Chrome failed to start: crashed
+
+解决办法：谷歌版本过低，下载一个最新版本，同时更新driver驱动版本为相对应的版本即可。
+
+5.添加cookie操作时，WebDriverException:会出现报错为：Message: unable to set cookie。报错信息如下
+
+解决方法：参考文档--https://www.cnblogs.com/CoolJayson/p/7421013.html
+
+需要在driver.add_cookie()前加上driver1.get("url地址")。
+
+必须首先加载网站，这样Selenium 才能知道cookie 属于哪个网站，即使加载网站的行为对我们没任何用处。如下代码加粗部分。
+
+6.selenium加入单元测试pytest后，提示：Empty test suite.
+
+D:\Python34\python.exe "D:\Program Files (x86)\JetBrains\PyCharm Community Edition 3.4.4\helpers\pycharm\utrunner.py" E:\aaa\python\web_API\QCD_webFramework\pytest_TestCases\test_login_fixture.py true
+Testing started at 16:03 ...
+
+Process finished with exit code 0
+Empty test suite
+
+解决办法：网上一部分百度说是，在setting设置，如下。我设置后运行还是之前的错误
+
+然后又再次点击“Edit Configurations”
+
+进入如下界面，添加一个py.test
+
+填入name，写上路径，点击apply->点击ok
+
+在右上角选中选中刚刚配置的name名字，然后点击run，即可。
+

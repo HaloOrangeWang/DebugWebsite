@@ -1,0 +1,24 @@
+{
+    "err_msg": {
+        "text": "UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range",
+        "lines": ["title"],
+        "weight": [1]
+    },
+    "solve": [
+        {
+            "text": "在命令行修改，仅本会话有效：\n1)通过>>>sys.getdefaultencoding()查看当前编码(若报错，先执行>>>import sys >>>reload(sys));\n2)通过>>>sys.setdefaultencoding('utf8')设置编码",
+            "lines": [15, 16, 17],
+            "weight": [1, 1, 1]
+        },
+        {
+            "text": "在程序文件中以下三句\nimport sys\nreload(sys)\nsys.setdefaultencoding('utf8')",
+            "lines": [20, 21, 22, 23],
+            "weight": [1, 1, 1, 1]
+        },
+        {
+            "text": "修改Python本环境\n在Python的Lib\\site-packages文件夹下新建一个sitecustomize.py文件，内容为：\n#coding=utf8\nimport sys\nreload(sys)\nsys.setdefaultencoding('utf8')",
+            "lines": [25, 26, 27, 28, 29, 30],
+            "weight": [1, 1, 1, 1, 1, 1]
+        }
+    ]
+}

@@ -1,0 +1,57 @@
+pip install 包名 -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+问题起因如下图：
+
+出错的原因：
+
+1、可能cv2相关包没有安装完；
+
+2、可能缺少相关包。
+
+针对第一种情况：
+
+可以先卸载相关包，卸载语句如下：
+
+pip uninstall opencv-contrib-python
+
+pip uninstall opencv-python
+
+效果如下图：
+
+针对第二种情况：
+
+可以安装相关包：
+
+pip install opencv-python
+
+pip install opencv-contrib-python
+
+但是如果直接用这两句的话下载速度太慢了，可以换一个语句（此时安装快得飞起！！！）：
+
+pip install Pyinstaller -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+（其中的Pyinstaller是你需要下载的库或包名，根据自己需求自行更改即可）
+
+效果如下图：
+
+参考了其他博文说，opencv-contrib-python需要特定版本即3.4.2.16，否则不行，具体原因没有详细了解，你们可以试下其他版本。（我感觉最新的应该也可以，只是我试的时候还是用的3.4.2.16）
+
+但是红色那几排很醒目，还得在末尾加上--user才行，效果如下图：
+
+现在就没有报错啦，确定安装好opencv-python，opencv-contrib-python后我就运行成功啦！
+
+注意事项：
+
+我用的是anaconda调试的，我之前设置了两个环境一个是base(root)环境，一个是自己新建的tensorflow36环境，但是我用命令行的时候没有activate我新建的环境，导致安装了两次都运行不了，也就是说你需要的包必须安装在你需要的环境下才行！
+
+参考博文链接：
+
+1.https://blog.csdn.net/hopena/article/details/91350271
+
+2.https://blog.csdn.net/weixin_43167047/article/details/82841750
+
+3.https://www.baidu.com/link?url=x8DKQh8B3T5RRS2ldLOdzzI4ceFD3UvsLRk6QiBfXto_Yp05WvTQWha1V1mw0rd3qLb1NDqjJIIJZQYhTtI7b0B5tOZ-jdZZU9-K7JILX8i&wd=&eqid=fba27c75003eda80000000035e6635f8
+
+4.https://blog.csdn.net/weixin_35389463/article/details/88344481
+
+5.https://blog.csdn.net/hk121/article/details/100098117?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task
+

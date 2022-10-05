@@ -1,0 +1,106 @@
+
+关于分布式事务seata
+
+客户端启动报错
+
+先决条件
+
+报错原因
+
+问题解决
+
+原因一：在nacos中cluster默认是大写DEFAULT,在registry.conf中
+
+原因二：获取不到服务在Seata config.txt 配置中添加自己的服务
+
+原因三：检查seata的registry.conf中nacos的配置是否正确
+
+
+客户端启动报错
+
+no available service 'default' found, please make sure registry config correct
+
+
+先决条件
+
+1.seata 正常启动并在nacos注册中心的服务列表中有该服务
+2.seata 的config.txt配置文件信息是否在nacos-->配置管理-->配置列表 --> namespace所对的命名空间中是否存在seata的配置
+
+
+报错原因
+
+1.原因一：default大小写
+ 2.原因二：获取不到服务
+ 3.原因三：seata的registry.conf中nacos的配置是否正确
+
+
+问题解决
+
+
+原因一：在nacos中cluster默认是大写DEFAULT,在registry.conf中
+
+nacos {
+   
+   
+    application = "seata-server"
+    serverAddr = ""
+    group = "SEATA_GROUP"
+    namespace = ""
+    cluster = "default"
+    username = ""
+    password = ""
+  }
+nacos的cluster我们配置的是小写default,客户端seata registry 的配置将cluster: default
+seata:
+  registry:
+    type: nacos
+    nacos:
+      application: ${
+   
+   nacos.seata.application}
+      server-addr: ${
+   
+   nacos.instance.hostname1}
+      namespace: ${
+   
+   nacos.namespace}
+      group: ${
+   
+   nacos.group}
+      username: nacos
+      password: nacos
+      cluster: default
+
+
+原因二：获取不到服务在Seata config.txt 配置中添加自己的服务
+
+如：service.vgroupMapping.provider_base_tx_group=default 
+查看客户端seata配置：
+seata:
+  enabled: true
+  application-id: seata-server
+  tx-service-group: provider_base_tx_group
+
+安装官方配置流程，原因一和原因二仍未解决此问题
+
+
+原因三：检查seata的registry.conf中nacos的配置是否正确
+
+示例：
+nacos {
+   
+   
+    application = "seata-server"
+    serverAddr = "ip:8848"
+    group = "TRUNK_GROUP"
+    namespace = "c4832bc1-86f5-49a0-b253-ebd08e6b81d9"
+    cluster = "default"
+    username = "nacos"
+    password = "nacos"
+  }
+其中nacos.serverAddr 为 nacos 注册中心的地址
+group为分组
+namespace为命名空间
+
+确保namespace 和 应用服务注册的空间为同一个环境
+

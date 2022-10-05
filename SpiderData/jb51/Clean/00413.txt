@@ -1,0 +1,79 @@
+错误展示
+
+new_model = load_model(“model.h5”)
+
+报错：
+
+1、keras load_model valueError: Unknown Layer :CRF
+
+2、keras load_model valueError: Unknown loss function:crf_loss
+
+错误修改
+
+1、load_model修改源码：custom_objects = None 改为 def load_model(filepath, custom_objects, compile=True)：
+
+2、new_model = load_model(“model.h5”,custom_objects={‘CRF': CRF,‘crf_loss': crf_loss,‘crf_viterbi_accuracy': crf_viterbi_accuracy}
+
+以上修改后，即可运行。
+
+补充知识：用keras搭建bilstm crf
+
+使用 https://github.com/keras-team/keras-contrib实现的crf layer，
+
+安装 keras-contrib
+
+pip install git+https://www.github.com/keras-team/keras-contrib.git
+
+Code Example：
+
+# coding: utf-8
+from keras.models import Sequential
+from keras.layers import Embedding
+from keras.layers import LSTM
+from keras.layers import Bidirectional
+from keras.layers import Dense
+from keras.layers import TimeDistributed
+from keras.layers import Dropout
+from keras_contrib.layers.crf import CRF
+from keras_contrib.utils import save_load_utils
+
+VOCAB_SIZE = 2500
+EMBEDDING_OUT_DIM = 128
+TIME_STAMPS = 100
+HIDDEN_UNITS = 200
+DROPOUT_RATE = 0.3
+NUM_CLASS = 5
+
+def build_embedding_bilstm2_crf_model():
+ """
+ 带embedding的双向LSTM + crf
+ """
+ model = Sequential()
+ model.add(Embedding(VOCAB_SIZE, output_dim=EMBEDDING_OUT_DIM, input_length=TIME_STAMPS))
+ model.add(Bidirectional(LSTM(HIDDEN_UNITS, return_sequences=True)))
+ model.add(Dropout(DROPOUT_RATE))
+ model.add(Bidirectional(LSTM(HIDDEN_UNITS, return_sequences=True)))
+ model.add(Dropout(DROPOUT_RATE))
+ model.add(TimeDistributed(Dense(NUM_CLASS)))
+ crf_layer = CRF(NUM_CLASS)
+ model.add(crf_layer)
+ model.compile('rmsprop', loss=crf_layer.loss_function, metrics=[crf_layer.accuracy])
+ return model
+
+def save_embedding_bilstm2_crf_model(model, filename):
+ save_load_utils.save_all_weights(model,filename)
+
+def load_embedding_bilstm2_crf_model(filename):
+ model = build_embedding_bilstm2_crf_model()
+ save_load_utils.load_all_weights(model, filename)
+ return model
+
+if __name__ == '__main__':
+ model = build_embedding_bilstm2_crf_model()
+
+注意：
+
+如果执行build模型报错，则很可能是keras版本的问题。在keras-contrib==2.0.8且keras==2.0.8时，上面代码不会报错。
+
+以上这篇keras 解决加载lstm+crf模型出错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

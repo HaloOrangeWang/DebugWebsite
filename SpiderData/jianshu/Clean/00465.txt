@@ -1,0 +1,100 @@
+执行时报错
+
+qt.qpa.plugin: Could not find the Qt platform plugin "windows" in ""
+
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem
+
+.
+
+根据给出的提示可以看出错误原因是系统找不到Qt平台的插件，解决方法则是将PySide2或者PyQt5的plugins目录加入到QT_QPA_PLATFORM_PLUGIN_PATH环境变量里面。
+
+例如：
+
+#%%
+
+import sys
+
+import os
+
+from PySide6 import QtCore, QtWidgets, QtGui
+
+import PySide6
+
+# 加入以下脚本即可正常显示窗口
+
+dirname = os.path.dirname(PySide6.__file__)
+
+plugin_path = os.path.join(dirname, 'plugins', 'platforms')
+
+os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = plugin_path
+
+print(plugin_path)
+
+#%%
+
+class MyWidget(QtWidgets.QWidget):
+
+def __init__(self):
+
+super().__init__()
+
+self.button = QtWidgets.QPushButton("点这里")
+
+self.layout = QtWidgets.QVBoxLayout(self)
+
+self.layout.addWidget(self.button)
+
+self.button.clicked.connect(self.showMessage)
+
+@QtCore.Slot()
+
+def showMessage(self):
+
+msgBox = QtWidgets.QMessageBox()
+
+msgBox.setText("Hello world")
+
+msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+ret = msgBox.exec()
+
+if __name__ == "__main__":
+
+app = QtWidgets.QApplication([])
+
+widget = MyWidget()
+
+widget.resize(300, 200)
+
+widget.show()
+
+sys.exit(app.exec())
+
+二、修改配置文件，避免重复代码
+
+首先 在VS中运行以下代码，找到 platforms 的 路径
+
+import sys
+
+import os
+
+from PySide6 import QtCore, QtWidgets, QtGui
+
+import PySide6
+
+# 加入以下脚本即可正常显示窗口
+
+dirname = os.path.dirname(PySide6.__file__)
+
+plugin_path = os.path.join(dirname, 'plugins', 'platforms')
+
+os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = plugin_path
+
+print(plugin_path)
+
+第一个方法：修改PySide2的初始化文件"c:\users\XXX.virtualenvs\pyqt5-3bre18dc\lib\site-packages\PySide2_init_.py" ，在下图位置添加上述代码即可：
+
+第二个方法：set QT_QPA_PLATFORM_PLUGIN_PATH='C:\ProgramData\Anaconda3\lib\site-packages\PySide6\plugins\platforms’
+
+第三个方法：在cmd中运行sysdm.cpl ,在高级、环境变量中添加
+

@@ -1,0 +1,57 @@
+报错环境：
+
+python=3.7，django=2.2，PyMySQL=0.9.3
+
+抛出异常：
+
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+报错场景：
+
+　　1、启动django项目
+
+　　2、更新表：python manage.py makemigrations
+
+报错原因：安装Django后不想折腾mysqlclient那堆库文件，直接装了pymysql替代mysqlclient。还是老办法，__init__.py 中patch一下:
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+　　启动项目出现以下异常:
+
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+　　看来是Django2.2对mysqlclient的要求提高了: 1.3.13. 但pymysql的版本没有跟上。
+
+看了下tracelog指向的异常抛出处的代码, 发现如下代码片段:
+
+果然是有个版本判断并raise了异常，而且校验的是Database库的version_info属性。那pymysql中的version_onfo属性是怎么返回的呢？找到pymysql源码，发现如下片段:
+
+解决办法：不管三七二十一，直接简单粗暴，干掉这个判断就完事了
+
+这个异常到此解决完了，紧跟着又来一个报错：
+
+File "C:\Users\Administrator\AppData\Roaming\Python\Python37\site-packages\django\db\backends\mysql\operations.py", line 147, in last_executed_query
+    query = query.decode(errors='replace')
+AttributeError: 'str' object has no attribute 'decode'
+
+是的，py3默认str是unicode编码，通过encode方法编码成bytes类型，后者才有decode解码方法。点进去看源码，果然没错，没encode哪里来的decode。
+
+解决办法：
+
+　　到django的github去翻这个文件这个方法的最新/历史版本，结果最新master分支内容如下：force_str方法解决了这个问题，只需要把下面代码替换上面的代码就可以了
+
+from django.utils.encoding import force_str
+
+至此，项目可以正常启动了，表更新也没问题。
+
+该方案只是避开了版本判断，不确定Django2.2是否依赖mysqlclient的新特性，因此生产环境还是建议部署mysqlclient，而非pymysql。
+
+　　mysqlclient与pymysql区别是什么？
+
+　　　　mysqlclient是mysql官方提供的Python SDK，安装时依赖mysql-dev与python-dev相关的库函数完成当前系统平台的编译，因为使用大量C库，性能会比pymysql优秀得多。SDK更新和维护也有官方保障。
+
+　　　　pymysql是第三方在MySQL通信协议上实现的SDK，所有与数据库的交互都是通过MySQL独有的通信协议完成，性能上会比mysqlclient有劣势。且版本更新可能滞后，且维护不一定到位。但好处就是pip install安装很容易，不像mysqlclient先要把编译依赖的C库装好，在一些建档任务和开发环境快速搭建上有优势。
+
+　　
+

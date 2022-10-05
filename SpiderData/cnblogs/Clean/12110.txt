@@ -1,0 +1,18 @@
+源码：
+
+报错：
+
+错误出在python内部的subprocess.py文件
+
+解决方式：
+
+第一种：打开subprocess.py文件，找到初始化函数__init__()，修改参数的默认值为encoding=‘utf-8’，程序运行不再报错
+第二种：
+
+import subprocess
+from functools import partial
+
+subprocess.Popen = partial(subprocess.Popen, encoding="utf-8")
+
+这三句话，在导入 execjs之前写进去
+

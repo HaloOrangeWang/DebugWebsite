@@ -1,0 +1,54 @@
+出现以上问题怎么解决？
+
+路径地址：用npm安装报错 reason: getaddrinfo ENOTFOUND server server:80 （代理器设置问题）以及npm+指令没有反应的问题_大芊与小箎的博客-CSDN博客
+
+执行上述操作后，再次执行还是报错：
+
+查看npm config ls,如下：
+
+以管理员身份启动cmd,再次执行安装依旧报错：
+
+尝试执行以下命令：
+
+C:\WINDOWS\system32>npm set strict-ssl false
+
+C:\WINDOWS\system32>npm config set registry http://registry.npmjs.org/
+
+参考路径：npm 依赖下载报错 Hostname/IP does not match certificate‘s 相关 解决方案_晓风揽月-CSDN博客
+
+结果再次执行安装，恢复原状：
+
+再次执行：
+
+C:\WINDOWS\system32>npm config get proxy
+null
+
+C:\WINDOWS\system32>npm config get https-proxy
+null
+
+C:\WINDOWS\system32>npm install --global --production windows-build-tools
+npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+npm WARN deprecated har-validator@5.1.5: this library is no longer supported
+
+> windows-build-tools@5.2.2 postinstall C:\Users\**\AppData\Roaming\npm\node_modules\windows-build-tools
+> node ./dist/index.js
+
+查看一下node和npm是否安装成功：
+
+C:\Users\**>node -v
+v14.17.0
+
+C:\Users\**>npm -v
+6.14.13
+
+出现版本号，说明安装成功。然后安装mewman
+
+安装成功。
+
+备注：
+
+
+Windows下Node.js与npm的安装与配置，参考路径：
+
+Windows下Node.js与npm的安装与配置_TragueZw的博客-CSDN博客
+

@@ -1,0 +1,178 @@
+今天突然出现了这样一个报错：
+
+Warning messages:
+1: In scan(file = file, what = what, sep = sep, quote = quote, dec = dec,  :
+  EOF within quoted string
+2: In scan(file = file, what = what, sep = sep, quote = quote, dec = dec,  :
+  读取的项目数必需是列数的倍数
+
+输入的命令是：
+
+go.res <- read.table('picture.test.l11.xls',header = TRUE, sep = "\t" )
+
+根据提示，说明函数的输入有问题，所以：
+
+修正后的代码：
+
+go.res <- read.table("data.txt",header = TRUE,sep = "\t",stringsAsFactors = FALSE,quote = "")
+
+在读取命令中增加了一个参数quote = ""，读取完成，就可以使用。
+
+看来对read.table的用法还不熟练呀，咱还是来复习一下吧！龇牙*3！！！
+
+
+R语言_read.table()函数用法
+
+read.table()函数是R最基本函数之一，主要用来读取矩形表格数据。
+
+Usage
+read.table(file, header = FALSE, sep = "", quote = "\"'",
+           dec = ".", numerals = c("allow.loss", "warn.loss", "no.loss"),
+           row.names, col.names, as.is = !stringsAsFactors,
+           na.strings = "NA", colClasses = NA, nrows = -1,
+           skip = 0, check.names = TRUE, fill = !blank.lines.skip,
+           strip.white = FALSE, blank.lines.skip = TRUE,
+           comment.char = "#",
+           allowEscapes = FALSE, flush = FALSE,
+           stringsAsFactors = default.stringsAsFactors(),
+           fileEncoding = "", encoding = "unknown", text, skipNul = FALSE)
+read.csv(file, header = TRUE, sep = ",", quote = "\"",
+         dec = ".", fill = TRUE, comment.char = "", ...)
+
+read.csv2(file, header = TRUE, sep = ";", quote = "\"",
+          dec = ",", fill = TRUE, comment.char = "", ...)
+
+read.delim(file, header = TRUE, sep = "\t", quote = "\"",
+           dec = ".", fill = TRUE, comment.char = "", ...)
+
+read.delim2(file, header = TRUE, sep = "\t", quote = "\"",
+            dec = ",", fill = TRUE, comment.char = "", ...)
+
+各参数的说明如下：
+
+（1）file
+
+file是一个带分隔符的ASCII文本文件。
+
+（2）header
+
+一个表示文件是否在第一行包含了变量的逻辑型变量。
+
+如果header设置为TRUE，则要求第一行要比数据列的数量少一列。
+
+（3）sep
+
+分开数据的分隔符。默认sep=""。
+
+read.table()函数可以将1个或多个空格、tab制表符、换行符或回车符作为分隔符。
+
+（4）quote
+
+用于对有特殊字符的字符串划定接线的字符串，默认值是TRUE(")或单引号。（`）
+
+（5）dec
+
+decimal用于指明数据文件中小数的小数点。
+
+（6）numerals
+
+字符串类型。用于指定文件中的数字转换为双精度数据时丢失精度的情况下如何进行转换。
+
+（7）row.names
+
+保存行名的向量。可以使用此参数以向量的形式给出每行的实际行名。或者要读取的表中包含行名称的列序号或列名字符串。
+
+在数据文件中有行头且首行的字段名比数据列少一个的情况下，数据文件中第1列将被视为行名称。除此情况外，在没有给定row.names参数时，读取的行名将会自动编号。
+
+可以使用row.names = NULL强制行进行编号。
+
+（8）col.names
+
+指定列名的向量。缺省情况下是又"V"加上列序构成，即V1,V2,V3......
+
+（9）as.is
+
+该参数用于确定read.table()函数读取字符型数据时是否转换为因子型变量。当其取值为FALSE时，该函数将把字符型数据转换为因子型数据，取值为TRUE时，仍将其保留为字符型数据。其取值可以是逻辑值向量（必要时可以循环赋值），数值型向量或字符型向量，以控制哪些列不被转换为因子。
+
+注意：可以通过设置参数 colClasses = "character"来阻止所有列转换为因子，包括数值型的列。
+
+（10）na.strings
+
+可选的用于表示缺失值的字符向量。
+
+na.strings=c("-9","?")把-9和？值在读取数据时候转换成NA
+
+（11）colClasses
+
+用于指定列所属类的字符串向量。
+
+（12）nrows
+
+整型数。用于指定从文件中读取的最大行数。负数或其它无效值将会被忽略。
+
+（13）skip
+
+整型数。读取数据时忽略的行数。
+
+（14）check.names
+
+逻辑值。该参数值设置为TRUE时，数据框中的变量名将会被检查，以确保符在语法上是有效的变量名称。
+
+（15）fill
+
+逻辑值。在没有忽略空白行的情况下（即blank.lines.skip=FLASE），且fill设置为TRUE时，如果数据文件中某行的数据少于其他行，则自动添加空白域。
+
+（16）strip.white
+
+逻辑值，默认为FALSE。此参数只在指定了sep参数时有效。当此参数设置为TRUE时，数据文件中没有包围的字符串域的前边和后边的空格将会被去掉。
+
+（17）blank.lines.skip
+
+逻辑值，此参数值设置为TRUE时，数据文件中的空白行将被忽略。默认值为TRUE。
+
+（18）comment.char
+
+字符型。包含单个字符或空字符的向量。代表注释字符的开始字符。可以使用""关闭注释。
+
+（19）allowEscapes
+
+逻辑值。类似“\n”这种C风格的转义符。如果这种转义符并不是包含在字符串中，该函数可能解释为字段分隔符。
+
+（20）flush
+
+逻辑值。默认值为FALSE。当该参数值设置为TRUE时，则该函数读取完指定列数后将转到下一行。这允许用户在最后一个字段后面添加注释。
+
+（21）stringsAsFactors
+
+逻辑值，标记处字符向量是否需要转化为因子，默认是TRUE。
+
+明确String与Factor的区别。
+
+String是字符串，可用于记录琐细信息（比如发现UFO者的口头描述内容）。Factor是因子，用于给一行记录做“分类标记”，比如人的性别factors可以设置为“男”、“女”，工作效率最高日期的factors可以是“Mon”、"Tue"，对于工作效率也可以有“high”、“low”等。对于Factor类型属性，R语言可以自动统计数据的factor水平（level），比如，男，有多少，Mon有多少等。
+
+stringsAsFactors = F意味着，“在读入数据时，遇到字符串之后，不将其转换为factors，仍然保留为字符串格式”。
+
+（22）fileEncoding
+
+字符串类型，指定文件的编码方式。如果指定了该参数，则文本数据按照指定的格式重新编码。
+
+（23）encoding
+
+假定输入字符串的编码方式。
+
+（24）text
+
+字符串类型。当未提供file参数时，则函数可以通过一个文本链接从text中读取数据。
+
+（25）skipNul
+
+逻辑值。是否忽略空值。默认为FALSE。
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------I'm a line ! Thanks !----------------------------------------------------------------------------------------------------------------
+
+参考：
+
+https://www.jianshu.com/p/35cb5c8f83ab
+
+https://www.jianshu.com/p/90e1d430c9ef
+

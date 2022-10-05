@@ -1,0 +1,62 @@
+在导入python的模块时会报错：
+
+配置文件：
+
+#!/usr/bin/env python
+
+# python Tab file
+
+import sys
+
+import readline
+
+import rlcompleter
+
+import atexit
+
+import os
+
+readline.parse_and_bind('tab:complete')
+
+histfile = os.path.join(os.environ['HOME'], '.pythonhistory')
+
+try:
+
+readline.read_history_file(histfile)
+
+except IOError:
+
+pass
+
+atexit.register(readline.write_history_file,histfile)
+
+del os,histfile, readline, rlcompleter
+
+直接在crt操作复制进tab.py不成功，会各种报错:
+
+提示line1，line2之类的
+
+那是因为在复制进去的时候有些字符被更改了
+
+解决办法：
+
+1.yum install lrzsz （安装上传下载软件）
+
+2.在电脑上新建一个名为tab.txt的文件,然后将配置内容复制进去；保存，修改tab.txt为                          tab.py
+
+3.rz（上传命令）
+
+4.在调出来的文件框里选择刚刚创建的tab.py
+
+5.whereis python（查看python模块放在那个文件夹下）
+
+python: /usr/bin/python /usr/bin/python2.6 /usr/lib/python2.6 /usr/lib64/python2.6 /usr/include/python2.6 /usr/share/man/man1/python.1.gz  （跳出好多个目录，有些是文件不是目录，不清楚模块在哪个目录下的可以cd切进去看看）
+
+6.cp tab.py /usr/lib64/python2.6（将刚刚上传的tab.py文件拷贝到python模块目录下）
+
+7.python（进入python）
+
+然后输入import tab.py（导入tab模块）
+
+即可
+

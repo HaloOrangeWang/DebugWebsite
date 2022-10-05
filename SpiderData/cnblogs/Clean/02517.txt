@@ -1,0 +1,67 @@
+最近想弄个发送邮件的脚本，代码一切正常，执行发送邮件就会报
+“554 DT:SPM 发送的邮件内容包含了未被许可的信息，或被系统识别为垃圾邮件。请检查是否有用户发送病毒或者垃圾邮件；”
+邮件正文内容反复更改还是不起作用。
+
+参考https://blog.csdn.net/sinat_21302587/article/details/60574393的思路进行了更改仍然报错。
+
+继续查找解决办法发现https://blog.csdn.net/weixin_41789943/article/details/82348946的方法非常有效，赶紧记录下来。
+
+以下转自https://blog.csdn.net/weixin_41789943/article/details/82348946
+
+开始以为是传送的文本的内容有问题！被当成了是垃圾邮件不允许发送！然后改了很多次都不行！后来找了很久！才发现是From 和 To 的格式不正确！不能只填写地址，要仿照邮箱显示地址的格式输入From和To，类似
+
+张三<**********@qq.com>
+
+import smtplib
+
+from email.mime.text import MIMEText
+
+from email.header import Header
+
+mail_host="smtp.163.com"
+
+mail_user="*******.com"
+
+mail_pass="*******"
+
+sender = '******@163.com'
+
+receivers = ['******@qq.com','******@163.com']
+
+body_content = """ 测试文本 """
+
+message = MIMEText(body_content, 'plain', 'utf-8')
+
+message['From'] = "********@163.com"
+
+message['To'] = "******@qq.com"
+
+subject = """
+项目异常测试邮件
+"""
+
+message['Subject'] = Header(subject, 'utf-8')
+
+smtpObj = smtplib.SMTP()
+
+smtpObj.connect(mail_host, 25)
+
+smtpObj.set_debuglevel(1)
+
+smtpObj.login(mail_user,mail_pass)
+
+smtpObj.sendmail(sender, receivers, message.as_string())
+
+print("邮件发送成功")
+
+smtpObj.quit()
+
+这里的message['From'] 和To 改为 邮箱里收发邮件的发件人和收件人那种字符格式！
+
+message['From'] = "wumian<**********@163.com>"
+
+message['To'] = "qishi<**********@qq.com>"
+
+然后就发送成功了！
+666
+

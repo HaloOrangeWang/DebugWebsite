@@ -1,0 +1,87 @@
+前言
+
+最近由于项目需要，需要读取一个含有中文的txt文档，完了还要保存文件。文档之前是由base64编码，导致所有汉字读取显示乱码。项目组把base64废弃之后，先后出现两个错误：
+
+ascii codec can't encode characters in position ordinal not in range 128
+UnicodeDecodeError: ‘utf8' codec can't decode byte 0x。
+
+如果对于ascii、unicode和utf-8还不了解的小伙伴，可以看之前的这篇文章关于字符串和编码
+
+那么必须对下面这三个概念有所了解：
+
+ascii只能表示数字、英文字母和一些特殊符号，不能表示汉字
+
+unicode和utf-8都可以表示汉字，unicode是固定长度，utf-8是可变长度
+
+内存中存储方式一般为unicode，而磁盘文件存储方式一般为utf-8，因为utf-8可以节约存储空间
+
+那么python的默认编码是什么？
+
+>>> import sys
+>>> sys.getdefaultencoding()
+'ascii'
+>>> reload(sys)
+<module 'sys' (built-in)>
+>>> sys.setdefaultencoding('utf-8')
+>>> sys.getdefaultencoding()
+'utf-8'
+
+python的默认编码是ascii，可以通过sys.setdefaultencoding('utf-8')函数设置python的默认编码。
+
+python中可以通过encode和decode的方式改变数据的编码，比如：
+
+>>> u'汉字'
+u'\u6c49\u5b57'
+>>> u'汉字'.encode('utf-8')
+'\xe6\xb1\x89\xe5\xad\x97'
+>>> u'汉字'.encode('utf-8').decode('utf-8')
+u'\u6c49\u5b57'
+
+我们可以通过这两个函数设置编码。
+
+那么，python中的str是什么类型？
+
+>>> import binascii
+>>> '汉字'
+'\xba\xba\xd7\xd6'
+>>> type('汉字')
+<type 'str'>
+>>> print binascii.b2a_hex('汉字')
+babad7d6
+>>> print binascii.b2a_hex(u'汉字')
+Traceback (most recent call last):
+ File "<stdin>", line 1, in <module>
+UnicodeEncodeError: 'ascii' codec can't encode characters in
+position 0-1: ordinal not in range(128)
+>>> print binascii.b2a_hex(u'汉字'.encode('utf-8'))
+e6b189e5ad97
+>>> print binascii.b2a_hex(u'汉字'.encode('gbk'))
+babad7d6
+
+binascii是将数据的二进制转换成ascii，上面的解释是：‘汉字'的类型是str，二进制是babad7d6，u‘汉字'是无法转换成ascii，这样就报出了开头的第一个错误。解决办法就是把它.encode(‘utf-8')成str类型。因为我命令行是windows默认的GBK编码，所有u'汉字'.encode(‘gbk')的时候，输出结果和‘汉字'结果一样。
+
+总结一下，python的str实际上是unicode的一种，python的默认编码是ascii，对于非ascii转成ascii的时候都会报错，牢记下面的规则：
+
+unicode => encode(‘合适的编码') => str
+
+str => decode(‘合适的编码') => unicode
+
+还有一种简单的方式，就是在文件头设置编码，可以省去很多麻烦：
+
+import sys
+reloads(sys)
+sys.setdefaultencoding('utf-8')
+
+对于第二个问题，是在文件读取的时候出的错。utf-8的文件有bom和无bom两种方式，两者的差别好像在bom文件比无bom文件多了一个头，导致以utf-8方式读文件时报错，我先前曾尝试读文件的时候先对有无bom进行判断，跳过bom文件的头，后来失败了，真尴尬～～。
+
+还得上google求助大神，具体的操作方法就是使用codecs库来读文件（我猜这个库就是对文件的头进行检测）。
+
+import codecs
+codecs.open(file_name, "r",encoding='utf-8', errors='ignore')
+
+对于编码问题，一定要懂得ascii、unicode和utf-8工作原理。
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作能带来一定的帮助，如果有疑问大家可以留言交流。
+

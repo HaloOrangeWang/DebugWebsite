@@ -1,0 +1,34 @@
+安装某些包时报这个错:
+
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc2 in position 37: ordinal not in range(128)
+
+其实是由于linux系统的输出默认编码不是UTF-8, 但python3默认就用这个，所以你需要修改编码:
+
+export LANGUAGE=en_US.UTF-8
+
+export LC_ALL=en_US.UTF-8
+
+export LANG=en_US.UTF-8
+
+export LC_TYPE=en_US.UTF-8
+
+运行前:
+
+>>> import sys
+
+>>> sys.stdout.encoding
+
+'ANSI_X3.4-1968'
+
+>>> eixt()
+
+运行后:
+
+>>> import sys
+
+>>> sys.stdout.encoding
+
+'UTF-8'
+
+>>> eixt()
+

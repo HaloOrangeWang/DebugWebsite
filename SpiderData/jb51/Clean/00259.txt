@@ -1,0 +1,189 @@
+写 Python 代码的时候,当代码中出现错误，会在输出的时候打印 Traceback  错误信息，很多初学者看到那一堆错误信息，往往都会处于懵逼状态，脑中总会冒出一句，这都是些啥玩意。如果你是第一次看到它，也许你不知道它在告诉你什么。虽然 Python 的 Traceback  提示信息看着挺复杂，但是里面丰富的信息，可以帮助你诊断和修复代码中引发异常的原因，以及定位到具体哪个文件的哪行代码出现的错误，所以说学会看懂 Traceback  信息是非常重要的，另外在面试的时候也经常会问到 Python 中的异常类型及其含义，那么，接下来就让我们对其进行详细理解。
+
+什么是 Traceback
+
+Traceback 是 Python  错误信息的报告。在其他编程语言中有着不同的叫法包括 stack trace, stack  traceback, backtrac  等名称, 在 Python  中，我们使用的术语是 Traceback。后面我提到的错误信息等词都表示Traceback。
+
+当你的程序导致异常时，Python 将打印 Traceback 以帮助你知道哪里出错了。下面是一个例子来说明这种情况
+
+# example.py
+def greet(someone ):
+  print('Hello, ' + someon )
+ 
+greet('Chad')
+
+这里首先定义了函数 greet,然后传入参数 someone，然后函数内，一个 print  语句其中 someon  是一个没有定义的变量，然后通过 greet ('Chad'),调用刚才定义的 greet  函数,运行之后会出现如下错误信息。
+
+(Python 中的错误信息开头就是 Traceback。)
+
+Traceback  (most  recent  call  last ):
+
+File  '/Users/chenxiangan/pythonproject/demo/exmpale.py', line  5, in  <module>
+
+greet ('Chad')
+
+File  '/Users/chenxiangan/pythonproject/demo/exmpale.py', line  3, in  greet
+
+print ('Hello, ' + someon )
+
+NameError: name  'someon' is  not  defined
+
+此错误输出包含诊断问题所需的所有信息。错误输出的最后一行一般会告诉你引发了什么类型的异常，以及关于该异常的一些相关信息。错误信息的前几行指出了引发异常的代码文件以及行数。
+
+在上面的错误信息中，异常类型是 NameError，意思是名称使用了一个没定义的名称(变量、函数、类)的引用。在本例中，引用的名称是 someon。
+
+一般情况下看错误信息的最后一行就能定位到错误的原因。然后在代码中搜索错误提示中的名称'someon'，然后发现这是一个拼写错误,然后我们改成 someone  即可。
+
+然而，有些代码的错误信息要比这个复杂的多。
+
+如何阅读 Python 的 Traceback  信息？
+
+当你想确定代码为什么引发异常的时侯，可以根据 Python  的 Traceback  获取许多有用的信息。下面，将列举一些常见的 Traceback，以便理解 Tracebac 中包含的不同信息。
+
+Python Traceback 信息一览
+
+每个 Python 的 Traceback  信息都有几个重要的部分。下图显示了各个组成部分:
+
+蓝框:Traceback 的最后一行为错误消息行。其中包含引发的异常名称。
+
+绿框：异常名称后面是错误消息。此消息通常包含有用的信息，用于了解引发异常的原因。
+
+黄色方框:阅读顺序由下而上,最下面的信息，是抛出错误的最外层的位置，越往上代码调用深度越深。
+
+然后每个出错的文件会有两条错误信息，第一行是 File 后面紧跟着文件的路径，然后是行数，最后是模块或者方法名。
+
+在 Pycharm  中点击文件的链接即可定位到错误的位置。
+
+红色下划线：第二行就是实际执行的代码语句了。
+
+一个具体的例子
+
+通过一些特定的 Traceback 信息，可以帮助我们更好地理解并查看 Traceback 将提供什么信息。
+
+通过下面的示例代码来说明 Python 中 Traceback 所提供的信息
+
+def who_to_greet(person ):
+  return person if person else input ('Greet who? ')
+
+def greet(someone, greeting='Hello'):
+  print(greeting + ', ' + who_to_greet (someone ))
+
+def greet_many(people):
+  for person in people:
+    try:
+      greet(person )
+    except Exception:
+      print ('hi, ' + person )
+
+定义一个 who_to_greet  函数，然后接受一个值 person，并根据 if  判断返回相应结果。
+
+然后,greet  函数接受一个 someone 和一个可选的 greeting，之后调用 print  函数,在 print 中调用 who_to_greet 函数并传入参数 someone。
+
+最后，greet_many(),将迭代 people  列表并调用 greet 函数。如果通过调用 greet()引发异常，则会打印一个简单的问候语。
+
+只要提供了正确的输入，此代码就没有任何可能导致异常被引发的错误。
+
+如果你在 greetings.py  中调用 greet 函数,并传入值(例如 greet ('chad',greting ='Yo'))，那么你将获得以下 Traceback  信息
+
+Traceback  (most  recent  call  last ):
+
+File  '/Users/chenxiangan/pythonproject/demo/greetings.py', line  17, in  <module>
+
+greet ('chad',greting  ='Yo')
+
+TypeError: greet () got  an  unexpected  keyword  argument  'greting'
+
+之前我们说过阅读 Python 的 Traceback  信息，是由下而上进行阅读的，这里我们再一起看一看。
+
+首先，我们需要看的是错误信息的最后一行，通过最后一行可以知道错误的类型以及一些错误原因。
+
+意思是说：调用 greet()的时候使用了一个未知的参数，这个未知参数就是 greting。
+
+好的，然后我们需要继续向上看，可以看到导致异常的行。在这个例子中我们看到的是调用 greet 方法的具体代码。
+
+它的上一行提供了代码所在文件的路径，以及代码文件的行号以及它所在的模块。(Pycharm 中通过点击文件链接可以定位到具体位置)
+
+在这个例子中，因为我们的代码没有使用任何其他 Python  模块，所以我们在这里看到<module>，它表示所处位置是在执行的文件。
+
+使用不同的文件和不同的调用方式调用 greet 方法，得到的 Traceback  信息也是不同的，下面就通过文件导入的形式来执行 greet 方法。看看结果有什么区别吧
+
+# example.py 
+from greetings import greet 
+greet (1)
+
+运行之后的结果:
+
+Traceback  (most  recent  call  last ):
+
+File  '/Users/chenxiangan/pythonproject/demo/exmpale.py', line  3, in  <module>
+
+greet (1)
+
+File  '/Users/chenxiangan/pythonproject/demo/greetings.py', line  6, in  greet
+
+print (greeting  + ', ' + who_to_greet (someone ))
+
+TypeError: can  only  concatenate  str  (not  'int') to  str
+
+在本例中引发的异常同样是一个类型错误,但这一次消息的帮助要小一些。它只是告诉你，在代码的某个地方，字符串只能和字符串拼接，不能是 int。
+
+向上移动,可以看到执行的代码行。然后是文件和行号的代码。不过，这一次我们得到的不是，而是正在执行的函数的名称 greet()。
+
+然后继续往上看，一行执行的代码，我们看到问题代码是 greet()函数调用时传入了一个整数。
+
+有时在引发异常之后，另一部分代码会捕获该异常并导致异常。在这种情况下，Python 将按接收顺序输出所有异常信息，最外层的异常信息处于 Traceback 内容的最下面位置。
+
+可能看起来有点懵，下面使用一个具体例子进行说明。
+
+在 greetings.py  文件中调用 greet_many  方式具体调用代码如下:
+
+greet_many (['Chad', 'Dan', 1])
+
+运行之后输出的错误信息如下
+
+Hello, Chad
+
+Hello, Dan
+
+Traceback  (most  recent  call  last ):
+
+File  '/Users/chenxiangan/pythonproject/demo/greetings.py', line  12, in  greet_many
+
+greet (person )
+
+File  '/Users/chenxiangan/pythonproject/demo/greetings.py', line  6, in  greet
+
+print (greeting  + ', ' + who_to_greet (someone ))
+
+TypeError: can  only  concatenate  str  (not  'int') to  str
+
+During  handling  of  the  above  exception, another  exception  occurred:
+
+Traceback  (most  recent  call  last ):
+
+File  '/Users/chenxiangan/pythonproject/demo/greetings.py', line  17, in  <module>
+
+greet_many (['Chad', 'Dan', 1])
+
+File  '/Users/chenxiangan/pythonproject/demo/greetings.py', line  14, in  greet_many
+
+print ('hi, ' + person )
+
+TypeError: can  only  concatenate  str  (not  'int') to  str
+
+emmmmm,这次好像不太一样,比之前的内容多了不少，而且有两个 Traceback 块信息，这是什么意思呢？
+
+注意这句话
+
+During  handling  of  the  above  exception, another  exception  occurred:
+
+它的意思是:在处理上述异常期间，发生了另一个异常。简单理解就是在 except 中的代码出现了异常。所以导致了这种现象。
+
+这个例子就是在第三次循环的时候 person=1 然后字符串 hi  和1 不能进行拼接操作，然后再次引发了异常。
+
+查看所有的错误信息输出可以帮助您了解异常的真正原因。
+
+有时，当您看到最后一个异常被引发，并由此产生错误信息时，你可能仍然看不出哪里出错了。比如这例子，直接通过最后的异常看不到问题具体出在哪,这个时候就要考虑继续往上看了。
+
+到此这篇关于浅谈python出错时traceback的解读的文章就介绍到这了,更多相关python traceback内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

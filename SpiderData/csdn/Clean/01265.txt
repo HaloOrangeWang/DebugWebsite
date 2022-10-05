@@ -1,0 +1,33 @@
+
+报错信息
+
+message：
+
+distutils.errors.DistutilsError: Command '['/root/.virtualenvs/xspiderenv/bin/python3', '-m', 'pip', 
+'--disable-pip-version-check', 'wheel', '--no-deps', '-w', '/tmp/tmphyu84kuz', '--quiet', '--index-url', 'http://mirrors.aliyun.com/pypi/simple/', 'incremental>=16.10.1']' returned non-zero exit status 1.
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+
+今天在往云服务上部署爬虫项目时，照常创建了虚拟环境之后，按照requirements安装第三方库时一直报错，而且很奇怪出现了一部分能安装成功，其中几个包装不上的情况。这就让我有点纳闷了。
+ 报错截图图下：
+ 
+ 因为当时没有很仔细看报错信息，发现报了一堆警告和错误，就按照寻常的解决方式来进行。
+
+首先更新pip，python -m pip install --upgrade pip,更新后依旧报错
+
+更新setuptools，setuptools是一个python包管理工具，同样需要升级python -m pip install --upgrade setuptools
+
+上面的操作都没什么用，因为是阿里的云服务器，即使不在pip后面加-i http://mirrors.aliyun.com/pypi/simple/也是默认用了阿里的镜像的
+
+仔细看报错信息，除了这个setuptools之外上面还有一个报错ERROR:Could not find a version that satisfies the requirement incremental>=16.10.1(from versions:none)
+ERROR:No matching distribution found for incremental>=16.10.1
+ 这里出现一个报错，说的是没有适配这个版本的包，然后就想试一下，把这里包单独拉出来用pip安装了一下，pip install incremental，安装成功了
+
+ERROR:Could not find a version that satisfies the requirement incremental>=16.10.1(from versions:none)
+ERROR:No matching distribution found for incremental>=16.10.1
+
+然后再继续安装之前那些报错的包，没有报错都成功了，问题解决。猜测可能是那些安装不成功的包和这个第三方库之间有依赖，所以这个不成功其他的都会报错。
+
+
+过程中花了不少时间，也去百度了看了别人的解决方案，发现并不适用于我的，其实是很简单的一个问题，仔细看报错就能解决，起码能先排查掉一些不确定因素，我的我的，以后避免
+

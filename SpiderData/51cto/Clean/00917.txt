@@ -1,0 +1,249 @@
+文件操作
+x=open('/etc/hosts')   ###默认读的方式打开
+x.readline()
+x.read()
+x.seek(0)
+y=open('/root/new.txt','w')
+y.writelines('abcd\n')
+y.flush()   保存
+y.close()
+
+函数
+def  函数名(x,y=11):
+
+命令
+
+函数名('tom','jerry')
+
+NameErrot            未声明错误
+IndexError           没有索引
+SyntaxError          语法错误
+KeyboardInterrupt    用户按ctrl+c（中断）错误
+EOFError             ctrl+d错误
+IOErrot              输入/输出操作失败
+ZeroDivisionError    整数整除错误（如 3/0 错误）
+ValueError           值错误  （如 字符串不是整数）
+###############################
+设定错误提示   ##可以把多个excep语句连接在一起，处理一个try块中可能发生的多种异常
+#!/usr/bin/python
+#coding:utf-8
+try:
+raw_input('请输入用户名：')
+except KeyboardInterrupt:                   ##如果上面结果出现异常KeyboardInterrupt(ctrl+c)错误   就打印ctrl+c
+print '\n你按了ctrl+c'
+except EOFError:                            ##如果上面结果出现异常EOFError错误  就打印ctrl+d
+print '\n你按了ctrl+d'
+except:                                     ##如果上面结果出现其他异常错误  就打印你出错了
+print '出错了'
+#################################
+数字错误
+#!/usr/bin/python
+#coding:utf-8
+try:
+x=int(raw_input('请输入数字：'))
+print 3/x
+except ZeroDivisionError:
+print '不能输入0'
+except ValueError:
+print '你输入的不是数字'
+#################################
+把错误内容赋给变量
+#!/usr/bin/python
+#coding:utf-8
+try:
+x=int(raw_input('请输入数字：'))
+print 3/x
+except ZeroDivisionError,e:
+print '你错了',e
+except ValueError:
+print '你输入的不是数字'
+
+###################################
+#!/usr/bin/python
+#coding:utf-8
+try:
+x=int(raw_input('请输入数字：'))    ##输入字符串，转化为整数，再赋值给x
+print 3/x
+except ZeroDivisionError,e:
+print '你错了',e
+except ValueError:
+print '你输入的不是数字'
+else:
+print '没毛病'              ##不出错执行
+finally:
+print 'Game Over'      ##出不出错都执行
+#######################################
+确定文件有没有关
+
+x=open('/etc/hosts')
+
+x.closed                ##文件关闭了吗
+False
+
+x.close()               ##关闭文件
+x.closed
+True
+##################################
+
+with open('/etc/hosts') as x:    ##将打开的文件操作放在with语句中的x内，代码结局后，没有缩进，文件自动关闭
+...     x.readline()                 ##读一行包含结束符号\n
+...     x.readline()                 ##读一行包含结束符号\n
+...                                            ##没有缩进代表结束
+'127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4\n'   ##文件第一行
+'::1         localhost localhost.localdomain localhost6 localhost6.localdomain6\n'   ##文件第二行
+
+x.closed            ##文件关闭了吗
+True                    ##关闭
+
+#################################
+条件判断命令的结果
+#!/usr/bin/python
+#coding:utf-8
+x=int(raw_input('请输入1-100数字：'))
+try:
+if x>100:
+
+raise ValueError,'值不能大于100'     ##把x的结果触发为异常ValueError
+if x<1:
+raise ValueError,'值不能小于1'
+except ValueError,e:                     ##如果异常出现ValueError，把内容给e
+print e                              ##打印错误显示的内容
+
+########################################
+re模块
+################################
+
+import re
+re.match正则匹配，仅匹配开头^
+
+x=re.match('hello','hello the world')
+x.group()
+'hello'
+
+import re
+re.search正则匹配,匹配全部位置，仅匹配第一个
+x=re.search('the','hello the wod,,he app')
+
+x.group()
+'the'
+
+import re
+re.findall正则匹配，匹配全部位置，全部内容
+
+x=re.findall('the','hello the wod,,the app')
+x
+['the', 'the']
+
+import re
+m=re.finditer('foo','seafood is food')
+for item in m:
+...     print item.group()
+...
+foo
+foo
+
+patt=re.compile('foo')    ##把foo编译成二进制，传给patt
+m=patt.match('food')      ##在food内容中匹配到foo，传给m
+print m.group()           ##显示m的内容
+foo
+
+mylist=re.split('.|-','hello-world.data')  ##使用.或者-为分隔符，把字符串分为一个列表，把结果给mylist
+print mylist
+['hello', 'world', 'data']
+
+m=re.sub('X','Mr.smith','attn:X\nDearX')    ##把X替换成Mr.smith
+print m
+attn:Mr.smith
+DearMr.smith
+
+###################################################
+用awk统计日志内容中ip个数
+awk  '{IP[$1]++}  END{for(i in IP){print i,IP[i]}}'    每个ip访问次数
+
+###################################################
+统计用firefox和curl浏览器访问的数量
+#!/usr/bin/python
+#coding:utf-8
+import re
+z=0
+file1=open('/var/log/httpd/access_log')
+for i in file1:
+x=re.search('Firefox',i)
+if x:
+z+=1
+file1.close()
+print '用Firefox的数量是%d' %z
+g=0
+file2=open('/var/log/httpd/access_log')
+for i in file2:
+x=re.search('curl',i)
+if x:
+g+=1
+file2.close()
+print '用curl的数量是%d' %g
+#################################
+相对上个脚本简单一些  字典{'下标':值,'下标':值,.....}  dic.get(key,0) 下标有key就取key(下标)的值，没有就取0
+#!/usr/bin/python
+#coding:utf-8
+import re
+dic={}    ###为字典
+data=open('/var/log/httpd/access_log')
+for i in  data:
+m = re.search('(Firefox|curl)',i)    ##把匹配的内容给m
+if m:                                ##如果m存在，就继续下面
+
+key=m.group()                ###取出m的内容，变成key
+dic[key]=dic.get(key,0)+1    ###累加dic字典下标firefox的值
+print dic
+###########################################
+python 自动ping主及
+#!/usr/bin/python
+#coding:utf-8
+import subprocess
+def myping(x):
+m=subprocess.call('ping -c2 -i0.5 -W2 W%s &>/dev/null'%x,shell=True)
+if m==0:
+print '%s is up' %x
+else:
+print '%s is down' %x
+ip=['176.121.205.%s'%i for i in xrange(1,100)]   ##定义列表并赋值
+for j in ip:                         ###循环列表
+myping(j)
+#################################################
+多进程  [每个进程，都有自己的内存]
+多线程  [共享一块内存]
+
+多线程ping主机比上面快
+#!/usr/bin/python
+#coding:utf-8
+import threading
+import subprocess
+def myping(x):
+m=subprocess.call('ping -c2 %s &>/dev/null'%x,shell=True)
+if m==0:
+print '%s is up' %x
+else:
+print '%s is down' %x
+ip=['176.121.205.%s'%i for i in xrange(1,254)]
+for j in ip:
+a=threading.Thread(target=myping,args=[j])
+a.start()
+#################################################
+利用多线程远程主机，执行命令
+#!/usr/bin/python
+#coding:utf-8
+import paramiko
+import threading
+def myssh(x):                                                    ##定义函数
+host = x                                                     ##远程的主机ip
+ssh = paramiko.SSHClient()                                   ##开启客户端 赋给变量ssh
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())    ##自动创建远程密钥
+ssh.connect(host,username='root',password='Taren1')          ##连接输入用户名密码
+ssh.exec_command('mkdir /root/桌面/到此一游')                   ##远程执行命令
+b=['176.121.205.%d'%i for i in xrange(23,60)]                    ##利用for循环创建列表
+for j in b:                                                      ##利用for循环取出列表，取一个循环一次
+a=threading.Thread(target=myssh,args=[j])
+a.start()
+
+正则表达式
+

@@ -1,0 +1,52 @@
+
+configparser简要介绍
+
+python的配置文件，将代码中的配置项抽取到配置文件中，修改配置时不需要涉及到代码修改，方便以后修改参数,极大的方便后期软件的维护。一般配置文件为config.ini
+ ini文件的写法一般是：
+
+[section]
+hostname = 127.0.0.1
+name = admin
+password = admin
+
+读取参数也十分简单
+
+cfg = configparser.ConfigParser()
+
+cfg.read('config.ini'))
+
+name= cfg.get('section','name')
+password = cfg.get('section','password ')
+
+
+原因
+
+首先在读取配置文件时，我们在当前目录下能够正常运行，python main.py但是当我们切换到其他目录下，比如上级目录python ./test/main.py，运行的时候可能会报错，configparser.NoSectionError: No section xx .产生此问题的原因是cofig.ini文件路径不对，没有正确读取。
+ 举一反三，在其他需要用到路径的地方，我们都需要注意，在此目录下能后正确运行，换成其他目录可能会产生错误，因此在使用os.getcwd()时需要注意。一般来说，可以采用下面方法解决。
+
+
+解决方法
+
+首先我们不能使用相关路径或者绝对路径的方式，这种方式只对特定的路径有效，也就是你程序写死了。
+ 有效的解决思路是找到你文件的绝对路径，在代码中用全局变量记录下来，其他部分在此基础上进行本机或者上下级目录等操作。具体实现是：
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ 注：
+ __file__是当前执行的文件
+ os.path.dirname() 是 获取路径中的目录名
+
+这样可以使用 BASE_DIR 进行相关操作，而不用担心路径问题。
+ 所以本次问题，有效的解决代码是：
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 读取配置文件
+cfg = configparser.ConfigParser()
+
+cfg.read(os.path.join(BASE_DIR ,'config.ini'))
+
+注意使用os.path.join 以适应linux和windows不同目录分隔符的写法。
+ 如果是多层级的话，可以使用os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+以上为二赛君整理发布，转载请注明出处。若有效解决了你的问题，欢迎点赞~
+

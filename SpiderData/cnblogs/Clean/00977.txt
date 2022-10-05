@@ -1,0 +1,34 @@
+前言，在添加Ubuntu中添加以太坊源的时候报错：
+
+发生之前所做的事情：
+
+因为系统是Ubuntu14.04，所带的python版本是3.5.4的，无法满足3.6+的需求，所以之前直接升级到3.6的版本
+
+1. $ sudo add-apt-repository ppa:jonathonf/python-3.6
+
+2. $ sudo apt update
+
+3. $ sudo apt install python3.6
+
+然后将/usr/bin/python3软连接到python3.6，结果之后添加源的时候还是爆了上面的错误，搜了篇博文，解决了问题，做此记录！
+
+解决措施：
+
+1、 sudo apt-get remove --purge python-apt
+
+2、 sudo apt-get install python-apt -f
+
+3、 cd /usr/lib/python3/dist-packages/
+
+4、 sudo cp apt_pkg.cpython-3?m-x86_64-linux-gnu.so apt_pkg.cpython-36m-x86_64-linux-gnu.so
+
+?可能有所不同 我的是4，可以先 ls apt* 查看下
+
+好了 再执行添加源成功！
+
+显示如下：
+
+Reference：
+
+https://blog.csdn.net/jaket5219999/article/details/78464310
+

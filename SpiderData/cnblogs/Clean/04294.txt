@@ -1,0 +1,17 @@
+pip install tesserocr pillow时，提示：
+
+按照给的提示，进到微软官网，啥都没有，pip的安装报错提示是时候更新一波了~
+
+在网上找Microsoft Visual C++的资料，十分稀少，只能采用wheel安装编译后的压缩包。whl文件本质上是一个压缩包，里面包含了py文件以及经过编译的pyd文件，可以在不具备编译环境的情况下，进行安装。pip默认也是先下载wheel安装，没有的话在对源码进行编译（包含了C++的源码都需要编译），而需要的Microsoft Visual C++ 14.0则是编译工具
+
+tesserocr的下载地址是：https://github.com/simonflueckiger/tesserocr-windows_build/releases/tag/tesserocr-v2.2.2-tesseract-4.0.0-master，下载tesserocr-2.2.2-cp36-cp36m-win_amd64.whl，然后拷贝到python目录，在python目录下打开cmder，pip install tesserocr-2.2.2-cp36-cp36m-win_amd64.whl
+
+好吧，我认输了，由于我的python版本是3.7的，而whl文件支持 的是python3.6的，才会抛出一个不支持这个平台的错误，后来仔细看了一下，应该选择下载的地址是：https://github.com/simonflueckiger/tesserocr-windows_build/releases，再次安装，可以看到由于是编译过的，安装速度超快：
+
+由于开始时使用pip install tesserocr pillow，同时安装tesserocr和pillow，安装报错了，pillow也没安装成功。所以需要再次pip install pillow即可
+
+
+参考文章
+
+安装tesserocr：error: Microsoft Visual C++ 14.0 is required Get it with "Microsoft Visual C++ Build Too
+

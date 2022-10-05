@@ -1,0 +1,18 @@
+_____________________________________________________________________________________ ERROR collecting test_panda_1.py ______________________________________________________________________________________
+ImportError while importing test module 'D:\pythonhome\pandabus_API_test_pytest\case\test_panda_1.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+test_panda_1.py:7: in <module>
+    from common.logger import log
+E   ModuleNotFoundError: No module named 'common'
+
+方法 1 在要执行pytest 的根目录新建   conftest.py文件；文件内容
+
+import os
+
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), ‘..‘)))
+
+方法2 pyteset 在执行测试test case目录下每个目录都包含__init__.py文件；在项目的跟目录执行，也可以，亲测可以
+

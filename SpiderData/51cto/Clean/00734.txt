@@ -1,0 +1,110 @@
+Node.js 在安装模块的时候报错，缺少python环境。
+
+ERR! configure error gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.
+
+错误信息如下：
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+​​D:\node_modules\selenium-webdriver\node_modules\ws\node_modules\utf-8-validate>node "D:\Program Files\nodejs\node_modules\npm\bin\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js" rebuild​​
+
+​​ERR! configure error​​
+
+​​gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.​​
+
+​​gyp ERR! stack     at failNoPython (D:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\lib\configure.js:103:14)​​
+
+​​gyp ERR! stack     at D:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\lib\configure.js:64:11​​
+
+​​gyp ERR! stack     at Object.oncomplete (fs.js:107:15)​​
+
+​​gyp ERR! System Windows_NT 6.2.9200​​
+
+​​gyp ERR! command "node" "D:\\Program Files\\nodejs\\node_modules\\npm\\node_modules\\node-gyp\\bin\\node-gyp.js" "rebuild"​​
+
+​​gyp ERR! cwd D:\node_modules\selenium-webdriver\node_modules\ws\node_modules\utf-8-validate​​
+
+​​gyp ERR! node -v v0.10.29​​
+
+​​gyp ERR! node-gyp -v v0.13.1​​
+
+​​gyp ERR! not ok​​
+
+原因看node-gyp的安装需求，​​https://github.com/nodejs/node-gyp​​， 部分剪切如下，可以请求的看到需要安装python2.7（其实2.6也行）python3不行
+
+You can install with ​​npm​​:
+
+You will also need to install:
+
+On Unix:
+
+python (v2.7 recommended, v3.x.x is not supported)
+
+make
+
+A proper C/C++ compiler toolchain, like GCC
+
+On Mac OS X:
+
+You also need to install the Command Line Tools via Xcode. You can find this under the menu Xcode -> Preferences -> Downloads
+
+This step will install gcc and the related toolchain containing make
+
+python (v2.7 recommended, v3.x.x is not supported) (already installed on Mac OS X)
+
+Xcode
+
+On Windows:
+
+For 64-bit builds of node and native modules you will also need the Windows 7 64-bit SDK
+
+You may need to run one of the following commands if your build complains about WindowsSDKDir not being set, and you are sure you have already installed the SDK:
+
+Microsoft Visual Studio C++ 2013 for Windows Desktop (Express version works well)
+
+Microsoft Visual Studio C++ 2013 (Express version works well)
+
+If the install fails, try uninstalling any C++ 2010 x64&x86 Redistributable that you have installed first
+
+If you get errors that the 64-bit compilers are not installed you may also need thecompiler update for the Windows SDK 7.1
+
+Make sure that you have a PYTHON environment variable, and it is set to drive:\path\to\python.exe not to a folder
+
+Python (v2.7.3 recommended, v3.x.x is not supported)
+
+Windows XP/Vista/7:
+
+Windows 7/8:
+
+All Windows Versions
+
+If you have multiple Python versions installed, you can identify which Python version ​​node-gyp​​ uses by setting the '--python' variable:
+
+If ​​node-gyp​​ is called by way of ​​npm​​ and you have multiple versions of Python installed, then you can set ​​npm​​'s 'python' config key to the appropriate value:
+
+Note that OS X is just a flavour of Unix and so needs ​​python​​, ​​make​​, and C/C++. An easy way to obtain these is to install XCode from Apple, and then use it to install the command line tools (under Preferences -> Downloads).
+
+所以下载安装Python2.7就行了，记得配环境变量。
+

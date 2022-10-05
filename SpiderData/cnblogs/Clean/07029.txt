@@ -1,0 +1,14 @@
+一、问题描述
+
+　　python爬虫爬取网上数据时报错：urllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self signed certificate in certificate chain (_ssl.c:1076)>
+
+二、解决方案
+
+　　加入以下代码，问题即可解决：
+
+　　import ssl
+
+　　# 全局取消证书验证
+
+　　ssl._create_default_https_context = ssl._create_unverified_context
+

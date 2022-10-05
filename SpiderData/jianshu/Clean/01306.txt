@@ -1,0 +1,12 @@
+运行python3 manage.py runserver后报错
+
+File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/Django-2.0.dev20170512015007-py3.6.egg/django/db/backends/mysql/base.py", line 36, in <module> raise ImproperlyConfigured("mysqlclient 1.3.3 or newer is required; you have %s" % Database.__version__) django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.3 or newer is required; you have 0.7.11.None
+
+通过查找/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/Django-2.0.dev20170512015007-py3.6.egg/django/db/backends/mysql/base.py
+
+这个路径里的文件把
+
+if version < (1, 3, 3): raise ImproperlyConfigured("mysqlclient 1.3.3 or newer is required; you have %s" % Database.__version__)
+
+注释掉后问题得到解决！
+

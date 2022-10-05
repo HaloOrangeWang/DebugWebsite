@@ -1,0 +1,36 @@
+不知道为什么，在cmd打开python会提示错误，但是似乎并不影响继续使用python（我的python版本是安装Anaconda自带的python 3.7.1）。希望知道原因的朋友可以告知一下。
+
+错误如下：
+
+Python 3.7.1 (default, Dec 10 2018, 22:54:23) [MSC v.1915 64 bit (AMD64)] :: Anaconda, Inc. on win32
+ Type "help", "copyright", "credits" or "license" for more information.
+ Failed calling sys.__interactivehook__
+ Traceback (most recent call last):
+   File "F:\Anaconda3\lib\site.py", line 439, in register_readline
+     readline.read_history_file(history)
+   File "F:\Anaconda3\lib\site-packages\pyreadline\rlmain.py", line 165, in read_history_file
+     self.mode._history.read_history_file(filename)
+   File "F:\Anaconda3\lib\site-packages\pyreadline\lineeditor\history.py", line 82, in read_history_file
+     for line in open(filename, 'r'):
+ UnicodeDecodeError: 'gbk' codec can't decode byte 0xaf in position 173: illegal multibyte sequence
+
+于是在知乎上搜到，有朋友遇到和我相似的问题 https://www.zhihu.com/question/68229361
+
+解决办法如下：
+
+把 F:\Anaconda3\Lib\site-packages\pyreadline\lineeditor\history.py 第82行:
+
+（如果不是Anaconda自带的python，可以在python的安装目录下寻找对应的目录\Lib\site-packages\pyreadline\lineeditor\history.py
+
+例如:我的目录为
+
+C:\Users\zhaocy\AppData\Local\Programs\Python\Python37\Lib\site-packages\pyreadline\lineeditor\history.py）
+
+for line in open(filename, 'r'):
+
+修改为:
+
+for line in open(filename, 'rb'):
+
+之后保存即可。
+

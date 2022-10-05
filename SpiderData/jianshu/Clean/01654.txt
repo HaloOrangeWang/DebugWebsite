@@ -1,0 +1,60 @@
+前言
+
+appium desktop V1.7.1版本使用命令行版本启动appium后，使用Uiautomator2定位toast信息报错：appium-uiautomator2-server-v0.3.0.apk does not exist or is not accessible
+
+主要原因是缺少appium-uiautomator2-server-v0.3.0.apk这个apk文件
+
+问题分析
+
+打开cmd启动命令行版本，appium V1.7.1
+
+使用Uiautomator2定位toast信息
+
+fromappiumimportwebdriverdesired_caps = {"platformName":"Android","deviceName":"emulator-5554",# 设备名称"platformVersion":"5.1.1",# android系统版本号"appPackage":"com.yipiao",# app包名"appActivity":"com.yipiao.activity.LaunchActivity",# 启动launch Activity"noReset":True,# 不清空数据'automationName':'Uiautomator2'# 使用Uiautomator2}driver = webdriver.Remote("http://127.0.0.1:4723/wd/hub", desired_caps)
+
+运行代码报错信息如下：
+
+selenium.common.exceptions.WebDriverException:Message: An unknown server-side error occurred while processing the command.
+
+Original error: The file at path C:\Users\dell\AppData\Roaming\npm\node_modules\appium\node_modules
+
+_appium-uiautomator2-driver@0.11.0@appium-uiautomator2-driver\uiautomator2\appium-uiautomator2-server-v0.3.0.apk
+
+does not exist or is not accessible
+
+分析问题原因
+
+从报错信息看出，uiautomator2路径下找不到appium-uiautomator2-server-v0.3.0.apk这个文件，于是顺着报错给的路径查看该目录
+
+会发现_appium-uiautomator2-driver@0.11.0@appium-uiautomator2-drive 目录（或者appium-uiautomator2-driver目录）下找不到uiautomator2这个文件
+
+之后用appium desktop v1.2.6桌面版appium server V1.7.1却是正常的，去appium-uiautomator2-driver/uiautomator2目录可以看到有2个apk文件
+
+(桌面版完整路径:C:\Users\dell\AppData\Local\Programs\appium-desktop\resources\app\node_modules\appium\node_modules\appium-uiautomator2-driver\uiautomator2)
+
+于是会发现命令行版本有个坑，少了这2个文件
+
+解决问题
+
+解决办法就是去下载到这两个文件，放到对应目录，重新启动appium就可以了，github下载地址：https://github.com/appium/appium-uiautomator2-server/releases/tag/v0.3.0
+
+在appium-uiautomator2-driver下新建一个uiautomator2目录，把下载的2个apk放进去就可以了
+
+桌面版完整地址：C:\Users\dell\AppData\Local\Programs\appium-desktop\resources\app\node_modules\appium\node_modules\appium-uiautomator2-driver\uiautomator2
+
+命令行版本完整地址：C:\Users\dell\AppData\Roaming\npm\node_modules\appium\node_modules\appium-uiautomator2-driver\uiautomator2
+
+不会下载的，去QQ群:779429633 群文件下载
+
+转载：https://www.cnblogs.com/yoyoketang/p/10847305.html
+
+最后发现还是未解决。
+
+解决方式：
+
+1、卸载appium
+
+2、重新安装时选择安装到当前用户
+
+问题：安装在全部用户时报错，安装在当前用户成功运行，神奇！！
+

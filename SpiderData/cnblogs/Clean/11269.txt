@@ -1,0 +1,288 @@
+
+1、pytest-metadata（元数据）
+
+元数据是关于数据的描述，存储着关于数据的信息，为人们更方便地检索信息提供了帮助。
+
+pytest 框架里面的元数据可以使用 pytest-metadata 插件实现。
+
+
+1.1、安装
+
+在命令行中运行以下命令进行安装：
+
+pip install pytest-metadata
+
+或者（使用国内的豆瓣源，数据会定期同步国外官网，速度快。）
+
+pip install pytest-metadata -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+
+1.2、查看元数据
+
+使用 pytest 执行用例的时候加上参数 --verbose，在控制台输出报告的头部就会输出元数据 (metadata) 信息。
+
+例如执行test_Demo用例：
+
+pytest --verbose test_Demo.py
+
+控制台输出的信息，元数据是以键值对 (key-value) 方式存储的：
+
+wangmeng@wangmengdeMacBook-Pro My_pytest_Demo % pytest --verbose test_Demo.py
+
+=========================================== test session starts ============================================
+
+platform darwin -- Python 3.7.9, pytest-6.2.2, py-1.9.0, pluggy-0.13.1 -- /Library/Frameworks/Python.framework/Versions/3.7/bin/python3.7
+
+cachedir: .pytest_cache
+
+metadata: {'Python': '3.7.9', 'Platform': 'Darwin-20.4.0-x86_64-i386-64bit', 'Packages': {'pytest': '6.2.2', 'py': '1.9.0', 'pluggy': '0.13.1'}, 'Plugins': {'assume': '2.4.2', 'allure-pytest': '2.8.19', 'Faker': '8.6.0', 'metadata': '1.10.0', 'rerunfailures': '9.1.1', 'html': '3.0.0', 'xdist': '2.1.0', 'ordering': '0.6', 'cov': '2.10.1', 'repeat': '0.9.1', 'forked': '1.3.0'}, 'JAVA_HOME': '/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home'}
+
+rootdir: /Users/wangmeng/PycharmProjects/My_pytest_Demo
+
+plugins: assume-2.4.2, allure-pytest-2.8.19, Faker-8.6.0, metadata-1.10.0, rerunfailures-9.1.1, html-3.0.0, xdist-2.1.0, ordering-0.6, cov-2.10.1, repeat-0.9.1, forked-1.3.0
+
+
+1.3、添加元数据
+
+1、在命令行用 --metadata 参数添加键值对 (key, value) 的元数据。
+
+例如：
+
+pytest --metadata author Meng
+
+2、如需添加多个元数据，可以使用多次 --metadata 参数添加。
+
+例如：
+
+pytest --metadata author Meng --metadata version v1.0
+
+3、还可以将元数据作为 JSON 字符串传入
+
+例如：
+
+pytest --metadata-from-json '{"cat_says": "bring the cat nip", "human_says": "yes kitty"}'
+
+
+1.4、访问元数据
+
+1、要在元数据收集结束时添加/修改/删除元数据，可以使用 hook 函数 pytest_metadata。
+
+2、要从测试用例或 fixture 访问元数据，可以使用元数据 metadata fixture。
+
+3、要从插件访问元数据，可以使用 config 对象的 _metadata 属性，这可用于读取/添加/修改元数据。
+
+关于 pytest-metadata 插件更详细的使用，可查看官方网址：
+
+https://pypi.org/project/pytest-metadata/#description
+
+
+2、pytest-base-url（可选择URL地址）
+
+在自动化测试执行中，我们可能会根据不同的环境（测试环境、预发环境、生产环境等）来执行用例，需要把URL地址单独提取出来，希望通过命令行或配置文件来执行。
+
+pytest-base-url 是 pytest 插件，它通过命令行或配置文件提供一个可选的URL地址。
+
+
+2.1、安装
+
+在命令行中运行以下命令进行安装：
+
+pip install pytest-base-url
+
+或者（使用国内的豆瓣源，数据会定期同步国外官网，速度快。）
+
+pip install pytest-base-url -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+
+2.2、示例
+
+pytest-base-url 提供了一个 base_url 固定装置，它返回指定的基本URL地址。
+
+创建test_base_url.py文件
+
+脚本代码：
+
+
+2.2.1、使用命令行
+
+命令行执行时，加上参数 --base-url
+
+例如：
+
+pytest -s test_base_url.py --base-url https://www.cnblogs.com/alltests/
+
+运行结果：
+
+
+2.2.2、使用配置文件
+
+pytest.ini 配置文件里添加 base_url 地址
+
+项目根目录下，创建pytest.ini配置文件
+
+配置文件内容：
+
+[pytest]
+base_url = https://www.cnblogs.com/alltests/
+
+打开命令行执行（不需要加上参数 --base-url）
+
+pytest -s test_base_url.py
+
+运行结果：
+
+
+3、pytest-instafail（实时输出错误信息）
+
+pytest 执行全部用例的时候，如果有用例失败，不会实时在控制台打印出来，而是要等到全部用例执行完成后，才会把所有的报错信息一起抛到控制台上显示，不方便实时查看报错信息。
+
+pytest-instafail 插件可以在运行用例的时候，如用例失败，可实时查看报错信息。
+
+使用参数 --instafail
+
+
+3.1、安装
+
+在命令行中运行以下命令进行安装：
+
+pip install pytest-instafail
+
+或者（使用国内的豆瓣源，数据会定期同步国外官网，速度快。）
+
+pip install pytest-instafail -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+
+3.2、示例
+
+创建test_instafail.py文件
+
+脚本代码：
+
+创建test_instafail2.py文件
+
+脚本代码：
+
+1、默认执行
+
+打开命令行执行：
+
+pytest test_instafail.py test_instafail2.py
+
+运行结果：
+
+用例全部执行完后，报错信息才抛出来。
+
+2、使用参数 --instafail
+
+打开命令行执行：
+
+pytest test_instafail.py test_instafail2.py --instafail
+
+运行结果：
+
+用例执行过程中，有失败用例，则实时抛出失败信息。
+
+
+4、pytest-rerunfailures（失败重试）
+
+
+4.1、安装
+
+在命令行中运行以下命令进行安装：
+
+pip install pytest-rerunfailures
+
+或者（使用国内的豆瓣源，数据会定期同步国外官网，速度快。）
+
+pip install pytest-rerunfailures -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+
+4.2、操作参数
+
+命令行参数：--reruns n（重新运行次数），--reruns-delay m（等待运行秒数）
+
+命令行参数：--reruns n（重新运行次数），--reruns-delay m（等待运行秒数）
+
+装饰器参数：reruns=n（重新运行次数），reruns_delay=m（等待运行秒数）
+
+装饰器参数：reruns=n（重新运行次数），reruns_delay=m（等待运行秒数）
+
+
+4.2.1、重新运行所有失败的用例
+
+创建test_rerunfailures.py文件
+
+脚本代码：
+
+4.2.1.1、重新运行次数
+
+要重新运行所有测试失败的，使用 --reruns 命令行选项，并指定要运行测试的最大次数。
+
+例如：
+
+pytest test_rerunfailures.py --reruns 2 -s
+
+运行结果：
+
+设置失败最大重新执行次数为2次
+
+函数test_case2执行失败后，又重新执行2次，同时引用的fixture也重新执行2次。
+
+由于setup_class报错，重新执行还是报错，则类方法test_case3没有被执行。
+
+4.2.1.2、等待运行秒数
+
+要在两次重试之间增加延迟时间，使用 --reruns-delay 命令行选项，指定下次测试重新开始之前等待的秒数。
+
+例如：
+
+pytest test_rerunfailures.py --reruns 2 --reruns-delay 5 -s
+
+两次重试之间等待5秒。
+
+
+4.2.2、重新运行指定的测试用例
+
+要将单个测试用例添加 flaky 装饰器 @pytest.mark.flaky(reruns=n) ，并在测试失败时自动重新运行，需要指定最大重新运行的次数n。
+
+创建test_rerunfailures2.py文件
+
+脚本代码：
+
+4.2.2.1、重新运行指定的测试用例
+
+函数test_case1、test_case2添加flaky装饰器@pytest.mark.flaky(reruns=n)
+
+运行结果：
+
+函数test_case1设置失败最大重新执行次数为2次
+
+函数test_case2设置失败最大重新执行次数为5次
+
+注意：
+
+如果指定了用例的重新运行次数，则在命令行执行添加 --reruns n 对这些用例是不会生效的。
+
+例如：在命令行输入命令
+
+pytest test_rerunfailures2.py --reruns 1 -s
+
+执行时，并没有按照失败最大重新执行次数设置的1次，还是按照指定用例里的设置，函数test_case1设置失败最大重新执行次数为2次，函数test_case2设置失败最大重新执行次数为5次。
+
+4.2.2.2、等待运行秒数
+
+在装饰器里添加参数 reruns_delay=m（等待运行秒数）
+
+例如：函数test_case2添加装饰器@pytest.mark.flaky(reruns=5, reruns_delay=2)
+
+两次重试之间等待2秒。
+
+
+4.3、兼容性
+
+此插件不能与装饰器 @pytest.fixture() 级别为（class, module, package）一起使用。
+
+此插件与 pytest-xdis 的 –looponfail 标志不兼容。
+
+此插件与 core –pdb 标志不兼容。
+

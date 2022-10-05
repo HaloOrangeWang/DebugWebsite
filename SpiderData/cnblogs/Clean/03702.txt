@@ -1,0 +1,36 @@
+使用anaconda，本来是为了减少装第三方模块依赖出错问题的。
+
+但是，今天发现，也是有坑啊。
+
+首先 import ssl 报错，import _ssl 说DLL load failed
+
+解决办法：用官方的python zip文件包的_ssl.pyd 替换anaconda中的 _ssl.pyd 文件
+
+1.在anaconda 安装目录找到DLLs/_ssl.pyd文件，改名为_ssl.pyd_bk，作为本分，以防不测。如果是使用了虚拟环境，也要将env中的虚拟环境中的_ssl.pyd替换
+
+2.查看本机的python具体版本，并在Python的官网中下载相对应的版本的Python ZIP文件
+
+3.解压，获取zip文件中的_ssl.pyd,并放在相应的anaconda 安装目录（就是_ssl.pyd_bk的目录）
+
+4.import 测试
+
+参考：http://www.pianshen.com/article/6230302890/
+
+然后接着是psycopg2 的报错，
+
+我之前的项目是使用pg数据库的，今天在新电脑clone了代码，跑的时候发现没有psycopg2
+
+想当然的使用conda install psycopg2 了
+
+安装后接着跑代码，发现。。。
+
+网上说换一个编译版，but,已经打不开他们说的网站了。找了一大通无果，
+
+烦躁的我直接 conda uninstall psycopg2
+
+然后 pip install psycopg2,
+
+运行，OK啦！！！！！！
+
+这个是anaconda的坑吧~~~~~
+

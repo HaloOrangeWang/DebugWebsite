@@ -1,0 +1,35 @@
+
+背景
+
+最近开发代码， 使用requests get时候报错，显示代理错误, 如下
+
+
+解决
+
+查询了后发现是代理问题， 所以需要禁用代理
+
+临时方案，同一个shell界面，使用下面命令临时禁用代理
+
+unset http_proxy
+unset http_proxy
+
+requests session里面设置trust_env为False
+
+import requests
+
+req = requests.session()
+#This will prevent requests getting any information from its environment: specifically, it‘ll disable environment searches for proxies and for certificate bundles.
+req.trust_env = False
+
+req.get(url)
+
+禁用特定ip或域名的代理
+
+import os
+import requests
+
+os.environ['no_proxy'] = ','.join([os.getenv('no_proxy', ''),  url])
+req = requests.session()
+
+req.get(url)
+

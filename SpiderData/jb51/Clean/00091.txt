@@ -1,0 +1,160 @@
+这篇文章主要介绍了python 采用paramiko 远程执行命令及报错解决,文中通过示例代码介绍的非常详细，对大家的学习或者工作具有一定的参考学习价值,需要的朋友可以参考下
+
+import sys
+import paramiko
+import config_reader
+from check_utils import standout_print, parse_remainsize_response_lines, error_out_print
+from time import time
+
+class RemoteModel:
+  """ remote options model
+  execute remote command
+  """
+
+def __init__(self, host, port=22):
+    self.hostname = host
+    self.port = port
+
+self.username, self.password = self.load_conf()
+    self.s = None
+    self.session = None
+    self.init_conn()
+
+def load_conf(self):
+    """
+      read config get the login info of remote host machine
+    :return:
+      login username and password of SSH login of this host
+    """
+    if self.hostname.find("10.179.1.110") != -1:
+      error_out_print("Error : the remote machine of KOR can not provide. please know")
+      sys.exit(-1)
+
+username, password = config_reader.read_login_config(self.hostname)
+
+if not username or not password:
+      error_out_print(
+        'Error: can not find ssh login info in this host[%s]. check need ' % self.hostname)
+      sys.exit(-1)
+
+return username, password
+
+def init_conn(self):
+    """
+      make a connection with the remote machine
+    :return:
+    """
+    try:
+      paramiko.util.log_to_file("paramiko_log.log")
+      self.s = paramiko.SSHClient()
+      self.s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+      self.s.connect(hostname=self.hostname, port=self.port, username=self.username, password=self.password)
+
+standout_print('success connect the remote machine [host=%s]' % self.hostname)
+
+except Exception, e:
+      standout_print(str(e))
+      standout_print(
+        'connect failed.in host[%s] user[%s] or pwd[%s] maybe wrong. ' % (
+          self.hostname, self.username, self.password))
+      sys.exit(-1)
+
+def close(self):
+    """
+    close
+    if close can not use this connection
+    :return:
+    """
+    if self.s:
+      self.s.close()
+      self = None
+
+def execute_command(self, command):
+    """
+    :param command:
+      execute cmd
+    :return:
+      the response lines
+    """
+    standout_print("Info: execute command [%s]" % command)
+    stdin, stdout, stderr = self.s.exec_command(command)
+    stdin.write("pwd"+"\n")
+    stdin.flush()
+
+response_lines = stdout.readlines()
+    error_info = stderr.read()
+
+if error_info and error_info.strip():
+      error_out_print(' remote command error info : %s' % stderr.read())
+      error_out_print(error_info)
+      return None
+
+# info_arr = response_info.split('\n')
+
+return response_lines
+
+def remain_space_size(self, directory_path):
+    """
+    :param directory_path:
+
+:return:
+      free size of the directory
+      unit size : MB
+    """
+
+cmd = 'sudo df -m %s 1>&2' % directory_path # /usr/local/pgsql/data/ssd1
+
+response_lines = self.execute_command(cmd)
+    # response_lines = self.execute_command_channel(cmd)
+
+return parse_remainsize_response_lines(response_lines)
+
+def execute(self, command, sudo=False):
+    feed_password = False
+    if sudo and self.username != "root":
+      command = "sudo %s" % command
+      feed_password = "pwd"
+    stdin, stdout, stderr = self.s.exec_command(command, get_pty=True)
+    if feed_password:
+      stdin.write(self.password + "\n")
+      stdin.flush()
+    return {'out': stdout.readlines(),
+        'err': stderr.readlines(),
+        'retval': stdout.channel.recv_exit_status()}
+
+if __name__ == '__main__':
+  host = ""
+  hostname = ""
+  command = "sudo df -m /data/pgsql94/data"
+  rm = RemoteModel(host=hostname)
+  print rm.execute_command(command)
+  # print rm.execute("df -m /data/pgsql94/data 1>&2", True)
+
+报错1：
+
+remote command error info : 
+sudo: sorry, you must have a tty to run sudo
+
+是由于
+
+self.s.exec_command(command, get_pty=True)
+
+没有设置
+
+get_pty=True
+
+报错2：
+
+会卡死在
+
+stdout.readlines()
+
+是由于 SSH在等待输入用户名的密码
+
+stdin.write("pwd"+"\n")
+stdin.flush()
+
+该种方式进行交互，注意必须要换行"\n",和前面必须不能有空格等其他字符，确保密码正确
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

@@ -1,0 +1,16 @@
+  本文介绍一种解决ArcGIS中ERROR 999999报错（Configuration RasterCommander ImageServer can not be started）的方法。
+
+  一次，在ArcGIS下属的ArcMap软件中进行栅格裁剪（“Clip”）操作时，发现程序出现了ERROR 999999: Error executing function. Configuration RasterCommander. ImageServer can not be started. Server Object instance creation failed on machine DESKTOP-UQHHR79. Image Server is not supported with the current license. Failed to execute (Clip) .”的报错，同时得不到对应的裁剪结果。本文将会对这一报错进行解决。
+
+  我们知道，在ArcMap软件中出现ERROR 999999形式的报错代码，往往并不是数据自身出现较大问题，而是在数据存储路径、环境配置等相对而言较为细节的方面具有不正确的地方，导致操作失败；这样子虽然说明出现的问题不是很大，但是由于其自身报错代码并没有很清楚地展示出操作失败的问题所在，因此也需要进行相对比较麻烦的调试。
+
+  通过不断尝试，发现解决如上问题的一个办法：
+
+  无论我们在ArcMap软件中执行什么操作，若出现如上所示的问题（注意，不是说出现了ERROR 999999形式的报错代码就可以用本文的方法，需要保证ERROR 999999后跟随的一长串报错提示亦一致才可以），可以在所用工具的显示界面中，选择下方“Environments...”选项。
+
+  找到“Parallel Processing”选项，并将其Factor设置为0。
+
+  随后再次执行对应操作（在本文中为“Clip”），即可不报错成功执行操作。
+
+  从而解决了问题~
+

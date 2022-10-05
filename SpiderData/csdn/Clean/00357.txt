@@ -1,0 +1,47 @@
+运行出错代码：
+
+import cv2
+import numpy as np
+
+image = cv2.imread('C:/Pictures/桌面背景图片切换/wallhaven-6oq1k7.jpg', cv2.IMREAD_COLOR)
+cv2.imshow("test", image)
+cv2.waitKey(0)
+
+报错内容：
+
+[ WARN:0@0.007] global D:\a\opencv-python\opencv-python\opencv\modules\imgcodecs\src\loadsave.cpp (239) cv::findDecoder imread_('C:/Pictures/桌面背景图片切换/wallhaven-6oq1k7.jpg'): **can't open/read file: check file path/integrity**
+Traceback (most recent call last):
+  File "D:/Code/DeepLearning/test/main.py", line 13, in <module>
+    cv2.imshow("test", image)
+cv2.error: OpenCV(4.6.0) D:\a\opencv-python\opencv-python\opencv\modules\highgui\src\window.cpp:967: error: (-215:Assertion failed) size.width>0 && size.height>0 in function 'cv::imshow'
+
+Process finished with exit code 1
+
+报错原因：路径中出现中文字符
+ 解决办法：
+ 1.修改路径
+ 2.修改代码，修改后代码如下：
+
+import cv2
+import numpy as np
+# 读取图像，解决imread不能读取中文路径的问题
+def cv_imread(file_path):
+    cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8), -1)
+    # im decode读取的是rgb，如果后续需要opencv处理的话，需要转换成bgr，转换后图片颜色会变化
+    cv_img = cv2.cvtColor(cv_img, cv2.COLOR_RGB2BGR)
+    return cv_img
+
+if __name__ == '__main__':
+    path = 'C:/Users/18724/Pictures/桌面背景图片切换/wallhaven-6oq1k7.jpg'
+    img = cv_imread(path)
+    cv2.namedWindow("test", cv2.WINDOW_AUTOSIZE)
+    cv2.imshow("test", img)
+    cv2.waitKey(0)
+    # 保存到当前运行目录下
+    cv2.imencode('.jpg', img)[1].tofile('凝光.jpg')
+
+参考链接：
+ 1.https://blog.csdn.net/liuqinshouss/article/details/78696032
+ 2.https://www.zhihu.com/question/47184512
+ 3.https://www.zhihu.com/question/67157462/answer/251754530
+

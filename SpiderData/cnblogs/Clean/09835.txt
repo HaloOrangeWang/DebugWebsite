@@ -1,0 +1,63 @@
+
+记录在使用selenium过程中踩的坑------
+
+在使用selenium时，用click点击网站弹出的文件上传框的“上传文件”按钮不生效，报错selenium.common.exceptions.InvalidArgumentException
+
+log如下：
+
+元素的定位是这样： Select_File = (By.CSS_SELECTOR, "input[type=file]")
+
+解决方法：
+
+把element.click()改为 ActionChains(self._driver).click(element).perform()
+
+原先用的click方法是
+
+File "F:\Python\lib\site-packages\selenium\webdriver\remote\webelement.py", line 80, in click
+
+self._execute(Command.CLICK_ELEMENT)
+
+换为ActionChains的
+
+至于为什么第一种方式不可以，现在还没弄懂。
+
+
+引申：
+
+
+两种Click有什么不同？
+
+下面是我的一点小见解。
+
+我大致看了一下源码，第一种方式是对远程的web driver post 一个请求/session/$sessionId/element/$id/click 去进行click操作
+
+Communicates with the Remote WebDriver server using the WebDriver wire protocol
+
+https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol
+
+Python\lib\site-packages\selenium\webdriver\remote\webelement.py
+
+def click(self):
+
+"""Clicks the element."""
+
+self._execute(Command.CLICK_ELEMENT)
+
+Python\Lib\site-packages\selenium\webdriver\remote\remote_connection.py
+
+Command.CLICK_ELEMENT: ('POST', '/session/$sessionId/element/$id/click')
+
+第二种方式是模拟鼠标操作，对元素进行点击，再post /session/$sessionId/actions
+
+Python\Lib\site-packages\selenium\webdriver\common\action_chains.py
+
+ActionChains are a way to automate low level interactions such as
+
+mouse movements, mouse button actions, key press, and context menu interactions.
+
+This is useful for doing more complex actions like hover over and drag and drop.
+
+Python\Lib\site-packages\selenium\webdriver\common\actions\action_builder.py
+
+Command.W3C_ACTIONS: ('POST', '/session/$sessionId/actions')
+

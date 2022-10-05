@@ -1,0 +1,12 @@
+python遇到的一个小问题
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 1368-1376: ordinal not in range(128)
+
+这个是在文件中存在中文，输出的时候报错，加上下面的一段代码，问题解决
+
+import sys
+import codecs
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+
+简单记录下就好。
+

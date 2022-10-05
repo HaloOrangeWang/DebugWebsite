@@ -1,0 +1,12 @@
+之前在使用Pandas处理csv文件时，发现如果文件名为中文，则会报错：
+
+OSError: Initializing from file failed
+
+后来在一位博主的博客中解释了是read_csv中engine参数的问题，默认是C engine，在读取中文标题时有可能会出错（在我这是必现），解决方法是将engine换为Python（官方文档的说法是C engine更快但是Python engine功能更完备），具体写法：
+
+df.read_csv('filename', engine='python')
+
+所以还是要多看文档，不过英语是个坎儿，还需要加强。
+
+以上这篇解决pandas中读取中文名称的csv文件报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

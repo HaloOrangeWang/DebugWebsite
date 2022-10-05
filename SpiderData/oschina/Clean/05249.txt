@@ -1,0 +1,20 @@
+早几天在pc电脑写了一个shell脚本，用来执行springboot项目，然后在centos7执行的时候报错，脚本如下比较简单：start.sh，下面只是列举了一部分脚本代码
+
+2、拷贝脚本到linux服务器执行报如下错误：
+
+-bash: ./test.sh: /bin/bash^M: bad interpreter: No such file or directory
+
+后面查了下资料报错原因是：
+
+我的start.sh的格式显示为：fileformat=dos
+
+start.sh是我在windows下编辑然后上传到linux系统里执行的。.sh文件的格式为dos格式。而linux只能执行格式为unix格式的脚本。
+
+3、解决办法使用 vi 命令修改start.sh文件修改文件format为unix
+
+使用命令：set ff=unix
+
+再次查看：
+
+最后执行./start.sh start就可以正常启动了。。。。
+

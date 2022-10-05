@@ -1,0 +1,17 @@
+旁边大佬让我重新写一个某XX监控脚本 需要请求https遇到了如下的问题  花了一下午解决这个问题。。。 害太菜，。。。。
+
+遇到的问题:
+
+requests.post  发送https请求的时候报错 解决方法加上verify=False
+
+还报错继续处理
+
+857: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  InsecureRequestWarning)
+
+给头部加上
+
+#禁用安全请求警告
+rom requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+

@@ -1,0 +1,22 @@
+
+Python3.x：报错POST data should be bytes, an iterable of bytes
+
+问题：
+
+python3.x：报错
+
+POST data should be bytes, an iterable of bytes, or a file object. It cannot be of type str.
+
+原因：
+
+# 组装GET方法的请求
+request = urllib2.Request(url, data, headers)
+
+其中的data需要转为utf-8
+
+解决方案：
+
+# 组装GET方法的请求
+#将代码request = urllib2.Request(url, data, headers)  更改为
+request = urllib.request.Request(url, data=urllib.parse.urlencode(data).encode(encoding='UTF8'), headers=headers)
+

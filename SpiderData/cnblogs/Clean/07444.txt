@@ -1,0 +1,35 @@
+
+问题出现
+
+执行Python manage.py makemigrations生成创建表的py文件
+
+执行python manage.py migrate创建数据表
+
+界面出现报错
+
+
+问题原因
+
+网上搜索原因，是因为在model模块中配置了中文名称
+
+而创建数据库默认的编码格式不是UTF-8，所以导致建表过程中报了数据库编码格式的错误
+
+
+解决办法
+
+方法一：
+
+　　model表中取消掉中文命名，然后再执行建表操作
+
+方法二：
+
+　　删除创建的数据库，重新创建数据库执行命令指定编码格式CREATE DATABASE 数据库名 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+　　修改setting.py中的数据库配置
+
+　　
+
+再次执行python manage.py migrate后正常创建
+
+参考地址：https://www.cnblogs.com/LOVEYU/p/10948289.html
+

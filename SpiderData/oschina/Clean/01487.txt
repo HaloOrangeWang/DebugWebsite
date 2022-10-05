@@ -1,0 +1,439 @@
+最近在学校Python和Django。在学习中遇到了种种的问题，对于一个新手来说，下面的问题可能都会遇到。希望能帮助到那些和我一样的人！！
+0.python-dev安装（ubuntu）
+
+1.Open(filename,mode)
+
+报错实例： f = open('d:\Users\168935495Request.xml','r')
+
+错误信息"SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape"
+
+解决方法: f = open(r'd:\Users\168935495Request.xml','r')
+
+原因：文件名中的 \U 开始的字符被编译器认为是八进制
+
+2.Module Path
+
+python安装目录在C:\Python33,fibo.py文件在E:\Python。
+
+报错实例:import fibo
+
+错误信息“ImportError: No module named 'fibo'”
+
+解决方法：import sys
+
+　　　　　sys.path.append('E:\Python')
+
+　　　  　import fibo
+
+原因：需要在sys中配置工作目录
+
+2.5 不同目录导入模块
+
+错误信息“ImportError: No module named 'fibo'”
+
+解决方法：在目录下新建空文件__init__.py
+
+3.Python2.7中文不识别
+
+错误信息“SyntaxError: Non-ASCII character '\xc9'”
+
+解决方法:文件头#coding=gbk
+
+4.mysqldb 模块安装（目前只支持python 2.7）
+
+系统32位的从https://pypi.python.org/pypi/MySQL-python/1.2.4下然后直接安装
+
+系统64位的从http://arquivos.victorjabur.com/python/modules/MySQL-python-1.2.3.win-amd64-py2.7.exe下然后直接安装
+
+5.import MySQLdb
+
+错误信息：this is MySQLdb version (1,2,4,'beta',4),but _mysql is version (1,2,3,'final‘,0)
+
+解决方法：删除\Lib\site-packages下所有的mysqldb，重新安装
+
+6.格式化
+
+整型数：%d 无符号整型数：%u 八进制：%o 十六进制：%x %X 浮点数：%f科学记数法
+字符串: %s 如果没有什么特殊需求完全可以全部使用’%s‘来标记
+
+7.with用法
+
+with conn:
+    conn.execute("insert into sometable values (?,?)",("foo","bar"))
+在这个例子中，commit()是在所有with数据块中的语句执行完毕并且没有错误之后自动执行的，如果出现任何的异常，将执行rollback()操作，再次提示异常
+
+8.文件每次修改后，需要重启服务
+
+9.python连接MySQL连接串（注意编码)
+
+python连接MySQL时加上编码参数 conn = MySQLdb.Connection(host='localhost', user='root', passwd='123', db='test',charset='utf8')
+
+9.5Django配置MySql
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', #Mysql引擎
+        'NAME': 'meiwei',                      # 数据库名，不需要路径以及后缀的   
+        'USER': 'root',#用户
+        'PASSWORD': '',#密码
+        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                      # Set to empty string for default.
+    }
+}
+
+10.Django模板错误
+
+错误信息：Requested setting TEMPLATE_DEBUG, but settings are not configured. You must either define
+
+解决方法:from django.conf import settings  
+　　　　 settings.configure()
+
+11.设置静态资源路径
+
+settings.py
+
+import os.path
+
+TEMPLATE_DIRS = (
+#静态模块文件存放路径
+os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
+)
+
+使用处
+from django.template.loader import get_template
+ t = get_template('shoplist.html')
+
+12.model设置表名和主键自增(django 默认的表是项目名+类名,主键是id)
+
+from django.db import models
+
+class Shop(models.Model):
+        class Meta:
+            db_table='shops'#指定表名，忽略django自动映射的表名（项目_class)
+        ShopId  = models.AutoField(primary_key=True,db_column='sid')#指定列名
+
+13.Templates模块
+
+需要和model对象的属性一致（大小写敏感)
+
+14.Model中的__unicode__(self)
+
+请确保你的每一个模型里都包含 __unicode__() 方法，这不只是为了交互时方便，也是因为 Django会在其他一些地方用 __unicode__() 来显示对象。
+
+15.DateTimeField received a naive datetime (2013-08-19 18:44:32) while time zone support is active.
+settings 修改 USE_TZ=False
+
+参考：https://docs.djangoproject.com；http://www.djangobook.com
+
+16.form自定义error,输出message
+
+class ShopForm(forms.Form):
+def clean(self):
+cleaned_data =self.cleaned_data
+data_shopname = cleaned_data.get('shopname')
+if data_shopname is None:
+raise forms.ValidationError(u'商户名不能空')
+if len(data_shopname)>50:
+raise forms.ValidationError(u'商户名长度不能超过50')
+return cleaned_data
+
+form = ShopForm(request.POST,error_class=ErrList)        
+  
+message= form.errors['__all__'].__unicode__()
+
+16.5使用Form验证表单数据 (表单中的name名称必须和form类中的名称一致)
+
+#form.py
+class ShopPicForm(forms.Form):
+    shopname = forms.CharField(label="商户名",error_messages={"required":u"商户不可空"})
+    picname = forms.CharField(label="图片名",help_text="长度范围2-20",max_length=20,min_length=2,error_messages={"required":u"图片名不可空","min_length":u"最小长度2","max_length":u"最大长度20"})
+    picup = forms.ImageField(label="选择图片",error_messages={"required":u"图片不可空"})
+
+#view.py
+
+form = ShopPicForm(request.POST)
+ if form.is_valid():      
+     #do something
+  else:
+     return render(request,"picadd.html",{"f":form})
+
+#template
+图片名:<input type="text" name="picname" value="{{f.data.picname}}"/> {{f.errors.picname.as_text}}<br/>
+商户名:<input type="text" name ="shopname" autocomplete="on" value="{{f.data.shopname}}"/>{{f.errors.shopname.as_text}}<br/>
+
+16.9修改errors键的值:
+
+#.py
+from django.forms.util import ErrorList
+form.errors['username'] = ErrorList([u'帐号错误'])
+#.html
+{{form.errors.username.as_text}}
+
+17.Template中使用cleaned_data
+
+　　在view.py中使用 form.cleaned_data['键名']，template中使用form.cleaned_data.键名
+
+18.加载动态下拉框（数据从数据库查询）
+
+#form代码
+ def __init__(self, *args, **kwargs):
+        super(ShopForm, self).__init__(*args, **kwargs)  
+        self.fields['cid'].choices = [('0','请选择')]+\
+            [(c.cid,c.categoryname) for c in CategoryModel.objects.all()]
+
+#另一种
+
+CATEGORY_CHOICES = [('0','请选择')]+[(c.cid,c.categoryname) for c in CategoryModel.objects.all()]
+cid = forms.ChoiceField(choices=CATEGORY_CHOICES)
+
+#template代码
+{{form.cid}}
+
+#model代码
+from django.db import models
+class CategoryModel(models.Model):
+    class Meta:
+        db_table="categorys"
+    cid  = models.AutoField(primary_key=True)
+    categoryname = models.CharField(max_length=20)
+    createtime = models.DateTimeField(auto_now_add = True)
+    lastmodifytime = models.DateTimeField(auto_now = True)    
+    def __unicode__(self):
+        return u'%s' % (self.categoryname)
+
+19.下拉框设置选中
+
+#view.py
+form.fields['cid'].choices = [(1,1),(2,2),(3,3)]
+form.fields['cid'].initial = [2]#选中第二个
+
+20.图片上传
+
+#model
+ url = models.ImageField(upload_to = "%Y/%m/%d",blank=True)#注意此处头部不要带/，否则会提示Attempted access to '' denied.
+#form
+ url = forms.ImageField()
+#view form = UploadFileForm(request.POST, request.FILES)必须要将request.FILES传给form的构造函数，才能将文件数据绑定到form.
+ if 'picup' in request.FILES:
+            image = request.FILES["picup"]
+        else:
+            image =None
+        name = request.POST["picname"]
+        s = ShopPicModle(name=name,url=image)
+        s.save()
+#template
+<form action="/pic/create/" method="post" enctype="multipart/form-data">
+            图片名:<input type="text" name="picname"/><br/>
+        
+            图片:<input type="file" name="picup" /><br/>
+            <input type="submit" name="添加"/> {% csrf_token %}            
+        </form>
+
+20.静态资源（图片）显示
+
+#url配置
+ url(r'^images/(?P<path>.*)$','django.views.static.serve',  
+        {'document_root': "/path/to/your/images/"}),#/person/web/web/images/
+
+#template
+<img src='/images/{{s.url}}' width="100px"/>
+
+DB中URL值：/shopspic/2013/08/29/ee244141a4874db7aeb034d3bd043306_550_412.jpg
+
+图片在磁盘上的路径：person\web\web\images\shopspic\2013\08\29\ee244141a4874db7aeb034d3bd043306_550_412.jpg
+
+21.生产环境关闭DEBUG，500的错误
+
+DEBUG = False，只是这样会出现500的错误，需要在ALLOWED_HOSTS = ['域名'或'ip'或'*']。生产环境推荐使用域名
+
+22.MD5加密
+
+from hashlib import md5
+
+md5('加密字符串').hexdigest()
+
+23.Cookie设置
+
+#设置cookie
+response = render_to_response("login.html", {"message":message})
+response.set_cookie(key,value="vv",path='/')
+return response
+
+　#获取cookie　
+  cookie = request.COOKIES.get(key)
+
+24.模板继承
+
+{%block%}告诉模板引擎。子模块可以重载这部分。
+
+#base.html
+<html>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link type="text/css" rel="stylesheet" href="/static/css/base.css"/>
+
+<title>{%block title %} {%endblock%}</title>
+    <body>
+        <h1>后台管理</h1>
+        <p class="path">
+            当前位置：{%block path%}{%endblock%}
+            <span>欢迎你:{{admin}} <a href="#">注销</a></span>
+        </p>
+        {%block content%}{%endblock%}
+    </body>
+</html>
+
+#piclist.html
+{%extends "base.html"%}
+{%block title %}图片列表页面{%endblock%}
+{%block path%}图片列表{%endblock%}
+{%block content%}
+内容
+{%endblock%}
+
+25.自定义contextprocessor
+
+a)修改settings
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+'django.core.context_processors.request',
+'django.contrib.auth.context_processors.auth',
+'web.offline.cookie.logined', # 自定义的 context processors 函数,格式:项目.包.模块.方法                
+)
+
+b)logined方法
+
+def logined(request):
+    c = request.COOKIES.get(web.settings.COOKIENAME)
+    if c:
+        context = {'admin':c}
+    else:
+        context =  {'admin':"未登录"}
+    return context #返回必须是字典
+
+26.配置多个数据库
+
+#settings.py
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'meishi',                      #  database    
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                      # Set to empty string for default.
+    },
+   'backup': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'meishi2',                
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',  
+        'PORT': '',                      # Set to empty string for default.
+    }
+}
+
+#view.py
+Shop.objects.all().order_by('-ShopId')#默认使用的是default
+
+Shop.objects.all().using('backup').order_by('-ShopId')#使用其他数据库
+
+27.Cookie设置后跳转Url（这个问题纠结了很久）
+
+response = HttpResponseRedirect('/piclist/')#
+response.set_cookie(web.settings.COOKIENAME,value=owner.name,path='/')
+return response
+
+28.自定义404页面
+
+#urls.py
+handler404 = 'project.view.404' 
+#需要把settings.py中的DEBUG=False才会生效
+
+29.提交表单报错:RuntimeError: You called this URL via POST, 
+      but the URL doesn’t end in a slash and you have APPEND_SLASH set.
+
+将from的action地址改为/结尾的就可以了
+或者
+修改settings:APPEND_SLASH=False
+
+30.Url配置name参数，
+
+31.文件操作(需要目录已存在)
+
+#view.py 写文件
+file_handle = open(file_path,'w+')
+file_handle.write(data) #encode('utf8')
+file_handle.close()
+#读文件
+file_handle = open(file_path)
+data = file_handle.read() #decode('utf8')
+file_handle.close()
+
+32.目录创建
+
+33.返回403
+
+1. 在settings.py里面的MIDDLEWARE_CLASSES中加入django.middleware.csrf.CsrfResponseMiddleware
+
+2. 在settings.py里面的MIDDLEWARE_CLASSES中去掉django.middleware.csrf.CsrfViewMiddleware
+
+34.返回Josn格式数据
+
+#view.py
+from django.utils import simplejson
+
+json={'ret':ret,'save_name':new_name}
+#支持中文
+return HttpResponse(simplejson.dumps(json,ensure_ascii = False))
+
+35.html转义
+
+#template
+{% autoescape off %}
+coding...
+{% endautoescape %}
+这里的off 参数表明被autoescape包含的信息都不需要执行HTML转义。on 参数表示需要执行HTML转义
+
+36.访问远程图片
+
+import cStringIO, urllib2, Image
+
+url = 'remote picture'
+file = urllib2.urlopen(url)
+tmpIm = cStringIO.StringIO(file.read())
+im = Image.open(tmpIm)
+
+37.‘gbk' codec can't encode character 错误
+
+#忽略特殊字符
+str.encode('gbk','ignore')
+
+38.获取Post name相同的值(如多个checkbox)
+
+#view.py
+request.POST.getlist('name')
+
+39.创建Django(path到django目录下)
+
+django-admin.py startproject mysite
+
+40.中文输出
+
+　　u'中文'
+
+41.模板注释
+
+{# 文字#}注释的内容不会在模板渲染时输出。注释不能跨多行
+
+42.密码框
+
+password = forms.CharField(widget=forms.PasswordInput())
+
+43.Template中{{ 变量}} 不要换行
+
+44.'ascii' codec can't encode characters in position 0-4: ordinal not in range(128)  python版本2.7
+
+在model中增加
+
+def __unicode__(self):
+      return self.question_text
+

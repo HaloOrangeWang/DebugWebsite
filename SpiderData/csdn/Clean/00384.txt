@@ -1,0 +1,130 @@
+
+
+前言
+
+Python 依赖包安装很慢、安装失败等问题解决办法，快速安装Python依赖包？
+
+解决方法：更改Python-pip安装源并配置 、whl文件安装
+
+由于Python属于国外，所以在一些库的下载安装上会不太方便，所以这时候就需要像Linux源一样配置为国内源了。
+
+还有部分依赖安装包通过pip安装也会导致安装失败超时等问题或查无此包，此时需要通过whl文件安装
+
+文章目录
+
+前言
+
+pip 简介
+
+pip 安装
+
+pip 临时 调用第三方源 安装
+
+pip 设置 默认第三方源 安装
+
+Python whl文件下载
+
+Python whl文件安装
+
+Python 安装依赖环境错误异常 常见信息
+
+
+pip 简介
+
+pip 是 Python 包管理工具，该工具提供了对Python 包的查找、下载、安装、卸载的功能。
+
+目前如果你在 python.orgpython.orgpython.org 下载最新版本的安装包，则是已经自带了该工具。
+
+使用pip安装的好处是，默认安装第三方相关的所有依赖库，一个命令就可以搞定所有依赖的安装。
+
+
+pip 安装
+
+pip 默认安装走默认的Python国外的源，下载安装速度慢，且可能出现网络断连导致安装失败或需要重新安装费时费力
+
+pip install <package Nmae>
+
+
+
+pip 临时 调用第三方源 安装
+
+常见第三方的源
+
+https://mirrors.aliyun.com/pypi/simple/     # 阿里云
+https://pypi.douban.com/simple/             # 豆瓣
+https://pypi.tuna.tsinghua.edu.cn/simple    # 清华大学
+
+pip使用第三方安装源 命令
+
+pip install -i https://pypi.douban.com/simple/     <package Name>
+
+示例：Python 成功安装 pycryptodome
+
+> pip install -i https://pypi.douban.com/simple/ pycryptodome
+
+安装一些库则可以明显看到安装国内源之后相比默认的安装速度明显提升了不少，成功率也提高了
+
+
+pip 设置 默认第三方源 安装
+
+升级 pip 到最新的版本
+
+pip install pip -U
+
+pip 设置默认第三方源
+
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+
+
+如果pip命令的方式未能解决Python安装第三方依赖包的问题，则推荐whl文件的方式安装解决
+
+
+
+Python whl文件下载
+
+注意 whl文件仅支持Windows环境下载和安装，具体看下载网址的信息。
+
+1、常用下载地址
+
+https://pypi.doubanio.com/simple/
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#wordcloud
+
+2、打开网址 搜索目标 whl 文件示例
+
+3、下载 注意 Python版本 Windows版本
+
+
+Python whl文件安装
+
+1、用pip安装wheel  执行命令pip install wheel
+
+pip install wheel
+
+2、使用pip 安装while文件
+
+pip install JPype1-1.3.0-cp310-cp310-win_amd64.whl
+
+3、安装示例
+
+C:\Users\Benjamin>pip install C:\Users\Benjamin\Desktop\JPype1-1.3.0-cp310-cp310-win_amd64.whl
+Processing c:\users\benjamin\desktop\jpype1-1.3.0-cp310-cp310-win_amd64.whl
+Installing collected packages: JPype1
+Successfully installed JPype1-1.3.0
+
+4、安装成功检索
+
+C:\Users\Benjamin>pip list|findstr JPype
+JPype1                            1.3.0
+
+
+Python 安装依赖环境错误异常 常见信息
+
+1、连接超时
+
+2、找不到资源包
+
+3、需要其他依赖包或系统环境中确实环境配置，源中无
+
+4、系统原因等导致安装失败
+

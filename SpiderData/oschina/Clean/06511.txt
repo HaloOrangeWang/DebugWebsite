@@ -1,0 +1,41 @@
+严重: Error deploying web application directory E:\Tomcat 7.0\webapps\ROOT
+
+......
+
+于是，开始在网上搜解决办法，网上还真有不少文章（大多都是水军）提供解决方法，各种各样的都有！
+
+常见的有
+
+（1）
+
+1.下载最新版本的tcnative-1.dll(1.1.17版本)
+
+2.把文件放入c:/windows/system32下
+
+3.重启tomcat7.0
+
+亲试，确实不管用啊
+
+（2）打开myeclipse，Preferentces->MyEclipse->Servers->Tomcat->Tomcat 6.x
+ ,载入Tomcat7，在"Paths"下，点击“Add JAR/ZIP”,加载tomcat7下的……/bin/tomcat-juli.jar。点击“OK”.
+
+亲试，确实不管用啊（骂人的心都有了）
+
+（3）把tomcat7下面的servlet-api.jar 放到JDK的目录下，重启启动Tomcat
+
+亲试，确实不管用啊（打人的心都有了）
+
+————————————————————————————————————————————————
+
+还是说说自己的解决方法吧！
+
+网上各种方法试过之后还是不管用，于是怀疑是JDK的问题！
+
+之前安装的JDK版本也是1.7的，是“jdk-7-ea-bin-b89-windows-i586-15_apr_2010.exe”。
+
+果断把这个版本的JDK卸载！官网上下载“jdk-7u79-windows-x64.exe”这个版本，按照之前JDK的原安装路径再安装这个版本的。启动Tomcat，然后就看到惊喜了！终于解决了！
+
+提醒：下载JDK的时候，要考虑系统，32位还是64位！
+
+希望能帮到遇见同样错误的人！
+

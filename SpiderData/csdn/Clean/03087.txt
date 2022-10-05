@@ -1,0 +1,48 @@
+如果想在init用retrun ****，则会出错，提示不能在init中返回值，利用再建一个函数则是可以解决
+ 方法一：直接调用属性
+
+class user:
+    """docstring for user:"""
+ 
+    def __init__(self, first_name, last_name, **user_info):
+        self.first = first_name
+        self.last = last_name
+        self.info = user_info
+        self.profile = {'first name': self.first, 'Last name': self.last}
+        for key, value in self.info.items():
+            self.profile[key] = value
+        self.returnprofile
+         
+    def returnprofile(self):
+        print('内部', self.profile)
+        return self.profile
+ 
+ 
+user_1 = user('john', 'smith', age=0, lover='judy')
+#
+print(user_1.returnprofile())
+
+方法二：把方法变成属性即可，不需要调用括号，但是需要在方法的上面调用@property把方法变成属性来使用。
+
+class user:
+    """docstring for user:"""
+ 
+    def __init__(self, first_name, last_name, **user_info):
+        self.first = first_name
+        self.last = last_name
+        self.info = user_info
+        self.profile = {'first name': self.first, 'Last name': self.last}
+        for key, value in self.info.items():
+            self.profile[key] = value
+        self.returnprofile
+    @property
+    def returnprofile(self):
+        return self.profile
+ 
+ 
+user_1 = user('john', 'smith', age=0, lover='judy')
+#
+print(user_1.returnprofile)
+
+感谢大佬给的解决方法
+

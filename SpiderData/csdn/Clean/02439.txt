@@ -1,0 +1,44 @@
+
+【问题描述】
+
+下面的代码，在Linux中可以正常运行，在windows中却报错。
+
+import multiprocessing
+
+def fun():  # 子进程函数
+    print("子进程执行")
+
+p = multiprocessing .Process(target=fun)  # 创建进程对象
+
+p.start()  # 启动进程
+
+p.join()  # 回收进程
+
+
+【解决方法】
+
+根据提示添加代码：
+
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
+
+仅添加上方代码还是会报错（一样的错误）。
+
+要把创建进程对象、启动进程、回收进程的代码也放到__main__保护下执行
+
+import multiprocessing
+
+def fun():  # 子进程函数
+    print("子进程执行")
+
+if __name__ == '__main__':
+    multiprocessing.freeze_support()         # 好像不加也行?
+
+p = multiprocessing.Process(target=fun)  # 创建进程对象
+
+p.start()  # 启动进程
+
+p.join()  # 回收进程
+
+完成。
+

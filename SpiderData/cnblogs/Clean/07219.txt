@@ -1,0 +1,27 @@
+原文地址：https://blog.csdn.net/qq_36853469/article/details/91572797
+
+windows环境下使用pytesseract识别验证码中文字时报错：
+          pytesseract.pytesseract.TesseractNotFoundError: tesseract is not installed or it's not in your path
+
+windows环境下使用pytesseract识别验证码中文字时报错：
+
+pytesseract.pytesseract.TesseractNotFoundError: tesseract is not installed or it's not in your path
+
+报错原因很明确: 没有找到 tesseract
+
+解决方案:
+
+1.找到python的安装路径下的pytesseract:   例如我的是   E:\Python3.7.1\Lib\site-packages\pytesseract
+
+2.用文本编辑器打开，查找tesseract_cmd
+
+将原来的   tesseract_cmd = 'tesseract' 改为:  tesseract_cmd = 'OCR的安装路径下的tessract.exe'
+
+例如我的是   tesseract_cmd = 'C:\Program Files\Tesseract-OCR\\tesseract.exe'
+
+注意有的地方需要转义   例如 \\tesseract.exe，或者也可直接加r转义
+
+tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+3.运行:不报错了
+

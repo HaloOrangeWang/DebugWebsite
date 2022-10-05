@@ -1,0 +1,189 @@
+这篇文章主要讲述Python如何安装Numpy、Scipy、Matlotlib、Scikit-learn等库的过程及遇到的问题解决方法。最近安装这个真是一把泪啊，各种不兼容问题和报错，希望文章对你有所帮助吧！你可能遇到的问题包括：
+         ImportError: No module named sklearn 未安装sklearn包
+         ImportError: DLL load failed: 找不到指定的模块
+         ImportError: DLL load failed: The specified module could not be found
+         Microsoft Visual C++ 9.0 is required Unable to find vcvarsall.bat
+         Numpy Install RuntimeError: Broken toolchain: cannot link a simple C program
+         ImportError: numpy.core.multiarray failed to import
+         ImportError: cannot import name __check_build
+         ImportError: No module named matplotlib.pyplot
+
+
+一. 安装过程
+
+最早我是使用"pip install scikit-learn"命令安装的Scikit-Learn程序，并没有注意需要安装Numpy、Scipy、Matlotlib，然后在报错"No module named Numpy"后，我接着使用PIP或者下载exe程序安装相应的包，同时也不理解安装顺序和版本的重要性。其中最终都会报错" ImportError: DLL load failed: 找不到指定的模块"，此时我的解决方法是：
+ 
+ 错误：sklearn ImportError: DLL load failed: 找不到指定的模块
+ 重点：安装python第三方库时总会出现各种兼容问题，应该是版本问题，版本需要一致。
+ 下载：http://download.csdn.net/detail/eastmount/9366117
+ 
+ 第一步：卸载原始版本，包括Numpy、Scipy、Matlotlib、Scikit-Learn
+         pip uninstall scikit-learn
+         pip uninstall numpy
+         pip uninstall scipy
+         pip uninstall matplotlib
+ 
+ 第二步：不使用"pip install package"或"easy_install package"安装，或者去百度\CSDN下载exe文件，而是去到官网下载相应版本。
+         http://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy
+         http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
+         http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib
+         http://www.lfd.uci.edu/~gohlke/pythonlibs/#scikit-learn
+ 
+ 安装过程中最重要的地方就是版本需要兼容。其中操作系统为64位，Python为2.7.8 64位，下载的四个whl文件如下，其中cp27表示CPython 2.7版本，cp34表示CPython 3.4，win_arm64指的是64位版本。
+         numpy-1.10.2-cp27-none-win_amd64.whl
+         scipy-0.16.1-cp27-none-win_amd64.whl
+         matplotlib-1.5.0-cp27-none-win_amd64.whl
+         scikit_learn-0.17-cp27-none-win_amd64.whl
+ 
+ PS：不推荐使用"pip install numpy"安装或下载如"numpy-MKL-1.8.0.win-amd64-py2.7.exe"类似文件，地址如：
+         http://sourceforge.net/projects/numpy/files/NumPy
+         http://sourceforge.net/projects/scipy/files/Scipy 
+ 
+ 第三步：去到Python安装Scripts目录下，再使用pip install xxx.whl安装，先装Numpy\Scipy\Matlotlib包，再安装Scikit-Learn。
+ 
+ 其中我的python安装路径"G:\software\Program software\Python\python insert\Scripts"，同时四个whl文件安装核心代码：
+         pip install G:\numpy+scipy+matplotlib\numpy-1.10.2-cp27-none-win_amd64.whl
+         pip install G:\numpy+scipy+matplotlib\scikit_learn-0.17-cp27-none-win_amd64.whl
+
+第四步：此时配置完成，关键是Python64位版本兼容问题和Scripts目录。最后用北邮论坛一个神人的回复结束这个安装过程：“傻孩子，用套件啊，给你介绍一个Anaconda或winpython。只能帮你到这里了！ ”
+
+
+二. 测试运行环境
+
+搞了这么半天，为什么要装这些呢？给几个用例验证它的正确安装和强大吧！
+ 
+ Scikit-Learn是基于python的机器学习模块，基于BSD开源许可。Scikit-learn的基本功能主要被分为六个部分，分类，回归，聚类，数据降维，模型选择，数据预处理，具体可以参考官方网站上的文档。
+ 
+ NumPy（Numeric Python）系统是Python的一种开源的数值计算扩展，一个用python实现的科学计算包。它提供了许多高级的数值编程工具，如：矩阵数据类型、矢量处理，以及精密的运算库。专为进行严格的数字处理而产生。
+ 内容包括：1、一个强大的N维数组对象Array；2、比较成熟的（广播）函数库；3、用于整合C/C++和Fortran代码的工具包；4、实用的线性代数、傅里叶变换和随机数生成函数。numpy和稀疏矩阵运算包scipy配合使用更加方便。
+ 
+ SciPy (pronounced "Sigh Pie") 是一个开源的数学、科学和工程计算包。它是一款方便、易于使用、专为科学和工程设计的Python工具包，包括统计、优化、整合、线性代数模块、傅里叶变换、信号和图像处理、常微分方程求解器等等。
+ 
+ Matplotlib是一个Python的图形框架，类似于MATLAB和R语言。它是python最著名的绘图库，它提供了一整套和matlab相似的命令API，十分适合交互式地进行制图。而且也可以方便地将它作为绘图控件，嵌入GUI应用程序中。
+ 
+ 
+ 第一个代码：斜线坐标，测试matplotlib
+
+运行结果：
+
+第二个代码：桃心程序，测试numpy和matplotlib
+ 代码参考：Windows 下 Python easy_install 的安装 - KingsLanding
+
+运行结果：
+
+第三个程序：显示Matplotlib强大绘图交互功能
+ 代码参考：Python-Matplotlib安装及简单使用 - bery
+
+运行结果：
+
+PS：如果设置legend没有显示比例图标，则参考下面代码：
+
+[python] view plain copy
+
+# coding=utf-8
+
+import numpy as np
+
+import matplotlib
+
+import scipy
+
+import matplotlib.pyplot as plt
+
+#设置legend: http://bbs.byr.cn/#!article/Python/7705
+
+#mark样式: http://www.360doc.com/content/14/1026/02/9482_419859060.shtml
+
+#国家 融合特征值
+
+x1 = [10, 20, 50, 100, 150, 200, 300]
+
+y1 = [0.615, 0.635, 0.67, 0.745, 0.87, 0.975, 0.49]
+
+#动物
+
+x2 = [10, 20, 50, 70, 90, 100, 120, 150]
+
+y2 = [0.77, 0.62, 0.77, 0.86, 0.87, 0.97, 0.77, 0.47]
+
+#人物
+
+x3 = [10, 20, 50, 70, 90, 100, 120, 150]
+
+y3 = [0.86, 0.86, 0.92, 0.94, 0.97, 0.97, 0.76, 0.46]
+
+#国家
+
+x4 = [10, 20, 50, 70, 90, 100, 120, 150]
+
+y4 = [0.86, 0.85, 0.87, 0.88, 0.95, 1.0, 0.8, 0.49]
+
+plt.title('Entity alignment result')
+
+plt.xlabel('The number of class clusters')
+
+plt.ylabel('Similar entity proportion')
+
+plot1, = plt.plot(x1, y1, '-p', linewidth=2)
+
+plot2, = plt.plot(x2, y2, '-*', linewidth=2)
+
+plot3, = plt.plot(x3, y3, '-h', linewidth=2)
+
+plot4, = plt.plot(x4, y4, '-d', linewidth=2)
+
+plt.xlim(0, 300)
+
+plt.ylim(0.4, 1.0)
+
+#plot返回的不是matplotlib对象本身,而是一个列表,加个逗号之后就把matplotlib对象从列表里面提取出来
+
+plt.legend( (plot1,plot2,plot3,plot4), ('Spot', 'Animal', 'People', 'Country'), fontsize=10)
+
+plt.show()
+
+输出如下图所示：
+
+第四个代码：矩阵数据集，测试sklearn
+
+运行结果：
+
+第五个代码：计算TF-IDF词语权重，测试scikit-learn数据分析
+ 参考代码：http://blog.csdn.net/liuxuejiang158blog/article/details/31360765
+
+运行结果：
+
+
+三. 其他错误解决方法
+
+这里虽然讲解几个安装时遇到的其他错误及解决方法，但作者更推荐上面的安装步骤。
+ 
+ 在这之前，我反复的安装、卸载、升级包，其中遇到了各种错误，改了又改，百度了又谷歌。常见PIP用法如下：
+
+ImportError: numpy.core.multiarray failed to import
+ python安装numpy时出现的错误，这个通过stackoverflow和百度也是需要python版本与numpy版本一致，解决的方法包括"pip install -U numpy"升级或下载指定版本"pip install numpy==1.8"。但这显然还涉及到更多的包，没有前面的卸载下载安装统一版本的whl靠谱。
+ 
+ Microsoft Visual C++ 9.0 is required(unable to find vcvarsall.bat)
+ 因为Numpy内部矩阵运算是用C语言实现的，所以需要安装编译工具，这和电脑安装的VC++或VS2012有关，解决方法：如果已安装Visual Studio则添加环境变量VS90COMNTOOLS即可，不同的VS版本对应不同的环境变量值：
+         Visual Studio 2010 (VS10)设置 VS90COMNTOOLS=%VS100COMNTOOLS%
+         Visual Studio 2012 (VS11)设置 VS90COMNTOOLS=%VS110COMNTOOLS%
+         Visual Studio 2013 (VS12)设置 VS90COMNTOOLS=%VS120COMNTOOLS%
+ 但是这并没有解决，另一种方法是下载Micorsoft Visual C++ Compiler for Python 2.7的包。
+ 下载地址：http://www.microsoft.com/en-us/download/details.aspx?id=44266 
+ 参考文章：http://www.oschina.net/question/2294527_244245
+
+PS：这些问题基本解决方法使用pip升级、版本一致、重新下载相关版本exe文件再安装。
+ 
+ 总之，最后希望文章对你有所帮助！尤其是刚学习Python和机器学习的同学。
+ 写文不易，且看且珍惜！
+ (By:Eastmount 2015-12-17 晚上10点   http://blog.csdn.net//eastmount/ )
+
+参考文章：
+         [Python] Windows7 x64安装numpy和scipy - delbert
+         [Python] matplotlib在windows下安装 - sina 
+         Windows系统下Python与NumPy安装方法 - bubuko 
+         scikit learn 安装及注意事项 - wbgxx333
+         Python包numpy、Matplotlib、SciPy在64位Windows上的安装 
+         windows下安装scikit learn以及python的各种包 
+         python 机器学习的开发环境搭建（numpy，scipy,matplotlib）
+

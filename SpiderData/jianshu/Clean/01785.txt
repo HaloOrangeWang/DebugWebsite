@@ -1,0 +1,92 @@
+
+一. 首先使用conda创建一个新环境。
+
+使用conda create -n 21cn创建环境.
+
+第一个报错信息,显示setuptools有问题
+
+RemoveError: 'setuptools' is a dependency of conda and cannot be removed from conda's operatin
+
+1.1 pip uninstall setuptools  没有用，使用```conda create -n 21cn````环境依旧报错上面的语句
+
+1.2. 使用conda update --force conda,然后就没有报错了
+
+使用conda create -n 21cn创建环境，这时候观察文件夹的话，会发现Anaconda3的envs文件夹中会多出一个子文件夹叫21cn,这就是我们创建的环境的目录。
+
+
+二、根据yml文件更新环境
+
+使用conda env update -f environment.yml更新依赖包。需要注意的是，这时候只会下载conda方式下载的包，而使用pip方式下载的包不会被下载。因此只会还需要使用pip install的方式下载其他的依赖包（maybe）,反正我使用pip list命令没有找到environment.yml中列出的pip依赖包。
+
+使用pip install -i http://pypi.douban.com/simple -r requirements --trusted-host pypi.douban.com安装pip方式下载的依赖包
+
+可能的报错问题：在使用pip下载的时候，遇到这样的报错，特别长RROR: Command "'D:\Anaconda3\envs\21cn\python.exe' -u -c 'import setuptools, tokenize;__file__='"前面一行大概是这样的，放到百度上一搜，按照第一个解决方式（https://blog.csdn.net/Viadimir/article/details/87165043）
+
+2.1 使用命令conda install twisted，然后重复执行上面的pip命令.
+
+还是报错，报错信息如下
+
+Command "D:\Anaconda3\python.exe -u -c "import setuptools, tokenize;
+__file__='C:\\Users\\14192\\AppData\\Local\\Temp\\pip-build-6dfvwta3\\pocketsphinx\\setup.py';f=getattr(tokenize, 'open', open)(__file__);
+code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record C:\Users\14192\AppData\Local\Temp\pip-3_ze3rg7-record\install-record.txt --single-version-externally-managed --compile" failed with error code 1 in C:\Users\14192\AppData\Local\Temp\pip-build-6dfvwta3\pocketsphinx\
+
+尝试网上的方式，对twist的依赖包进行下载安装，然后重新运行上面的命令，依旧报错。仔细查看报错的前部分内容
+
+文字版报错信息
+
+Failed building wheel for pocketsphinx
+
+Running setup.py clean for pocketsphinx
+
+Failed to build pocketsphinx
+
+Installing collected packages: pocketsphinx, XlsxWriter, python-pptx, pytz, pyxlsb, SpeechRecognition, xlrd, textract, tornado, urllib3
+
+Running setup.py install for pocketsphinx ... error
+
+Complete output from command D:\Anaconda3\python.exe -u -c "import setuptools, tokenize;__file__='C:\\Users\\14192\\AppData\\Local\\Temp\\pip-build-oczg1n3s\\pocketsphinx\\setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record C:\Users\14192\AppData\Local\Temp\pip-w6_6of1w-record\install-record.txt --single-version-externally-managed --compile:
+
+running install
+
+running build_ext
+
+building 'sphinxbase._ad' extension
+
+swigging swig/sphinxbase/ad.i to swig/sphinxbase/ad_wrap.c
+
+swig.exe -python -modern -Ideps/sphinxbase/include -Ideps/sphinxbase/include/sphinxbase -Ideps/sphinxbase/include/win32 -Ideps/sphinxbase/swig -outdir sphinxbase -o swig/sphinxbase/ad_wrap.c swig/sphinxbase/ad.i
+
+error: command 'swig.exe' failed: No such file or directory
+
+可以发现是在安装pocketsphinx的时候出错的
+
+2.2 直接尝试安装pip install -i http://pypi.douban.com/simple pocketsphinx --trusted-host pypi.douban.com没有报错，成功安装了。
+
+接着继续执行上面的pip指令 ，还是在相同的地方报错了。虽然成功的安装了pocketsphinx，但是在运行过程中，可以看到成功安装的是pocketsphinx-0.1.15
+
+而在错误的报错里面，会把之前下载的pocketsphinx-0.1.15给先卸载，然后使用setup。py中的语句重新安装pocketsphinx
+
+2.3 参考https://stackoverflow.com/questions/44504899/installing-pocketsphinx-python-module-command-swig-exe-failed里面的高分得票。
+
+首先下载swig,然后复制文件到对应位置。
+
+还是会报错，因为swig的部分文件虽然被拷贝到了python 的路径下，但是还有一些文件没有拷过来，被调用的时候找不到了
+
+2.4 参考上面链接中，看见第二个答案，直接将swigwin的路径添加到环境路径的path中去，还是不行。报相同的错误
+
+2.5 一筹莫展之时，重新看到第一个答案的后面，有人追加了回答说，还需要把typesmap添加到Python的lib路径，瞬间惊喜，我之前的报错就是这个文件夹找不到。于是重新尝试了一遍，成功了。
+
+
+三、使用虚拟环境运行项目代码
+
+在安装成功之后，打开pycharm，打开file-Settings-Project:apiserver-Project Interpreter，选择上方的齿轮图案，选择ADD Local,然后进path-to-Anaconda3/envs/21cn,选择里面的python.exe文件。
+
+
+总结
+
+三步走的策略很明确
+
+遇到setuptools问题，使用conda update --force conda指令解决报错
+
+安装pip依赖包的时候，遇到问题，看看是不是swig有问题，如果是，可以参考2.3的解决方法，也就是图4.png的方式尝试解决。
+

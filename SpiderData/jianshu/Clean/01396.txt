@@ -1,0 +1,130 @@
+Windows 环境下安装python包经常会有各种环境方面的问题及报错。 最近在python36/37下升级安装mysqlclient包时产生了下面的错误，不论是百度还是Stack Overflow上查找都没有真正的解决方案，于是写文章与大家一起分享下这类报错的解决方法。
+
+
+报错信息：
+
+Building wheels for collected packages: mysqlclient
+  Running setup.py bdist_wheel for mysqlclient ... error
+  Complete output from command "d:\program files\python\python36\python.exe" -u -c "import setuptools, tokenize;__file__='C:\\Users\\zdl25\\AppData\\Local\\Temp\\pip-install-83rodr64\\mysqlclient\\setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" bdist_wheel -d C:\Users\zdl25\AppData\Local\Temp\pip-wheel-nlo8hs6x --python-tag cp36:
+  running bdist_wheel
+  running build
+  running build_py
+  creating build
+  creating build\lib.win-amd64-3.6
+  copying _mysql_exceptions.py -> build\lib.win-amd64-3.6
+  creating build\lib.win-amd64-3.6\MySQLdb
+  copying MySQLdb\__init__.py -> build\lib.win-amd64-3.6\MySQLdb
+  copying MySQLdb\compat.py -> build\lib.win-amd64-3.6\MySQLdb
+  copying MySQLdb\connections.py -> build\lib.win-amd64-3.6\MySQLdb
+  copying MySQLdb\converters.py -> build\lib.win-amd64-3.6\MySQLdb
+  copying MySQLdb\cursors.py -> build\lib.win-amd64-3.6\MySQLdb
+  copying MySQLdb\release.py -> build\lib.win-amd64-3.6\MySQLdb
+  copying MySQLdb\times.py -> build\lib.win-amd64-3.6\MySQLdb
+  creating build\lib.win-amd64-3.6\MySQLdb\constants
+  copying MySQLdb\constants\__init__.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+  copying MySQLdb\constants\CLIENT.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+  copying MySQLdb\constants\CR.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+  copying MySQLdb\constants\ER.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+  copying MySQLdb\constants\FIELD_TYPE.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+  copying MySQLdb\constants\FLAG.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+  copying MySQLdb\constants\REFRESH.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+  running build_ext
+  building '_mysql' extension
+  creating build\temp.win-amd64-3.6
+  creating build\temp.win-amd64-3.6\Release
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\HostX86\x64\cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -Dversion_info=(1,3,13,'final',0) -D__version__=1.3.13 "-IC:\Program Files (x86)\MySQL\MySQL Connector C 6.1\include" "-Id:\program files\python\python36\include" "-Id:\program files\python\python36\include" "-IC:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\include" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt" "-IC:\Program Files (x86)\Windows Kits\8.1\include\\shared" "-IC:\Program Files (x86)\Windows Kits\8.1\include\\um" "-IC:\Program Files (x86)\Windows Kits\8.1\include\\winrt" "-IC:\Program Files (x86)\Windows Kits\8.1\include\\cppwinrt" /Tc_mysql.c /Fobuild\temp.win-amd64-3.6\Release\_mysql.obj /Zl
+  _mysql.c
+  _mysql.c(29): fatal error C1083: 无法打开包括文件: “mysql.h”: No such file or directory
+  error: command 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Tools\\MSVC\\14.15.26726\\bin\\HostX86\\x64\\cl.exe' failed with exit status 2
+
+----------------------------------------
+  Failed building wheel for mysqlclient
+  Running setup.py clean for mysqlclient
+Failed to build mysqlclient
+Installing collected packages: mysqlclient
+  Found existing installation: mysqlclient 1.3.12
+    Uninstalling mysqlclient-1.3.12:
+      Successfully uninstalled mysqlclient-1.3.12
+  Running setup.py install for mysqlclient ... error
+    Complete output from command "d:\program files\python\python36\python.exe" -u -c "import setuptools, tokenize;__file__='C:\\Users\\zdl25\\AppData\\Local\\Temp\\pip-install-83rodr64\\mysqlclient\\setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record C:\Users\zdl25\AppData\Local\Temp\pip-record-f544g5zo\install-record.txt --single-version-externally-managed --compile:
+    running install
+    running build
+    running build_py
+    creating build
+    creating build\lib.win-amd64-3.6
+    copying _mysql_exceptions.py -> build\lib.win-amd64-3.6
+    creating build\lib.win-amd64-3.6\MySQLdb
+    copying MySQLdb\__init__.py -> build\lib.win-amd64-3.6\MySQLdb
+    copying MySQLdb\compat.py -> build\lib.win-amd64-3.6\MySQLdb
+    copying MySQLdb\connections.py -> build\lib.win-amd64-3.6\MySQLdb
+    copying MySQLdb\converters.py -> build\lib.win-amd64-3.6\MySQLdb
+    copying MySQLdb\cursors.py -> build\lib.win-amd64-3.6\MySQLdb
+    copying MySQLdb\release.py -> build\lib.win-amd64-3.6\MySQLdb
+    copying MySQLdb\times.py -> build\lib.win-amd64-3.6\MySQLdb
+    creating build\lib.win-amd64-3.6\MySQLdb\constants
+    copying MySQLdb\constants\__init__.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+    copying MySQLdb\constants\CLIENT.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+    copying MySQLdb\constants\CR.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+    copying MySQLdb\constants\ER.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+    copying MySQLdb\constants\FIELD_TYPE.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+    copying MySQLdb\constants\FLAG.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+    copying MySQLdb\constants\REFRESH.py -> build\lib.win-amd64-3.6\MySQLdb\constants
+    running build_ext
+    building '_mysql' extension
+    creating build\temp.win-amd64-3.6
+    creating build\temp.win-amd64-3.6\Release
+    C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\HostX86\x64\cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -Dversion_info=(1,3,13,'final',0) -D__version__=1.3.13 "-IC:\Program Files (x86)\MySQL\MySQL Connector C 6.1\include" "-Id:\program files\python\python36\include" "-Id:\program files\python\python36\include" "-IC:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\include" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt" "-IC:\Program Files (x86)\Windows Kits\8.1\include\\shared" "-IC:\Program Files (x86)\Windows Kits\8.1\include\\um" "-IC:\Program Files (x86)\Windows Kits\8.1\include\\winrt" "-IC:\Program Files (x86)\Windows Kits\8.1\include\\cppwinrt" /Tc_mysql.c /Fobuild\temp.win-amd64-3.6\Release\_mysql.obj /Zl
+    _mysql.c
+    _mysql.c(29): fatal error C1083: 无法打开包括文件: “mysql.h”: No such file or directory
+    error: command 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Tools\\MSVC\\14.15.26726\\bin\\HostX86\\x64\\cl.exe' failed with exit status 2
+
+----------------------------------------
+  Rolling back uninstall of mysqlclient
+Command ""d:\program files\python\python36\python.exe" -u -c "import setuptools, tokenize;__file__='C:\\Users\\zdl25\\AppData\\Local\\Temp\\pip-install-83rodr64\\mysqlclient\\setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record C:\Users\zdl25\AppData\Local\Temp\pip-record-f544g5zo\install-record.txt --single-version-externally-managed --compile" failed with error code 1 in C:\Users\zdl25\AppData\Local\Temp\pip-install-83rodr64\mysqlclient\
+
+
+原因排查
+
+此类问题需要真正的会看且有耐心去看报错信息，根据报错去分析和思考问题出在哪个环节上，然后一步一步缩减范围，锁定问题原因。cl.exe' failed with exit status 2 基本上都是因为编译过程中缺少必要的依赖库文件所导致的。缺少哪个依赖文件，上面的报错信息就会指出来—— _mysql.c(29): fatal error C1083: 无法打开包括文件: “mysql.h”: No such file or directory。 所以此次报错的原因就出来了，缺少了 mysql.h 这个头文件。
+
+当把mysql.h添加进依赖库后，还会报 [ binary_log_types.h, errmsg.h, my_command.h, my_list.h, mysql_com.h, mysql_time.h, mysql_version.h, mysqld_error.h, mysql/client_plugin.h, mysql/plugin_auth_common.h, mysql/udf_registration_types.h ]。
+
+所以其核心原因在于环境的依赖库中不存在mysql相关的文件。去MySQL官方下载个MySQL-Server包[https://dev.mysql.com/downloads/mysql/?product=community]，zip或者installer均可
+
+，如果本机上已经有MySQL-Server也行，到图中MySQL-Server目录中include中拷贝图中选中的文件及文件夹到依赖库目录中去。
+
+
+依赖库目录在哪？
+
+上面的报错信息我们从下往上倒推，在“mysql.h”: No such file or directory这行往上第二行，报错中的 -IC:\Program Files (x86)\MySQL\MySQL Connector C 6.1\include， 在每一个 -I 后面紧跟的就是系统会查找的库目录。只要其中任何一个路径下能找到报错中需要依赖的头文件就能让安装顺利进行下去。
+
+虽然python的安装目录下的include文件夹也可以存放这些依赖文件，但如果你的系统中安装有多个不同的python版本，那么为了避免复制多分这些依赖文件，还是建议放到其它目录中，这样不同Python版本下安装都没有问题。
+
+
+大功告成了？
+
+只差最后一步了。
+
+以上的依赖库文件添加完之后，还会再依赖一个静态类库文件。这个文件在 MySQL-Server/lib 中。
+
+# 只截取以下关键错误信息贴出
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\x86_amd64\link.exe /nologo /INCREMENTAL:NO /LTCG /DLL /MANIFEST:EMBED,ID=2 /MANIFESTUAC:NO "/LIBPATH:C:\Program Files (x86)\MySQL\MySQL Connector C 6.1\lib\vs14" "/LIBPATH:D:\Program Files\Python\Python37\libs" "/LIBPATH:D:\Program Files\Python\Python37\PCbuild\amd64" "/LIBPATH:C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\LIB\amd64" "/LIBPATH:C:\Program Files (x86)\Windows Kits\10\lib\10.0.10240.0\ucrt\x64" "/LIBPATH:C:\Program Files (x86)\Windows Kits\8.1\lib\winv6.3\um\x64" kernel32.lib advapi32.lib wsock32.lib mysqlclient.lib /EXPORT:PyInit__mysql build\temp.win-amd64-3.7\Release\_mysql.obj /OUT:build\lib.win-amd64-3.7\_mysql.cp37-win_amd64.pyd /IMPLIB:build\temp.win-amd64-3.7\Release\_mysql.cp37-win_amd64.lib /MANIFEST
+LINK : fatal error LNK1181: cannot open input file 'mysqlclient.lib'
+D:\Program Files\Python\Python37\lib\distutils\dist.py:274: UserWarning: Unknown distribution option: 'long_description_content_type'
+  warnings.warn(msg)
+error: command 'C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\BIN\\x86_amd64\\link.exe' failed with exit status 1181
+
+根据以上报错，将 mysqlclient.lib 文件从MySQL-Server那里拷贝到任意一个 /LIBPATH即可！
+
+OK.
+
+
+总结
+
+虽然今天对于我们来说只是mysqlclient这个包的安装问题，但其实还有很多网友在搜索许多类似原因导致的包无法正常安装的问题，比如cudarray, pyltp, Scrapy等等，相信这篇文章一样可以帮助他们找到解决方案。
+
+
+其它
+
+在Stack Overflow上有网友提供了一个较为省事儿的解决办法，直接下载现成的.whl文件到本地进行安装（资源地址：https://www.lfd.uci.edu/~gohlke/pythonlibs/）。
+

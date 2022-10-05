@@ -1,0 +1,16 @@
+背景：
+
+做接口自动化时，有个接口的参数内容很多，可以从excel中读取出来，但是在eval()进行转化时，就报错“'EOL while scanning string literal”，debug模式查看返回的exception,其中一个参数content:{'id':1,'info':[{'age':'18','sex':'女'}].....省略其他参数},eval（）进行转化时，就是检测到这里报错了
+
+错误日志如下：
+
+('EOL while scanning string literal', ('<string>', 2, 13, "'Content':'{\n"))，大概意思是有些匹配的符号找不到，这里其实可以看出来，双引号不匹配
+
+解决方案：
+
+给需要特别注意是否会被转义部分的内容，由原来的单引号或双引号，更改为三引号"""
+
+遇到的第二个问题，传入的参数有false ,null ,提示name'false'not defind
+
+解决方案：将false改为False, null改为''
+

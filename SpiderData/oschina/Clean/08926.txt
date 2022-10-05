@@ -1,0 +1,13 @@
+org.springframework.beans.BeanInstantiationException: Failed to instantiate [XXX]: Specified class is an interface
+
+今天在工作中出现如下报错，开始还以为由于粗心缺少注解（博主项目为springboot+mybatis架构，全部用注解配置）
+
+部分报错如下
+
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [cn.com.depeng.yan.product.dao.PrpdProductDao]: Specified class is an interface
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:68) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1155) ~[spring-beans-4.3.17.RELEASE.jar:4.3.17.RELEASE]
+	... 43 common frames omitted
+
+结果并不是，后来发现居然是在别的包中有同名的sysUserDao类,重命名后果然好使。但是控制台报错也太误导别人了吧
+

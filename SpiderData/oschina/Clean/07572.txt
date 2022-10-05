@@ -1,0 +1,46 @@
+
+问题描述
+
+线上环境使用的是cdh搭建的集群，今天zookeeper报错“no space left on device”，经查为zookeeper的datadir的默认目录（/var/lib/zookeeper）空间所剩无几导致，重新调整了数据的存储目录，再次启动zookeeper，结果报如下错误：
+
+2018-05-07 11:25:07,425 INFO org.apache.zookeeper.server.quorum.QuorumPeerConfig: Reading configuration from: /var/run/cloudera-scm-agent/process/604-zookeeper-server/zoo.cfg
+2018-05-07 11:25:07,446 INFO org.apache.zookeeper.server.quorum.QuorumPeerConfig: Defaulting to majority quorums
+2018-05-07 11:25:07,453 INFO org.apache.zookeeper.server.DatadirCleanupManager: autopurge.snapRetainCount set to 5
+2018-05-07 11:25:07,453 INFO org.apache.zookeeper.server.DatadirCleanupManager: autopurge.purgeInterval set to 24
+2018-05-07 11:25:07,454 INFO org.apache.zookeeper.server.DatadirCleanupManager: Purge task started.
+2018-05-07 11:25:07,460 ERROR org.apache.zookeeper.server.DatadirCleanupManager: Error occured while purging.
+org.apache.zookeeper.server.persistence.FileTxnSnapLog$DatadirException: Missing snap directory /data/var/lib/zookeeper/version-2, automatic data directory creation is disabled (zookeeper.datadir.autocreate is false). Please create this directory manually.
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.<init>(FileTxnSnapLog.java:122)
+	at org.apache.zookeeper.server.PurgeTxnLog.purge(PurgeTxnLog.java:68)
+	at org.apache.zookeeper.server.DatadirCleanupManager$PurgeTask.run(DatadirCleanupManager.java:140)
+	at java.util.TimerThread.mainLoop(Timer.java:555)
+	at java.util.TimerThread.run(Timer.java:505)
+2018-05-07 11:25:07,474 INFO org.apache.zookeeper.server.DatadirCleanupManager: Purge task completed.
+2018-05-07 11:25:07,483 INFO org.apache.zookeeper.server.quorum.QuorumPeerMain: Starting quorum peer
+2018-05-07 11:25:07,497 INFO org.apache.zookeeper.server.NIOServerCnxnFactory: binding to port 0.0.0.0/0.0.0.0:2181
+2018-05-07 11:25:07,512 ERROR org.apache.zookeeper.server.quorum.QuorumPeerMain: Unable to access datadir, exiting abnormally
+org.apache.zookeeper.server.persistence.FileTxnSnapLog$DatadirException: Missing snap directory /data/var/lib/zookeeper/version-2, automatic data directory creation is disabled (zookeeper.datadir.autocreate is false). Please create this directory manually.
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.<init>(FileTxnSnapLog.java:122)
+	at org.apache.zookeeper.server.quorum.QuorumPeer.<init>(QuorumPeer.java:490)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.runFromConfig(QuorumPeerMain.java:138)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:116)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main(QuorumPeerMain.java:79)
+
+
+解决过程
+
+经日志可得，原因为目录  /data/var/lib/zookeeper/version-2 无法自动创建，根据提示可以通过设置属性 zookeeper.datadir.autocreate=true 来解决，或者手动创建该目录并修改所属用户和用户组，处理细节具体如下：
+
+mkdir /data/var/lib/zookeeper/version-2
+chown zookeeper:zookeeper /data/var/lib/zookeeper/version-2
+
+然后重启zookeeper，启动成功。但是，接下来启动hdfs失败，错误日志如下：
+
+FATAL org.apache.hadoop.ha.ZKFailoverController: Unable to start failover controller. Parent znode does not exist.
+
+参考：zookeeper hadoop-ha znode丢失导致hadoop不能failover的解决办法，执行如下命令：
+
+/usr/local/hadoop/bin/hdfs zkfc -formatZK # 重新进入hadoop namenode服务器
+
+然后，重启hdfs，问题解决。
+

@@ -1,0 +1,65 @@
+Java调用Python的的两种方式
+
+1.Runtime
+
+private static String call_python(String input_argv)
+    {
+        String python_py = "C:/Users/lichaoxing/Desktop/python_test.py";
+        String result = null;
+        try {
+            String[] args1 = new String[] { "python", python_py, input_argv};
+            Process proc=Runtime.getRuntime().exec(args1);
+            InputStreamReader stdin=new InputStreamReader(proc.getInputStream());
+            LineNumberReader input=new LineNumberReader(stdin);
+            result = input.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+2.jython
+
+public class jython
+{
+  public static void main(String[] args)throws Exception
+  {
+      try 
+      {
+            PythonInterpreter interpreter = new PythonInterpreter();
+          interpreter.execfile("C:\\Users\\lichaoxing\\Desktop\\hello.py");
+
+PyFunction pyFunction = interpreter.get("hello", PyFunction.class);
+          PyObject pyObject = pyFunction.__call__();
+
+System.out.println(pyObject);
+      }catch(Exception e) 
+      {
+          e.printStackTrace();
+      }
+      
+  }
+}
+
+遇到的问题：
+
+采用jython的方式时，如果python调用了第三方python库的话，就会报错（可能不支持，或者解决办法是指定第三方库的路径，我没试过）
+
+还有一个问题是
+
+它的意思好像是没有权限创建一个缓存文件夹，来为己用（windows下的环境，如果linux可能问题会不同，没试过）
+
+相比使用Runtime的方式会更方便一些，而且支持python来import第三方库
+
+这里特别记录一下，我的python脚本中有读入文件的操作，当时的文件路径是与python在同一文件夹下的，但是java与它们不在同一路径下
+
+导致，运行时，不报错也有输出，最后找到原因就是，被python读的文件路径java是不知道的
+
+（这里很奇怪，明明只是使用java运行一下python脚本，然后python执行，结束将结果输出在输出缓存区，等待java来取，但为什么一定要让java知道这个文件的路径呢）
+
+解决办法：
+
+实验的话，可以直接在python中指定文件的绝对路径
+
+更好的方法，将文件在java中以参数的形式传递给python
+

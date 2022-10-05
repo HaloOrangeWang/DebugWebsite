@@ -1,0 +1,80 @@
+打补丁报错：
+
+[oracle@db01 23054359]$ opatch apply
+Oracle Interim Patch Installer version 11.2.0.3.10
+Copyright (c) 2019, Oracle Corporation.  All rights reserved.
+
+Oracle Home       : /oracle/app/oracle/product/11.2.0
+Central Inventory : /oracle/app/oraInventory
+   from           : /oracle/app/oracle/product/11.2.0/oraInst.loc
+OPatch version    : 11.2.0.3.10
+OUI version       : 11.2.0.4.0
+Log file location : /oracle/app/oracle/product/11.2.0/cfgtoollogs/opatch/opatch2019-05-27_20-37-28PM_1.log
+
+Verifying environment and performing prerequisite checks...
+Prerequisite check "CheckActiveFilesAndExecutables" failed.
+The details are:
+
+Following executables are active :
+/oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+Prerequisite check "CheckActiveFilesAndExecutables" failed.
+The details are:
+
+Following executables are active :
+/oracle/app/oracle/product/11.2.0/lib/libnmemso.so
+UtilSession failed: Prerequisite check "CheckActiveFilesAndExecutables" failed.Prerequisite check "CheckActiveFilesAndExecutables" failed.
+Log file location: /oracle/app/oracle/product/11.2.0/cfgtoollogs/opatch/opatch2019-05-27_20-37-28PM_1.log
+
+OPatch failed with error code 73
+
+解决方案：
+查看文件使用者，并查询文件使用进程号杀掉
+
+[oracle@db01 23054359]$ fuser  /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+/oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1: 25765m 45788m 45931m
+[oracle@db01 23054359]$ 
+[oracle@db01 23054359]$ 
+[oracle@db01 23054359]$ lsof /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+COMMAND   PID   USER  FD   TYPE DEVICE SIZE/OFF   NODE NAME
+emagent 25765 oracle mem    REG    8,5 53793682 920687 /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+java    45788 oracle mem    REG    8,5 53793682 920687 /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+sqlplus 45931 oracle mem    REG    8,5 53793682 920687 /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+[oracle@db01 23054359]$ 
+[oracle@db01 23054359]$ kill -9 45931
+[oracle@db01 23054359]$ kill -9 ^C   
+[oracle@db01 23054359]$ lsof /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+COMMAND   PID   USER  FD   TYPE DEVICE SIZE/OFF   NODE NAME
+emagent 25765 oracle mem    REG    8,5 53793682 920687 /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+java    45788 oracle mem    REG    8,5 53793682 920687 /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+[oracle@db01 23054359]$ 
+[oracle@db01 23054359]$ 
+[oracle@db01 23054359]$ kill -9 45788
+[oracle@db01 23054359]$ lsof /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+COMMAND   PID   USER  FD   TYPE DEVICE SIZE/OFF   NODE NAME
+emagent 25765 oracle mem    REG    8,5 53793682 920687 /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+[oracle@db01 23054359]$ 
+[oracle@db01 23054359]$ 
+[oracle@db01 23054359]$ lsof /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.^C
+[oracle@db01 23054359]$ kill -9 25765
+[oracle@db01 23054359]$ lsof /oracle/app/oracle/product/11.2.0/lib/libclntsh.so.11.1
+
+验证正常：
+
+[oracle@db01 23054359]$ opatch apply
+Oracle Interim Patch Installer version 11.2.0.3.10
+Copyright (c) 2019, Oracle Corporation.  All rights reserved.
+
+Oracle Home       : /oracle/app/oracle/product/11.2.0
+Central Inventory : /oracle/app/oraInventory
+   from           : /oracle/app/oracle/product/11.2.0/oraInst.loc
+OPatch version    : 11.2.0.3.10
+OUI version       : 11.2.0.4.0
+Log file location : /oracle/app/oracle/product/11.2.0/cfgtoollogs/opatch/opatch2019-05-27_20-38-44PM_1.log
+
+Verifying environment and performing prerequisite checks...
+OPatch continues with these patches:   17478514  18031668  18522509  19121551  19769489  20299013  20760982  21352635  21948347  22502456  23054359
+
+Do you want to proceed? [y|n]
+y
+User Responded with: Y
+

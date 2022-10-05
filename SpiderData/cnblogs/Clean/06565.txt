@@ -1,0 +1,22 @@
+python 代码形式（3.6）
+
+conn=pymysql.connect(
+
+host=’127.0.0.1’,
+
+port=3306,
+
+user=’root’,
+
+passwd=’343434’,
+
+db=’kmind8’,
+
+charset=’utf8mb4’,
+
+)
+
+mysql字符编码的问题，将表编码类型改为utf8mb4
+
+是因为mysql不能识别4个字节的utf8编码的字符，抛出了异常，这应该也是问题的根源。将对应字符类型换成将对应的数据类型改为utf8mb4类型，同时连接类型也要改成utf8mb4_general_ci
+

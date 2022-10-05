@@ -1,0 +1,18 @@
+我用Robot Framework做API的自动化测试，因为RIDE最多支持2.8， 所以我在本机安装了Python2.7.12 ，然后在Python2下面安装了requests, pandas等等library，并且将Python2的scripts和lib等加入了环境变量Path中。
+
+但是我需要查看开发的Python代码，他们的工程是用Python3.6开发的，所以为了在IDEA中查看项目就又安装了Python3.6.5，但是这个版本并未加入到环境变量Path中。
+
+所以在cmd查看python版本的时候，只会显示Python2：
+
+此时打开开发Project，并且配置Project SDK是Python 3.6.5， 然后用最常用的方式来安装该Project需要的library，如下所示：
+
+在Python3主目录下执行完命令后，requests安装成功，此时查看所有安装的library列表会发现requests安装成功：
+
+然后就高兴的去开发的project中Rebuild一下project，本来以为 import requests 语句下面的红色波浪线会消失，结果。。。仍然是红色！ 重新bulid还是不行，重新加载并编译还是不行。
+
+然后想到可能是安装有两个版本的Python带来了一小点麻烦，所以就跑到Python3的pip安装目录下面去安装requests library：
+
+此时在查看pip list，发现了问题原来就出在执行命令的路径上：
+
+所以安装了两个Python版本的同学，在安装不同版本下的library的时候，一定要注意在pip所在路径下执行install命令哈。
+

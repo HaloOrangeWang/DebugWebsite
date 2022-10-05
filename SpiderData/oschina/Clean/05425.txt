@@ -1,0 +1,33 @@
+安装php时的报错
+
+checking libxml2 install dir... no
+ checking for xml2-config path... 
+ configure: error: xml2-config not found. Please check your libxml2 installation.
+
+检查是否安装了libxm包
+
+[root@XKWB3403 php-5.3.8]# rpm -qa |grep  libxml2
+ libxml2-2.6.26-2.1.12
+ libxml2-python-2.6.26-2.1.12
+
+重新安装libxml2和libxml2-devel包
+
+yum install libxml2
+
+yum install libxml2-devel -y
+
+安装完之后查找xml2-config文件是否存在
+
+[root@XKWB3403 php-5.3.8]# find / -name "xml2-config"
+ /usr/bin/xml2-config
+
+如果存在的话重新安装php
+
+[root@XKWB3403 php-5.3.8]# ./configure
+
+安装成功的标志是
+
+之后再进行编译
+
+make && make install
+

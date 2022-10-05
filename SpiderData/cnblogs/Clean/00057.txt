@@ -1,0 +1,57 @@
+【背景】
+
+环境： RHEL 7.3
+
+版本： python2.7
+
+【错误情况】
+
+写了一个简单的python脚本 将dict转换为json
+
+脚本如下：
+
+#!/usr/bin/python
+#-*- coding:utf-8 -*-
+
+import json
+
+name = 'jack'
+age= 28
+student_dict = {name:age}
+
+print json.dumps(obj=student_dict)
+
+执行后报错：
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'module' object has no attribute 'dumps'
+
+【排查】
+
+1. 进入python解释器，查看是否存在json模块
+
+# python
+>>> import json
+>>>
+
+==> 没有报错，证明存在此模块
+
+2. 测试是否存在dumps模块并且可用
+
+==> 可用
+
+3. 网络查找：
+
+原来是因为我的脚本命名为json.py， python误认为是json模块的源代码。
+
+本来我要去 json.py找dumps方法，但是现在自己变成了json.py，并且自己也没有定义dumps方法，自然就无法找到了
+
+【总结】
+
+解析json数据时，不要将脚本命名为json.py 或是 simplejson.py
+
+要多了解底层脚本的命名，以免再出现此处的误会
+
+问题查找结果地址：https://stackoverflow.com/questions/11369734/python-json-module-has-no-attribute-dumps
+

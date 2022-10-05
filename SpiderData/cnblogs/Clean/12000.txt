@@ -1,0 +1,17 @@
+报错对于初学者来说，是令人恐惧的，尤其是分析错误时，无从下手。
+
+一、Python报错一般分为三种：
+
+缩进报错  一般报错提示“IndentationError: unindent does not match any outer indentation level”
+
+编码错误  在开发Python程序的过程中，会涉及三个方面的编码，具体如下：（1）Python程序文件编码。编写的程序本身也存在编码一般可以在程序开头加上“#coding=utf-8”或“#coding=gbk”,使程序统一为UTF-8或GBK编码。（2）Python程序运行环境（IDE）编码。不管是 Python 自带的IDLE或是PyCharm，使用的IDE 本身也会有编码。所以要清楚地知道自己的IDE所使用的编码。（如PyCharm设置默认编码：https://jingyan.baidu.com/article/e8cdb32bff1d3237052badd5.html）(3)Python 程序读取外部文件、网页的编码。最容易出现编码问题的情况应该是用Python读取外部文件、网页的时候。首先要确定读取的文件、网页的编码格式，然后通过decode()和encode0方法来进行编码转换。decode 的作用是将其他编码的字符串转换成 Unicode 编码。encode的作用是将 Unicode 编码转换成其他编码的字符串。当我们再遇到 Python的编码问题时，从以上三个方面分析就可以很容易地解决了。
+
+引包错误  如下图,本意是想引用Python的unittest包，可我自己已创建了unittest文件，这相当于自引用了。Python的引包机制，当import一个模块或一个库时，Python会先查找当前目录下是否存在同名的Python文件，如果存在则会优先引用当前目录下的同名文件。所以，要注意给程序的文件或目录的命名。
+
+二、学会分析错误
+新手往往在看到程序抛出的一大堆报错时会变得手足无措，比起一大堆的报错，最难解决的问题是没有任何报错信息，而程序却无法正确地执行。如果能耐心地正确认真阅读报错信息，一般会很容易找到出现错误的原因。
+
+（1）找到自己写的程序。所以前面的一大段信息就没必要看了；根据倒数第二行的提示“File "D:git guestsignlviews py", line 85, in search phone”(views.py文件的第85行 search_phone 函数中)，找到自己写的代码“print(phone)”。
+
+（2）看最终的错误提示。最终的提示为“NameError: name 'phone'is not defined”因“NameError”为错误类型，根据错误类型可以锁定错误范围。“name 'phone' is not defined";常错误提示(名字'phone’没有定义)。结合第一点找到自己写的程序，显然，print()打印的'phone'变量没有定义。
+

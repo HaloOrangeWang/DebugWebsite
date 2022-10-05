@@ -1,0 +1,29 @@
+
+1. 安装pretty-errors
+
+python -m pip install pretty_errors
+
+2.如果你想让你的每一个程序都能这样在报错时也保持美貌，那么运行下面这这行命令，就不用每次都 import pretty_errors 。这是使用pretty_errors的推荐方法；除了更简单和通用之外，使用它意味着SyntaxError异常也会得到prettly格式化（如果手动导入pretty_errors，则这不起作用）。
+
+python -m pretty_errors
+
+如果您还没有安装它，只需导入它，就可以在项目中使用它：
+
+import pretty_errors
+
+注意：要获得颜色输出，您需要在能够输出颜色的终端中运行：在Windows中，这意味着powershell、cmder等。如果必须使用单色终端，则可以调用助手函数pretty_errors.mono（），该函数将以对单色输出有用的方式设置一些配置选项。
+
+如果要配置输出，请使用pretty_errors.configure（）、pretty_errors.whitelist（）、pretty_errors.blacklist（）、pretty_errors.pathed_config（）。例如：
+
+import pretty_errors
+pretty_errors.configure(
+    separator_character = '*', filename_display = pretty_errors.FILENAME_EXTENDED, line_number_first = True, display_link = True, lines_before = 5, lines_after = 2, line_color = pretty_errors.RED + '> ' + pretty_errors.default_config.line_color, code_color = ' ' + pretty_errors.default_config.line_color, truncate_code = True, display_locals = True ) pretty_errors.blacklist('c:/python')
+
+3.通过将环境变量PYTHON_prety_errors设置为0，可以暂时禁用prety_errors。
+
+set PYTHON_PRETTY_ERRORS=0
+
+调用pretty_errors.activate()将覆盖此项。
+
+详见：https://github.com/onelivesleft/PrettyErrors
+

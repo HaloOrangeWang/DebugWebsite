@@ -1,0 +1,30 @@
+升级2.7.3使用命令./configure --prefix=/usr/local/python2.7.3时，出现以下错误：
+checking build system type... x86_64-unknown-linux-gnu
+checking host system type... x86_64-unknown-linux-gnu
+checking for --enable-universalsdk... no
+checking for --with-universal-archs... 32-bit
+checking MACHDEP... linux2
+checking EXTRAPLATDIR... 
+checking for --without-gcc... no
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... configure: error: in `/data/python/Python-2.7.3':
+configure: error: cannot run C compiled programs.
+If you meant to cross compile, use `--host'.
+
+See `config.log' for more details
+
+原因是未安装合适的解释器，解决办法如下：
+
+sudo yum install gcc-c++
+
+然后在重新执行
+
+./configure
+make
+make instal
+
+问题的解决也是我在网上找了很多帖子解决的，非原创，只是很难找，所有梳理了一下写给大家
+

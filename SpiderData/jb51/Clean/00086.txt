@@ -1,0 +1,52 @@
+问题描述：
+
+windows安装python mysqldb时报错python version 2.7 required,which was not found in the registry
+
+网上很多方案，比如方案一：
+
+Python3.x时， from _winreg import *  改为 from winreg import * 去掉下划线
+
+import sys  
+ from _winreg import *  
+# tweak as necessary  
+version = sys.version[:3]  
+installpath = sys.prefix  
+regpath = "SOFTWARE\\Python\\Pythoncore\\%s\\" % (version)  
+installkey = "InstallPath"  
+pythonkey = "PythonPath"  
+pythonpath = "%s;%s\\Lib\\;%s\\DLLs\\" % (  
+  installpath, installpath, installpath  
+)  
+def RegisterPy():  
+  try:  
+    reg = OpenKey(HKEY_CURRENT_USER, regpath)  
+  except EnvironmentError as e:  
+    try:  
+      reg = CreateKey(HKEY_CURRENT_USER, regpath)  
+      SetValue(reg, installkey, REG_SZ, installpath)  
+      SetValue(reg, pythonkey, REG_SZ, pythonpath)  
+      CloseKey(reg)  
+    except:  
+      print "*** Unable to register!"  
+      return  
+    print "--- Python", version, "is now registered!"  
+    return  
+  if (QueryValue(reg, installkey) == installpath and  
+    QueryValue(reg, pythonkey) == pythonpath):  
+    CloseKey(reg)  
+    print "=== Python", version, "is already registered!"  
+    return  
+  CloseKey(reg)  
+  print "*** Unable to register!"  
+  print "*** You probably have another Python installation!"  
+if __name__ == "__main__":  
+  RegisterPy()
+
+方案二：
+
+这种也是我遇到的情况，是因为你的MySQLdb与python的版本不匹配，你要下载匹配的版本即可
+
+总结
+
+以上所述是小编给大家介绍的安装python时MySQLdb报错的问题描述及解决方法，希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+

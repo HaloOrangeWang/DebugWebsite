@@ -1,0 +1,57 @@
+我在做一个本地读取mongodb的时候，遇到报错，代码如下：
+
+path = '/Users/jkxuan/Desktop/walden.txt'
+with open(path, 'r') as f:
+    lines = f.readlines()
+    for index, line in enumerate(lines): # enumerate是内建函数，与for in 区别是它循环出的结果有编号排序
+        data = {
+            'index': index,
+            'line': line,
+            'words': len(line.split())
+        }
+        print(data)
+
+报错内容：
+
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xca in position 0: ordinal not in range(128)
+
+
+解法一
+
+首先我想到的是我忘记添加编码,找到一段文字如下：
+
+Python 3的字符串使用Unicode，直接支持多语言。
+
+由于Python源代码也是一个文本文件，所以，当你的源代码中包含中文的时候，在保存源代码时，就需要务必指定保存为UTF-8编码。当Python解释器读取源代码时，为了让它按UTF-8编码读取，我们通常在文件开头写上这两行：
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+但是添加后还是原样报错，因为我这里是读取文件的格式不对，而不是代码中包含中文字符。
+
+于是，我又修改了代码：
+
+with open(path, 'r', encoding = 'utf-8') as f:
+
+没想到又报错：
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xca in position 0: invalid continuation byte
+
+仔细一看，应该是我所读取的文档不是utf-8格式，而是GBK,好了，终于读取成功。
+
+with open(path, 'r',encoding='GBK') as f:
+
+
+解法二
+
+最稳妥的还是去修改我的TXT，将它改成utf-8格式
+
+
+衍生阅读
+
+GBK是在国家标准GB2312基础上扩容后兼容GB2312的标准（好像还不是国家标准）。GBK编码专门用来解决中文编码的，是双字节的。不论中英文都是双字节的。
+
+UTF－8 编码是用以解决国际上字符的一种多字节编码，它对英文使用8位（即一个字节），中文使用24位（三个字节）来编码。对于英文字符较多的论坛则用UTF－8 节省空间。另外，如果是外国人访问你的GBK网页，需要下载中文语言包支持。访问UTF-8编码的网页则不出现这问题。可以直接访问。
+
+GBK包含全部中文字符；UTF-8则包含全世界所有国家需要用到的字符。
+

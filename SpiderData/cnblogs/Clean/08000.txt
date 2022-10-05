@@ -1,0 +1,33 @@
+
+问题
+
+云端项目上有一个api通过HTTP/GET请求调用返回json数据
+
+使用Python自带requests库发送GET请求查询数据报错如下
+
+
+分析
+
+使用Chrome浏览器可以正常显示返回值，F12检察元素查看GET返回Headers内容。
+
+显然Response Headers中status code给错了
+
+看了眼response内容本身没问题
+
+暂时屏蔽status code校验优先对内容进行测试
+
+
+解决
+
+将status code强制赋值为200抑制错误
+
+溯源response函数得知调用关系为requests -> urllib -> http
+
+重写class比较复杂，直接修改ConnectionError源码位于python/lib/http/client.py > HTTPResponse > _read_status
+
+找到
+
+改为
+
+OK！测完记得改回来
+

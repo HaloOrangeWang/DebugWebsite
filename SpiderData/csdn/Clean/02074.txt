@@ -1,0 +1,35 @@
+
+强烈建议使用pymysql  替代mysql-python
+
+今天电脑重装系统，所有软件都重装一遍，MySQLdb模块一直装不好，纠结了好久，终于解决，方法分享给大家。 MySQLdb模块安装：
+
+1、下载MySQL-pyhon模块，网站为：https://pypi.python.org/pypi/MySQL-python/
+
+2、解压，进入目录，修改site.cfg文件13行，取消注释，将原路径mysql_config = /usr/local/bin/mysql_config，改为新的mysql_config = /usr/local/mysql/bin/mysql_config(mysql_config路径，不知道的可以使用whereis命令查询路径)， 保存；
+
+3、修改setup_posix.py 文件第27行，将原路径mysql_config.path = "mysql_config"改为mysql_config.path = "/usr/local/mysql/bin/mysql_config"，保存；
+
+4、将export DYLD_LIBRARY_PATH=/usr/local/mysql/lib/（路径为mysql安装路径，写完自己mysql安装路径即可）加入当 前用户家目录下的.bash_profile或者/etc/profile文件中，.bash_profile是当前登录用户的环境变量，/etc /profile是系统环境变量，然后执行命令 soure .bash_profile或者source /etc/profile;
+
+5、安装，执行python setup.py build 和python setup.py install ；
+
+6、验证，进入python交互式命令行，import MySQLdb，不报错即安装成功；
+
+7、该解决方案适用于Macosx、Centos、Redhat、Ubuntu、Windows。
+
+
+1.  EnvironmentError: mysql_config not found
+
+解决方法：
+
+apt-get install libmysqlclient-dev
+
+
+2 .  unable to execute 'x86_64-linux-gnu-gcc': No such file or directory
+
+
+
+解决方法：
+
+apt-get install gcc
+

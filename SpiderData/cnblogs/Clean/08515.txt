@@ -1,0 +1,18 @@
+1、ModuleNotFoundError: No module named 'sklearn.cross_validation
+
+sklearn已经将cross_validation合并到model_selection
+
+from sklearn.model_selection import KFold
+
+2、TypeError: shuffle must be True or False; got 5
+
+添加shuffle=False，删掉第一个参数位的值
+
+kf=KFold(5,random_state=1,shuffle=False)
+
+shuffle并不是必须的，可以删掉
+
+3、TypeError: 'KFold' object is not iterable
+
+for iteration, indices in enumerate(kf.split(y_train), start=1):
+

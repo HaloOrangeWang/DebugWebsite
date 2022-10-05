@@ -1,0 +1,20 @@
+第一步：vi /usr/bin/yum  把#! /usr/bin/python修改为#! /usr/bin/python2
+
+第二步：vi /usr/libexec/urlgrabber-ext-down  把#! /usr/bin/python 修改为#! /usr/bin/python2
+
+yum恢复；
+
+但在执行firewall-cmd --state时报错：
+
+[root@linux-centos7 ~]# firewall-cmd 
+Traceback (most recent call last):
+  File "/usr/bin/firewall-cmd", line 24, in <module>
+    from gi.repository import GObject
+ModuleNotFoundError: No module named 'gi'
+
+那么继续可以在这个问题上使用：
+
+第一步，vim /usr/bin/firewall-cmd， 将#！/usr/bin/python -Es 改为 #！/usr/bin/python2 -Es（到目前为止，上面提到的问题已解决）
+
+第二步，vim /usr/sbin/firewalld,  将#！/usr/bin/python -Es 改为 #！/usr/bin/python2 -Es (这一步是针对于防火墙报错，进行的修改)
+

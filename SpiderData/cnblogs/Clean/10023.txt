@@ -1,0 +1,62 @@
+一个方法是这篇博文里面提到的   https://blog.csdn.net/qq_43657442/article/details/105822953
+
+@
+
+目录为什么pip会很慢？解决办法临时配置永久配置
+
+目录
+
+为什么pip会很慢？
+
+解决办法临时配置永久配置
+
+临时配置
+
+永久配置
+
+
+为什么pip会很慢？
+
+pip是一个非常流行的python包管理工具，在命令行中只需要输入pip install 你要安装的库，就可以自动安装第三方库。然而pip是从pypi中下载库文件的，pypi是python官方第三方库的仓库，它用的是国外的服务器，下载速度自然很慢。
+
+所以，慢是因为要去国外服务器上下载，国内的访问速度你懂的。
+
+
+解决办法
+
+通过国内镜像网站下载。镜像网站完整复制pypi的内容，放到国内的服务器上。这样你只需要把pip的下载源修改为镜像站，就能享受流畅快速的pip安装功能了。
+
+
+临时配置
+
+像上面这段代码就是指定从清华的镜像网站上下载  pandas
+
+我们用的时候直接输入 pip install 你要安装的库 -i https://pypi.tuna.tsinghua.edu.cn/simple   就可以了
+
+当然 ， https://pypi.tuna.tsinghua.edu.cn/simple 清华镜像你也可以换成其他的国内镜像
+
+豆瓣http://pypi.douban.com/simple
+
+豆瓣http://pypi.douban.com/simple
+
+阿里   http://mirrors.aliyun.com/pypi/simple/
+
+阿里   http://mirrors.aliyun.com/pypi/simple/
+
+中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple
+
+中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple
+
+
+永久配置
+
+上面的用法是临时配置，也就是说每次安装库时必须带上镜像源的网址。其实这样不太方便，若想省力气，那就要永久配置镜像源，配置好后只要输入pip install 你要安装的库，就可以快速安装库了。
+
+以配置清华源为例，在命令行输入：
+
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+然后回车，就可以了，想配置其他的镜像也一样照葫芦画瓢就好了
+
+不过也有人反应永久配置阿里的存在被墙的情况，所以大家自己考虑，清华和中科大的应该比较稳
+

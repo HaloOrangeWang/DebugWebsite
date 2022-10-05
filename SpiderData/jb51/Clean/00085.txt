@@ -1,0 +1,28 @@
+修改HTMLTestRunner.py以支持python3+
+
+搜索到的结果整理
+
+修改一： 在python shell里输入 >>>import HTMLTestRunner >>> dir(HTMLTestRunner) 发现不认识StringIO （No module named StringIO）
+
+确实3里面没有这个了，第94行引入的名称要改，改成import io，539行要改成self.outputBuffer = io.BytesIO()
+
+修改二： 运行程序的时候有报错，AttributeError: ‘dict' object has no attribute ‘has_key' 发现has_key的又被K掉了
+
+到642行去做修改，if not rmap.has_key(cls): 需要换成 if not cls in rmap: （修改的时候换行、空格等不要改掉原有的格式）
+
+修改三： 运行，继续有报错：'str' object has no attribute ‘decode'
+
+好像是3里面对字符的操作，decode已经拿掉了。定位一下，报在了772行，ue = e.decode(‘latin-1')，那么不需要decode操作了吧，直接改成 ue = e ，另外766还有类似的uo = o.decode(‘latin-1')，可不动先留着；
+
+打开本地文件需用 fp = open(filename,'wb')，不要再去用file了；关闭该文件可用fp.close()
+
+修改四： 继续运行，发现还是在纠结数据类型的错： output = saxutils.escape(uo+ue), TypeError: can't concat bytes to str
+
+bytes和str不能直接连起来，那么778行的内容escape(uo+ue) 有一个处理的“笨办法”：都改成str，可修改该处内容为escape(str(uo)+ue)
+
+修改五：（此处是最后一处改动了） 程序已然运行大半，但是最后还是有error： print >>sys.stderr, ‘\nTime Elapsed: %s' % (self.stopTime-self.startTime) TypeError: unsupported operand type(s) for >>: ‘builtin_function_or_method' and ‘RPCProxy'
+
+到631行，把print的语句修改掉，改成 print (sys.stderr, ‘\nTime Elapsed: %s' % (self.stopTime-self.startTime))
+
+以上这篇解决python3运行selenium下HTMLTestRunner报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

@@ -1,0 +1,104 @@
+错误信息
+
+PS D:\parttime\python\django\guanxiangzhiji> python manage.py migrate
+Operations to perform:
+ Apply all migrations: admin, auth, contenttypes, sessions
+Running migrations:
+Traceback (most recent call last):
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\utils.py", line 82, in _execute
+ return self.cursor.execute(sql)
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\oracle\base.py", line 510, in execute
+ return self.cursor.execute(query, self._param_generator(params))
+cx_Oracle.DatabaseError: ORA-02000: missing ALWAYS keyword
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+ File "D:\app\anaconda\lib\site-packages\django\db\migrations\recorder.py", line 67, in ensure_schema
+ editor.create_model(self.Migration)
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\base\schema.py", line 307, in create_model
+ self.execute(sql, params or None)
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\base\schema.py", line 137, in execute
+ cursor.execute(sql, params)
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\utils.py", line 99, in execute
+ return super().execute(sql, params)
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\utils.py", line 67, in execute
+ return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\utils.py", line 76, in _execute_with_wrappers
+ return executor(sql, params, many, context)
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\utils.py", line 84, in _execute
+ return self.cursor.execute(sql, params)
+ File "D:\app\anaconda\lib\site-packages\django\db\utils.py", line 89, in __exit__
+ raise dj_exc_value.with_traceback(traceback) from exc_value
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\utils.py", line 82, in _execute
+ return self.cursor.execute(sql)
+ File "D:\app\anaconda\lib\site-packages\django\db\backends\oracle\base.py", line 510, in execute
+ return self.cursor.execute(query, self._param_generator(params))
+django.db.utils.DatabaseError: ORA-02000: missing ALWAYS keyword
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+ File "manage.py", line 21, in <module>
+ main()
+ File "manage.py", line 17, in main
+ execute_from_command_line(sys.argv)
+ File "D:\app\anaconda\lib\site-packages\django\core\management\__init__.py", line 381, in execute_from_command_line
+ utility.execute()
+ File "D:\app\anaconda\lib\site-packages\django\core\management\__init__.py", line 375, in execute
+ self.fetch_command(subcommand).run_from_argv(self.argv)
+ File "D:\app\anaconda\lib\site-packages\django\core\management\base.py", line 323, in run_from_argv
+ self.execute(*args, **cmd_options)
+ File "D:\app\anaconda\lib\site-packages\django\core\management\base.py", line 364, in execute
+ output = self.handle(*args, **options)
+ File "D:\app\anaconda\lib\site-packages\django\core\management\base.py", line 83, in wrapped
+ res = handle_func(*args, **kwargs)
+ File "D:\app\anaconda\lib\site-packages\django\core\management\commands\migrate.py", line 234, in handle
+ fake_initial=fake_initial,
+ File "D:\app\anaconda\lib\site-packages\django\db\migrations\executor.py", line 91, in migrate
+ self.recorder.ensure_schema()
+ File "D:\app\anaconda\lib\site-packages\django\db\migrations\recorder.py", line 69, in ensure_schema
+ raise MigrationSchemaMissing("Unable to create the django_migrations table (%s)" % exc)
+django.db.migrations.exceptions.MigrationSchemaMissing: Unable to create the django_migrations table (ORA-02000: missing ALWAYS keyword)
+
+环境情况
+
+1、操作系统：Win10 64bit
+
+2、Python版本：3.7.3
+
+3、django版本：2.2.4
+
+4、Oracle版本：11.2.0.4
+
+5、cx_oracle版本：7.0.0
+
+6、settings配置
+
+原因分析
+
+从错误提示ORA-02000: missing ALWAYS keyword看，是SQL语法错误，创建表的时候使用了Always这个关键词。 Always是在Oracle12c的新特性自增序列里用到的，语法如下：
+
+generated-column-spec
+[ GENERATED { ALWAYS | BY DEFAULT } AS IDENTITY 
+[ ( START WITH IntegerConstant 
+[ ,INCREMENT BY IntegerConstant] ) ] ] ]
+
+但是，我机器上用的是Oracle11.2.0.4版本，这个语法在11g版本里执行自然就会报ORA-02000的错误。
+
+解决方案
+
+看了网上的一些解决方案，主要有2种：
+
+（1）将Oracle升级到12c
+
+（2）将cx_oracle降低版本
+
+刚开始选用方案（2），觉得简单，但是实际操作下来，问题一环套一环，比如说将cx_oracle降低版本后，接着出现了django版本与cx_oracle版本不适应的情况，接着又降低django版本。。。接着做还是不行，最终放弃了。不知道有没有人成功过。
+
+重新选择方案（1），装了Oracle12.1.0.2
+
+再将django和cx_oracle升级回最新版本，migrate的时候就成功了
+
+以上这篇解决django migrate报错ORA-02000: missing ALWAYS keyword就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

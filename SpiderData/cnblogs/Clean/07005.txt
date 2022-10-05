@@ -1,0 +1,36 @@
+在读取桌面文件的时候一直报错：(unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape
+一开始写的：
+
+xlsx = pd.ExcelFile('C:\Users\yujiawen\Desktop\新建 Microsoft Excel 工作表.xlsx')
+
+后来发现，在Python中\是转义符，\u表示其后是UNICODE编码，因此\User在这里会报错，在字符串前面加个r表示就可以了
+
+xlsx = pd.ExcelFile(r'C:\Users\yujiawen\Desktop\新建 Microsoft Excel 工作表.xlsx')
+
+或者
+
+xlsx = pd.ExcelFile('examples/ex1.xlsx')
+
+C:/Users/yujiawen/Desktop/这种反斜杠
+
+在读取桌面文件的时候一直报错：(unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape
+
+一开始写的：
+
+xlsx = pd.ExcelFile('C:\Users\yujiawen\Desktop\新建 Microsoft Excel 工作表.xlsx')
+
+后来发现，在Python中\是转义符，\u表示其后是UNICODE编码，因此\User在这里会报错，在字符串前面加个r表示就可以了
+
+xlsx = pd.ExcelFile(r'C:\Users\yujiawen\Desktop\新建 Microsoft Excel 工作表.xlsx')
+
+或者
+
+xlsx = pd.ExcelFile('examples/ex1.xlsx')
+
+C:/Users/yujiawen/Desktop/这种反斜杠
+
+转自：
+作者：渔家傲_俞
+链接：https://www.jianshu.com/p/57d1012783d9
+来源：简书
+

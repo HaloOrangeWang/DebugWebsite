@@ -1,0 +1,60 @@
+一、问题描述
+
+　　在亚马逊云服务器使用Nginx+uwsgi部署django项目时，项目可以使用python manage.py runserver正常运行，uwsgi测试也没问题，Nginx也正常启动，nginx.conf和uwsgi.ini的配置也正确，使用uwsgi --ini uwsgi.ini运行项目时，报错：
+
+ImportError: libssl.so.10: cannot open shared object file: No such file or directory
+
+unable to load app 0 (mountpoint='') (callable not found or import error)
+
+　　根据报错信息，说明libssl.so.10找不到应用，从网上查了很多资料，大部分的解决方法是制作软连接，但是这个问题依然存在，咨询专业的前辈，大佬指出是python肯定是编译安装的，用的源码不好，少装了插件，的确被说中了。
+
+二、解决方案
+
+　　第一种：修改环境变量LD_LIBRARY_PATH，加入所在的目录的就可以了，可以治标，但是编译安装的python隐患依然存在，说不定下次会出什么幺蛾子，大佬不建议这样不治本的方式，推荐第二种方案。
+
+　　第二种：完全卸载python，重新使用工具安装，具体步骤：
+
+　　完全卸载编译安装的python(我安装的是python3.6.1)：
+
+$cd /usr/local        进入安装目录
+
+$ sudo rm -rf python3    删除安装目录
+
+$ cd /usr/bin   进入当时制作的软连接目录
+
+$ sudo rm -rf python3  删除制作的软连接
+
+$ sudo vim ~/.bash_profile   编辑当时做的路径（将  /usr/local/python3  改为  $HOME)
+
+$ sudo find / -name Python-3.6.1   查找当时安装包及已解压的包，cd 进入目录
+
+$ sudo rm -rf Python-3.6.1
+
+$ sudo rm -rf Python-3.6.1.tgz    至此，恢复如初
+
+　　安装python3（以下方式挑一种）：
+
+$ sudo yum install python3
+
+$ brew install python3
+
+安装完成后，测试：
+
+$ python3 -V
+
+Python 3.6.5
+
+$ python
+
+Python 3.6.5 (default, Apr 26 2018, 20:07:20)
+
+[GCC 5.4.0 20160609] on linux
+
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>>
+
+三、后续
+
+　　重装了python3后，项目环境中的python解释器路径需要修改，或者删除环境后，使用python3 -m venv （环境名）,重新创建环境。
+

@@ -1,0 +1,25 @@
+开发的程序在我的本地mac上，ubuntu上，以及树莓派上都成功实现了迁移和运行，但是当准备将运行好好地程序迁移到阿里云的服务器上的mysql数据库上时，出现了非常多的幺蛾子的问题。
+
+具体如下：
+
+初始化连接，执行python manage.py makemigrations; python manage.py migrate 生成部分表格（不全），报错。报错信息如下：
+
+
+Specified key was too long; max key length is 767 bytes
+
+由于所有的报错信息都是django的内部信息，无法判断具体错误在哪一段代码上。在网上找了各种资料，mysql版本等多种问题均未不是我想要的解决方案，因为本身确认没问题。
+
+又遇上了Django从1.11.7升级到2.0的情况，看谁都像坏人。只能耐心地将django版本库升级到最新版后，将系统跑起来。在树莓派上测试还是ok，阿里云还是死。。。
+
+后面又是逐步调整，把可能的所有的对象都搞了一遍，没有定位到错误。最后选择新建一个新的django项目，将models中的表一张张移过来，马上发现varchar(256)改成255后就可以成功运行了。终于找到了问题所在。后面就是调试定位具体的原因。
+
+下面的代码是models.py中的两个varchar(256)的表。
+
+from django.db import models
+
+# Create your models here.
+
+逐步调整，最终发现，Company表中的varchar(256)也不会出错。最后的原因在于在Tags中，tag_name这个字段做了一个联合唯一， 阿里云对mysql索引做了限制，索引的长度不能超过255。
+
+这就是一个字引发的血案。
+

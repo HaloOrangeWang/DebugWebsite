@@ -1,0 +1,140 @@
+
+安装ggplot
+
+
+1、pip安装ggplot
+
+python -m pip install -U ggplot （如果你的cmd是管理员运行就不用加-U。还有就是如果你的python版本兼容就不需要加python -m这个，直接pip就可）
+
+
+报错：
+
+
+AttributeError: module 'pandas' has no attribute 'tslib'还有No module named 'pandas.lib'
+
+原因：pandas的tslib被弃用，ggplot太久没人维护，源码中没有做出相应的跟进，需要自己去文件中修改
+
+
+解决方法：
+
+https://blog.csdn.net/weixin_43886949/article/details/102809595
+
+
+报错：
+
+
+ModuleNotFoundError: No module named 'mpl_toolkits.mplot3d'
+
+
+解决方法：
+
+python -m pip install mpl_toolkits
+
+
+报错：
+
+
+No module named 'xxx'
+
+
+解决方法：
+
+在pycharm控制台输入python -m pip install xxx，没有安装的就会安装最新版本，安装过的会显示在哪个路径下面，比如我的好几个包都是在anaconda的lib\site-packages下或者是在python37的lib\site-packages下，就把对应的包复制到pycharm运行项目的lib\site-packages中下
+
+
+报错：
+
+
+AttributeError: module 'sip' has no attribute 'setapi'
+
+原因：matplotlib最新版本与其它版本不兼容，我安装的是最新的3.3.2。有以下两种解决方法
+
+
+解决方法：
+
+1.将matplotlib降级
+
+python -m pip install matplotlib==3.3.0
+
+2.因为最新版本应当可以向下兼容，所以还可采用安装pyqt5解决
+
+python -m pip install pyqt5
+
+具体步骤向下看
+
+
+使用国内镜像安装pyqt5
+
+
+1、pip 安装 pyqt5
+
+python -m pip install -U pyqt5
+
+安装pyqt5，发现pycharm安装实在太慢了，于是采用国内的镜像网站下载
+
+目前国内比较好用的pypi源有：
+
+http://mirrors.aliyun.com/pypi/simple/          阿里云
+
+http://pypi.douban.com/simple/                     豆瓣
+
+https://pypi.mirrors.ustc.edu.cn/simple/         中国科技大学
+
+http://pypi.mirrors.opencas.cn/simple/           中科院
+
+https://pypi.tuna.tsinghua.edu.cn/simple/       清华大学
+
+
+2、使用国内pypi源安装（以豆瓣为例）
+
+安装完pyqt5之后，发现C:\Users\dell\AppData\Local\Programs\Python\Python37\Lib\site-packages\PyQt5下没有designer.exe，于是安装pyqt5-tools，这个里面有designer.exe。仍然采用上述镜像安装
+
+python -m pip install pyqt5-tools -i http://pypi.douban.com/simple/需要下载的模块名
+
+PS:如果pyqt5和pyqt5-tools是安装在C:\Users\dell\AppData\Local\Programs\Python\Python37\Lib\site-packages\下，就要把相关包复制粘贴在pycharms运行项目对应的\Lib\site-packages路径下，比如我的就是E:\Pycharm\DateScience\第4章\venv\Lib\site-packages下。
+
+
+使用pypi源报错：
+
+
+The repository located at mirrors.aliyun.com is not a trusted or secure host and is being ignored.
+
+
+解决方法：
+
+https://blog.csdn.net/Ximerr/article/details/104736271/
+
+
+安装pyqt5-tools时报错：
+
+
+ERROR: Cannot unpack file C:\Users\admin\AppData\Local\Temp\pip-unpack-yo8pmupp\simple.htm (downloaded from C:\Users\admin\AppData\Local\Temp\pip-req-build-bscsadf5, content-type: text/html); cannot detect archive format ERROR: Cannot determine archive format of C:\Users\admin\AppData\Local\Temp\pip-req-build-bscsadf5
+
+
+解决方法：
+
+python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn 加你想要下载的东西
+
+例如：我要下载pyqt5-tools
+
+python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn pyqt5-tools
+
+结果如图：
+
+
+配置pyqt5的环境变量
+
+
+pycharm运行调用pyqt5的代码报错：
+
+
+this application failed to start because no Qt platform plugin could be initi...
+
+原因：没有配置plugins的环境变量
+
+
+解决方法：
+
+https://www.pianshen.com/article/49361217709/
+
+

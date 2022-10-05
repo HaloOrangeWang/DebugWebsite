@@ -1,0 +1,89 @@
+前言
+
+今天学习Django框架，用ajax向后台发送post请求，直接报了403错误，说CSRF验证失败；先前用模板的话都是在里面加一个 {% csrf_token %} 就直接搞定了CSRF的问题了；很显然，用ajax发送post请求这样就白搭了；
+
+文末已经更新更简单的方法，上面的略显麻烦
+
+上网上查了一下，看了几个别人的博客，才知道官网也早有说明解决办法，大致流程就是：
+
+就是新建一个JavaScript文件，然后把网上给的代码粘贴进去，然后在你使用ajax的页面把它引入一下；当然，如果你在网上找到的解决代码包含JQuery的话，那就需要在引入的JQuery之后引入了（毕竟解决代码不唯一，网上一找一堆，基本都是对的，原生JS和带JQuery的都有）；
+
+文末会附上我使用的JS相关代码，也可以去网上找！
+
+如果上述没有解决你的问题，那就说明你和我踩了同样的一个小坑........
+
+用了上面查到的方法，直接就解决了我的问题，但是随着我对代码修修改改、清除了相关页面的cookie，吃个饭再运行，竟然又报403的CSRF错误了；百思不得其解的我又去Django官网看了一下相关部分的文档，一堆英文看看大概找到了问题；
+
+我发现我把html页面里面原先加的 {% csrf_token %} 这个东西给删掉了，加上谷歌的相关页面cookie被我一清除，csrftoken就被咔嚓了，再刷新页面，去html页面里也找不到 {% csrf_token %} ，没有了csrftoken那个cookie值，即使有相关的JS代码也毛用没有了；
+
+打个比方：
+
+你吃饭需要工具，也就是筷子，但是饭都没有，你拿个筷子吃什么呀！！！
+
+这里的筷子就是解决问题的JS代码，而饭就是这个 {% csrf_token %} ，更确切说因该是浏览器中的叫 csrftoken 的 cookie；
+
+两者都有了，才能彻底解决吃饭的问题；
+
+总结下来：
+
+使用ajax发送post请求时，html页面里一定要有 {% csrf_token %}，在body里应该就没什么大问题；
+
+然后引入相关的JS解决代码；
+
+补充一下，和表单没什么太大关系，因为我的html页面里就没有表单，直接通过点击按钮发送的ajax请求；
+
+需要引入的相关JS代码
+
+$(document).ajaxSend(function(event, xhr, settings) {
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = jQuery.trim(cookies[i]);
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  function sameOrigin(url) {
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+      (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+      // or any other URL that isn't scheme relative or absolute i.e relative.
+      !(/^(\/\/|http:|https:).*/.test(url));
+  }
+  function safeMethod(method) {
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+ 
+  if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+  }
+});
+
+简单方法
+
+首先在你需要发起ajax post请求的页面的里面随便一个地方加上 {% crsr_token %}
+
+然后浏览器里查看源码，会有这么一个隐藏标签：<input type="hidden" name="csrfmiddlewaretoken" value="jlYb5LCP21TxGapw7OuO0xbHmRnyFzlgDapiDl1M1Vp6dOjPM4BlHOgOVeuPYQ27">
+
+在发起ajax post 请求时，组织json参数时，以下面这种方式使其成为参数，前两个参数是我自定义的请自行忽略，其中键值对中的键名为input标签的name名，值就为其value值
+
+csrf = $('input[name="csrfmiddlewaretoken"]').val();
+
+params = {'sku_id': sku_id, 'count': count, 'csrfmiddlewaretoken': csrf};
+
+这样就可以把csrf中的参数传递给后端，就不会有403错误了，相比前面用了好大一段JS代码要简洁的多
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

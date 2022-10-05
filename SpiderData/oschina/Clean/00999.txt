@@ -1,0 +1,34 @@
+通常情况下
+
+cmd /k (python.exe文件所在路径) "$(FULL_CURRENT_PATH)"&PAUSE&EXIT
+
+就ok了，路径里有空格就不一样了，比如我这种：D:\Python\Python 3.6.8,
+
+我的Python 3.6.8文件夹被吃了。。。都是空格的错。。。
+
+这里你可以去改文件夹名，同时改环境变量，但打开dos窗口执行pip等python命令时又会报错。
+
+捣鼓半天变成下面这样就ok了
+
+cmd /k D:&cd \Python\Python 3.6.8\&python "$(FULL_CURRENT_PATH)"&PAUSE&EXIT
+
+解释：
+
+cmd ：打开命令提示符程序
+
+/k ：执行后面的命令，相当于把后面的内容复制到命令提示符里执行
+
+D:：打开D盘
+
+cd：打开python.exe文件路径
+
+python：执行python命令
+
+$(FULL_CURRENT_PATH) ：Notepad++的宏定义，获取当前文件路径，在cmd里需要用双引号将路径括起来。
+
+& ：连接多条命令，x & y & z 意味着先执行x，然后执行y，然后执行z
+
+pause、exit 为cmd的指令，指暂停、退出
+
+所以整条命令的意思就是，打开cmd，执行python.exe，运行当前文件，运行结束暂停，按任意键退出cmd。
+

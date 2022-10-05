@@ -1,0 +1,24 @@
+背景：由于需要读取的文件编码与系统环境编码的不同，比如繁体windows系统读取简体的csv文档，经常会出现一些难以解决的编码问题，也是试了网上许多方法均不得解，最终采取
+改变Python标准输出的默认编码来解决。
+
+常见报错：1、ValueError: Expected 2 fields in line 2, saw 3
+                  2、UnicodeEncodeError: 'cp950' codec can't encode character '\u76d8' in position 388: illegal multibyte sequence
+
+解决方案：
+
+Python3:
+
+import io
+
+import sys
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8') #改变标准输出的默认编码
+
+Python2:
+
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding('utf8') #改变标准输出的默认编码
+

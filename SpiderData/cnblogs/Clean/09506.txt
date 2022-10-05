@@ -1,0 +1,22 @@
+报错 DatabaseError: DPI-1047: Cannot locate a 64-bit Oracle Client library: “The specified module could not be found”
+
+pycharm是64位
+
+oracle客户端是64位
+
+python是64位
+
+三者必须一致，若不一致，重装oracle
+
+在此前提下，还报以上错误，说明pycharm运行时没有引用你自己装的oracle，进而导致版本冲突
+
+解决方案：
+
+1、将Oracle的安装目录~\instantclient_19_10添加到环境变量Path中
+
+2、将Oracle客户端安装目录下的所有dll文件（不止oci.dll、oraocci11.dll、oraociei11.dll）拷贝至Anaconda的根目录下（此时各dll文件与python.exe同级）
+
+我的oracle client比较新
+
+成功解决
+

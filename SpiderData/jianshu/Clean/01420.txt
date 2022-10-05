@@ -1,0 +1,9 @@
+最近在学习爬虫，用的是conda的虚拟环境，然后遇到了这个问题，以下是ide的报错：
+
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.baidu.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:581)'),))
+
+查了网上的解决办法，说是在进行GET请求时，SSL证书的问题，当指定headers的User-Agent时,百度的服务器会重定向到https的网址.因此报出SSL验证失败的错误。我也觉得可能是端口的问题，于是用网上的各种解决办法，发现都不能解决问题。奇怪的是和我在同一个网段的朋友访问都能正常返回，于是经过多种测试后，发现其实是虚拟环境的问题，虽然不知道具体问题出在哪，但是新建了一个虚拟环境之后，是可以在这个环境下正常访问的。
+
+
+解决办法如下：使用conda新建一个虚拟环境运行爬虫的request请求
+

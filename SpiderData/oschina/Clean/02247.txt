@@ -1,0 +1,73 @@
+因工作需要，需要在服务器中写一个定时任务，定时把redis数据库中的数据查询出来存放在mysql数据库中，奈何没写过shell脚本，只能用python代替了。确定好思路开始行动。
+
+
+写脚本
+
+#!/usr/local/bin/pyhton
+import redis
+import pandas
+import numpy
+import pymysql
+from sqlalchemy import create_engine
+# 连接redis数据库
+try:
+	pool = redis.ConnectionPool(host='192.168.*.*', port='6379', decode_responses=True, db=2, password='111111')
+	re = redis.Redis(connection_pool=pool)
+except Exception as e:
+	print(e)
+# redis数据库中存的是哈希值，先查出键，再把所有的值查出来放在一个列表中
+li = []
+lis = re.keys('*')
+for i in lis:
+	print(re.hgetall(i))
+	li.append(re.hgetall(i))
+# 使用pandas转换数据，存入mysql中
+sq = pandas.DataFrame(li)
+engin = create_engine('mysql+pymysql://admin:111111@192.168.*.*:3306/redis')
+try:
+	sq.to_sql('tt', engin, index=False, if_exists='append')
+except Exception as e:
+	raise e
+
+脚本存放在linux的 /foot/test.py ==并赋予可执行权限（特别注意）== 并创建日志文件run.log ，先测试一下
+
+python test.py
+
+执行没问题
+
+
+编写定时任务(测试先每三分钟执行一次)
+
+*/3 * * * * python /foot/test.py >> /foot/run.log 2>&1
+
+任务执行后报错，查看run.log日志
+
+ImportError: No module named redis
+
+pip list | grep redis   查询redis模块也已经安装了
+
+这时候就纳闷了，刚才还执行好好的啊！！！！
+ 经过多方查询，终于找到原因（暂且不表，先做一个测试）
+ 再写一个脚本test2.py，放在定时任务中执行
+
+import sys
+print(sys.path)
+
+*/3 * * * * python /foot/test2.py >> /foot/run.log 2>&1
+
+查看日志显示
+
+['/foot', '/usr/lib64/python26.zip', '/usr/lib64/python2.6', '/usr/lib64/python2.6/plat-linux2', '/usr/lib64/python2.6/lib-tk', '/usr/lib64/python2.6/lib-old', '/usr/lib64/python2.6/lib-dynload', '/usr/lib64/python2.6/site-packages', '/usr/lib/python2.6/site-packages']
+
+在定时任务外面再一次执行后打印结果 python test2.py
+
+['/foot', '/usr/local/python3/lib/python36.zip', '/usr/local/python3/lib/python3.6', '/usr/local/python3/lib/python3.6/lib-dynload', '/usr/local/python3/lib/python3.6/site-packages', '/usr/local/python3/lib/python3.6/site-packages/redis-3.2.1-py3.6.egg']
+
+对比后发现，linux定时任务中python使用的版本为python2.6，定时任务外使用的python3.6，搜索模块的路径也不相同，而刚开始我们的定时任务中使用的是python2.6，搜索模块的路径根本不是我们所需要的路径，python3和python2又不兼容，因此才会出现找不到redis模块的错误信息。知道这个原因，解决起来就容易了。
+ 安装python3的时候python命令存放路径是/usr/local/bin/python，只需要把定时任务中python命令特别指定一下即可
+
+*/3 * * * * /usr/local/bin/python /foot/test.py >> /foot/run.log 2>&1
+
+再次执行任务后，任务执行成功。
+ linux默认预装python2，如果重新安装python3，再使用python命令的是时候要特别考虑其使用场景。
+

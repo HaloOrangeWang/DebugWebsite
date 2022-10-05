@@ -1,0 +1,52 @@
+跑程序，因为内存问题或者其它问题(总之不是代码问题)，程序可能会偶尔挂掉，我们又不能整天盯着程序，怎么办呢？
+
+写个脚本来检查程序是否挂掉，如果挂掉就重启，这是一个不错的想法，具体做法依操作系统而不同。
+
+解决方法：
+
+在python中增加一些额外检查异常的代码，如果发生异常，就重新执行，这里用的是递归的方法。
+
+下面的例子中，我设置count最大为3，为了避免无限递归下去。import time
+
+count = 0
+
+def compute_number():
+
+for i in xrange(10):
+
+print 'count number: %s' % str(i+1)
+
+time.sleep(1)
+
+raise Exception("a", "b")
+
+def main():
+
+print "AutoRes is starting"
+
+print "Respawning"
+
+global count
+
+if count
+
+try:
+
+count += 1
+
+compute_number()
+
+except Exception, e:
+
+print e
+
+main()
+
+finally:
+
+print 'success'
+
+if __name__ == "__main__":
+
+main()
+

@@ -1,0 +1,18 @@
+在此之前遇上的相对导入的问题，现在看DBNET代码时候作者给出了解决方法，我这边也记录一下，后面可以用
+
+首先感谢作者;
+
+https://github.com/WenmuZhou/DBNet.pytorch.git
+
+大概的目录框架：
+
+需要在train.py中将utils文件夹中的util.py导入：
+
+from ..utils import util
+
+相对导入报错：  ImportError:attemptedrelative import with no known parent  package
+
+作者利用sys.path.append（在python环境下永久添加路径,退出python环境后自动消失）方式将train.py的上上级目录append,之后直接 from utils import util
+
+记录下后面可以用得着~~~~~~
+

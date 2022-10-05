@@ -1,0 +1,90 @@
+【问题1】在编译安装完Python后，不能正常使用yum，使用yum出现以下错误
+
+[root@localhost bin]# yum
+  File "/usr/bin/yum", line 30
+    except KeyboardInterrupt, e:
+                            ^
+SyntaxError: invalid syntax
+
+【解决办法】
+
+将/usr/bin/yum文件的第一行中的解释器转换回python-2.7
+
+[root@localhost bin]# vi /usr/bin/yum
+
+因为我在安装python-3.6.2时，只是删除了/usr/bin/python这个软连接，但是还
+
+有/usr/local/python2.7没有删除。
+
+但是，这样修改过后任然不能正常下载，错误如下：
+
+[root@localhost bin]# yum -y install gcc
+
+Loaded plugins: fastestmirror
+
+Loading mirror speeds from cached hostfile
+
+* base: mirrors.aliyun.com
+
+* epel: mirrors.aliyun.com
+
+* extras: mirrors.aliyun.com
+
+* updates: mirrors.aliyun.com
+
+File "/usr/libexec/urlgrabber-ext-down", line 28
+
+except OSError, e:
+
+^
+
+SyntaxError: invalid syntax
+
+Exiting on user cancel
+
+vim打开/usr/libexec/urlgrabber-ext-down看了一下，发下也使用了/usr/bin/python，于是跟前面一样，改为2.7，完成。
+
+[root@localhost bin]# vim /usr/libexec/urlgrabber-ext-down
+
+大功告成，可以正常使用yum安装了！
+
+【问题2】在python输入上下左右方向键盘时，出现以下错误
+
+>>> ^[[A^[[B^[[D^[[C
+
+【解决办法】
+
+由于在编译安装python时，没有提前安装readline-devel。现在需要重新安装readline-devel这个包，然后再重新编译python-3.2.6。
+
+1、安装python依赖的包readline-devel
+
+[root@localhost bin]# yum -y install readline-devel
+
+[root@localhost bin]# cd /usr/local/python-3.6.2/
+
+2、重新编译安装
+
+[root@localhost python-3.6.2]# ./configure --enable-optimizations
+
+[root@localhost python-3.6.2]# echo $?
+
+[root@localhost python-3.6.2]# make
+
+[root@localhost python-3.6.2]# echo $?
+
+[root@localhost python-3.6.2]# make install
+
+[root@localhost python-3.6.2]# echo $?
+
+【问题3】在使用Python安装psutil库时出现一下错误。
+
+python setup.py install
+
+报错如下：
+
+error: command 'gcc' failed with exit status 1
+
+【解决办法】yum -y install python-devel
+
+转载于:https://blog.51cto.com/doublelinux/1956265
+

@@ -1,0 +1,55 @@
+SpringBoot 集成 HBase 启动报错：
+
+//添加一行
+127.0.0.1 本机名称
+
+以上是网上的答案，配置完后发现没什么卵用。因为上面配置的是宿主机的host，docker容器里的host并没有改变，所以要把host推到容器里才行，有四种方式：
+
+方法一：
+
+
+方法一：
+
+直接进入容器中修改/etc/hosts
+
+缺点：重启容器后，增加的内容会丢失
+
+方法二：
+
+
+方法二：
+
+制作镜像的时候，直接修改。
+
+限制：
+
+需要是root用户，需要在容器中安装sudo
+
+增大了镜像大小
+
+方法三：
+
+
+方法三：
+
+使用docker run运行一个新的容器的时候，通过参数 --add-host来添加域名和IP信息到容器的/etc/hosts文件中。例如：
+
+docker run --add-host=myhostname:10.180.8.1 --name test -it debian
+
+注意：
+
+--add-host参数最好在--name后面，避免启动报错
+
+方法四：
+
+
+方法四：
+
+在docker-compose.yml文件中，通过配置参数extra_hosts实现。例如：
+
+extra_hosts:
+
+"somehost:162.242.195.82"
+
+"otherhost:50.31.209.229"
+

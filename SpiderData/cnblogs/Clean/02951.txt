@@ -1,0 +1,33 @@
+
+前言
+
+现在的Xcode最新版本都是在10.1，原先使用的版本是9.4.1！结果今天手贱将其升级。。。
+
+然后，跑IOS自动化时，出现“Xcode version '0.1'. Support for Xcode 0.1 is not supported.”的报错
+
+环境信息：
+
+Python：3.7
+
+Appium：1.8.1
+
+Xcode：10.1
+
+
+遇到的问题
+
+启动Appium时，Appium报“Error: Xcode version '0.1'. Support for Xcode 0.1 is not supported. Please upgrade to version 7.3 or higher”
+
+然后再Appium的官方上看到，这个是Appium的bug，是在匹配Xcode的正则表达式有问题，暂时没法解决。
+
+
+解决办法
+
+Appium官方没法解决，因此目前只能采用Xcode版本回退（这个不太现实）或下载个低版本的Xcode。
+
+解决此问题，我是采用下载多一个低版本的方法（9.4.1），地址：https://developer.apple.com/download/more/
+
+然后将9.4.1版本的设置为默认的，重新启动Appium服务，完美解决此问题。
+
+直接升级Appium也是可以解决问题的。
+

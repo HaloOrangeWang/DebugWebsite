@@ -1,0 +1,25 @@
+转自
+
+https://blog.csdn.net/ping523/article/details/54135228#commentBox
+
+之前按照网络上搜罗的教程安装了python-mysql（1.2.3），可是项目需要的是1.2.5，需要更新，然而，一个简单的pip install --upgrade python-mysql就该解决的问题，其实在自己机器上并不生效，而且还报错。
+
+无奈之下又开始各种搜罗，
+
+尝试途径：
+
+N1：pip install -r python-mysql==1.2.5，not ok；pip常用命令
+
+N2：在官网下载的1.2.5的.exe文件（https://pypi.python.org/pypi/MySQL-python/1.2.5）并不能直接安装，1.2.3版本的就可以，不知道为什么；
+
+N3：终于找到了一篇文章跟我的报错情况一样的（http://www.cnblogs.com/lgh344902118/p/6244266.html），但是按照其方法，在报错（error:
+ command ‘C:\\Users\\Admin\\AppData\\Local\\Programs\\Common\\Microsoft\\Visual C++ for Python\\9.0\\VC\\Bin\\cl.exe’ failed with exit status 2）时，并不能解决我的问题，无奈，放弃之
+
+N4：在我的报错中，其中有提示缺少VC++9.0的，安装之；还有要安装setuptools是，安装之（可参考），但是都安装以后，还是一样的错误，最后，功夫不负有心人，终于找到了我的救星：http://www.mamicode.com/info-detail-1222077.html，里面提到的解决方法很快的实现了我的需求。
+
+首先，安装wheel
+
+其次，下载MySQL_python-1.2.5-cp27-none-win_amd64.whl，下载路径
+
+下载后，直接使用pip安装：
+

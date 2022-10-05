@@ -1,0 +1,16 @@
+报错1：exec: "python3 test.py": executable file not found in $PATH
+
+在单个go程序中直接执行以下脚本没有问题
+
+但是在gin中开启子线程去执行脚本，就会有报错1的出现
+
+go diffPython()
+
+1.gin运行后当前目录为项目的目录，而不是go文件所在的目录
+
+2.gin中的exec.Commond会将python3 test.py识别为一整个命令，而不是python3 +参数
+
+解决方案，将python和运行文件分开
+
+其中还会有一个报错  exit status 1，是因为我的脚本为python3的不能用python -dir执行
+

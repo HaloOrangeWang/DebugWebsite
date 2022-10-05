@@ -1,0 +1,14 @@
+1. 运行程序时，报以下错误：
+
+HTTPSConnectionPool(host='test.xxxx.com', port=443): Max retries exceeded with url: /openapi/smartStock/000008.SZ.shtml (Caused by SSLError(SSLError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:600)'),))
+
+解决方法：requests请求时加上：verify=False
+
+2. 不显示warning信息
+
+import urllib3
+
+# 去掉运行时的Warning
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+

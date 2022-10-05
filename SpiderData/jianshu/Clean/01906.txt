@@ -1,0 +1,61 @@
+环境：kali 2018.3   Python3
+
+环境：kali 2018.3   Python3
+
+出现问题：scapy安装正常，交互模式下运行正常，进入编辑器后，导包失败，报No module named scapy错误
+
+出现问题：scapy安装正常，交互模式下运行正常，进入编辑器后，导包失败，报No module named scapy错误
+
+Kali 是自带有scapy的，在交互模式下一切正常，进入编译器之后，导包时出了问题
+
+恩，没注意这个scapy可能是Python2的或是其他的，也是把  No module named scapy 当做导入库的方式不对，换了各种导入方式，都没用，搜Google时，出现过N多次的 pip install scapy都没管……对，我以为我安装着，也确实安装着……
+
+然后，突然想起来，pip3都没安装，scapy哪来的，怎么可能找到库。。。
+
+之后，安装scapy时要注意是以root的权限安装：
+
+sudo pip3 install scapy
+
+
+* 要是以普通用户安装：pip3 install scapy，会出现这种情况：
+
+from scapy.all import *
+
+ip = IP()
+ip.version = 4
+ip.id = 1124
+ip.src = '170.12.0.6'
+ip.dst = '172.168.1.3'
+ip.ttl = 64
+
+print(ip.show)
+
+编辑以及打印数据包都没有问题，返回结果：
+
+mei@kali:~/Documents/03-scapy$ python3 01-IPSend.py 
+<bound method Packet.show of <IP  version=4 id=1124 ttl=64 src=170.12.0.6 dst=172.168.1.3 |>>
+
+但是，发送数据包时，会调用一些底层的东西，需要root权限，否则会报错：[Error 1] operation not permitted，：
+
+from scapy.all import *
+
+ip = IP()
+ip.version = 4
+ip.id = 1124
+ip.src = '170.12.0.6'
+ip.dst = '172.168.1.3'
+ip.ttl = 64
+
+send(ip)
+
+报错了：
+
+mei@kali:~/Documents/03-scapy$ sudo python3 01-IPSend.py
+
+×××××××
+××××××××
+××××××××××
+××××× No module named scapy
+
+会继续出现：No module named scapy
+

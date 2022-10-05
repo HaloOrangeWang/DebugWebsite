@@ -1,0 +1,37 @@
+启动Django时报错，mysqlclient版本低于1.3.13：
+
+File "C:\Users\wurij\AppData\Local\Programs\Python\Python37\lib\site-packages\django\db\backends\mysql\base.py", line 36, in <module>
+    raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+　　
+
+解决思路及过程如下，解决办法可直接查看步骤5
+
+1.一开始怀疑是公司内网的pip源中的mysqlclient版本低~
+
+2.通过pip list查看mysqlclient包的版本是1.4.6，并不低啊！
+
+3.找到报错的base.py文件，将其中检测版本的两行拿出来，在当前的Python环境中执行，结果是版本也并不低于1.3.13，真是见鬼了~
+
+4.想起来之前有用过pymysql包，是不是这货引起的冲突，于是将pymysql卸载，同时清理pymysql在Django项目__init__.py的两行代码，报错不在了！
+
+5.原因是之前使用了pymysql，在Django主app目录(有settings.py的那个目录)下的__init__.py中添加了如下两行代码
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+这两行代码覆盖了base.py中的Database变量，版本判断函数检测的是PyMySql的版本
+
+于是pip list查看PyMySql的版本，巧了！也是0.9.3，问题总算是水落石出了！
+
+顺便说几句：
+
+网上很多人用pymysql替代mysqlclient，说是mysqlclient很难装，其实也还好（可参考我的上一篇随笔）。
+
+如果你是用的pymysql替换mysqlclient，出现前面版本的报错，需要将base.py中的“if version < (1, 3, 13):”及后面一行注释掉。
+
+如果你用的pymysql替换mysqlclient，Django开启debug模式后，启动时会报一个decode的错，解决办法是找到报错的那一行将decode方法改成encode就行了。
+
+感觉使用pymysql替换mysqlclient的破坏性太强了，都要直接修改django的源码了(当然也可以自己修改settings中mysql的bakends到自己的目录)，还不如直接使用mysqlclient（毕竟是Django官方推荐的）
+

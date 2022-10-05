@@ -1,0 +1,50 @@
+
+问题描述：
+
+使用 brew upgrade 升级软件，同时解决了python的问题：
+
+【Mac】使用brew upgrade 升级 python 后的报错解决
+
+httpie 使用时会显示如下问题：
+
+http GET http://localhost:5000/prosrv/language/published
+dyld: Library not loaded: @executable_path/../.Python
+  Referenced from: /usr/local/Cellar/httpie/0.9.9_3/libexec/bin/python3.6
+  Reason: image not found
+[1]    12882 trace trap  http --pretty all GET http://localhost:5000/prosrv/language/published
+
+具体原因是 /usr/local/Cellar/httpie/0.9.9_3/libexec/bin/../.Python 目录无法找到。进入到目录：/usr/local/Cellar/httpie/0.9.9_3/libexec
+
+$ cd /usr/local/Cellar/httpie/0.9.9_3/libexec
+$ ls -al
+total 16
+drwxr-xr-x   7 long  admin  238 12  9  2016 .
+drwxr-xr-x  10 long  admin  340  4 13 10:18 ..
+lrwxr-xr-x   1 long  admin   70 12  9  2016 .Python -> ../../../../opt/python/Frameworks/Python.framework/Versions/3.6/Python
+drwxr-xr-x  18 long  admin  612  4 13 10:18 bin
+drwxr-xr-x   3 long  admin  102 12  9  2016 include
+drwxr-xr-x   3 long  admin  102 12  9  2016 lib
+-rw-r--r--   1 long  admin   60 12  9  2016 pip-selfcheck.json
+
+可以看到 .Python 使用的是 /usr/local/opt/python 目录，由于：【Mac】使用brew upgrade 升级 python 后的报错解决 的原因，/usr/local/opt/python 已经由 python3 变为了Python2，因此 .Python 目录是不存在的。
+
+
+解决办法
+
+重新链接 .Python 目录：
+
+$ cd /usr/local/Cellar/httpie/0.9.9_3/libexec
+$ ln ../../../../opt/python3/Frameworks/Python.framework/Versions/3.6/Python .Python
+$ ls -al
+total 24
+drwxr-xr-x   8 long  admin   272B  4 13 10:46 .
+drwxr-xr-x  10 long  admin   340B  4 13 10:18 ..
+lrwxr-xr-x   1 long  admin    71B  4 13 10:46 .Python -> ../../../../opt/python3/Frameworks/Python.framework/Versions/3.6/Python
+lrwxr-xr-x   1 long  admin    70B 12  9  2016 .Python.bk -> ../../../../opt/python/Frameworks/Python.framework/Versions/3.6/Python
+drwxr-xr-x  18 long  admin   612B  4 13 10:18 bin
+drwxr-xr-x   3 long  admin   102B 12  9  2016 include
+drwxr-xr-x   3 long  admin   102B 12  9  2016 lib
+-rw-r--r--   1 long  admin    60B 12  9  2016 pip-selfcheck.json
+
+重新链接后，httpie 就可以正常使用了。
+

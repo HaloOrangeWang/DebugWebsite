@@ -1,0 +1,48 @@
+关键字：初试化，执行器
+
+关键字：初试化，执行器
+
+问题描述：在定义执行器之后，就直接使用执行器进行训练，就出现错误，提示错误 y_dims.size():1 <= y_num_col_dims:1。
+
+问题描述：在定义执行器之后，就直接使用执行器进行训练，就出现错误，提示错误 y_dims.size():1 <= y_num_col_dims:1。
+
+报错信息：
+
+报错信息：
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in run(self, program, feed, fetch_list, feed_var_name, fetch_var_name, scope, return_numpy, use_program_cache)
+    468 
+    469         self._feed_data(program, feed, feed_var_name, scope)
+--> 470         self.executor.run(program.desc, scope, 0, True, True)
+    471         outs = self._fetch_data(fetch_list, fetch_var_name, scope)
+    472         if return_numpy:
+
+EnforceNotMet: Enforce failed. Expected y_dims.size() > y_num_col_dims, but received y_dims.size():1 <= y_num_col_dims:1.
+The input tensor Y's rank of MulOp should be larger than y_num_col_dims. at [/paddle/paddle/fluid/operators/mul_op.cc:52]
+PaddlePaddle Call Stacks:
+
+问题复现：编写一个图像分类程序，在定义执行器之后，使用执行器exe执行run函数，就会出现这个问题。错误代码如下：
+
+place = fluid.CPUPlace()
+exe = fluid.Executor(place)
+for batch_id, data in enumerate(train_reader()):
+    train_cost, train_acc = exe.run(program=fluid.default_main_program(),
+                                    feed=feeder.feed(data),
+                                    fetch_list=[avg_cost, acc])
+
+问题解决：定义执行器之后，因为还没有执行初始化模型参数，所以缺少初始化数据，导致出现这个问题。在定义执行器之后，还执行初始化参数程序exe.run(fluid.default_startup_program())，之后再执行训练程序。正确代码如下：
+
+place = fluid.CPUPlace()
+exe = fluid.Executor(place)
+exe.run(fluid.default_startup_program())
+for batch_id, data in enumerate(train_reader()):
+    train_cost, train_acc = exe.run(program=fluid.default_main_program(),
+                                    feed=feeder.feed(data),
+                                    fetch_list=[avg_cost, acc])
+
+问题分析：在定义网络之后，Fluid内部有大量的参数需要进行初始化才能正常运行，网络也才能正确使用，所以在执行训练之前需要执行exe.run(fluid.default_startup_program())初始化参数。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

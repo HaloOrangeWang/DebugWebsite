@@ -1,0 +1,321 @@
+最近遇到 import python 自定义模块出现报错的问题，捣鼓了很久，终于算是比较搞清楚了，为了描述清楚，有测试项目目录如下：
+
+环境描述：
+
+自定义模块 pkg_a，包含两个文件 file_a_01.py，file_a_02.py（以下测试模块的测试文件都分别有两个包含模块标识的文件，不一一赘述了）
+
+自定义模块 pkg_c，属于 pkg_a 模块的子模块
+
+自定义模块 pkg_b
+
+入口文件目录 src，模拟常规的运行脚本 runner.py 以及一个仅包含一些字符串的配置文件 conf.py
+
+顶级目录入口文件 test.py
+
+以上每个文件运行都会打印出自己的文件名，方便根据输出判断导入成功与否
+
+本项目使用了 python 3.7 的虚拟环境
+
+
+经常出现的使用场景：
+
+
+场景一：顶级目录入口文件导入
+
+在 test.py 文件测试了以下代码：
+
+# 导入配置文件 src/conf.py
+import src.conf
+
+# 导入包 pkg_a
+import pkg_a.file_a_02
+
+输出：
+
+I'm conf.py
+I'm pkg_a_02
+
+分析：
+
+src 里没有包含 init.py 为什么还可以导入成功？
+
+原因是 python3.3 之后支持了隐式命名空间包，可以参考https://www.python.org/dev/peps/pep-0420/#specification
+
+从顶级目录可以导入包，这里为什么不需要写 sys.path.append(${项目目录})?
+
+test.py 处于项目的根目录，在运行此入口文件的时候，会自动把入口文件所在的文件夹目录添加到 sys.path 里面，有兴趣的同学可以在运行入口文件的时候输出 sys.path 看一下
+
+
+场景二：次级目录入口文件导入
+
+在 runner.py 文件测试了以下代码：
+
+# 导入配置文件 conf.py
+import conf
+
+# 导入包 pkg_a
+import pkg_a.file_a_02
+
+输出：
+
+I'm conf.py
+Traceback (most recent call last):
+  File "src/runner.py", line 9, in <module>
+    import pkg_a.file_a_02
+ModuleNotFoundError: No module named 'pkg_a'
+
+分析：
+
+导入 pkg_a 为什么会报错？
+
+import sys
+for p in sys.path:
+    print(p)
+"""
+输出:
+test-python-import/src
+...
+"""
+
+通过 python xxx.py 运行的时候，会把 xxx.py 所在的目录添加到 sys.path 的 0 位，可以通过输出 sys.path 观察到
+
+从上面的输出可以看出，运行 runner.py 的时候，仅把 runner.py 对应的目录添加到了 sys.path 里面，所以 python 去找 package 的时候出现了找不到的问题。这个时候可以通过 sys.path.append('${project_pth}/test-python-import/src') 来临时解决问题，但是这里又引入了另外一些很繁琐的问题，如果有 runner_01.py，runner_02.py，runner_0n.py ... 那么每次又要再写一遍
+
+pylint 出现的错误提示产生的误导
+
+如果这个目录是个命名空间目录，而不是包目录，那么 pylint 会出现如下图的报错，这个看起来也算正常，毕竟此时 sys.path 的确没有 pkg_a 的信息
+
+pylint 出现的错误提示产生的误导
+
+如果这个目录是个命名空间目录，而不是包目录，那么 pylint 会出现如下图的报错，这个看起来也算正常，毕竟此时 sys.path 的确没有 pkg_a 的信息
+
+那么，这个时候模拟另外一种情况，往 src 里添加一个 init.py 文件，让这个目录变成包，如下图所示：
+
+I'm conf.py
+Traceback (most recent call last):
+  File "src/runner.py", line 2, in <module>
+    import pkg_a.file_a_02
+ModuleNotFoundError: No module named 'pkg_a'
+
+然后出现了一个会诡异的情况，我换了一个行，不报错了...我也是很醉
+
+有兴趣的同学可以继续研究一下这个报错是啥问题，有一些方向：
+
+pylint 对 namespace pkg 的支持还不是很好
+
+https://github.com/PyCQA/pylint/issues/2862
+
+https://github.com/PyCQA/pylint/issues/842
+
+pylint init-hook
+
+在 .vscode/settings.json 里添加：
+
+"python.linting.pylintArgs": [ 
+        "--init-hook",
+        "import sys; sys.path.insert(0, './')"
+    ]
+
+总之，不要被 pylint 误导了，上面有情况出现 pylint 没有对 pkg_a 检查出导入报错，但是还是运行的时候找不到包，所以最好还是通过运行时判断，不要相信 pylint。后续谈到的 pth 解决方案也会解决这个 pylint 的问题（但梅开二度说一次还是请不要相信 pylint，时刻记得 import 只和 python 的搜索路径有关，手动狗头）
+
+
+场景三：模块导入另外一个模块
+
+在 pkg_a/file_a_01.py 测试了以下代码
+
+from pkg_b import file_b_01
+import file_a_02
+
+print('I am pkg_a_01')
+
+输出：
+
+I'm pkg_a_02
+Traceback (most recent call last):
+  File "pkg_a/file_a_01.py", line 2, in <module>
+    from pkg_b import file_b_01
+ModuleNotFoundError: No module named 'pkg_b'
+
+分析：
+
+导入报错
+
+同样的问题，此时 python 在路径里找不到 pkg_b
+
+相对导入问题
+
+修改一下 pkg_a/file_a_01.py 的代码如下：
+
+from . import file_a_02
+from pkg_b import file_b_01
+
+print('I am pkg_a_01')
+
+输出：
+
+Traceback (most recent call last):
+  File "pkg_a/file_a_01.py", line 1, in <module>
+    from . import file_a_02
+ImportError: cannot import name 'file_a_02' from '__main__' (pkg_a/file_a_0
+1.py)
+
+这个问题出现的 __main__ 是不是很眼熟，就是我们经常会写一个代码
+
+if __name__ == '__main__':
+    pass
+
+这个 __name__ 其实就是命名空间，当 file_a_01.py 自运行的时候，__name__ 会被设置为 __main__，所以这个相对导入会出现错误。但是如果这样写，被别的文件引用的时候就不会报错（前提是能找到 pkg_a），试试在顶级目录入口文件 test.py 导入 pkg_a/file_a_01.py
+
+import src.conf
+import pkg_a.file_a_01
+
+输出
+
+I'm conf.py
+I'm pkg_a_02
+I am pkg_b_01
+I am pkg_a_01
+
+这里也牵涉了一个平常不太注意的问题，当我们写一个包的时候，应该怎么导入该包内其他的文件呢？有兴趣的同学可以参考一下著名的包 requests 的导入写法，里面用的全部都是相对导入。当然也有另外一种写法，就是 import pkg_name.xxx，类比到上面的例子就是：
+
+# 相对导入
+from . import file_a_02
+# 带包名的写法
+from pkg_a import file_a_02
+
+通过这些例子可以加强对导入的理解，本质上还是理解路径搜索
+
+
+场景四：次级模块导入另外一个模块
+
+在 pkg_c/file_c_01.py 测试了以下代码
+
+import pkg_b
+
+print('I am pkg_c_01')
+
+输出
+
+Traceback (most recent call last):
+  File "pkg_a/pkg_c/file_c_01.py", line 1, in <module>
+    import pkg_b
+ModuleNotFoundError: No module named 'pkg_b'
+
+分析
+
+导入报错，都读到这的同学，估计都已经非常清楚导入报错问题了，子模块也是同理没什么特殊的地方
+
+这里讨论一个常见的使用场景，次级模块导入上级模块的文件，把 pkg_c/file_c_01.py 代码修改为：
+
+from .. import file_a_02
+
+print('I am pkg_c_01')
+
+输出：
+
+Traceback (most recent call last):
+  File "pkg_a/pkg_c/file_c_01.py", line 1, in <module>
+    from .. import file_a_02
+ValueError: attempted relative import beyond top-level package
+
+再结合两个例子一起说明问题
+
+在 test.py 进行调用
+
+import src.conf
+import pkg_a.pkg_c.file_c_01
+
+输出
+
+I'm conf.py
+I'm pkg_a_02
+I'm pkg_c_01
+
+修改一下文件内容
+
+pkg_a/pkg_c/file_c_01.py
+
+print(__name__)
+from ...pkg_b import file_b_01
+
+print("I'm pkg_c_01")
+
+test.py 保持例子 1 不变，仍然导入 file_c_01.py
+
+import src.conf
+import pkg_a.pkg_c.file_c_01
+
+输出：
+
+I'm conf.py
+pkg_a.pkg_c.file_c_01
+Traceback (most recent call last):
+  File "test.py", line 7, in <module>
+    import pkg_a.pkg_c.file_c_01
+  File "/xxx/xxx/test-python-import/pkg_a/pkg_c/file
+_c_01.py", line 2, in <module>
+    from ...pkg_b import file_b_01
+ValueError: attempted relative import beyond top-level package
+
+分析：
+
+为什么会出现 attempted relative import beyond top-level package 这个报错？
+
+通过 .. 或者 ... 这种相对查找父级目录的导入，是相对该文件的目录（命名空间）去找的
+
+参考例子 2 的情况：
+
+file_c_01 的 __name__ 输出是 pkg_a.pkg_c.file_c_01
+
+此时如果通过 ... 这个去找的时候会超出 pkg_a 的范围，因为 .. 就已经是顶级包名 pkg_a 了，所以会报错
+
+参考一开始那个自运行的例子：
+
+__name__ 是 __main__，所以再通过 .. 去找父目录的时候，就会报错
+
+有个博主的博文说的也比较清楚，可以参考：https://blog.csdn.net/SKY453589103/article/details/78863050
+
+
+解决方案
+
+上述通过几个实际的例子说明了一些常见的报错原因，下面来讨论一下解决办法。
+
+先来看一下目前现网给出的比较多的解决办法，具体怎么做就不展开了，一搜一大堆：
+
+最原始的，环境变量添加项目根目录进去
+
+这种方法比方法 2 好的就是不用写那么多冗余代码，但是可移植性太差了，不推荐
+
+每次使用之前需要添加包的绝对路径进去 sys.path.append('${absolute_path}')
+
+这种方法应该是比较多人使用的了，但是每次都要写这堆代码到文件头上，太冗余了
+
+很容易被 IDE 格式化，比较不友好
+
+会欺骗 pylint 的检查，梅开三度再吐槽一下 pylint
+
+
+本文推荐的解决方案是虚拟环境 + pth 文件解决导入问题
+
+首先来说一下使用虚拟环境的好处（可能还有些同学没接触，就啰嗦一下）
+
+将项目环境与系统环境隔离，这样安装包的时候不会与系统环境的包发生冲突。尤其是在公用的机器上，系统环境的冲突往往引发一堆没必要的问题
+
+python cli ，如果系统存在 python 和 python3 的时候，每次运行脚本都要 python3 xxx.py，很不利于拼写的补全（因为每次都是先出来 python 要自己补充一个 3）。如果更改 python 指向了 python3，又可能引发很多系统的问题，因为系统很多地方还是用的 python2。
+
+具体使用参考官网，这里就不展开了
+
+https://docs.python.org/3/tutorial/venv.html
+
+以 python 3.7 为例子，创建好虚拟环境之后，在 venv/lib/python3.7/site-packages 下添加一个文件 myproject.pth （名字随便都可以），然后添加项目的绝对路径：
+
+${绝对路径}/test-python-import
+
+添加完之后，无论在项目的哪个目录运行脚本，python 都能搜到我们的根目录，这样我们导入包的时候，就可以直接通过包名导入了。例如，在 src/runner.py 这种二级目录不做额外处理是找不到根目录下 pkg_a 这种包名，在添加完路径之后，就可以搜得到。
+
+具体参考官网：https://docs.python.org/3/library/site.html
+
+也可以看一下 stackoverflow 的讨论：https://stackoverflow.com/questions/10738919/how-do-i-add-a-path-to-pythonpath-in-virtualenv
+
+所以理解好 import 本质还是要理解好 python 的路径搜索问题
+

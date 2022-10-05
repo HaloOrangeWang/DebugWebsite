@@ -1,0 +1,24 @@
+今天安装frida是报错，内容如下
+
+看报错信息是SSL 证书 问题，百度查了下，Python 2.7.9 之后版本引入了一个新特性：当你urllib.urlopen一个 https 的时候会验证一次 SSL 证书 ，当目标使用的是自签名的证书时就会爆出该错误消息
+
+也提供了解决办法：
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_con
+
+把这个加到了setup.py中，再次python xxx build / install，嗯，解决。。。
+
+####很遗憾，上述方法失败了。不过貌似是因为公司网络的问题。。。
+
+不过找到了一个新方法：
+
+sudo /Applications/Python\ 3.9/Install\ Certificates.command
+
+执行完后，终于可以执行sudo pip install frida-tools了，下面可能还有一个坑，关于six包的
+
+如果你碰见了这个报错：
+那就
+
+当然你要么已经又six了或者自己先装好six
+

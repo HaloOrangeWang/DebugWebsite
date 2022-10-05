@@ -1,0 +1,24 @@
+mysql查询报错：
+
+Expression #24 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'a.process' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+
+这是因为mysql5.7以上的版本中的“严格模式”，对于 group by 的这种聚合操作，如果在select 中的列，没有在group by 中出现，那么这个SQL是不合法的，因为列不在group by的从句中，所以对于设置了这个mode的数据库，在使用group by 的时候，就要用MAX()，SUM()，ANT_VALUE()的这种聚合函数，才能完成GROUP BY 的聚合操作。
+
+需要修改mysql的配置文件，我这里使用docker安装的mysql，修改方式如下：
+
+1.进入mysql容器，
+
+docker exec -it {mysql容器id} bash
+
+2.修改配置文件：
+
+vi /etc/mysql/my.cnf
+
+3.在[mysqld]下加入如下配置：
+
+sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+
+4.重启mysql容器
+
+docker restart {mysql容器id}
+

@@ -1,0 +1,38 @@
+Python 多进程报错问题
+
+windows环境下代码如下
+
+import multiprocessing
+import os
+import time
+
+def show_info(name, age):
+    print(name, age)
+
+运行会报如下错误
+
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+if __name__ == '__main__':
+                freeze_support()
+                ...
+
+The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+
+　　加上 if __name__ == '__main__'   后，错误消失
+
+但是在linux和mac环境下，不加 if __name__ == '__main__'   是可以正常运行的，这是为什么呢？
+
+请你们自己去思考哦。
+
+小细节：windows创建多进程，会默认把当前文件全部代码copy一份，放在其他创建出来的进程里面去执行，就形成了无限递归。
+
+而且进程之前不共享全局变量。每个进程里面都有自己的一份儿全局变量
+

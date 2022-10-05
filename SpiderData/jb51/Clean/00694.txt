@@ -1,0 +1,38 @@
+这篇文章主要介绍了Python SSL证书验证问题解决方案,文中通过示例代码介绍的非常详细，对大家的学习或者工作具有一定的参考学习价值,需要的朋友可以参考下
+
+一、SSL问题
+
+1、在你不启用fiddler时，python代码直接发送https请求，不会有SSL问题（也就是说不想看到SSL问题，关掉fiddler就行）
+
+2.启用fiddler会报出以下错误：
+
+raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='163.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1056)')))
+
+verify参数设置
+
+1、Requests的请求默认verify=True
+
+2、如果你将 verify设置为 False，Requests 也能忽略对 SSL 证书的验证
+
+3、但是依然会出现两行Warning,可以不用管
+
+Python3 提示warning 添加如下三种任意一种代码即可解决：
+
+方式1：
+
+import requests
+requests.packages.urllib3.disable_warnings
+
+方式2：
+
+import warnings
+warnings.filterwarnings("ignore")
+
+方式3：
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

@@ -1,0 +1,55 @@
+出这种情况的原因目前有两种：数据库连接不上（网络、权限、认证失败），另一种就是数据库中存在一些特殊数据导致在读表的时候出现异常，通常发生在excel导入到数据库中的情况，因为编码或者其他格式问题，导致读取失败，进而抛出异常错误。
+
+Traceback (most recent call last):
+  File "runner.py", line 24, in <module>
+    runstart()
+  File "runner.py", line 14, in runstart
+    web_obj = session.query(WebData).all()
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/orm/query.py", line 2773, in all
+    return list(self)
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/orm/query.py", line 2925, in __iter__
+    return self._execute_and_instances(context)
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/orm/query.py", line 2948, in _execute_and_instances
+    result = conn.execute(querycontext.statement, self._params)
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 948, in execute
+    return meth(self, multiparams, params)
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/sql/elements.py", line 269, in _execute_on_connection
+    return connection._execute_clauseelement(self, multiparams, params)
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1060, in _execute_clauseelement
+    compiled_sql, distilled_params
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1200, in _execute_context
+    context)
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1413, in _handle_dbapi_exception
+    exc_info
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/util/compat.py", line 203, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/util/compat.py", line 186, in reraise
+    raise value.with_traceback(tb)
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/engine/base.py", line 1193, in _execute_context
+    context)
+  File "/usr/local/lib/python3.7/site-packages/sqlalchemy/engine/default.py", line 507, in do_execute
+    cursor.execute(statement, parameters)
+  File "/usr/local/lib/python3.7/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/usr/local/lib/python3.7/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/usr/local/lib/python3.7/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/usr/local/lib/python3.7/site-packages/MySQLdb/cursors.py", line 411, in _query
+    rowcount = self._do_query(q)
+  File "/usr/local/lib/python3.7/site-packages/MySQLdb/cursors.py", line 374, in _do_query
+    db.query(q)
+  File "/usr/local/lib/python3.7/site-packages/MySQLdb/connections.py", line 277, in query
+    _mysql.connection.query(self, query)
+sqlalchemy.exc.OperationalError: (_mysql_exceptions.OperationalError) (2027, 'Malformed packet') [SQL: 'SELECT webdata.id AS webdata_id, webdata.web AS webdata_web, webdata.state AS webdata_state, webdata.comments AS webdata_comments, webdata.size AS webdata_size, webdata.uptime AS webdata_uptime \nFROM webdata'] (Background on this error at: http://sqlalche.me/e/e3q8)
+
+ID：Python之战
+
+|作|者|公(zhong)号:python之战
+
+专注Python，专注于网络爬虫、RPA的学习-践行-总结
+
+喜欢研究和分享技术瓶颈，欢迎关注
+
+独学而无友,则孤陋而寡闻！
+

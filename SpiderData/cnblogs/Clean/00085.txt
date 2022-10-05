@@ -1,0 +1,55 @@
+RedHat下的yum是需要注册才能使用的
+
+使用的话会提示：
+
+我们可以将redhat的yum先卸载然后在重新安装就可以解决。
+
+1.清除yum的安装包　
+
+rpm -qa | grep yum | xargs rpm -e --nodeps
+rpm -qa |grep python-urlgrabber|xargs rpm -e --nodeps
+
+2.下载相关的rpm包（下载下面安装的rpm）
+
+　　链接：http://mirrors.sohu.com/centos/6/os/x86_64/Packages/
+
+　　ps：我安装的是64位下载的是rpm包，可以用 uname -a 查看系统
+
+3.安装rpm
+
+　ps:yum-plugin-fastestmirror和yum-3.2.29要一起安装,不然会相互依赖，报错！！！！！！！！！！！！
+
+4.配置yum的配置文件
+
+yum使用仓库保存管理rpm软件包，仓库的配置文件保存在/etc/yumrepos.d/目录下（该目录下可能有 .repo文件可以直接配置，没有的话可以自己新增，必须是移.repo结尾）
+
+格式如下（是我自己新增配置的，也是最简单的yum配置）：
+
+　　
+
+　　仓库可以使用file,http,ftp,nfs方式
+
+　　yum配置文件必须以.repo结尾
+
+　　一个配置文件内可以保存多个仓库的配置信息
+
+　　/etc/yum.repos.d/目录下可以存在多个配置文件
+
+　　也可以配置 mirrorlist参数可以通过后面的地址中动态获取baseurl方便baseurl的更新
+
+　　enabled没有写时，默认为1，
+
+　　beaseurl这个可以自己在网上找比较多，尽量找国内的
+
+5.检查郁闷安装
+
+　　清理yum缓存
+
+　　#yum clean all
+
+　　不报错的话基本上已经成功了，下面就可以进行yum安装了
+
+6.附上执行过程：
+
+　
+

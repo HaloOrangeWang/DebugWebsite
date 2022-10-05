@@ -1,0 +1,29 @@
+问题：最新在爬取某站点的时候，发现在post请求当中，参数构造正确却获取不到数据，索性将post的参数urlencode之后放到post请求的url后面变成get请求，结果成功获取到数据，对此展开疑问。
+
+
+1.http请求中Form Data和Request Playload的区别：
+
+Ajax post请求中常用的两种参数形式：form data 和 request payload
+
+get请求的时候，我们的参数直接反映在url里面，为key1=value1&key2=value2形式，如果是post请求，那么表单参数是在请求体中，也是以key1=value1&key2=value2的形式在请求体中。通过chrome的开发者工具可以看到如下
+
+a.Form Data类型：
+
+这种情况有两种处理方式，一个是把这个post请求变成get请求，即把请求参数通过"?key1=value1&key2=value2"拼接在url当中，然后以get方式请求就可以了：response = requests.get(url,headers=headers)，其中url为拼接的url
+
+另一种是仍然用post请求，将参数放在data中：response = requests.post(url,headers=headers,data=data),其中url为post url.
+
+注意上图中红圈内的内容，这里请求头中的Content-Type为application/x-www-form-urlencoded，点击Form Data旁边的view source，变成了key1=value1&key2=value2形式，如下图，这时你可以将这部分内容加到post的Request URL后面使它变成一个get请求，就可以获取到数据了，
+
+b.Request Payload类型
+
+同样在chrome浏览器开发者工具中可以看到它们不同的地方，Content-Type为application/json，表明需要传的是一个json类型的对象，点击view source,如下图
+
+自动变成了json类型，这时必须发post请求，将这json对象传入才可获取数据。形如：
+
+response = requests.post(url,json=data,headers=headers) 相比普通的post，这个post参数中的data一定要序列化才行。
+
+参考：https://stackoverflow.com/questions/10494574/what-is-the-difference-between-form-data-and-request-payload
+
+到此这篇关于详解python requests中的post请求的参数问题的文章就介绍到这了,更多相关python requests post请求参数内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

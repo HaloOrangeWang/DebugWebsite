@@ -1,0 +1,84 @@
+在终端输入任何pip 相关的任何命令都会报错：
+
+File "/usr/local/bin/pip", line 11, in <module>
+    load_entry_point('pip==10.0.1', 'console_scripts', 'pip')()
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/pkg_resources/__init__.py", line 489, in load_entry_point
+    return get_distribution(dist).load_entry_point(group, name)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/pkg_resources/__init__.py", line 2843, in load_entry_point
+    return ep.load()
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/pkg_resources/__init__.py", line 2434, in load
+    return self.resolve()
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/pkg_resources/__init__.py", line 2440, in resolve
+    module = __import__(self.module_name, fromlist=['__name__'], level=0)
+  File "/Library/Python/2.7/site-packages/pip-10.0.1-py2.7.egg/pip/_internal/__init__.py", line 42, in <module>
+    from pip._internal import cmdoptions
+  File "/Library/Python/2.7/site-packages/pip-10.0.1-py2.7.egg/pip/_internal/cmdoptions.py", line 16, in <module>
+    from pip._internal.index import (
+  File "/Library/Python/2.7/site-packages/pip-10.0.1-py2.7.egg/pip/_internal/index.py", line 15, in <module>
+    from pip._vendor import html5lib, requests, six
+  File "/Library/Python/2.7/site-packages/pip-10.0.1-py2.7.egg/pip/_vendor/requests/__init__.py", line 86, in <module>
+    from pip._vendor.urllib3.contrib import pyopenssl
+  File "/Library/Python/2.7/site-packages/pip-10.0.1-py2.7.egg/pip/_vendor/urllib3/contrib/pyopenssl.py", line 46, in <module>
+    import OpenSSL.SSL
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/OpenSSL/__init__.py", line 8, in <module>
+    from OpenSSL import crypto, SSL
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/OpenSSL/crypto.py", line 12, in <module>
+    from cryptography import x509
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/cryptography/x509/__init__.py", line 8, in <module>
+    from cryptography.x509.base import (
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/cryptography/x509/base.py", line 16, in <module>
+    from cryptography.x509.extensions import Extension, ExtensionType
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/cryptography/x509/extensions.py", line 24, in <module>
+    from cryptography.x509.general_name import GeneralName, IPAddress, OtherName
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/cryptography/x509/general_name.py", line 16, in <module>
+    from cryptography.x509.name import Name
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/cryptography/x509/name.py", line 28, in <module>
+    _ASN1_TYPE_TO_ENUM = dict((i.value, i) for i in _ASN1Type)
+TypeError: 'type' object is not iterable
+
+
+资料方案
+
+方法1
+
+查找资料说可以如下解决：
+
+sudo pip uninstall enum
+sudo pip install enum34
+
+但是该命令仍然会报上述错误。
+
+资料2
+
+手动移除
+
+Removed enum from "/usr/lib/python2.7/dist-packages": rm -rf enum*
+
+When I tried to install enum34 using "pip install enum34" I still run into the same error from cryptography: "TypeError: 'type' object is not iterable". (I think its because there is a copy of enum present under "/usr/local/lib/python2.7/dist-packages" as well.
+
+Next I removed cryptography from "/usr/lib/python2.7/dist-packages": rm -rf cryptography*
+
+Now try running "pip uninstall enum", it works.
+
+Then install enum34: pip install enum34
+
+Then install cryptography again: pip install cryptography
+
+
+最终解决
+
+command + space按键打开搜索栏，输入/library打开资源库
+
+进入/Library/Python/2.7目录中发现只有site-packages目录，且里面有enum相关的文件，应该是之前自己通过pip install enum命令添加的
+
+输入sudo rm -rf enum*
+
+安装enum，pip install enum34
+
+
+参考
+
+https://stackoverflow.com/questions/49509790/typeerror-when-importing-requests-from-python
+
+https://github.com/pyca/cryptography/issues/4020
+

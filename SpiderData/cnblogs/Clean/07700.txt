@@ -1,0 +1,22 @@
+通过以下代码获得certificates，注意，必须对于master结点和两个node结点机器上都需要获取
+
+通过 kubectl describe pod xxx获得报错信息：
+
+Error syncing pod, skipping: failed to "StartContainer" for "POD" with ErrImagePull: 
+"image pull failed for registry.access.redhat.com/rhel7/pod-infrastructure:latest, this may be because there are no credentials on this request.  
+details: (open /etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt: no such file or directory)"
+
+通过一下命令解决：
+
+yum install -y *rhsm*
+
+wget http://mirror.centos.org/centos/7/os/x86_64/Packages/python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm
+
+rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm | cpio -iv --to-stdout ./etc/rhsm/ca/redhat-uep.pem | tee /etc/rhsm/ca/redhat-uep.pem
+
+注意必须是对每台机器都使用这个指令，然后就能获取到certificate。
+
+接下来检查pod的状态就能发现pod已经成功被创建，并且状态是running
+
+转载自：https://www.jianshu.com/p/adf2aebdc381
+

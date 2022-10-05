@@ -1,0 +1,101 @@
+这篇博客主要总结的学习Django框架中，遇到的报错如何去解决问题：
+
+
+1、decimal.InvalidOperation:
+
+
+decimal.InvalidOperation: [<class 'decimal.InvalidOperation'>]
+
+在最后一行出现这样的报错：
+
+decimal.InvalidOperation: [<class 'decimal.InvalidOperation'>]
+
+这个报错其实是数据库的数据长度超过了原本的长度
+
+在models中定义类型是DecimalField中的（max_digits的范围，decimal_places=小数的长度）
+
+分析：
+
+因为max_digits的长度包括decimal_places的长度，数据库的数据经过运算超越了原本的最大长度，就会出现这种报错！
+
+解决方法：
+
+就是max_digits的长度增加，就能解决这个异常！ （6月22日）
+
+
+2、no such table: django_session
+
+
+no such table: django_session
+
+这个报错其实很简单的报错，意思就是数据库没有django_session，这个报错还是很好解决的。
+
+解决方法：
+
+就是在数据库中创建表，在pycharm 中的Terminal 中输入两个命令：
+
+python manage makemigrations  先把要修改的内容登记到小本本上
+
+python manage migrate   在数据库中创建表 这生成的是django的默认的表格
+
+表格创建好，这个报错就能解决了。（6月26日）
+
+
+3、 出现莫名其妙的 app01
+
+我项目中的app名字并不是app01，可是运行python manage.py makemigrations的时候总是提示app01不是已安装的app
+
+Applying admin.0003_auto_20180701_0233...Traceback (most recent call last):  
+FiApplying admin.0003_auto_20180701_0233...Traceback (most recent call last):   Field ...
+
+解决办法：
+
+找到自己的python环境下的site-packages/django/contrib/admin/migrations，把里面的py文件全删掉即可。
+
+
+4、django.core.exceptions.FieldDoesNotExist: model has no field named <id>
+
+使用了自定义的auth表，结果建表的时候提示admin找不到某个字段
+
+解决办法：
+
+找到自己的python环境下的site-packages/django/contrib/admin/migrations，把里面的py文件全删掉即可。
+
+
+5、点击页面的按钮绑定AJAX提交数据但是后端收不到任何数据
+
+这种情况一般是form表单中使用了 <button>提交</button>按钮，但是<button>< button/>按钮中没有明确指定type="button"。
+
+解决办法：
+
+使用AJAX提交数据的时候，提交数据的按钮可以使用如下方式：
+
+1. 使用最保险的input标签， 并且指定type类型为button
+
+2. 既然使用ajax提交数据就没必要再写form标签。
+
+直接用div包裹获取用户输入的input标签即可。
+
+3. 使用button按钮的时候，明确指定type类型为button， type一定不能省！！！
+
+<button type="button">提交</button>
+
+
+6、ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js
+
+这个问题是用Google的浏览器的问题，配置jQuery的URL
+
+django-debug-toolbar 默认使用的Google的地址，默认配置如下：
+
+JQUERY_URL=‘//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js’
+
+解决方法：
+
+在国内Google无法加载默认的jQuery的URL，我们就在settings.py中配置一下，我们特意选用了和原作者相同版本的jQuery:
+
+DEBUG_TOOLBAR_CONFIG={
+    'JQUERY_UPL':'//cdn.bootcss.com/jquery/2.2.4/jquery.min.js'
+}
+
+也可以在Django项目中使用了jquery的话就可以直接将这一设置为空，那么django-debug-toolbar就会使用你项目中用到的jquery:
+

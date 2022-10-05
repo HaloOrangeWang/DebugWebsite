@@ -1,0 +1,302 @@
+在bugly上面看到老是报下面的错，但是我们自测，包括给测试进行测试，也不会出现下面的问题，很是头疼
+
+经过三方jar进行分析发现就是下面图片的地方mContext报错，那么我们是不是可以在这个getNetworkType方法里插入mContext的判空操作呢？
+
+但是这个只是解决这一个方法，这个类还是有其他方法里也用到了这个mContext，我们是不是可以直接在最开始传入context的地方插入判空呢？于是继续看源码发现可以在init方法里插入
+
+可以插入如下代码：
+
+public void init() {
+    if(mContext != null){
+        Log.e("zuojie","mContext is null");
+        return ;
+    }
+    // 原本的逻辑代码
+}
+
+这时就可以使用之前了解过的ASM框架，对三方jar的class进行部分修改
+
+
+1、创建buildScr目录
+
+在项目中新建buildScr目录，然后添加build.gradle文件
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public'}
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+    google()
+//    jcenter()
+    mavenCentral()
+}
+dependencies {
+    implementation gradleApi()
+    //因为我这个自定义Plugin是用java写的不是Groovy所以这个localGroovy不需要
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:4.2.1'
+    implementation 'org.ow2.asm:asm:7.1'
+    implementation 'org.ow2.asm:asm-commons:7.1'
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(JavaCompile){
+    options.encoding = "UTF-8"
+}
+
+注意
+
+上面的com.android.tools.build:gradle:4.2.1要跟你项目中根目录下的build.gradle要一致
+
+
+2、创建自定义的Plugin插件
+
+class ModifyPlugin implements Plugin<Project> {
+
+@Override
+    void apply(Project project) {
+        println "=====Hello TransformPlugin"
+        def android = project.extensions.getByType(AppExtension)
+        //注册 Transform，操作 class 文件
+        android.registerTransform(new ModifyTransform())
+    }
+}
+
+在项目的build.gradle中引入apply plugin: ModifyPlugin
+
+
+3、创建自定义Transform
+
+在自定义一个Transform用于对三方jar进行遍历得到具体的class文件
+
+class ModifyTransform extends Transform {
+
+//自定义 Task 名称
+    @Override
+    String getName() {
+        return this.getClass().name
+    }
+
+@Override
+    Set<QualifiedContent.ContentType> getInputTypes() {
+        return TransformManager.CONTENT_CLASS
+    }
+
+@Override
+    Set<? super QualifiedContent.Scope> getScopes() {
+        return TransformManager.SCOPE_FULL_PROJECT
+    }
+
+// 当前Transform是否支持增量编译
+    @Override
+    boolean isIncremental() {
+        return false
+    }
+
+@Override
+    void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
+        super.transform(transformInvocation)
+        TransformOutputProvider outputProvider = transformInvocation.getOutputProvider()
+        //清理文件
+        outputProvider.deleteAll();
+
+transformInvocation.inputs.each {
+            TransformInput input ->
+
+//这里存放着开发者手写的类
+                input.directoryInputs.each {
+                    DirectoryInput directoryInput ->
+                        File dir = directoryInput.file
+                        println("dir===" + dir)
+                        /* dir.eachFileRecurse {
+                             File file ->
+                                 def name = file.name
+                                 if(name.endsWith(".class") && !name.startsWith("R\$") &&
+                                         !"R.class".equalsIgnoreCase(name) && !"BuildConfig.class".equalsIgnoreCase(name)){
+                                     println("name==="+name)
+                                     //class阅读器
+                                     ClassReader cr = new ClassReader(file.bytes);
+                                     //写出器
+                                     ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+                                     //分析，处理结果写入cw
+                                     cr.accept(new ClassAdapterVisitor(cw),ClassReader.EXPAND_FRAMES)
+                                     byte[] newClassBytes = cw.toByteArray();
+                                     FileOutputStream fos = new FileOutputStream(file.parentFile.absolutePath+File.separator+name)
+                                     fos.write(newClassBytes)
+                                     fos.close()
+                                 }
+                        }*/
+
+//获取output目录，处理完输入文件之后，要把输出给下一个任务
+                        def dest = outputProvider.getContentLocation(directoryInput.name, directoryInput.contentTypes,
+                                directoryInput.scopes, Format.DIRECTORY)
+                        //将input的目录复制到output指定目录
+                        FileUtils.copyDirectory(directoryInput.file, dest)
+                }
+
+//遍历jar文件
+                input.jarInputs.each {
+                    JarInput jarInput ->
+                        def src = jarInput.file
+                        String jarName = src.name
+                        String absolutePath = src.absolutePath
+                        if (jarName.contains("bi-9.1-runtime")) {
+                            println("jarName = ${jarName}")
+                            println("jar = ${absolutePath}")
+                        }
+                        String md5name = DigestUtils.md5Hex(src.getAbsolutePath());
+                        if (absolutePath.endsWith(".jar")) {
+                            //...对jar进行插入字节码
+                            jarName = jarName.substring(0, jarName.length() - 4)
+                        }
+
+// bi-9.1-runtime.jar
+                        File dest = outputProvider.getContentLocation(jarName + md5name, jarInput.contentTypes, jarInput.scopes, Format.JAR)
+                        if (jarName.contains("bi-9.1-runtime")) {
+                            JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(dest))
+                            JarFile jarFile = new JarFile(src)
+                            Enumeration<JarEntry> entries = jarFile.entries()
+                            while (entries.hasMoreElements()) {
+                                JarEntry jarEntry = entries.nextElement()
+                                def jarEntryName = jarEntry.name
+                                println "====jarEntryName:$jarEntryName"
+                                ZipEntry zipEntry = new ZipEntry(jarEntryName)
+
+if(zipEntry.isDirectory()) continue
+
+jarOutputStream.putNextEntry(zipEntry);
+
+//读取class的字节数据
+                                 InputStream is = jarFile.getInputStream(jarEntry)
+
+ByteArrayOutputStream bos = new ByteArrayOutputStream()
+                                IOUtils.copy(is, bos)
+                                byte[] sourceClassBytes = bos.toByteArray()
+                                is.close()
+                                bos.close()
+
+if ("bi/com/xxx/bi/GetBaseDataInfo.class" == jarEntryName) {
+                                    println "55555"
+                                     //class阅读器
+                                     ClassReader cr = new ClassReader(bos.toByteArray());
+                                     //写出器
+                                     ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+                                     //分析，处理结果写入cw
+                                     cr.accept(new ClassAdapterVisitor(cw),ClassReader.EXPAND_FRAMES);
+                                     byte[] newClassBytes = cw.toByteArray();
+                                     jarOutputStream.write(newClassBytes)
+                                }else {
+                                    jarOutputStream.write(sourceClassBytes)
+                                }
+                            }
+                            jarOutputStream.close()
+                        } else {
+                            FileUtils.copyFile(src, dest)
+                        }
+                }
+        }
+    }
+}
+
+
+4、基于ASM创建class文件的操作类
+
+需要根据ASM框架提供的api和规则来创建操作字节码文件的操作类，这里需要修改字节码来实现自己的业务逻辑，所以为了方便这里使用java类来实现，ClassAdapterVisitor类用于对class字节码的观察并监听类的信息，ClassAdapterVisitor代码如下：
+
+public class ClassAdapterVisitor extends ClassVisitor {
+    //当前类的类名称
+    //本例：com/zxj/plugin/demo/MainActivity
+    private String className;
+
+//className类的父类名称
+    //本例：androidx/appcompat/app/AppCompatActivity
+    private String superName;
+
+public ClassAdapterVisitor(ClassVisitor classVisitor) {
+        super(Opcodes.ASM7, classVisitor);
+    }
+
+@Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, signature, superName, interfaces);
+        className = name;
+        System.out.println("className:"+name+",superName:"+superName+",interfaces.length:"+interfaces.length);
+    }
+
+@Override
+    public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+        System.out.println("====access:"+access+",name:"+name+",descriptor:"+descriptor+",signature:"+signature+",value:"+value);
+        return super.visitField(access, name, descriptor, signature, value);
+    }
+
+@Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        System.out.println("methodName:"+name+",descriptor:"+descriptor+",signature:"+signature);
+
+MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+
+if("init".equals(name) && "()V".equals(descriptor)){
+            return new MethodAdapterVisitor(Opcodes.ASM7,mv,access,name,descriptor,className);
+        }
+        return mv;
+    }
+}
+
+MethodAdapterVisitor类用于对方法的观察，可以在对应的方法执行前插入自己的代码
+
+public class MethodAdapterVisitor extends AdviceAdapter {
+    private String methodName;
+    private String className;
+
+public MethodAdapterVisitor(int api, MethodVisitor methodVisitor, int access, String name, String descriptor,String className) {
+        super(api, methodVisitor, access, name, descriptor);
+        this.className = className;
+        methodName = name;
+        System.out.println("MethodAdapterVisitor->MethodName:"+name);
+    }
+
+@Override
+    protected void onMethodEnter() {
+        super.onMethodEnter();
+        /**
+         * if (this.mContext == null) {
+         *     Log.e("zuojie", "mContext is null");
+         *     return;
+         * }
+         */
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn(GETFIELD, "bi/com/xxx/bi/GetBaseDataInfo", "mContext", "Landroid/content/Context;");
+        Label label1 = new Label();
+        mv.visitJumpInsn(IFNONNULL, label1);// IFNULL IFNONNULL
+        Label label2 = new Label();
+        mv.visitLabel(label2);
+        mv.visitLdcInsn("zuojie");
+        mv.visitLdcInsn(className+",mContext is null");
+        mv.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
+        mv.visitInsn(POP);
+        Label label3 = new Label();
+        mv.visitLabel(label3);
+        mv.visitInsn(RETURN);
+        mv.visitLabel(label1);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+    }
+}
+
+这里怎么写上面的插入语句呢？其实是可以利用AS的一个插件ASM Bytecode Viewer Support Kotlin，其中图片上面前两个在新版本AS是不能正常使用了。
+
+我们可以创建一个测试的类，这个类里的模仿三方jar里的方法，
+
+然后右键选择ASM Bytecode Viewer，就可以在AS的右上角查看字节码
+
+我们可以把生成的字节码拷贝到自己的项目中，稍做修改一下就可以了，
+
+注意：修改时一定要仔细，有一点没修改好，在编译的时候就会报错，而且报的错还看不出来哪里的错。
+
+下面就是反编译apk后，查看可以发现已经插入成功了。
+

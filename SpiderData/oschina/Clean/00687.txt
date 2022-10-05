@@ -1,0 +1,20 @@
+程序猿都是喜欢尝试使用新的东西，可是升级了python之后出会导致yum无法使用。
+
+百度找到解决方法：:
+
+1、刚开始报yum文件语法错误
+
+vi /usr/bin/yum文件
+
+修改python为旧版本python2.6。
+
+还报错：rpmdb: unable to join the environment
+
+备份/var/lib/rpm/__db.*文件
+
+删除rm -rf /var/lib/rpm/__db*
+
+重建rpm --rebuilddb
+
+恢复yum功能
+

@@ -1,0 +1,22 @@
+今天看到网上一个Python的代码段子,于是自己试着去抄着写,写完之后,运行没有问题,于是自己想着改一下.中文拼接参数打印出来,便报了以下错误:
+
+提示错误信息:'ascii' codec can't decode byte 0xe6 in position 0: ordinal not in range(128)
+
+网上搜了搜,是因为 ASCII 编码问题
+
+Python顶部一般都会声明编码
+
+# -*-coding:utf-8-*-
+
+
+解决办法: 在代码顶部加入以下代码
+
+#sys模块包括了一组非常实用的服务，内含很多函数方法和变量，用来处理Python运行时配置以及资源，从而可以与前当程序之外的系统环境交互(具体介绍和使用可以自行百度)
+#导入sys库
+import sys
+
+# 设置系统默认编码，执行dir（sys）时不会看到这个方法，在解释器中执行不通过，可以先执行reload(sys)，在执行 setdefaultencoding('utf-8')，此时将系统默认编码设置为utf-8。（见设置系统默认编码 ）
+reload(sys)
+
+sys.setdefaultencoding('utf-8')#添加该方法声明编码
+

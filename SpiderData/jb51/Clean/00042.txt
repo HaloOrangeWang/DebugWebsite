@@ -1,0 +1,37 @@
+如下所示：
+
+#!/usr/bin/python
+import pickle 
+shoplist=['apple','mango','carrot']
+f = open('c:\poem.txt','w')
+pickle.dump(shoplist,f)
+f.close()
+del shoplist
+f = open('c:\poem.txt','r')
+storedlist = pickle.load(f)
+print(storedlist)
+
+执行上述程序时候报错：
+
+TypeError: must be str, not bytes
+
+解决方法：
+
+在使用open打开文件的时候，加个b
+
+f = open('c:\poem.txt','wb‘)
+
+f = open('c:\poem.txt','rb')
+
+补充知识：TypeError: LoadLibrary() argument 1 must be str, not None
+
+在最新版本的Anaconda3中，新加入了一个condabin目录，而新版的anaconda中创建虚拟环境时需要依赖该目录中的文件，所以会报错如下：
+
+解决办法：
+
+将该目录加入系统环境变量中，然后进入该目录打开cmd窗口
+
+执行 conda create -n DjangoPath python=3.5.2
+
+以上这篇解决Python中报错TypeError: must be str, not bytes问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

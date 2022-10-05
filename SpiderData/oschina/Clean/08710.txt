@@ -1,0 +1,21 @@
+服务器环境
+
+架构图
+
+架构搭成后，在B机器上发现主从报错Last_IO_Errno: 1595 
+ Last_IO_Error: Relay log write failure: could not queue event from master
+
+最终发现是B和C开启了半同步复制，而A机器是5.5版本，没有半同步参数设置，从而造成主从复制1595错误
+
+解决办法：关闭B和C半同步复制，使用异步复制。
+
+另一现象：
+
+A和B想做成主主复制， 即版本低的MySQL5.5做为MySQL5.7的从库
+
+主从报错：
+
+Got fatal error 1236 from master when reading data from binary log: 'Slave can not handle replication events with the checksum that master is configured to log; the first event 'mysql-bin.000106' at 165107652,the last event read from '/opt/mysql/binlogs/mysql-bin.000106' at 123, the last byte read from '/opt/mysql/binlogs/mysql-bin.000106' at 123.'
+
+欢迎转载，转载请注明出处
+

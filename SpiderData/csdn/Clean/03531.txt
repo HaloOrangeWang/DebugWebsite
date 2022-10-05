@@ -1,0 +1,14 @@
+一、Python Error
+
+在 Pytorch 读取参数时，报错 RuntimeError: cuda runtime error (10) : invalid device ordinal。
+
+二、解决方法
+
+造成这个错误的原因主要是本地只有一个 GPU (GPU:0)，而程序中使用 GPUs:1。
+
+因此，在程序中找到定义 device 的地方，我的如下：
+
+将其中 "cuda:1" 修改为 "cuda:0"，程序将不在报错。
+
+完毕！
+

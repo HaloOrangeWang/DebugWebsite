@@ -1,0 +1,40 @@
+当项目需要新建一个分支并切换到最新分支的时候:
+
+新建一个分支并切换到最新分支:git checkout -b dev/x.x.x
+
+git pull命令就会出现报错
+
+There is no tracking information for the current branch.
+ Please specify which branch you want to merge with.
+ See git-pull(1) for details.
+
+git pull <remote> <branch>
+
+If you wish to set tracking information for this branch you can do so with:
+
+git branch --set-upstream-to=origin/<branch> dev/x.x.x
+
+是因为git没有在远程追溯到你最新的分支或pull的时候没有指定当前分支也没有设置当前分支为默认分支
+
+解决方案：
+
+设置当前分支为默认分支
+
+git branch --set-upstream-to=origin/<branch> dev/x.x.x
+
+如果还报错：No such file or directory
+
+打开项目.git文件夹
+
+打开config文件是否有最新的分支信息，没有就添加
+
+[branch "dev/2.4.5"]
+     remote = origin
+     merge = refs/heads/dev/x.x..x
+
+到文件
+
+或者执行bash：$ git push -u origin dev/x.x.x
+
+操作成功！
+

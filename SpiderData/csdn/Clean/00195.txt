@@ -1,0 +1,43 @@
+在部署django项目时候，安装uwsgi，频频出错、警告什么的！！
+
+最后在网上查看各种信息，东搞搞，西搞搞，最后还是下载好了，分享我这次解决经历
+
+安装python和各种依赖包，就不讲了，需要就看这个链接https://www.jb51.net/article/216239.htm
+
+
+1、安装uwsgi错误1：提示pip版本不够
+
+堡塔下（我用的）：/usr/local/python3/bin/pip3 install uwsgi
+
+出现了下面的错误：
+
+出现下面的情况：他叫你升级pip，所以输入它提示的信息如下，再输上面命令
+
+/usr/local/python3/bin/python3.8 -m pip install --upgrade pip
+
+
+2、安装uwsgi错误2：提示root环境下，下载可能会有冲突
+
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+
+警告：以“root”用户身份运行PIP会导致权限损坏并与系统包管理器的行为发生冲突。建议改用虚拟环境：https : //pip.pypa.io/warnings/venv
+
+解决用：sudo pip3 install uwsgi
+
+但是可能会出现3 的错误
+
+
+3、安装uwsgi错误3：#include <Python.h>^
+
+还是警告：
+
+这个时候需要安装  python-devel  库，先查看的python版本
+
+在堡塔输入 ：python3 --version ，由python版本安装对应的库，不对应可能会失败
+
+然后在堡塔输入：yum install python36-devel
+
+最后 ：sudo pip3 install uwsgi
+
+输入查看，有下面的信息就成功了：uwsgi
+

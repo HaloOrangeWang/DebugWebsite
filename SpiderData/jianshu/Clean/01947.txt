@@ -1,0 +1,158 @@
+对于同一份manifest，gdc-client时常也会出现报错下载失败，推测原因为网络/网速问题。春节在家，无法更换网络，故尝试在不同时间段进行下载，最后终于成功。另外，发现gdc-client支持断点下载。
+
+$ ./gdc-client.exe download -m gdc_manifest_CESC_counts.2021-02-15.txt -d expdata
+
+100% [###############################################################] Time:  0:00:07   0.1 B/s
+
+100% [###############################################################] Time:  0:00:08   0.1 B/s
+
+100% [###############################################################] Time:  0:00:08   0.1 B/s
+
+N/A% [                                                               ] ETA:  --:--:--   0.0 s/B E
+
+RROR: HTTPSConnectionPool(host='api.gdc.cancer.gov', port=443): Max retries exceeded with url: /d
+
+ata?tarfile (Caused by SSLError(SSLError("bad handshake: SysCallError(10060, 'WSAETIMEDOUT')")))
+
+ERROR: An unexpected error has occurred during normal operation of the client. Please report the
+
+following exception to GDC support support@nci-gdc.datacommons.io.
+
+--- Logging error ---
+
+Traceback (most recent call last):
+
+File "gdc-client", line 111, in <module>
+
+File "site-packages\gdc_client-1.5.0-py3.7.egg\gdc_client\download\parser.py", line 103, in dow
+
+nload
+
+File "site-packages\gdc_client-1.5.0-py3.7.egg\gdc_client\download\client.py", line 279, in dow
+
+nload_small_groups
+
+File "site-packages\gdc_client-1.5.0-py3.7.egg\gdc_client\download\client.py", line 218, in _do
+
+wnload_tarfile
+
+AttributeError: 'NoneType' object has no attribute 'status_code'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "tokenize.py", line 385, in find_cookie
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xcf in position 0: invalid continuation byte
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "logging_init.py", line 1025, in emit
+
+File "logging_init.py", line 869, in format
+
+File "site-packages\gdc_client-1.5.0-py3.7.egg\gdc_client\log\log.py", line 42, in format
+
+File "logging_init.py", line 616, in format
+
+File "logging_init.py", line 566, in formatException
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 104, in prin
+
+t_exception
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 508, in in
+
+it
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 363, in extr
+
+act
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 285, in line
+
+File "c:\users\cdis\desktop\gdc-client\bin\venv\lib\linecache.py", line 16, in getline
+
+File "c:\users\cdis\desktop\gdc-client\bin\venv\lib\linecache.py", line 47, in getlines
+
+File "c:\users\cdis\desktop\gdc-client\bin\venv\lib\linecache.py", line 136, in updatecache
+
+File "tokenize.py", line 449, in open
+
+File "tokenize.py", line 426, in detect_encoding
+
+File "tokenize.py", line 390, in find_cookie
+
+SyntaxError: invalid or missing encoding declaration for 'gdc-client'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "tokenize.py", line 385, in find_cookie
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xcf in position 0: invalid continuation byte
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "gdc-client", line 121, in <module>
+
+File "logging_init.py", line 1413, in exception
+
+File "logging_init.py", line 1407, in error
+
+File "logging_init.py", line 1514, in log
+
+File "logging_init.py", line 1524, in handle
+
+File "logging_init.py", line 1586, in callHandlers
+
+File "logging_init.py", line 894, in handle
+
+File "logging_init.py", line 1033, in emit
+
+File "logging_init_.py", line 947, in handleError
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 104, in prin
+
+t_exception
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 521, in in
+
+it
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 533, in _loa
+
+d_lines
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 533, in _loa
+
+d_lines
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 531, in _loa
+
+d_lines
+
+File "C:\Users\CDIS\AppData\Local\Programs\Python\Python37\Lib\traceback.py", line 285, in line
+
+File "c:\users\cdis\desktop\gdc-client\bin\venv\lib\linecache.py", line 16, in getline
+
+File "c:\users\cdis\desktop\gdc-client\bin\venv\lib\linecache.py", line 47, in getlines
+
+File "c:\users\cdis\desktop\gdc-client\bin\venv\lib\linecache.py", line 136, in updatecache
+
+File "tokenize.py", line 449, in open
+
+File "tokenize.py", line 426, in detect_encoding
+
+File "tokenize.py", line 390, in find_cookie
+
+SyntaxError: invalid or missing encoding declaration for 'gdc-client'
+
+[23512] Failed to execute script gdc-client
+

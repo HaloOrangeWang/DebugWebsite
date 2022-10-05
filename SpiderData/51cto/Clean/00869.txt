@@ -1,0 +1,14 @@
+　　编译caffe（Python3）时make all的时候出现了如下错误
+
+cannot find -lboost_python3
+
+　　网上搜索了一下。先检查：
+
+cd /usr/lib/x86_64-linux-gnu
+
+find -name libboost_python3*.so
+
+　　只有libboost_python35.so，没有libboost_python3.so，则建立链接：
+
+sudo ln -s libboost_python-py35.so libboost_python3.so
+

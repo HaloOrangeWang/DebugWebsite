@@ -1,0 +1,92 @@
+
+解决 conda 环境中调用 python 失败的问题
+
+问题描述
+
+问题1 解决办法问题2 解决办法解决问题1 的对比操作切换环境的正常命令流程不退出次级环境导致执行python出错的命令流程
+
+问题1 解决办法
+
+问题2 解决办法
+
+解决问题1 的对比操作
+
+切换环境的正常命令流程不退出次级环境导致执行python出错的命令流程
+
+切换环境的正常命令流程
+
+不退出次级环境导致执行python出错的命令流程
+
+感想
+
+
+问题描述
+
+今天在项目过程中遇到了两个很奇怪的问题，具体问题如下：
+
+This Python interpreter is in a conda environment, but the environment has not been activated.
+
+This Python interpreter is in a conda environment, but the environment has not been activated.
+
+Failed calling sys.interactivehook
+
+Failed calling sys.interactivehook
+
+
+问题1 解决办法
+
+解决办法就是在如果要在命令行中运行 python 解释器，首先使用命令 conda activate base 进入 anaconda 中的主环境（base），然后再使用命令 conda activate secondary-env-a （secondary-env-a 表示次级环境名称，一般就是项目环境）进入次级环境
+
+当需要从一个次级环境切换到另一个次级环境的时候，一定要先使用命令conda deactivate退出当前的次级环境进入主环境（base），然后再激活另一个次级环境 conda activate secondary-env-b。其核心方式就是当需要在次级环境中进行切换的时候，一定要使用命令conda decativate退出当前环境，不然会出现很奇怪的错误，至少在我的系统上出现过了。
+
+PS: 在 conda 4.6 以后的版本中，激活以及退出的命令是conda activate xxx与conda deactivate，要加关键词conda（见图），可以参考此链接 https://conda.io/activation（它也是问题一中报错后命令行中给出的链接），里面也包含了很多conda 命令操作。
+
+关于问题1的实验操作请见 – 解决问题1 的对比操作
+ 
+ 这个问题可能与我的 anaconda 配置的环境有关，因为其他同事都没有遇到过这种问题。我的系统曾经在本地安装过原生的 python 解释器 3.7 版本，但是后来因为项目需要，原生版本以及附带的 idle 都已经被卸载了，项目全部交给 anaconda 托管。我的 anaconda 路径是添加在系统的环境变量中而不是用户的环境变量中，路径截图如下。
+
+
+问题2 解决办法
+
+解决的办法是修改 一个名为 history.py 文件，具体做法及原因可以参考链接。
+
+参考链接
+
+https://blog.csdn.net/zcyzhangzhou/article/details/86535075
+
+https://blog.csdn.net/bupaipython/article/details/101425302
+
+具体的做法，在我的系统中修改 history.py 文件中的第82行，第二个参数从 r 改为 rb，但是我并不是很理解这样改的原因。
+
+def read_history_file(self, filename=None): 
+        '''Load a readline history file.'''
+        if filename is None:
+            filename = self.history_filename
+        try:
+            for line in open(filename, 'rb'):  # 修改这里 r --> rb
+                self.add_history(lineobj.ReadLineTextBuffer(ensure_unicode(line.rstrip())))
+
+
+解决问题1 的对比操作
+
+
+切换环境的正常命令流程
+
+在命令行中：进入 base，进入 face36，退出 face36，进入 py36，退出 py36，退出 base 命令流程
+ 
+ 可以看到 face36 与 py36 环境中的 python 模块版本都是 3.6.10，而 base 环境中 python 版本为 3.7.4，这个是python版本的正确显示与执行，并且正常切换与退出anaconda的各个环境。
+
+
+不退出次级环境导致执行python出错的命令流程
+
+现在尝试再 face36 中不退出到 base 环境直接 切换到 py36 环境会出现的错误
+ 
+ 可以看到 在 face36 环境中不退出到 base 直接进入 py36 环境时，在当前的环境中执行的 python 模块版本为 3.7.4，而不是 py36 中的 3.6.10；同时在运行此 python 模块时会报错，错误信息为 当前环境没有被激活。
+
+所以建议在任何次级环境中（base 为 conda 的主环境）要切换到另一个次级环境，就像从 face36 环境 切换到 py36 环境，为了保险起见，要退出当前的次级环境，并在 主环境 base 中激活另一个次级环境，避免莫名其妙的错误。
+
+
+感想
+
+python确实很容易上手，不过这个容易会让像我这样的 newBies 在写程序做项目时过于大意，很多时候只是想着解决眼前的问题，而不去深思问题背后的原因。前路漫漫，交予时间吧。
+

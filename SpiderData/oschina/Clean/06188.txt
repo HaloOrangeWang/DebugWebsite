@@ -1,0 +1,63 @@
+SwiftyJSON 是一款很棒的 Swift 语言第三方库，主要处理JSON数据，作者是ThoughtWorks的工程师傅若愚。
+
+使用 SwiftyJSON 时，Xcode报错：No such module 'SwiftyJSON'
+
+SwiftyJSON Github：
+
+Manually (iOS 7+, OS X 10.9+):
+
+To use this library in your project manually you may:
+ for Projects, just drag SwiftyJSON.swift to the project tree
+ for Workspaces, include the whole SwiftyJSON.xcodeproj
+
+Initialization
+
+import SwiftyJSON
+ let json = JSON(data: dataFromNetworking)
+ let json = JSON(jsonObject)
+
+
+问题复现：
+
+Xcode: Version 7.1.1 (7B1005)
+
+新建项目(project)，选择 Single View Application.
+
+按照 SwiftyJSON 中的说明,使用手动方式，直接将SwiftyJSON.swift拖拽进入项目。
+
+然后再 UIViewController 中使用 import 引入 SwiftyJSON：
+
+import UIKit  
+import SwiftyJSON  //Xcode ERROR: No such module 'SwiftyJSON'
+
+class ViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+}
+
+Xcode就提示错误： No such module 'SwiftyJSON'
+
+
+解决办法：
+
+在网上搜了一下，也有不少人遇到这个问题，在 stackoverflow 上看到有人回答：
+
+If you added SwiftyJSON.swift to your project, you don't need to import it.
+ It's already available.
+
+原来是将SwiftyJSON.swift文件加入的项目中，就不需要使用 import再引入了，直接可以使用了。 (晕)
+
+直接可以在代码中使用 JSON()方法:
+ let json = JSON(data: dataFromNetworking)
+ let json = JSON(jsonObject)
+
+参考资料：
+
+http://stackoverflow.com/questions/26754481/example-handling-json-with-swiftyjson
+ https://github.com/SwiftyJSON/SwiftyJSON
+ https://github.com/lingoer/SwiftyJSON
+

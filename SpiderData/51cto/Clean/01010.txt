@@ -1,0 +1,21 @@
+今天用pyhon安装完web.py的时候，点击运行还是没错的，但是在网页输入链接就会报错。
+1.安装我是这样的:
+
+pip install web.py
+
+2.运行后错误信息是这样:
+
+AttributeError: module 'six.moves.urllib_parse' has no attribute 'unquote_to_bytes'
+
+大概原因就是说模块six.moves.urllib_parse，没有unquote_to_bytes属性，然后最后的网上查找说是pytho2可以用，
+但是我不能安装个python2，于是继续查找最后找到了一个解决方法，用另一种安装方式重新安装web.py
+第一步卸载原理的web.py
+
+pip uninstall web.py
+
+第二步安装
+
+pip install web.py==0.40.dev0
+
+再次运行完美解决。
+

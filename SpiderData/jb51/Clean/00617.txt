@@ -1,0 +1,115 @@
+假设需要把发生异常错误的信息写入到log.txt日志文件中去：
+
+import traceback
+import logging
+ 
+logging.basicConfig(filename='log.txt', level=logging.DEBUG,
+     format='%(asctime)s - %(levelname)s - %(message)s')
+ 
+try:
+ raise Exception('发生异常错误信息')
+except:
+ #方案一，自己定义一个文件，自己把错误堆栈信息写入文件。
+ #errorFile = open('log.txt', 'a')
+ #errorFile.write(traceback.format_exc())
+ #errorFile.close()
+ 
+ #方案二，使用Python标准日志管理维护工具。
+ logging.debug(traceback.format_exc())
+
+补充知识：Python---异常处理、调用栈、异常记录、抛出错误
+
+异常处理：
+
+在python中，内置了一套错误处理机制：try:...except:...finally
+
+语法：
+
+try:
+
+可能出现异常语句
+
+except 错误类型1 as e：
+
+异常处理
+
+except 错误类型2 as e：
+
+异常处理2
+
+...
+
+finally:
+
+无论是否出错，都会执行的语句
+
+PS：python的错误也是类，所有错误的类都继承自BaseException。
+
+所以使用except时需注意，不但会捕获该类型的错误，还会将其子类错误一网打尽
+
+调用栈：
+
+若异常没有被捕获，则会一直往上抛，最后抛给解释器，解释器打印错误的堆栈信息，然后退出。
+
+因此，查找错误的时候：
+
+1、先看错误类型
+
+2、从下往上找
+
+如：
+
+异常记录：
+
+如果只使用异常捕获，结果只会打印错误类型，不会打印错误堆栈信息。如果不使用异常捕获，python解释器会打印错误类型及错误堆栈信息，但是程序也被结束了。使用异常记录就可以把错误类型和错误堆栈信息都打印出来，而且程序可以继续执行。
+
+import logging
+
+def foo(s)：
+ return 10/int(s)
+def bar(s)
+ return foo(s)*2
+
+def mian():
+ try:
+  bar('0')
+ except Exception as e:
+  logging.exception(e)
+main()
+print("END")
+
+抛出错误：
+
+因为错误是class，捕获一个错误就是捕获到该class的一个实例，因此，错误并不是凭空产生的，而是有意创建并抛出的，pyhton的内置函数会抛出很多类型的错误，我们自己编写的函数也可以抛出错误。
+
+如果要抛出错误，首先根据需要，可以定义一个错误的class，选择好继承关系，然后，用raise语句抛出一个错误的实例。
+
+class FooError(valueError)：
+ pass
+def foo(s)：
+ n = int(s)
+ if n == 0:
+  raise FooError("invalid value :%s"%s)
+ return 10/n
+foo('0')
+
+PS：只有在必要的时候才定义我们自己的错误类型，如果可以选择python已有的内置的错误类型，尽量使用python内置的错误类型。
+
+常见的错误类型
+
+- AttributeError 试图访问一个对象没有的属性
+
+- IOError 输入/输出异常 无法打开文件
+
+- IndentationError 语法错误，代码没有对齐
+
+- keyError 访问的key字典中不存在
+
+- NameError 使用一个还未赋值的对象的变量
+
+- TypeError 传入对象类型与要求不合法
+
+- ValueError 传入一个调用者不期望的值
+
+以上这篇使用Python将Exception异常错误堆栈信息写入日志文件就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

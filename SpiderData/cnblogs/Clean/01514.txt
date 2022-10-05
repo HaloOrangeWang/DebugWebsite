@@ -1,0 +1,16 @@
+1.mac下python环境pip报错：
+
+issuserdeMacBook-Pro:~ issuser$ pip install pyinstaller
+Collecting pyinstaller
+  Could not fetch URL https://pypi.python.org/simple/pyinstaller/: There was a problem confirming the ssl certificate: [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:590) - skipping
+  Could not find a version that satisfies the requirement pyinstaller (from versions: )
+No matching distribution found for pyinstaller
+
+2.出现这个错误的原因是python.org已经不支持TLSv1.0和TLSv1.1了更新pip可以解决这个问题。
+
+但是如果使用传统的python -m pip install --upgrade pip的方式，还是会出现那个问题。这是因为TLS证书的问题需要去升级pip，升pip的时候又因为TLS证书的原因不能下载最新版本的pip。这时候就没有办法了，只能手动的去升级pip。
+
+3.解决方式如下：
+mac或者linux操作系统：在终端下执行命令：curl https://bootstrap.pypa.io/get-pip.py | python。
+windows操作系统：从https://bootstrap.pypa.io/get-pip.py下载get-pip.py文件，然后使用python运行这个文件python get-pip.py即可。
+

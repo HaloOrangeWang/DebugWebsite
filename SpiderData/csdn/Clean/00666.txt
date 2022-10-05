@@ -1,0 +1,14 @@
+问题描述：Python 中报错TypeError: expected string or bytes-like object
+
+解决方法：根据报错上方的提示信息，大体猜测到可能出错的具体地方。出现该报错一般为数据类型不匹配造成的，可以通过print(type(object))来查当前的数据类型，式中object为要查询的对象。
+
+print(type(xml_data.xpath('/html/head/script[5]/text()')))
+
+输出结果：
+
+<class 'list'>
+
+因此上述xpath获取的数据可考虑采用下述方式进行使用
+
+xml_data.xpath('/html/head/script[5]/text()')[0]
+

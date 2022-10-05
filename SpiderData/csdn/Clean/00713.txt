@@ -1,0 +1,44 @@
+
+显示报错如下
+
+from pdfminer.pdfparser import PDFParser, PDFDocument
+ImportError: cannot import name 'PDFDocument' from 'pdfminer.pdfparser'
+
+
+解决办法
+
+1、修改模块导入方式
+
+from pdfminer.pdfparser import PDFParser, PDFDocument:
+
+改为：
+
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfpage import PDFPage
+
+2、修改模块调用方式（2处）
+ 1）PDFDocument
+
+doc = PDFDocument()
+
+改为
+
+doc = PDFDocument(parser)
+
+parser说明：
+
+fp = open(pdf, 'rb')
+# 用文件对象创建一个PDF文档分析器
+parser = PDFParser(fp)
+
+2）循环方式
+
+for page in doc.get_pages():
+
+改为
+
+for page in PDFPage.create_pages(doc):
+
+再次运行顺利，解决报错。
+

@@ -1,0 +1,15 @@
+错误信息
+
+Attempting to use uninitialized value input_producer/input_producer/limit_epochs/epochs
+
+今天在模型恢复的时候出现上图报错信息，最后发现是由于调用tf.train.slice_input_producer方法产生的错误信息。它本身认为是一个tensor
+
+修改方法：
+
+获取batch后，在sess中先初始化即可
+
+sess.run(tf.global_variables_initializer())
+sess.run(tf.local_variables_initializer())
+
+以上这篇解决TensorFlow模型恢复报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

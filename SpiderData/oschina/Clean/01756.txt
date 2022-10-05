@@ -1,0 +1,61 @@
+
+问题：xlrd读取Excel时传入 formatting_info=True 报错
+
+之前我们使用读取xls文件的时候都是使用的xlrd库，但是这个库只能操作 <font color=red>.xls</font>格式，对于后来的 <font color=red>.xlsx</font>的版本支持不算太好。 比如说：当你使用xlrd来加载 xlsx文件的时候，在代码中加入了
+
+xlrd.open_workbook(filePath, formatting_info=True)
+
+该参数默认为False，这可以节省内存；当取值为True时，会读取各种格式的信息。
+
+但是在最新的 xlrd-0.8.0 版本中，读取xlsx格式的Excel时，传入formatting_info就会直接抛出异常：
+
+Traceback (most recent call last):
+  File "xxxxxxxx\test_read_excel_color.py", line 7, in <module>
+    xlrd.open_workbook(r'./xxxxx.xlsx',formatting_info=True)
+  File "C:\Python27\lib\site-packages\xlrd\__init__.py", line 422, in open_workbook
+    ragged_rows=ragged_rows,
+  File "C:\Python27\lib\site-packages\xlrd\xlsx.py", line 751, in open_workbook_2007_xml
+    raise NotImplementedError("formatting_info=True not yet implemented")
+NotImplementedError: formatting_info=True not yet implemented
+
+官网中 formatting_info 的解释是：
+
+> formatting_info –
+The default is False, which saves memory. In this case, “Blank” cells, which are those with their own formatting information but no data, are treated as empty by ignoring the file’s BLANK and MULBLANK records. This cuts off any bottom or right “margin” of rows of empty or blank cells. Only cell_value() and cell_type() are available.
+
+这个option使用与节约内存的。在这个情况下，空的单元格，存在格式信息但是没有数据，将会被当成空来对待。这将会裁剪掉任何底部，右边的“边缘”空的表格。只有cell_value()和cell_type是有效的。 实际上在当关闭了这个option之后，当程序需要去加载cell中的颜色代码的时候将会存在下面的问题。
+
+Traceback (most recent call last):
+  File "xxxxx\test_read_execel_color1.py", line 10, in <module>
+    xf_idx  = xws1.cell_xf_index(0,0)
+  File "C:\Python27\lib\site-packages\xlrd\sheet.py", line 420, in cell_xf_index
+    self.req_fmt_info()
+  File "C:\Python27\lib\site-packages\xlrd\sheet.py", line 1664, in req_fmt_info
+    raise XLRDError("Feature requires open_workbook(..., formatting_info=True)")
+XLRDError: Feature requires open_workbook(..., formatting_info=True)
+
+还不知道里面是否还存在一些啥其他的问题。关闭了这个option之后，有些xlrd的代码就不能这么写了。
+
+
+解决办法
+
+
+1、修改为xlsx为xls（推荐）
+
+将.xlsx文件另存为.xls，然后再进行后续操作，亲测有效，能正常保存Excel原有格式，不用修改代码。（PS：直接将 .xlsx文件后缀修改为 .xls 是不可行的。）
+
+
+2、改用 openpyxl
+
+coding尝试读取文件，处理速度真的很慢...而且规则和宏全部丢失。
+
+
+3、使用pywin32
+
+这是用于Win32 (pywin32)扩展的Python的readme，它提供了对许多来自Python的Windows api的访问。
+
+
+4、使用老旧的版本 xlrd-0.6.1
+
+使用xlrd-0.6.1可以读取，没有异常抛出。直到我传入其他几个xls文件，出现Expected BOF record; found 0x4b50 错误，原因是xlrd-0.6.1不支持office2007
+

@@ -1,0 +1,19 @@
+在封装读取剪贴板的时候，执行测试代码时遇到个错误：
+
+pywintypes.error: (1418, 'GetClipboardData', '\xcf\xdf\xb3\xcc\xc3\xbb\xd3\xd0\xb4\xf2\xbf\xaa\xb5\x
+
+代码：
+
+然后在网上查，是因为设置了剪贴板内容之后，马上就读取剪贴板内容的话，可能这时候剪贴板的内容还没设置好，读取不到内容就会报错，
+
+需要在设置剪贴板之后等几秒钟。
+
+测试改成：
+
+结果：
+
+C:\Python27\python.exe D:/test/hybrid_version2/util/keyboard.py
+hey buddy!
+
+Process finished with exit code 0
+

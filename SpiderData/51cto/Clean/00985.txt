@@ -1,0 +1,32 @@
+anacond 或python3 报check_hostname requires server_hostname错误
+
+在anaconda启动过程中提示如下错误
+
+或者你可以在​​python3​​中看到类似的错误
+
+
+错误解析
+
+出现问题的主要原因是Urllib3 的 1.26.4 版本中存在一个错误。
+
+在 Python 3.4 和 2.7.9 中，SSLContext 上有一个 ​​check_hostname​​ 属性，它将让 SSLContext 实例处理检查 do_handshake 中的主机名。urllib3 在可能的情况下依靠它而不是自己进行检查会很好。我认为这与将 SSLContext 用作 TLS 内容的"bag of configuration"的其他内容相得益彰。这可以通过确定 SSLContext 对象是否具有 check_hostname 属性来检测。有一个缺点，这依赖于将主机名作为 ​​SSLContext().wrap_socket(server_name=)​​的一部分传递。最初这仅在 OpenSSL 启用了 SNI 时才有效。但是即使未启用 SNI，Python 3.4.3 和 2.7.9 也会接受 server_name。
+
+
+解决方案
+
+
+1. URLLIB3 降低到1.25.8以下​​urllib3 == 1.25.8​​
+
+
+2. 请求方法加验证=假参数
+
+直接运行会报如下警告：
+
+
+3. 在请求请求前，添加如下代码，即可解决以上警告
+
+
+4. 关掉代理
+
+​
+

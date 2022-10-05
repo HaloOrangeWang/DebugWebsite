@@ -1,0 +1,48 @@
+使用openpyxl保存文件的时候，出现最下面异常，查看openpyxl 的版本是2.5.14， 把openpyxl降级就可以解决此问题。
+
+[root@billig mytest]# pip install openpyxl==2.5.11
+DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7.
+Looking in indexes: http://mirrors.aliyun.com/pypi/simple/
+Collecting openpyxl==2.5.11
+ Downloading http://mirrors.aliyun.com/pypi/packages/38/7f/65d6b1700470749579b1585bbaf85fb8885f10fd53a77fb11915df913bbc/openpyxl-2.5.11.tar.gz (173kB)
+  100% |################################| 174kB 596kB/s
+Requirement already satisfied: jdcal in /usr/lib/python2.7/site-packages (from openpyxl==2.5.11) (1.4)
+Requirement already satisfied: et_xmlfile in /usr/lib/python2.7/site-packages (from openpyxl==2.5.11) (1.0.1)
+Installing collected packages: openpyxl
+ Found existing installation: openpyxl 2.5.14
+  Uninstalling openpyxl-2.5.14:
+   Successfully uninstalled openpyxl-2.5.14
+ Running setup.py install for openpyxl ... done
+Successfully installed openpyxl-2.5.11
+
+raceback (most recent call last):
+ File "excelwritedemonopd.py", line 24, in <module>
+  work_book.save("demo_new.xlsx")
+ File "/usr/lib/python2.7/site-packages/openpyxl/workbook/workbook.py", line 391, in save
+  save_workbook(self, filename)
+ File "/usr/lib/python2.7/site-packages/openpyxl/writer/excel.py", line 284, in save_workbook
+  writer.save(filename)
+ File "/usr/lib/python2.7/site-packages/openpyxl/writer/excel.py", line 266, in save
+  self.write_data()
+ File "/usr/lib/python2.7/site-packages/openpyxl/writer/excel.py", line 85, in write_data
+  self._write_images()
+ File "/usr/lib/python2.7/site-packages/openpyxl/writer/excel.py", line 122, in _write_images
+  self._archive.writestr(img.path[1:], img._data())
+ File "/usr/lib/python2.7/site-packages/openpyxl/drawing/image.py", line 64, in _data
+  img = _import_image(self.ref)
+ File "/usr/lib/python2.7/site-packages/openpyxl/drawing/image.py", line 33, in _import_image
+  img = PILImage.open(img)
+ File "/usr/lib64/python2.7/site-packages/PIL/Image.py", line 2638, in open
+  fp.seek(0)
+ValueError: I/O operation on closed file.
+
+补充：python的openpyxl 3.0.2版无法保存数据
+
+在使用openpyxl3.0.2版的时候老是
+
+报错“TypeError: got invalid input value of type , expected string or Element”
+
+在将3.0.2版的卸载并且重新安装了3.0.0版的openpyxl之后此报错解除！
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

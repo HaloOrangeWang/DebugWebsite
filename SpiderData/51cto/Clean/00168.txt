@@ -1,0 +1,18 @@
+from blog.models import Book.Author报错如下:
+
+django.core.exceptions.ImproperlyConfigured: Requested setting DEFAULT_INDEX_TABLESPACE, but settings are not configured. You must either define the environment variable DJANGO_SETTING
+S_MODULE or call settings.configure() before accessing settings.
+
+django.core.exceptions.AppRegistryNotReady: Apps aren't loaded yet
+
+解决办法:
+
+>>> import os;
+>>> os.environ['DJANGO_SETTINGS_MODULE'] = 'mtm.settings';
+>>> import django;
+>>> django.setup();
+>>> from blog.models import Book,Author
+
+引自：
+http://www.dark-hamster.com/programming/how-to-resolve-error-message-django-core-exceptions-appregistrynotready-apps-arent-loaded-yet/
+

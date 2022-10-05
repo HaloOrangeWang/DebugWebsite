@@ -1,0 +1,107 @@
+原文链接：https://www.cnblogs.com/harrymore/p/13854363.html
+
+
+1. 前言
+
+操作系统：centos7.2
+
+python版本：3.7
+
+pip版本：20.2.4
+
+公司一个AI项目需要部署，但是客户的服务器环境是在内网，无法联网更新，于是在公司开发服创建了一个同样的环境，离线下载安装包后再进行安装，关于离线安装可以参考：python使用pip离线安装库
+
+因为使用了一个叫fastai的库，需要依赖Bottleneck，然后这个包就真的成为我的bottleneck了。
+
+因为怀疑是前面依赖问题，于是将numpy之类的依赖安装后，再单独安装Bottleneck，安装命令：
+
+pip install Bottleneck-1.3.2.tar.gz
+
+报错：
+
+Processing ./Bottleneck-1.3.2.tar.gz
+   Installing build dependencies ... error
+   ERROR: Command errored out with exit status 1:
+    command: /usr/local/python3/bin/python3.7 /usr/local/python3/lib/python3.7/site-packages/pip install --ignore-installed --no-user --prefix /tmp/pip-build-env-1g2lyacs/overlay --no-warn-script-location --no-binary :none: --only-binary :none: -i https://pypi.org/simple -- setuptools wheel 'numpy==1.13.3; python_version=='"'"'2.7'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.13.3; python_version=='"'"'3.5'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.13.3; python_version=='"'"'3.6'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.14.5; python_version=='"'"'3.7'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.17.3; python_version>='"'"'3.8'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.16.0; python_version=='"'"'2.7'"'"' and platform_system=='"'"'AIX'"'"'' 'numpy==1.16.0; python_version=='"'"'3.5'"'"' and platform_system=='"'"'AIX'"'"'' 'numpy==1.16.0; python_version=='"'"'3.6'"'"' and platform_system=='"'"'AIX'"'"'' 'numpy==1.16.0; python_version=='"'"'3.7'"'"' and platform_system=='"'"'AIX'"'"'' 'numpy==1.17.3; python_version>='"'"'3.8'"'"' and platform_system=='"'"'AIX'"'"''
+        cwd: None
+   Complete output (16 lines):
+   Ignoring numpy: markers 'python_version == "2.7" and platform_system != "AIX"' don't match your environment
+   Ignoring numpy: markers 'python_version == "3.5" and platform_system != "AIX"' don't match your environment
+   Ignoring numpy: markers 'python_version == "3.6" and platform_system != "AIX"' don't match your environment
+   Ignoring numpy: markers 'python_version >= "3.8" and platform_system != "AIX"' don't match your environment
+   Ignoring numpy: markers 'python_version == "2.7" and platform_system == "AIX"' don't match your environment
+   Ignoring numpy: markers 'python_version == "3.5" and platform_system == "AIX"' don't match your environment
+   Ignoring numpy: markers 'python_version == "3.6" and platform_system == "AIX"' don't match your environment
+   Ignoring numpy: markers 'python_version == "3.7" and platform_system == "AIX"' don't match your environment
+   Ignoring numpy: markers 'python_version >= "3.8" and platform_system == "AIX"' don't match your environment
+   WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fcfa878e3c8>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/setuptools/
+   WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fcfa6008e48>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/setuptools/
+   WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fcfa6008358>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/setuptools/
+   WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fcfa6008780>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/setuptools/
+   WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7fcfa6008048>: Failed to establish a new connection: [Errno -2] Name or service not known')': /simple/setuptools/
+   ERROR: Could not find a version that satisfies the requirement setuptools (from versions: none)
+   ERROR: No matching distribution found for setuptools
+   ----------------------------------------
+
+ERROR: Command errored out with exit status 1: /usr/local/python3/bin/python3.7 /usr/local/python3/lib/python3.7/site-packages/pip install --ignore-installed --no-user --prefix /tmp/pip-build-env-1g2lyacs/overlay --no-warn-script-location --no-binary :none: --only-binary :none: -i https://pypi.org/simple -- setuptools wheel 'numpy==1.13.3; python_version=='"'"'2.7'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.13.3; python_version=='"'"'3.5'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.13.3; python_version=='"'"'3.6'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.14.5; python_version=='"'"'3.7'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.17.3; python_version>='"'"'3.8'"'"' and platform_system!='"'"'AIX'"'"'' 'numpy==1.16.0; python_version=='"'"'2.7'"'"' and platform_system=='"'"'AIX'"'"'' 'numpy==1.16.0; python_version=='"'"'3.5'"'"' and platform_system=='"'"'AIX'"'"'' 'numpy==1.16.0; python_version=='"'"'3.6'"'"' and platform_system=='"'"'AIX'"'"'' 'numpy==1.16.0; python_version=='"'"'3.7'"'"' and platform_system=='"'"'AIX'"'"'' 'numpy==1.17.3; python_version>='"'"'3.8'"'"' and platform_system=='"'"'AIX'"'"'' Check the logs for full command output.
+
+将numpy降为里面要求的1.16.0版本，依旧无法通过。
+
+按照官网的教程：https://pypi.org/project/Bottleneck/，解压后在文件夹中进行安装：
+
+pip install .
+
+依旧报一样的问题。
+
+
+2. 解决
+
+用google上查到的大多说是项目本身的bug，pip无能为力之类的，所以只能从编译项目的角度去解决。
+
+通过阅读解压后的文件，我在一个叫versioneer.py的文件中找到了下面这段话：
+
+Versioneer will look for `.git` in parent directories, and most operations
+
+should get the right version string. However `pip` and `setuptools` have bugs
+
+and implementation details which frequently cause `pip install .` from a
+
+subproject directory to fail to find a correct version string (so it usually
+
+defaults to `0+unknown`).
+
+`pip install --editable .` should work correctly. `setup.py install` might
+
+work too.
+
+Pip-8.1.1 is known to have this problem, but hopefully it will get fixed in
+
+some later version.
+
+尝试：
+
+pip install --editable
+
+依旧有错。
+
+继续尝试：
+
+python setup.py install
+
+没想到就可以了，安装完成后没有报错，使用
+
+pip list | grep Bottle
+
+显示：
+
+Bottleneck         1.3.2
+
+安装成功。
+
+
+3. 参考
+
+无
+
+（完）
+

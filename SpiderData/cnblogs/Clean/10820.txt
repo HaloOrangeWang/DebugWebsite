@@ -1,0 +1,18 @@
+报错原因为缺少共享库：
+
+yum whatprovides libSM.so.6
+
+查看下libSM版本，然后，运行命令：
+
+yum install libSM-1.2.2-2.el7.x86_64 --setopt=protected_multilib=false
+或者
+sudo yum install libSM-1.2.2-2.el7.i686 --setopt=protected_multilib=false
+
+然后继续检查，如果问题还没有解决，则需要安装：python-qt4，运行：
+
+sudo apt-get install -y python-qt4
+或者
+yum install python-qt4
+
+本人就是在运行：yum install python-qt4之后才顺利通过的。运行后，不需要运行make&&make install，记录下。
+

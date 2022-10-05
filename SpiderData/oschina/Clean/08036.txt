@@ -1,0 +1,71 @@
+1.报错： 
+The connection to adb is down, and a severe error has occured. 
+[2012-03-11 09:36:56 - Camera] You must restart adb and Eclipse. 
+[2012-03-11 09:36:56 - Camera] Please ensure that adb is correctly located at 'D:\SDK_1.5 
+\platform-tools\adb.exe' and can be executed. 
+解决： 
+方法1.cmd中adb kill-server，然后adb -startserver 
+方法2.方法1不管用，那么在任务管理器中杀死adb.exe，然后重启Eclipse。 
+方法3.方法1和2都不管用，那么查看最后一句报错中：platform-tools中是否有adb.exe（相关路径下面的若没有platform-tools文件夹就新建一个并且把tools中的文件全部复制到platform-tools中）
+2.报错：
+
+The Eclipse executable launcher was unable to locate its companion launcher jar
+
+解决：
+
+1.在未解压的eclipse中复制eclipse.ini到安装目录下替换
+
+2把.ini中256改为128
+
+3.报错：
+
+打开Eclipse时出现 “fail to crate the Java virtual machine“，也是把256改为128。
+
+4.报错：
+
+Android.View.WindowLeaked异常
+
+Android.view.WindowLeaked按字面了解，Window Leaked大概就是说一个窗体泄漏了，也就是我们常说的内存泄漏，我们知道Android的每一个Activity都有个WindowManager窗体管理器，同样，构建在某个Activity之上的对话框、PopupWindow也有相应的WindowManager窗体管理器。因为对话框、PopupWindown不能脱离Activity而单独存在着，所以当某个Dialog或者某个PopupWindow正在显示的时候我们去finish()了承载该Dialog(或PopupWindow)的Activity时，就会抛Window Leaked异常了，因为这个Dialog(或PopupWindow)的WindowManager已经没有谁可以附属了，所以它的窗体管理器已经泄漏了。
+解决：
+
+关闭(finish)某个Activity前，要确保附属在上面的Dialog或PopupWindow已经关闭(dismiss)了。
+
+5.报错：
+
+eclipse导入工程师报错，Invalid project description
+
+解决：
+
+.project文件中name是否与你的工程名相同
+
+6.报错：
+
+使用ViewPager是时遇到Error inflating class android.support.v4.view.ViewPager
+
+解决：
+
+右键项目选择Build Path ->Configure Build Path,然后选择Order and export 选项.置顶android-support-v4.jar并且将该选项勾上，然后Clean下项目，重新编译问题就解决了
+
+7.报错：
+
+import 项目的时候，有时会出现No projects are found to import，其实就是.classpath和.project丢失了，直接从别的项目中复制过来再简单修改下就行了。
+
+8.报错：
+
+启动eclipse是报 no java virtual machine was found after searching the following location
+
+在里面输入java -version看有没有版本的提示？有的话说明你的JDK是对的，那么就是Eclipse的问题了。没有参考其他方法。
+
+1）如果没有的话：
+依次点击：“我的电脑”－(右键)“属性”－“高级”－“环境变量”，弹出Windows的“环境变量”配置卡。
+在“系统变量”栏下执行三项操作：
+①新建“Java_Home”，值：JDK所在的绝对路径(例如 D:\Program Files\Java\jdk1.5.0_04\)。
+②新建“Classpath”(如果已有，则直接编辑)，值：.;%Java_Home%\lib (若值中原来有内容，用分号与之隔开)。
+③新建“Path”(如果已有，则直接编辑),值：%Java_Home%\bin; (若值中原来有内容，用分号与之隔开)。
+
+9.报错：
+
+conversion to dalvik format failed with error 1
+
+抱这个错的原因比较多，要具体问题具体对待，最笨的办法就是重新建个项目把代码copy进去。
+

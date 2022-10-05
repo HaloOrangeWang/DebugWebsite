@@ -1,0 +1,58 @@
+Django项目上线之后，死活无法正常运行（本地正常）
+
+开始排查了好久才发现是字符编码问题
+
+前面的小坑基本有一些，好（我）解（忘）决（了）。
+
+不好解决的是这个报错：
+
+SyntaxError: 'ascii' codec can't decode byte 0xe5 in position 7: ordinal not in range(128)
+
+具体表现如下：默认编码是utf-8，但是输出中文会报错。
+
+看到很多方法是这样：在文件开头加上，然鹅并没有用，这是这个只适用于python2
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+或者这样：（这个是文件内）
+
+等等
+
+python3的默认编码方式就是utf-8，所以无需设置。
+
+还有一些是文件读取过程中报这个错误，解决方法是，加:
+
+　　'字符串'.encode('utf-8')
+
+之后看到一个解决办法是在控制台输入：
+
+export LC_ALL="en_US.UTF-8"
+
+问题解决了！
+
+python 可以正常输出了！django项目运行正常了！
+
+然而事情并没有想象的这么简单，当我把xshell关掉之后，项目挂掉了！
+
+（ps：这个挂掉的根本原因是没有后台运行参考：链接）
+
+这个设置只是临时的设置。
+
+我突然意识到似乎这是linux系统默认语言的设置方法，
+
+用echo 输出中文，果然是乱码！
+
+于是找到了完美的解决方法：
+
+成功！重启服务器有效
+
+# sudo vim /etc/profile
+在末尾添上：
+
+export LC_ALL="en_US.UTF-8"
+export LANG="zh_CN.GBK"
+
+参考：https://blog.csdn.net/huoyunshen88/article/details/41113633
+

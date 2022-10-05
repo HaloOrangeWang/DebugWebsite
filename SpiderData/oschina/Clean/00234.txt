@@ -1,0 +1,31 @@
+问题描述：
+
+今天在测试环境中，为了执行脚本，安装下python3命令，在执行make install的时候报错：
+
+ModuleNotFoundError: No module named '_ctypes'
+make: *** [install] Error 1
+
+解决：
+
+在网上找了一些方案，说要通过yum安装一个包：
+
+yum install libffi-devel -y
+
+于是安装了，可是执行make install还是报同样的错误。
+
+接着：
+
+make clean然后make insall还是报错。
+
+再接着：
+
+以为是环境变量的问题，退出主机用户重新登录，还是报错。
+
+再接着：
+
+make clean，重新执行configuire命令，然后make , make install,发现成功。
+
+所以：应该是在检查环境的时候，配置指定了模块的位置信息，然后在make的时候使用了，yum安装之后，重新执行configure，加载最新的模块信息，就解决了该问题。
+
+文档创建时间：2019年8月1日17:07:22
+

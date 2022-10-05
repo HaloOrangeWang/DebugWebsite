@@ -1,0 +1,61 @@
+最新在学习Python的基础入门系列课程，今天学习到使用python 的内置库smtplib发送邮件内容。
+
+使用Python发送邮件步骤简单：
+
+创建SMTP连接
+
+使用邮箱和密码登录SMTP服务器
+
+创建邮件内容对象EmailMessage， 并使用set_content方法设置邮件内容
+
+调用sendmail方法发送邮件
+
+具体代码如下：
+
+import smtplib
+from email.message import EmailMessage
+# 定义SMTP邮件服务器地址
+smtp_server = 'smtp.qq.com'
+# 邮件发送人邮箱
+from_addr = '******@qq.com' # 自己的邮想
+# 邮件发送人邮箱密码
+password = '******' # 邮箱密码
+# 邮件接收人
+to_addr = '******@163.com' # 测试接收邮件地址邮箱
+# 创建SMTP连接
+conn = smtplib.SMTP_SSL(smtp_server, 465)
+# 设计调试级别
+conn.set_debuglevel(1)
+# 登录邮箱
+conn.login(from_addr, password)
+# 创建邮件内容对象
+msg = EmailMessage()
+# 设置邮件内容
+msg.set_content('您好，这是一封来自Python的测试邮件', 'plain', 'utf-8')
+# 发送邮件
+conn.sendmail(from_addr, [to_addr], msg.as_string())
+# 退出连接
+conn.quit()
+
+运行上述代码后，会报如下错误：
+
+smtplib.SMTPAuthenticationError: (535, b'Error: \xc7\xeb\xca\xb9\xd3\xc3\xca\xda\xc8\xa8\xc2\xeb\xb5\xc7\xc2\xbc\xa1\xa3\xcf\xea\xc7\xe9\xc7\xeb\xbf\xb4: http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=28&&no=1001256')
+
+点击网址部分：http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=28&&no=1001256，会跳转到腾讯邮箱的如下页面
+
+就是我们在使用第三方客户端登录QQ邮箱时，为了保证账户安全，需要使用说授权码，在帮助中心中，点击生成授权码就可以得到腾讯邮箱给出的授权码了。
+
+然后，使用得到的授权码，替换下面登录login方法中的password代码,即使用用户邮箱和授权码登录
+
+conn.login(from_addr, "授权码")
+
+修改完成后，重新运行就不会出现以上错误，并且成功的发送邮件到了指定邮箱，可以登录收件邮箱已查看是否收到，也有可能在垃圾箱里。
+
+至此，Python使用smtplib发送邮件成功了。
+
+总结
+
+以上所述是小编给大家介绍的Python使用QQ邮箱发送邮件报错smtplib.SMTPAuthenticationError，希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+
+如果你觉得本文对你有帮助，欢迎转载，烦请注明出处，谢谢！
+

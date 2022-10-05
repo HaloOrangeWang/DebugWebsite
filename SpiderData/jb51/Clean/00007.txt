@@ -1,0 +1,91 @@
+Python导包模块报错的问题：
+
+import报错No module named "xxx"的问题
+如何将指定目录作为项目根目录，让项目根目录下的包/模块都可以直接导入？（linux下）
+
+Python导入模块时，解释器如何定位模块：
+
+1.当前目录
+2.内置模块列表
+3.sys.path列表的目录
+
+由于python没有定位到模块目录时出现的No module named "xxx"问题，大概有两种解决思路：
+1.在sys.path永久加入需要导入的模块的父目录；2.每次要导入时在执行的py文件中执行sys.path.append方法将需要导入的模块的父目录加入到sys.path
+
+问题和解决示例：
+
+永久将某个目录加入到sys.path让这个目录下的py文件在导包时python的finder可以直接查找到
+
+Desktop/pytest/下两个各包含一个py文件的文件夹：
+
+test/test.py    
+    path_test/path_test.py
+
+# test.py
+print("test")
+
+# path_test.py
+from test import test
+
+目标：在目录path_test下执行python3 path_test.py，应该打印出字符串test（一般情况下未配置.../pytest/作为源目录时会出现报错No module named “test” 或者ImportError之类的）
+
+将指定目录加入到sys.path（永久或者临时），作为某个项目的源目录（source root）的方法步骤：
+
+进入pytest/目录在终端输入pwd命令获取到pytest/的绝对路径：
+
+/home/image/Desktop/pytest
+
+查看和复制python3的sitepackage路径：
+
+>>python3
+>>import site
+>>site.getsitepackages()
+['/usr/local/lib/python3.8/dist-packages', '/usr/lib/python3/dist-packages', '/usr/lib/python3.8/dist-packages']
+
+复制sitepackages所在路径，根据自己实际要使用的python版本为准，这里我复制的是第一个：
+
+/usr/local/lib/python3.8/dist-packages
+
+进入上面复制的目录下cd /usr/local/lib/python3.8/dist-packages
+创建并编辑一个.pth文件
+(sudo) vim /usr/local/lib/python3.8/dist-packages/xxx.pth
+xxx是你的文件命名
+
+在xxx.pth文件中加入需要添加的项目根目录的路径：
+
+验证看是否目录添加到sys.path成功
+
+>>python3
+>>import sys
+
+>>sys.path
+['', '/usr/lib/python38.zip', '/usr/lib/python3.8', '/usr/lib/python3.8/lib-dynload', '/usr/local/lib/python3.8/dist-packages', '/home/image/Desktop', '/home/image/Desktop/pytest', '/usr/lib/python3/dist-packages']
+
+倒数第二个路径/home/image/Desktop/pytest是刚刚加进去的
+在Desktop/pytest/path_test/目录下执行：>>>python3 path_test.py看起来在 应该可以导入然后打印字符串test，但是却出现了ImportError：
+
+Traceback (most recent call last):
+  File "path_test.py", line 5, in <module>
+    from test import test
+ImportError: cannot import name 'test' from 'test' (/usr/lib/python3.8/test/__init__.py)
+
+经过一番检查之后，发现似乎是在找到sys.path的路径之前，在内置模块匹配到了另外一个名为test的模块，然后没有找到需要的/test/test.py，于是想到了解决方法
+修改名称目录Desktop/pytest/test/的名称，例如Desktop/pytest/example/：
+mv test/ example/
+
+同时path_test.py中代码修改为from example import test
+
+然后再运行:
+
+>>>python3 path_test.py
+test
+
+发现正常运行，打印了字符串test
+
+临时将指定目录加入到sys.path让python finder可以在导包时可以直接查找到的方法
+
+不修改文件夹名称，单个py文件的一次性解决方法，注意把路径插入到sys.path列表的第一位而不是append
+这个时候直接在代码里执行sys.path.insert(0, ‘/home/image/Desktop/pytest’)，可以对于本test.py文件奏效
+
+到此这篇关于Python导包模块报错的问题解决的文章就介绍到这了,更多相关Python导包模块报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

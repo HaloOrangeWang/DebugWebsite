@@ -1,0 +1,40 @@
+在用Pycharm运行项目时，不知道干了什么，导致运行后无法像平时那样显示输出结果：
+
+
+最后试了很多种方法，终于解决了：
+
+将打勾的地方去掉，不要运行时用Python console。
+
+补充：pycharm运行正确但是不出结果
+
+
+描述：
+
+之前用的好好的，突然有一天用pycharm运行程序，明明结果正确， 打印不出来结果，看下图
+
+
+解决：
+
+查看File Transfer有好多错误，意思是没有连接上服务器
+
+[2018/12/8 21:05] Automatic upload failed: could not connect to SFTP server at "192.168.0.204". (SSH_MSG_DISCONNECT: 2 Too many authentication failures )
+[2018/12/8 21:06] Automatic upload
+
+附图
+
+原来是服务器root密码更改过，但是pycharm没有改掉。所以报错连接不上，奇怪的是测试pycharm连接服务器没有报错
+
+查看原来的密码
+
+修改为正确密码
+
+重启pycharm
+
+必须先执行下面这一句才可以
+
+# -*- coding:UTF-8 -*-
+import subprocess
+subprocess.call(["ls /home"], shell=True)
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

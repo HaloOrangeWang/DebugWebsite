@@ -1,0 +1,76 @@
+
+Ubuntu下安装Pygame出错
+
+Ubuntu版本为16.04 python配置是ubuntu自带的python2.7和python3.5
+
+
+出现一片红码
+
+国内网速过慢,需要更换镜像源
+ 下面有两个源地址:
+
+豆瓣 https://pypi.doubanio.com/simple/
+ 网易 https://mirrors.163.com/pypi/simple/
+ 阿里云 https://mirrors.aliyun.com/pypi/simple/
+ 腾讯云 https://mirrors.cloud.tencent.com/pypi/simple
+ 清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
+
+建议用清华大学和阿里云的镜像源
+
+
+更改镜像后仍然报错
+
+
+显示
+ Reading package lists…
+ Done Building dependency tree Reading state informa
+ 或者
+ Traceback (most recent call last):
+ File “/usr/bin/pip3”, line 9, in 
+ (上面两种情况本人都显示过)
+
+
+解决方案：
+
+据说这是python3.5版本遗留的一个BUG,只要吧python版本升级到3.6及以上就可以了.
+
+
+下面是python3.5升级的步骤:
+
+步骤1：在python官网找到python-3.6.5.tgz的地址：https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz
+
+步骤2：下载安装包
+
+步骤3：解压安装包(在终端直接输入下面的命令)
+ tar -zxvf Python-3.6.5.tgz
+
+步骤4：切换到解压后的目录下(找到对应的目录,或者把文件移动至制定文件夹)
+ cd Python-3.6.5
+
+步骤5:
+
+./configure
+
+步骤6：安装sudo make install
+
+sudo make install
+
+步骤7：
+ 添加环境变量:``
+
+PATH=$PATH:$HOME/bin:/usr/local/python3.6.5/bin
+
+查看环境变量:`
+```powershell
+echo $PATH
+
+步骤8：测试，输入python3.6
+
+步骤9:安装python3.6的pygame:
+
+sudo pip3 install pygame
+
+步骤10:在python3.6下输入import pygame
+ 
+ 最后,问题解决啦!
+

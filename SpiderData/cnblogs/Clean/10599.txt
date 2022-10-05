@@ -1,0 +1,28 @@
+autosub报错
+
+ffmpeg: Executable not found on machine.
+
+但是我的ffmpeg已经装好了，并且把ffmpeg的bin文件夹添加到了环境变量的path里面，经过测试，在命令行输入ffmpeg有正常的输出。
+
+于是找到这篇文章https://github.com/agermanidis/autosub/issues/94
+
+Just comment out the following code in Python27\Scripts\autosub_app.py:
+
+if not which("ffmpeg"):
+        print "ffmpeg: Executable not found on machine."
+        raise Exception("Dependency not found: ffmpeg")
+
+也就是说它错误地报错，把raise这一行删掉就行了。
+
+这个文件不一定在这个目录下，可以看报错信息有反映autosub.py文件的目录。
+
+这个文件不一定在这个目录下，可以看报错信息有反映autosub.py文件的目录。
+
+至于为什么会报错，which这个命令是检测在命令行输入which的参数后是否有正确的输出，这里检验ffmpeg是否安装成功。
+
+然而在这里which似乎只检验python根目录下的ffmpeg，如果python根目录下没有ffmpeg就会报错。至于为什么，我已经不想折腾下去了。
+
+还有一个问题，就是如果之前把ffmpeg复制到python根目录下，要把他删掉。不然把raise注释掉后会报另一个错。这样看来似乎它会优先使用python根目录下的ffmpeg。
+
+亲测可用，如图
+

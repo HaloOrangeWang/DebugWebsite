@@ -1,0 +1,28 @@
+
+xadmin运行报错：
+
+File "/home/lijun/app/hippo/hippo_api/venv/lib/python3.8/site-packages/xadmin/plugins/importexport.py", line 48, in <module>
+    from import_export.admin import DEFAULT_FORMATS, SKIP_ADMIN_LOG, TMP_STORAGE_CLASS
+ImportError: cannot import name 'DEFAULT_FORMATS' from 'import_export.admin' (/home/lijun/app/hippo/hippo_api/venv/lib/python3.8/site-packages/import_export/admin.py)
+
+Django版本：2.2
+
+Xadmin版本：2.0.1
+
+python版本：3.8.10
+
+报错解决办法：
+
+点击进入报错目录：importexport.py
+
+注释报错行：
+
+# from import_export.admin import DEFAULT_FORMATS, SKIP_ADMIN_LOG, TMP_STORAGE_CLASS
+
+并添加如下代码：
+
+from import_export.formats.base_formats import DEFAULT_FORMATS
+from import_export.admin import ImportMixin, ImportExportMixinBase
+
+如下图：
+

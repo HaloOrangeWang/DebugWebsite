@@ -1,0 +1,41 @@
+
+问题
+
+执行运行python文件命令：
+
+python filename.py
+
+报错：
+
+[1] 57684 segmentation fault
+
+
+原因1
+
+具体原因我不确定。我是在电脑本地运行的，没有连接服务器，搜资料有说是内存不够了，但是我删了很多进程，依然不好使。
+ 最后我重新搭建了一个conda虚拟环境，到新环境中就不报错了。
+ 所以现在个人角度是怀疑之前的环境有所损坏。
+
+
+原因2
+
+最近又发现了一个报错“segmentation fault”的情况，原因是 运行的文件中没有main() 函数！
+
+
+原因3
+
+新发现：
+ 目录情况是：
+
+project:
+
+main.py
+
+data_processor.py
+
+model.py
+
+我想检查一下我的data_processor.py写的对不对，然后再data_processor.py中写了main()函数，运行，报错“segmentation fault”。当我把data_processor.py中的代码全部复制到main.py中运行时，就正确了。原因可能是文件之间的调用问题。main.py可以调用其他文件中的函数，但是其他文件未必有这个权利。
+
+关于这个错误，原因是多种多样的，应该根据自己情况进行判断和解决。
+

@@ -1,0 +1,18 @@
+
+问题描述：使用so包时报错。
+
+
+解决方法：
+
+1.保证 libs > armeabi 和 armeabi-v7a 中的so包一致。
+
+2.去掉 x86，x86_64，arm64-v8a。
+
+3. so的生成操作修改成 AndroidNativeLibrary。
+
+然后进行调试，就不会出现问题了。
+
+如果程序无法调试，输出中提示:(无法连接到logcat，GetProcessId 返回了:0)
+
+那么取消掉 使用共享运行时，低版本的Xamarin取消掉 Use Shared Runtime
+

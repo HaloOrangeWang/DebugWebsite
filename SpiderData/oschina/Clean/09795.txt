@@ -1,0 +1,25 @@
+安装hive，初始化数据库的时候报错
+
+schematool -dbType mysql -initSchema
+
+Metastore Connection Driver : com.mysql.cj.jdbc.Driver
+Metastore connection User:    hive
+org.apache.hadoop.hive.metastore.HiveMetaException: Failed to get schema version.
+Underlying cause: java.sql.SQLNonTransientConnectionException : Public Key Retrieval is not allowed
+
+网上搜了很多教程，解决不了。
+
+mysql授权什么的都做了，换mysql版本，不行。
+
+<property>
+    <name>javax.jdo.option.ConnectionURL</name>
+    <value>jdbc:mysql://127.0.0.1:3306/hive?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false&amp;serverTimezone=GMT</value>
+    <description>
+      JDBC connect string for a JDBC metastore.
+      To use SSL to encrypt/authenticate the connection, provide database-specific SSL flag in the connection URL.
+      For example, jdbc:postgresql://myhost/db?ssl=true for postgres database.
+    </description>
+  </property>
+
+今天再盯着配置文件看，发现配置jdbc链接的字符串里有&amp,恍然大悟，乱码都删了，再初始化，成功！
+

@@ -1,0 +1,35 @@
+PHP源码安装
+
+setenforce 0
+--------------------------------------------------------------------
+安装php时的报错
+checking libxml2 install dir... no
+checking for xml2-config path...
+configure: error: xml2-config not found. Please check your libxml2 installation.
+
+检查是否安装了libxm包
+[root@XKWB3403 php-5.3.8]# rpm -qa |grep libxml2
+libxml2-2.6.26-2.1.12
+libxml2-python-2.6.26-2.1.12
+
+重新安装libxml2和libxml2-devel包
+yum install libxml2
+yum install libxml2-devel -y
+
+安装完之后查找xml2-config文件是否存在
+
+[root@XKWB3403 php-5.3.8]# find / -name "xml2-config"
+/usr/bin/xml2-config
+
+如果存在的话重新安装php
+[root@XKWB3403 php-5.3.8]# ./configure
+
+---------------------------------------------------------------------------
+安装mcrypt时间报错
+[root@www ~]# tar zxf mcrypt-2.6.8.tar.gz -C /usr/src/
+[root@www ~]# cd /usr/src/mcrypt-2.6.8/
+[root@www mcrypt-2.6.8]# export LD_LIBRARY_PATH=/usr/local/lib
+:$LD_LIBRARY_PATH
+[root@www mcrypt-2.6.8]# ./configure
+[root@www mcrypt-2.6.8]# make && make install
+

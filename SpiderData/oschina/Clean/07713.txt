@@ -1,0 +1,17 @@
+报错
+
+nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+ nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+ nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+ nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+
+#查看当前所有tcp端口
+netstat -ntlp
+
+#查找nginx.conf文件，80端口已被占用，修改默认端口
+find / -name "nginx.conf"
+vi /usr/local/nginx/conf/nginx.conf
+#重新启动
+cd /usr/local/nginx/sbin
+./nginx
+

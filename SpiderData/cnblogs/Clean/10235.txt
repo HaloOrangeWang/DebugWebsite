@@ -1,0 +1,76 @@
+
+python安装
+
+第一步：访问官网，找到windos下载页面
+
+Python2的安装
+
+Python3的安装
+
+下载之后的文件是
+
+统一添加环境变量【这里将py2与py3的地址安装到同一层级下】
+
+C:\Python27\;C:\Python27\Scripts;C:\Python38\;C:\Python38\Scripts\
+
+验证python
+
+验证pip
+
+pip -v /pip3 -v
+
+python2 -m pip -V  /  Python3 -m pip -V
+
+
+关于 pip 使用时的问题
+
+常用命令
+
+1.查看已安装过的拓展包：pip list
+
+2.卸载安装好的包：pip uninstall 包名
+
+pip 的版本问题
+
+关于pip相关问题
+
+1.pip报错：ERROR: Could not install packages due to an EnvironmentError: [WinError 5] 拒绝访问。
+
+由于安装 Jupyter NoteBook 时我发现我的 pip 版本过低，可以更新！
+
+所以毫（qiang）不（po）犹（zheng）豫的执行pip install --upgrade pip
+
+然后就没了。 没了！我 pip 没了！！！
+
+不要慌，查看之前的信息发现，更新pip时会先删除原有的旧版 pip 然后才进行新版的安装，根据错误信息的提示，之所以失败是因为缺少用户权限导致没办法执行安装。所以就出现原版 pip 被卸载，有没有新的 pip 来接上一代的活，导致 pip 消失了。
+
+解决办法
+
+从标准库引导 pip 安装,这个命令会安装一个旧版本的 pip。
+
+然后根据上面的错误信息在执行安装时添加 --user 进行 pip 更新
+
+python -m pip install --user --upgrade pip
+
+2.pip遇到问题：D:\Anaconda3\python.exe: No module named pip.__main__; 'pip' is a package and cannot be directly executed
+
+情况如下：紧接着上一个问题如果运行第一条命令python -m ensurepip时遇到以下问题：
+
+这会导致你在执行第二条命令时遇到以下情况
+
+解决办法
+
+手动前往上述信息中给出的Requirement already satisfied：给出的文件路径，将 pip 有关的文件全部删除.
+
+删除后和重新执行上述命令，依次完成 pip 的安装与更新：
+
+3.pip报错：ValueError:Unable to find resource t64.exe in package pip._vendor.distlib
+
+情况如下：是在升级pip时遇到的问题。因为已安装好 pip 新版本后，但为了做问题总结去复现所遇到过的问题时，将 pip 的版本回滚到旧版---->然后安装新版---->重新升级时遇到了以下的问题：
+
+解决办法（通过网上搜集到的方法，进行汇总）
+
+卸载 python -m pip uninstall pip setuptools
+
+通过 pip3 install --upgrade pip 成功的安装了最新的 pip（通过这个方法将直接安装好最新的版本）
+

@@ -1,0 +1,19 @@
+Python运行后，报错：SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape
+
+原因：window 读取文件可以用\，但是在字符串中\是被当作转义字符来使用，经过转义之后可能就找不到路径的资源了，例如\t会转义为tab键
+
+上代码：
+
+解决方法：
+
+总结有三种方法：
+
+一:更换为绝对路径的写法
+func1("C:\\Users\\renyc")
+
+二:显式声明字符串不用转义（加r）
+func1(r"C:\Users\renyc")
+
+三:使用Linux的路径/
+func1("C:/Users/renyc")
+

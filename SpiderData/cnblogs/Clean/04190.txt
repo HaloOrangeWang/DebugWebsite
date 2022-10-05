@@ -1,0 +1,72 @@
+转自https://www.cnblogs.com/dreamyu/p/7889959.html
+
+https://www.cnblogs.com/lifeofershisui/p/8135702.html
+
+大家可能知道我们的工程在IDE（Pycharm）中运行和我们在cmd中运行的路径是不一样的，在pycharm中运行时，
+
+会默认pycharm的目录+我们的工程所在目录为运行目录，而在cmd中运行时，会以我们的工程目录所在目录来运行
+
+而在import包时，会首先从pythonPATH的环境变量中来查看包，如果没有你的PYTHONPATH中所包含的目录没有
+
+工程目录的根目录，那么你在导入不是同一个目录下的其他工程中的包时会出现import错误
+
+解决方法:在你运行的文件中将你的工程目录加入到PYTHONPATH中，具体方法如下:
+
+import os,sys
+
+sys.path.append("path")  //path为你的工程根目录的绝对路径
+
+如果此时你运行时依然报错，请先检查是否将根目录加入到了PYTHONPATH中，方法为:
+
+import os
+
+PATH = os.environ
+
+for key in PATH:
+
+　　print(key,PATH[key])
+
+其他设置PYTHONPATH方法：
+
+PYTHONPATH是Python搜索路径，默认我们import的模块都会从PYTHONPATH里面寻找。
+
+
+打印PYTHONPATH：
+
+注意：sys.path 也可以用 os.sys.path 替换，两个应该是同一个命令，推荐使用sys.path, 因为 os.sys.path 在python document 中好像没有提及．
+
+
+设置PYTHONPATH：
+
+方法一：命令窗口添加路径
+ export PYTHONPATH=$PYTHONPATH:/home/ershisui
+注意：此方法只在当前命令窗口生效，即如果打开一个新的Terminal 窗口，定位到当前目录，　打印PYTHONPATH 是没有刚才加入的路径的．
+
+方法一：命令窗口添加路径
+
+注意：此方法只在当前命令窗口生效，即如果打开一个新的Terminal 窗口，定位到当前目录，　打印PYTHONPATH 是没有刚才加入的路径的．
+
+方法二：在python 中添加：
+  import sys
+  sys.path.append('/home/ershisui/')
+实例
+
+方法二：在python 中添加：
+
+
+实例
+
+Tensorflow 的　object detection API 模块中安装教程中
+  export PYTHONPATH=$PYTHONPATH:`pwd`:'pwd'/slim
+即添加了python 路径：（pwd 是输出当前目录的命令，这里为什么可以这样，还不懂）添加了两个路径，分别为 /home/.../models-master/research 和　 /home/.../models-master/research/slim（可以验证在research 文件夹下有slim 文件）
+
+Tensorflow 的　object detection API 模块中安装教程中
+
+Tensorflow 的　object detection API 模块中object_detection_tutorial.ipynb 中
+ sys.path.append("..")
+即在python 中添加了新的搜索目录，即当前目录的上一层（在这里应该是　/home/.../models-master/research）
+
+Tensorflow 的　object detection API 模块中object_detection_tutorial.ipynb 中
+
+即在python 中添加了新的搜索目录，即当前目录的上一层（在这里应该是　/home/.../models-master/research）
+

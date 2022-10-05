@@ -1,0 +1,37 @@
+
+问题背景
+
+Django项目初始化，在MySQL数据库中创建表报错
+
+报错如下：
+
+
+解决过程
+
+尝试1：bind-address = 0.0.0.0
+
+my.cnf配置文件中注释掉bind-address = 127.0.0.1，新增配置bind-address = 0.0.0.0，重启MySQL服务
+
+结果：同样报错
+
+尝试2：修改root用户的权限，刷新权限
+
+结果：同样报错
+
+尝试3：修改root的密码
+
+结果：同样报错
+
+
+*** 崩溃的分割线 ***
+
+尝试4：尝试在本地连接数据库
+
+报错：Authentication method 'caching_sha2_password' is not supported，原因在MySQL 8.X中 caching_sha2_password is the default authentication plugin rather than mysql_native_password.
+
+解决办法：
+
+结果：问题解决
+
+参考链接：https://stackoverflow.com/questions/50557234/authentication-plugin-caching-sha2-password-is-not-supported
+

@@ -1,0 +1,23 @@
+模型的恢复
+
+对于的模型的恢复来说，需要首先恢复模型的整个图文件，之后从图文件中读取相应的节点信息。
+
+存储的模型文件包括四个子文件，如下：
+
+现在假如我想恢复模型中的某个节点信息：
+
+需要注意的是在使用saver.restore恢复权值的时候，参数的设置需要万分注意：
+
+# 先加载图文件
+saver = tf.train.import_meta_graph("./model/save_model.meta")
+graph = tf.get_default_graph()
+# 其中的一个节点
+a_val = graph.get_tensor_by_name("var/a_val:0") # 这里是我的节点名称，这都不是重点
+
+with tf.Session() as sess:
+  # 加载权值
+  saver.restore(sess, "./model/save_model") # 这里才是重点，注意使用的是save_model，而不是save_model.data-00000-of-00001，不要带一串后缀，如果使用后者的话，会报错！！！！！
+  print(sess.run(a_val))
+
+以上这篇如何解决tensorflow恢复模型的特定值时出错就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

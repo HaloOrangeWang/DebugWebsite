@@ -1,0 +1,47 @@
+iview版本：3.1.3
+
+===========================================
+
+在使用Modal 对话框组件时，添加属性（如：draggable、mask等）
+
+<Modal
+        v-model="modal2"
+        width="120"
+        footer-hide="true"   <!--错误写法 -->
+        draggable="true"
+        :styles="{top: '45%'}"
+      >
+        <div style="text-align:center">
+          <p style="color: #ffffff;font-size: 0.8rem">预警城市排名</p>
+        </div>
+</Modal>
+
+上述写法虽然功能依然能正常实现，但是浏览器控制台会报错：
+
+报错原因Expected Boolean, got String（期待布尔类型，提供的却是字符串类型）
+
+搜索iview文档，未发现对应的属性写法；
+
+于是修改为符合要求的写法：
+
+<Modal
+            v-model="modal2"
+            width="120"
+            :footer-hide='status'      <!--正确写法 -->
+            :draggable='status'
+            :styles="{top: '60%',left: '16%'}"
+          >
+            <div style="text-align:center">
+              <p style="color: #ffffff;font-size: 0.8rem">预警城市</p>
+              
+            </div>
+</Modal>
+====================================
+data() {
+    return {
+      status: true,
+   }
+}
+
+以上写法可以直接指定布尔类型，这样就不会报错；
+

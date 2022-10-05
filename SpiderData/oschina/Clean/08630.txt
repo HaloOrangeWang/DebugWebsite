@@ -1,0 +1,58 @@
+rz命令的安装包名是lrzsz。
+
+安装lrzsz包时报错Failed to mount cd:///?devices=/dev/sr1,/dev/sr0 on /var/adm/mount/AP_0x9XSGs6: Mounting media failed (mount: no medium found on /dev/sr0)
+
+
+环境
+
+Windows 7
+
+VM player
+
+SUSE Enterprise 11
+
+
+报错详细
+
+安装lrzsz包时，报错 如下:
+
+linux-velh:~ # zypper install -y lrzsz
+Loading repository data...
+Reading installed packages...
+'lrzsz' not found in package names. Trying capabilities.
+Resolving package dependencies...
+
+The following NEW package is going to be installed:
+  rzsz
+
+1 new package to install.
+Overall download size: 96.0 KiB. After the operation, additional 244.0 KiB will be 
+used.
+Continue? [y/n/?] (y): y
+Retrieving package rzsz-0.12.20-934.22.x86_64 (1/1), 96.0 KiB (244.0 KiB unpacked)
+Failed to mount cd:///?devices=/dev/sr1,/dev/sr0 on /var/adm/mount/AP_0x9XSGs6: Mounting media failed (mount: no medium found on /dev/sr0)
+
+Please insert medium [SUSE-Linux-Enterprise-Server-11-SP3 11.3.3-1.138] #1 and type 'y' to continue or 'n' to cancel the operation. [yes/no] (no): no
+Failed to provide Package rzsz-0.12.20-934.22. Do you want to retry retrieval?
+
+[SUSE-Linux-Enterprise-Server-11-SP3 11.3.3-1.138|cd:///?devices=/dev/sr1,/dev/sr0] Can't provide file './suse/x86_64/rzsz-0.12.20-934.22.x86_64.rpm' from repository 'SUSE-Linux-Enterprise-Server-11-SP3 11.3.3-1.138'
+History:
+ - Failed to mount cd:///?devices=/dev/sr1,/dev/sr0 on /var/adm/mount/AP_0x9XSGs6: Mounting media failed (mount: no medium found on /dev/sr0)
+
+- Can't provide ./suse/x86_64/rzsz-0.12.20-934.22.x86_64.rpm
+
+Abort, retry, ignore? [a/r/i] (a): a
+Problem occured during or after installation or removal of packages:
+Installation aborted by user
+
+Please see the above error message for a hint
+
+
+原因
+
+这是由于没有关在SUSE的镜像造成的，
+
+虚拟机设置->硬件->CD?DVD(SATA)->勾选已连接->使用ISO镜像文件->选择安装的镜像
+
+然后在虚拟机中重新安装lrzsz包
+

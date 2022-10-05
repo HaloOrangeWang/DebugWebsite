@@ -1,0 +1,34 @@
+首先下载tar包 地址  http://www.python.org/ftp/python
+
+下载好之后 解压  tar xjvf
+
+在安装python时下载好tar包
+
+在./configure时  报错提示  configure: error: no acceptable C compiler found in $PATH
+
+查资料得知是缺少gcc组件
+
+安装gcc组件即可
+
+再次进行./configure  不再报错
+
+make&&make install
+
+编译完之后
+
+mv /usr/bin/python  /usr/bin/python.bak
+
+ln -s /usr/local/bin/python3.2   /usr/bin/python
+
+然后通过python -V 检测版本
+
+在做完以上操作之后可能会导致yum无法工作
+
+是因为yum利用的是老版本的python工作 再安装新版本并建立软连接之后导致yum配置文件无法找到老版本的python而无法工作
+
+此时需要 vim /usr/bin/yum
+
+修改 /usr/bin/python 为
+
+/usr/bin/python2.6
+

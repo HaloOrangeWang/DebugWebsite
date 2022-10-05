@@ -1,0 +1,28 @@
+
+Outline
+
+在把scrapy任务部署到scrapyd服务上时，遇到问题一直不成功：
+
+报错如下：
+
+（Deploy failed (500):，部署失败）
+
+scrapyd-deploy muji_data_python_spider -p muji_data_python_spider
+
+
+Fix
+
+经过查询发现问题原因是：
+
+早于18.9的Twisted版本不支持python-3.7，而我当前的Python版本是3.7的，且twisted版本小于18.9；
+
+如果使用的是python-3.7版本，并且twisted版本低于18.9，可以将twisted版本升至大于等于18.9。
+
+eg：
+
+pip install -U Twisted==18.9.0
+
+修改twisted版本后，问题得到解决：
+
+scrapyd-deploy muji_data_python_spider -p muji_data_python_spider
+

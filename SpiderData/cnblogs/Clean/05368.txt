@@ -1,0 +1,22 @@
+之前，在用pyinstaller打包一个python程序时没有问题,后来不知道什么原因,再打包时出现了所谓的pyinstaller打包报错： RecursionError: maximum recursion depth exceeded
+
+按照上述文章中的方法也得到了解决,打包成功,可是在运行时,又出现了错误,经查dos窗口提示,是matplotlib库的版本过高引进,卸掉matplotlib3.1.1，重新安装
+
+pip install matplotlib --V==3.0.3
+
+然后，重新打包
+
+pyinstaller -F ****.py
+
+　　成功,另外又发现了一个问题,pyinstaller 在打包 *.py文件时,导致RecursionError 的主要原因是,class类中__init__(args1,args2,....)函数,最大支持两个参数,一到3个参数,就发生错误,安装matplotlib --V==3.0.3,没有此现象,希望后来者,注意
+
+按照上述文章中的方法也得到了解决,打包成功,可是在运行时,又出现了错误,经查dos窗口提示,是matplotlib库的版本过高引进,卸掉matplotlib3.1.1，重新安装
+
+pip install matplotlib --V==3.0.3
+
+然后，重新打包
+
+pyinstaller -F ****.py
+
+　　成功,另外又发现了一个问题,pyinstaller 在打包 *.py文件时,导致RecursionError 的主要原因是,class类中__init__(args1,args2,....)函数,最大支持两个参数,一到3个参数,就发生错误,安装matplotlib --V==3.0.3,没有此现象,希望后来者,注意
+

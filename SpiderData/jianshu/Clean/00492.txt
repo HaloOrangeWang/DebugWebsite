@@ -1,0 +1,23 @@
+一、vue2.0通过echarts初始化dom实例的时候要使用this.$refs.domEle,但是3.0发生了改变，需要在setup定义一个字段，在dom元素标签里定义跟setup里声明的变量同名的ref属性值,e.g:   <div id="ryCharts" ref="chartDom" class="bcontent"></div>
+
+<script setup lang="ts">
+const chartDom = ref<HTMLElement | null>(null);
+let myChart = echarts.init(chartDom.value); //这行代码会有ts验证的报错，但是不影响正常运行
+</script>
+
+
+报错信息如下：
+
+Argument of type 'HTMLElement | null' is not assignable to parameter of type 'HTMLElement'.
+Type 'null' is not assignable to type 'HTMLElement'.
+
+
+解决方案如下：
+
+<script setup lang="ts">
+  const chartDom = ref<HTMLElement | ''>('');
+  let myChart = echarts.init(chartDom.value as HTMLElement); 
+  //通过console会发现chartDom.value其实跟之前this.$refs.domEle拿到的值是一样的，都是元素信息;
+  //ts是js的超集，它会验证数据格式，所以需要为它设置类型 HTMLElement.
+</script>
+

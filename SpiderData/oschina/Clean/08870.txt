@@ -1,0 +1,27 @@
+
+MySQL中遇到的几种报错及其解决方法
+
+
+1.[Err] 1064 - You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''xxx'' at line 1
+
+　 解决方法：将所有的“ '' ”换成“ ·· ”（将所有的英文单引号换为Tab键上面的那个点号）
+
+
+2.[Err] 1100 - Table 'xxx' was not locked with LOCK TABLES
+
+　 解决方法：加上UNLOCK TABLES；这句代码
+
+
+3.[Err] 1063 - Incorrect column specifier for column 'xxx'
+
+　解决方法：INT型：max=255，不能超；　　FLOAT型：必须要这样用：float（m，n），m为显示长度，n为小数位数。
+
+
+4.[Err] 1426 - Too big precision 10 specified for column 'T_START_TIME'. Maximum is 6.
+
+　解决方法：TIME类型的数据最大只能为6，将TIME后面括号里的数字改为6。（一般这个报错都是因为你写的数字>6了）
+
+PS：注释“--”符号后面要有空格，否则也会报错。
+
+【如果之后遇到其他问题会再更新完善】
+

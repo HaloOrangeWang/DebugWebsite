@@ -1,0 +1,59 @@
+django 默认使用的数据库是sqlite
+
+在项目中通常用mysql作为数据库，这就需要对mysql进行一些基本配置
+
+1.在与项目名同名的文件夹下找到setting文件，找到
+
+# DATABASES = {
+# 'default': {
+# 'ENGINE': 'django.db.backends.sqlite3',
+# 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+# }
+# }  并将其注释
+
+2.在下面加上mysql的配置
+
+DATABASES = {
+ 'default': {
+ 'ENGINE': 'django.db.backends.mysql',
+ 'NAME': 'xxx',
+ 'USER':'root',
+ 'PASSWORD':'root',
+ 'HOST':'localhost',
+ 'PORT':'3306',
+ }
+}
+
+3.如果遇到如下报错：
+
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module.
+Did you install mysqlclient?
+
+解决方案：
+
+首先 pip install pymysql
+
+再在项目名同名的文件夹下的__init__.py文件中
+
+加入
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+接下来如果遇到这个错误提示
+
+raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+解决方案:
+
+找到报错路径，如：E:\PycharmProjects\s14_day20\venv\Lib\site-packages\django\db\backends\mysql\base.py
+
+找到文件将第35行 36行注释
+
+再将operations文件的第146行：
+
+query = query.decode(errors='replace') 改为query = query.encode(errors='replace')
+
+至此 问题已经得到解决
+

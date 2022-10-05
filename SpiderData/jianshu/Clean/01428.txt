@@ -1,0 +1,53 @@
+
+1. OSError: [WinError 6] 句柄无效。
+
+Traceback (most recent call last):
+  ...
+  File "subprocess.py", line 383, in run
+  File "subprocess.py", line 640, in __init__
+  File "subprocess.py", line 850, in _get_handles
+OSError: [WinError 6] 句柄无效。
+
+
+问题点：
+
+程序里执行命令行，使用subprocess.run
+
+PyInstaller发布使用了--windowed参数
+
+
+解决：
+
+发布选项去掉--windowed
+
+subprocess.run执行时，添加参数stdin=subprocess.PIPE
+
+参考：使用pyinstaller打包，subprocess报“句柄无效”错误的解决方法
+
+
+2. Windows平台发布GUI应用(PySide2)，开子进程时会多打开GUI界面
+
+
+问题点：
+
+Windows上，子进程会复制主进程中所有代码，导致显示GUI的逻辑走两次
+
+PyInstaller发布后，if __name__=='__main__' 的作用无效了
+
+
+解决：
+
+if __name__=='__main__':
+    # 在此处添加
+    multiprocessing.freeze_support()
+    # 其他代码
+    # ......
+
+参考：
+
+Python多进程在Windows操作系统下的坑
+
+pyinstaller 打包含有多进程代码的程序问题
+
+进程之间不共享全局变量
+

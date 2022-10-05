@@ -1,0 +1,25 @@
+
+项目场景：
+
+Windows server 2019.
+ 使用shutil模块复制共享目录下的文件。
+
+
+问题描述
+
+python代码打包为exe文件，debug模式可以运行。以服务模式却会报错
+
+[WinError 5] Access is denied:
+
+
+原因分析：
+
+服务列表中，该服务的属性设置有问题
+
+若设置了administrator用户，可能不是以administrator用户运行的，导致没有权限访问共享目录。
+
+
+解决方案：
+
+重新运行服务，完美解决
+

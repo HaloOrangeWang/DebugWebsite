@@ -1,0 +1,44 @@
+
+分析原因
+
+在sublime运行python代码报错——ImportError: No module，表示导入模块错误。
+
+有两种可能：
+
+一种是没有安装这个模块，pip install 模块名就行了。
+
+另一种是配置sublime里面的系统Python没有选对，也就是python2和python3的区别。
+
+
+解决步骤
+
+对于第二种可能，在sublime里面配置Python编译器步骤：
+
+在sublime中点击：工具 -> 编译系统 -> 新建编译系统
+
+在sublime中点击：工具 -> 编译系统 -> 新建编译系统
+
+新建一个系统环境，并命名为python3.sublime-build，添加如下代码，保存：
+ {
+  "cmd": ["/usr/local/Cellar/python/3.7.4/bin/python3","-u","$file"],
+  "file_regex": "^(...*?):([0-9]*):?([0-9]*)",
+  "selector": "source.python"
+ }
+
+新建一个系统环境，并命名为python3.sublime-build，添加如下代码，保存：
+
+{
+  "cmd": ["/usr/local/Cellar/python/3.7.4/bin/python3","-u","$file"],
+  "file_regex": "^(...*?):([0-9]*):?([0-9]*)",
+  "selector": "source.python"
+ }
+
+注意：1）保存的文件名的格式后缀为.sublime-build；2）"/usr/local/Cellar/python/3.7.4/bin/python3"换成终端python3可运行的路径。
+
+在工具 -> 编译系统中，选取python3即可。
+
+
+参考
+
+解决Mac上的sublime运行python代码报“ImportError: No module named bs4” 以及 在sublime上如何添加新的系统环境 - mosdon的博客 - CSDN博客
+

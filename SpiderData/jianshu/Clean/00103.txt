@@ -1,0 +1,84 @@
+MacOS 12.3 把自带python删除了。bundle打包fsevents依赖报错
+
+以为多难的问题，走了不少弯路。。。
+
+> fsevents@1.2.13 install /Users/admin/jenkins/workspace/sit-saas-app-ios/saasDashboard/node_modules/fsevents
+> node install.js
+
+gyp info it worked if it ends with ok
+gyp info using node-gyp@3.8.0
+gyp info using node@12.4.0 | darwin | x64
+gyp ERR! configure error 
+gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.
+gyp ERR! stack     at PythonFinder.failNoPython (/usr/local/node-v12.4.0/lib/node_modules/npm/node_modules/node-gyp/lib/configure.js:484:19)
+gyp ERR! stack     at PythonFinder.<anonymous> (/usr/local/node-v12.4.0/lib/node_modules/npm/node_modules/node-gyp/lib/configure.js:406:16)
+gyp ERR! stack     at F (/usr/local/node-v12.4.0/lib/node_modules/npm/node_modules/which/which.js:68:16)
+gyp ERR! stack     at E (/usr/local/node-v12.4.0/lib/node_modules/npm/node_modules/which/which.js:80:29)
+gyp ERR! stack     at /usr/local/node-v12.4.0/lib/node_modules/npm/node_modules/which/which.js:89:16
+gyp ERR! stack     at /usr/local/node-v12.4.0/lib/node_modules/npm/node_modules/isexe/index.js:42:5
+gyp ERR! stack     at /usr/local/node-v12.4.0/lib/node_modules/npm/node_modules/isexe/mode.js:8:5
+gyp ERR! stack     at FSReqCallback.oncomplete (fs.js:165:21)
+gyp ERR! System Darwin 21.4.0
+gyp ERR! command "/usr/local/node-v12.4.0/bin/node" "/usr/local/node-v12.4.0/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js" "rebuild"
+gyp ERR! cwd /Users/admin/jenkins/workspace/sit-saas-app-ios/saasDashboard/node_modules/fsevents
+gyp ERR! node -v v12.4.0
+gyp ERR! node-gyp -v v3.8.0
+gyp ERR! not ok
+
+
+解决方法
+
+安装python2.7
+
+python官网下载2.7.18版本，安装即可。
+
+
+无用的实践（不用看了，仅做记录）
+
+安装python2.7
+
+//优先安装wget
+brew install wget
+
+//安装python2.7
+wget http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
+
+//双击解压后
+cd Python-2.7.3
+./configure
+make
+make altinstall
+
+//后发现为exe，卸载
+make distclean    //uninstall/distclean/veryclean
+
+安装python3
+
+brew install python3
+//版本不对后卸载
+brew uninstall python3
+
+2.关联到环境变量python
+
+由于新系统权限问题，ln -s未能修改成功
+
+ln -s /usr/bin/python3 /usr/bin/python
+
+尝试修改.bash_profile
+
+vi ~/.bash_profile
+
+//./bash_profile 添加以下代码
+export PATH="/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/bin:${PATH}"
+export PATH="/usr/local/opt/python@3.9/bin:${PATH}"
+alias python="/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/bin/python3.9"
+
+//生效文件
+source ~/.bash_profile
+
+参考文章：
+
+python环境变量修改
+
+安装不同版本python
+

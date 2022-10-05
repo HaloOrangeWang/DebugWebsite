@@ -1,0 +1,14 @@
+在处理emoji时，报错1366，原因是编码造成的
+
+在mysql8里，字符集默认就是 utf8mb4，已支持emoji
+
+python3默认就是utf8
+
+原因就出在两个字符集上，utf8mb4是utf8的超集，mb4是most bytes 4的意思，专门用来兼容四字节的unicode
+
+处理emoji时需要字符集支持unicode，utf8mb4是没问题的，但是utf8不行
+
+只需要将python连接mysql的默认格式由utf8改为utf8mb4即
+
+'mysql+pymysql://root:123456@localhost:3306/test?charset=utf8mb4'
+

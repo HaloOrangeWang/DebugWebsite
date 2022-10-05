@@ -1,0 +1,42 @@
+
+0x0 背景
+
+既然已经在手机里安好Python了 怎么能不挂点东西?
+
+之前是在挂爬虫  现在准备挂一个QQ机器人~    使用的机器人为QQBot GitHub传送门
+
+
+0x1 安装
+
+Hin简单, 就一行.......  当然你也可以下载源码进行安装
+
+pip install qqbot
+
+然后直接敲 'qqbot' 跑起来~~~
+
+Duang! 报错: "pytz.exceptions.UnknownTimeZoneError: 'Can not find any timezone configuration'"
+
+
+0x2 错误修复
+
+报错的原因是tzlocal这个包尝试去 /etc/localtime 中获取时区  而安卓中没有这个文件
+
+这时候就需要去修改tzlocal了  方法来自GitHub
+
+cd
+vim ../usr/lib/python3.6/site-packages/tzlocal/unix.py  //Python版本可能不一致 自行替换
+
+打开unix.py之后在第50行后加入以下内容  (" :set nu" 显示行号)
+
+if os.path.exists('/system/bin/getprop'):
+        import subprocess
+        androidtz = subprocess.check_output(['getprop', 'persist.sys.timezone']).strip().decode()
+        return pytz.timezone(androidtz)
+
+保存之后就搞定啦
+
+
+0x3 执行
+
+再敲 "qqbot" 试试~  从Termux左侧边缘向内划点击New Session开启一个新的对话来控制机器人
+

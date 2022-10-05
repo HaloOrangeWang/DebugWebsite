@@ -1,0 +1,16 @@
+
+错误记录
+
+练习 Rails Guides 通知发布系统 CRUD 教程（改进版），尝试使用 HTML 原生 form 表单，重新编写 Controller 文档的 create 方法时，出现以下报错
+
+
+分析与解决
+
+Google 搜索关键词——ActionController::InvalidAuthenticityToken
+
+这是 Rails 内置的安全机制，防止 CSRF 攻击
+
+在对应的 Controller 文件最上方增加以下代码就可以解决该问题。
+
+skip_before_action :verify_authenticity_token
+

@@ -1,0 +1,44 @@
+无法使用Django新建项目：'django-admin.py’不是内部或外部命令
+找到site-packages/django/bin(如 D:\Program Files\Anaconda3\Lib\site-packages\django\bin)，把这个路径加入系统环境变量中。
+
+error: unrecognized arguments: getall
+原因：django版本和代码里的requirements.txt要求的不符
+解决：重装django制定版本的代码
+
+要用 pip 安装指定版本的 Python 包，只需通过 == 操作符 指定
+pip install robotframework==2.8.7
+将安装robotframework 2.8.7 版本。
+
+‘WSGIRequest’ object has no attribute ‘user’
+这是Django版本的问题，
+1.9之前，中间件的key为MIDDLEWARE_CLASSES,
+1.9之后，为MIDDLEWARE。
+所以在开发环境和其他环境的版本不一致时，要特别小心，会有坑。需要在settings里面把MIDDLEWARE改为MIDDLEWARE_CLASSES 即可
+
+TypeError at / ‘bool’ object is not callable
+使用 Django自带的 auth 用户验证功能，编写函数，使用 is_authenticated 检查用户是否登录报错
+
+查询相关资料，发现 is_authenticated 是属性而不是方法，我们应该把括号去掉，这样就没什么问题了。
+
+将　if request.user.is_authenticated(): 改为 if request.user.is_authenticated:
+
+错误编码1050
+
+python manage.py migrate myapp --fake # 数据库表结构同步成功
+
+错误编码1146
+　　1.同步数据库
+　　　　项目建起来后，同步数据库，加入自定义的app　
+
+python manage.py syncdb
+
+　　2.创建初始的迁移脚本
+
+python manage.py makemigrations appname
+
+　　3.同步迁移数据库　　　　
+
+python manage.py migrate appname
+
+user.User.basemodel_ptr: (fields.E300) Field defines a relation with model ‘BaseModel’, which is either not installed, or is abstract.
+

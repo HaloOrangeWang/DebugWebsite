@@ -1,0 +1,104 @@
+
+安装mysqlclient
+
+pip install Mysqlclient
+
+报错如下
+
+Looking in indexes: http://mirrors.tencentyun.com/pypi/simple
+Collecting Mysqlclient
+  Downloading http://mirrors.tencentyun.com/pypi/packages/d0/97/7326248ac8d5049968bf4ec708a5d3d4806e412a42e74160d7f266a3e03a/mysqlclient-1.4.6.tar.gz (85 kB)
+     |████████████████████████████████| 85 kB 577 kB/s 
+    ERROR: Command errored out with exit status 1:
+     command: /usr/local/python3/bin/python3.6 -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-036cgtd_/Mysqlclient/setup.py'"'"'; __file__='"'"'/tmp/pip-install-036cgtd_/Mysqlclient/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base /tmp/pip-pip-egg-info-5twazgvm
+         cwd: /tmp/pip-install-036cgtd_/Mysqlclient/
+    Complete output (12 lines):
+    /bin/sh: mysql_config: 未找到命令
+    /bin/sh: mariadb_config: 未找到命令
+    /bin/sh: mysql_config: 未找到命令
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-install-036cgtd_/Mysqlclient/setup.py", line 16, in <module>
+        metadata, options = get_config()
+      File "/tmp/pip-install-036cgtd_/Mysqlclient/setup_posix.py", line 61, in get_config
+        libs = mysql_config("libs")
+      File "/tmp/pip-install-036cgtd_/Mysqlclient/setup_posix.py", line 29, in mysql_config
+        raise EnvironmentError("%s not found" % (_mysql_config_path,))
+    OSError: mysql_config not found
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+
+
+解决方法
+
+1、安装python-devel
+
+yum install python-devel
+
+已加载插件：fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+软件包 python-devel-2.7.5-88.el7.x86_64 已安装并且是最新版本
+无须任何处理
+
+2、安装 mysql-devel
+
+yum install mysql-devel
+
+已加载插件：fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+正在解决依赖关系
+--> 正在检查事务
+---> 软件包 mysql-community-devel.x86_64.0.5.6.48-2.el7 将被 安装
+--> 解决依赖关系完成
+
+依赖关系解决
+
+================================================================================
+ Package                  架构      版本             源                    大小
+================================================================================
+正在安装:
+ mysql-community-devel    x86_64    5.6.48-2.el7     mysql56-community    3.4 M
+
+事务概要
+================================================================================
+安装  1 软件包
+
+总下载量：3.4 M
+安装大小：18 M
+Is this ok [y/d/N]: y
+Downloading packages:
+mysql-community-devel-5.6.48-2.el7.x86_64.rpm              | 3.4 MB   00:02     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  正在安装    : mysql-community-devel-5.6.48-2.el7.x86_64                   1/1 
+  验证中      : mysql-community-devel-5.6.48-2.el7.x86_64                   1/1
+
+已安装:
+  mysql-community-devel.x86_64 0:5.6.48-2.el7
+
+完毕！
+
+3、安装gcc
+
+yum install gcc
+
+已加载插件：fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+软件包 gcc-4.8.5-39.el7.x86_64 已安装并且是最新版本
+无须任何处理
+
+4.再次执行安装mysql
+
+pip3 install mysqlclient
+
+Looking in indexes: http://mirrors.tencentyun.com/pypi/simple
+Collecting mysqlclient
+  Downloading http://mirrors.tencentyun.com/pypi/packages/d0/97/7326248ac8d5049968bf4ec708a5d3d4806e412a42e74160d7f266a3e03a/mysqlclient-1.4.6.tar.gz (85 kB)
+     |████████████████████████████████| 85 kB 668 kB/s 
+Could not build wheels for mysqlclient, since package 'wheel' is not installed.
+Installing collected packages: mysqlclient
+    Running setup.py install for mysqlclient ... done
+Successfully installed mysqlclient-1.4.6
+

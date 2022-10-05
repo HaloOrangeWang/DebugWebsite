@@ -1,0 +1,50 @@
+本文实例讲述了Python错误处理操作。分享给大家供大家参考，具体如下：
+
+同java一样，在python中也有try...except...finaly的错误处理机制
+
+try:
+ print('try...')
+ r=5/0
+ print('result:',r)
+except ZeroDivisionError as e:
+ print('except',e)
+finally:
+ print('finally....')
+print('end')
+
+比如上面这串代码，因为被除数不能为0所以在try中会出现错误，而出现错误之后，result是不会打印出来的，而是直接跳转到except中并打印出错误信息，执行完except之后，如果有finally语句，就一定会执行完，所以无论有没有finally都会执行。
+
+结果为：
+
+try...
+
+except: division by zero
+
+finally...
+
+END
+
+这里出现的错误是ZeroDivisionError错误，python中还有很多的错误，比如ValueError错误，所以，在这个错误机制中我们可以设置多个except语句来捕捉不同的错误，比如，
+
+try:
+ print('try...')
+ r = 10 / int('a')
+ print('result:', r)
+except ValueError as e:
+ print('ValueError:', e)
+except ZeroDivisionError as e:
+ print('ZeroDivisionError:', e)
+finally:
+ print('finally...')
+print('END')
+
+因为多了一个int()函数，所有有可能出现值错误，接着，你也可以在except后面加一个else函数来打印无错误来提醒自己。
+
+可以看出，其实和java一样，错误都是继承类，他们的父类都为BaseException，所以，如果写了多个except语句但是里面包含父子类，那么只会被父类给捕获：
+
+Python错误处理还可参考：https://docs.python.org/3/library/exceptions.html#exception-hierarchy
+
+更多Python相关内容感兴趣的读者可查看本站专题：《Python入门与进阶经典教程》、《Python字符串操作技巧汇总》、《Python列表(list)操作技巧总结》、《Python编码操作技巧总结》、《Python数据结构与算法教程》、《Python函数使用技巧总结》及《Python文件与目录操作技巧汇总》
+
+希望本文所述对大家Python程序设计有所帮助。
+

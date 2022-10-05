@@ -1,0 +1,19 @@
+今天想把数据处理用pandas来处理。计划很完美。然后就在第一步read-excle中的时候就报错了。一股脑的查看官方文档，
+
+https://www.pypandas.cn/docs/ 也是如此调用。到底是哪里出错了呢？
+
+一股脑的傻劲想要放弃。算了，搜索一下吧。 整理如下：
+
+原因是最近xlrd更新到了2.0.1版本，只支持.xls文件。
+
+所以pandas.read_excel(‘xxx.xlsx’)会报错。
+
+安装旧版xlrd，在cmd中运行：
+
+pip uninstall xlrd
+ pip install xlrd==1.2.0
+
+也可以用openpyxl代替xlrd打开.xlsx文件：
+
+df=pandas.read_excel(‘data.xlsx’,engine=‘openpyxl’)
+

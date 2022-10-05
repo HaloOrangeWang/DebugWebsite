@@ -1,0 +1,71 @@
+在用VSCode编辑Python源码时，常会有from...import...此类用法，模块都已正确安装，还是会提示出错
+
+或是xxx has no xxx member出错
+
+但是能正常运行，记录原因与解决方法。
+
+一般VSCode使用pylint来检查Python的语法错误，pylint语法规则校验器对于python的import导入必须是相对于main函数的路径
+
+一些方法是禁用pylint的语法检查或是屏蔽一些简单错误
+
+方法：在setting.json加入代码（新版vscode已经不用json文件设置，直接改选项）
+
+直接禁用
+
+"python.linting.enabled": false
+
+忽略指定错误
+
+"python.linting.pylintArgs": [
+	 "--disable=W,C,E"
+ ], //忽略指定报错
+
+"python.linting.enabled": false //关闭pylint 报错 （不包括语法错误）
+
+虽然不显示红色波浪线了，担心其他的错误也不显示，不可取
+
+方法：在项目主目录下新建一个.pylintrc文件，然后在这个文件里添加一行
+
+extension-pkg-whitelist=packagename
+
+packagename就是模块名，本例则是win32gui，相当于是加了一个白名单
+
+但是实测只要存在.pylintrc这个文件，里面随便写点什么，就不会出红色波浪线
+
+方法：使用--generated-members
+
+打开设置，搜索框输入 python.linting.pylint 找到如下项目
+
+点击Add Item，框内输入 --generated-members 注意第一个单词后面有个d，好多文章里少了这个。。。
+
+还有更详细的设置，规定特定类
+
+方法：修改设置里的提醒
+
+以前版本是以json文件打开来设置的，现在新版本已经变成了选项
+
+打开设置（Ctrl+，），输入 python.linting.pylint 找到如下信息
+
+Convention是 惯例（不重要，可关闭）
+Error是 错误
+Fatal是 致命错误
+Refactor是 重构（这个貌似也不重要，可关闭）
+Warning是 警告 （这个不关掉就烦了，必须关闭）
+这四个选项，分别可以设置为：Hint（暗示），Error（错误），Information（信息），Warning（警告）
+
+方法：打开设置（Ctrl+，）搜索内输入 python.linting.pylintPath
+
+将框内输入为你的pylint安装的路径，路径可以命令行里看
+
+保存设置后问题消失
+
+猜想是其他模块保存的地方和pylint不一样导致的，我的其他模块放在了D:\Python\Python36\Scripts
+
+之前有次是模块安装在用户目录，导致源码里没法用
+
+参考：
+
+https://blog.csdn.net/yinizhilianlove/article/details/105560705
+
+https://blog.csdn.net/weixin_42657158/article/details/104072953
+

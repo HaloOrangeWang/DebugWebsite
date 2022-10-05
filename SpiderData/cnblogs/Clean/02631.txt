@@ -1,0 +1,24 @@
+问题描述：
+
+mac笔记本本身会自带几个python版本，比如python2.7版本，我没有改动mac默认的python版本，只是安装了python3.7版本。
+
+使用Pycharm开发Python项目没有遇到什么问题。但是在java项目中调用py脚本的话，就有问题了。我的项目需要将Pycharm开发好的py脚本（多个.py文件），拷贝到java项目中，在java项目（是用IDEA开发工具）中，如果直接是用鼠标右键运行py脚本的话是没有问题的，将py脚本依赖的第三方库直接拷贝到py脚本所在地目录下然后再用java去调用也没有问题，但如果py脚本中导入了python的第三方库，就会有问题，具体表现为java调用后控制台没有任何输出，也不报错。
+
+解决方式主要参考了这篇博客：
+
+https://www.cnblogs.com/BlueSkyyj/p/9455955.html
+
+下面是我的mac笔记本中的python环境，重点在于配置正确的python环境PATH变量：
+
+执行 source ~/.bash_profile 立即生效
+
+设置完环境变量后，我们 想要执行python3,仍然需要 输入python3 or python3.7方可，也挺麻烦，可以通过设置软连接来实现
+
+设置软连接
+
+命令：
+
+sudo ln -f /usr/local/bin/python3.7 /usr/local/bin/python
+
+即通过这个设置，可以实现输入python 就是执行的python3.7
+

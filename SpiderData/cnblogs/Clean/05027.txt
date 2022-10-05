@@ -1,0 +1,28 @@
+报错信息：
+
+HTTPConnectionPool(host=''xx.xx.xx.xx', port=xx): Max retries exceeded with url: (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000237EE44EF98>: Failed to establish a new connection: [WinError 10060]
+
+由于连接方在一段时间后没有正确答复或连接的主机没有反 应，连接尝试失败。',))
+
+问题查找：
+
+执行 ping files.pythonhosted.org
+
+返回：ping: files.pythonhosted.org: 未知的名称或服务
+
+ping这个域名，竟然提示解析错误。于是用windows机器ping，解析正常。想到应该是dns解析问题，接着把dns换成了1.1.1.1和8.8.8.8，再次安装，问题顺利解决。
+
+解决方式：
+
+cd /etc/resolv.conf
+
+添加：
+
+nameserver 8.8.8.8
+
+nameserver 8.8.4.4
+
+nameserver 1.1.1.1
+
+再次安装，安装成功！ 问题解决！！
+

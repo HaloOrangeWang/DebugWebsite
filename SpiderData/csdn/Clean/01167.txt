@@ -1,0 +1,11 @@
+Python入坑不久，今天碰到个奇怪的问题，想利用python pdb debug代码。但实际中用pdb.set_trace()的时候却报错：
+ AttributeError: module ‘pdb’ has no attribute 'set_trace’
+
+自己反复查看没有拼写错误，再仔细看是因为引入这个模块里面没有set_trace方法。
+ Google搜索报错信息，StackOverflow上面说：
+ The python module pdb has a set_trace() function. Since your program is not finding it, it is importing something else. Almost certainly, you named your program (or another program in the same directory) pdb.py.
+
+原来是我这边有其他文件名字为pdb，这样导致import的时候并不是python模块的pdb，恍然大悟，自己为了练习这个pdb功能，把python文件命名为了pdb.py。
+
+吃一堑长一智，以后命名必须要规范化，切忌重名。
+

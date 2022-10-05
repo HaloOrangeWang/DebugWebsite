@@ -1,0 +1,115 @@
+
+错误和异常
+
+程序运行时有两种可以分辨的错误: syntax error 和 exception , 按中文来说, 就是语法错误和异常。
+
+
+语法错误
+
+语法错误也就是解析错误，是我们最优可能遇到的错误。
+
+while True print('Hello world')
+  File "<stdin>", line 1, in ?
+    while True print('Hello world')
+                   ^
+SyntaxError: invalid syntax
+
+在这个例子中, 错误是在 print() 函数这里被发现的, 因为在它之前少了一个冒号 (':'). 文件的名称与行号会被打印出来, 以便于你能找到一个脚本中导致错误的地方。
+
+
+异常
+
+即使语法没有错误，在运行时也会有报错，这样的报错我们叫做异常：大多数异常并不会被程序处理, 不过, 导致错误的信息会被显示出来。
+
+print(10 * (1/0))
+Traceback (most recent call last):
+  File "/Users/hadoop/Documents/Python_workspace/python_3.X/Exception.py", line 3, in <module>
+    print(10 * (1/0))
+ZeroDivisionError: division by zero
+
+Built-in Exceptions ：列出了内建的异常和它们的意义。
+
+
+异常处理
+
+try 语句像下面这样使用.
+
+首先, try clause (在 try 和 except 之间的语句) 将被执行.
+
+如果没有异常发生, except clause 将被跳过, try 语句就算执行完了.
+
+如果在 try 语句执行时, 出现了一个异常, 该语句的剩下部分将被跳过. 然后如果它的类型匹配到了 except 后面的异常名, 那么该异常的语句将被执行, 而执行完后会运行 try 后面的问题.
+
+如果一个异常发生时并没有匹配到 except 语句中的异常名, 那么它就被传到 try 语句外面; 如果没有处理, 那么它就是 unhandled exception 并且将会像前面那样给出一个消息然后执行.
+
+while True:
+    try:
+        nu = int(input("please input a number:"))
+        break
+    except ValueError:
+        print("valid number!")
+
+please input a number:a
+valid number!
+please input a number:a
+valid number!
+please input a number:1
+
+一个 try 语句可以有多于一条的 except 语句, 用以指定不同的异常. 但至多只有一个会被执行. Handler 仅仅处理在相应 try 语句中的异常, 而不是在同一 try 语句中的其他 Handler. 一个异常的语句可以同时包括多个异常名, 但需要用括号括起来, 比如:
+
+except (RuntimeError, TypeError, NameError):
+pass
+
+最后的异常段可以忽略异常的名字, 用以处理其他的情况. 使用这个时需要特别注意, 因为它很容易屏蔽了程序中的错误! 它也用于输出错误消息, 然后重新产生异常 (让调用者处理该异常):
+
+import sys
+
+try:
+    f = open('myfile.txt')
+    s = f.readline()
+    i = int(s.strip())
+except IOError as err:
+    print("I/O error: {0}".format(err))
+except ValueError:
+    print("Could not convert data to an integer.")
+except:
+    print("Unexpected error:", sys.exc_info()[0])
+    raise
+
+try ... except 语句可以有一个可选的 else 语句, 在这里, 必须要放在所有 except 语句后面. 它常用于没有产生异常时必须执行的语句. 例如:
+
+for arg in sys.argv[1:]:
+    try:
+        f = open(arg, 'r')
+    except IOError:
+        print('cannot open', arg)
+    else:
+        print(arg, 'has', len(f.readlines()), 'lines')
+        f.close()
+
+使用 else 比额外的添加代码到 try 中要好, 因为这样可以避免偶然的捕获一个异常, 但却不是由于我们保护的代码所抛出的.
+
+当一个异常发生了, 它可能有相关的值, 这也就是所谓的异常的参数. 该参数是否出现及其类型依赖于异常的类型.
+
+在 except 语句中可以在异常名后指定一个变量. 变量会绑定值这个异常的实例上, 并且把参数存于 instance.args. 为了方便, 异常的实例会定义 __str__() 来直接将参数打印出来, 而不用引用 .args. 当然也可以在产生异常前, 首先实例化一个异常, 然后把需要的属性绑定给它.
+
+try:
+    raise Exception('spam', 'eggs')
+    except Exception as inst:
+    　　print(type(inst))    # the exception instance
+    　　print(inst.args)     # arguments stored in .args
+    　　print(inst)          # __str__ allows args to be printed directly,
+                            # but may be overridden in exception subclasses
+    　　x, y = inst.args     # unpack args
+    　　print('x =', x)
+ 
+<class 'Exception'>
+('spam', 'eggs')
+('spam', 'eggs')
+x = spam
+y = eggs
+
+如果一个异常有参数, 它们将作为异常消息的最后一部分打印出来.
+
+异常的 handler 处理的异常, 不仅仅是 try 语句中那些直接的异常, 也可以是在此处调用的函数所产生的异常。
+

@@ -1,0 +1,71 @@
+场景:请求获取验证码模块regVC.py读取配置文件config.ini时，regVC.py模块单独执行正常，但通过run_all.py模块批量执行时报错，找不到section
+
+解决办法：配置文件路径需写绝对路径
+
+config.ini文件如下：
+
+regVC.py模块代码如下：
+
+1 import requests
+ 2 import configparser
+ 3 import unittest
+ 4 from Case.readexcel import ExcelData
+ 5 import json
+ 6 
+ 7 class registerVerifyCode(unittest.TestCase):
+ 8     def setUp(self):
+ 9         self.Purl = "/api/register/getVerifyCode"
+10         #取配置文件内数据
+11         self.config = configparser.ConfigParser()
+12         self.text = self.config.read("F:\\Case\\config.ini")      #这里要写配置文件的绝对路径                                  
+13         self.section = self.config.sections()
+14         self.option = self.config.options("section_1")
+15         self.item = self.config.items("section_1")
+16         self.url = self.config.items("section_1")[1][1]+self.Purl
+17         self.headers = self.config.items("section_1")[0][1]
+18         #self.headers由str类型转化为字典类型
+19         self.header = eval(self.headers)
+20         self.data_path = self.config.items("section_1")[2][1]
+21         self.sheetname = "注册验证码获取"
+22         self.data = ExcelData(self.data_path,self.sheetname).readExcel()
+23         print(self.url)
+24         print(self.data)
+25 
+26     def test_reVC(self):
+27         for a in self.data:
+28             for b in a:
+29                 print(a)
+30                 print(b)
+31                 par = {"data":{
+32                     b:a[b]
+33                 }
+34                 }
+35                 print(par)
+36                 par_json = json.dumps(par)
+37                 res = requests.post(self.url,par_json,headers=self.header)
+38                 print(res.text)
+39                 if "手机号码已注册" in res.text:
+40                     print("该手机号码已注册")
+41                 if "请求注册验证码成功" in res.text:
+42                     print("请求注册验证码成功")
+43 
+44 if __name__ == '__main__':
+45    unittest.main()
+
+run_all.py代码如下：
+
+1 import unittest
+ 2 
+ 3 def all_case():
+ 4     case_dir = "F:\\KEJINSUO_interface\\Case\\"
+ 5     testCase = unittest.TestSuite()
+ 6     discover = unittest.defaultTestLoader.discover(case_dir, pattern = "reg*.py", top_level_dir = None)
+ 7     testCase.addTest(discover)
+ 8     return testCase
+ 9 
+10 if __name__ == '__main__':
+11     runner = unittest.TextTestRunner()
+12     runner.run(all_case())
+
+代码需慢慢优化，先实现简单的功能
+

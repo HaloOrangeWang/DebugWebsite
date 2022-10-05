@@ -1,0 +1,56 @@
+python 64位机器上 打包 32位 程序:
+
+pyinstaller -F test/test.py 打包 好后 在winxp上运行不了,打包机器是64位的
+
+然后下载:anaconda: 下载32位的 python3.7 的版本,https://repo.anaconda.com/archive/Anaconda3-2019.10-Windows-x86.exe
+
+打包机器上的python是3.5版本的,安装完32位的anaconda create 发现只有3.7,于是在打包电脑上环境执行: pip freeze>requirements.txt # 导出所有安装的包
+
+然后在虚拟环境中导入:pip install -r requirements.txt  -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com #导进包时怕版本不一致会有差别,所以把requirements.txt 后面的版本 "==3.1.0" 类似的全部去掉了
+
+然后在此虚拟环境中切到项目的主文件,pyinstaller -F test/test.py #报错: ** maximum recursion depth exceeded ** #递归导致出错
+
+接着修改生成的 test.spec 中第二行加上: #也可以把test.spec删了,执行:pyi-makespec -F test/test.py 也会生成 test.spec,然后按照下面修改
+
+然后执行: pyinstaller -F test.spec #注意是 test.spec #之后打包成功,
+
+运行 报错 : failed to execute script pyi_rth_win32comgenpy
+
+安装pyqt5; pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyqt5
+
+打包出来的文件能不能使用需要在进行测试
+
+此时打出来的报经过测试在win7以上可以正常运行,但是xp系统会报错:"无法定位程序输入点 GetFinalPathNameByHandleW 于动态链接库 KERNEL32.dll 上"
+
+然后查资料查到3.4以上就不支持xp系统,故需要在anacoda 上安装python3.4
+
+然后在anacoda界面上根本没有找到 python3.4
+
+然后在命令行: conda create -n py3.4forXp python=3.4 # 报错"PackagesNotFoundError: The following packages are not available from current channels:"
+
+然后根据清华镜像设置:https://mirror.tuna.tsinghua.edu.cn/help/anaconda/
+
+配置;可以通过修改用户目录下的 .condarc 文件: #Windows 用户无法直接创建名为 .condarc 的文件，可先执行 conda config --set show_channel_urls yes 生成该文件之后再修改。
+
+然后运行:conda create -n py3.4forXp python=3.4 #安装成功
+
+set CONDA_FORCE_32BIT=1是切换到32位 #需要在进入到conda 环境内输入 =0 则是 64位, conda info 可以看到相关信息
+
+conda info -e #可以看到新创建的环境py3.4forXp 已经创建成功
+
+conda activate py3.4forXp #切到该环境
+
+安装相关包:pip install -r requirements.txt  -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+
+requirements.txt里面有 numpy,pip 安装python3.4没有 numpy,所有在  requirements.txt 中把这个包删了,
+
+然后执行: conda install numpy #自动安装好了.然后继续安装其他的包,其他的也出现类似的情况也是这样操作
+
+或者直接用conda安装 requirements.txt
+
+conda list -e > requirements.txt #导出包
+
+conda install --yes --file requirements.txt #导入包
+
+实践证明这个工具也有些安装不了,还是先用上面的方法安装
+

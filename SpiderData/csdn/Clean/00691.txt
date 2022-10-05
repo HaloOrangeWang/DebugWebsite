@@ -1,0 +1,34 @@
+本文介绍如何处理报错–SyntaxError: positional argument follows keyword argument
+
+源代码：
+
+def fun(x, y):
+    print(x, y)
+
+fun(x=1, 2)
+
+运行报错如下：
+
+C:\Python37\python.exe "D:/Program Files/PycharmProjects/pycharmPrj/zzz/Python/lx0.py"
+  File "D:/Program Files/PycharmProjects/pycharmPrj/zzz/Python/lx0.py", line 57
+    fun(x=1, 2)
+            ^
+SyntaxError: positional argument follows keyword argument
+
+由于如果使用关键字赋值就需要都使用，这里只使用了一个关键字参数赋值，因此报错：SyntaxError: positional argument follows keyword argument
+ 可以都是用关键字赋值，或者都不使用关键字赋值
+ 修改如下：
+
+def fun(x, y):
+    print(x, y)
+
+fun(x=1, y=2)
+#fun（y=2, x=1）	#位置不影响关键字赋值
+#fun（1， 2）
+
+运行结果如下：
+
+C:\Python37\python.exe "D:/Program Files/PycharmProjects/pycharmPrj/zzz/Python/lx0.py"
+1 2
+Process finished with exit code 0
+

@@ -1,0 +1,16 @@
+Undefined symbols for architecture x86_64:
+
+"_OBJC_CLASS_$_HeaderView", referenced from:
+
+objc-class-ref in ViewController.o
+
+ld: symbol(s) not found for architecture x86_64
+
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
+此处错误是因为你的在building phases中没有引用相关的头文件，比如这里就是没有引入HeaderView。
+
+因此，只需要在 building phase 中的 Compile Sources  项 中添加对应的 HeaderView.m 文件就
+
+可以了。
+

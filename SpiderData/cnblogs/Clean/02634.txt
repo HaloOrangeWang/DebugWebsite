@@ -1,0 +1,32 @@
+背景：学习django+fdfs+nginx时碰见的问题，笔记本电脑的虚拟机ubuntu实在卡到怀疑人生，所以django装在windows，ubuntu只开启fdfs+nginx服务。于是就有在windows下安装fdfs client的需求，先提醒一下，有条件还是在linux下学习开发好~
+
+详情：
+
+网上下载 fdfs_client-py-master.zip 解压
+
+cd 到解压后的路径fdfs_client-py-master
+
+敲入：python setup.py install
+
+报错：
+
+error: Microsoft Visual C++ 14.0 is required.
+
+这时到控制面板确认此程序已安装，问题不在这。
+
+于是百度，发现WIN下需要删除一些代码段：
+
+1.解压后的fdfs_client-py-master\fdfs_client 目录下的storage_client.py
+
+屏蔽第12行  # from fdfs_client.sendfile import *
+
+2.解压后的fdfs_client-py-master 目录下的setup.py
+
+屏蔽sdict字典中的   'ext_modules'
+
+完成以上两步，接着安装 pip install mutagen  和 pip install requests  ，不然会提示缺少此两个包。
+
+最后 python setup.py install ，成功！
+
+总结：人生苦短，我想在linux下学python。
+

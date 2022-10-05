@@ -1,0 +1,31 @@
+最近做项目需要用java调用python，配置了jython后，运行了例子代码：
+
+获得一个元组里面的元素：
+
+import org.python.util.PythonInterpreter;
+public class FirstJavaScript {
+    public static void main(String args[]) {
+
+PythonInterpreter interpreter = new PythonInterpreter();
+        interpreter.exec("days=('mod','Tue','Wed','Thu','Fri','Sat','Sun'); ");
+        interpreter.exec("print days[1];");
+
+}// main
+}
+
+运行时报错：
+
+Exception in thread "main" ImportError: Cannot import site module and its dependencies: No module named site
+Determine if the following attributes are correct:
+  * sys.path: ['C:\\（你的项目地址）', '__classpath__', '__pyclasspath__/']
+    This attribute might be including the wrong directories, such as from CPython
+  * sys.prefix: C:（你的项目地址）
+    This attribute is set by the system property python.home, although it can
+    be often automatically determined by the location of the Jython jar file
+
+You can use the -S option or python.import.site=false to not import the site module
+
+我们只需要把代码改为以下这个例子就可以顺利执行了。
+
+执行结果是Tue
+

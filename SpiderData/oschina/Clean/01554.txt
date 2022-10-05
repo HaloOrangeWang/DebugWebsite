@@ -1,0 +1,604 @@
+
+1 numpy 概述
+
+numpy是Numerical Python的缩写，释义为数值的Python
+
+numpy弥补了作为通用编程语言的Python在数值计算方面能力弱、速度慢的不足（numpy的底层是通过C语言编写的甚至汇编语言实现的，可以直接操作CPU）
+
+numpy拥有丰富的数学函数、具有矢量运算能力，快速、节省空间，，强大的多维数组（矩阵运算）和优异的运算能力，此外也针对数组运算提供大量的数学函数库
+
+numpy的存储效率和I/O性能优胜于python
+
+numpy的模块是用C语言编写的，故不支持jython
+
+
+2 numpy 安装
+
+
+2.1 在线安装
+
+python -m pip install numpy 或 pip install numpy
+
+该种方式安装的是标准的numpy，当实际使用过程中除了安装标准的numpy外还有另外的组件——数学核心库mkl（inter(R) Math Kernel Library），即numpy + mkl
+
+
+2.2 离线安装（一）
+
+离线安装：pip install 路径+文件名
+
+C:\WINDOWS\system32>pip install D:\numpy-1.13.3+mkl-cp36-cp36m-win_amd64.whl
+
+出现报错：numpy-1.13.3+mkl-cp36-cp36m-win_amd64.whl is not a supported wheel on this platform.
+
+查找原因尝试了一遍，问题依旧就有解决
+
+>>> import pip
+>>> print(pip.pep425tags.get_supported())
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: module 'pip' has no attribute 'pep425tags'
+
+显示pip中没有pep425tags属性
+
+此时查看pip帮助
+
+>>> help(pip)
+Help on package pip:
+
+NAME
+    pip
+
+PACKAGE CONTENTS
+    __main__
+    _internal (package)
+    _vendor (package)
+
+VERSION
+    10.0.1
+
+FILE
+    c:\users\z***g\appdata\local\programs\python\python36-32\lib\site-packages\pip\__init__.py
+
+该pip package 中有package contents ：_internal(package)和_vendor(package) ；
+
+确实没有pep425tags，继续查看package
+
+>>> help(pip._internal)
+Help on package pip._internal in pip:
+
+NAME
+    pip._internal
+
+PACKAGE CONTENTS
+    basecommand
+    baseparser
+    build_env
+    cache
+    cmdoptions
+    commands (package)
+    compat
+    configuration
+    download
+    exceptions
+    index
+    locations
+    models (package)
+    operations (package)
+    pep425tags
+    req (package)
+    resolve
+    status_codes
+    utils (package)
+    vcs (package)
+    wheel
+
+SUBMODULES
+    bazaar
+    deprecation
+    git
+    mercurial
+    subversion
+
+FUNCTIONS
+    autocomplete()
+        Command and option completion for the main option parser (and options)
+        and its subcommands (and options).
+
+Enable by sourcing one of the completion shell scripts (bash, zsh or fish).
+
+check_isolated(args)
+
+create_main_parser()
+
+main(args=None)
+
+parseopts(args)
+
+DATA
+    absolute_import = _Feature((2, 5, 0, 'alpha', 1), (3, 0, 0, 'alpha', 0...
+    commands_dict = {'check': <class 'pip._internal.commands.check.CheckCo...
+    logger = <Logger pip._internal (WARNING)>
+
+VERSION
+    10.0.1
+
+FILE
+    c:\users\zyong\appdata\local\programs\python\python36-32\lib\site-packages\pip\_internal\__init__.py
+
+我们明显看到了_internal package中有 pep425tags 属性，
+
+我们继续查看_vendor package
+
+>>> help(pip._vendor)
+Help on package pip._vendor in pip:
+
+NAME
+    pip._vendor
+
+DESCRIPTION
+    pip._vendor is for vendoring dependencies of pip to prevent needing pip to
+    depend on something external.
+
+Files inside of pip._vendor should be considered immutable and should only be
+    updated to versions from upstream.
+
+PACKAGE CONTENTS
+    appdirs
+    cachecontrol (package)
+    certifi (package)
+    chardet (package)
+    colorama (package)
+    distlib (package)
+    distro
+    html5lib (package)
+    idna (package)
+    ipaddress
+    lockfile (package)
+    msgpack (package)
+    packaging (package)
+    pkg_resources (package)
+    progress (package)
+    pyparsing
+    pytoml (package)
+    requests (package)
+    retrying
+    six
+    urllib3 (package)
+    webencodings (package)
+
+FUNCTIONS
+    vendored(modulename)
+        # Define a small helper function to alias our vendored modules to the real ones
+        # if the vendored ones do not exist. This idea of this was taken from
+        # https://github.com/kennethreitz/requests/pull/2567.
+
+DATA
+    DEBUNDLED = False
+    WHEEL_DIR = r'C:\Users\zyong\AppData\Local\Programs\Python\Python36-32...
+    absolute_import = _Feature((2, 5, 0, 'alpha', 1), (3, 0, 0, 'alpha', 0...
+
+FILE
+    c:\users\zyong\appdata\local\programs\python\python36-32\lib\site-packages\pip\_vendor\__init__.py
+
+基于此，可以发现这可能是由于pip版本问题而产生的，依据pip 10.0.1 进行如下操作
+
+>>> import pip._internal
+>>> print(pip._internal.pep425tags.get_supported())
+[('cp36', 'cp36m', 'win32'), ('cp36', 'none', 'win32'), 
+('py3', 'none', 'win32'), ('cp36', 'none', 'any'), 
+('cp3', 'none', 'any'), ('py36', 'none', 'any'), 
+('py3', 'none', 'any'), ('py35', 'none', 'any'), 
+('py34', 'none', 'any'), ('py33', 'none', 'any'),
+ ('py32', 'none', 'any'), ('py31', 'none', 'any'), ('py30', 'none', 'any')]
+>>>
+
+从上述内容可以看到，本pip并不支持numpy-1.13.3+mkl-cp36-cp36m-win_amd64.whl，
+
+可以从python插件中找到32位numpy+mklhttps://www.lfd.uci.edu/~gohlke/pythonlibs/#pymssql
+
+也即numpy-1.14.3+mkl-cp36-cp36m-win32.whl
+
+在命令提示符CMD中执行：
+
+C:\WINDOWS\system32>pip install D:\Software\Python\numpy-1.14.3+mkl-cp36-cp36m-win32.whl
+Processing d:\software\python\numpy-1.14.3+mkl-cp36-cp36m-win32.whl
+Installing collected packages: numpy
+Successfully installed numpy-1.14.3+mkl
+
+安装成功！
+
+
+2.3 离线安装（二）
+
+PS C:\Users\zyong\Desktop> python -m pip install -U pip
+Collecting pip
+  Downloading https://.../pip-18.0-py2.py3-none-any.whl (1.3MB)
+    100% |████████████████████████████████| 1.3MB 81bytes/s
+Installing collected packages: pip
+  Found existing installation: pip 10.0.1
+    Uninstalling pip-10.0.1:
+      Successfully uninstalled pip-10.0.1
+Successfully installed pip-18.0
+
+
+3 scipy
+
+Scipy是一个高级的科学计算库，它和Numpy联系很密切；
+
+Scipy一般都是操控Numpy数组来进行科学计算，所以可以说是基于Numpy之上了。
+
+Scipy有很多子模块可以应对不同的应用，例如插值运算，优化算法、图像处理、数学统计等。
+
+
+3.1 安装
+
+SciPy is software for mathematics, science, and engineering.
+Install numpy+mkl before installing scipy（在安装scipy前必须先安装numpy + mkl）.
+
+下载链接 https://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy
+
+安装：
+
+PS D:\Software\Python> pip install scipy-1.1.0-cp36-cp36m-win32.whl
+
+现在已经更新至：numpy-1.14.5+mkl-cp37-cp37m-win_amd64.whl
+
+
+4 matplotlib
+
+下载网站：https://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib
+
+安装：PS D:\Software\Python> pip install matplotlib-2.2.2-cp36-cp36m-win32.whl
+
+
+5 在windows中使用 Windows PowerShell的方式
+
+按住shift ，然后右击选择 “在此处打开PowerShell窗口”
+
+2018年6月8日早追记
+
+使用上述方法1是可以安装上的，但是在运行numpy时会报错，例如使用numpy.arange函数时，报错：AttributeError: 'module' object has no attribute 'arange'
+
+在网上找不到原因，后来在虚拟机上尝试，可以正常运行。找原因！
+
+原因追记！
+
+（1）在运行numpy.arange()，报错：AttributeError: 'module' object has no attribute 'arange'，此时怀疑可能是版本的差异造成的，遂尝试numpy.array()；
+
+（2）尝试运行numpy.array()时，也同样报出没有array这个属性值，
+
+（3）help(numpy)，结果内容太多，查询非常困难，同时猜想这arange 、array 两个都是最基本的函数都没有，可能是在装numpy库时，没有同时载入arange、array函数。
+
+（4）当时装的时候，安装的是numpy-1.14.3+mkl-cp36-cp36m-win32.whl，而不是numpy-1.14.3+mkl-cp36-cp36m-win_amd64.whl，我的电脑又是64位的，所以先win32位的卸载，安装64位，
+
+C:\WINDOWS\system32>pip uninstall D:\Software\Python\numpy-1.14.3+mkl-cp36-cp36m-win32.whl
+Uninstalling numpy-1.14.3+mkl:
+  Would remove:
+    c:\users\zyong\appdata\local\programs\python\python36-32\lib\site-packages\numpy-1.14.3+mkl.dist-info\*
+    c:\users\zyong\appdata\local\programs\python\python36-32\lib\site-packages\numpy\*
+    c:\users\zyong\appdata\local\programs\python\python36-32\scripts\f2py.py
+Proceed (y/n)? y
+  Successfully uninstalled numpy-1.14.3+mkl
+
+备注：卸载时是将 install 替换成 uninstall 。最后章节会讲述安装的库卸载方法。
+
+（5）之后安装win_amd64.whl，可是pip 不支持 安装，pip支持的列表如下：
+
+>>> import pip._internal
+>>> print(pip._internal.pep425tags.get_supported())
+[('cp36', 'cp36m', 'win32'), ('cp36', 'none', 'win32'), 
+('py3', 'none', 'win32'), ('cp36', 'none', 'any'), 
+('cp3', 'none', 'any'), ('py36', 'none', 'any'), 
+('py3', 'none', 'any'), ('py35', 'none', 'any'), 
+('py34', 'none', 'any'), ('py33', 'none', 'any'),
+ ('py32', 'none', 'any'), ('py31', 'none', 'any'), ('py30', 'none', 'any')]
+
+（6）依据 pip安装报错：is not a supported wheel on this platform 内容中的说法，将numpy-1.14.3+mkl-cp36-cp36m-win_amd64.whl修改为numpy-1.14.3+mkl-cp36-none-win_amd64.whl，此时出现下列内容
+
+C:\WINDOWS\system32>pip install D:\Software\Python\numpy-1.14.3+mkl-cp36-none-win_amd64.whl
+numpy-1.14.3+mkl-cp36-none-win_amd64.whl is not a supported wheel on this platform.
+
+（7）不支持情况下，继续修改，将numpy-1.14.3+mkl-cp36-cp36m-win_amd64.whl 修改为 numpy-1.14.3+mkl-cp36-none-any.whl
+
+安装结果：
+
+C:\WINDOWS\system32>pip install D:\Software\Python\numpy-1.14.3+mkl-cp36-none-any.whl
+Processing d:\software\python\numpy-1.14.3+mkl-cp36-none-any.whl
+Installing collected packages: numpy
+Successfully installed numpy-1.14.3+mkl
+
+显示成功了！
+
+（8）查看安装效果
+
+C:\WINDOWS\system32>python
+Python 3.6.5 (v3.6.5:f59c0932b4, Mar 28 2018, 16:07:46) [MSC v.1900 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import numpy
+Traceback (most recent call last):
+  File "C:\Users\zyong\AppData\Local\Programs\Python\Python36-32\lib\site-packages\numpy\core\__init__.py", line 16, in <module>
+    from . import multiarray
+ImportError: cannot import name 'multiarray'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Users\zyong\AppData\Local\Programs\Python\Python36-32\lib\site-packages\numpy\__init__.py", line 142, in <module>
+    from . import add_newdocs
+  File "C:\Users\zyong\AppData\Local\Programs\Python\Python36-32\lib\site-packages\numpy\add_newdocs.py", line 13, in <module>
+    from numpy.lib import add_newdoc
+  File "C:\Users\zyong\AppData\Local\Programs\Python\Python36-32\lib\site-packages\numpy\lib\__init__.py", line 8, in <module>
+    from .type_check import *
+  File "C:\Users\zyong\AppData\Local\Programs\Python\Python36-32\lib\site-packages\numpy\lib\type_check.py", line 11, in <module>
+    import numpy.core.numeric as _nx
+  File "C:\Users\zyong\AppData\Local\Programs\Python\Python36-32\lib\site-packages\numpy\core\__init__.py", line 26, in <module>
+    raise ImportError(msg)
+ImportError:
+Importing the multiarray numpy extension module failed.  Most
+likely you are trying to import a failed build of numpy.
+If you're working with a numpy git repo, try `git clean -xdf` (removes all
+files not under version control).  Otherwise reinstall numpy.
+
+Original error was: cannot import name 'multiarray'
+
+报错！
+
+（9）此时想 pip 可能是32 造成的，也就意味着python解释器，显示32位，遂将32位python解释器卸载，重新下载安装python 64位解释器。
+
+（10）安装完python解释器(64位)后，查看pip所支持的类型；
+
+C:\WINDOWS\system32>python
+Python 3.6.5 (v3.6.5:f59c0932b4, Mar 28 2018, 17:00:18) [MSC v.1900 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import pip._internal
+>>> print(pip._internal.pep425tags.get_supported())
+[('cp36', 'cp36m', 'win_amd64'), ('cp36', 'none', 'win_amd64'),
+ ('py3', 'none', 'win_amd64'), ('cp36', 'none', 'any'), ('cp3', 'none', 'any'), 
+('py36', 'none', 'any'), ('py3', 'none', 'any'), ('py35', 'none', 'any'), 
+('py34', 'none', 'any'), ('py33', 'none', 'any'), ('py32', 'none', 'any'), 
+('py31', 'none', 'any'), ('py30', 'none', 'any')]
+>>>
+
+可以看出，64位python解释器是支持cp36 win_amd64的，直接安装轮子
+
+（11）安装轮子，因pip版本较低，需要更新pip版本状态；详细过程如下
+
+C:\WINDOWS\system32>pip install D:\Software\Python\numpy-1.14.3+mkl-cp36-cp36m-win_amd64.whl
+Processing d:\software\python\numpy-1.14.3+mkl-cp36-cp36m-win_amd64.whl
+Installing collected packages: numpy
+Successfully installed numpy-1.14.3+mkl
+You are using pip version 9.0.3, however version 10.0.1 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+C:\WINDOWS\system32>python -m pip install --upgrade pip
+Cache entry deserialization failed, entry ignored
+Collecting pip
+Using cached https://files.pythonhosted.org/packages/0f/74/ecd13431bcc456ed390b44c8a6e917c1820365cbebcb6a8974d1cd045ab4/pip-10.0.1-py2.py3-none-any.whl
+Installing collected packages: pip
+Found existing installation: pip 9.0.3
+Uninstalling pip-9.0.3:
+Successfully uninstalled pip-9.0.3
+Successfully installed pip-10.0.1
+
+C:\WINDOWS\system32>pip install D:\Software\Python\numpy-1.14.3+mkl-cp36-cp36m-win_amd64.whl
+Requirement already satisfied: numpy==1.14.3+mkl from file:///D:/Software/Python/numpy-1.14.3%2Bmkl-cp36-cp36m-win_amd64.whl in c:\users\zy***g\appdata\local\programs\python\python36\lib\site-packages (1.14.3+mkl)
+
+其实，为了省事（因基本原因已基本确认了，所以也就不查看pip所支持的格式了），直接安装轮子即可。
+
+（12）小插曲：安装完成后，使用PyCharm时，出现报错；详细示例见 pycharm运行报错unable to load the file system codec ImportError ？
+
+Fatal Python error: Py_Initialize: unable to load the file system codec
+ImportError: No module named 'encodings'
+
+Current thread 0x000033c4 (most recent call first):
+
+尝试修改解释器路径后，没有效果，只得将其卸载。重新安装。
+
+（13）可以使用import numpy及相关函数验证是否正确安装。例如
+
+import numpy as np
+print(np.random.rand(4,4))
+
+运行后代码
+
+[[0.985837   0.09206095 0.79042019 0.26074964]
+ [0.23293134 0.61763471 0.02468984 0.29329917]
+ [0.89250718 0.94265628 0.10534024 0.49142388]
+ [0.39379788 0.74113902 0.88442658 0.12648295]]
+
+至此，numpy库已经全部安装完毕
+
+-----------------------------------------2018.09.01更新---------------------------------------------------------
+
+
+6 安装OpenCV
+
+安装OpenCV时可能出现错误，所以可以先卸载OpenCV，更新numpy，然后在安装新版本OpenCV。
+
+在安装过程中出现了 “ ModuleNotFoundError: No module named 'cv2” ，一直报错，以为是opencv安装错误，反复卸载安装，后来下载sublime text 3，并用（Sublime Text3 注册码激活码(持续更新中2018-6-29)，博主地址 https://blog.csdn.net/qq_29819449）激活了，运行同样的代码，运行成功！
+
+安装过程出现问题参考：
+
+Opencv试用备忘
+
+ImportError: No module named cv2 报错处理
+
+python导入opencv解决no module named cv2问题 这个貌似安装后文件 *.pyd 就在Python文件中
+
+No module named 'cv2'出错
+
+2017 windows python 安装numpy+mkl+scipy+scikit-learn
+
+解决RuntimeError:module compiled against API version 9 but this version of numpy is 7
+
+国内镜像：pip install opencv-python -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+==========2019年01月01日 更新===================
+
+
+7 查看python及相关库位置、版本
+
+
+7.1 查看python位置及版本
+
+
+7.1.1 查看python的位置
+
+1 打开cmd
+
+win + R  -->  cmd ，回车确认，
+
+2 where python
+
+3 进入 python 所在的文件夹（延伸，为python库打基础）
+
+方法一：
+
+cd +（绝对）路径
+
+方法二：
+
+将路径粘贴在文件地址栏，直接进入python.exe所在的文件中
+
+再shift + 鼠标右键，-->  在此处打开powershell窗口即可。
+
+
+7.1.2 查看 python 版本
+
+打开 cmd --> 输入 python
+
+我用的python是 3.7.2rc1
+
+
+7.2 查看 python 库
+
+
+7.2.1 查看安装库
+
+依据 7.1 章节 \ 7.1.1 \ 3 中的方法打开 python.exe 文件所在文件夹中的 CMD
+
+输入下列代码中的第 1 行 或 第 3 行
+
+1 pip list
+2 # or
+3 pip freeze
+
+
+7.2.2 查看所有过期的库
+
+pip list --outdated
+
+界面如下
+
+
+7.2.3 将过期库升级
+
+pip install --upgrade 库名
+
+备注：此命令不支持全局全部库升级。
+
+另：
+
+DOS命令行下输入python进入python环境，然后利用下面python代码实现批量更新工具库
+
+import pip
+from subprocess import call
+for dist in pip.get_installed_distributions():
+    call("pip install --upgrade " + dist.project_name, shell=True)
+
+利用pip批量更新python库
+
+如何查看Python 安装位置以及已经安装的库
+
+
+8 库文件卸载
+
+在以上章节用虽然涉及到卸载，但是安装后立刻卸载将 install 改为 unstall 倒是可以，如果关闭 命令提示符 后，那种方法就不适用了。
+
+1、打开命令提示符
+
+略
+
+2、输入
+
+pip list
+
+此时可以看到所有安装库及版本号。
+
+3、找到所需安装的库名。
+
+比如安装的opencv，如果直接（❌）
+
+pip uninstall opencv
+
+这样就会失败，因为在库列表中没有 opencv 这个库名，而是 opencv-python 库名存在的。
+
+应该输入（✔）
+
+pip uninstall opencv-python
+
+4、卸载成功
+
+C:\Users>pip uninstall opencv-python
+Uninstalling opencv-python-4.0.1:
+  Would remove:
+    c:\users\appdata\local\programs\python\python36\lib\site-packages\cv.py
+...
+
+Proceed (y/n)? y
+  Successfully uninstalled opencv-python-4.0.1
+
+
+9 sklearn 的安装
+
+
+9.1 安装过程的误会
+
+安装第三方库，首先想到的是在 Anacanda 中寻找相关的库，发现没有，再去 Python扩展包的非官方Windows二进制文件 中搜索库文件，结果发现，有两个
+
+和
+
+确定下载参数，选择目标下载安装。
+
+import sklearn
+
+失败。
+
+后来发现原因是 sklearn 非 sklearn，而是 scikit-learn，引用库文件方式则是  import sklearn
+
+
+9.2 正确安装方式
+
+明确两件事
+
+1 正确的库名 scikit-learn
+
+1 正确的库名 scikit-learn
+
+2 该库的依赖库
+
+2 该库的依赖库
+
+参考：
+
+GitHub 上的内容 scikit-learn https://github.com/scikit-learn/scikit-learn
+
+scikit-learn：Python中的机器学习 https://scikit-learn.org
+
+从安装可知，scikit-learn 的依赖库为 numpy 和 scipy，安装scikit-learn前请确保 numpy 和 scipy 已安装。
+
+安装方法1
+
+activate tf2.0
+pip install -U scikit-learn
+# conda install scikit-learn
+
+安装方法2
+
+直接在 Anaconda 中安装
+
+安装方法3
+
+现在第三方库中下载，然后本地安装
+

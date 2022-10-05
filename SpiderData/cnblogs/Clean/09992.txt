@@ -1,0 +1,30 @@
+于新版本的Python中引入了关键字async，所以在安装好pyspider库之后运行pyspider all 会报错，如下图所示（他人的图）。
+
+解决方法：按照报错的路径，找到anaconda\lib\site-packages\pyspider，进入后将run.py中的async查找，全部替换为async_mode。之后对同目录下其他文件夹中的py文件执行相同的操作。替换时要注意大小写，只替换async单个单词为async_mode。替换完之后执行pyspider all，若出现如下错误，ValueError: Invalid configuration:
+  - Deprecated option 'domaincontroller': use 'http_authenticator.domain_controller' instead.
+
+修改pyspider/webui/webdav.py中第203行：
+
+config = DEFAULT_CONFIG.copy()
+ config.update({
+    'mount_path': '/dav',
+    'provider_mapping': {
+        '/': ScriptProvider(app)
+    },
+    #'domaincontroller': NeedAuthController(app),
+    'http_authenticator': {
+        'HTTPAuthenticator':NeedAuthController(app),
+    },
+ 
+    'verbose': 1 if app.debug else 0,
+ 
+    'dir_browser': {'davmount': False,
+                    #'enable': True,
+                    'msmount': False,
+                    'response_trailer': ''},
+})
+dav_app = WsgiDAVApp(config)
+然后再次执行pyspider all，发现成功运行。
+————————————————
+原文链接：https://blog.csdn.net/qq_42187741/article/details/90697622
+

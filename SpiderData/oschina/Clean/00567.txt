@@ -1,0 +1,631 @@
+腾讯课堂 | Python网络爬虫与文本分析(现在只需198元)~~
+
+大家好，今天我们简单介绍下在学习Python时常见的一些错误和异常。
+
+记得刚接触Python的时候，一条简单的语句在执行的时候却总能遇到报错。然后各种艰难的复查发现可能是循环语句缺少冒号啊、用了中文的标点符号啊、引号/括号等少了一个或者无法匹配啊、函数方法或变量名拼写错误啊等等。
+
+在Python编程中有两种可区分的报错：语法错误 和 异常。
+
+
+1.语法错误
+
+语句本身的语法存在问题，常见的有循环语句后面少了冒号、用了中文的标点符号、字符串赋值时引号少一个等等，属于非逻辑错误。
+
+In [1]: for i in range(10)
+   ...:     print(i)
+  File "<ipython-input-1-696a89bc759f>", line 1
+    for i in range(10)
+                      ^
+SyntaxError: invalid syntax
+
+在这个例子中，for循环遗漏了一个冒号。解析器会输出出现语法错误的那一行，并显示一个“箭头”，指向这行里面检测到的第一个错误。错误是由箭头指示的位置 上面 的 token 引起的（或者至少是在这里被检测出的）：在示例中，在 print() 这个函数中检测到了错误，因为在它前面少了个冒号 (':') 。文件名和行号也会被输出，以便输入来自脚本文件时你能知道去哪检查。
+
+In [2]: for i in range(10)：
+   ...:     print(i)
+  File "<ipython-input-7-6f0e28cee45c>", line 1
+    for i in range(10)：
+                      ^
+SyntaxError: invalid character in identifier
+
+在这个例子中，for循环后面我们错误使用了中文字符冒号(：)，在错误类型后面的提示invalid character in identifier也说的很明确，就是标识符中用了无效的字符。
+
+In [3]: s = 'a
+  File "<ipython-input-2-2674c3b7142b>", line 1
+    s = 'a
+          ^
+SyntaxError: EOL while scanning string literal
+
+在这个例子中，赋值字符串少了一个引号。在错误类型后面其实有提示EOL while scanning string literal，直译就是字符串扫描的时候EOL了吧。
+
+
+2.异常
+
+异常是在程序执行过程中发生的逻辑错误，大多数异常并不会被程序处理，大多数异常并不会被程序处理，此时会显示如下所示的错误信息:
+
+In [4]: 1/0
+Traceback (most recent call last):
+
+File "<ipython-input-8-9e1622b385b6>", line 1, in <module>
+    1/0
+
+ZeroDivisionError: division by zero
+
+In [5]: 1+2*var
+Traceback (most recent call last):
+
+File "<ipython-input-9-fa55356f14f5>", line 1, in <module>
+    1+2*var
+
+NameError: name 'var' is not defined
+
+In [6]: 1+'2'
+Traceback (most recent call last):
+
+File "<ipython-input-10-7e3aa5c4fbef>", line 1, in <module>
+    1+'2'
+
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+
+错误信息的最后一行告诉我们程序遇到了什么类型的错误。异常有不同的类型，而其类型名称将会作为错误信息的一部分中打印出来：上述示例中的异常类型依次是：ZeroDivisionError， NameError 和 TypeError。作为异常类型打印的字符串是发生的内置异常的名称，这一行的剩下的部分根据异常类型及其原因提供详细信息。
+
+错误消息的开头部分以堆栈回溯的形式显示发生异常的上下文：通常它会包含列出源代码行的堆栈回溯；但是，它将不会显示从标准输入读取的行。
+
+拿1/0为例，我们知道0是无法作为除数的，这里就存在逻辑错误。在错误信息中，我们发现这是一个ZeroDivisionError异常类型，其发生异常的是代码第1行1/0位置，具体解释是division by zero(除数为0)。
+
+
+2.1.常见的异常
+
+In [7]: 1+2*var
+Traceback (most recent call last):
+
+File "<ipython-input-9-fa55356f14f5>", line 1, in <module>
+    1+2*var
+
+NameError: name 'var' is not defined
+
+变量var在参与运算之前没有被定义，因此出现该异常提示。我们只需要在此代码前对var进行定义，方可正常执行后续代码。另外，我们在初学的时候，容易出现对变量名拼写错误，导致自以为已经定义但是依旧出现这个报错的情况：比如定义var=2，实际使用的时候是1+war的情况。
+
+In [6]: 1+'2'
+Traceback (most recent call last):
+
+File "<ipython-input-10-7e3aa5c4fbef>", line 1, in <module>
+    1+'2'
+
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+
+对于运算符+的操作，不支持int和str，这个时候检查出现的变量类型即可完成自查。
+
+In [7]: for i in range(10):
+   ...: print(i)
+  File "<ipython-input-6-0c8aafc23d7e>", line 2
+    print(i)
+    ^
+IndentationError: expected an indented block
+
+在for循环后面的语句，应为缩进模块，但是这里并没有进行合理缩进，故而出现报错。
+
+In [8]: dic = {'key1':'var1',
+   ...:        'key2':'var2'}
+
+In [9]: dic.append('a')
+Traceback (most recent call last):
+
+File "<ipython-input-11-611a9bdb0662>", line 1, in <module>
+    dic.append('a')
+
+AttributeError: 'dict' object has no attribute 'append'
+
+比如我们定义一个字典dic，但是对它使用了列表的方法append，这个时候就会出现报错提示dict没有方法append。出现类型错误的时候，查看对象是否有想使用方法，或者查看一下你的方法拼写是否正确。
+
+In [10]: lis = [1,2,3,4,5]
+
+In [11]: lis[6]
+Traceback (most recent call last):
+
+File "<ipython-input-13-8eaf39d436a7>", line 1, in <module>
+    lis[6]
+
+IndexError: list index out of range
+
+对于列表lis一共5个元素，若我们试图访问第7个元素也就是lis[6]时会出现 列表超出了范围的提示。通常我们在编写循环，访问序列元素的时候容易出现此类越界问题。
+
+In [12]: dic = {'key1':'var1',
+    ...:        'key2':'var2'}
+
+In [13]: dic['key1']
+Out[13]: 'var1'
+
+In [14]: dic['key']
+Traceback (most recent call last):
+
+File "<ipython-input-15-0b90da6672e1>", line 1, in <module>
+    dic['key']
+
+KeyError: 'key'
+
+在字典dic中，我们并没有key这个键，若我们试图访问不存在的键就会提示 KeyError: 'key'，此时我们复查key是否存在即可。
+
+In [15]: import docxtpl
+Traceback (most recent call last):
+
+File "<ipython-input-22-bfd93c61f778>", line 1, in <module>
+    import docxtpl
+
+ModuleNotFoundError: No module named 'docxtpl'
+
+我们引入模块不存在的时候，会出现此报错，这个时候可以检查模块的名称拼写是否正确或者进行模块的安装(pip install docxtpl)。
+
+In [16]: from os import x
+Traceback (most recent call last):
+
+File "<ipython-input-20-a0857005ff12>", line 1, in <module>
+    from os import x
+
+ImportError: cannot import name 'x' from 'os' (C:\Users\Gdc\anaconda3\lib\os.py)
+
+比如随便写的这个从os中import x，实际上不存在。
+
+In [17]: num = int(input('请输入一个整数：'))
+
+请输入一个整数：a
+Traceback (most recent call last):
+
+File "<ipython-input-23-9c8264b2c0f9>", line 1, in <module>
+    num = int(input('请输入一个整数：'))
+
+ValueError: invalid literal for int() with base 10: 'a'
+
+比如当我们使用int对输入对象进行转化为整数时，输入的对象是字符串时，这是一个不合适的参数。
+
+In [18]: num = int(input('请输入一个整数：'))
+
+请输入一个整数：Traceback (most recent call last):
+
+File "<ipython-input-24-9c8264b2c0f9>", line 1, in <module>
+    num = int(input('请输入一个整数：'))
+
+File "C:\Users\Gdc\anaconda3\lib\site-packages\ipykernel\kernelbase.py", line 860, in raw_input
+    return self._input_request(str(prompt),
+
+File "C:\Users\Gdc\anaconda3\lib\site-packages\ipykernel\kernelbase.py", line 904, in _input_request
+    raise KeyboardInterrupt("Interrupted by user") from None
+
+KeyboardInterrupt: Interrupted by user
+
+当程序执行过程中，我们使用 Control+C 或 Delete时，就会出现中断程序的提示，我常常在程序执行过程中想复制部分打印信息的时候错使用 Control+C想着复制却使得程序中断的情况。
+
+
+3.遇到错误和异常时怎么办？
+
+其实，大部分的报错信息都有很明显的指引，已经具体到某行具体什么类型的错误以及对错误比较清晰的解释。
+
+遇到报错不要慌，对于新手来说，常见的就是先检查基础语法对不对、标识符是不是用了中文，变量名的拼写是不是错了，变量名是不是没定义就调用了，缩进是不是没整对，函数方法是不是用错了，想引入的库是不是没有安装等等。
+
+再就是复制报错信息，然后丢到搜索引擎里查！！基本上绝大多数报错都有人遇到过且在网上能找到相关的解决方案！！
+
+
+4.标准异常查询
+
+近期文章  
+      
+      
+      
+   
+       
+       
+       Python网络爬虫与文本数据分析
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       bsite库 | 采集B站视频信息、评论数据
+
+爬虫实战 | 采集&可视化知乎问题的回答
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       pdf2docx库 | 转文件格式，支持抽取文件中的表格数据
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       rpy2库 | 在jupyter中调用R语言代码
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       tidytext | 耳目一新的R-style文本分析库
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       reticulate包 | 在Rmarkdown中调用Python代码
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       plydata库 | 数据操作管道操作符>>
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       
+   
+       
+       
+       plotnine: Python版的ggplot2作图库
+
+七夕礼物 | 全网最火的钉子绕线图制作教程
+
+读完本文你就了解什么是文本分析
+
+文本分析在经管领域中的应用概述  
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       综述:文本分析在市场营销研究中的应用
+
+plotnine: Python版的ggplot2作图库
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       小案例: Pandas的apply方法
+   
+       
+       
+         
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       stylecloud:简洁易用的词云库
+   
+       
+       
+        
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       用Python绘制近20年地方财政收入变迁史视频
+   
+       
+       
+         
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       Wow~70G上市公司定期报告数据集
+
+漂亮~pandas可以无缝衔接Bokeh  
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       YelpDaset: 酒店管理类数据集10+G
+
+“
+   
+       
+       
+       分享
+   
+       
+       
+       ”和“
+   
+       
+       
+       在看
+   
+       
+       
+       ”是更好的支持！
+
+
+近期文章
+
+
+Python网络爬虫与文本数据分析
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       bsite库 | 采集B站视频信息、评论数据
+
+爬虫实战 | 采集&可视化知乎问题的回答
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       pdf2docx库 | 转文件格式，支持抽取文件中的表格数据
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       rpy2库 | 在jupyter中调用R语言代码
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       tidytext | 耳目一新的R-style文本分析库
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       reticulate包 | 在Rmarkdown中调用Python代码
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       plydata库 | 数据操作管道操作符>>
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       
+   
+       
+       
+       plotnine: Python版的ggplot2作图库
+
+七夕礼物 | 全网最火的钉子绕线图制作教程
+
+读完本文你就了解什么是文本分析
+
+文本分析在经管领域中的应用概述  
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       综述:文本分析在市场营销研究中的应用
+
+plotnine: Python版的ggplot2作图库
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       小案例: Pandas的apply方法
+   
+       
+       
+         
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       stylecloud:简洁易用的词云库
+   
+       
+       
+        
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       用Python绘制近20年地方财政收入变迁史视频
+   
+       
+       
+         
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       Wow~70G上市公司定期报告数据集
+
+漂亮~pandas可以无缝衔接Bokeh  
+  
+      
+      
+      
+  
+      
+      
+      
+   
+       
+       
+       YelpDaset: 酒店管理类数据集10+G
+
+“
+   
+       
+       
+       分享
+   
+       
+       
+       ”和“
+   
+       
+       
+       在看
+   
+       
+       
+       ”是更好的支持！
+
+本文分享自微信公众号 - 大邓和他的Python（DaDengAndHisPython）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

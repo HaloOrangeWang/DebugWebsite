@@ -1,0 +1,28 @@
+
+☞ ░  前往老猿Python博文目录 ░
+
+moviepy音视频剪辑模块的视频剪辑基类VideoClip的fl_image方法用于进行对剪辑帧数据进行变换。 调用语法：fl_image(self, image_func, apply_to=None)。
+
+其中参数image_func用于对帧数据进行变换，可以调用moviepy提供的相关方法，也可以自己实现，但自己实现时可能在运行时报错：ValueError: assignment destination is read-only
+
+这是因为image_func参数对应的帧数组是只读的，不能修改，实际上get_frame(t)返回的所有帧数组都是只读的。帧的类型为numpy.ndarray，而numpy.ndarray直接定义的数据是可修改的，为什么帧数据不能修改笔者暂时还没弄明白（报错ValueError: assignment destination is read-only），为了规避该问题，将参数img数据采用如下形式的赋值语句：frame= np.array(img)就可以对新的变量frame进行修改，所有变换可以针对新变量frame进行，返回也必须是新变量frame。
+
+更多关于VideoClip的属性和方法请参考《moviepy音视频剪辑：视频剪辑基类VideoClip的属性及方法详解》（免费文章）或《moviepy音视频剪辑：视频剪辑基类VideoClip详解》（付费专栏文章，但内容更全、案例更多）。
+
+更多moviepy的介绍请参考《PyQt+moviepy音视频剪辑实战文章目录》或《moviepy音视频开发专栏》。
+
+
+关于收费专栏
+
+老猿的付费专栏《使用PyQt开发图形界面Python应用》专门介绍基于Python的PyQt图形界面开发基础教程，付费专栏《moviepy音视频开发专栏》详细介绍moviepy音视频剪辑合成处理的类相关方法及使用相关方法进行相关剪辑合成场景的处理，两个专栏加起来只需要19.9元，都适合有一定Python基础但无相关专利知识的小白读者学习。
+
+对于缺乏Python基础的同仁，可以通过老猿的免费专栏《专栏：Python基础教程目录》从零开始学习Python。
+
+如果有兴趣也愿意支持老猿的读者，欢迎购买付费专栏。
+
+
+跟老猿学Python、学5G!
+
+
+☞ ░ 前往老猿Python博文目录 ░
+

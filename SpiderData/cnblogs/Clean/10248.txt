@@ -1,0 +1,56 @@
+把django项目git clone后本地pycharm运行总是很多东西需要配置，感觉可能在项目弄个虚拟环境就最方便了，即项目下的venv文件夹。（能力有限，设置不好还是会运行到本地的python或Anaconda3的资源。
+
+经常出问题的一定就是数据库了，不同环境下mysql数据库的配置基本不一样呢。
+
+
+执行 PYTHON MANAGE.PY MAKEMIGRATIONS报错：
+
+
+1. 缺少MODULE
+
+1
+
+解决：直接pip install pymysql即可
+
+
+2. MYSQLCLIENT版本不符合
+
+1
+
+2
+
+3
+
+解决：将提示目录的base.py文件对应行注释掉
+
+
+3. ‘STR’ OBJECT HAS NO ATTRIBUTE ‘DECODE’
+
+1
+
+2
+
+3
+
+str通过encode()编码变成byte，反之decode()译码
+
+解决：将提示目录的operations.py文件对应的decode改为encode
+
+
+4.数据库安全模式
+
+1
+
+2
+
+3
+
+解决：把项目的settings.py关于数据的option注释掉
+
+
+其他
+
+某些问题下，数据库迁移不成功可以把迁移文件删掉重新迁移
+
+迁移命令
+

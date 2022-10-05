@@ -1,0 +1,63 @@
+
+树莓派Python3 安装OpenCV学习笔记
+
+1. 树莓派安装Python3 版本的OpenCV2存在的问题2.解决使用过程的报错参考文献
+
+1. 树莓派安装Python3 版本的OpenCV2存在的问题
+
+2.解决使用过程的报错
+
+参考文献
+
+这篇博客主要参考了博文《import cv2时ImportError: libjasper.so.1: cannot open shared object file: No such file or directory》，记录了在树莓派4B平台上安装Python3 版本的OpenCV的过程
+
+
+1. 树莓派安装Python3 版本的OpenCV2存在的问题
+
+树莓派系统（Raspbian）下，Python 2.7 安装OpenCV模块很容易，使用 pip命令安装一般不会出问题。安装Python3版本的OpenCV2存在很多问题，直接利用pip3命令安装的模块无法正常运行，在包导入过程中会出现错位，opencv安装命令如下：
+
+pip3 install opencv-python
+
+安装过程不会报错，使用这个模块会有一些问题。在python环境中引入opencv会报错：
+
+import cv2
+
+>> import cv2
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/local/lib/python3.7/dist-packages/cv2/__init__.py", line 3, in <module>
+    from .cv2 import *
+ImportError: libjasper.so.1: cannot open shared object file: No such file or directory
+
+
+2.解决使用过程的报错
+
+解决opencv安装过程的一种方法是在树莓派上编译安装OpenCV，这种方法耗时长，更复杂，在博文《import cv2时ImportError: libjasper.so.1: cannot open shared object file: No such file or directory》发现了一种处理方法记录如下：
+
+sudo apt-get install libhdf5-dev
+sudo apt-get install libatlas-base-dev
+sudo apt-get install libjasper-dev
+sudo apt-get install libqt4-test
+sudo apt-get install libqtgui4
+sudo apt-get update
+
+运行完上面几个命令，运行Python3，导入cv2模块验证是否存在问题。
+
+python3
+
+import cv2
+
+pi@raspberrypi:~ $ python3
+Python 3.7.3 (default, Jul 25 2020, 13:03:44) 
+[GCC 8.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import cv2
+>>>
+
+无报错信息，问题解决。
+
+
+参考文献
+
+import cv2时ImportError: libjasper.so.1: cannot open shared object file: No such file or directory
+

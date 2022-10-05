@@ -1,0 +1,48 @@
+2019年7月12日
+
+
+python反射机制中参数问题小解
+
+
+例子
+
+import sys
+import inspect
+def fun(name,age):
+    print(name,age)
+
+if __name__ == '__main__':
+    fun = getattr(sys.modules[__name__],'fun')
+    fun()  #程序报错
+
+错误：==TypeError: fun() missing 2 required positional arguments: 'name' and 'age'==
+
+fun()函数缺少了两个所需位置参数:name和age。
+
+
+即：如果同时存在多个无参和有参的函数，那么如果继续使用寻常的反射机制则无法完美动态的解决这个问题。
+
+
+经过查询，暂时找到两种解决方案：
+
+第一种:可以通过fun.code.co_argcount来获取反射函数的参数个数。
+
+parameter_count = fun.__code__.co_argcount #统计函数所需的参数个数
+v_list = []   #创建一个空列表来存储参数值
+for i in range(0, parameter_count): #遍历参数个数，赋值
+    parameter = input('请输入第{}个参数:'.format(i+1))
+    v_list.append(parameter)  #讲值append进list中
+    fun(*v_list)#通过list拆包将参数传给带参函数
+
+第二种:较第一种方法更加直观，简便。通过导入inspect包中的getfullargspec(fun)方法，返回一个FullArgSpec对象，对象中的args属性包含了fun函数的所有参数名称(r.args)和默认参数值(r.defaults)。
+
+v_list = []
+fun = getattr(sys.modules[__name__],'fun')
+r = inspect.getfullargspec(fun)  #获取FullArgSpec对象
+for i in r.args:
+    res = input('输入{}'.format(i))
+    v_list.append(res)
+fun(*v_list)
+
+通过以上两种方式可以暂时解决在python反射机制中由于参数个数不同而导致的动态匹配问题。
+

@@ -1,0 +1,81 @@
+
+Python之完美解决pycharm安装python模块失败，pycharm第三方库在线安装pycharm还是报错——no such option: --build-dir
+
+一、问题描述
+
+详细描述在此报错
+
+详细描述
+
+在此报错
+
+二、解决方案
+
+方法一：坚持用pip的方法安装第三方库方法二：降级pip到之前的版本
+
+方法一：坚持用pip的方法安装第三方库
+
+方法二：降级pip到之前的版本
+
+三、原因分析
+
+
+一、问题描述
+
+我的python版本为3.9 pip版本为21.3.1 pycharm版本为2020.2.3
+
+无论安装什么都会报错
+
+Usage:   
+  C:\Users\123\PycharmProjects\csdn\venv\Scripts\python.exe -m pip install [options] <requirement specifier> [package-index-options] ...
+  C:\Users\123\PycharmProjects\csdn\venv\Scripts\python.exe -m pip install [options] -r <requirements file> [package-index-options] ...
+  C:\Users\123\PycharmProjects\csdn\venv\Scripts\python.exe -m pip install [options] [-e] <vcs project url> ...
+  C:\Users\123\PycharmProjects\csdn\venv\Scripts\python.exe -m pip install [options] [-e] <local project path> ...
+  C:\Users\123\PycharmProjects\csdn\venv\Scripts\python.exe -m pip install [options] <archive url/path> ...
+
+no such option: --build-dir
+
+
+详细描述
+
+1.点击菜单栏File，选择Settings。
+ 
+ 2.选中当前项目，然后点击右边“+”,添加第三方库
+ 
+ 3.(1).搜索栏，搜索所需库。(2).查看该库的当前最新版本。(3).如果有需要下载所需版本（因为有些库之间版本要相互匹配的，这里不深究，遇到你就会懂……）(4).点击下载按钮下载
+
+
+在此报错
+
+
+二、解决方案
+
+
+方法一：坚持用pip的方法安装第三方库
+
+1.这里我就新建一个项目：new_project，里面新建一个文件：new_file ；再次导库，如你所见，又出现红色波浪线了，还是识别不了！！！这是怎么回事呢？在上面的方法一中不是已经下载好这个库了吗？！带着疑惑往下看：
+ .接着打开命令框，找到你这个新项目文件的目录
+ 
+ 
+ 关键！！！：接着进入这个目录（一定要确认是你这个项目的目录）后，输入安装指令
+
+pip install virtualenv
+
+再回来看，成功解决
+
+
+方法二：降级pip到之前的版本
+
+解决方法是降级pip到之前的版本——关闭PyCharm，python -m pip install
+ pip==20.2.4在终端中使用对应的虚拟环境运行。
+
+
+三、原因分析
+
+回到之前的问题：“pip成功，pycharm识别不了”，这就是因为新建项目默认解释器是用“项目的解释器”的，但是pip安装的第三方库是在python安装目录下，所以会识别不了。
+
+PyCharm 依赖于–build-dir安装包，该标志在最新的20.3 中被移除pip。
+ PyCharm 的修复程序已准备就绪，将于本周在 2020.3 版本中发布（并反向移植到 2020.2.5 和 2020.1.5）。
+ 解决方法是降级pip到之前的版本——关闭PyCharm，python -m pip install
+ pip==20.2.4在终端中使用对应的虚拟环境运行。
+

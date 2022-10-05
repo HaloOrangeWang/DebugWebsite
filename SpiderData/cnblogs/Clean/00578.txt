@@ -1,0 +1,43 @@
+在大多数人使用Windows中文版本的情况下，使用Python从TXT文件中读取数据时，初学者经常会遇到由于文档编码规则差异导致文档读取报错，例如，如下报错：
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xa7 in position 14: illegal multibyte sequence
+
+从以上报错可以看出，应该是万国码在转换时出障碍，即GBK规则的文档编码无法正确解码。那么这是为什么呢？ 如何解决这个问题呢？
+
+对于文档编码，在Windows环境下，我们几乎很少注意文档的编码方式。但是几乎可以判定，对于中文操作环境，必定是默认为Unicode编码规则，而不是ASCII或者UTF编码规则，这应该是大多数PC厂家的预装的默认设置。（虽然，我觉得默认UTF应该更合理！优化内存的消耗。）
+
+我使用的Excel创建的文档，然后选择另存为，果然，我发现默认的是Unicode，应该说找到了问题点。
+
+鉴于学习需要，我们Python IDE，编译器等以及文档的Encoding 编码规则起初均设置为UTF-8，所以，我所要提取的文档应该也需要是UTF-8的编码规则。
+
+这个只要另存为的时候选择编码：UTF-8选项就可以了。
+
+运行代码如下：
+
+结果发现，读取的结果有两个乱码。返回原始文档查看未发现该乱码。
+"D:\4 Python Learning\oldboy1\venv\Scripts\python.exe" 
+锘縩ame	Password	EmployeeID	Accountlooked
+Jessica&&%	love123	A000001	
+Richard	ppl123	A000002	
+Jordan	abc123	B000003	
+Jessica&&%	love124	A000003	
+Richard	hkp124	A000004
+
+修改代码如下，在调用Open打开文档时，即声明Encoding的编码方式为UTF-8
+
+运行结果如下：
+
+name Password EmployeeID Accountlooked
+Jessica&&%	love123	A000001	
+Richard	ppl123	A000002	
+Jordan	abc123	B000003	
+Jessica&&%	love124	A000003	
+Richard	hkp124	A000004	
+Jordan	abc124	B000004	
+Jessica&&%	love125	A000005	
+Richard	hhu125	A000006
+
+发现，乱码消失了。
+
+通过以上可以确定，Open调用TXT文档时，在Read（）时，可能并不一开始就是用默认的编码规则读取，而是尝试。这个要查看相关源码才能确定。
+

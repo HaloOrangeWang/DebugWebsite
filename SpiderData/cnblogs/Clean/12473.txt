@@ -1,0 +1,73 @@
+『方便检索』 ros::Time msg_time = mt::TimeStamp<typename mpl::at_c<Messages, i>::type>::value(msg);
+
+
+1. 瞎扯一会儿：
+
+博主是大学生，最近一直使用ROS进行机器人控制编程。由于项目需要对多个接受者(Subscriber)进行同时接收。于是决定使用ROS里面的message_filters进行多消息接受的同步。
+
+官方链接如下：message_filters - ROS Wiki。
+
+并参考学习了这篇文章：时间同步及在回调函数中发布ROS消息_罗宾酱的博客-CSDN博客_ros时间同步函数
+
+个人觉得上面的文章非常不错。（强烈推荐！！！）
+
+
+2. 遇见的问题：（Header header 的缺失）
+
+主要报错如下：
+
+/opt/ros/noetic/include/message_filters/sync_policies/approximate_time.h: In instantiation of ‘bool message_filters::sync_policies::ApproximateTime<M0, M1, M2, M3, M4, M5, M6, M7, M8>::checkInterMessageBound() [with int i = 0; M0 = rfid_reader::DataDev_<std::allocator<void> >; M1 = tracer_msgs::TracerStatus_<std::allocator<void> >; M2 = message_filters::NullType; M3 = message_filters::NullType; M4 = message_filters::NullType; M5 = message_filters::NullType; M6 = message_filters::NullType; M7 = message_filters::NullType; M8 = message_filters::NullType]’:
+
+
+主要报错如下：
+
+/opt/ros/noetic/include/message_filters/sync_policies/approximate_time.h:170:85: error: ‘value’ is not a member of ‘ros::message_traits::TimeStamp<rfid_reader::DataDev_<std::allocator<void> >, void>’
+
+170 |     ros::Time msg_time = mt::TimeStamp<typename mpl::at_c<Messages, i>::type>::value(msg);
+
+|                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+
+/opt/ros/noetic/include/message_filters/sync_policies/approximate_time.h:181:86: error: ‘value’ is not a member of ‘ros::message_traits::TimeStamp<rfid_reader::DataDev_<std::allocator<void> >, void>’
+
+181 |       previous_msg_time = mt::TimeStamp<typename mpl::at_c<Messages, i>::type>::value(previous_msg);
+
+|                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+
+/opt/ros/noetic/include/message_filters/sync_policies/approximate_time.h:187:87: error: ‘value’ is not a member of ‘ros::message_traits::TimeStamp<rfid_reader::DataDev_<std::allocator<void> >, void>’
+
+187 |       previous_msg_time =  mt::TimeStamp<typename mpl::at_c<Messages, i>::type>::value(previous_msg);
+
+|                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+
+
+报错原因：
+
+消息类型中没有Head,就是没有时间戳信息。所以不能够同步。
+
+
+解决方法：
+
+在自定义消息中添加 Header header 即可。（可以看一下松灵机器人的官方ROS包里的源代码，就像下面这样），个人觉得看官方源码确实收获不小。
+
+添加后即可编译成功：
+
+
+！！！不要忘记
+
+在Cmakelists.txt中的find_package添加message_filters
+
+
+3. 学霸题，反思一下（C++与python的区别）：
+
+由于博主使用ROS C++与python ，在使用python时却没有出现相同的问题。那么问题来了，what f**k ? 有必要研究一番，（下面是官方文档里的c++与python中的相关代码部分）
+
+我们注意到python代码中多了一个奇怪的参数『allow_headerless=True』，并且官方文档中给出了相关解释：
+
+如果某些消息的类型不包含标头字段，则 ApproximateTimeSynchronizer 默认拒绝添加此类消息。 但是，它的 Python 版本可以使用 allow_headerless=True 构建，它使用当前的 ROS 时间代替任何缺失的 header.stamp 字段：
+
+那么终于可以解释得通了（不得不吹一下python。不但numpy好用，还这么贴心）。虽然但是，我还是主要使用C++（doge）。
+
+如果帮到了你，可以麻烦点一个赞吗？
+
+（图片来自网络，侵删）
+

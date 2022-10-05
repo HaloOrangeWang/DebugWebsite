@@ -1,0 +1,49 @@
+笔者初学python，碰见一些坑，分享出来，节约大家时间：
+
+
+1、错误信息如下：
+
+
+ImportError: No module named numpy
+
+pip install numpy
+
+如果连pip都没有，请先安装pip！命令如下：
+
+sudo apt-get install python-pip
+
+好吧！言归正传，开始本文讨论：
+
+
+2、原因分析：
+
+明明已经安装pip install  xxx，为什么还报错找不到对应的库呢？其实，主要原因有两个：
+
+（1）python 、pip 存在多个版本，或者升级过
+
+（2）权限问题，有的是root，有的是非 root权限
+
+原理：
+
+其实也很简单，就是python执行的时候，会有一个搜索路径，要搜索到才行，安装不同版本，搜索路径可能就错了，那么搜索路径如何查看呢？如下：
+
+import sys
+sys.path
+
+
+3、解决问题：
+
+接下来问题就简单了，正确安装对应的包，再指明路径。
+
+这里介绍两种办法指明路径：
+
+（1）定义环境变量PYTHONPATH
+
+export PYTHONPATH=/usr/local/lib/python2.7/site-packages
+
+（2）在已有的python搜索路径中添加 .pth 文件（这个很直观）
+
+cd /usr/lib/python2.7/dist-packages/
+sudo vim my.pth
+#增加路径，保存退出
+

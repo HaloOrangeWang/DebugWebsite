@@ -1,0 +1,88 @@
+使用conda安装某个包,报错如下:
+
+ERROR: Exception:
+Traceback (most recent call last):
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/cli/base_command.py", line 178, in main
+    status = self.run(options, args)
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/commands/install.py", line 292, in run
+    with self._build_session(options) as session:
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/cli/base_command.py", line 92, in _build_session
+    insecure_hosts=options.trusted_hosts,
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/download.py", line 380, in __init__
+    self.headers["User-Agent"] = user_agent()
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/download.py", line 134, in user_agent
+    zip(["name", "version", "id"], distro.linux_distribution()),
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 122, in linux_distribution
+    return _distro.linux_distribution(full_distribution_name)
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 677, in linux_distribution
+    self.version(),
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 737, in version
+    self.lsb_release_attr('release'),
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 899, in lsb_release_attr
+    return self._lsb_release_info.get(attribute, '')
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 552, in __get__
+    ret = obj.__dict__[self._fname] = self._f(obj)
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 1012, in _lsb_release_info
+    stdout = subprocess.check_output(cmd, stderr=devnull)
+  File "/home/lab/anaconda3/envs/python3/lib/python3.7/subprocess.py", line 395, in check_output
+    **kwargs).stdout
+  File "/home/lab/anaconda3/envs/python3/lib/python3.7/subprocess.py", line 487, in run
+    output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '('lsb_release', '-a')' returned non-zero exit status 1.
+Traceback (most recent call last):
+  File "/home/lab/anaconda3/envs/python3/bin/pip", line 11, in <module>
+    sys.exit(main())
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/__init__.py", line 78, in main
+    return command.main(cmd_args)
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/cli/base_command.py", line 227, in main
+    timeout=min(5, options.timeout)
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/cli/base_command.py", line 92, in _build_session
+    insecure_hosts=options.trusted_hosts,
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/download.py", line 380, in __init__
+    self.headers["User-Agent"] = user_agent()
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_internal/download.py", line 134, in user_agent
+    zip(["name", "version", "id"], distro.linux_distribution()),
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 122, in linux_distribution
+    return _distro.linux_distribution(full_distribution_name)
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 677, in linux_distribution
+    self.version(),
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 737, in version
+    self.lsb_release_attr('release'),
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 899, in lsb_release_attr
+    return self._lsb_release_info.get(attribute, '')
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 552, in __get__
+    ret = obj.__dict__[self._fname] = self._f(obj)
+  File "/home/lab/anaconda3/lib/python3.7/site-packages/pip/_vendor/distro.py", line 1012, in _lsb_release_info
+    stdout = subprocess.check_output(cmd, stderr=devnull)
+  File "/home/lab/anaconda3/envs/python3/lib/python3.7/subprocess.py", line 395, in check_output
+    **kwargs).stdout
+  File "/home/lab/anaconda3/envs/python3/lib/python3.7/subprocess.py", line 487, in run
+    output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '('lsb_release', '-a')' returned non-zero exit status 1.
+
+这里的问题主要出在 lsb_release 包上, 此处可通过修改conda中pip下的 distro.py , 编辑其初始化方法的 include_lsb属性为False.
+
+stackoverflow - 解答:
+I had the same problem on a shared hosting account
+ which is very limiting (I was installing python and pip for my user only). 
+Their lsb_release -a returns something non-standard 
+and I cannot change it. 
+I solved the issue by editing distro.py
+ (in your case: /usr/local/lib/python2.7/dist-packages/pip/_vendor/distro.py) 
+and changing the default parameter of __init__ method. 
+In my version it was at the line 545. Snippet:
+
+def __init__(self,
+    include_lsb=True,
+    os_release_file='',
+    distro_release_file=''):
+Just change include_lsb=True to include_lsb=False.
+
+即:
+
+def __init__(self,
+                 include_lsb=False,
+                 os_release_file='',
+                 distro_release_file='',
+                 include_uname=True):
+

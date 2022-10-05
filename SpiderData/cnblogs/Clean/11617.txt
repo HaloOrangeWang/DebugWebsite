@@ -1,0 +1,92 @@
+0.项目目录说明，pythonpathdemo是这个项目的根目录，d1/d2/d3/m3.py  有一个fun3函数，d4/d5/run.py 里面导入和运行fun3函数，这种目录的python项目就很容易验证pythonpath作用了。
+
+截图可以看出，pycahrm运行正确，cmd命令行却不行，vscode也不行。
+
+主要原因是pycahrm自动把项目根目录加到了 PYTHONPATH，你把这两个勾选去掉就pycahrm运行run5.py也会和cmd命令行一样报错
+
+如果在cmd窗口会话中临时设置PYTHONPATH为项目根目录再运行run5.py就不会报错了。
+
+注意要在代码运行前临时设置环境变量，不要设置永久固定系统环境变量，因为你不可能只有一个python项目，一般每个人最少有七八个python项目吧。
+
+如果嫌敲击两次命令麻烦，一句命令行可以运行多个命令，win是：      set PYTHONPATH=项目根目录 & python run.py
+
+linux是：     export  PYTHONPATH=项目根目录 ； python run.py,
+
+笨瓜喜欢手动操作sys.path,然后在cmd命令，cd 到d5目录下，再运行 python run5.py，太笨了这样写，如果别的文件夹层级有run6.py   run7.py,一个个脚本硬编码sys.path改到猴年马月。
+
+1.pycahrm运行代码
+
+如果深层级文件夹中的py文件导入其他项目中的其他模块，
+
+pycahrm将一个文件夹以项目方式打开，那么自动会把这个文件夹当做项目根目录，所以import 不会报错，如图
+
+如果深层级内层文件夹的py文件导入其他文件夹的模块，能导入成功，是因为pycharm自动把项目根目录加到PYTHONPATH能。因为你print(sys.path)就可以发现第0个当前脚本的所在文件夹路径，第1个是项目的根目录。
+
+主要是pycharm默认自动帮我们把项目根目录添加到了PYTHONPATH，如图中的两个勾选项，如果去掉了就会和vscode一样import报错了。
+
+2.vscode运行代码
+
+使用vscode怎么办做到这pycahrm自动设置PYTHONPATH这一点呢。
+
+在项目根目录下 的 .vscode文件夹创建 launch.json（这个文件也可以在vscode界面自动生成创建）
+
+在launch.json中写上如下内容，主要是 PYTHONPATH那一行指定为你项目的根目录，本人建议直接写死为项目的绝对路径，反正你又不是每天把项目代码文件夹在磁盘上整天移来移去得，写死是最简单稳固的。
+
+网上别的人可能叫你这么写 ，
+
+"env": {"PYTHONPATH":"${workspaceFolder};${env:PYTHONPATH}"}，这样还行看似比较万能通用，但如果你vscode一个工作区打开多个python项目，那么就会别的python项目读取的 sys.path[1] 不是自身项目的根目录，而是第一个python项目的根目录，造成混乱，照样import报错。所以本人推荐不要写 ${workspaceFolder} 那么魔幻，在每个python项目下的 .vscode/launch.json 直接写死你每个python项目自身的根目录是最好的。
+
+{
+
+// Use IntelliSense to learn about possible attributes.
+
+// Hover to view descriptions of existing attributes.
+
+// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+
+"version": "0.2.0",
+
+"configurations": [
+
+{
+
+"name": "Python: 当前文件",
+
+"type": "python",
+
+"request": "launch",
+
+"program": "${file}",
+
+"console": "integratedTerminal",
+
+"env": {
+
+"PYTHONPATH": "F:/coding2/distributed_framework;${env:PYTHONPATH}"
+
+}
+
+}
+
+]
+
+}
+
+使用ctrl + f5 运行代码可以自动先读取运行launch.json里面的配置，如果你在代码编辑区右键点击运行在终端中运行由于不先读取launch.json的配置，所以仍然报错，
+
+所以需要ctrl+f5运行（或者点击vscode的顶部的运行按钮，以非调试模式运行）。
+
+3. shell、cmd运行代码？
+
+首先cd 到项目根目录，然后linux  上  export PYTHONPATH=./   ，如果是win  set PYTHONPATH=./  ，   然后可以切换到任意文件夹，运行你需要运行的python xx.py
+
+当然可以不先cd到项目根目录，那就 export PYTHONPATH=项目根目录的绝对路径 就行了。
+
+4、为什么老有笨瓜喜欢在很多python脚本硬编码 sys.path.insert或者append？
+
+这种人主要是不懂 PYTHONPATH的作用，造成到处手动硬编码操作sys.path。
+
+你不信去看看任意一个三方包python大神写的框架或者库，有谁那么愚蠢这么手动操作sys.path的？手动sys.path.insert是一厢情愿一意孤行意淫的写法。
+
+可以这么说，在控制台命令行部署运行任何项目，把PYTHONPATH设置为项目根目录路径是最合适的，pycahrm默认帮我们这么做了。你这么做了，那么你的代码运行逻辑就和pycahrn运行代码保持一致了。
+

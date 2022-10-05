@@ -1,0 +1,88 @@
+$ brew install zookeeper
+==> Downloading https://homebrew.bintray.com/bottles/zookeeper-3.4.13.mojave.bottle.tar.gz
+...
+
+先来看dubbo-admin的安装；我们先找到它在apache下的官方GitHub，官方也有相关介绍，中英文版都有(毕竟原本是中国人开发的~)，可根据喜好自选研究
+
+1）首先我们需要选一个版本，默认的是develpoBranch，为了保证稳定少坑，我们选择稳定的tags 0.2.0版本
+
+将0.2.0分支版本clone到本地
+
+$ git clone -b 0.2.0 git@github.com:apache/dubbo-admin.git
+
+2）clone完成后会有一个dubbo-admin路径，cd进去，然后执行mvn package命令进行编译
+
+$ cd dubbo-admin/
+$ ls
+DISCLAIMER      README.md      doc        dubbo-admin-ui      pom.xml
+LICENSE        README_ZH.md      dubbo-admin-distribution  mvnw
+NOTICE        codestyle      dubbo-admin-server    mvnw.cmd
+$ mvn package
+[INFO] Scanning for projects...
+...
+
+第一次编译的话会在线在线很多依赖，可能要稍稍等一会了~
+
+这里插播一条踩坑广告
+
+在编译完成时你可能会得到如下的dubbo-admin-ui 编译失败报错：Could not extract the Node archive: Could not extract archive...
+
+这有可能网络波动或者需要梯子等原因导致文件安装不完整(或者其他什么我不知道的原因...)
+
+总之解决办法就是找到报错的文件路径，删除它，毫不犹豫删除它重新mvn clean package编译(万能的重启大法！)
+
+重启大法后BUILD SUCCESS
+
+1）直接执行zkServer，会有操作命令提示如下：
+
+$ zkServer
+ZooKeeper JMX enabled by default
+Using config: /usr/local/etc/zookeeper/zoo.cfg
+Usage: ./zkServer.sh {start|start-foreground|stop|restart|status|upgrade|print-cmd}
+
+2）使用start便可启动zookeeper：
+
+$ zkServer start
+ZooKeeper JMX enabled by default
+Using config: /usr/local/etc/zookeeper/zoo.cfg
+Starting zookeeper ... STARTED
+
+$ pwd
+/tmp/dubbo/dubbo-admin/dubbo-admin-server/target
+$ ls
+classes          generated-sources      maven-archiver        site
+dubbo-admin-server-0.2.0.jar    generated-test-sources      maven-shared-archive-resources    surefire-reports
+dubbo-admin-server-0.2.0.jar.original  jacoco.exec        maven-status        test-classes
+
+2）java -jar 运行jar包：
+
+$ java -jar dubbo-admin-server-0.2.0.jar
+
+3）看到如下界面表示启动完成，默认端口为8080：
+
+1）访问http://localhost:8080，见到如下界面说明dubbo-admin服务已经成功运行：
+
+2）接下来进行测试验证，首先从GitHub上下载一个测试代码：
+
+https://github.com/nzomkxia/dubbo-demo
+
+然后检查项目中pom文件配置的dubbo-version是否为2.7.0
+
+3）然后在dubbo-basic-provider下找到DubboProviderApplication并运行：
+
+见到如下场景说明成功运行
+
+4）这个时候再刷新dubbo-admin界面，就会看到注册过的服务了,可以很方便的进行在线调试
+
+到这里简单的搭建就算完成了~
+
+对于想系统进阶提升测试开发技能的同学，推荐霍格沃兹测试学院出品的 《测试开发从入门到高级实战》系统进阶班课程。
+
+原文链接
+
+来霍格沃兹测试开发学社，学习更多软件测试与测试开发的进阶技术，知识点涵盖web自动化测试 app自动化测试、接口自动化测试、测试框架、性能测试、安全测试、持续集成/持续交付/DevOps，测试左移、测试右移、精准测试、测试平台开发、测试管理等内容，课程技术涵盖bash、pytest、junit、selenium、appium、postman、requests、httprunner、jmeter、jenkins、docker、k8s、elk、sonarqube、jacoco、jvm-sandbox等相关技术，全面提升测试开发工程师的技术实力。
+
+获取更多相关资料：请添加vx,ceshiren001
+
+https://qrcode.ceba.ceshiren.com/link?name=article&project_id=qrcode&from=jianshu&timestamp=1650939440
+

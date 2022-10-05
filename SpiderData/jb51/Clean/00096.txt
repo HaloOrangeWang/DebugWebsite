@@ -1,0 +1,38 @@
+1、ValueError: Invalid control character at: line 1 column 8363 (char 8362)
+
+使用json.loads(json_data)时，出现：
+
+ValueError: Invalid control character at: line 1 column 8363 (char 8362)
+
+出现错误的原因是字符串中包含了回车符（\r）或者换行符（\n）
+
+解决方法：
+
+(1)对这些字符转义：
+
+json_data = json_data.replace('\r', '\\r').replace('\n', '\\n')
+
+(2)使用关键字strict:
+
+json.loads(json_data, strict=False)
+
+strict默认是True,它将严格控制内部字符串，将其设置为False,便可以允许你\n \r。
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-11: ordinal not in range(128)
+
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf8')
+
+（2）一劳永逸：
+
+在Python的lib\site-packages文件夹下新建一个sitecustomize.py，内容如下：
+
+# encoding=utf8 
+import sys
+
+reload(sys) 
+sys.setdefaultencoding('utf8')
+
+这样的话，系统在Python启动的时候，自行调用该文件，设置系统的默认编码。
+

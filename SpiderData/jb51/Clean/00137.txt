@@ -1,0 +1,38 @@
+最近脱离了googlecolab想使用本地的anaconda进行机器学习课题的演练，在安装tensorflow时报错 : UnsatisfiableError: The following specifications were found。下面给出解决方法。
+
+发现实际原因是由于anaconda的python环境，当前版本的tensorflow只能适用于python 3.5 3.6 3.7等衍生版本，而anaconda自带的python版本为3.8。
+
+首先打开控制台
+
+使用以下命令可以查看当前的anaconda版本，判断是否正确安装了anaconda。
+
+conda --version
+
+我这里的版本是conda 4.9.1。
+
+接着列出所有conda中的环境 :
+
+conda info --envs
+
+查看当前默认环境下的python版本 :
+
+conda activate
+python -V
+
+我目前版本是python 3.8
+
+为了要能成功安装tensorflow，首先我们需要一个低版本python的环境。
+
+执行以下命令，创建一个名字为python37的环境，并跟随提示自动安装python3.7
+
+conda create --name python37 python=3.7
+
+进入新环境，我们重新检查下python版本是不是我们需要的3.7版本。
+
+activate python37
+python -V
+
+在配置好我们的python3.7版本之后，我们就可以通过各种方式安装tensorflow了，我这里使用了简明的anaconda navigator的图形界面。
+
+到此这篇关于Anaconda安装tensorflow报错的文章就介绍到这了,更多相关Anaconda安装tensorflow内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

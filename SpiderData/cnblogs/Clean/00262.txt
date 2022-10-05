@@ -1,0 +1,20 @@
+最近遇到字典或者列表中包含中文时，显示成u'\u的问题，如：
+
+运行结果报错：
+
+原因：
+
+这是python编码的问题， python中默认的编码格式是ASCII格式， 所以默认是情况下无法正确编码汉字
+
+解决方法：使用json进行格式转换，在代码中加入：
+
+保存特色服务模块
+    ${proxy}    Set Variable    http://127.0.0.0:8888
+    ${list0}    Create List    高价置换    分期贷款    全程代办    车辆寄售    延长质保
+    ...    试乘试驾
+    ${list0}    Dumps    ${list0}    ensure_ascii=${False}    encoding=utf-8
+    ${params0}    Create Dictionary    moduleld=5    display=1    serviceList=${list0}    token=15otU_DbOyF4q9hZ
+    ${json0}    Rest.post    /api/miniapp/index/modules/special/save.json    ${params0}    form    ${hosts["site"]}
+
+即可解决。
+

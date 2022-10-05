@@ -1,0 +1,126 @@
+以下报错信息如下，请问大家的解决方法!!!
+
+[root@controller nova]# tail -f nova-api.log
+
+2018-02-06 15:00:56.350 31880 ERROR nova     self._socket = eventlet.listen(bind_addr, family, backlog=backlog)
+
+2018-02-06 15:00:56.350 31880 ERROR nova   File "/usr/lib/python2.7/site-packages/eventlet/convenience.py", line 43, in listen
+
+2018-02-06 15:00:56.350 31880 ERROR nova     sock.bind(addr)
+
+2018-02-06 15:00:56.350 31880 ERROR nova   File "/usr/lib64/python2.7/socket.py", line 224, in meth
+
+2018-02-06 15:00:56.350 31880 ERROR nova     return getattr(self._sock,name)(args)
+
+2018-02-06 15:00:56.350 31880 ERROR nova error: [Errno 98] Address already in use
+
+2018-02-06 15:00:56.350 31880 ERROR nova
+
+2018-02-06 15:01:01.686 31894 WARNING oslo_reports.guru_meditation_report [-] Guru meditation now registers SIGUSR1 and SIGUSR2 by default for backward compatibility. SIGUSR1 will no longer be registered in a future release, so please use SIGUSR2 to generate reports.
+
+2018-02-06 15:01:01.691 31894 WARNING oslo_config.cfg [-] Option "auth_strategy" from group "DEFAULT" is deprecated. Use option "auth_strategy" from group "api".
+
+2018-02-06 15:01:01.817 31894 WARNING oslo_config.cfg [-] Option "use_neutron" from group "DEFAULT" is deprecated for removal.  Its value may be silently ignored in the future.
+
+2018-02-06 15:01:02.326 31894 INFO nova.api.openstack [req-df7a9b02-fad0-4eec-9dff-bea66ba69211 - - - - -] 已加载的扩展:['extensions', 'flavors', 'image-metadata', 'image-size', 'images', 'ips', 'limits', 'os-admin-actions', 'os-admin-password', 'os-agents', 'os-aggregates', 'os-assisted-volume-snapshots', 'os-attach-interfaces', 'os-availability-zone', 'os-baremetal-nodes', 'os-block-device-mapping', 'os-cells', 'os-certificates', 'os-cloudpipe', 'os-config-drive', 'os-console-auth-tokens', 'os-console-output', 'os-consoles', 'os-create-backup', 'os-deferred-delete', 'os-evacuate', 'os-extended-availability-zone', 'os-extended-server-attributes', 'os-extended-status', 'os-extended-volumes', 'os-fixed-ips', 'os-flavor-access', 'os-flavor-extra-specs', 'os-flavor-manage', 'os-flavor-rxtx', 'os-floating-ip-dns', 'os-floating-ip-pools', 'os-floating-ips', 'os-floating-ips-bulk', 'os-fping', 'os-hide-server-addresses', 'os-hosts', 'os-hypervisors', 'os-instance-actions', 'os-instance-usage-audit-log', 'os-keypairs', 'os-lock-server', 'os-migrate-server', 'os-migrations', 'os-multinic', 'os-multiple-create', 'os-networks', 'os-networks-associate', 'os-pause-server', 'os-quota-class-sets', 'os-quota-sets', 'os-remote-consoles', 'os-rescue', 'os-scheduler-hints', 'os-security-group-default-rules', 'os-security-groups', 'os-server-diagnostics', 'os-server-external-events', 'os-server-groups', 'os-server-password', 'os-server-tags', 'os-server-usage', 'os-services', 'os-shelve', 'os-simple-tenant-usage', 'os-suspend-server', 'os-tenant-networks', 'os-used-limits', 'os-user-data', 'os-virtual-interfaces', 'os-volumes', 'server-metadata', 'server-migrations', 'servers', 'versions']
+
+2018-02-06 15:01:02.752 31894 INFO nova.api.openstack [req-df7a9b02-fad0-4eec-9dff-bea66ba69211 - - - - -] 已加载的扩展:['extensions', 'flavors', 'image-metadata', 'image-size', 'images', 'ips', 'limits', 'os-admin-actions', 'os-admin-password', 'os-agents', 'os-aggregates', 'os-assisted-volume-snapshots', 'os-attach-interfaces', 'os-availability-zone', 'os-baremetal-nodes', 'os-block-device-mapping', 'os-cells', 'os-certificates', 'os-cloudpipe', 'os-config-drive', 'os-console-auth-tokens', 'os-console-output', 'os-consoles', 'os-create-backup', 'os-deferred-delete', 'os-evacuate', 'os-extended-availability-zone', 'os-extended-server-attributes', 'os-extended-status', 'os-extended-volumes', 'os-fixed-ips', 'os-flavor-access', 'os-flavor-extra-specs', 'os-flavor-manage', 'os-flavor-rxtx', 'os-floating-ip-dns', 'os-floating-ip-pools', 'os-floating-ips', 'os-floating-ips-bulk', 'os-fping', 'os-hide-server-addresses', 'os-hosts', 'os-hypervisors', 'os-instance-actions', 'os-instance-usage-audit-log', 'os-keypairs', 'os-lock-server', 'os-migrate-server', 'os-migrations', 'os-multinic', 'os-multiple-create', 'os-networks', 'os-networks-associate', 'os-pause-server', 'os-quota-class-sets', 'os-quota-sets', 'os-remote-consoles', 'os-rescue', 'os-scheduler-hints', 'os-security-group-default-rules', 'os-security-groups', 'os-server-diagnostics', 'os-server-external-events', 'os-server-groups', 'os-server-password', 'os-server-tags', 'os-server-usage', 'os-services', 'os-shelve', 'os-simple-tenant-usage', 'os-suspend-server', 'os-tenant-networks', 'os-used-limits', 'os-user-data', 'os-virtual-interfaces', 'os-volumes', 'server-metadata', 'server-migrations', 'servers', 'versions']
+
+2018-02-06 15:01:02.769 31894 ERROR nova.wsgi [req-df7a9b02-fad0-4eec-9dff-bea66ba69211 - - - - -] 无法绑定至 0.0.0.0:8774
+
+2018-02-06 15:01:02.770 31894 CRITICAL nova [req-df7a9b02-fad0-4eec-9dff-bea66ba69211 - - - - -] error: [Errno 98] Address already in use
+
+2018-02-06 15:01:02.770 31894 ERROR nova Traceback (most recent call last):
+
+2018-02-06 15:01:02.770 31894 ERROR nova   File "/usr/bin/nova-api", line 10, in <module>
+
+2018-02-06 15:01:02.770 31894 ERROR nova     sys.exit(main())
+
+2018-02-06 15:01:02.770 31894 ERROR nova   File "/usr/lib/python2.7/site-packages/nova/cmd/api.py", line 59, in main
+
+2018-02-06 15:01:02.770 31894 ERROR nova     server = service.WSGIService(api, use_ssl=should_use_ssl)
+
+2018-02-06 15:01:02.770 31894 ERROR nova   File "/usr/lib/python2.7/site-packages/nova/service.py", line 334, in init
+
+2018-02-06 15:01:02.770 31894 ERROR nova     max_url_len=max_url_len)
+
+2018-02-06 15:01:02.770 31894 ERROR nova   File "/usr/lib/python2.7/site-packages/nova/wsgi.py", line 101, in init
+
+2018-02-06 15:01:02.770 31894 ERROR nova     self._socket = eventlet.listen(bind_addr, family, backlog=backlog)
+
+2018-02-06 15:01:02.770 31894 ERROR nova   File "/usr/lib/python2.7/site-packages/eventlet/convenience.py", line 43, in listen
+
+2018-02-06 15:01:02.770 31894 ERROR nova     sock.bind(addr)
+
+2018-02-06 15:01:02.770 31894 ERROR nova   File "/usr/lib64/python2.7/socket.py", line 224, in meth
+
+2018-02-06 15:01:02.770 31894 ERROR nova     return getattr(self._sock,name)(args)
+
+2018-02-06 15:01:02.770 31894 ERROR nova error: [Errno 98] Address already in use
+
+2018-02-06 15:01:02.770 31894 ERROR nova
+
+^C
+
+[root@controller nova]#
+
+[root@controller nova]# systemctl status openstack-nova-api.service
+
+● openstack-nova-api.service - OpenStack Nova API Server
+
+Loaded: loaded (/usr/lib/systemd/system/openstack-nova-api.service; enabled; vendor preset: disabled)
+
+Active: activating (start) since 二 2018-02-06 15:01:36 CST; 6s ago
+
+Main PID: 31989 (nova-api)
+
+CGroup: /system.slice/openstack-nova-api.service
+
+└─31989 /usr/bin/python2 /usr/bin/nova-api
+
+2月 06 15:01:36 controller systemd[1]: Starting OpenStack Nova API Server...
+
+[root@controller nova]# nova-status upgrade check
+
++-------------------------------------------------------------------+
+
+| Upgrade Check Results                                             |
+
++-------------------------------------------------------------------+
+
+| Check: Cells v2                                                   |
+
+| Result: 成功                                                      |
+
+| Details: None                                                     |
+
++-------------------------------------------------------------------+
+
+| Check: Placement API                                              |
+
+| Result: 成功                                                      |
+
+| Details: None                                                     |
+
++-------------------------------------------------------------------+
+
+| Check: Resource Providers                                         |
+
+| Result: Warning                                                   |
+
+| Details: There are no compute resource providers in the Placement |
+
+|   service but there are 1 compute nodes in the deployment.        |
+
+|   This means no compute nodes are reporting into the              |
+
+|   Placement service and need to be upgraded and/or fixed.         |
+
+|   See                                                             |
+
+|   http://docs.openstack.org/developer/nova/placement.html         |
+
+|   for more details.                                               |
+
++-------------------------------------------------------------------+
+

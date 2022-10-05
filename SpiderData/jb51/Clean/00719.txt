@@ -1,0 +1,83 @@
+异常处理是日常操作了，但是有时候不能只能打印我们处理的结果，还需要将我们的异常打印出来，这样更直观的显示错误
+
+下面来介绍traceback模块来进行处理
+
+try:
+    1/0
+  except Exception, e:
+    print e
+
+输出结果是integer division or modulo by zero，只知道是报了这个错，但是却不知道在哪个文件哪个函数哪一行报的错。
+
+使用traceback
+
+try:
+    1/0
+  except Exception, e:
+    traceback.print_exc()
+
+输出结果
+
+Traceback (most recent call last):
+
+File "test_traceback.py", line 3, in <module>
+
+1/0
+
+ZeroDivisionError: integer division or modulo by zero
+
+这样非常直观有利于调试。
+
+traceback.print_exc()跟traceback.format_exc()有什么区别呢？
+
+format_exc()返回字符串，print_exc()则直接给打印出来。
+
+即traceback.print_exc()与print traceback.format_exc()效果是一样的。
+
+print_exc()还可以接受file参数直接写入到一个文件。比如
+
+traceback.print_exc(file=open('tb.txt','w+'))
+
+写入到tb.txt文件去。
+
+示例
+
+# -*- coding:utf-8 -*-
+
+import os
+import logging
+import traceback
+
+#设置log, 这里使用默认log
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+    datefmt='[%Y-%m_%d %H:%M:%S]',
+    filename=os.path.dirname(os.path.realpath(__file__)) + "/" + 'test.log',
+    filemode='a')
+
+a=10
+b=0 #设置为0, 走异常流程; 否则， 走正常流程
+
+try:
+  res=a/b
+  logging.info("exec success, res:" + str(res))
+except Exception,e:
+  #format_exc()返回字符串，print_exc()则直接给打印出来
+  traceback.print_exc()
+  logging.warning("exec failed, failed msg:" + traceback.format_exc())
+
+logging默认打印级别是warning.
+
+日志打印:
+
+[2017-11_17 07:51:02] trace.py[line:24] WARNING exec failed, failed msg:Traceback (most recent call last):
+
+File "trace.py", line 19, in <module>
+
+res=a/b
+
+ZeroDivisionError: integer division or modulo by zero
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

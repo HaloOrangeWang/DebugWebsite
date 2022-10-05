@@ -1,0 +1,43 @@
+点击新建Python文件即弹出弹窗显示 Permission denied: Untitled.ipynb
+
+看到Permission denied 尝试是权限问题进行解决，各种百度结果都是对文件进行权限777的操作，如下：
+
+sudo chmod 777 ~/.local/share/jupyter/
+cd ~/.local/share/jupyter/
+ls
+sudo chmod 777 runtime/
+cd runtime/
+
+注意这里的jupyter目录是.local下share下的路径，不是你自己定义的安装路径下的share/jupyter，在自己安装路径下的jupyter目录结构下没有runtime文件夹。
+
+但是执行完 chmod 777 操作之后再重新启动jupyter notebook发现还是无法进行python3文件的创建，依旧提示权限不足。
+
+
+解决： 修改jupyter工作路径
+
+　　我们所有提示的权限不足，应该是我们的jupyter工作区间的文件权限不足，所有造成无法在目录下创建新文件。
+
+　　所以我们可以自行修改jupyter的工作路径并对权限进行控制。
+
+　　cd 进入anaconda安装目录下的bin目录，执行命令查看配置文件所在路径：
+
+[virtual@virtual001 bin]$ ./jupyter notebook --generate-config
+Writing default config to: /home/virtual/.jupyter/jupyter_notebook_config.py
+
+打开配置文件   jupyter_notebook_config.py
+
+## The directory to use for notebooks and kernels.
+#c.NotebookApp.notebook_dir = ''
+将其改为
+## The directory to use for notebooks and kernels.
+c.NotebookApp.notebook_dir = '~/Workspace/Jupyter'
+其中 ~/Workspace/Jupyter 为我的工作空间，你可以改成你自己的已经存在的文件路径
+
+（文件夹必须提前新建，如果没有新建，Jupyter Notebook会找不到这个文件，会产生闪退现象。）
+
+（#c.NotebookApp.notebook_dir = '' 前面的#表示注释必须删除，且前面不能留空格。)
+
+ps.在linux vi中输入 / 然后输入所要搜索的关键字即可进行全文查找关键字。例如这里就可以  /notebook_dir   来定位所要修改的地方
+
+修改完毕保存重启 jupyter nootbook 即可。
+

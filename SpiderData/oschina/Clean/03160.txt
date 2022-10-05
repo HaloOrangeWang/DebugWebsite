@@ -1,0 +1,69 @@
+最近正在看用 python 进行数据处理的内容，很多教程都会用 pandas 去抓取金融数据。我也尝试跑教程上的示例代码以抓取数据。
+
+本文着重介绍遇到的问题以及解决方法。
+
+注：我使用的是 Python 3.6.1
+
+1. import pandas.io.data as web
+
+我看到的教程均采用如上形式引入 pandas.io.data，然而该方式在 pandas 0.19.0 及以上版本就不支持这种引入形式，该模块功能迁移到了 pandas-datareader 上。我使用的 pandas 版本是 0.22.0，必然已经不支持 pandas.io 这种方式，用旧方法引用会出现如下报错
+
+import pandas.io.data as web   # Package and modules for importing data; this code may change depending on pandas version
+  File "D:\Program Files (x86)\Python\lib\site-packages\pandas\io\data.py", line 2, in <module>
+    "The pandas.io.data module is moved to a separate package "
+ImportError: The pandas.io.data module is moved to a separate package (pandas-datareader). After installing the pandas-datareader package (https://github.com/pydata/pandas-datareader), you can change the import ``from pandas.io import data, wb`` to ``from pandas_datareader import data, wb``.
+
+于是根据提示，安装 pandas-datareader 模块
+
+pip install pandas-datareader
+
+安装完成之后，以 pandas-datareader 代替 pandas.io
+
+import pandas-datareader.data as web
+
+问题一得以圆满解决。
+
+2. ImmediateDeprecationError
+
+很快第二个问题随之而来，当我使用如下代码，试图从 yahoo 抓取数据来源时，问题二出现。
+
+import pandas as pd
+import pandas_datareader.data as web   # Package and modules for importing data; this code may change depending on pandas version
+import datetime
+ 
+# We will look at stock prices over the past year, starting at January 1, 2016
+start = datetime.datetime(2016,1,1)
+end = datetime.date.today()
+ 
+# Let's get Apple stock data; Apple's ticker symbol is AAPL
+# First argument is the series we want, second is the source ("yahoo" for Yahoo! Finance), third is the start date, fourth is the end date
+apple = web.DataReader("AAPL", "yahoo", start, end)
+ 
+type(apple)
+
+此时会报如下错误
+
+raceback (most recent call last):
+  File ".\l1.py", line 11, in <module>
+    apple = web.DataReader("AAPL", "yahoo", start, end)
+  File "D:\Program Files (x86)\Python\lib\site-packages\pandas_datareader\data.py", line 291, in DataReader
+    raise ImmediateDeprecationError(DEP_ERROR_MSG.format('Yahoo Daily'))
+pandas_datareader.exceptions.ImmediateDeprecationError:
+Yahoo Daily has been immediately deprecated due to large breaks in the API without the
+introduction of a stable replacement. Pull Requests to re-enable these data
+connectors are welcome.
+
+See https://github.com/pydata/pandas-datareader/issues
+
+然而这个错误，在网上搜索了很多结果，都没有找到能解决的办法。无可奈何，就通过下面的 github 链接，想搜索是否有类似的疑问。在 github 上看到有人提了这个问题。
+
+确实得到了很多大神的解答，不过很多办法在别人的电脑上成功，而我自己尝试的时候依然是失败。
+
+直接在这里介绍我成功的解决办法吧：
+
+（1）将 pandas-dataread 版本回退到 0.5.0。用 pip 安装的 pandas-datareader 默认是 0.6.0，将版本回退再尝试，发现可以成功运行上面的代码；
+
+（2）安装 fix_yahoo_finance，这是高人分享的一个补丁，专门解决 pandas-datareader 无法获取 yahoo 金融数据的方法。
+
+　
+

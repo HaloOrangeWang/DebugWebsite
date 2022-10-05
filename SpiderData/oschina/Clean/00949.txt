@@ -1,0 +1,31 @@
+最近做一个脚本，其实就是通过python往mysql数据库里面插入数据
+
+import pymysql
+db=pymysql.connect("localhost","root","","test_1_3")
+cursor=db.cursor()
+#sql语句
+sql="""INSERT INTO 
+giveaway(xxxx)
+VALUES(xxxxx)
+"""
+try:
+    cursor.execute(sql)
+    db.commit()
+except:
+     print('sql未执行')
+     db.rollback()
+
+db.close()
+
+中间遇到个报错
+
+UnicodeEncodeError: 'latin-1' codec can't encode characters
+
+搜索了很久没找到答案，最后看到了一个方法
+
+1.找到安装目录，我的目录是Python35\Lib\site-packages\pymysql
+
+2.打开connections.py文件
+
+3.修改charset=‘utf8’
+

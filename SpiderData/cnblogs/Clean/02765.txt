@@ -1,0 +1,25 @@
+在pycharm中安装pandas出现报错：AttributeError: 'module' object has no attribute 'main'，
+
+刚开始以为是pip的版本太旧了，于是乎将其做了升级（python -m pip install -U pip），结果还是不行。
+
+百度了好多都没有找到问题出现在哪里，后面看到了一篇博文中说到时因为
+
+新版的 pip 更改了 部分api 将其中 pip.main() 改为 pip_main()，
+
+旧版的pycharm中 在packaging_tool.py 中引用的就是 pip.main()方法，所以会报错。
+
+解决方法：
+
+1、打开pycharm的所在位置，找到X:\PyCharm\PyCharm 2018.1\helpers
+
+2、下载最新的packaging_tool.py替换里面的packaging_tool.py
+
+3、重新再pycharm中安装 pandas即可
+
+packaging_tools.py下载地址
+
+链接：https://pan.baidu.com/s/1I36ZLjbUeCmJc8_rsdrNDw 
+提取码：i1ob
+
+参考：https://blog.csdn.net/qq_34802511/article/details/82528778
+

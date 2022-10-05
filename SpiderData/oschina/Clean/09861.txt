@@ -1,0 +1,68 @@
+**背景：**某机器有2块闪存卡，利用LVM，将其挂载到一个目录供测试使用； 之前厂商已经安装了闪存卡对应的驱动，fdisk可以看到闪存卡信息，但是在pvcreate创建时，遭遇如下错误：
+
+# pvcreate /dev/dfa 
+  Device /dev/dfa not found (or ignored by filtering).
+# pvcreate /dev/dfb
+  Device /dev/dfb not found (or ignored by filtering).
+
+fdisk -l可以看到这两块闪存卡的信息，使用shannon-status -a也可以正常看到状态信息。 这初步说明驱动的安装应该没有问题。
+
+从报错信息看有可能是设置了filter，而检查lvm的配置文件/etc/lvm/lvm.conf中并没有配置任何有效filter的内容。
+
+最终解决： 在/etc/lvm/lvm.conf中有设置 types，语法没来及细查，直接仿照示例配置尝试添加宝存的闪存卡信息；
+
+# types = [ "fd", 16 ]
+types = [ "fd", 16 , "shannon", 252]
+
+这里的252这个数字是通过查看/proc/devices信息获得：
+
+# cat /proc/devices |grep shan
+252 shannon
+
+再次尝试创建pv成功：
+
+--1.创建pv
+# pvcreate /dev/dfa 
+  Physical volume "/dev/dfa" successfully created
+# pvcreate /dev/dfb
+  Physical volume "/dev/dfb" successfully created
+
+然后创建vg,lv,格式化,挂载这一系列操作就都很顺利了：
+
+--2.创建vg
+vgcreate vg_oracle /dev/dfa /dev/dfb
+vgdisplay --查到 1525878 Free PE
+
+--3.创建lv
+lvcreate -l 1525878 -n lv_oracle vg_oracle
+
+--查看lv信息
+# lvs
+  LV            VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  LogVol_oracle VolGroup  -wi-ao---- 100.00g                                                    
+  LogVol_root   VolGroup  -wi-ao---- 100.00g                                                    
+  lv_oracle     vg_oracle -wi-a-----   5.82t
+
+--4.格式化lv
+mkfs.ext4 /dev/vg_oracle/lv_oracle
+
+--5.挂载目录使用
+# mkdir /xtts
+
+# /etc/fstab添加：
+/dev/vg_oracle/lv_oracle        /xtts           ext4    defaults        0 0
+
+# mount -a
+
+--查看成功挂载的目录
+# df -h /xtts
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/mapper/vg_oracle-lv_oracle
+                      5.8T   56M  5.5T   1% /xtts
+
+其实事后思考，认为types中只添加宝存的应该就可以了，因为之前的示例本就是注释掉的，不过这个尚未测试，直觉是可行的：
+
+types = [ "shannon", 252 ]
+
+**总结：**这个问题本质是个很小的知识点，只是之前从未遇到，相信随着闪存卡的普及，应该也会给很多新人带来困惑，因此记录一下。
+

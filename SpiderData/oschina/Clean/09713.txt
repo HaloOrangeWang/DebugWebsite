@@ -1,0 +1,38 @@
+YII常见报错笔记
+
+报错返回的代码如下：
+
+<pre>PHP Notice 'yii\base\ErrorException' with message 'Uninitialized string offset: 0'
+
+in /my/test/project/iot/vendor/yiisoft/yii2/base/Model.php:778
+
+Stack trace:
+#0 /my/test/project/iot/vendor/yiisoft/yii2/base/Model.php(778): yii\base\ErrorHandler->handleError(8, 'Uninitialized s...', '/my/test/projec...', 778, Array)
+#1 /my/test/project/iot/vendor/yiisoft/yii2/base/Model.php(354): yii\base\Model->activeAttributes()
+#2 /my/test/project/iot/vendor/yiisoft/yii2/db/ActiveRecord.php(455): yii\base\Model->validate(NULL)
+#3 /my/test/project/iot/vendor/yiisoft/yii2/db/BaseActiveRecord.php(635): yii\db\ActiveRecord->insert(true, NULL)
+#4 /my/test/project/iot/common/models/Order.php(243): yii\db\BaseActiveRecord->save()
+#5 /my/test/project/iot/frontend/controllers/OrderController.php(219): common\models\Order->createOrder(Array)
+#6 [internal function]: frontend\controllers\OrderController->actionOrderoncecreate()
+#7 /my/test/project/iot/vendor/yiisoft/yii2/base/InlineAction.php(57): call_user_func_array(Array, Array)
+#8 /my/test/project/iot/vendor/yiisoft/yii2/base/Controller.php(156): yii\base\InlineAction->runWithParams(Array)
+#9 /my/test/project/iot/vendor/yiisoft/yii2/base/Module.php(523): yii\base\Controller->runAction('orderoncecreate', Array)
+#10 /my/test/project/iot/vendor/yiisoft/yii2/web/Application.php(102): yii\base\Module->runAction('order/orderonce...', Array)
+#11 /my/test/project/iot/vendor/yiisoft/yii2/base/Application.php(380): yii\web\Application->handleRequest(Object(yii\web\Request))
+#12 /my/test/project/iot/frontend/web/index.php(18): yii\base\Application->run()
+#13 {main}</pre>
+
+原因：这里明显提示是模型Model出错,所以根据报错信息分析。
+
+第一步：找到相应调用的模型检查，
+
+第二步：查看报错提示（这个错误是：Uninitialized string offset: 0  未初始化字符串偏移量：0）。
+
+最后分析上面两步得出，我在模型的验证规则里定义了一个空字段（‘’），如下图所示
+
+因为yii的验证规则是对写入每个字段都做验证（没有做空判断），我数据表又没有这个字段，所以就会报错。
+
+结论：如果报错代码类似以上的，检查下自己的验证规则字段是否有和数据表不一样的字段。
+
+错误代码分析总结：
+

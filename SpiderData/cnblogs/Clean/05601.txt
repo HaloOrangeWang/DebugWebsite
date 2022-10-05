@@ -1,0 +1,159 @@
+网上帖子一大堆，按照那些教程操作，确实可以成功安装。但是安装成功之后呢，pip还是用的python2的pip。
+
+切换到python3的pip之后，发现无法下载模块，还会有很多报错信息。以及"require TLS/SSL, however the ssl module in Python is not avail"等等的错误。（文章最下面列出了安装过程中遇到的7类错误）
+
+下面开始介绍闭坑的步骤：
+
+操作系统：
+
+centos6。
+
+一、正式安装前的准备工作：
+
+1.重新安装openssl
+
+详细教程，这篇文章有专门介绍，这里不再赘述。
+
+https://www.cnblogs.com/music-liang/p/11888672.html
+
+2.安装 libffi-devel
+
+yum install libffi-devel -y
+
+3.安装 zlib
+
+yum -y install zlib*
+
+二、开始正常的Python安装流程
+
+1.下载最新版本的python
+
+wget https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz
+
+2.解压。解压出来的文件是Python-3.8.0（不同版本，名称不一样）
+
+tar -zxvf Python-3.8.0.tgz
+
+3.进入Python-3.8.0文件夹
+
+cd Python-3.8.0
+
+4.创建Python3的安装路径
+
+mkdir /usr/local/python3
+
+5.运行（Python-3.8.0文件夹）里面的配置脚本
+
+./configure --prefix=/usr/local/python3 --enable-optimizations --with-openssl=/usr/local/openssl/
+
+请注意了，这里的ssl就是我们第1步里面安装的那个openssl的路径。
+
+在这一步的时候，要特别注意，openssl是否已经在PATH环境变量里面。
+
+关于安装openssl的文章里面有提到这个环境变量的事情。
+
+6.编译Python
+
+make
+
+注意，如果你是第2次安装，请先执行  make  clean   命令清理工程，然后再执行 make  命令编译工程。
+
+如果一切正常，日志信息里面不会有错误。
+
+也不会出现某些模块找不到等信息。（如果这一步有问题，请在下方留言。并粘贴详细的日志信息）
+
+7.测试
+
+make  test
+
+如果一切正常，日志信息里面不会有错误。
+
+也不会出现某些模块找不到等信息。（如果这一步有问题，请在下方留言。并粘贴详细的日志信息）
+
+8.安装
+
+make   install
+
+9.到这里假设你已经安装好了Python3，接下来是配置环境变量
+
+删除旧的python快捷方式（之前由python2创建的）
+rm /usr/bin/python
+
+创建我们Python3的软链接（快捷方式），这次我们创建2个
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+ln -s /usr/local/python3/bin/python3 /usr/bin/python
+
+10.验证Python命令是否ok
+
+python  -V
+
+11.yum 被影响了，修改回来
+
+11.1先查看之前旧版本的Python是什么版本的
+
+ls -ls /usr/bin | grep python
+
+例如，我这里旧版的Python是python2.7。
+
+11.2我们需要创建这个旧版本的Python的一个软连接（快捷方式）
+
+ln -s /usr/bin/python2.7  /usr/bin/python2
+
+11.3 修改下面2个文件
+
+vi   /usr/bin/yum
+
+vi   /usr/libexec/urlgrabber-ext-down
+
+将第1行的python改为 python2。
+
+12.将pip2改为pip3
+
+rm /usr/bin/pip
+
+ln -s /usr/local/python3/bin/pip3  /usr/bin/pip
+
+这时候，运行pip命令，才是真正Python3的pip命令。
+
+请注意，这里的 /usr/local/python3 就是我们自定义的python3的安装路径。
+
+13.检测Python版本、pip版本，验证是否安装成功，版本是否正确
+
+python  -V
+
+pip  -V
+
+14.如果提示pip版本需要升级，可以把pip升级一下
+
+pip install  --upgrade pip
+
+到这里，一次完整的安装就结束了。如果您还有什么安装报错，请下方留言。或者重新看看是不是哪个地方漏掉了。
+
+一次完整安装介绍完之后，再说说安装过程中出现的各种错误问题：
+
+1.pip在Python目录下面不存在，系统不认识pip命令。然后去网上搜帖子，如何安装pip，结果就是安装不成功。
+
+2.pip无法安装模块。No package python-pip available.
+
+3.however the ssl module in Python is not avail
+
+ImportError: Entry point ('console_scripts', 'easy_install') not found
+
+pip is configured with locations that require TLS/SSL, however the ssl module in Python is not avail
+
+4.No module named '_ctypes' when using Value from module
+
+from _ctypes import Union, Structure, Array ModuleNotFoundError: No module named '_ctypes'
+
+5.pkg_resources.DistributionNotFound: The 'pip==7.1.0' distribution was not found and is required by the application
+
+6.Can't connect to HTTPS URL because the SSL module is not available.
+
+7.Failed to build these modules:_ctypes binascii
+
+如果你遇到了这些问题，莫慌。把这篇文章完整看一遍。
+
+这里面的命令，全部执行下来，一般就OK了。
+
+你还可以参考我另外一篇关于安装的文章。请参考之前写的一篇旧闻。
+

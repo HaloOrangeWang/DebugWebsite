@@ -1,0 +1,58 @@
+最近一个项目接近尾声，准备部署上线，单每次运行的时候，Python在对redis进行hset操作时，传入mapping参数的时候，一旦参数字典的key稍微多一点，就报错。
+
+redis.exceptions.ResponseError: wrong number of arguments for 'hset' command
+
+一开始走了很多弯路，以为是代码逻辑出了什么问题，但本地的mac上测试都是好的，百度与google了一圈，就有一条消息说了，可能是redis版本的问题，查了一下跑服务的服务器redis版本是通过我前面的yum方式安装的，一看版本是3.2的，好像是老了点，再看本地mac上面的版本是5.0的，那就换呗。
+
+就写个流水账，给自己留给记录。
+
+1.前面通过yum安装的redis，首先通过service redis stop关闭正在运行的redis进程，然后通过yum卸载redis
+
+2.这次我不准备通过安装的方式装redis，准备通过docker来使用部署redis，刚刚可以把前面学的那一点点docker知识用起来。
+
+通过https://hub.docker.com/_/redis找到redis的信息，我下载的是5.0.12
+
+3.然后参考菜鸟编程网站
+
+https://www.runoob.com/docker/docker-install-redis.html
+
+启动该镜像，并执行容器，在运行的时候，主要是关注加上一个-p，做好端口转换。
+
+4.当docker正常运行之后，当然可以通过
+
+这样的命令，进入容器里面操作redis，但我感觉太蛮烦了，所以我准备在服务器上面就装一个redis-cli
+
+5.参考https://blog.csdn.net/mijichui2153/article/details/105433929
+
+wget http://download.redis.io/redis-stable.tar.gz
+
+wget http://download.redis.io/redis-stable.tar.gz
+
+tar -xzvf redis-stable.tar.gz
+
+tar -xzvf redis-stable.tar.gz
+
+cd redis-stable
+
+cd redis-stable
+
+make
+
+make
+
+cp src/redis-cli /usr/local/bin/
+
+cp src/redis-cli /usr/local/bin/
+
+如果没有cc编译器，通过这个命令安装
+
+yum -y install gcc automake autoconf libtool make
+
+如果make报错，通过
+
+make distclean && make 命令安装
+
+安装redis-cli以后到时候测试就更加方便了
+
+话说，docker真的很方便，部署上线使用的好工具啊
+

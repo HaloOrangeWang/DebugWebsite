@@ -1,0 +1,34 @@
+转于：https://blog.csdn.net/Song_74110/article/details/80387307
+Android Studio 3.1.2编译报错报错如下
+Configuration ‘compile’ is obsolete and has been replaced with ‘implementation’ and ‘api’.
+It will be removed at the end of 2018. For more information see: http://d.android.com/r/tools/update-dependency-configurations.html
+
+dependencies {
+compile fileTree(dir: 'libs', include: ['*.jar'])
+androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+exclude group: 'com.android.support', module: 'support-annotations'
+})
+compile 'com.android.support:appcompat-v7:25.3.1'
+compile 'com.android.support.constraint:constraint-layout:1.0.2'
+compile 'com.android.support:support-core-ui:25.3.1'
+compile 'com.android.support:design:25.3.1'
+testCompile 'junit:junit:4.12'
+}
+
+需要改成如下：
+compile 改成implementation
+androidTestCompile改成androidTestImplementation
+testCompile 改成testImplementation
+
+dependencies {
+implementation fileTree(dir: 'libs', include: ['*.jar'])
+androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+exclude group: 'com.android.support', module: 'support-annotations'
+})
+implementation 'com.android.support:appcompat-v7:25.3.1'
+implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+implementation 'com.android.support:support-core-ui:25.3.1'
+implementation 'com.android.support:design:25.3.1'
+testImplementation 'junit:junit:4.12'
+}
+

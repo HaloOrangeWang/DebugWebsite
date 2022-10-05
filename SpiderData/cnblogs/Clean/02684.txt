@@ -1,0 +1,38 @@
+在使用Node.js中的npm命令安装appium的坏境依赖时老是报错。。。。。。
+
+当在cmd命令中输入：npm install cnpm -g --registry=http://registry.npm.taobao.org或者npm install cnpm -g --registry=http://r.cnpmjs.org时可以成功执行该命令：
+
+然后，接着输入：cnpm install -p appium时却报错：
+
+说是python存在无效解析。瞬间明白，应该是python版本问题，而且我的系统安装了python2.7.和python3.4两个版本。而且我是利用Anaconda来创建和安装这两个python的，跟平时直接安装python有一点点区别。需要先激活python。
+
+按顺序在Anaconda命令行窗口中键入以下命令并执行：
+
+activate XQQTEST （注意：XQQTEST是我的之前已经创建好了的python2.7.）
+
+npm install cnpm -g --registry=http://registry.npm.taobao.org
+
+cnpm install -g appium
+
+结果又有问题了。。。。。。我。。。。好吧，接着弄。。。
+
+这个错误是缺少VCBuild,exe组件。好，既然缺少这个组件，那就安装。。。
+
+在Anaconda命令行窗口中输入：npm install –global –production windows-build-tools 命令。来构建VCBuild.exe以及其他一系列组件，注意，在执行这个命令的时候会自动安装python2.7.，而我本身激活的python就是v2.7.版本的。。。。所以Anaconda命令行中会有python 已经安装过了的提示消息。没事儿，假如不是很放心VCBuild等相关组件没有完全安装成功，那么可以在系统自带的cmd命令中执行这个npm install –global –production windows-build-tools 命令也是可以的。
+
+当重新输入以下命令执行时：
+
+就会变成黄色区域的警告了，没关系，已经解决了，可以正常使用appium了。
+
+为了之后可以正常的定位Toast元素（Toast元素是指那些浮动于Activity页面上的元素，通常情况下只显示3秒左右，3秒左右过后会自动消失的元素，一般只是为了显示一些反馈信息，比如在登录一个APP时，当你的用户名或密码输入错误，APP可能会弹出一个信息提示你“用户名或密码输入错误”，而后过了几秒，他又自动消失，这一类元素就是Toast元素），这类元素用普通的定位方式是根本定位不到的，因为它不在activity页面上，想要定位它必须导入两个模块：
+
+1、appium-uiautomator2-driver
+
+2、appium-uiautomator2-server
+
+接着在以上命令窗口中输入;
+
+npm install -g appium-uiautomator2-driver直接安装即可。
+
+npm install -g appium-uiautomator2-server直接安装即可。
+

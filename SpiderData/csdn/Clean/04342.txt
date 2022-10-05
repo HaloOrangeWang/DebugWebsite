@@ -1,0 +1,96 @@
+今天来给大家介绍几种在Python编程中，所常见的几种错误类型。
+
+1.在用加号进行拼接时，必须用字符串。
+
+name='小明'
+age=18
+print('我的名字是'+name+'，我今年'+age+'岁了')
+
+点击运行输出时会报错，错误提示为 ：TypeError: must be str, not int，翻译为类型错误，必须为字符串str，不能是数字int。
+
+解决方案为：
+
+name='小明'
+age='18'
+print('我的名字是'+name+'，我今年'+age+'岁了')
+
+或者：
+
+name='小明'
+age=18
+print('我的名字是'+name+'，我今年'+str(age)+'岁了')
+
+2.语法错误。
+
+name='小明，'小兰''
+print(name)
+
+点击运行报错，错误提示为：SyntaxError: invalid syntax ，翻译为语法错误：无效的语法
+
+解决方案为：
+
+name="小明，'小兰'"
+print(name)
+
+3.使用列表时出现索引错误。
+
+list=[9,8,7,6,5,4]
+print(list[7])
+
+点击运行，错误提示为：IndexError: list index out of range，翻译为指示错误：列表的索引值超出了范围。
+
+解决方案，更改索引值。
+
+4.属性错误。
+
+tp1=('1','2','3','4','5')
+tp1.remove()
+
+点击运行，错误提示为：AttributeError: 'tuple' object has no attribute 'remove'，翻译为属性错误：元组对象中没有属性remove. 解决方案为，在元组中含有的属性进行操作。
+
+5.字典类型错误。
+
+dic={'name':'小明','age':18,'fond':'打篮球'}
+dic.pop()
+
+点击运行，错误提示为：TypeError: pop expected at least 1 arguments, got 0，翻译为类型错误：pop期望至少得到一个参数，但是现在参数为0。解决方案为，在pop里面添加一个你要删除的对象。
+
+6.字典关键字错误。
+
+dic={'name':'小明','age':18,'fond':'打篮球'}
+print(dic['height'])
+
+点击运行，错误提示为：KeyError: 'height'，翻译为关键字错误：height。解决方案为更改字典中含有的关键字。
+
+7.字符串值错误。
+
+info='Hello World'
+result=info.index('a')
+print(result)
+
+点击运行，错误提示为：ValueError: substring not found，翻译为值错误：子字符串未找到。解决方案为把未找到的子字符串换成字符串中拥有的子字符串。
+
+8.字符串索引错误。
+
+info='Hello World'
+print(info[20])
+
+点击运行，错误提示为：IndexError: string index out of range，翻译为指示误差：字符串索引超出范围。解决方案为可以查看字符串的长度，更换索引值，要小于这个字符串的长度值。
+
+9.while循环的错误信息。
+
+while True:
+    count+=1
+    if count==20:
+        return
+
+x=10
+if x <10:
+        print('这个数小于10')
+    else:
+         print('这个数大于10')
+
+点击运行，错误提示为：IndentationError: unindent does not match any outer indentation level，翻译为缩进错误：位置缩进不匹配任何的缩进等级，解决办法是，在编写代码的过程中，不要时用tab键时用空格键，同一用tab键进行缩进。
+
+常见的几种基础的错误类型也就这么多了，以后还会和大家多分享一些有关python的知识的。
+

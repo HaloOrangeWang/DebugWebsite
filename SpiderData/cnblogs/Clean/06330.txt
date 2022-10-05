@@ -1,0 +1,16 @@
+在项目中__init__.py中配置了
+
+再次运行python manage.py makemigrations，出现报错：
+
+raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.version)
+
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+解决方法：
+
+根据报错信息，点击进入文件/Users/apple/Documents/venvs/api-monitor-platform/lib/python3.6/site-packages/django/db/backends/mysql/base.py
+
+注释掉报错的版本检查行：
+
+保存，再次运行python manage.py makemigrations即可。
+

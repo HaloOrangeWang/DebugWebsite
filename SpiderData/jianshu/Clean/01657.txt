@@ -1,0 +1,40 @@
+在Pycharm中编写测试用例的时候
+
+import unittest
+from name_function import get_fall_name
+
+class NamesTestCase(unittest.TestCase):
+    def test_first_last_name(self):
+        formatted_name = get_fall_name('Xiao','Hong')
+        self.assertEqual(formatted_name,'Xiao Hong')
+
+# suite = unittest.TestSuite()       
+# runner = unittest.TextTestRunner(verbosity=2)
+# if __name__ == '__main__':
+# #     unittest.main(argv=['first-arg-is-ignored'],exit=False)
+#     runner.run(suite)
+unittest.main()
+
+此时报错，解决方案是将
+
+unittest.main()
+
+变为如下内容
+
+if __name__ == '__main__':
+    unittest.main()
+
+如果直接执行用例文件，需要这样写：
+
+if __name__ == '__main__':
+     unittest.main(argv=['first-arg-is-ignored'],exit=False)
+
+如果是从其他文件调用，需要这样写：
+
+suite = unittest.TestSuite()
+runner = unittest.TextTestRunner(verbosity=2)
+if __name__ == '__main__':
+    runner.run(suite)
+
+自己在jupyter notebook中使用的是最后一种方式解决的。
+

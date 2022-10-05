@@ -1,0 +1,25 @@
+安装好salt-master和salt-minion之后，发现无法启动服务。
+
+使用systemctl status salt-master命令查看，提示报错：
+
+ImportError: cannot import name EscapeFormatter
+
+Linux系统版本是：
+
+# cat /etc/redhat-release
+CentOS Linux release 7.5.1804 (Core)
+
+salt-master的版本是：
+
+解决方法：
+
+# pip install --upgrade pip
+# pip uninstall markupsafe
+# pip install markupsafe
+
+检验结果：
+
+import没有报错，就说明已经OK了。
+
+参考文档：https://stackoverflow.com/questions/51998470/while-starting-airflow-webserver-importerror-cannot-import-name-escapeformatt/51998488
+

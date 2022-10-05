@@ -1,0 +1,26 @@
+　　使用Vue+Webpack搭建工程时，在webpack.config.js中的module的rules里针对各种文件配置加载工具。在针对css文件配置时遇到一个问题：打包构建时报错——Module build failed: Unknown word。
+
+　　配置内容如下：
+
+{
+　　test: /\.css$/,
+　　use: [
+　　　　'css-loader',
+　　　　'style-loader'
+　　]
+}
+
+　　在网上找解决方案时看到一种方法，将这段配置注释掉，不会影响css代码的引入，也不会再报错，不过作者并未找到原因。但是，将该方法运用到我的代码中时没有作用，将配置注释掉后会报错：You may need an appropriate loader to handle this file type.——要求对该类型文件配置加载工具！
+
+　　试了几种方法并没有效果，后来想到视频教程中提到这些工具的作用：css-loader用于读取css文件，style-loader用于处理css-loader读取的文件，这里有没有依赖关系之类的，需要按照一定的顺序配置，于是将顺序调换了一下，配置如下：
+
+{
+　　test: /\.css$/,
+　　use: [
+       'style-loader',
+　　　　'css-loader'
+　　]
+}
+
+　　这样处理后，打包构建时没有报错了，输出文件中也有css样式，说明打包构建是成功的，也证实了loader的加载顺序是有要求的，而且越是基础的loader越要放在前面，如果使用less、sass或stylus，less-loader、sass-loader、stylus-loader要放在最后面。另外，使用sass-loader时，要安装node-sass依赖，不过不用在webpack.config.js里面配置。
+

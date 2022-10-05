@@ -1,0 +1,22 @@
+mysql8导入mysql5.7的sql备份,报错:
+
+ERROR 1178 (42000) at line 241: The storage engine for the table doesn't support native partitioning
+
+检查后发现是老数据的引擎是 MyISAM
+
+改为 InnoDB 即可
+
+客户端连接mysql 服务器报错:
+
+The server time zone value 'EDT' is unrecognized or represents more than one time zone.
+
+是时区的设置为 EDT,查看: show variables like '%time_zone%';
+
+修改为系统时区,执行:
+
+set time_zone=SYSTEM;
+
+set global time_zone='+8:00';
+
+flush privileges;
+

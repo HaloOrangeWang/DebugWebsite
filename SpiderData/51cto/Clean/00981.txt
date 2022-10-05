@@ -1,0 +1,72 @@
+解决方案：
+
+首先从https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal下载MySQL-python驱动
+
+那么我们不下载MySQL_python‑1.2.5‑cp27‑none‑win32.whl ，去下载MySQL_python‑1.2.5‑cp27‑none‑win_amd64.whl
+
+下载后文件放到C:\Python27,然后开始安装，
+
+c:\Python27>pip install C:\Python27\MySQL_python-1.2.5-cp27-none-win_amd64.whl
+
+发现安装失败了，ERROR: MySQL_python-1.2.5-cp27-none-win_amd64.whl is not a supported wheel on this platform.
+
+估计还是要去下载c++环境
+
+————————————————
+
+Running setup.py install for mysql-python ... error
+ERROR: Command errored out with exit status 1:
+     command: 'c:\program files\python\python.exe' -u -c 'import io, os, sys, setuptools, tokenize; sys.argv[0] =
+'"'"'C:\\Users\\lin26\\AppData\\Local\\Temp\\pip-install-gpn4j3c1\\mysql-python_4fc8e8e2440d4e86b9373d429b8c6634\\
+setup.py'"'"'; __file__='"'"'C:\\Users\\lin26\\AppData\\Local\\Temp\\pip-install-gpn4j3c1\\mysql-python_4fc8e8e244
+0d4e86b9373d429b8c6634\\setup.py'"'"';f = getattr(tokenize, '"'"'open'"'"', open)(__file__) if os.path.exists(__fi
+le__) else io.StringIO('"'"'from setuptools import setup; setup()'"'"');code = f.read().replace('"'"'\r\n'"'"', '"
+'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record 'C:\Users\lin26\AppData\Loca
+l\Temp\pip-record-iz_1sfbp\install-record.txt' --single-version-externally-managed --user --prefix= --compile --in
+stall-headers 'C:\Users\lin26\AppData\Roaming\Python\Python38\Include\mysql-python'
+         cwd: C:\Users\lin26\AppData\Local\Temp\pip-install-gpn4j3c1\mysql-python_4fc8e8e2440d4e86b9373d429b8c6634
+\
+    Complete output (24 lines):
+    running install
+    running build
+    running build_py
+    creating build
+    creating build\lib.win-amd64-3.8
+    copying _mysql_exceptions.py -> build\lib.win-amd64-3.8
+    creating build\lib.win-amd64-3.8\MySQLdb
+    copying MySQLdb\__init__.py -> build\lib.win-amd64-3.8\MySQLdb
+    copying MySQLdb\converters.py -> build\lib.win-amd64-3.8\MySQLdb
+    copying MySQLdb\connections.py -> build\lib.win-amd64-3.8\MySQLdb
+    copying MySQLdb\cursors.py -> build\lib.win-amd64-3.8\MySQLdb
+    copying MySQLdb\release.py -> build\lib.win-amd64-3.8\MySQLdb
+    copying MySQLdb\times.py -> build\lib.win-amd64-3.8\MySQLdb
+    creating build\lib.win-amd64-3.8\MySQLdb\constants
+    copying MySQLdb\constants\__init__.py -> build\lib.win-amd64-3.8\MySQLdb\constants
+    copying MySQLdb\constants\CR.py -> build\lib.win-amd64-3.8\MySQLdb\constants
+    copying MySQLdb\constants\FIELD_TYPE.py -> build\lib.win-amd64-3.8\MySQLdb\constants
+    copying MySQLdb\constants\ER.py -> build\lib.win-amd64-3.8\MySQLdb\constants
+    copying MySQLdb\constants\FLAG.py -> build\lib.win-amd64-3.8\MySQLdb\constants
+    copying MySQLdb\constants\REFRESH.py -> build\lib.win-amd64-3.8\MySQLdb\constants
+    copying MySQLdb\constants\CLIENT.py -> build\lib.win-amd64-3.8\MySQLdb\constants
+    running build_ext
+    building '_mysql' extension
+error: Microsoft Visual C++ 14.0 is required. Get it with "Build Tools for Visual Studio": https://visualstudio
+.microsoft.com/downloads/
+
+----------------这里是真正错误，去http://go.microsoft.com/fwlink/?LinkId=691126把系统安装一些最新c++框架------------------------------------
+
+https://support.microsoft.com/zh-cn/topic/%E6%9C%80%E6%96%B0%E6%94%AF%E6%8C%81%E7%9A%84-visual-c-%E4%B8%8B%E8%BD%BD-2647da03-1eea-4433-9aff-95f26a218cc0
+
+x64： vc_redist.x64.exe  这个可以bylin
+
+----------------------------------------
+ERROR: Command errored out with exit status 1: 'c:\program files\python\python.exe' -u -c 'import io, os, sys, setu
+ptools, tokenize; sys.argv[0] = '"'"'C:\\Users\\lin26\\AppData\\Local\\Temp\\pip-install-gpn4j3c1\\mysql-python_4fc
+8e8e2440d4e86b9373d429b8c6634\\setup.py'"'"'; __file__='"'"'C:\\Users\\lin26\\AppData\\Local\\Temp\\pip-install-gpn
+4j3c1\\mysql-python_4fc8e8e2440d4e86b9373d429b8c6634\\setup.py'"'"';f = getattr(tokenize, '"'"'open'"'"', open)(__f
+ile__) if os.path.exists(__file__) else io.StringIO('"'"'from setuptools import setup; setup()'"'"');code = f.read(
+).replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record '
+C:\Users\lin26\AppData\Local\Temp\pip-record-iz_1sfbp\install-record.txt' --single-version-externally-managed --use
+r --prefix= --compile --install-headers 'C:\Users\lin26\AppData\Roaming\Python\Python38\Include\mysql-python' Check
+ the logs for full command output.
+

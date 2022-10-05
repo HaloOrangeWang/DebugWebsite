@@ -1,0 +1,38 @@
+前言
+
+最近在工作中遇到一个问题，python pyqt5在安装的时候居然提示失败了，无奈只能找解决的办法，发现网上有同样遇到这个问题的同学，所以就总结了解决的方法分享出来，下面话不多说了，来一起看看详细的介绍：
+
+发现问题
+
+以前装命令都是pip一条命令搞定，会自动安装依赖的库，但在安装pyqt5时却遇到了问题
+
+在下载完pyqt5时，会提示找不到合适的SIP版本
+
+Could not find a version that satisfies the requirement sip>=4.19 (from pyqt5) (from versions: ) No matching distribution found for sip>=4.19 (from pyqt5)
+
+手动pip install sip也安装不了，提示找不到合适的版本，这就奇怪了
+
+我下载了SIP的所有whl文件版本，使用pip安装都提示与当前的机器平台不符合，安装不了。
+
+然后又下载源码编译安装，为了能够编译又安装了mingw32，以便可以使用make,gcc等命令。编译安装完之后，再通过pip install pyqt5依然装不上，提示一样的错误。
+
+于是又琢磨下载源码编译安装pyqt5，编译这个就比较麻烦了，配置了半天，编译不过。。
+
+解决方法
+
+折腾了老半天，最后怎么解决的呢？
+
+卸载了python3.4，下载安装了python3.5，然后pip install pyqt5一条命令搞定
+
+老版本Python不能安装最新的pyqt5的意思？
+
+python3.5写好代码，pyinstaller打包好后，WIN7运行正常，XP电脑运行不了。
+
+提示无法定位程序输入点 Getfinalpathnamebyhandlew 于动态链接库 kernel32.dll。
+
+百度了一下说：python3.5不再支持XP，需要python3.4.
+
+总结
+
+好了，以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作能带来一定的帮助，如果有疑问大家可以留言交流，谢谢大家对脚本之家的支持。
+

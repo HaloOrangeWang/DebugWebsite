@@ -1,0 +1,54 @@
+报错如下：
+
+SQL> select * from t@mstest;
+
+select * from t@test
+
+*
+
+ERROR at line 1:
+
+ORA-28545: error diagnosed by Net8 when connecting to an agent
+
+Unable to retrieve text of NETWORK/NCR message 65535
+
+ORA-02063: preceding 2 lines from MSSQL
+
+解决办法：
+
+说明：sqlserver版本为2008
+
+gateway版本为11.2.0.4。
+
+sqlserver端的listener中将program的值写成了tg4msql。11g版本应该为dg4msql，10g版本中为tg4msql
+
+SID_LIST_LISTENER =
+
+(SID_LIST =
+
+(SID_DESC =
+
+(SID_NAME = PLSExtProc)
+
+(ORACLE_HOME = C:\product\11.2.0\tg_1)
+
+(PROGRAM = extproc)
+
+)
+
+(SID_DESC =
+
+(SID_NAME = test)
+
+(ORACLE_HOME = C:\product\11.2.0\tg_1)
+
+(PROGRAM = dg4msql)
+
+)
+
+)
+
+再次执行成功
+
+oracle gateway透明网关详细安装步骤可联系重庆思庄
+

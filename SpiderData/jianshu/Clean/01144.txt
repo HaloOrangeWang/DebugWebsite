@@ -1,0 +1,61 @@
+  最近在Kali上安装binwalk，因为Kali默认使用python2.7，需要安装Python lzma模块，但是安装时报错，找不到python-lzma
+
+root@zzz:/binwalk# apt-get install python-lzma
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+E: Unable to locate package python-lzma
+root@zzz:/binwalk#
+
+  此类报错一般是源的问题，所以在sources.list文件中增加一句deb http://ftp.de.debian.org/debian sid main
+
+root@zzz:/binwalk# more /etc/apt/sources.list
+#
+
+# deb cdrom:[Debian GNU/Linux 2018.2 _Kali-rolling_ - Official Snapshot amd64 LI
+VE/INSTALL Binary 20180412-10:55]/ kali-last-snapshot contrib main non-free
+
+#deb cdrom:[Debian GNU/Linux 2018.2 _Kali-rolling_ - Official Snapshot amd64 LIV
+E/INSTALL Binary 20180412-10:55]/ kali-last-snapshot contrib main non-free
+
+# This system was installed using small removable media
+# (e.g. netinst, live or single CD). The matching "deb cdrom"
+# entries were disabled at the end of the installation process.
+# For information about how to configure apt package sources,
+# see the sources.list(5) manual.
+
+deb http://ftp.de.debian.org/debian sid main 
+root@zzz:/binwalk#
+
+  更新源，再安装python-lzma，安装成功
+
+root@zzz:/binwalk# apt-get update
+Get:1 http://ftp.de.debian.org/debian sid InRelease [243 kB]
+Get:2 http://ftp.de.debian.org/debian sid/main amd64 Packages [8,333 kB]
+Get:3 http://ftp.de.debian.org/debian sid/main Translation-en [6,317 kB]       
+Get:4 http://ftp.de.debian.org/debian sid/main amd64 DEP-11 Metadata [3,905 kB]
+Get:5 http://ftp.de.debian.org/debian sid/main DEP-11 64x64 Icons [7,827 kB]   
+Fetched 26.6 MB in 23s (1,173 kB/s)                                            
+Reading package lists... Done
+root@zzz:/binwalk# apt-get install python-lzma
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following packages were automatically installed and are no longer required:
+  cramfsswap freeglut3 mtd-utils python3-binwalk python3-opengl
+  python3-pyqtgraph
+Use 'apt autoremove' to remove them.
+The following NEW packages will be installed:
+  python-lzma
+0 upgraded, 1 newly installed, 0 to remove and 1837 not upgraded.
+Need to get 44.2 kB of archives.
+After this operation, 113 kB of additional disk space will be used.
+Get:1 http://ftp.de.debian.org/debian sid/main amd64 python-lzma amd64 0.5.3-4 [44.2 kB]
+Fetched 44.2 kB in 2s (29.5 kB/s)                
+Selecting previously unselected package python-lzma.
+(Reading database ... 334136 files and directories currently installed.)
+Preparing to unpack .../python-lzma_0.5.3-4_amd64.deb ...
+Unpacking python-lzma (0.5.3-4) ...
+Setting up python-lzma (0.5.3-4) ...
+root@zzz:/binwalk#
+

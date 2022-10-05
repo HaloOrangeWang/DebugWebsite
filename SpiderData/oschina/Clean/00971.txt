@@ -1,0 +1,402 @@
+
+文章目录
+
+1. SQLite 3.8.3 or later is required (found 3.7.17)
+
+2. ModuleNotFoundError: No module named '_sqlite3'
+
+3. 导入的django项目不能至直接运行
+
+4. 执行python3 manage.py makemigrations
+
+5. Forbidden (CSRF cookie not set.)
+
+6. pip安装模块出现连接问题
+
+7. django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+8. You called this URL via POST, but the URL doesn't end in a slash and you have APPEND_SLASH set. Django can't redirect to the slash URL while maintaining POST data.
+
+9. ModuleNotFoundError: No module named 'MySQLdb'
+
+10. RuntimeError: You called this URL via POST, but the URL doesn't end in a slash and you have APPEND_SLASH set. Django can't redirect to the slash URL while maintaining POST data
+
+11. django.core.exceptions.ImproperlyConfigured: Application labels aren't unique, duplicates: xxx
+
+12. django.core.exceptions.ImproperlyConfigured: Specifying a namespace in include() without providing an app_name is not supported. Set the app_name attribute in the included module, or pass a 2-tuple containing the list of patterns and app_name instead.
+
+13. django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.00
+
+14. Requested setting USE_I18N, but settings are not configured.
+
+15. ImportError: No module named 'MySQLdb'
+
+16. OSError: mysql_config not found
+
+17. ERROR: No matching distribution found for mysqlclient
+
+18. ModuleNotFoundError: No module named 'import_export'
+
+19. ModuleNotFoundError: No module named 'captcha.fields'
+
+20. Django: ImportError: No module named 'corsheaders'
+
+21. 使用PyCharm启动Django项目不能加载静态资源
+
+22. ImportError: cannot import name 'six' from 'django.utils'
+
+
+1. SQLite 3.8.3 or later is required (found 3.7.17)
+
+raise ImproperlyConfigured('SQLite 3.8.3 or later is required (found %s).' % Database.sqlite_version)django.core.exceptions.ImproperlyConfigured: SQLite 3.8.3 or later is required (found 3.7.17).
+
+① django版本降级
+
+卸载当前的django版本：[root@instance-mtfsf05r mysite]# pip3 uninstall django
+
+安装一个版本低一些的：[root@instance-mtfsf05r mysite]# pip3 install django==2.1.12
+
+② 安装SQLite 3.8.3或以上的版本
+
+【SQLite官网】：https://www.sqlite.org/download.html
+
+下载SQLite3源码安装包：[root@instance-mtfsf05r ~]# wget https://www.sqlite.org/2019/sqlite-autoconf-3290000.tar.gz
+
+下载SQLite3源码安装包：[root@instance-mtfsf05r ~]# wget https://www.sqlite.org/2019/sqlite-autoconf-3290000.tar.gz
+
+解压缩：[root@instance-mtfsf05r ~]# tar -zxvf sqlite-autoconf-3290000.tar.gz
+
+解压缩：[root@instance-mtfsf05r ~]# tar -zxvf sqlite-autoconf-3290000.tar.gz
+
+切换到sqlite目录下：[root@instance-mtfsf05r ~]# cd sqlite-autoconf-3290000/
+
+切换到sqlite目录下：[root@instance-mtfsf05r ~]# cd sqlite-autoconf-3290000/
+
+释放编译文件：[root@instance-mtfsf05r sqlite-autoconf-3290000]# ./configure --prefix=/usr/local/sqlit329
+
+释放编译文件：[root@instance-mtfsf05r sqlite-autoconf-3290000]# ./configure --prefix=/usr/local/sqlit329
+
+编译和安装[root@instance-mtfsf05r sqlite-autoconf-3290000]# make && make install
+
+编译和安装[root@instance-mtfsf05r sqlite-autoconf-3290000]# make && make install
+
+查看当前全局sqlite3的版本检查sqlite3版本还是没有被改变，所以更改旧的sqlite3：
+
+查看当前全局sqlite3的版本检查sqlite3版本还是没有被改变，所以更改旧的sqlite3：
+
+[root@instance-mtfsf05r ~]# sqlite3 -version
+3.7.17 2013-05-20 00:56:22 118a3b35693b134d56ebd780123b7fd6f1497668
+[root@instance-mtfsf05r ~]# mv /usr/bin/sqlite3 /usr/bin/sqlite3_old
+
+为新版本创建软链接：[root@instance-mtfsf05r ~]# ln -s /usr/local/bin/sqlite3 /usr/bin/sqlite3
+
+为新版本创建软链接：[root@instance-mtfsf05r ~]# ln -s /usr/local/bin/sqlite3 /usr/bin/sqlite3
+
+检查当前SQLite3版本：[root@instance-mtfsf05r ~]# sqlite3 --version
+
+检查当前SQLite3版本：[root@instance-mtfsf05r ~]# sqlite3 --version
+
+检查Python的SQLite3版本：[root@instance-mtfsf05r ~]# python3
+
+检查Python的SQLite3版本：[root@instance-mtfsf05r ~]# python3
+
+>>>  import sqlite3
+>>> sqlite3.sqlite_version
+'3.29.0'
+
+再次运行django项目：
+
+
+2. ModuleNotFoundError: No module named ‘_sqlite3’
+
+错误场景：运行Django项目的时候报错，找不到_sqlite3模块
+ 问题原因：因为安装python3的时候没有找到安装sqlite3依赖
+ 解决方式：安装这个模块，然后编译安装python3
+
+[root@instance-mtfsf05r Python-3.7.3]# yum install sqlite*
+[root@instance-mtfsf05r Python-3.7.3]# make  && make install
+
+ps：在重新编译安装python的时候，需要安装一些依赖，下面是安装python的依赖：
+
+[root@VM_39_157_centos ~]# yum install gcc patch libffi-devel python-devel  zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel -y
+
+
+3. 导入的django项目不能至直接运行
+
+解决方式：
+
+1、第一步
+ 
+ 2、第二步
+
+
+4. 执行python3 manage.py makemigrations
+
+执行python3 manage.py makemigrations报下面的错误:
+
+You are trying to add a non-nullable field 'goods' to order without a default; we can't do that (the database needs something to populate existing rows).
+Please select a fix:
+ 1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+ 2) Quit, and let me add a default in models.py
+Select an option:
+
+执行python3 manage.py migrate报下面的错误：
+
+Operations to perform:
+  Apply all migrations: admin, app, auth, contenttypes, sessions
+Running migrations:
+  No migrations to apply.
+  Your models have changes that are not yet reflected in a migration, and so won't be applied.
+  Run 'manage.py makemigrations' to make new migrations, and then re-run 'manage.py migrate' to apply them.
+
+解决方式：thanlon@vivobook:~/git与gitee项目/github/alipay_django/app/migrations$ rm -rf 0001_initial.py
+
+makemigrations 命令用于将定义的模型生成 0001_initial.py 文件，0001_initial.py中是生成数据表的脚本代码，migrate命令根据脚本呢代码在目标数据库中生成相对于的数据表。第一次创建过数据表，再次创建就会报上面的错误。
+
+
+5. Forbidden (CSRF cookie not set.)
+
+问题原因：CSRF cookie not set.这里使用了中间件，可以把CSRF中间件注释掉
+ 解决方案：注释掉 django.middleware.csrf.CsrfViewMiddleware
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+
+6. pip安装模块出现连接问题
+
+问题原因： 国外资源，访问比较慢
+ 解决方案： 指定清华源或者豆瓣源下载，清华源：https://pypi.tuna.tsinghua.edu.cn/simple，豆瓣源：，使用的格式：
+
+pip install -i  https://pypi.tuna.tsinghua.edu.cn/simple 模块名
+pip install -i  https://pypi.douban.com/simple 模块名
+
+
+7. django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+问题来源：Django3.0中使用pymysql生成表的时候报错
+ 解决方案：报错出现的原因是 mysqlclient 最低要求是1.3.13，而我们默认的是 0.9.3，所以需要修改为 0.9.3。网上有很多办法，这里使用最简单、最容易理解的方式就是 动态修改使用的 mysqlclient 版本。只需要修改 pymysql 中的 version_info 的值，默认是(1, 3, 12, “final”, 0)，修改为(1, 3, 13, “final”, 0)就可以解决了。可以进入install_as_MySQLdb方法中找到version_info变量查看默认值。
+
+具体操作：
+
+import pymysql
+
+pymysql.version_info = (1, 3, 13, "final", 0) # (1, 3, 12, "final", 0)->(1, 3, 13, "final", 0)
+pymysql.install_as_MySQLdb()
+
+
+8. You called this URL via POST, but the URL doesn’t end in a slash and you have APPEND_SLASH set. Django can’t redirect to the slash URL while maintaining POST data.
+
+具体报错内容：
+
+You called this URL via POST, but the URL doesn't end in a slash and you have APPEND_SLASH set. Django can't redirect to
+the slash URL while maintaining POST data. Change your form to point to 127.0.0.1:8000/login.html/ (note the trailing 
+slash), or set APPEND_SLASH=False in your Django settings.
+
+问题来源：
+ urls.py：
+
+urlpatterns = [
+    path('login.html/', views.Login.as_view()),
+]
+
+login.html：
+
+<form method="post" action="/login.html">
+    <div class="form-group">
+        <label for="">用户名</label>
+        <input type="text" name="username" class="form-control" id="name" placeholder="请输入用户名"
+               autofocus>
+    </div>
+    <div class="form-group">
+        <label for="">密码</label>
+        <input type="password" name="pwd" class="form-control" id="pwd" placeholder="请输入密码">
+    </div>
+    <input type="submit" class="btn" value="登录" id="add_student" style="background: #f2dede;">
+</form>
+
+问题原因：可以发现，请求的url写错了，没有加斜杠
+ 解决方案：url由 /login.html 修改为 /login.html/
+
+
+9. ModuleNotFoundError: No module named ‘MySQLdb’
+
+问题来源：将Django默认使用的sqlite更换为mysql时出现的报错
+
+解决方案：除了在配置文件 settings.py 中配置连接的数据库之外还需要在与配置文件同级目录下的 __init__.py 文件中加入以下代码：
+
+import pymysql
+
+pymysql.version_info = (1, 3, 13, "final", 0)
+pymysql.install_as_MySQLdb()
+
+这里使用pymysql来连接数据库，我们都知道Django的ORM实质上是不负责连接数据的。另外把数据库的配置也贴出来仅供大家参考：
+
+DATABASES = {
+    'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_test',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',
+        'PORT': '3306'
+    }
+}
+
+
+10. RuntimeError: You called this URL via POST, but the URL doesn’t end in a slash and you have APPEND_SLASH set. Django can’t redirect to the slash URL while maintaining POST data
+
+问题翻译：运行时错误：您通过POST调用了此URL，但该URL不以斜线结尾，并且设置了附加斜线。Django在维护POST数据时不能重定向到斜杠URL。
+
+问题原因：在使用AJAX向后台发送请求的时候报这样的错误
+
+解决方案：url部分写错了，少了一个斜线，/csrf.html 是不正确的，应该是 /csrf.html/。
+
+<script>
+    $(function () {
+        submitForm();
+    });
+
+function submitForm() {
+        $('#submit').click(function () {
+            var user = $('#user').val();
+            var token = $.cookie('csrftoken');
+            $.ajax({
+                url: '/csrf.html/', //可以不写，默认发送到本页面对应的视图函数中
+                type: 'post',
+                headers:{'X-CSRFToken':token},
+                data: {
+                    'user': user
+                },
+                success: function (arg) {
+                    alert(arg) //ok
+                }
+            })
+        })
+    }
+</script>
+
+
+11. django.core.exceptions.ImproperlyConfigured: Application labels aren’t unique, duplicates: xxx
+
+问题翻译：大致意思是应用程序标签不是唯一的
+
+问题原因：INSTALLED_APPS 列表中有重复的元素（应用程序标签），比如误写了两个 'django.contrib.admin'
+
+解决方案：删除重复的应用程序标签
+
+
+12. django.core.exceptions.ImproperlyConfigured: Specifying a namespace in include() without providing an app_name is not supported. Set the app_name attribute in the included module, or pass a 2-tuple containing the list of patterns and app_name instead.
+
+问题翻译：大致意思是不支持在include()中指定名称空间而不提供app_name
+
+问题原因：新版本的Django与旧版本的有所不同，在定义路由的时候会有所不同
+
+解决方案：旧版本中定义路由，
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('learning_logs.urls', namespace='learning_logs')),
+]
+
+新版本中定义路由：
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path(' ', include(('learning_logs.urls', "learning_logs"), namespace='learning_logs')),
+]
+
+代码来自：https://blog.csdn.net/jason_cdd/article/details/106953974
+
+
+13. django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.00
+
+问题原因：在重新封装更新用户表之前，已经更新了数据表，在数据库中已经有了django相关的依赖表，就会报这样的错误/异常
+
+解决方案：删除原有的数据库（删除之前注意备份数据），然后重新建立数据库
+
+参考：https://cloud.tencent.com/developer/article/1424629
+
+
+14. Requested setting USE_I18N, but settings are not configured.
+
+具体报错信息是：
+
+django.core.exceptions.ImproperlyConfigured: Requested setting USE_I18N, but settings are not configured. You must
+either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.
+
+报错来源：在Pycharm中打开Python控制台运行一些测试程序的时候报错
+
+报错分析：请求的设置为USE_I18N，但未配置设置。必须先定义环境变量DJANGO_SETTINGS_MODULE或调用settings.configure()才能访问设置。
+
+解决方案：具体什么原因，我也不太清楚。但如果想在Python Console正常运行代码，需要提前执行 from xxx.wsgi import *，其中xxx是你的项目名称。
+
+
+15. ImportError: No module named ‘MySQLdb’
+
+报错来源：Django中配置mysql
+ 报错分析：使用的Python3版本，Python2中直接安装mysqldb，但是Python3需要安装mysqlclient
+ 解决方法：pip install mysqlclient
+
+
+16. OSError: mysql_config not found
+
+报错来源：安装 MySQLdb 报错
+ 报错分析：缺少相关依赖
+ 解决方法：sudo apt install libmysqlclient-dev
+
+
+17. ERROR: No matching distribution found for mysqlclient
+
+报错来源：安装 mysqlclient 报错
+ 报错分析：缺少相关依赖
+ 解决方法：sudo apt install libmysqlclient-dev 后再次安装mysqlclient：pip install mysqlclient
+
+
+18. ModuleNotFoundError: No module named ‘import_export’
+
+报错来源：安装 import_export 报错
+ 解决方法：不应该使用：pip install import_export 而应该使用：pip install django-import_export
+
+
+19. ModuleNotFoundError: No module named ‘captcha.fields’
+
+报错来源：django3.0+集成xadmin报错
+ 解决方法：应该使用：pip install django-simple-captcha
+
+
+20. Django: ImportError: No module named ‘corsheaders’
+
+报错来源：安装 corsheaders 报错
+ 解决方法：不应该使用：pip install corsheaders 而应该使用：pip install django-cors-headers
+
+
+21. 使用PyCharm启动Django项目不能加载静态资源
+
+问题来源：使用PyCharm启动Django项目不能加载静态资源
+ 解决方法：发现在配置文件settings.py中配置DEBUG的值是False，将DEBUG设置为Ture，即：开启DEBUG模式。
+
+
+22. ImportError: cannot import name ‘six’ from ‘django.utils’
+
+问题来源：Python3引入xadmin启动后报的错
+ 解决方法：进入python3.6/site-packages将six.py 复制粘贴到 django/utils即可
+
+本文同步分享在 博客“NiuXL1996”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

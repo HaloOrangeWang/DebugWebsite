@@ -1,0 +1,104 @@
+概念：
+
+BAM is the compressed binary version of the Sequence Alignment/Map (SAM) format. 生物信息中的二进制文件主要是为了节约空间，计算机机可读。可以用samtools工具实现sam和bam文件之间的转化。
+
+BAM is the compressed binary version of the Sequence Alignment/Map (SAM) format. 生物信息中的二进制文件主要是为了节约空间，计算机机可读。可以用samtools工具实现sam和bam文件之间的转化。
+
+peaks注释： 就是想看看该peaks在基因组的哪一个区段，看看它们在各种基因组区域(基因上下游，5,3端UTR，启动子，内含子，外显子，基因间区域，microRNA区域)分布情况，但是一般的peaks都有近万个，所以需要批量注释，
+
+peaks注释： 就是想看看该peaks在基因组的哪一个区段，看看它们在各种基因组区域(基因上下游，5,3端UTR，启动子，内含子，外显子，基因间区域，microRNA区域)分布情况，但是一般的peaks都有近万个，所以需要批量注释，
+
+.bw文件：BigWig文件是压缩的，索引的二进制格式，用于全基因组信号数据的计算（例如GC百分比）或实验（例如ChIP-seq / RNA-seq读取深度）。
+
+.bw文件：BigWig文件是压缩的，索引的二进制格式，用于全基因组信号数据的计算（例如GC百分比）或实验（例如ChIP-seq / RNA-seq读取深度）。
+
+sam/bam格式文件: 就是把测序reads比对到参考基因组后的文件。bam或者bed格式的文件主要是为了追踪我们的reads到底比对到了参加基因组的什么区域。
+
+sam/bam格式文件: 就是把测序reads比对到参考基因组后的文件。bam或者bed格式的文件主要是为了追踪我们的reads到底比对到了参加基因组的什么区域。
+
+ChIP-Seq : 染色质免疫共沉淀技术（chip）是研究体内蛋白质与DNA相互作用的有力工具。ChIP-Seq 结合了ChIP技术和高通量测序技术，首先通过chip特异性地富集目的蛋白结合的DNA片段，并对其进行纯化与文库构建，然后对富集得到的DNA片段进行高通量测序。
+
+ChIP-Seq : 染色质免疫共沉淀技术（chip）是研究体内蛋白质与DNA相互作用的有力工具。ChIP-Seq 结合了ChIP技术和高通量测序技术，首先通过chip特异性地富集目的蛋白结合的DNA片段，并对其进行纯化与文库构建，然后对富集得到的DNA片段进行高通量测序。
+
+高通量测序技术（High-throughput sequencing）：又称“下一代”测序技术（"Next-generation" sequencing technology，NGS），以能一次并行对几十万到几百万条DNA分子进行序列测定和一般读长较短等为标志。
+
+高通量测序技术（High-throughput sequencing）：又称“下一代”测序技术（"Next-generation" sequencing technology，NGS），以能一次并行对几十万到几百万条DNA分子进行序列测定和一般读长较短等为标志。
+
+index（索引）：在关系数据库中，索引是一种单独的、物理的对数据库表中一列或多列的值进行排序的一种存储结构，它是某个表中一列或若干列值的集合和相应的指向表中物理标识这些值的数据页的逻辑指针清单。索引的作用相当于图书的目录，可以根据目录中的页码快速找到所需的内容。
+
+index（索引）：在关系数据库中，索引是一种单独的、物理的对数据库表中一列或多列的值进行排序的一种存储结构，它是某个表中一列或若干列值的集合和相应的指向表中物理标识这些值的数据页的逻辑指针清单。索引的作用相当于图书的目录，可以根据目录中的页码快速找到所需的内容。
+
+echo : 字符串输出。
+
+echo : 字符串输出。
+
+xargs 与管道的区别 ：
+
+1）echo '--help' | cat   该命令输出的是echo的内容，也就是说将echo的内容当作cat处理的文件内容了，实际上就是echo命令的输出通过管道定向到cat的输入了。然后cat从其标准输入中读取待处理的文本内容。这等价于在test.txt文件中有一行字符 '--help' 然后运行  cat test.txt 的效果。
+
+2）echo '--help' | xargs cat 等价于 cat --help 什么意思呢，就是xargs将其接受的字符串--help 做成cat的一个命令参数来运行cat命令，同样  echo 'test.c test.cpp' | xargs cat 等价于 cat test.c test.cpp 此时会将test.c和test.cpp的内容都显示出来。参考文章（https://www.cnblogs.com/wangqiguo/p/6464234.html）
+
+xargs 与管道的区别 ：
+
+1）echo '--help' | cat   该命令输出的是echo的内容，也就是说将echo的内容当作cat处理的文件内容了，实际上就是echo命令的输出通过管道定向到cat的输入了。然后cat从其标准输入中读取待处理的文本内容。这等价于在test.txt文件中有一行字符 '--help' 然后运行  cat test.txt 的效果。
+
+2）echo '--help' | xargs cat 等价于 cat --help 什么意思呢，就是xargs将其接受的字符串--help 做成cat的一个命令参数来运行cat命令，同样  echo 'test.c test.cpp' | xargs cat 等价于 cat test.c test.cpp 此时会将test.c和test.cpp的内容都显示出来。参考文章（https://www.cnblogs.com/wangqiguo/p/6464234.html）
+
+bw文件方便查看测序深度。
+
+bw文件方便查看测序深度。
+
+IGV最佳可视化工具，deeptools也是不错的可视化工具
+
+IGV最佳可视化工具，deeptools也是不错的可视化工具
+
+操作：
+
+安装atac:
+
+下载samtools :
+
+根据此方法下载bowtie2:
+
+wget https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.3.4.3/bowtie2-2.3.4.3-linux-x86_64.zip
+
+unzip bowtie2-2.3.4.3-linux-x86_64.zip
+
+运用bowtie2 把fastqc转换成.sam文件，再用samtools将.sam文件转换成.bam文件：
+
+运用bowtie2 把fastqc转换成.sam文件，再用samtools将.sam文件转换成.bam文件：
+
+建立.bw文件：
+
+建立.bw文件：
+
+ls  tmp.bam |while read id;do
+
+nohup bamCoverage --normalizeUsing CPM -b id -o ${id%%.}.tmp.bw &
+
+done
+
+cat nohup.out 发现错误：
+
+问题解决方案：1）运用所学知识分析。  2）网上查找是否有解决方案 。3）对比正确的环境找出问题的根源，从而改变环境解决问题。
+
+问题解决方案：1）运用所学知识分析。  2）网上查找是否有解决方案 。3）对比正确的环境找出问题的根源，从而改变环境解决问题。
+
+找到问题根源numpy版本过低，重新下载版本较高的numpy :
+
+找到问题根源numpy版本过低，重新下载版本较高的numpy :
+
+bamcoverage 正常可用，问题解决：
+
+bamcoverage 正常可用，问题解决：
+
+友情阅读推荐：
+
+强烈推荐参加生信技能树（爆款入门培训课）全国巡讲 ，课程详情见：https://mp.weixin.qq.com/s/Z9sdxgvFj0XJjYaW_5yHXg 各大城市均有开课，随时随地报名。
+
+生信技能树公益视频合辑：学习顺序是linux，r，软件安装，geo，小技巧，ngs组学！
+
+B站链接：https://m.bilibili.com/space/338686099
+
+学徒培养详见：https://mp.weixin.qq.com/s/3jw3_PgZXYd7FomxEMxFmw
+

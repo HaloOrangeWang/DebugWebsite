@@ -1,0 +1,39 @@
+
+一. 发现问题
+
+今天在cmd命令行运行一个py文件，本来在pycharm中运行好好的文件，在命令行却报错了，直接提示我：ImportError: No module named 'homeworks'
+
+
+
+二. 什么原因
+
+这是因为pycharm中，不光会导入环境变量中sys.path发现的模块，还会导入当前工作目录下的模块。在pycharm中，当前工作目录就是项目目录，能顺利调用相同项目中的模块。但通过命令行启动时，当前工作目录有可能不是项目目录，那么项目中的模块就不会被找到，因此运行时会报错：ImportError: No module named ...
+
+如上图所示，pycharm中，homeworks所在的目录路径D:\python_workshop\python6就是工作目录，所以会导入当前工作目录下的模块
+
+
+三. 如何解决
+
+
+方法一：
+
+新建环境变量PYTHONPATH，将模块路径放到环境变量中作为全局变量(推荐使用)
+
+由于我的homeworks包所在目录的路径为：D:\python_workshop\python6
+
+
+方法二：
+
+在代码中使用sys.path.append方法将homeworks所在目录加入到搜素目录中，切记，这段代码必须放在from ... import ...前面
+
+
+注意：
+
+选择上面两种方法任意一种都可以，如果修改完代码或者配置完环境变量后，命令行还是报错，这时请退出cmd，重新进入，然后就可以顺利的运行了
+
+参考文章
+
+https://blog.csdn.net/qq_35304570/article/details/78151545
+
+https://blog.csdn.net/hello__Jerry/article/details/79586034
+

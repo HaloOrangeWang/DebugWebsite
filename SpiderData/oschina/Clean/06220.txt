@@ -1,0 +1,81 @@
+import shelve
+
+a = shelve.open('1')
+b = [1,2,3]
+a['b'] = b
+a.close()
+
+a['b']
+
+Traceback (most recent call last):
+File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38-32\lib\shelve.py", line 111, in __getitem__
+value = self.cache[key]
+KeyError: 'b'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38-32\lib\shelve.py", line 113, in __getitem__
+f = BytesIO(self.dict[key.encode(self.keyencoding)])
+File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38-32\lib\shelve.py", line 70, in closed
+raise ValueError('invalid operation on closed shelf')
+ValueError: invalid operation on closed shelf
+
+原因是a.close()就已经关闭了shelf文件。
+
+1 >>> shelve.open('1')['b']
+2 [1,2,3]
+3 >>> shelve.close()
+4 Traceback (most recent call last):
+5   File "<stdin>", line 1, in <module>
+6 AttributeError: module 'shelve' has no attribute 'close'
+
+shelve模块没有close()，需要变量来关闭。
+
+那如果没有关闭会怎样？
+
+1 >>> b
+ 2 [1, 2, 3]
+ 3 >>> c = shelve.open('5') 
+ 4 >>> c['b'] = b
+ 5 >>> c['b']
+ 6 [1, 2, 3]　　#创建并打开文件5
+ 7 >>> d = shelve.open('6')
+ 8 >>> d['b'] = [4,5,6]
+ 9 >>> d['b']
+10 [4, 5, 6]　　#创建并打开文件6
+11 >>> b
+12 [1, 2, 3]
+13 >>> c['b']
+14 [1, 2, 3]
+15 >>> d.close()
+16 >>> d['b']　　#关闭文件
+17 Traceback (most recent call last):
+18   File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38-32\lib\shelve.py", line 111, in __getitem__
+19     value = self.cache[key]
+20 KeyError: 'b'
+21 
+22 During handling of the above exception, another exception occurred:
+23 
+24 Traceback (most recent call last):
+25   File "<stdin>", line 1, in <module>
+26   File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38-32\lib\shelve.py", line 113, in __getitem__
+27     f = BytesIO(self.dict[key.encode(self.keyencoding)])
+28   File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38-32\lib\shelve.py", line 70, in closed
+29     raise ValueError('invalid operation on closed shelf')
+30 ValueError: invalid operation on closed shelf
+31 >>> c['b']
+32 [1, 2, 3]
+
+从上面代码可以看出shelve模块的close()是分别针对每个文件的，会一直处于打开状态直到关闭。
+
+1 >>> list(c.values())
+2 [[1, 2, 3]]
+3 >>> list(c.keys())
+4 ['b']
+5 >>> list(c)
+6 ['b']
+
+shelf值默认返回值为keys()方法的返回值。
+

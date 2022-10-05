@@ -1,0 +1,17 @@
+今天在看书运行python程序的时候，将书中的Python程序中例子的文件名string.py，直接用到我写的Python程序文件名中来了，在输入完整的程序，要运行的时候，IDLE突然间就不好使了，并报了错误 Subprocess Connection Error（IDLE’s subprocess didn’t make connection. Either IDLE can’t start a
+ subprocess or personal firewall software is blocking the connection.”）。我还一直以为是我的程序有问题，仔细检查了好几遍都没有发现问题所在，之后我就在网上查找，之后找到两个答案。
+
+其中之一给出了问题的所在：①
+ 这个错误的原因在于，python安装路径下里面 有文件名和他软件自身的文件名称冲突了（即使不在同一级路径下），这个错误在给文件命名的时候不会提示，会在下次打开IDLE的时候报这个错。
+ 解决方案：找到自定义的文件删掉或者改名字就好了。
+
+第二种解决办法：
+ 修改[Python目录]\Lib\idlelib\PyShell.py文件，在1300行附近，将
+ def main():函数下面
+ use_subprocess = True
+ 修改为：
+ use_subprocess = False
+
+其实，在报错弹出的页面中给出的网站中的解决办法和第一个解决办法是一样的，详细链接地址为：https://docs.python.org/3/library/idle.html
+ 仅供参考。
+

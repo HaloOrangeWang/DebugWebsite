@@ -1,0 +1,43 @@
+
+Python fitz模块导入出错的解决
+
+我们不应该仅仅使用pip install fitz来安装fitz，而是同时安装fitz和PyMuPDF（一定注意安装顺序：先安装fitz，然后安装pymupdf，如果顺序相反则无法导入）
+
+另外注意：不能只安装PyMuPDF，当只安装PyMuPDF时，虽然可以用import fitz，但是运行fitz.open()等会出错
+
+最简单的image转pdf
+
+import fitz
+imgdoc = fitz.open(img_file)
+# imgdoc = fitz.open('png', img_bytes)
+pdfbytes = imgdoc.convertToPDF()
+with open(pdf_file, 'wb') as f:
+    f.write(pdfbytes)`
+
+常用pdf转image（缩放，旋转，剪切）
+
+import fitz
+import os
+
+pdf_file = r'c:\Users\Name\Desktop\test.pdf'
+pdfDoc = fitz.open(pdf_file)
+# pdfDoc = fitz.open('pdf', io_bytes)
+page = pdfDoc[0]
+
+# 设置缩放和旋转系数
+w = page.MediaBox.width
+h = page.MediaBox.height
+
+length = w if w>=h else h
+zoom = 1600/length # 将长边缩放到1600像素宽
+
+trans = fitz.Matrix(zoom, zoom).preRotate(0) # 传递矩阵
+
+clip_rate = (0.2,0.1,0.9,1) #剪切百分比(x_from_rate, y_from_rate, x_to_rate, y_to_rate)
+clip = (w*clip_rate[0],h*clip_rate[1], w*clip_rate[2], h*clip_rate[3])
+
+pm = page.getPixmap(matrix=trans, alpha=False, clip=clip)
+img_path = os.path.join(os.path.splitext(pdf_file)[0] + '.png')
+# 开始写图像
+pm.writePNG(img_path)
+

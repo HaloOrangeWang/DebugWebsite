@@ -1,0 +1,21 @@
+
+1.OSError: [WinError 123]文件名、目录名或卷标语法不正确
+
+错误代码：
+
+os.chmod("D:\Project\python_test\test.txt", 256)
+
+正确代码：
+
+os.chmod(r"D:\Project\python_test\test.txt", 256)
+
+错误原因：
+
+因为在python中\是转义字符，Windows 路径如果只有一个\，会被识别为转义字符。
+
+可以用r''把它转为原始字符，或者用\\、Linux的路径字符/。
+
+PS:os.chmod() 方法用于更改文件或目录的权限。
+
+参考文章：Python：OSError [WinError 123] 文件名、目录名或卷标语法不正确。错误解决方法。_集电极的博客-CSDN博客_python文件名目录名或卷标语法不正确
+

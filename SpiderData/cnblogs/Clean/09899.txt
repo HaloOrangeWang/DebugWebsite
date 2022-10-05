@@ -1,0 +1,38 @@
+
+进入conda标签的时候报错
+
+"EnvironmentLocationNotFound: Not a conda environment: /home/xxx/.conda/envs/anaconda3 "
+
+原因是conda info--json输出的更改。 版本4.3.33提供envs=[]，版本>=4.4提供envs=[root_env_dir](始终非空)。
+
+可以通过以下修复：
+
+在anaconda的安装目录查找这个文件：
+
+~/anaconda3/pkgs/nb_conda-2.2.1-py36.0/lib/python3.6/site-packages/nb_conda/envmanager.py, 这里的(py36.0) 根据版本可能会有不同
+
+查找这一句:
+
+修改一下返回值，给列表生成器添加一个限制条件
+
+
+不报错，但是无法更改conda文件，创建的时候找不到这个环境
+
+点击conda页面，选择你计算机中已有却无法用于jupyternotebook的虚拟环境。
+
+然后，在右侧栏查找包：ipykernel，查找后安装。
+
+然后我们刷新home页面，点击files页面，选择new下拉菜单，可以看到，这里已经找到了我们以前创建的python环境。
+
+所以说，想要让jupyternotebook查找到你所创建的python虚拟环境，那么这个环境必须装有ipykernel包。至于如何去让这个环境装这个包，通过pip，或者刚才我们说的在jupyter页面操作，或者通过conda管理器都是可以的
+
+参考了这两篇文章
+
+https://www.jianshu.com/p/7d8ce818a923
+
+https://www.jianshu.com/p/8188c32a3a34
+
+在网上又发现了一个很详细的切换conda环境的文章
+
+https://www.pythonheidong.com/blog/article/147169/
+

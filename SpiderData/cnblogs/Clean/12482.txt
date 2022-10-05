@@ -1,0 +1,20 @@
+今天在看python爬虫视频Selenium过程中遇到报错为
+
+selenium.common.exceptions.ElementClickInterceptedException: Message: element click intercepted: Element <span hidefocus="hidefocus" action="next" class="pager_next ">...</span> is not clickable at point (604, 852). Other element would receive the click: <div class="body-container showData">...</div>
+  (Session info: chrome=86.0.4240.111)
+1
+2
+原代码为
+
+next_btn = self.driver.find_element_by_xpath("//div[@class='pager_container']/span[last()]")
+ next_btn.click()
+1
+2
+在网上找到的错误原因大概是因为这个按钮上面还有别的东西覆盖，后来将代码改成
+
+next_btn = self.driver.find_element_by_xpath("//div[@class='pager_container']/span[last()]")
+self.driver.execute_script("arguments[0].click();", next_btn)
+1
+2
+即可成功运行
+

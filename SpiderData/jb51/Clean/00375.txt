@@ -1,0 +1,68 @@
+你应该在生产环境中把TEMPLATE_DEBUGFalse 如果这个设为`` True`` ，为了在那个好看的错误页面上显示足够的东西，Django的模版系统就会为每一个模版保存一些额外的信息。
+
+实现一个404模板
+
+如果`` DEBUG`` 设置为`` True`` ，Django会显示那个自带的404错误页面。 但如果`` DEBUG`` 被设置成`` False`` ，那它的行为就不一样了： 他会显示一个在你的模版根目录中名字叫`` 404.html`` 的模版 所以，当你准备部署你的应用时，你会需要创建这个模版并在里面放一些有意义的“页面未找到”的信息
+
+这里有一个`` 404.html``的示例，你可以从它开始。 假定你使用的模板继承并定义一个 `` base.html``,该页面由titlecontent两块组成。
+
+{% extends "base.html" %}
+
+{% block title %}Page not found{% endblock %}
+
+{% block content %}
+<h1>Page not found</h1>
+
+<p>Sorry, but the requested page could not be found.</p>
+{% endblock %}
+
+要测试你的404.html页面是否正常工作，仅仅需要将DEBUG 设置为`` False`` ，并且访问一个并不存在的URL。 （它将在`` sunserver`` 上工作的和开发服务器上一样好）
+
+实现一个500模板
+
+类似的，如果`` DEBUG`` 设置为`` False`` ，Djang不再会显示它自带的应对未处理的Python异常的错误反馈页面。 作为代替，它会查找一个名为`` 500.html`` 的模板并且显示它。 像`` 404.html`` 一样，这个模板应该被放置在你的模板根目录下。
+
+这里有一个关于500.html的比较棘手的问题。你永远不能确定`` 为什么``会显示这个模板，所以它不应该做任何需要连接数据库，或者依赖任何可能被破坏的基础构件的事情。 （例如：它不应该使用自定义模板标签。）如果它用到了模板继承，那么父模板也就不应该依赖可能被破坏的基础构件。 因此，最好的方法就是避免模板继承，并且用一些非常简单的东西。 这是一个`` 500.html`` 的例子，可以把它作为一个起点：
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+  "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+  <title>Page unavailable</title>
+</head>
+<body>
+  <h1>Page unavailable</h1>
+
+<p>Sorry, but the requested page is unavailable due to a
+  server hiccup.</p>
+
+<p>Our engineers have been notified, so check back later.</p>
+</body>
+</html>
+
+设置错误警告
+
+当你使用Django制作的网站运行中出现了异常，你会希望去了解以便于修正它。 默认情况下，Django在你的代码引发未处理的异常时，将会发送一封Email至开发者团队。但你需要去做两件事来设置这种行为。
+
+首先，改变你的ADMINS设置用来引入你的E-mail地址，以及那些任何需要被注意的联系人的E-mail地址。 这个设置采用了类似于(姓名, Email)元组，像这样：
+
+ADMINS = (
+  ('John Lennon', 'jlennon@example.com'),
+  ('Paul McCartney', 'pmacca@example.com'),
+)
+
+第二，确保你的服务器配置为发送电子邮件。 设置好postfix,sendmail或其他本书范围之外但是与Django设置相关的邮件服务器,你需要将将 EMAIL_HOST设置为你的邮件服务器的正确的主机名. 默认模式下是设置为'localhost', 这个设置对大多数的共享主机系统环境适用. 取决于你的安排的复杂性,你可能还需要设置 EMAIL_HOST_USER,EMAIL_HOST_PASSWORD,EMAIL_PORT或EMAIL_USE_TLS。
+
+你还可以设置EMAIL_SUBJECT_PREFIX以控制Django使用的 error e-mail的前缀。 默认情况下它被设置为'[Django] '
+
+设置连接中断警报
+
+如果你安装有CommonMiddleware(比如，你的MIDDLEWARE_CLASSES设置包含了'django.middleware.common.CommonMiddleware'的情况下，默认就安装了CommonMiddleware),你就具有了设置这个选项的能力：有人在访问你的Django网站的一个非空的链接而导致一个404错误的发生和连接中断的情况，你将收到一封邮件. 如果你想激活这个特性，设置SEND_BROKEN_LINK_EMAILS 为True(默认为False),并设置你的MANAGERS为某个人或某些人的邮件地址，这些邮件地址将会收到报告连接中断错误的邮件. MANAGERS使用和ADMINS 同样的语法.例如:
+
+MANAGERS = (
+  ('George Harrison', 'gharrison@example.com'),
+  ('Ringo Starr', 'ringo@example.com'),
+)
+
+请注意，错误的Email会令人感到反感，对于任何人来说都是这样。
+

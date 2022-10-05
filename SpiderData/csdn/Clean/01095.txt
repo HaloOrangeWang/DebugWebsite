@@ -1,0 +1,44 @@
+
+一、AttributeError: module ‘cv2‘ has no attribute ‘face‘报错
+
+解决方法：
+
+1、用pycharm打开你的代码，然后在pycharm中右键打开终端
+
+2、安装opencv-contrib-python包
+
+pip install opencv-contrib-python
+
+
+二、anonymous-namespace'::SourceReaderCB::~SourceReaderCB terminating async callback报错警告
+
+原代码：
+
+camera = cv2.VideoCapture(0)  # 0:开启摄像头
+
+解决方法：修改代码如下
+
+camera = cv2.VideoCapture(0,cv2.CAP_DSHOW)  # 0:开启摄像头
+
+
+三、error: (-215) !empty() in function cv::CascadeClassifier::detectMultiScale
+
+解决方法：检查分类器haarcascade_frontalface_default.xml的路径是否有错误，可以参考博文
+
+
+
+四、Python CV2:[ WARN:0]`anonymous-namespace‘SourceReaderCB~SourceReaderCB terminating async callback
+
+将以下代码
+
+camera = cv2.VideoCapture(0)  # 0:开启摄像头
+
+修改为：
+
+camera = cv2.VideoCapture(0,cv2.CAP_DSHOW)  # 0:开启摄像头
+
+参考博文
+
+
+五、PermissionError: [Errno 13] Permission denied: 'D:/PycharmTest/face1/data\\haarcascades'
+

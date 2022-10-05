@@ -1,0 +1,11 @@
+刚刚安装完的系统，做完基线版本后，使用passwd更改用户密码后报错，如图：
+
+查询各种日志无果，遂使用strace跟踪查看一下，查看之后还真是少了东西
+ （做基线后，更改了pam.d下面的东西）
+ strace -o passwd.log passwd
+ 查看日志如下：
+
+于是进入到/usr/lib64/security,复制一个pam_passwdqc.so
+
+ok,解决。
+

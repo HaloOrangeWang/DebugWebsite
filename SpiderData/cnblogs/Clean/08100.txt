@@ -1,0 +1,71 @@
+这两天在用python调用接口时，因为接口返回的是str类型的数据，形如：
+
+因为这样的str类似字典，所以我想把它转为字典以便处理，使用的是eval来进行转换，如下：
+
+<pre name="code" class="python">a='{"errno":0,"errmsg":null,"unassigned":0,"total":0,"list":null}'
+
+<pre name="code" class="python">a='{"errno":0,"errmsg":null,"unassigned":0,"total":0,"list":null}'
+
+a=eval(a)
+
+a=eval(a)
+
+print type(a)
+
+print type(a)
+
+结果出现错误如下：NameError: name ‘null’ is not defined
+
+查询资料发现，python无法处理null这样的字符串，所以报错。解决方法有两个：
+
+一、把null转换为python可以接受的字符，例如空字符串
+
+如：
+
+global null
+
+global null
+
+null=''
+
+null=''
+
+a='{"errno":0,"errmsg":null,"unassigned":0,"total":0,"list":null}'
+
+a='{"errno":0,"errmsg":null,"unassigned":0,"total":0,"list":null}'
+
+a=eval(a)
+
+a=eval(a)
+
+print type(a)
+
+print type(a)
+
+发现这时就可以正常转换了。
+
+二、使用json模块的loads()方法
+
+这是一个大杀器，直接使用如下语句：
+
+a=json.loads(a)
+
+a=json.loads(a)
+
+print type(a)
+
+print type(a)
+
+完事，转换正常，python自动把null转换为了python支持的None。
+
+当然，要记得引入json。
+
+注意：json字符串中，必须用双引号，如果定义成下面这样，是不对的
+
+使用json,loads()时会报错：
+
+
+ValueError: Expecting property name: line 1 column 1 (char 1)
+
+https://blog.csdn.net/onlyanyz/article/details/45745045
+

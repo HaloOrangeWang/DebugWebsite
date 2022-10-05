@@ -1,0 +1,9 @@
+python 在使用 xlsxwriter组件写入数据时，当数据包含类似“http://*** /”数据时，导出的excel，打开时会提示如下错误：
+
+没有查到相关的资料处理这个问题，可能原因为excel识别为链接，与内置库冲突导致，对数据准确性无大影响的情况下，只能临时通过字符替换解决：
+
+if keyword.startswith('http://') and keyword.find(' ') >= 0:
+    keyword = keyword.replace('','')
+
+截取的部分代码如下：
+

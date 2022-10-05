@@ -1,0 +1,37 @@
+windows系统下
+
+在python中直接pip install rpy2时，会出错，没仔细看错误，直接下载了whl文件（https://www.lfd.uci.edu/~gohlke/pythonlibs/）进行安装。
+
+此时可以import rpy2，但是在import rpy2.robjects时会提示 “Rpy2 error wac-a-mole: R_USER not defined”，解决办法：
+
+将R.dll添加到系统路径中（比如我的是C:\Program Files\R\R-3.4.4\bin\x64）；
+
+添加环境变量R_HOME（我是C:\Program Files\R\R-3.4.4）；
+
+添加环境变量R_USER，为用户名（比如我是Administrator）。
+
+此时再import rpy2.robjects时，通过，问题解决。
+
+cnetos系统下
+
+rpy2：
+
+　　python直接安装pip3.5 install rpy2时，报错：
+
+　　
+
+　　解决办法：
+
+先在centos中安装readline-devel，sudo yum install readline-devel；
+再安装pip3.5 install rpy2就可以了。
+
+先在centos中安装readline-devel，sudo yum install readline-devel；
+
+再安装pip3.5 install rpy2就可以了。
+
+tkinter：
+
+　　直接安装pip3.5 install tkinter，显示找不到这个包。
+
+　　搜索之后发现这个包不是这么安装的，应该sudo yum -y install python35u-tkinter安装成功！
+

@@ -1,0 +1,54 @@
+由于不小心将migrations目录下的0001_initial.py误删，运行makemigrations报错：
+
+manage.py@travel > makemigrations
+
+"C:\Program Files (x86)\JetBrains\PyCharm 2016.2.3\bin\runnerw.exe" C:\Users\Acer\AppData\Local\Programs\Python\Python35\python.exe "C:\Program Files (x86)\JetBrains\PyCharm 2016.2.3\helpers\pycharm\django_manage.py" makemigrations E:/python_project/travelTraceback (most recent call last):  File "C:\Program Files (x86)\JetBrains\PyCharm 2016.2.3\helpers\pycharm\django_manage.py", line 41, inrun_module(manage_file, None, '__main__', True)  File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\runpy.py", line 182, in run_module    return _run_module_code(code, init_globals, run_name, mod_spec)  File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\runpy.py", line 96, in _run_module_code    mod_name, mod_spec, pkg_name, script_name)  File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\runpy.py", line 85, in _run_code    exec(code, run_globals)  File "E:/python_project/travel\manage.py", line 22, inexecute_from_command_line(sys.argv)
+
+File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\site-packages\django\core\management\__init__.py", line 354, in execute_from_command_line
+
+utility.execute()
+
+File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\site-packages\django\core\management\__init__.py", line 346, in execute
+
+self.fetch_command(subcommand).run_from_argv(self.argv)
+
+File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\site-packages\django\core\management\base.py", line 394, in run_from_argv
+
+self.execute(*args, **cmd_options)
+
+File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\site-packages\django\core\management\base.py", line 445, in execute
+
+output = self.handle(*args, **options)
+
+File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\site-packages\django\core\management\commands\makemigrations.py", line 63, in handle
+
+loader = MigrationLoader(None, ignore_no_migrations=True)
+
+File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\site-packages\django\db\migrations\loader.py", line 47, in __init__
+
+self.build_graph()
+
+File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\site-packages\django\db\migrations\loader.py", line 185, in build_graph
+
+self.load_disk()
+
+File "C:\Users\Acer\AppData\Local\Programs\Python\Python35\lib\site-packages\django\db\migrations\loader.py", line 112, in load_disk
+
+"Migration %s in app %s has no Migration class" % (migration_name, app_config.label)
+
+django.db.migrations.loader.BadMigrationError: Migration 0001_initial in app employer has no Migration class
+
+Process finished with exit code 1
+
+跟此情形类似的还有一种情形，那就是把其中的一个app的migrations目录删了（而其他的app的migrations目录没删），会报如下错误：
+
+django.db.migrations.graph.NodeNotFoundError: Migration travel_list.0001_initial dependencies reference nonexistent parent node ('employer', '0001_initial')
+
+解决办法：
+
+1、备份数据库
+
+2、把所有app的migrations目录全部清空（注意“清空”不是“删除”，要保留里面的__init__.py文件）
+
+3、重新运行makemigrations以及migrate
+

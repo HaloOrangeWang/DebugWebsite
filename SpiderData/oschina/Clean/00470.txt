@@ -1,0 +1,58 @@
+关键字：标签维度，label
+
+关键字：标签维度，label
+
+问题描述：使用MNIST数据集训练分类模型报错，提示label的维度不正确。
+
+问题描述：使用MNIST数据集训练分类模型报错，提示label的维度不正确。
+
+报错信息：
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/layers/nn.py in cross_entropy(input, label, soft_label, ignore_index)
+   1126         outputs={'Y': [out]},
+   1127         attrs={"soft_label": soft_label,
+-> 1128                "ignore_index": ignore_index})
+   1129     return out
+   1130
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/layer_helper.py in append_op(self, *args, **kwargs)
+     48 
+     49     def append_op(self, *args, **kwargs):
+---> 50         return self.main_program.current_block().append_op(*args, **kwargs)
+     51 
+     52     def multiple_input(self, input_param_name='input'):
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/framework.py in append_op(self, *args, **kwargs)
+   1205         """
+   1206         op_desc = self.desc.append_op()
+-> 1207         op = Operator(block=self, desc=op_desc, *args, **kwargs)
+   1208         self.ops.append(op)
+   1209         return op
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/framework.py in __init__(***failed resolving arguments***)
+    654         if self._has_kernel(type):
+    655             self.desc.infer_var_type(self.block.desc)
+--> 656             self.desc.infer_shape(self.block.desc)
+    657 
+    658     def _has_kernel(self, op_type):
+
+EnforceNotMet: Enforce failed. Expected label_dims[rank - 1] == 1UL, but received label_dims[rank - 1]:10 != 1UL:1.
+If Attr(softLabel) == false, the last dimension of Input(Label) should be 1. at [/paddle/paddle/fluid/operators/cross_entropy_op.cc:45]
+PaddlePaddle Call Stacks:
+
+问题复现：使用卷积神经网络训练MNIST数据集，定义label输出层设置形状为[10]。在执行开始训练的时候就会报错。错误代码如下：
+
+image = fluid.layers.data(name='image', shape=[1, 28, 28], dtype='float32')
+label = fluid.layers.data(name='label', shape=[10], dtype='int64')
+
+问题解决：因为每一条数据对应的label只有一个值，所以label的形状应该是(1)。label的形状是值label的维度，而不是label的类别数量。正确代码如下：
+
+image = fluid.layers.data(name='image', shape=[1, 28, 28], dtype='float32')
+label = fluid.layers.data(name='label', shape=[1], dtype='int64')
+
+问题分析：在PaddlePaddle的旧版本中，在定义label的大小需要在输入层设置label的数量。而在新版本Fluid的中，定义label输入层是设置label数量的形状，而不是label的数量。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

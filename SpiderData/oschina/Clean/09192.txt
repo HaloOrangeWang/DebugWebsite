@@ -1,0 +1,34 @@
+
+用idea写java连接MongoDb报错，先来看看详细报错信息
+
+
+解决办法
+
+编辑
+
+vim mongodb/conf/mongod.conf
+
+添加
+
+bind_ip=0.0.0.0
+
+修改完之后配置文件为：
+
+#指定启动端口
+port=27017
+#指定数据存放目录
+dbpath=data/db
+#指定日志存放目录
+logpath=log/mongodb.log
+#后台运行
+fork=true
+#使用任何IP登陆
+bind_ip=0.0.0.0
+
+
+出现报错信息原因
+
+从mongodb 3.6版本之后，它把bind_ip的值默认为localhost，这样只能使用localhost去登录才能进入
+
+只要把bind_ip改成0.0.0.0就可以使用任何IP登陆了
+

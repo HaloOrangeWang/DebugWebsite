@@ -1,0 +1,107 @@
+
+1 首先 配置caffe环境
+
+http://caffe.berkeleyvision.org/install_apt.html
+
+我使用的是 ubuntu 16.04,python2.7,cpu版本。gpu配置大同小异。
+
+建议使用anaconda环境
+
+conda create -n fastrcnn python=2.7
+
+激活环境
+
+conda activate fastrcnn
+
+
+安装依赖
+
+sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+
+sudo apt-get install --no-install-recommends libboost-all-dev
+
+sudo apt install python-dev
+
+install OpenBLAS by sudo apt-get install libopenblas-dev
+
+
+编译
+
+克隆代码
+
+git clone --recursive https://github.com/rbgirshick/fast-rcnn.git
+
+$FRCN_ROOT为代码的根目录
+
+cd $FRCN_ROOT/lib
+
+make
+
+报错 缺少 protobuf
+
+建议按顺序安装下面的依赖
+
+sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+
+sudo apt-get install --no-install-recommends libboost-all-dev
+
+sudo apt-get install libopenblas-dev liblapack-dev libatlas-base-dev
+
+sudo apt-get install libgflags-dev libgoogle-glog-dev liblmdb-dev
+
+sudo apt-get install git cmake build-essential
+
+报错fatal error: google/protobuf/stubs/common.h: No such file or directory
+
+重新安装 sudo apt-get install libprotobuf-dev
+
+执行make pycaffe 报错 fatal error: hdf5.h: No such file or directory
+
+在Makefile.config文件中 INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include    后加 /usr/include/hdf5/serial/
+
+继续执行make pycaffe
+
+报错 LD -o .build_release/lib/libcaffe.so
+
+/usr/bin/ld: cannot find -lsnappy
+
+/usr/bin/ld: cannot find -lhdf5_hl
+
+/usr/bin/ld: cannot find -lhdf5
+
+将Makefiel中
+
+lmdb boost_system hdf5_hl hdf5 m
+
+改为
+
+lmdb boost_system hdf5_serial_hl  hdf5_serial m
+
+make clean 后继续
+
+报错fatal error: numpy/arrayobject.h: No such file or directory
+
+执行
+
+sudo apt-get install python-numpy
+
+继续 make clean
+
+make -j8 && make pycaffe
+
+成功！！
+
+大功告成
+
+执行./tools/demo.py出错
+
+pip install easydict
+
+pip install scikit-image networkx==2.2
+
+pip install opencv-python
+
+执行./tools/demo.py --cpu
+
+成功弹出检测成功的框
+

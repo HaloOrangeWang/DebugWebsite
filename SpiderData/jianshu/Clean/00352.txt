@@ -1,0 +1,19 @@
+今天因为想要尝试一下vue-cli3版本的脚手架，于是更新了一下node版本，结果导致原来的vue项目无法成功启动，报错信息大概类似于
+
+“Node Sass could not find a binding for your current environment: Windows 64-bit with Node.js 10.x”
+
+同时，命令行提示：
+
+This usually happens because your environment has changed since running `npm install`.
+    Run `npm rebuild node-sass` to download the binding for your current environment.
+
+看这个说明，大概意思就是说，因为我在执行了npm install指令安装好了依赖之后，环境又发生了改变（node版本变更），所以不能将当前的node环境与项目中的sass依赖建立绑定关系，需要执行“npm rebuild node-sass”来重新下载依赖。
+
+npm rebuild node-sass
+
+所以，按他说的，执行命令
+
+npm rebuild node-sass
+
+一通下载之后，运行项目，依然报错，于是开始百度，按照其他网友的指示，再执行一次npm update来更新项目里的依赖包，然后，大功告成。
+

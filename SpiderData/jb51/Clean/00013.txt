@@ -1,0 +1,35 @@
+
+问题描述
+
+使用pandas库的read_excel()方法读取外部excel文件报错, 截图如下
+
+好像是缺少了什么方法的样子
+
+
+问题分析
+
+分析个啥, 水平有限, 直接面向stackoverflow编程
+
+https://stackoverflow.com/questions/64264563/attributeerror-elementtree-object-has-no-attribute-getiterator-when-trying
+
+我找到了下面的这几种说法
+
+根据国外大神的指点, 我得出了这些结论:
+
+pandas库读取excel文件是需要安装xlrd模块的, 也就是它默认是引擎engine是xlrd(之前已经手动pip3安装过), 使用Anaconda会把这些模块都安装上, 可是我没用Anaconda, 而是直接pip3 install pandas, 导致了很多其他模块需要自己安装. 但是安装了xlrd并不能解决问题, 因为我用的Python3.9, xlrd还没有对py3.9做相应的更新, 内部的getiterator方法在py3.9版本已经被移除, 需要将其替换成iter方法.
+
+
+解决问题
+
+方法一, 替换引擎
+
+既然默认引擎xlrd出问题, 那干脆就直接换个, 指定engine为openpyxl
+
+方法二, 修改源码
+
+将已废弃掉的getiterator方法替换为iter方法
+
+找到xlrd包下的xlsx.py, 进行替换!
+
+到此这篇关于关于Python 解决Python3.9 pandas.read_excel(‘xxx.xlsx‘)报错的问题的文章就介绍到这了,更多相关Python3.9 pandas.read_excel内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

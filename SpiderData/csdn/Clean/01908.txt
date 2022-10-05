@@ -1,0 +1,21 @@
+python操作kafka报错：return '<SimpleProducer batch=%s>' % self.async
+
+return '<SimpleProducer batch=%s>' % self.async
+                                               ^^^^^
+ SyntaxError: invalid syntax
+
+原因：
+
+因为py3.7里面async已经变成了关键字。所以导致了不兼容。
+
+解决办法：
+
+方法1：
+
+使用最新的kafka版本，但是pyPI上的kafka还没有被替换成最新的，可以使用下面的方法升级kafka python
+ pip install kafka-python
+
+方法2：
+
+切换到3.6版本就可以了，等待后续升级完善
+

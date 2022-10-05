@@ -1,0 +1,88 @@
+知识点汇总：
+
+异常的定义：
+
+当解释器遇到错误（无法执行）的代码，就会中断当前代码的执行，抛出一个异常对象。
+
+1、python是解释型语言，没有报错可以执行---到报错那行代码，之后的代码不执行
+
+2、使用try---except捕获异常       捕获多种异常：try  ---except  异常1    except  异常2.....except  异常n
+
+捕获特定异常：try except  as e:
+
+3、捕获所有异常：有时候我们并不知道会抛出什么异常，这时候可以用捕获所有异常。
+
+　　1--try  可能出现异常的代码块    except Exception as e:       等价于 try   except  ：-traceback.format_exc()----打印详细信息  ，需要import traceback
+
+　　Exception  指明所有异常（父类）
+
+4、finally语句：不管是否有异常，都会去执行一段代码，finally一定要放在最后。
+
+5、else语句：没有异常的情况下，要执行的一段代码
+
+　　1--else必须跟在所有的except代码块后面
+
+　　2--在finally前面
+
+6、函数调用栈
+
+　　1--异常发生：解释器中断当前代码的执行，并抛出一个异常对象，并在函数的调用栈从下到上，层层的寻找捕获处理该异常的代码。如果能找到就执行对应的代码
+
+　　    如果不能则会一直找到最外层的函数结束本次执行
+
+　　2、使用raise向上层抛出异常
+
+7、自定义异常
+
+　　1---继承自Exception
+
+　　　　class NameTooLongError(Exception)
+
+　　　　　　pass
+
+　　　　class NameTooLongError(Exception)
+
+　　　　　　pass
+
+　　2、使用raise抛出
+
+　　　　raise NameTooLongError
+
+　　3、抛出异常常用在：
+
+　　　　1--当函数里面出现错误，代码无法继续进行执行的时候
+
+　　　　2、告诉上层调用代码，什么样执行产生了错误
+
+　　　　3、由上层调用代码决定如何处理
+
+示例程序
+
+1-1   没有定义
+
+print(name)  #变量name没有定义
+
+1-2  需要加判断
+
+2-1 使用try except 捕获异常
+
+2-2  如下面的例子，使用try except进行了异常处理，如果除数为0时，直接字形except后面的打印语句。这时，因为name没被执行，所以没报错。
+
+2-3 捕获多种异常
+
+2-4  捕获特定异常
+
+3-1  捕获所有异常
+
+3-2  另外一种写法，需要先导入tracebaclk
+
+6-1 向上抛出异常
+
+7-1 自定义异常
+
+class NameTooLongError(Exception): #自定义异常的名字
+    pass
+
+class NameTooShortError(Exception):  #自定义异常名字
+    pass
+

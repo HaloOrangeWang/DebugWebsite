@@ -1,0 +1,44 @@
+关键字：张量，数据类型
+
+关键字：张量，数据类型
+
+问题描述：使用卷积神经网络训练MNIST数据集，由于输入数据的数据类型设置为float32，在训练时直接报错，报错信息提示张量类型错误。
+
+问题描述：使用卷积神经网络训练MNIST数据集，由于输入数据的数据类型设置为float32，在训练时直接报错，报错信息提示张量类型错误。
+
+报错信息：
+
+报错信息：
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in run(self, program, feed, fetch_list, feed_var_name, fetch_var_name, scope, return_numpy, use_program_cache)
+    468 
+    469         self._feed_data(program, feed, feed_var_name, scope)
+--> 470         self.executor.run(program.desc, scope, 0, True, True)
+    471         outs = self._fetch_data(fetch_list, fetch_var_name, scope)
+    472         if return_numpy:
+
+EnforceNotMet: Tensor holds the wrong type, it holds f at [/paddle/paddle/fluid/framework/tensor_impl.h:29]
+PaddlePaddle Call Stacks:
+
+问题复现：使用MNIST数据集，使用卷积神经网络进行训练，并定义输入层数据类型设置为float64，即将dtype参数的值设置为float64，如下代码片段：
+
+image = fluid.layers.data(name='image', shape=[1, 28, 28], dtype='float64')
+label = fluid.layers.data(name='label', shape=[1], dtype='int64')
+
+问题解决：由于如果数据为float32，而定义的输入层数据类型为float64，导致的数量类型不正确。把输入数据的类型设置为float32，即将dtype参数值设置为float32。如下代码片段：
+
+image = fluid.layers.data(name='image', shape=[1, 28, 28], dtype='float32')
+label = fluid.layers.data(name='label', shape=[1], dtype='int64')
+
+问题拓展：PaddlePaddle支持多种数据类型，比如上面使用的float32，这个是主要实数类型，float64是次要实数类型，支持大部分操作。我们使用的标签是int64，这个是主要标签类型，也有次要标签类型int32。也有一些控制流的数据类型bool。
+
+问题拓展：PaddlePaddle支持多种数据类型，比如上面使用的float32，这个是主要实数类型，float64是次要实数类型，支持大部分操作。我们使用的标签是int64，这个是主要标签类型，也有次要标签类型int32。也有一些控制流的数据类型bool。
+
+问题分析：在使用PaddlePaddle构建神经网络时，一开始编写的只是整体的结构，此时就需要注意整体结构中不同节点的数据类型，如输入的数据类型是否与fluid.layers.data定义的数据类型一致，如果不一致就会出现错误，就像使用三口插头去插二口插座，是不可取的。
+
+问题分析：在使用PaddlePaddle构建神经网络时，一开始编写的只是整体的结构，此时就需要注意整体结构中不同节点的数据类型，如输入的数据类型是否与fluid.layers.data定义的数据类型一致，如果不一致就会出现错误，就像使用三口插头去插二口插座，是不可取的。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

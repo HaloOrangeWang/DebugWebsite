@@ -1,0 +1,400 @@
+
+1.错误分类
+
+1.语法错误 - 这种错误，根本过不了python解释器的语法检测，必须在程序执行前就改正
+
+# 语法错误
+# 例1：
+if
+# SyntaxError: invalid syntax
+
+# 例2：
+def test:
+    pass
+# SyntaxError: invalid syntax
+
+# 例3：
+print(haha
+# SyntaxError: unexpected EOF while parsing
+
+# 例4：出现语法错误，即使添加try..except也会显示出现异常
+try:
+    if
+except:
+    print('error')
+# SyntaxError: invalid syntax
+
+2.逻辑错误
+
+# 用户输入数字进行相关操作
+inp = input('a number: ')
+inp = int(inp)
+print(inp)
+a number: 3
+# 3
+a number: s
+#     inp = int(inp)
+# ValueError: invalid literal for int() with base 10: 's'
+
+
+2.什么是异常
+
+异常就是程序运行时发生错误的信号，在python中，错误触发的异常如下
+
+x # 引发错误的代码
+# Traceback (most recent call last):
+#   File "E:/... 复习/01 异常处理.py", line 32, in <module>
+#     x
+# NameError: name 'x' is not defined
+# 说明：NameError -- 错误类
+#      name 'x' is not defined -- 错误的值
+
+
+3.python中的异常种类
+
+# 常见异常
+AttributeError 试图访问一个对象没有的树形，比如foo.x，但是foo没有属性x
+IOError 输入/输出异常；基本上是无法打开文件
+ImportError 无法引入模块或包；基本上是路径问题或名称错误
+IndentationError 语法错误（的子类） ；代码没有正确对齐
+IndexError 下标索引超出序列边界，比如当x只有三个元素，却试图访问x[5]
+KeyError 试图访问字典里不存在的键
+KeyboardInterrupt Ctrl+C被按下
+NameError 使用一个还未被赋予对象的变量
+SyntaxError Python代码非法，代码不能编译(个人认为这是语法错误，写错了）
+TypeError 传入对象类型与要求的不符合
+UnboundLocalError 试图访问一个还未被设置的局部变量，基本上是由于另有一个同名的全局变量，
+导致你以为正在访问它
+ValueError 传入一个调用者不期望的值，即使值的类型是正确的
+
+# 更多异常
+ArithmeticError
+AssertionError
+AttributeError
+BaseException
+BufferError
+BytesWarning
+DeprecationWarning
+EnvironmentError
+EOFError
+Exception
+FloatingPointError
+FutureWarning
+GeneratorExit
+ImportError
+ImportWarning
+IndentationError
+IndexError
+IOError
+KeyboardInterrupt
+KeyError
+LookupError
+MemoryError
+NameError
+NotImplementedError
+OSError
+OverflowError
+PendingDeprecationWarning
+ReferenceError
+RuntimeError
+RuntimeWarning
+StandardError
+StopIteration
+SyntaxError
+SyntaxWarning
+SystemError
+SystemExit
+TabError
+TypeError
+UnboundLocalError
+UnicodeDecodeError
+UnicodeEncodeError
+UnicodeError
+UnicodeTranslateError
+UnicodeWarning
+UserWarning
+ValueError
+Warning
+ZeroDivisionError
+
+
+4.异常处理
+
+异常：
+
+　　出现异常时，异常之后的代码就不执行了
+
+异常处理：
+
+　　1) python解释器检测到错误，触发异常（也允许程序员自己触发异常）
+
+　　2) 程序员编写特定的代码，专门来捕捉这个异常（这段代码与程序逻辑无关，与异常处理有关）
+
+　　3) 如果捕捉成功则进入另外一个处理分支，执行为其定制的逻辑，使程序不会崩溃，这就是一场处理
+
+为什么要进行异常处理：
+
+　　python解释器去执行程序，检测到一个错误时，触发异常，异常触发后且没被处理的情况下，程序就在当前异常出终止，后面的代码不会运行。 -- 所以必须提供一种异常处理机制来增强程序的健壮性与容错性
+
+5.如何进行异常处理
+
+说明：1 - 异常是由程序的错误引起的，语法上的错误跟异常处理无关，必须在程序运行前就进行修正
+
+　　  2 - 异常处理排查顺序：从下向上 -- 原则：从下向上找到第一行自己写的代码开始排错　　
+
+1. 使用if判断式
+
+# 未对输入的值进行判断，容易出现异常
+inp = input('a number: ')
+print(int(inp))
+
+# 处理：
+while True:
+    inp = input('a number: ')
+    if inp.isdigit():
+        print(int(inp))
+    elif inp.isspace():
+        print('输入的是空格')
+    elif len(inp) == 0:
+        print('输入的内容为空')
+    else:
+        print('其他异常')
+# a number: 3
+# 3
+# a number:  
+# 输入的是空格
+# a number: 
+# 输入的内容为空
+# a number: s
+# 其他异常
+
+2. try..except..
+
+try:
+    print(11111)
+    lst = []
+    lst[2]
+    int('a')
+    print(22222)
+except ValueError:print('报错了')
+except IndexError:print('你要的索引不存在')
+# 11111
+# 你要的索引不存在
+
+3. try..except..as
+
+try:
+    print(11111)
+    # lst = []
+    # lst[2]
+    int('a')
+    print(22222)
+except ValueError as e:print(e)
+except IndexError:print('你要的索引不存在')
+# 11111
+# invalid literal for int() with base 10: 'a'
+
+4-1. try..except -- 万能异常
+
+try:
+    print(11111)
+    # lst = []
+    # lst[2]
+    int('a')
+    print(22222)
+except:
+    print('出错了')
+# 11111
+# 出错了
+
+4-2. try..except Exception -- 万能异常
+
+try:
+    print(11111)
+    # lst = []
+    # lst[2]
+    int('a')
+    print(22222)
+except Exception:
+    print('出错了')
+# 11111
+# 出错了
+
+4-3. 以上两种万能异常虽然可以提示异常，但是不能分析异常出现的原因
+
+所以引入 try..except Exception as e
+
+try:
+    print(11111)
+    # lst = []
+    # lst[2]
+    int('a')
+    print(22222)
+except Exception as e:
+    print(e)
+# 11111
+# invalid literal for int() with base 10: 'a'
+
+5.阶段总结
+
+说明：try/except/except as
+找到一个满足条件的其他分支都不走了
+预料不到的错误 -- 万能异常
+    except
+    except Exception
+    except Exception as e -- 推荐
+所有的异常处理都用万能异常好不好
+
+6. 异常处理+万能异常
+
+try:
+    l = []
+    num = int(input('num : '))
+    l[num]
+except ValueError:print('请输入一个数字')
+except IndexError:print('您要找到的项目不存在')
+except Exception as e:print(e)
+# num : s
+# 请输入一个数字
+# num : 3
+# 您要找到的项目不存在
+
+try:
+    # l = []
+    num = int(input('num : '))
+    l[num]
+except ValueError:print('请输入一个数字')
+except IndexError:print('您要找到的项目不存在')
+except Exception as e:print(e)
+# num : 3
+# name 'l' is not defined
+
+# 说明：具体的异常处理+万能异常：
+    # 能够提前预料到的异常都应该用具体的异常去处理，剩下的其他的异常用万能异常控制
+    # 万能异常应该写在最后
+
+7.try..except..else -- else不能脱离except
+
+try:
+    l = [0]
+    num = int(input('num : '))
+    l[num]
+except ValueError:print('请输入一个数字')
+except IndexError:print('您要找到的项目不存在')
+except Exception as e:print(e)
+else:print('执行了else') 
+# num : 0
+# 执行了else
+
+# 说明:如果try语句中的代码都顺利的执行了，没有报错，那么执行else中的代码
+
+8.finally
+
+try:
+    l = []
+    num = int(input('num : '))
+    l[num]
+except ValueError:print('请输入一个数字')
+except IndexError:print('您要找到的项目不存在')
+except Exception as e:print(e)
+else:print('执行了else') 
+finally:print('执行finally了') 
+# num : 3
+# 您要找到的项目不存在
+# 执行finally了
+
+# 说明：如果try语句中的代码都顺利的执行了，没有报错，那么执行else中的代码
+# 无论如何都会执行finally语句
+
+finally与return的优先级：finally高于return
+
+# 例1：出现异常，文件句柄不关闭的现象
+def func():
+    try:
+        f = open('aaa', 'w')
+        ret = f.read()
+        return ret
+    except:
+        print('error')
+    f.close()
+# 说明：如果代码执行不出错，会出现文件不关闭的问题
+
+使用finally关闭文件句柄
+
+# 1-
+def func():
+    try:
+        f = open('aaa', 'w')
+        ret = f.read()
+        return ret
+    except:
+        print('error')
+    finally:
+        f.close()
+# 2-
+def func():
+    try:
+        f = open('aaa', 'w')
+        ret = f.read()
+        return ret
+    finally:
+        f.close()
+
+9.总结
+
+try:
+    pass #可能有问题的代码
+except ValueError: #能预料到的错误
+    pass
+except Exception as e:print(e) #能处理所有的异常
+else:pass            #try中的代码没有错误的时候执行
+finally:pass         #无论如何都会执行的
+
+10.主动抛异常raise
+
+raise ValueError
+#     raise ValueError
+# ValueError
+
+11.自定义异常
+
+class EvaException(BaseException):
+    def __init__(self,msg):
+        self.msg=msg
+    def __str__(self):
+        return self.msg
+try:
+    raise EvaException('类型错误')
+except EvaException as e:
+    print(e)
+obj = EvaException('类型错误') # 实例化
+print(obj)
+# 类型错误
+# 类型错误
+
+12.断言assert
+
+assert 1==2 #如果不满足，直接退出并抛出下面错误
+x = 3
+print(x)
+# AssertionError
+# 和exit()类似
+
+6.try..except与if的比较
+
+try..except这种异常处理机制就是取代if那种方式，让你的程序在不牺牲可读性的前提下增强健壮性和容错性
+
+异常处理中为每一个异常定制了异常类型（python中统一了类与类型，类型即类），对于同一种异常，一个except就可以捕捉到，可以同时处理多段代码的异常（无需‘写多个if判断式’）减少了代码，增强了可读性
+
+使用try..except的方式
+
+1：把错误处理和真正的工作分开来
+2：代码更易组织，更清晰，复杂的工作任务更容易实现；
+3：毫无疑问，更安全了，不至于由于一些小的疏忽而使程序意外崩溃了；
+
+
+7.异常处理的使用
+
+try...except应该尽量少用，因为它本身就是你附加给你的程序的一种异常处理的逻辑，与你的主要的工作是没有关系的
+这种东西加的多了，会导致你的代码可读性变差，只有在有些异常无法预知的情况下，才应该加上try...except，其他的逻辑错误应该尽量修正
+

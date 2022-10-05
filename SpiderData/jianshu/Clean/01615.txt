@@ -1,0 +1,25 @@
+
+在编写检测进程的程序的时候发现如下错误：
+
+def check_exsit(process_name):
+    WMI = win32com.client.GetObject('winmgmts:')
+    processCodeCov = WMI.ExecQuery('select * from Win32_Process where Name="%s"' % process_name)
+    if len(processCodeCov) > 0:
+        print ('%s is exists' % process_name)
+    else:
+        win32process.CreateProcess('C:\Program Files (x86)\Tektronix\VectorVuPC\VectorVu-PC.exe', '', None, None, 0, win32process.CREATE_NO_WINDOW,None,None,win32process.STARTUPINFO())
+        print ('%s is not exists' % process_name)
+
+
+这个程序是在子线程中运行的，经过查询得知在子线程中运行WMI需要进行初始化,改为如下程序：
+
+def check_exsit(process_name):
+    pythoncom.CoInitialize()
+    WMI = win32com.client.GetObject('winmgmts:')
+    processCodeCov = WMI.ExecQuery('select * from Win32_Process where Name="%s"' % process_name)
+    if len(processCodeCov) > 0:
+        print ('%s is exists' % process_name)
+    else:
+        win32process.CreateProcess('C:\Program Files (x86)\Tektronix\VectorVuPC\VectorVu-PC.exe', '', None, None, 0, win32process.CREATE_NO_WINDOW,None,None,win32process.STARTUPINFO())
+        print ('%s is not exists' % process_name)
+

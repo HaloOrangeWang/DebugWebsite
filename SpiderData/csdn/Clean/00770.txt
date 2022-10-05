@@ -1,0 +1,64 @@
+
+项目场景：
+
+用jupyter notebook连接服务器进行csv文件读取，csv文件有2.56g，里面记录着很多信息，猜测此前使用excel记录的，可以用dataframe打开分析。此解决方法对我有用，你也可以试试！
+
+
+问题描述
+
+首先就是编码错误提示：
+
+import numpy as np
+import pandas as pd
+import csv
+path1=r'数据2.csv'
+q1=pd.read_csv(path1)
+q1
+
+
+原因分析：
+
+这是因为默认的是utf-8编码方式，咱们文件并不是。
+
+
+解决方案：
+
+在服务器端可以查看文件编码方式
+
+file -i 数据2.csv
+
+数据2.csv: text/plain; charset=iso-8859-1
+
+可以看出这个这个csv文件的编码方式iso-8859-1，它可以用gbk进行解码，所以修改读入方式：
+
+import numpy as np
+import pandas as pd
+import csv
+path1=r'数据2.csv'
+with open(path1,'r',encoding='gbk',errors='ignore') as f:
+    q1 = csv.reader(f)
+    q1 = pd.DataFrame(q1,dtype=str)
+    q1
+
+将读取方式改为ignore忽略错误，但是还是出现了一个意想不到的错误：
+
+再次更改代码：
+
+import numpy as np
+import pandas as pd
+import csv
+path1=r'数据2.csv'
+with open(path1,'r',encoding='gbk',errors='ignore') as f:
+    reader = csv.reader(_.replace('\x00', '') for _ in f)
+    next (reader)
+    q1 = pd.DataFrame(reader,dtype=str)
+q1
+
+可以看出中间读取多了一个replace函数，也不用管是什么意思，照写就行了，总有你不知道的操作。
+
+读取成功，啊嘞？！我的列名呢
+
+参考网址：
+
+(40条消息) 报错解决：Error: line contains NULL byte_花开花落，人走茶凉-CSDN博客
+

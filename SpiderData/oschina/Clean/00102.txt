@@ -1,0 +1,17 @@
+path = 'D:/Postgraduate/Python/Machine Learning/小象学院机器学习/08、回归实践/8.Regression代码/8.Regression/8.Advertising.csv'
+data = pd.read_csv(path)
+x = data[['TV','Radio','Newspaper']]
+y = data['Sales']
+data
+
+报错了，OSError: Initializing from file failed
+
+报错原因在于文件路径中有中文，所以可以改为如下：
+
+path = 'D:/Postgraduate/Python/Machine Learning/小象学院机器学习/08、回归实践/8.Regression代码/8.Regression/8.Advertising.csv'
+f = open(path)
+data = pd.read_csv(f)
+x = data[['TV','Radio','Newspaper']]
+y = data['Sales']
+data
+

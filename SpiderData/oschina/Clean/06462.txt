@@ -1,0 +1,229 @@
+场景：内网服务器不能上外网（代理也不通！），
+
+之前安装了PYTHON的几个安装包，但不是知道为什么无法使用PARAMIKO这个模块
+
+在导入 from cryptography.hazmat.bindings._openssl import ffi, lib 的时候会
+
+报错：
+
+from cryptography.hazmat.bindings._openssl import ffi, lib
+ImportError: /usr/local/python36/lib/python3.6/site-packages/cryptography-2.2.2-py3.6-linux-x86_64.egg/cryptography/hazmat/bindings/_openssl.abi3.so: undefined symbol: d2i_DHxparams
+
+找了好多资料都没有解决，没办法只好放弃原有的安装方式，之前是一个个手动下载模块，传到内网服务器后 通过PYTHON SETUP.PY INSTALL 安装。
+
+现在打算在外网通过PIP 下载模块，再打包到内网服务器，然后利用pip安装，这样可以避免模块之间依赖的问题
+
+注：以下步骤是安装单个包的，下例子以安装paramiko包（较多依赖）说明
+
+步骤说明：
+
+1、使用pip download 命令下载wheel文件至下载目录~/pippackage目录下
+
+pip install paramiko --download ~/pippackage/
+或者
+[root@master pippackage]# pip download paramiko --src ./
+
+[djuser@localhost ~]$ mkvirtualenv py3test
+
+New python executable in /home/djuser/.virtualenvs/py3test/bin/python2
+
+Also creating executable in /home/djuser/.virtualenvs/py3test/bin/python
+
+Installing setuptools, pip, wheel...done.
+
+virtualenvwrapper.user_scripts creating /home/djuser/.virtualenvs/py3test/bin/predeactivate
+
+virtualenvwrapper.user_scripts creating /home/djuser/.virtualenvs/py3test/bin/postdeactivate
+
+virtualenvwrapper.user_scripts creating /home/djuser/.virtualenvs/py3test/bin/preactivate
+
+virtualenvwrapper.user_scripts creating /home/djuser/.virtualenvs/py3test/bin/postactivate
+
+virtualenvwrapper.user_scripts creating /home/djuser/.virtualenvs/py3test/bin/get_env_details
+
+(py3test) [djuser@localhost ~]$ lssitepackages
+
+easy_install.py   pip                   pkg_resources  setuptools-40.0.0.dist-info  wheel-0.31.1.dist-info
+
+easy_install.pyc  pip-10.0.1.dist-info  setuptools     wheel
+
+(py3test) [djuser@localhost ~]$ mkdir pippackage
+
+(py3test) [djuser@localhost ~]$ pip installl paramiko --download ~/pippackage/
+
+ERROR: unknown command "installl" - maybe you meant "install"
+
+(py3test) [djuser@localhost ~]$ pip install paramiko --download ~/pippackage/
+
+Usage:
+
+pip install [options] <requirement specifier> [package-index-options] ...
+
+pip install [options] -r <requirements file> [package-index-options] ...
+
+pip install [options] [-e] <vcs project url> ...
+
+pip install [options] [-e] <local project path> ...
+
+pip install [options] <archive url/path> ...
+
+no such option: --download
+
+(py3test) [djuser@localhost ~]$ pip3 install paramiko --download ~/pippackage/
+
+DEPRECATION: pip install --download has been deprecated and will be removed in the future. Pip now has a download command that should be used instead.
+
+Collecting paramiko
+
+Cache entry deserialization failed, entry ignored
+
+Cache entry deserialization failed, entry ignored
+
+Downloading https://files.pythonhosted.org/packages/3e/db/cb7b6656e0e7387637ce850689084dc0b94b44df31cc52e5fc5c2c4fd2c1/paramiko-2.4.1-py2.py3-none-any.whl (194kB)
+
+100% |████████████████████████████████| 194kB 107kB/s
+
+Saved ./pippackage/paramiko-2.4.1-py2.py3-none-any.whl
+
+Collecting cryptography>=1.5 (from paramiko)
+
+Cache entry deserialization failed, entry ignored
+
+Cache entry deserialization failed, entry ignored
+
+Downloading https://files.pythonhosted.org/packages/fa/f4/3cde3604972dfa2b0fea85b9711948bb4fb70ab64095322aef35071bd254/cryptography-2.2.2-cp34-abi3-manylinux1_x86_64.whl (2.2MB)
+
+100% |████████████████████████████████| 2.2MB 117kB/s
+
+Saved ./pippackage/cryptography-2.2.2-cp34-abi3-manylinux1_x86_64.whl
+
+Collecting pynacl>=1.0.1 (from paramiko)
+
+Cache entry deserialization failed, entry ignored
+
+Cache entry deserialization failed, entry ignored
+
+Downloading https://files.pythonhosted.org/packages/77/03/927e4cdbd821f929392608ddb2220a9548ce164c52047e90fadd20786fd8/PyNaCl-1.2.1-cp36-cp36m-manylinux1_x86_64.whl (692kB)
+
+100% |████████████████████████████████| 696kB 269kB/s
+
+Saved ./pippackage/PyNaCl-1.2.1-cp36-cp36m-manylinux1_x86_64.whl
+
+Collecting pyasn1>=0.1.7 (from paramiko)
+
+Cache entry deserialization failed, entry ignored
+
+Cache entry deserialization failed, entry ignored
+
+Downloading https://files.pythonhosted.org/packages/a0/70/2c27740f08e477499ce19eefe05dbcae6f19fdc49e9e82ce4768be0643b9/pyasn1-0.4.3-py2.py3-none-any.whl (72kB)
+
+100% |████████████████████████████████| 81kB 761kB/s
+
+Saved ./pippackage/pyasn1-0.4.3-py2.py3-none-any.whl
+
+Collecting bcrypt>=3.1.3 (from paramiko)
+
+Cache entry deserialization failed, entry ignored
+
+Cache entry deserialization failed, entry ignored
+
+Downloading https://files.pythonhosted.org/packages/b8/09/905ec939994e2c49dcffff72f823802557f166b3815ea54c1db3671eed42/bcrypt-3.1.4-cp36-cp36m-manylinux1_x86_64.whl (54kB)
+
+100% |████████████████████████████████| 61kB 418kB/s
+
+Saved ./pippackage/bcrypt-3.1.4-cp36-cp36m-manylinux1_x86_64.whl
+
+Collecting idna>=2.1 (from cryptography>=1.5->paramiko)
+
+Cache entry deserialization failed, entry ignored
+
+Downloading https://files.pythonhosted.org/packages/4b/2a/0276479a4b3caeb8a8c1af2f8e4355746a97fab05a372e4a2c6a6b876165/idna-2.7-py2.py3-none-any.whl (58kB)
+
+100% |████████████████████████████████| 61kB 467kB/s
+
+Saved ./pippackage/idna-2.7-py2.py3-none-any.whl
+
+Collecting six>=1.4.1 (from cryptography>=1.5->paramiko)
+
+Cache entry deserialization failed, entry ignored
+
+Cache entry deserialization failed, entry ignored
+
+Downloading https://files.pythonhosted.org/packages/67/4b/141a581104b1f6397bfa78ac9d43d8ad29a7ca43ea90a2d863fe3056e86a/six-1.11.0-py2.py3-none-any.whl
+
+Saved ./pippackage/six-1.11.0-py2.py3-none-any.whl
+
+Collecting cffi>=1.7; platform_python_implementation != "PyPy" (from cryptography>=1.5->paramiko)
+
+Cache entry deserialization failed, entry ignored
+
+Cache entry deserialization failed, entry ignored
+
+Downloading https://files.pythonhosted.org/packages/6d/c0/47db8f624f3e4e2f3f27be03a93379d1ba16a1450a7b1aacfa0366e2c0dd/cffi-1.11.5-cp36-cp36m-manylinux1_x86_64.whl (421kB)
+
+100% |████████████████████████████████| 430kB 516kB/s
+
+Saved ./pippackage/cffi-1.11.5-cp36-cp36m-manylinux1_x86_64.whl
+
+Collecting asn1crypto>=0.21.0 (from cryptography>=1.5->paramiko)
+
+Cache entry deserialization failed, entry ignored
+
+Cache entry deserialization failed, entry ignored
+
+Downloading https://files.pythonhosted.org/packages/ea/cd/35485615f45f30a510576f1a56d1e0a7ad7bd8ab5ed7cdc600ef7cd06222/asn1crypto-0.24.0-py2.py3-none-any.whl (101kB)
+
+100% |████████████████████████████████| 102kB 394kB/s
+
+Saved ./pippackage/asn1crypto-0.24.0-py2.py3-none-any.whl
+
+Collecting pycparser (from cffi>=1.7; platform_python_implementation != "PyPy"->cryptography>=1.5->paramiko)
+
+Cache entry deserialization failed, entry ignored
+
+Saved ./pippackage/pycparser-2.18-py2.py3-none-any.whl
+
+Successfully downloaded paramiko cryptography pynacl pyasn1 bcrypt idna six cffi asn1crypto pycparser
+
+You are using pip version 9.0.3, however version 10.0.1 is available.
+
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+(py3test) [djuser@localhost ~]$ cd pippackage/
+
+(py3test) [djuser@localhost pippackage]$ ll
+
+总用量 3892
+
+-rw-rw-r--. 1 djuser djuser  101571 7月  13 15:04 asn1crypto-0.24.0-py2.py3-none-any.whl
+
+-rw-rw-r--. 1 djuser djuser   54260 7月  13 15:04 bcrypt-3.1.4-cp36-cp36m-manylinux1_x86_64.whl
+
+-rw-rw-r--. 1 djuser djuser  421443 7月  13 15:04 cffi-1.11.5-cp36-cp36m-manylinux1_x86_64.whl
+
+-rw-rw-r--. 1 djuser djuser 2152496 7月  13 15:04 cryptography-2.2.2-cp34-abi3-manylinux1_x86_64.whl
+
+-rw-rw-r--. 1 djuser djuser   58213 7月  13 15:04 idna-2.7-py2.py3-none-any.whl
+
+-rw-rw-r--. 1 djuser djuser  194536 7月  13 15:04 paramiko-2.4.1-py2.py3-none-any.whl
+
+-rw-rw-r--. 1 djuser djuser   72560 7月  13 15:04 pyasn1-0.4.3-py2.py3-none-any.whl
+
+-rw-rw-r--. 1 djuser djuser  205978 7月  13 15:04 pycparser-2.18-py2.py3-none-any.whl
+
+-rw-rw-r--. 1 djuser djuser  692905 7月  13 15:04 PyNaCl-1.2.1-cp36-cp36m-manylinux1_x86_64.whl
+
+-rw-rw-r--. 1 djuser djuser   10702 7月  13 15:04 six-1.11.0-py2.py3-none-any.whl
+
+(py3test) [djuser@localhost ~]$ tar -cvf pippack.tar pippackage/
+
+打包后 传到服务器上
+
+解压后执行
+
+pip install paramiko-2.4.1-py2.py3-none-any.whl  --no-index --find-links=~/pippackage/
+
+安装完成 PARAMIKO 模块就可以正常使用  也没有再报错
+
+原博主有加 --user 参数，但是我加了之后不能执行，不知道为什么，暂时不考虑了。
+

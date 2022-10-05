@@ -1,0 +1,24 @@
+Cannot write or read cache for themes (ENOENT on cache folder)
+
+aglio -i ./api.md -o api.html
+>> { Error: Could not get CSS: Error writing cached CSS to file: ENOENT: no such file or directory, open '/usr/local/lib/node_modules/aglio/node_modules/aglio-theme-olio/cache/bb851236ef33e467631256487d5bbe519de24415.css'
+    at Object.fs.openSync (fs.js:653:18)
+    at Object.fs.writeFileSync (fs.js:1300:33)
+    at /usr/local/lib/node_modules/aglio/node_modules/aglio-theme-olio/lib/main.js:222:14
+    at /usr/local/lib/node_modules/aglio/node_modules/less/lib/less/render.js:35:17
+    at /usr/local/lib/node_modules/aglio/node_modules/less/lib/less/parse.js:63:17
+    at ImportVisitor.finish [as _finish] (/usr/local/lib/node_modules/aglio/node_modules/less/lib/less/parser/parser.js:183:28)
+    at ImportVisitor._onSequencerEmpty (/usr/local/lib/node_modules/aglio/node_modules/less/lib/less/visitors/import-visitor.js:35:14)
+    at ImportSequencer.tryRun (/usr/local/lib/node_modules/aglio/node_modules/less/lib/less/visitors/import-sequencer.js:50:14)
+    at /usr/local/lib/node_modules/aglio/node_modules/less/lib/less/visitors/import-sequencer.js:19:25
+    at fileParsedFunc (/usr/local/lib/node_modules/aglio/node_modules/less/lib/less/import-manager.js:50:17)
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/usr/local/lib/node_modules/aglio/node_modules/aglio-theme-olio/cache/bb851236ef33e467631256487d5bbe519de24415.css' }
+
+解决方案，既然找不到这个文件，不如我们手动创建一下这个文件，然后重新执行 aglio -i ./api.md -o api.html
+
+mkdir /usr/local/lib/node_modules/aglio/node_modules/aglio-theme-olio/cache/
+ touch /usr/local/lib/node_modules/aglio/node_modules/aglio-theme-olio/cache/bb851236ef33e467631256487d5bbe519de24415.css
+

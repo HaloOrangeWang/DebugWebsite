@@ -1,0 +1,67 @@
+首先,一般来说,写一个小demo可能一个文件就够了,但是要是做一个小项目,可能需要拆分成很多零散的文件,放在不同的文件夹里面调用,这个就称之为模块(包),Python的导包是一件令人头疼的事情,当文件多了之后,同样的导入方式可能在不同的场合遇到解释器抛出异常
+
+
+错误记录:
+
+
+1. ModuleNotFoundError: No module named ‘public’
+
+ModuleNotFoundError：没有名为“public”的模块
+ 模块间的引用：
+ 错误的
+ 正确的方式：
+ 但是如果在里面运行代码,将会收到
+
+
+2. ImportError: attempted relative import with no known parent package
+
+ImportError：尝试在没有已知父包的情况下进行相对导入
+ (适合相邻文件的导入)
+
+如果真想用里面的方法做测试,尝试
+
+from public import print_date
+or
+import public
+
+同样使用此也会抛出ImportError异常 from utils.public import print_date -> ModuleNotFoundError: No module named 'utils'
+ 但是如果在包外调用包内的方法，又会报错
+ 
+ 这里又需要把
+ from public import print_date
+ 改回
+ from .public import print_date
+ 其中 import .public 是不支持的,编辑器也会智能显示错误波浪线
+
+导入之前捕获异常 ImportError
+
+
+3. ImportError: attempted relative import beyond top-level package
+
+ImportError：尝试相对导入超出顶级包 (包内导包外) - 需要在这个层级之上再建立一个文件夹来管理，把现有的文件夹当作子文件夹管理
+ 
+ ······
+
+目录结构(部分文件内容被删掉了):
+
+关于 __init__.py 文件的作用，当在包外面使用 from xxx imprt * 这中方式导入时，会导入 __all__ = ['app'] 里面的，如果没有，就不能像下面一样使用
+
+正常是
+
+# from utils import *
+from utils import app
+
+def putfile():
+    print('test putfile')
+
+if __name__ == '__main__':
+    app.main_run()
+
+很明显,这样不行
+
+
+4. ImportError: cannot import name ‘print_date’ from partially initialized module ‘utils.public’ (most likely due to a circular import) (D:\xxx\xxx\public.py)
+
+ImportError：无法从部分初始化的模块“utils.public”导入名称“print_date”（很可能是由于循环导入）（D:\xxx\xxx\public.py）
+ 这种情况把真正不依赖当前项目本身(公有变量等)的方法,再提取出来写到一个文件里面
+

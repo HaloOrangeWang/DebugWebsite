@@ -1,0 +1,18 @@
+背景：将项目位置移动 或者将项目完整拷贝到其他计算机上 之后 运行时发现报错 如图：
+
+报错信息：
+
+py._path.local.localPath.ImportMismatchError:  xxx/conftest.py 文件
+
+Could not load  xxx/conftest.py 文件
+
+处理方式：
+
+删除项目中所有  .pyc  文件（__pycache__ 文件下的 .pyc文件也要删除）
+
+原因：
+
+pyc文件是py文件编译后生成的字节码文件(byte code)。pyc文件经过python解释器最终会生成机器码运行。一般py文件改变后，都会重新生成pyc文件。
+
+Python在运行时会先去查找py文件对应的pyc文件，如果pyc文件存在，则执行pyc文件，如果没有则会进行代码翻译，在程序执行完成后会将翻译生成的PyCodeObject回写到.pyc中生成对应的pyc文件
+

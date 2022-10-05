@@ -1,0 +1,110 @@
+
+错误一：Uncaught TypeError: Cannot set property 'onclick' of null
+
+at operate.js:86
+
+原因：
+ 当js文件放在head里面时，如果绑定了onclick事件，就会出现这样的错误，是因为W3School的写法是浏览器先加载完按钮节点才执行的js，所以当浏览器自顶向下解析时，找不到onclick绑定的按钮节点，于是报错。因此，需要把js文件放在底部加载，就会避免该问题。
+
+解决办法：用window.onload=function(){}包裹起来就不会出现这个错误了，因为浏览器要先加载节点才可以用onclick。
+
+
+错误二：Uncaught TypeError: $(...).none is not a function
+
+at HTMLLIElement.<anonymous> (operate.js:66)
+at HTMLLIElement.dispatch (jquery.min.js:5)
+at HTMLLIElement.y.handle (jquery.min.js:5)
+
+Query 1.9 比之前的版本做了很大的调整，很多函数都不被支持
+ none()方法已经失效，需要改成以下方式
+
+
+错误三：Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+
+只是注释了js里面隔行换色的代码，表格就加载不出来了，按f12键查看控制台network,按F5刷新如下
+
+对于这种莫名其妙，上一秒还能正常显示，这一秒就出现了错误的bug，我通常重启一下编辑器，重启一下浏览器，就正常了，不要问我为什么，我拿这种蜜汁bug也没有办法
+
+
+错误四：最常见：Failed to load resource: the server responded with a status of 404 (Not Found)
+
+文件没有被找到，说明文件引用的路径有问题，或文件损坏
+
+
+错误五：tomcat启动报错处理：Several ports (8005, 8080, 8009) required by Tomcat v7.0 Server at localhost are already in use
+
+8080端口被占用
+ 将配置文件里面被占用的端口名改掉：
+
+做一个项目的时候 ，控制台总是会出现各种bug,其实不用慌张，终结起来也就几种类型的错误，在开发中每次遇到错误都善于总结，下次在看到就会胸有成竹知道是什么情况了，以下是在开发过程中总结的一些错误以及错误的解决方法。
+
+
+报错六：Uncaught ReferenceError: $ is not defined
+
+Uncaught ReferenceError: $ is not defined
+Uncaught ReferenceError: jQuery is not defined
+
+错误原因：文件加载的顺序不对，jQuery文件的顺序要在前面
+
+方法：把jQuery文件写在所有script文件前面
+
+
+报错七：jsp页面相对路径和绝对路径的问题：
+
+正常路径：html里面的../../，改成jsp页面就找不到路径了，这个时候成了这个鬼样子
+
+这时候，只需要在文件里面加入这段代码：
+
+解决办法：在<html>和<head>之间插入以下代码
+
+<%
+    String path = request.getRequestURI();
+    String basePath = request.getScheme() + "://"
+            + request.getServerName() + ":" + request.getServerPort()
+            + path;
+%>
+<base href="<%=basePath%>">
+
+
+报错八：Uncaught TypeError: $(...).tooltip is not a function
+
+Uncaught TypeError: $(...).tooltip is not a function
+    at HTMLDocument.<anonymous> (app.js:42)
+    at l (jquery.min.js:4)
+    at Object.fireWith [as resolveWith] (jquery.min.js:4)
+    at Function.ready (jquery.min.js:4)
+    at HTMLDocument.S (jquery.min.js:4)
+
+原因：包括两个不同版本的jQuery UI。这可能会导致冲突。尝试删除
+
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+解决办法：
+ 编辑：
+
+<script>
+jQuery( document ).ready(function( $ ) {
+   $('.hasTooltip').tooltip();
+});
+</script>
+
+像这样使用它，解决了我的问题！
+
+
+报错九：Uncaught TypeError: $(...).sortable is not a function
+
+Uncaught TypeError: $(...).sortable is not a function
+    at HTMLDocument.<anonymous> (dashboard.js:12)
+    at l (VM552 jquery.min.js:4)
+    at Object.fireWith [as resolveWith] (VM552 jquery.min.js:4)
+    at Function.ready (VM552 jquery.min.js:4)
+    at HTMLDocument.S (VM552 jquery.min.js:4)
+
+
+报错十：bootstrap.min.js:7 Uncaught Error: Bootstrap requires jQuery
+
+bootstrap.min.js:7 Uncaught Error: Bootstrap requires jQuery
+    at bootstrap.min.js:7
+
+解决方案：解决方案：将jquery.min.js放在bootstrap.min.js文件之前引用，bootstrap.min.css文件在整两个文件前后引用都无妨（测试多次）。
+

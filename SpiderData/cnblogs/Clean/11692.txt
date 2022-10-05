@@ -1,0 +1,16 @@
+Python打包出exe后运行发现总是报OSError: Could not find lib geos_c.dll or load any of its variants缺少geos_c.dll的错误，
+
+而且非常奇怪，直接运行Python文件不报错，打出来的exe就报错，考虑是依赖没有打进去，
+
+解决方式是：
+
+1、首先确保电脑上有geos.dll和geos_c.dll，如果没有就执行pip install geos安装一下
+
+2、找到geos.dll和geos_c.dll位置
+
+3、在.spec文件中的datas=[]添加geos.dll和geos_c.dll的依赖
+
+datas=[("D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Python37_64\\Lib\\site-packages\\shapely\\DLLs\\geos.dll","."),("D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Python37_64\\Lib\\site-packages\\shapely\\DLLs\\geos_c.dll",".")],
+
+4、通过.spec编译exe， pyinstaller xxx.spec就行了
+

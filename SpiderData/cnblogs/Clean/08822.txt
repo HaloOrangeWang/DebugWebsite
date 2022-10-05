@@ -1,0 +1,20 @@
+Django2.2报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0xa6 in position 9737: illegal multibyte sequence
+
+
+一、问题复现
+
+File "D:\Python\Python37-32\lib\site-packages\django\views\debug.py", line 332, in get_traceback_html
+
+t = DEBUG_ENGINE.from_string(fh.read())
+
+
+二、解决方法
+
+打开 django/views 下的 debug.py 文件，转到 line331 行：
+
+将其改成：
+
+第 338 行相同位置可能也需要修改 encoding。
+
+这样就成功解决了。
+

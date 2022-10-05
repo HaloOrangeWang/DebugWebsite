@@ -1,0 +1,38 @@
+
+python 错误tensorflow.python.framework.errors_impl.InvalidArgumentError: Assign requires shapes of both tensors to match. lhs shape= [24,1] rhs shape= [32,1]
+
+错误
+
+tensorflow.python.framework.errors_impl.InvalidArgumentError: Assign requires shapes of both tensors to match. lhs shape= [24,1] rhs shape= [32,1]
+
+版本
+
+tensorflow2.3.0
+
+原因
+
+我在修改模型时错误修改了模型的前行传播部分代码
+
+我在def call(self, inputs, **kwargs):中不当使用了固定的batch_size参数。
+
+原来我的目标如下面例子
+
+inputs = tf.constant([[1, 2, 34, 5],
+                 [2, 3, 6, 7]], dtype=float)
+
+目标是把inputs张量转换，由 (batch_size, embeding_dim)=(2,4) ===>(batch_size, embeding_dim，1) =（2，4，1）
+
+一开始我是使用固定的batch_size，如下例子
+
+inputs_vector = tf.reshape(inputs,[batch_size, -1, 1])
+
+batch_size是在模型初始化就传入的，所以batch_size是固定大小的。-1表示有程序自动计算出当前的维度大小。
+
+如果传入的每个批次的inputs都是固定的话，那是不会出错的，但一般最后一个批次都不是完整的，所以在最后一个批次inputs_vector 的转换就出错了。解决方法是不使用batch大小了，改为使用embeding_dim数据的维度信息。因为每个样本数据的维度是不变的。
+
+我正确改为：
+
+inputs_vector = tf.reshape(inputs,[-1, self. embeding_dim, 1])
+
+。
+

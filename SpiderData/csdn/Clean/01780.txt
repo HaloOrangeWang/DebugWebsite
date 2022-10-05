@@ -1,0 +1,68 @@
+已解决（Python3中pip无法安装urllib报错问题）
+ ERROR: Could not find a version that satisfies the requirement urllib (from versions: none)
+ ERROR: No matching distribution found for urllib
+
+
+文章目录
+
+报错信息
+
+报错翻译
+
+报错原因
+
+解决方法
+
+帮忙解决
+
+
+报错信息
+
+粉丝群里面一个小伙伴在网上看到一个代码想用urllib库转换汉字为url编码，但是又没安装过urllib，就想着用pip install urllib安装模块，但是报了下面错误（当时他心里瞬间凉了一大截，跑来找我求助，然后顺利帮助他解决了，顺便记录一下希望可以帮助到更多遇到这个bug不会解决的小伙伴）：
+
+报错信息：
+
+ERROR: Could not find a version that satisfies the requirement urllib (from versions: none)
+ ERROR: No matching distribution found for urllib
+
+
+报错翻译
+
+报错内容翻译：
+
+错误：找不到满足要求urllib的版本（来自版本：无）
+
+错误：找不到urllib的匹配分发
+
+
+报错原因
+
+报错原因：
+
+urllib是Python中请求url连接的模块，在Python2中主要为urllib和urllib2，在Python3中整合成了urllib，为官方内置模块，不用安装，可以直接使用，和一般的导包不同，必须按照指定方法导包，看下面代码即可
+
+
+解决方法
+
+在Python3中直接导入urllib使用即可：
+
+import urllib.parse
+
+t = '爬虫工程师'
+s = urllib.parse.quote(t)  # 将汉字转换成url可识别的
+f = urllib.parse.unquote(s)  # 将url可识别的编码转换成汉字
+print(s)
+print(f)
+
+输出结果：
+
+%E7%88%AC%E8%99%AB%E5%B7%A5%E7%A8%8B%E5%B8%88
+爬虫工程师
+
+
+帮忙解决
+
+本文已收录于：《告别Bug》专栏
+
+本专栏用于记录学习和工作中遇到的各种疑难Bug问题，以及粉丝群里小伙伴提出的各种问题，文章形式：报错代码 + 报错翻译 + 报错原因 + 解决方法，包括程序安装、运行程序过程中等等问题，订阅专栏+关注博主后如遇到其他问题可私聊帮忙解决！！！
+

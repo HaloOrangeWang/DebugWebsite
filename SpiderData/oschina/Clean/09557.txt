@@ -1,0 +1,215 @@
+　　问题现象：在一个已有的proto文件（RecommendResponse.proto）中新增一个message（BookList），用maven编译proto文件时报错：
+
+E:\workspace\ms-selection-service\ms-selection-api>mvn clean install
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Detecting the operating system and CPU architecture
+[INFO] ------------------------------------------------------------------------
+[INFO] os.detected.name: windows
+[INFO] os.detected.arch: x86_64
+[INFO] os.detected.version: 10.0
+[INFO] os.detected.version.major: 10
+[INFO] os.detected.version.minor: 0
+[INFO] os.detected.classifier: windows-x86_64
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ms-selection-api 1.0.18061
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ ms-selection-api ---
+[INFO] Deleting E:\workspace\ms-selection-service\ms-selection-api\target
+[INFO]
+[INFO] --- protobuf-maven-plugin:0.5.0:compile (default) @ ms-selection-api ---
+[INFO] Compiling 84 proto file(s) to E:\workspace\ms-selection-service\ms-selection-api\target\generated-sources\protobuf\java
+[ERROR] PROTOC FAILED: recommend/RecommendResponse.proto:34:16: "BookList.bookName" is already defined in file "contentrecommend/ContentRecommendResponse.proto".
+recommend/RecommendResponse.proto:35:16: "BookList.authorName" is already defined in file "contentrecommend/ContentRecommendResponse.proto".
+recommend/RecommendResponse.proto:36:16: "BookList.bookCover" is already defined in file "contentrecommend/ContentRecommendResponse.proto".
+recommend/RecommendResponse.proto:37:16: "BookList.bookUrl" is already defined in file "contentrecommend/ContentRecommendResponse.proto".
+recommend/RecommendResponse.proto:38:16: "BookList.coPercent" is already defined in file "contentrecommend/ContentRecommendResponse.proto".
+recommend/RecommendResponse.proto:39:16: "BookList.contentType" is already defined in file "contentrecommend/ContentRecommendResponse.proto".
+recommend/RecommendResponse.proto:33:9: "BookList" is already defined in file "contentrecommend/ContentRecommendResponse.proto".
+recommend/RecommendResponse.proto:13:19: "BookList" seems to be defined in "contentrecommend/ContentRecommendResponse.proto", which is not imported by "recommend/RecommendResponse.proto".  To use it here, please add the necessary import.
+
+　　先看下RecommendResponse.proto：
+
+syntax = "proto3";
+
+option java_package = "cn.wlf.selection.proto.base";
+
+message RecommendResponse {
+    
+     string pluginCode=1;
+     string status=2;
+     string isvisable=3;
+     string isShowLine=4; 
+     Recommend data=5; 
+     string messageDesc=6;
+     repeated BookList bookList= 7;
+
+}
+
+message Recommend{
+
+repeated RecommendData   buttons=1;
+    map<string, string> ctag = 2;
+    string isMarginTop=3;
+    string isMarginBottom=4;
+
+}
+
+message RecommendData{
+
+string name=1;
+    
+    string url=2;    
+}
+
+message BookList{
+    string bookName=1;
+    string authorName=2;
+    string bookCover=3;
+    string bookUrl=4;
+    string coPercent=5;
+    string contentType=6;
+
+}
+
+　　再看ContentRecommendResponse.proto:
+
+syntax = "proto3";
+
+option java_package = "cn.wlf.selection.proto.base";
+
+message  ContentRecommendResponse {
+    string pluginCode=1;
+    
+    string status=2;
+    
+    string isvisable=3;
+    
+    string messageDesc=4;
+
+ContentRecommendData data=5;
+
+}
+message ContentRecommendData{
+    
+    string isMarginTop = 1;
+    
+    string isMarginBottom = 2;
+    
+    string isPaddingTop = 3;
+    
+    string isShowLine = 4;
+    
+    string dataFrom = 5;
+    
+    string title = 6;
+    
+    string style = 7;
+
+repeated BookList bookList=8;
+    
+    BiData biData = 9;
+    
+}
+message BookList{
+    string bookName=1;
+    string authorName=2;
+    string bookCover=3;
+    string bookUrl=4;
+    string coPercent=5;
+    string contentType=6;
+}
+
+message BiData{
+    
+    string msisdn = 1;
+    string bid = 2;
+    string pageNo = 3;
+    string showNum = 4;
+    string clientVersion = 5;
+    string instanceId = 6;
+}
+
+　　问题定位：从报错信息中其实已经告诉我们，在ContentRecommendResponse.proto已经存在BookList这个message了，从上面也能看到两个proto存在同名message。
+
+　　问题解决：
+
+　　1、如果新增的BookList跟已有的数据结构一样，那么只需要引入即可，RecommendResponse.proto改为：
+
+syntax = "proto3";
+
+option java_package = "cn.wlf.selection.proto.base";
+import "contentrecommend/ContentRecommendResponse.proto";
+
+message RecommendResponse {
+    
+     string pluginCode=1;
+     string status=2;
+     string isvisable=3;
+     string isShowLine=4; 
+     Recommend data=5; 
+     string messageDesc=6;
+     repeated BookList bookList= 7;
+
+}
+
+message Recommend{
+
+repeated RecommendData   buttons=1;
+    map<string, string> ctag = 2;
+    string isMarginTop=3;
+    string isMarginBottom=4;
+
+}
+
+message RecommendData{
+
+string name=1;
+    
+    string url=2;    
+}
+
+　　2、如果BookList数据结构改了，那么就没法复用了，只能改类名，RecommendResponse.proto改为：
+
+syntax = "proto3";
+
+option java_package = "cn.wlf.selection.proto.base";
+
+message RecommendResponse {
+    
+     string pluginCode=1;
+     string status=2;
+     string isvisable=3;
+     string isShowLine=4; 
+     Recommend data=5; 
+     string messageDesc=6;
+     repeated BookListNew bookList= 7;
+
+}
+
+message Recommend{
+
+repeated RecommendData   buttons=1;
+    map<string, string> ctag = 2;
+    string isMarginTop=3;
+    string isMarginBottom=4;
+
+}
+
+message RecommendData{
+
+string name=1;
+    
+    string url=2;    
+}
+
+message BookListNew{
+    string bookCover=1;
+}
+
+　　虽然类名从BookList改为BookListNew，但实例名没改，还是bookList，最终输出的响应字段名还是叫bookList的。
+
+　　以上两种情况修改后跑maven均可成功编译出java文件。
+

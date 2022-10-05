@@ -1,0 +1,47 @@
+
+一、通过执行js脚本触发点击事件
+
+页面元素结构如下图所示：
+
+通过如下方式获取该元素后直接点击会报错：
+
+selenium.common.exceptions.WebDriverException: Message: element click intercepted: Element <span role="img" id="btn_layer_title_options" tabindex="-1" class="anticon i-more ant-dropdown-trigger">...</span> is not clickable at point (467, 22). Other element would receive the click: <svg width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">...</svg>
+
+more_btn = WebDriverWait(self.driver,20,0.5).until(
+            EC.visibility_of_element_located(（By.ID,'btn_layer_title_options'）)
+more_btn.click()
+
+解决方法：通过执行js脚本点击该元素
+
+more_btn = WebDriverWait(self.driver,20,0.5).until(
+            EC.visibility_of_element_located(（By.ID,'btn_layer_title_options'）
+driver.execute_script("arguments[0].click();", more_btn)
+
+
+二、通过pyautogui库操作
+
+pyautogui是一个图形用户界面自动化工具，通过屏幕x,y坐标系统来确定目标位置，控制鼠标和键盘发送虚拟击键和鼠标点击，完成点击按钮、填写表单等操作
+
+1、安装
+
+在https://pypi.org/project/PyAutoGUI下载PyAutoGUI-0.9.38.tar.gz，解压后，进入解压目录执行python setup.py install
+
+2、常用方法
+
+#确定鼠标当前位置
+pyautogui.position()
+
+3、实例
+
+下图中同意协议框，按理说通过id可以定位到，然后进行点击勾选，但实际上是会报错，不支持点击：
+
+上述代码报错如下：
+
+下面通过pyautogui工具来实现点击该元素
+
+也可以通过如下方法点击该元素
+
+ele = self.driver.find_element_by_id('agree')
+
+ActionChains(self.driver).move_to_element(ele).click().perform()
+

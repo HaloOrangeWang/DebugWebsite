@@ -1,0 +1,20 @@
+程序错误分为两种:语法错误 和 异常错误
+语法错误:代码没有按照python规定语法去写,发明创造产生的错误
+异常错误:在代码语法正确的前提下,程序报错就是异常
+
+#try...except...  基础语法  用于解决程序异常问题
+#raise 可以主动抛异常,异常类可以自定义
+
+# 异常的分类
+
+# 获取错误行号和文件名(了解)
+
+#(了解)系统底层获取行数和文件名的函数( 只有在程序异常时才能触发 ) 
+def return_errorinfo(n):
+	import sys
+	f = sys.exc_info()[2].tb_frame.f_back
+	if n==1:		
+		return str(f.f_lineno)      #返回当前行数
+	elif n == 2:	
+		return f.f_code.co_filename #返回文件名
+

@@ -1,0 +1,20 @@
+问题：在jupyter notebook中使用asyncio.run()时发生如上标题报错，没错就是这个
+
+官方文档：This function cannot be called when another asyncio event loop is running in the same thread.
+
+百度翻译：当另一个异步事件循环在同一线程中运行时，无法调用此函数
+
+大致就是jupyter 已经运行了loop，无需自己激活，采用上文中的await()调用即可
+
+In jupyter
+
+async def main():
+        print(1)
+await main()
+
+In plain Python (≥3.7)
+
+链接: 原文
+
+参考：https://blog.csdn.net/sunnydarkcloud/article/details/101775608
+

@@ -1,0 +1,12 @@
+obj3 = pd.Series(['blue', 'purple', 'yellow'], index=['0', '2', '4'])
+obj3.reindex(range(6), method='ffill')
+
+此时会爆出一大堆错误。
+
+出错原因是：之前 obj3 的索引是字符串类型，重新索引是 range，int 类型。这样数据类型不一样，导致出错
+
+修改后：把最开始的 obj3 的 index 中的引号去掉，str 型变成 int 型。
+
+obj3 = pd.Series(['blue', 'purple', 'yellow'], index=[0, 2, 4])
+obj3.reindex(range(6), method='ffill')
+

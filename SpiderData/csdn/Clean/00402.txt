@@ -1,0 +1,19 @@
+安装matplotlib时，出现的三种失败情况
+ 1、read timed out
+ 一开始我在pycharm终端使用pip install matplotlib时，出现的是下图所示情况，大致情况是安装时间太长，所以当时我用了清华镜像，将原来的命令改成了pip install -i https://mirrors.ustc.edu.cn/pypi/web/simple/ matplotlib，速度是上来了，但是还是安装失败（第二种安装失败情况）
+ 2、error ：microsoft visual c+ is required
+ 看了很多博文，大多数都是说要到用到whl（我到现在还不大清楚这个该怎么弄）或者是下载microsoft visual c++14.0，因为不会使用whl，而且还看到说安装c++是可以百分百成功的（有的博文安装了c++过后还是不能成功安装mpl，所以还进行了一些后续操作，比如添加path、lib等，这些其实我也不太会，抱着侥幸心理就还是下载了4个G的c++。。。(https://blog.csdn.net/feifeiyechuan/article/details/90313012?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-8&utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-8)
+ 安装完成后，尝试pip，还是失败，出现了第三种失败情况
+
+3、error： command cl.exe failed with exit status 2
+ 
+ 其实看到这次失败我已经快绝望了。。然后又看到了一个博文，我理解的大致意思是，python3.8的版本相对于matplotlib的版本高了点，所以那位博主的做法是又下载了python3.5还是3.6的旧版本，然后更新了一下pip，再次安装mpl的时候就成功了。（因为看的博文太多了，找不到原文链接了）其实这个时候我是不太愿意下载py旧版本的，所以还在寻找一个简单的我能够操作的小白方法，就又找到下面这个链接
+ 添加链接描述
+ 
+ 一开始我尝试的是第二条命令，但是又出现了一个我不清楚的错误提示，所以我尝试了第一条命令，这个时候出现的错误是readtimeout，我当时想的就是，既然是安装时间太长，那就加上镜像命令试试
+
+加了镜像后的命令如下
+ python -m pip install --index https://mirrors.ustc.edu.cn/pypi/web/simple/ matplotlib
+
+其实只比最开始试的只加了镜像的命令多了一个python-m，但是最后成功了，感觉中间我下载的c++14.0也并没有起到任何作用😂
+

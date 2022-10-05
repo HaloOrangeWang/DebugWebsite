@@ -1,0 +1,39 @@
+
+1、问题现象
+
+在执行spark任务，通过数据库操作SQL写数据到hive时， 遇到insert overwrite插入数据到分区表的新分区，或者insert into插入数据到分区表的老分区时，会有报错日志：
+
+2022-04-08T11:11:55,113 ERROR [pool-6-thread-7] metastore.RetryingHMSHandler: java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
+    at java.util.ArrayList.rangeCheck(ArrayList.java:657)
+    at java.util.ArrayList.get(ArrayList.java:433)
+    at org.apache.hive.hcatalog.listener.DbNotificationListener$FileChksumIterator.next(DbNotificationListener.java:444)
+    at org.apache.hive.hcatalog.listener.DbNotificationListener$FileChksumIterator.next(DbNotificationListener.java:429)
+    at com.google.common.collect.Lists.newArrayList(Lists.java:145)
+    at org.apache.hadoop.hive.metastore.messaging.json.JSONInsertMessage.<init>(JSONInsertMessage.java:62)
+    at org.apache.hadoop.hive.metastore.messaging.json.JSONMessageFactory.buildInsertMessage(JSONMessageFactory.java:167)
+    at org.apache.hive.hcatalog.listener.DbNotificationListener.onInsert(DbNotificationListener.java:457)
+
+并出现下列情况：
+
+查看底层hdfs发现hive对应的目录和数据都有了；
+
+使用show partitions xxx查看不到对应的新分区；
+
+使用select语句也查不到该新分区下的数据。
+
+
+2、问题原因
+
+参考官网jira链接解释，这是hive自身的一个BUG，并且在hive3.0才修复，问题概括如下：
+
+在hive2.x版本上，hive.metastore.dml.events配置为true时，向不存在的分区插入数据，如向新分区insert overwrite，或以动态分区模式插入数据到新分区时，hive的处理机制会因为metastore找不到分区而断开链接并报错。
+
+
+3、解决办法
+
+官方推荐的解决办法有两个：
+
+配置 hive.metastore.dml.events 为false.
+
+或者升级版本到hive3.0.
+

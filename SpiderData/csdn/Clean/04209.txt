@@ -1,0 +1,51 @@
+
+问题描述：
+
+使用python ide执行脚本正常，使用python直接执行报错，报错“不存在对应模块”
+
+
+问题原因分析：
+
+Q1: 等同于python脚本在ide和console中执行的区别
+
+Q2: 因为在ide里执行脚本的时候，不仅会导入path环境变量中的模块，还会导入当前工作目录下模块，所以idle会很容易调用到相应的模块；【因为大多数的代码，是在创建项目的时候是使用ide进行编辑的】。 而在python console中执行python命令，会自动导入python path环境变量中的模块，还会将python.exe所在目录下的模块进行导入，如果所在目录不是创建的项目所在目录，就无法导入项目中的模块；；只能通过添加到python path中进行导入；【这个在python里执行脚本的时候容易报错 “ModuleNotFoundError: No module named 'Delivery'”】
+
+
+问题解决方法：
+
+最简单的方式，使用固定的添加path环境变量
+
+import sys, os
+
+#当前文件所在绝对路径
+curPath = os.path.dirname(__file__)
+
+#文件所在根目录路径
+rootPath = os.path.split(curPath)[0]
+
+#检查下rootPath是否为文件所在根目录路径
+print("rootpath=====>",rootPath)
+
+#将rootPath添加到系统path环境变量中
+sys.path.append(rootPath)【另一种写法：sys.path.insert(0,rootPath)】
+
+#查看当前系统path环境变量中的路径是否包含添加的rootPath
+print(sys.path)
+
+
+FAQ可能遇到的问题：
+
+问题一：添加路径之后还报错？
+
+原因分析：路径还未到根目录
+
+解决办法：
+
+#如果上一步还未到根路径，则进行再一次提前上级目录
+
+sys.path.append(os.path.split(rootPath)[0])
+
+#查看当前path环境变量中的路径
+
+print(sys.path)
+

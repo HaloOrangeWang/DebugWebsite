@@ -1,0 +1,81 @@
+在学习 pandas与numpy中遇到 下列代码
+
+import seaborn as sns
+planets = sns.load_dataset('planets')
+planets.shape
+
+结果报错：
+
+OSError                                   Traceback (most recent call last)
+<ipython-input-2-9ef247eedb4e> in <module>()
+      1 import seaborn as sns
+----> 2 planets = sns.load_dataset('planets')
+      3 planets.shape
+
+G:\Anaconda3\lib\site-packages\seaborn\utils.py in load_dataset(name, cache, data_home, **kws)
+    425         full_path = cache_path
+    426 
+--> 427     df = pd.read_csv(full_path, **kws)
+    428     if df.iloc[-1].isnull().all():
+    429         df = df.iloc[:-1]
+
+G:\Anaconda3\lib\site-packages\pandas\io\parsers.py in parser_f(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, escapechar, comment, encoding, dialect, tupleize_cols, error_bad_lines, warn_bad_lines, skipfooter, skip_footer, doublequote, delim_whitespace, as_recarray, compact_ints, use_unsigned, low_memory, buffer_lines, memory_map, float_precision)
+    653                     skip_blank_lines=skip_blank_lines)
+    654 
+--> 655         return _read(filepath_or_buffer, kwds)
+    656 
+    657     parser_f.__name__ = name
+
+G:\Anaconda3\lib\site-packages\pandas\io\parsers.py in _read(filepath_or_buffer, kwds)
+    403 
+    404     # Create the parser.
+--> 405     parser = TextFileReader(filepath_or_buffer, **kwds)
+    406 
+    407     if chunksize or iterator:
+
+G:\Anaconda3\lib\site-packages\pandas\io\parsers.py in __init__(self, f, engine, **kwds)
+    760             self.options['has_index_names'] = kwds['has_index_names']
+    761 
+--> 762         self._make_engine(self.engine)
+    763 
+    764     def close(self):
+
+G:\Anaconda3\lib\site-packages\pandas\io\parsers.py in _make_engine(self, engine)
+    964     def _make_engine(self, engine='c'):
+    965         if engine == 'c':
+--> 966             self._engine = CParserWrapper(self.f, **self.options)
+    967         else:
+    968             if engine == 'python':
+
+G:\Anaconda3\lib\site-packages\pandas\io\parsers.py in __init__(self, src, **kwds)
+   1580         kwds['allow_leading_cols'] = self.index_col is not False
+   1581 
+-> 1582         self._reader = parsers.TextReader(src, **kwds)
+   1583 
+   1584         # XXX
+
+pandas\_libs\parsers.pyx in pandas._libs.parsers.TextReader.__cinit__ (pandas\_libs\parsers.c:4209)()
+
+pandas\_libs\parsers.pyx in pandas._libs.parsers.TextReader._setup_parser_source (pandas\_libs\parsers.c:8895)()
+
+OSError: Initializing from file failed
+
+网上搜索发现是:
+
+pandas.read_csv()中参数问题，一检查发现，报错中的确有提到这个函数
+
+G:\Anaconda3\lib\site-packages\seaborn\utils.py in load_dataset(name, cache, data_home, **kws)
+    425         full_path = cache_path
+    426 
+--> 427     df = pd.read_csv(full_path, **kws)
+    428     if df.iloc[-1].isnull().all():
+    429         df = df.iloc[:-1]
+
+于是添加参数到之前输入的函数中去
+
+import seaborn as sns
+planets = sns.load_dataset('planets',*{'encoding':'utf8','engine':'python'})
+planets.shape
+
+完美解决：
+

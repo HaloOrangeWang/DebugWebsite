@@ -1,0 +1,75 @@
+某天发现无法用客户端远程登录 MySQL 了，客户端提示：
+
+Authentication plugin 'caching_sha2_password' cannot be loaded: dlopen(/usr/local/mysql/lib/plugin/caching_sha2_password.so, 2): image not found
+
+同时，用 python 脚本连接客户端也出现了报错：
+
+RuntimeError: cryptography is required for sha256_password or caching_sha2_password
+
+查看官方文档，找到了原因：
+
+MySQL 8.0的首选身份验证插件是 caching_sha2_password，它提供了比旧的身份验证插件 mysql_native_password 更安全的密码哈希 。但是，它也具有兼容性影响。
+
+如果客户端或连接器是基于 Client/Server 协议实现的，而该实现是无法正常处理无法识别的默认身份验证插件的，所以连接会失败并报出上面的错误。
+
+总结下来，结论就是：问题出在客户端或者连接器上，谁让你们的实现方式没有适配最新的 MySQL 8.0（怪我咯？）。
+
+所以，要么客户端或连接器改，要么服务端改。
+
+
+改客户端或连接器的连接方式
+
+我是在 Python 环境下遇到的问题，两步解决：
+
+修改 Python 连接 MySQL 的驱动为 pymysql。
+
+pip install PyMySQL
+
+然后，数据库连接字符串改成
+
+mysql+pymysql://username:password@server/db
+
+安装 cryptography 模块。
+
+这一步骤是以防万一，有网友反馈使用了 pymysql 模块可能还是会出现报错 cryptography is required for sha256_password or caching_sha2_password，其实只要再安装 cryptography 模块就可以了。
+
+pip install cryptography
+
+也期待有小伙伴分享其他解决方案。
+
+
+改服务端的身份验证插件
+
+现在要考虑两个问题：
+
+如何处理已有的账号，使得这些账号可以正常访问？-> 重置身份验证插件
+
+如何避免今后新账号，不要再出现这个问题？-> 修改数据库配置
+
+
+重置身份验证插件
+
+登录 MySQL 所在主机，用有权限的账号，以本地登录的方式进入 MySQL。
+
+对受到影响的账号，修改身份认证方式。
+
+ALTER USER '用户名'@'HOST' IDENTIFIED WITH mysql_native_password BY '旧密码';
+
+如果不想每次遇到问题了再修改，索性就把所有可能会遇到问题的账号都改了：
+
+首先，查看目前有哪些账号的身份验证插件用了 caching_sha2_password：
+
+select user, host 
+from mysql.user 
+where plugin = 'caching_sha2_password';
+
+然后对上述结果，执行一遍 alter 语句。
+
+
+修改数据库配置
+
+修改数据库的配置文件 my.cnf，指定默认的身份验证插件为旧插件。
+
+[mysqld]
+default_authentication_plugin=mysql_native_password
+

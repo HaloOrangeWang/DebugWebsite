@@ -1,0 +1,87 @@
+如图，启动我的项目发生报错
+
+python3.7 manage.py runserver  127.0.0.1:8001
+
+return _bootstrap._gcd_import(name[level:], package, level)
+  File "/root/lib/python3.7/site-packages/django/db/backends/sqlite3/base.py", line 10, in <module>
+    from sqlite3 import dbapi2 as Database
+  File "/usr/local/python3.7/lib/python3.7/sqlite3/__init__.py", line 23, in <module>
+    from sqlite3.dbapi2 import *
+  File "/usr/local/python3.7/lib/python3.7/sqlite3/dbapi2.py", line 27, in <module>
+    from _sqlite3 import *
+ModuleNotFoundError: No module named '_sqlite3'
+
+问题原因
+
+安装python的时候没有找到sqlite3.so的库。
+
+解决方法
+
+wget https://www.sqlite.org/2018/sqlite-autoconf-3250200.tar.gz
+tar -zxvf sqlite-autoconf-3250200.tar.gz
+cd sqlite-autoconf-3250200
+
+./configure --prefix=/usr/local/sqlite3
+
+make && make install
+
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/sqlite3/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+ /bin/mkdir -p '/usr/local/sqlite3/bin'
+  /bin/sh ./libtool   --mode=install /usr/bin/install -c sqlite3 '/usr/local/sqlite3/bin'
+libtool: install: /usr/bin/install -c sqlite3 /usr/local/sqlite3/bin/sqlite3
+ /bin/mkdir -p '/usr/local/sqlite3/include'
+ /usr/bin/install -c -m 644 sqlite3.h sqlite3ext.h '/usr/local/sqlite3/include'
+ /bin/mkdir -p '/usr/local/sqlite3/share/man/man1'
+ /usr/bin/install -c -m 644 sqlite3.1 '/usr/local/sqlite3/share/man/man1'
+ /bin/mkdir -p '/usr/local/sqlite3/lib/pkgconfig'
+ /usr/bin/install -c -m 644 sqlite3.pc '/usr/local/sqlite3/lib/pkgconfig'
+make[1]: Leaving directory `/opt/sqlite'
+
+最后python需要重新编译一下
+
+./configure  --prefix=/usr/local/python3.7.0  --with-openssl=/root/testvir/openssl --enable-loadable-sqlite-extensions
+
+make
+
+make install
+
+如果还是有问题，尝试如下方法
+
+[root@host-192-168-151-177 Python-3.7.0]#  find / -name  _sqlite3.cpython*
+/opt/python35/lib/python3.5/lib-dynload/_sqlite3.cpython-35m-x86_64-linux-gnu.so
+/opt/python3.5/build/lib.linux-x86_64-3.5/_sqlite3.cpython-35m-x86_64-linux-gnu.so
+/opt/Python-3.7.0/build/lib.linux-x86_64-3.7/_sqlite3.cpython-37m-x86_64-linux-gnu_failed.so
+/usr/local/python3.7.0/lib/python3.7/lib-dynload/_sqlite3.cpython-37m-x86_64-linux-gnu_failed.so
+/usr/local/python3/lib/python3.5/lib-dynload/_sqlite3.cpython-35m-x86_64-linux-gnu.so
+/usr/local/python3.7/lib/python3.7/lib-dynload/_sqlite3.cpython-37m-x86_64-linux-gnu_failed.so
+/usr/local/src/Python-3.5.2/build/lib.linux-x86_64-3.5/_sqlite3.cpython-35m-x86_64-linux-gnu.so
+/usr/python3/lib/python3.5/lib-dynload/_sqlite3.cpython-35m-x86_64-linux-gnu.so
+
+cp  /usr/local/src/Python-3.5.2/build/lib.linux-x86_64-3.5/_sqlite3.cpython-35m-x86_64-linux-gnu.so  /usr/local/python3.7.0/lib/python3.7/lib-dynload/_sqlite3.so
+
+最后解决
+
+[root@host-192-168-151-177 Python-3.7.0]# /usr/local/python3.7.0/bin/python3.7 
+Python 3.7.0 (default, May 13 2020, 17:52:25) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-23)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sqlite3
+>>>
+

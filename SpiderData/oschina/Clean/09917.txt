@@ -1,0 +1,54 @@
+别以为JSON.parse(JSON.stringify(data))做深拷贝无敌，对于以下这种情况，当你需要保留父级对象，即 对象存在循环引用，就会报错。
+
+var a = [
+        {
+            "id":5,
+            "pid":2,
+            "categoryName":"搜索行为",
+        },
+        {
+            "id":6,
+            "pid":3,
+            "categoryName":"购买力",
+        }
+    ]
+    a.map(item => {
+        item.parent = item
+        return item
+    })
+    let b = JSON.stringify(a)
+    console.log(b)
+
+　报错
+
+　
+
+正确的方法是：
+
+var a = [
+        {
+            "id":5,
+            "pid":2,
+            "categoryName":"搜索行为",
+        },
+        {
+            "id":6,
+            "pid":3,
+            "categoryName":"购买力",
+        }
+    ]
+    a.map(item => {
+        item.parent = JSON.parse(JSON.stringify(item))  // 注意这里
+        return item
+    })
+    let b = JSON.stringify(a)
+    console.log(b)
+
+　　更精简的情况：
+
+var a = {};
+    a.o = a;
+    console.log(JSON.stringify(o))
+
+　　
+

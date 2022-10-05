@@ -1,0 +1,190 @@
+
+配置 nginx 遇到错误排查（初级）
+
+系统版本：ubuntu 14.04，nginx 版本：nginx/1.4.6 (Ubuntu)
+
+本文不是一步步搭建 nginx 的过程，而是我在使用 nginx 的过程中，整理自己遇到的的一些问题。适用于：nginx 遇到问题，排查问题的 checklist
+
+
+一、安装
+
+sudo apt-get update
+sudo apt-get install nginx
+
+注意：用 root 身份安装 nginx
+
+
+二、常用命令
+
+请在执行下面命令时，确保权限正确，统一在命令前加入：sudo，使用 root 权限操作 nginx。
+
+查看 nginx 版本：nginx -v
+
+检查配置语法是否正确：service nginx configtest
+
+重启：service nginx restart
+
+停止：service nginx stop
+
+查看状态：service nginx status
+
+如遇到，启动失败的情况，请查看 nginx 错误日志，日志位于：/var/log/nginx/error.log
+
+
+三、nginx 正则表达式匹配
+
+location 支持的正则规则，注意：使用正则需要谨慎，确定正则的正确性。
+
+容易出现：因为错误的正则，导致 NOT FOUND：The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+
+
+3.1 正则表达式匹配
+
+
+3.2 例子
+
+location = / ：匹配任何查询，因为所有请求都已 / 开头。但是正则表达式规则和长的块规则将被优先和查询匹配
+
+location ^~ /images/ ：匹配任何已/images/开头的任何查询并且停止搜索。任何正则表达式将不会被测试。
+
+location ~* .(gif|jpg|jpeg)$ ：匹配任何已.gif、.jpg 或 .jpeg 结尾的请求
+
+
+四、必知参数
+
+
+4.1 root
+
+默认访问请求文件的所在目录。例如访问：http://hellogithub.com/img/hello-github.jpg，nginx 中配置如下：
+
+location /img/ {
+    root /该图片所在的绝对路径;
+}
+
+该请求就会到 root 指定路径去寻找 /img/hello-github.jpg 文件，返回请求。
+
+注意：指定目录的权限
+
+
+4.2 user
+
+user root;
+worker_processes 4;
+pid /run/nginx.pid;
+
+user 参数，代表 worker 属于那个用户身份，这个身份牵扯到可以访问那些目录。正如上面的 root 参数指定的路径，如果 worker 没有访问该目录的权限，那么就会返回 403 Forbidden 错误。
+
+
+4.3 server、server_name、listen
+
+server {
+    listen 80;
+    server_name hellogithub.com;
+	...
+}
+
+server 是配置虚拟主机（Virtual Hosting
+
+server_name是对应的虚拟主机的域名（domain）
+
+listen 是该虚拟主机监听的端口
+
+虚拟主机配置实现了，如何一台计算机实现服务多个域名。
+
+注意：在配置 listen 参数时，确保该端口为打开状态、没有其它进程占用。
+
+
+4.4 关系
+
+server {
+	listen 80;
+	...
+	server_name hellogithub.com www.hellogithub.com;
+	access_log /path/access.log;
+	error_log /path/hellogithub/error.log;
+
+location / {
+		...
+		proxy_pass         http://0.0.0.0:4000;
+	}
+}
+
+access_log：虚拟主机的访问日志
+
+error_log：虚拟主机的错误日志
+
+请求到了目标服务器，Nginx 接受请求，根据 nginx.conf 中的配置的虚拟主机。找到到具体的虚拟主机配置的规则，然后根据虚拟主机的 location 规则，匹配请求的 path 。最后，返回结果（静态资源）或者通过 proxy_pass 参数，反向代理到本机上的处理服务，然后把处理后的结果再通过 nginx 返回结果。
+
+注意：proxy_pass 参数配置的地址末尾不要带 /。例如上面的例子，就不要写成：http://0.0.0.0:4000/
+
+否则会出现：proxy_pass cannot have URI part in location given by regular expression...，错误提示。
+
+
+4.5 include
+
+http {
+    ...
+
+##
+    # Virtual Host Configs
+    ##
+    include conf.d/*.conf;
+}
+
+意思：引入 conf.d 目录下后缀为 conf 的文件。该目录下存放不同的虚拟主机的相关配置。
+
+目的：为了方便以后的修改配置，使用 include 参数。把不同的虚拟主机的配置放在单独的文件中，达到相互独立，减少出错的可能。
+
+
+五、问题排查步骤
+
+修改完 nginx.conf 文件后，执行sudo service nginx configtest，检查语法错误。无误后再重启 nginx。
+
+如果语法出现的错误，查看 sudo vi /var/log/nginx/error.log 错误日志分析问题，根据异常信息，搜索问题的解决办法。
+
+语法正确也不一定可以正常启动 nginx（端口被占用），如果启动失败。查看 sudo vi /var/log/nginx/error.log 错误日志分析问题。
+
+nginx 正常启动了，访问地址出现：
+
+无法访问此网站（ERR_NAME_NOT_RESOLVED）：检查服务的 80 或 443 端口是否打开。
+
+NOT FOUND：检查 location 是否匹配到了请求的 path。
+
+403 Forbidden：检查 root 的文件权限和 user 身份的权限。
+
+无法访问此网站（ERR_NAME_NOT_RESOLVED）：检查服务的 80 或 443 端口是否打开。
+
+NOT FOUND：检查 location 是否匹配到了请求的 path。
+
+403 Forbidden：检查 root 的文件权限和 user 身份的权限。
+
+
+六、总结
+
+排查问题的关键，是需要清楚整个流程都经历的那些步骤，逐一进行排查，取保每一步的正确。中间最关键的信息就是 日志中的错误说明。
+
+就像排查 nginx，可以通过日志，定位到问题是在那一步出错了。如果日志中没有这一次访问的记录，那就需要查看端口是否开放、域名解析是否正确。
+
+首先，清楚整个流程
+
+然后，根据有限的信息，定位问题
+
+最后，分析问题，整理问题的关键字，求教 Google
+
+至此就是我在配置 nginx 遇到的问题和总结的经验，这些折腾了我半天。所以，记录、整理这些东西希望自己以后遇到这个问题有‘套路’，不至于浪费时间，同样分享给大家，希望能帮到更多的人????。
+
+PS：在我搜索相关资料的时候，我发现如何配置环境的资料，一般都是云服务商（linode、digitalocean）写的最好、最详细、最全。所以，遇到这类问题，可以多去看看他们的帮助文档。
+
+
+参考
+
+how-to-configure-nginx
+
+nginx-proxy-pass-cannot-have-uri-part-in-location
+
+install-ssl-certificate-nginx-port-443-refuse-connection
+
+nginx-403-forbidden-for-all-files
+
+Nginx服务器的学习和配置
+

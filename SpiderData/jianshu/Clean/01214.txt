@@ -1,0 +1,20 @@
+python-cx_oracle报错"DatabaseError: DPI-1047: 64-bit Oracle Client library cannot be loaded: "
+
+问题的主要原因是python-cx_oracle加载的是32位的instantclient-basic，我们需要让他读到64位的。
+
+首先安装配置时，必须把握一个点，就是版本一致！包括：系统版本，python版本，oracle客户端的版本，cx_Oracle的版本，然后安装配置就容易了！
+
+Oracle数据库中的instantclient的位置：D:\app\issuser\product\11.2.0\dbhome_1\instantclient
+
+因为使用的是Windows的系统，配置环境变量：
+
+path=C:\instantclient-basic-nt-11.2.0.2.0
+
+其实最重要的是下载Oracle的客户端程序，将其中三个重要的dll文件复制到Libs/site-packages文件夹中
+
+oracle客户端
+
+下载地址：http://www.oracle.com/technetwork/database/features/instant-client/index-097480.html
+
+把下载的文件解压，复制oci，oraocci11，oraociei11的3个DLL粘贴到你的PY目录的Libs/site-packages文件夹下面
+

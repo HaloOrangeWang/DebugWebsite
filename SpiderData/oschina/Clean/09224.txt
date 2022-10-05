@@ -1,0 +1,144 @@
+问题背景
+
+在云服务器上构建一个云数据库RDS数据库的从库，构建的方式也相对比较简单，和搭建主从的复制没啥区别，这里不做具体介绍；
+
+构建完成后，业务上线之后，构建的从库出现主从复制报错的问题，具体的报错信息如下所示：
+
+备注：由于云数据库RDS由于没有开启GTID，所以只能基于偏移量进行主从复制、
+
+（有些强一致性金融级云数据库RDS默认GTID是关闭的）
+
+mysql>show slave status\G
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for master to send event
+                  Master_Host: xxxxx
+                  Master_User: xxxxx
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: mysql-bin.000001
+          Read_Master_Log_Pos: 192682856
+               Relay_Log_File: slave-relay-bin.000002
+                Relay_Log_Pos: 182919607
+        Relay_Master_Log_File: mysql-bin.000001
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: No
+              Replicate_Do_DB: db_log
+          Replicate_Ignore_DB: 
+           Replicate_Do_Table: 
+       Replicate_Ignore_Table: 
+      Replicate_Wild_Do_Table: 
+  Replicate_Wild_Ignore_Table: mysql.%,information_schema.%,performance_schema.%,sys.%
+                   Last_Errno: 1298
+                   Last_Error: Coordinator stopped because there were error(s) in the worker(s). The most recent failure being: Worker 1 failed executing transaction 'ANONYMOUS' at master log mysql-bin.000001, end_log_pos 189340186. See error log and/or performance_schema.replication_applier_status_by_worker table for more details about this failure or others, if any.
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 189340026
+              Relay_Log_Space: 186263083
+              Until_Condition: None
+               Until_Log_File: 
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File: 
+           Master_SSL_CA_Path: 
+              Master_SSL_Cert: 
+            Master_SSL_Cipher: 
+               Master_SSL_Key: 
+        Seconds_Behind_Master: NULL
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 0
+                Last_IO_Error: 
+               Last_SQL_Errno: 1298
+               Last_SQL_Error: Coordinator stopped because there were error(s) in the worker(s). The most recent failure being: Worker 1 failed executing transaction 'ANONYMOUS' at master log mysql-bin.000001, end_log_pos 189340186. See error log and/or performance_schema.replication_applier_status_by_worker table for more details about this failure or others, if any.
+  Replicate_Ignore_Server_Ids: 
+             Master_Server_Id: 2230469996
+                  Master_UUID: 101414c4-4c0a-11ec-bd6b-0c42a1f03afe
+             Master_Info_File: mysql.slave_master_info
+                    SQL_Delay: 0
+          SQL_Remaining_Delay: NULL
+      Slave_SQL_Running_State: 
+           Master_Retry_Count: 86400
+                  Master_Bind: 
+      Last_IO_Error_Timestamp: 
+     Last_SQL_Error_Timestamp: 220115 13:48:22
+               Master_SSL_Crl: 
+           Master_SSL_Crlpath: 
+           Retrieved_Gtid_Set: 
+            Executed_Gtid_Set: 
+                Auto_Position: 0
+         Replicate_Rewrite_DB: 
+                 Channel_Name: 
+           Master_TLS_Version: 
+1 row in set (0.00 sec)
+
+查看performance_schema.replication_applier_status_by_worker表查看具体的报错信息如下：
+
+mysql>select * from performance_schema.replication_applier_status_by_worker\G
+*************************** 1. row ***************************
+         CHANNEL_NAME: 
+            WORKER_ID: 1
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: ANONYMOUS
+    LAST_ERROR_NUMBER: 1298
+   LAST_ERROR_MESSAGE: Worker 1 failed executing transaction 'ANONYMOUS' at master log mysql-bin.000001, end_log_pos 189340186; Error 'Unknown or incorrect time zone: 'Asia/Shanghai'' on query. Default database: 'inter_dg_log'. Query: 'BEGIN'
+ LAST_ERROR_TIMESTAMP: 2022-01-15 13:48:22
+
+从报错信息看，是由于binlog中存在设置时区time zone为Asia/Shanghai而导致的报错：
+
+Error ‘Unknown or incorrect time zone: ‘Asia/Shanghai”
+
+接下来我们解析一下Binlog日志，确认一下具体执行的SQL语句
+
+# at 182919672
+#220115 11:11:08 server id 2230469996  end_log_pos 189340186 CRC32 0x4c174b2d   Query   thread_id=7046077       exec_time=0     error_code=0
+SET TIMESTAMP=1642216268/*!*/;
+SET @@session.time_zone='Asia/Shanghai'/*!*/;
+BEGIN
+/*!*/;
+# at 182919767
+#220115 11:11:08 server id 2230469996  end_log_pos 189340301 CRC32
+
+通过解析binlog文件，确实发现binlog中有设置时区的语句：SET @@session.time_zone=’Asia/Shanghai’
+
+按道理的话，设置session级别应该是支持的，那为什么会出现报错呢？
+
+接下来，我们查看一下，目前从库设置的时区
+
+mysql>show variables like '%time_zone%';
++------------------+--------+
+| Variable_name    | Value  |
++------------------+--------+
+| system_time_zone | CST    |
+| time_zone        | +08:00 |
++------------------+--------+
+2 rows in set (0.01 sec)
+
+从库实例默认时区格式是’+8:00’的格式
+
+默认这个时区设置是没有的，mysql默认不支持’Asia/Shanghai’这种时区格式
+
+mysql>set global time_zone='Asia/Shanghai';
+ERROR 1298 (HY000): Unknown or incorrect time zone: 'Asia/Shanghai
+
+那如何解决这个问题呢？
+
+
+解决方案
+
+需要从mysql官网下载一个时区文件，下载地址：https://dev.mysql.com/downloads/timezones.html
+
+下载完成后，解压后是一个SQL文件，将SQL文件导入到系统库mysql中，然后就支持设置支持’Asia/Shanghai’这种时区格式
+
+mysql>set session time_zone='Asia/Shanghai';
+Query OK, 0 rows affected (0.00 sec)
+ 
+mysql>show variables like '%time_zone%';
++------------------+---------------+
+| Variable_name    | Value         |
++------------------+---------------+
+| system_time_zone | CST           |
+| time_zone        | Asia/Shanghai |
++------------------+---------------+
+2 rows in set (0.00 sec)
+
+那么从库复制报错的问题也可以解决了，只需要stop slave;start slave;即可；
+

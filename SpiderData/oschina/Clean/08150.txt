@@ -1,0 +1,55 @@
+
+Eclipse报错：java.lang.ClassNotFoundException: ContextLoaderListener
+
+Eclipse中tomcat部署工程启动后报错：
+
+严重: Error configuring application listener of class org.springframework.web.context.ContextLoaderListener
+
+java.lang.ClassNotFoundException: org.springframework.web.context.ContextLoaderListener
+
+at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1678)
+
+at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1523)
+
+at org.apache.catalina.core.DefaultInstanceManager.loadClass(DefaultInstanceManager.java:415)
+
+at org.apache.catalina.core.DefaultInstanceManager.loadClassMaybePrivileged(DefaultInstanceManager.java:397)
+
+at org.apache.catalina.core.DefaultInstanceManager.newInstance(DefaultInstanceManager.java:118)
+
+at org.apache.catalina.core.StandardContext.listenerStart(StandardContext.java:4660)
+
+at org.apache.catalina.core.StandardContext$1.call(StandardContext.java:5226)
+
+at org.apache.catalina.core.StandardContext$1.call(StandardContext.java:5221)
+
+at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+
+at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+
+at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+
+at java.lang.Thread.run(Thread.java:662)
+
+问题背景：
+
+工程为maven工程，ContextLoaderListener类位于spring-web-3.1.0.RELEASE.jar包中。检查了maven的pom.xml，依赖引入正常。在工程Maven Dependencies视图中也能看到spring-web-3.1.0.RELEASE.jar包被正常引入进来了。
+
+错误原因：
+
+进入到tomcat的部署路径.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\下检查了一下，发现工程部署后在WEB-INF文件夹下没有生成lib目录，正常情况下，会生成lib目录并把工程的所有依赖jar包都部署到该目录下。
+
+解决方案：
+
+1.右键点击项目--选择Properties
+
+选择Deployment Assembly,在右边点击Add按钮，在弹出的窗口中选择Java Build Path Entries。如下图所示：
+
+2.点击Next，选择Maven Dependencies
+
+3.点击Finish，然后可以看到已经把Maven Dependencies添加到Web应用结构中了
+
+操作完后，重新部署工程，不再报错了。然后我们再到.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\目录下，发现工程WEB-INF目录下自动生成了lib目录，并且所有的依赖jar包也都已经部署进来。问题因此解决。
+

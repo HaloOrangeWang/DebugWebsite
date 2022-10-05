@@ -1,0 +1,9 @@
+
+报错 Scope 'session' is not active for the current thread; consider defining a scoped
+
+
+解决方案
+
+可以看到代码里是通过 String[] beanNames = context.getBeanNamesForType(Object.class);获取到的所有的bean name，对于这个方法，其实有两个参数可以使用，这是解决这个问题的关键，把第二个参数设置成false，就可以只取scope为singleton的bean了，第三个参数根据实际情况设置，我这里直接设为true。
+ String[] beanNames = applicationContext.getBeanNamesForType(Object.class,false,true);
+

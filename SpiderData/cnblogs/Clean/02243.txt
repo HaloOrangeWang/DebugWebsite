@@ -1,0 +1,29 @@
+现在caffe2被合并到了PyTorch中
+
+git clone https://github.com/pytorch/pytorch
+
+pip install -r requirements.txt
+sudo python setup.py install
+
+后边报错信息的解决
+
+遇到
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "torch/__init__.py", line 84, in <module>
+
+from torch._C import *
+
+ImportError: No module named _C
+
+错误的时候，有两种可能：
+
+numpy版本不匹配，使用sudo pip install numpy -I重新安装numpy
+
+找不到_C.so文件。到/usr/local/lib/python2.7/dist-packages下查看是否存在_C.so(文件名必须是这个，如果文件名太长，需要修改成这个)
+
+之后切换到自己目录下重新尝试后，问题解决
+

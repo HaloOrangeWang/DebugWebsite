@@ -1,0 +1,20 @@
+想用 pycharm 写个 aes 解密，抄完代码发现 Unresolved reference 问题；
+
+百度大佬告诉我需要安装 Crypto，先 cmd 中 "pip install PyCrypto" 安装 Crypto ，再在编辑器中 "alt + enter" 安装 Crypto，依旧报错；
+
+继续百度，得解决方案：
+
+给目标文件夹添加 source 标识；
+
+给目标文件夹添加 source 标识；
+
+2.清缓存重启
+
+仍然报错；
+
+最终来到此界面：
+
+发现 pycharm 使用的是其安装向导中提示安装的自带 python，那么 cmd 中 "pip install PyCrypto" 安装的 package 必定对此处无效了，将 Interpreter 修改为系统环境变量中的 python，再清除缓存重启，发现不报错了。(若是新安装的 pycharm，此处下拉框应只有一个 python，需点击 Show All，在新窗口中添加系统 python。)
+
+对比二者已安装的 package 列表发现，"pip install PyCrypto" 为系统 python 安装的为 pycrypto，而 "alt + enter" 为 pycharm 自带 python 安装的为 crypto，于是为后者添加 pycrypto 库，清除缓存重启发现也不再报错。问题解决。
+

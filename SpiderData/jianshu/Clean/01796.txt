@@ -1,0 +1,70 @@
+原文链接：https://www.cnblogs.com/felixqiang/p/11946644.html
+
+Docker-Compose 的安装
+
+方法一
+
+# 下载1.25.0 docker composesudo curl -L"https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)"-o /usr/local/bin/docker-compose# 添加可执行权限sudo chmod +x /usr/local/bin/docker-compose# 测试安装sudo docker-compose --version
+
+Install Docker Compose
+
+方法二
+
+本人是用此方法安装的,期间的一些错误及解决方法
+
+安装pip
+
+# 安装 EPEL 软件包sudo yuminstallepel-release# 安装pipsudo yuminstall-y python-pip# 升级pipsudo pipinstall--upgrade pip
+
+安装docker-compose时报错
+
+sudo pipinstalldocker-compose
+
+第一次报错(sudo pip install docker-compose时)
+
+ERROR: jsonschema3.2.0has requirement six>=1.11.0, but you'llhave six1.9.0whichisincompatible.
+
+解决方法
+
+sudo pipinstallsix--user -U
+
+第二次报错(sudo pip install docker-compose时)
+
+ERROR: Cannotuninstall'subprocess32'. Itisa distutils installedprojectandthus we cannot accurately determine which >files belongtoit which wouldleadtoonlyapartialuninstall.
+
+解决方法
+
+# 搜索subprocess32-3.2.6-py2.7.egg-info文件sudofind / -name *subpro*.egg-info# 删除rm -rf /usr/lib64/python2.7/site-packages/subprocess32-3.2.6-py2.7.egg-info
+
+第三次报错(sudo pip install subprocess32 -U时)
+
+configure:error:noacceptableCcompilerfoundin$PATH
+
+解决方法
+
+sudo yuminstall-y  gcc
+
+第四次报错(sudo pip install subprocess32 -U时)
+
+error: command'gcc'failed withexitstatus1
+
+解决方法
+
+# 安装openssl-develsudo yuminstallgcc libffi-devel python-devel openssl-devel -y
+
+第五次报错(sudo pip install docker-compose时)
+
+RROR: Cannotuninstall'requests'. Itisa distutils installedprojectandthus we cannot accurately determine which files >belongtoit which wouldleadtoonlyapartialuninstall.
+
+解决方法
+
+# 搜索requests-2.6.0-py2.7.egg-info文件sudofind / -name *requests*.egg-info# 删除rm -rf /usr/lib/python2.7/site-packages/requests-2.6.0-py2.7.egg-info
+
+最后再次安装docker-compose
+
+sudo pipinstalldocker-compose
+
+安装成功
+
+sudo docker-compose--version
+

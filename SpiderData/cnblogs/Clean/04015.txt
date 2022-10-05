@@ -1,0 +1,28 @@
+
+（一）问题描述
+
+Centos7 安装python-igraph时，pip install python-igraph 报错，C core of igraph 没有安装。
+
+
+（二）解决办法
+
+网上的方法都试过，搞了好几天，焦头烂额，也没有整出来。最后看了源码。才知道它安装的时候，会下载igraph。也就是C core。具体解决方法：
+
+1. 下载：igraph-0.7.1.tar
+
+2. 解压：tar -zxvf igraph-0.7.1.tar.gz
+
+3.安装：
+
+./configure
+
+make
+
+make install
+
+4. 在安装pip install python-igraph，命令如下：
+
+pip install -v python-igraph --install-option="--c-core-url=【igraph路径】/igraph-0.7.1.tar.gz"
+
+pip install -v python-igraph --install-option="--c-core-url=http://127.0.0.1/imagedeps/igraph-0.7.1.tar.gz"
+

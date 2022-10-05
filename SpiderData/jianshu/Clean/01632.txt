@@ -1,0 +1,16 @@
+使用lxml.etree.parse()解析html文件，该方法默认使用的是“XML”解析器，所以如果碰到不规范的html文件时就会解析错误，报错代码如下：
+
+lxml.etree.XMLSyntaxError: Opening and ending tag mismatch: meta line 3 and head, line 3, column 87
+
+解决办法：
+
+自己创建html解析器，增加parser参数
+
+from lxml import etree
+
+parser = etree.HTMLParser(encoding="utf-8")
+
+htmlelement = etree.parse("baidu.html", parser=parser)
+
+print(etree.tostring(htmlelement, encoding="utf-8").decode("utf-8"))
+

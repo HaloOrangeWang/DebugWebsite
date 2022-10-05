@@ -1,0 +1,53 @@
+
+报错提示
+
+今天，在复习整理Ui自动化的东西，学习selenium的时候，要先进行安装浏览器驱动；安装好了之后，跑一下，报错 ：selenium.common.exceptions.WebDriverException: Message: unknown Error: cannot find Chrome binary
+
+这是为什么呢？我明明就已经把chromedriver.exe放在了python安装目录下啊，为什么还是报错呢？
+
+主要是有两种问题引起：1、chromedriver.exe驱动有问题(强烈建议使用71版本)
+
+2、chrome.exe  浏览器本身的问题
+
+
+解决方案
+
+因此，解决方案有两种：
+
+第一种：使用绝对路径
+
+from selenium import webdriver
+import time
+
+options = webdriver.ChromeOptions()
+options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+browser = webdriver.Chrome(chrome_options=options)
+
+time.sleep(5)
+
+browser.close()
+
+看看跑起来的效果：
+
+第二种：添加chrome.exe到系统path环境变量
+
+找到chaome的安装目录：
+
+然后，把chrome.exe的路径添加到环境变量中：
+
+这样就可以了；如果还不行，建议重启pycharm,关闭重新打开，再去跑一遍，就可以了；比如我就是这样，看我的图：
+
+总结：其实这个地方要注意的就这几个点：
+
+1、你下载的chromedriver.exe最好是71版本，兼容性较高
+
+2、把这个chromedriver放在python安装目录下，并且放在chrome.exe的安装目录下
+
+3、配置环境变量，把chrome.exe的安装地址复制过来，添加到环境变量的path中
+
+4、最后重启pycharm，即可简单的使用selenium来控制打开goole浏览器
+
+tips:不建议使用绝对路径的方法，因为万一你的项目或者你的脚本要发给别人，在别人的电脑上来怎么办？后期可维护性很麻烦，所以建议使用第二种方法
+
+此方法绝对有效，本人亲测，若有疑问，欢迎广大网友留言一起交流讨论
+

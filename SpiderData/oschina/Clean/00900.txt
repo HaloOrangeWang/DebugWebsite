@@ -1,0 +1,33 @@
+
+背景
+
+python经常会遇到路径的引用问题，引用不同目录下的文件，一般会报错误：
+
+ImportError: No module named xxx
+
+如果是xxx是没有安装的包，则安装即可。如果是项目中对其它python文件的引用，则可以用如下两个方式解决。
+
+
+方案一 增加main执行sys.path.append
+
+if __name__ == '__main__':
+    import sys
+
+sys.path.append("./")
+    sys.path.append("../")
+    sys.path.append("../../src/")
+
+
+方案二 修改python_path 变量, 增加路径
+
+将项目的绝对路径,src路径加入到PYTHONPATH变量，如下
+
+export PYTHONPATH=$PYTHONPATH:${your_project_abs_path}
+
+
+总结
+
+1.两种方案本质是一样的，都是修改了PYTHONPATH变量，因为python脚本在编译/链接阶段会在PYTHONPATH里找import的package
+
+2.单元测试适合用第一种方式，项目部署适合用第二种方式
+

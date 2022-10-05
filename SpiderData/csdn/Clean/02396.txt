@@ -1,0 +1,46 @@
+配置：
+
+python3.8 + pycharm + opencv-python4
+
+电脑：GF65 Thin 95D（笔记本电脑需要先手动打开摄像头，像本人的电脑需按Fn+F6键才能打开摄像头，机型不同快捷键不同）
+
+代码：
+
+import cv2
+
+cap = cv2.VideoCapture(0) #笔记本内置摄像头索引号为0
+while cap.isOpened(): #当摄像头打开时
+    ret,frame = cap.read()
+    cv2.imshow('frame',frame)
+    c = cv2.waitKey(1)
+    if c == 27: #EXC键ASCII码：27
+        break
+cap.release()
+cv2.destroyAllWindows()
+
+报错：
+
+视频窗口一闪而过并且程序运行提示窗口报告进程已结束
+
+方案：
+
+可能是笔记本摄像头没开，按快捷键打开摄像头即可。
+
+报错：
+
+若开了摄像头，报下面的错误
+
+error: (-215:Assertion failed) !_src.empty() in function 'cv::cvtColor'
+
+方案：
+
+将原先其中一行代码改为
+
+cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+
+即可成功打开摄像头。
+
+了解：
+
+网上查了一下这个参数，cv2.CAP_DSHOW是作为打开调用的一部分传递的标志，并且是微软独有的，指定了这个后才可以使用更高分辨率的摄像头。
+

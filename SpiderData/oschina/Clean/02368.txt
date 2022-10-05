@@ -1,0 +1,28 @@
+python3使用pymysql报错：
+
+代码：
+
+#插入数据
+try:
+    sql = 'INSERT INTO classb (a_id,name,age) VALUES (6,"韩",12)'
+    cur.execute(sql)
+except Exception as e: print(e)
+
+解决办法一：
+修改创建连接位置，设置字符编码：
+
+db = pymysql.connect(user='root',password='123456',database='1609k',charset='uft8')
+
+#或者 db = pymysql.connect(user='root',password='123456',database='1609k',charset='UTF8')
+
+如果还是报错，修改Mysql编码格式：
+show variables like 'character%';
+
+修改： set character_set_database=utf8;
+再次查看：
+
+对于已经存在的数据库和表格，修改：
+修改数据库编码格式： Alter database 数据库名称 character set utf8 collate utf8_general_ci;
+修改表编码格式： Alter table 表名称 convert to character set utf8;
+查看数据库的编码格式： show create database 数据库名称;
+

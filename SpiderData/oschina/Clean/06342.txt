@@ -1,0 +1,56 @@
+报错如下
+
+java.lang.RuntimeException: Can't parse input data: ' \N \N \N'
+	at ads_completed_claim_list.__loadFromFields(ads_completed_claim_list.java:1100)
+	at ads_completed_claim_list.parse(ads_completed_claim_list.java:958)
+	at org.apache.sqoop.mapreduce.TextExportMapper.map(TextExportMapper.java:89)
+	at org.apache.sqoop.mapreduce.TextExportMapper.map(TextExportMapper.java:39)
+	at org.apache.hadoop.mapreduce.Mapper.run(Mapper.java:145)
+	at org.apache.sqoop.mapreduce.AutoProgressMapper.run(AutoProgressMapper.java:64)
+	at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:793)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:341)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:164)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1924)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:158)
+Caused by: java.util.NoSuchElementException
+	at java.util.ArrayList$Itr.next(ArrayList.java:862)
+	at ads_completed_claim_list.__loadFromFields(ads_completed_claim_list.java:1085)
+	... 12 more
+
+使用的export-dir模式 ，脚本如下
+
+sqoop export -Dmapreduce.map.memory.mb=2048 \
+--connect xxx \
+--username xxx \
+--password xxx \
+--num-mappers 5 \
+--input-null-string  '\\N' \
+--input-null-non-string '\\N' \
+--input-fields-terminated-by "\001" \
+--table $mysql_table \
+--export-dir /data/hive/warehouse/${db}.db/$hive_talbe/ds=${ds} \
+--update-key id \
+--update-mode allowinsert
+
+
+解决
+
+改用hcatalog模式，解决问题,应该是hcatalog模式处理的非法字符
+
+sqoop export -Dmapreduce.map.memory.mb=2048 \
+--connect xxx \
+--username xxx  \
+--password xxx \
+--num-mappers 10 \
+--input-null-string  '\\N' \
+--input-null-non-string '\\N' \
+--hcatalog-database ${db} \
+--hcatalog-table $hive_talbe \
+--hcatalog-partition-keys ds \
+--hcatalog-partition-values $ds \
+--table $mysql_table \
+--update-key id \
+--update-mode allowinsert
+

@@ -1,0 +1,37 @@
+
+报错信息
+
+学习《机器学习实战》这本书时，按照书上的代码运行，一直有错误：产生错误的代码如下：
+
+sortedClassCount = sorted(classCount.iteritems(),key = operator.itemgetter(1), reverse = True) #排序
+
+报错如下：
+
+仔细检查了好多遍，还是没有找到问题所在，所以上网查了相关资料，终于找到问题所在。
+
+
+错误原因
+
+首先我们先看一下报错：
+
+AttributeError: 'dict' object has no attribute 'iteritems'
+
+翻译过来是：
+
+属性错误：“dict”对象没有属性“iteritems”
+
+这样我们就可以理解了，原因是对象本身出现了问题，并不是我们输入错误。
+
+原因在于：python3中已经没有 “iteritems” 这个属性了，现在属性是：“ items ” 。
+
+当然，如果你使用的是以前的Python版本，不会出现这个错误。
+
+
+解决方案
+
+将代码中的 classCount 的属性：iteritems 修改为：items，如下：
+
+sortedClassCount = sorted(classCount.items(),key = operator.itemgetter(1), reverse = True) #排序
+
+然后运行就可以啦！运行结果如下：
+

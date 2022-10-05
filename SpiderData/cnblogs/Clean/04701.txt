@@ -1,0 +1,98 @@
+django 创建项目时遇到的一些问题：
+
+创建mysite项目：
+
+django-admin startproject mysite
+
+报错信息：
+
+pkg_resources.DistributionNotFound: The 'sqlparse' distribution was not found and is required by Django
+
+原因是缺少sqlparse 模块
+
+解决方法： pip3 install sqlparse
+
+报错信息：
+
+django 2.2.4 requires pytz, which is not installed.
+
+提示django2.2.4 需要提供pytz 模块
+
+解决方法：
+
+pip3 install pytz
+
+安装完这两个模块后再执行项目创建命令没有再出现报错
+
+django-admin startproject mysite
+
+项目目录文件的作用：
+
+(djenv) [root@root]# cd mysite/
+(djenv) [root@root mysite]# tree .
+.
+├── manage.py          # 用于项目管理
+└── mysite                 # 项目配置目录
+    ├── __init__.py          # py2必须的文件，将目录变成包
+    ├── settings.py          # 项目配置文件
+    ├── urls.py                 # 路由系统文件，程序入口
+    └── wsgi.py               # 用于发布项目
+
+启动项目的时候又出现了以下报错：
+
+No module named _sqlite3
+
+原因是没有安装 sqlite-devel 模块
+
+解决的方法：
+
+yum -y install sqlite-devel
+
+重新再编译python
+
+./configure --enable-optmizations --with-openssl = /usr/local/openssl/
+
+make && make install
+
+报错信息：
+
+django.core.exceptions.ImproperlyConfigured: SQLite 3.8.3 or later is required (found 3.7.17).
+
+django 2.2.4 要求sqllite3 的版本必须是3.8.3 及以上版本
+
+解决的方法：
+
+1、降低django的版本，降低到2.1.8的django版本
+
+2、升级slqlite3 软件的版本,升级到最新的版本3.2.9
+
+下载源码： wgets  https://www.sqlite.org/2019/sqlite-autoconf-3290000.tar.gz
+
+解压源码： tar -xaf sqlite-autoconf-3290000.tar.gz
+
+配置： ./configure --prefix=/usr/local/
+
+编译安装 ： make && make install
+
+备份旧的sqlite3  ： mv  /usr/bin/sqlite3 /usr/bin/sqlite3.bak
+
+把新版本的sqlite3 链接到原来的位置： ln -s /usr/local/bin/sqlite3 /usr/bin/sqlite3
+
+更新环境变量：export LD_LIBRARY_PATH="/usr/local/lib">> ~/.bashrc
+
+source ~/.bashrc
+
+全局sqlite3 的版本查询：
+
+sqlite3 --version
+
+然后可以在python3 里面查看到sqlite3 的版本了
+
+python3
+
+import sqlite3
+
+sqlite3.sqlite_version  #查询sqlite3的版本
+
+python3 manager.py runserver #启动服务
+

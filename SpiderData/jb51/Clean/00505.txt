@@ -1,0 +1,16 @@
+读取文件时报错：
+
+xlrd.biffh.XLRDError: Unsupported format, or corrupt file: Expected BOF record; found '<?xml'
+
+该xls文件在打开时确实会警告该文件与扩展名格式不一致。用文本编辑器打开该xls文件查看，发现确实不是xls文件，而是xml文件被保存为了xls文件。
+
+解决办法：将文件后缀名改为.xml，作为xml文件读入。
+
+改名代码：
+
+import os
+os.rename(u"D:\PycharmProjects\classify\成绩列表.xls",
+ u"D:\PycharmProjects\classify\成绩列表.xml")
+
+以上这篇解决python xlrd无法读取excel文件的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

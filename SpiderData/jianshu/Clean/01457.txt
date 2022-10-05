@@ -1,0 +1,89 @@
+解决办法:
+
+yum install bzip2
+
+解决方法:
+
+pip3添加软链接
+
+ln -s  /usr/local/python3/bin/pip3  /usr/bin/pip3
+
+yum装包出问题
+
+解决方法:
+
+这是yum改了默认Python版本导致的
+
+修改/usr/libexec/urlgrabber-ext-down
+
+将python同样指向旧版本
+
+安装python scrapy时间报错：
+
+(python354) [root@lockey python354]# pip install scrapy
+
+Collecting scrapy
+
+Downloading Scrapy-1.4.0-py2.py3-none-any.whl (248kB)
+
+100% |████████████████████████████████| 256kB 406kB/s
+
+Collecting queuelib (from scrapy)
+
+Downloading queuelib-1.4.2-py2.py3-none-any.whl
+
+Collecting Twisted>=13.1.0 (from scrapy)
+
+Could not find a version that satisfies the requirement Twisted>=13.1.0 (from scrapy) (from versions: )
+
+No matching distribution found for Twisted>=13.1.0 (from scrapy)
+
+分析：扭曲的模块依赖版本的太低或者缺失
+
+解决：自己下载安装包安装扭曲模块
+
+(python354) [root@lockey python354]# wget https://pypi.python.org/packages/31/bf/7f86a8f8b9778e90d8b2921e9f442a8c8aa33fd2489fc10f236bc8af1749/Twisted-17.5.0.tar.bz2#md5=cd5c287802dcbaf7be15cf937c922b71
+
+(python354) [root@lockey python354]# tar -xjvf Twisted-17.5.0.tar.bz2
+
+(python354) [root@lockey python354]# cd Twisted-17.5.0/
+
+(python354) [root@lockey Twisted-17.5.0]# ls
+
+bin  CONTRIBUTING  doc  INSTALL  LICENSE  NEWS  README  setup3.py  setup.py  twisted
+
+(python354) [root@lockey Twisted-17.5.0]# python setup.py install
+
+然后再执行pip install scrapy安装命令即可
+
+这个Twisted,用的时候自己去官网找最新的,
+
+错误信息:
+
+
+_ssl库找不到报错
+
+解决办法:
+
+重装Python3,基本上已安装的包什么的都不会变
+
+http://cache.baiducontent.com/c?m=9d78d513d99d1af31fa7837e7c549c204309dc743da7d1027fa3945f93154c31447194b930541013a4b56b6671b8385dfd844765460037c0ecdccf0a83b4c86e69ca303503019b114c8e4cb8cb31748076cc4de9d845b0fced72c4fe8c94885353c84e563ac6abda0457099c38b6476abde7844e1e5413bae93a64&p=927bde16d9c107e50ebd9b7e0e1c92&newp=8b2a9737c5df05fb08e2947d07088d231610db2151ddc44324b9d71fd325001c1b69e7bd2026110fd1c27a660bae4e5de1fa3574301766dada9fca458ae7c45a3c946360&user=baidu&fm=sc&query=linux+python3%2E5+%B1%E0%D2%EB%C3%FC%C1%EE&qid=831798dd00009615&p1=3
+
+装完你回发现,连pip3都进不去了,,,
+
+python3: error while loading shared libraries: libpython3.5m.so.1.0: cannot open shared object file:
+
+解决办法
+
+步骤如下：
+
+-> cd  /etc/ld.so.conf.d
+
+->vim python3.conf
+
+->编辑 添加库文件路径 /opt/Python3.5/lib
+
+->退出保存
+
+->运行ldconfig
+

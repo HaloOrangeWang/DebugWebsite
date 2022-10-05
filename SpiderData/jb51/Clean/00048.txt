@@ -1,0 +1,30 @@
+numpy.array可使用 shape。list不能使用shape。
+
+可以使用np.array(list A)进行转换。
+
+（array转list：array B B.tolist()即可）
+
+补充知识：Pandas使用DataFrame出现错误：AttributeError: 'list' object has no attribute 'astype'
+
+在使用Pandas的DataFrame时出现了错误:AttributeError: ‘list' object has no attribute 'astype'
+
+代码入下：
+
+import pandas as pd
+pop = {'Nevada': {2001: 2.4, 2002: 2.9},
+'Ohio': {2000: 1.5, 2001: 1.7, 2002: 3.6}}
+
+pd.DataFrame(pop, index=[2001, 2002, 2003])
+
+错误提示如下：
+
+原因：可能是Pandas版本问题，语法格式不正确。
+
+解决办法：将代码写成如下格式,再次运行，没有报错。
+
+pd.DataFrame(pop,columns=['Nevada', 'Ohio'],index=[2001,2002,2003])
+#或者也可以写成下面这样：
+pd.DataFrame(pop,index=pd.Series([2001,2002,2003]))
+
+以上这篇python报错: 'list' object has no attribute 'shape'的解决就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

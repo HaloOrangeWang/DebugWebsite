@@ -1,0 +1,16 @@
+使用 python 进入python解释器，输入import paddle.fluid ，再输入 paddle.fluid.install_check.run_check()出现了cublas64_90.dll not found
+
+查看本机安装的CUDA版本： nvcc -V
+
+方法一：
+
+在anaconda3\envs\你的虚拟环境名\Library\bin下找到缺失的cublas64_90.dll文件，将其移动到C:\Windows\System32目录下
+
+方法二：
+
+检查系统环境变量，查看是否有：
+
+方法三：
+
+如果以上两个依旧不起作用，此时注意报错的内容，我在查看报错时发现我的runtime是9.0而我的CUDA是10.0，缺失的文件也是cublas64_90.dll，而不是对应的cublas64_10.dll，因此怀疑是安装的paddle版本问题，重新install了CUDA10.0对应的版本，再输入 paddle.fluid.install_check.run_check()，出现Your Paddle Fluid is installed successfully!，安装成功
+

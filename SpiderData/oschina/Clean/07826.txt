@@ -1,0 +1,19 @@
+最近使用 springboot 配置 mysql 时出现了一个错误
+Access denied for user ''@'localhost' (using password: YES) 或者
+Access denied for user ''@'localhost' (using password: NO)
+
+经发现这是 springboot 中 yml 语法的的一个坑，在我现在用的最新版本2.2.4 的springBoot中所推荐 yml 的格式是
+
+data-username: root
+data-password: 112233
+
+　就是前面加了 data- 的这种格式导致了这个错误，
+
+单独使用 data-username 报错 using password: YES
+如果使用 data-password 报错 using password: NO
+
+后来查看源码发现，对于 username 和 password 的参数有一句这样的说明：Login username of the database./ Login password of the database.
+而 data-username 和 data-password 的说明又有不同：
+ Username of the database to execute DML scripts (if different). / Password of the database to execute DML scripts (if different).
+执行DML脚本的数据库的用户名（如果有）。
+

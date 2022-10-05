@@ -1,0 +1,152 @@
+前言：使用requests包建立访问时，正常的访问状态会返回状态代码200，但是在爬一些网站时，经常会返回403（众所周知的404代表的是网站disappear了。而403代表我们当前的IP被forbidden了）。这是因为在短时间内直接使用Get获取大量数据，会被服务器认为在对它进行攻击，所以拒绝我们的请求，自动把电脑IP封了。
+
+因此，这里介绍两种解决办法。
+
+解决办法一：
+
+增加Header
+
+在使用浏览器访问谷歌图片时，即使手动下载了大量图片依然没有被封IP，但程序中我们只爬取了几张图片， IP就被封了。主要原因是，我们直接使用Get方法请求时是没有Header的，而浏览器的请求是有Header的。 基于这一点，把Get请求伪装成浏览器请求，就可以解决这个问题了。 代码如下：
+
+# coding=utf-8
+import urllib2 as ulb
+import numpy as np
+import PIL.ImageFile as ImageFile
+import cv2
+import random
+ 
+# 收集到的常用Header
+my_headers = [
+    "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/537.75.14",
+    "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)",
+    'Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11',
+    'Opera/9.25 (Windows NT 5.1; U; en)',
+    'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)',
+    'Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.5 (like Gecko) (Kubuntu)',
+    'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.12) Gecko/20070731 Ubuntu/dapper-security Firefox/1.5.0.12',
+    'Lynx/2.8.5rel.1 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/1.2.9',
+    "Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.7 (KHTML, like Gecko) Ubuntu/11.04 Chromium/16.0.912.77 Chrome/16.0.912.77 Safari/535.7",
+    "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:10.0) Gecko/20100101 Firefox/10.0 "
+]
+ 
+ 
+# 获取影像数据
+def getImage(url):
+    # 用urllib2库链接网络图像
+    response = ulb.Request(url)
+ 
+    # 随机选择一个Header伪装成浏览器
+    response.add_header('User-Agent', random.choice(my_headers))
+ 
+    # 打开网络图像文件句柄
+    fp = ulb.urlopen(response)
+ 
+    # 定义图像IO
+    p = ImageFile.Parser()
+ 
+    # 开始图像读取
+    while 1:
+        s = fp.read(1024)
+        if not s:
+            break
+        p.feed(s)
+ 
+    # 得到图像
+    im = p.close()
+ 
+    # 将图像转换成numpy矩阵
+    arr = np.array(im)
+ 
+    # 将图像RGB通道变成BGR通道，用于OpenCV显示
+    pic = np.zeros(arr.shape, np.uint8)
+    pic[:, :, 0] = arr[:, :, 2]
+    pic[:, :, 1] = arr[:, :, 1]
+    pic[:, :, 2] = arr[:, :, 0]
+ 
+    return pic
+ 
+ 
+img = getImage('http://static.fuwo.com/upload/attachment/1601/08/bea48ebeb5a811e58e9e00163e00254c.jpg')
+cv2.imshow('image', img)
+cv2.waitKey(0)
+
+解决办法二：
+
+使用代理IP
+
+使用代理的方法可能大家也能想到，即通过自动更换不同IP来“迷惑”服务器，让它认为是来自不同电脑的访问请求， 从而不会被拒绝掉。由于代理IP的时效性很强，所以需要经常更换。最好是现用现找。代码如下：
+
+# coding=utf-8
+import urllib2 as ulb
+import numpy as np
+import PIL.ImageFile as ImageFile
+import cv2
+import random
+ 
+# 免费代理IP不能保证永久有效，如果不能用可以更新
+# http://www.goubanjia.com/
+proxy_list = [
+    '183.95.80.102:8080',
+    '123.160.31.71:8080',
+    '115.231.128.79:8080',
+    '166.111.77.32:80',
+    '43.240.138.31:8080',
+    '218.201.98.196:3128'
+]
+ 
+ 
+# 获取影像数据
+def getImage(url):
+    # 随机从IP列表中选择一个IP
+    proxy = random.choice(proxy_list)
+    # 基于选择的IP构建连接
+    urlhandle = ulb.ProxyHandler({'http': proxy})
+    opener = ulb.build_opener(urlhandle)
+    ulb.install_opener(opener)
+ 
+    # 用urllib2库链接网络图像
+    response = ulb.Request(url)
+ 
+    # 打开网络图像文件句柄
+    fp = ulb.urlopen(response)
+ 
+    # 定义图像IO
+    p = ImageFile.Parser()
+ 
+    # 开始图像读取
+    while 1:
+        s = fp.read(1024)
+        if not s:
+            break
+        p.feed(s)
+ 
+    # 得到图像
+    im = p.close()
+ 
+    # 将图像转换成numpy矩阵
+    arr = np.array(im)
+ 
+    # 将图像RGB通道变成BGR通道，用于OpenCV显示
+    pic = np.zeros(arr.shape, np.uint8)
+    pic[:, :, 0] = arr[:, :, 2]
+    pic[:, :, 1] = arr[:, :, 1]
+    pic[:, :, 2] = arr[:, :, 0]
+ 
+    return pic
+ 
+ 
+img = getImage('http://mt2.google.cn/vt/lyrs=s&hl=zh-CN&gl=CN&x=214345&y=107714&z=18')
+cv2.imshow('image', img)
+cv2.waitKey(0)
+
+想获取更多代理地址的可以点击这里，上述代码里就是在这找的，还不赶紧收藏一波~
+
+下面是广告时间：
+
+做了这么久生信，我也该出山了，如果有生信分析需求或者想交流生信学习经验的小伙伴，可在简书私信联系我噢~~
+
+或者关注我们的微信公众号：BI201708
+

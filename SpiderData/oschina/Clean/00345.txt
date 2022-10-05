@@ -1,0 +1,30 @@
+一、环境
+
+mac OS + python3.6 + pymysql
+
+二、执行
+
+1、语句
+
+select count(user_id)
+from chezhubangapppp.yfq_user
+where register_dt between '2018-11-01' and '2018-12-01';
+
+写成这样直接会报错，说between and之间必须是时间类型
+
+2、修改后
+
+"select count(user_id) from chezhubangapppp.yfq_user where register_dt between str_to_date('%s', '%Y-%m-%d') and str_to_date('%s', '%Y-%m-%d');" % ('2018-11-01', '2018-12-01')
+
+报错
+
+ValueError: unsupported format character 'Y' (0x59) at index 98
+
+为啥？因为python执行的sql中存在类似DATE_FORMAT(CREATE_TIME, ‘%Y-%m-%d’) 的写法,与其中%Y与python的参数%s冲突
+
+三、结论
+
+修改后的结果
+
+select count(user_id) from chezhubangapppp.yfq_user where register_dt between str_to_date('%s', '%%Y-%%m-%%d') and str_to_date('%s', '%%Y-%%m-%%d')" % ('2018-11-01', '2018-12-01')
+

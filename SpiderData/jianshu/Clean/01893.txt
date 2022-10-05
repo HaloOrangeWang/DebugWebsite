@@ -1,0 +1,23 @@
+创建APP时报错
+
+raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+环境：python3.7+Django2.2+pymysql+mysql8.0
+
+解决办法：
+
+报错意为：“需要mysqlclient 1.3.13或更高版本；您有0.9.3版本”，所以下载更高版本的mysqlclient（大于1.3.13版本）
+
+mysqlclient和pymysql都是python驱动MySQL用的，两者选其一即可。
+
+另外mysqldb仅支持python2。
+
+我下载的pymysql版本是0.9.3，不支持最新版2.2的Django
+
+所以我重新安装了2.1版本的Django，至此问题解决。
+
+如果坚持用2.2 Django，请参考如下链接：
+
+http://www.pianshen.com/article/2285376009/
+

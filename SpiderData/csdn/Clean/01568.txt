@@ -1,0 +1,20 @@
+
+在使用Python读取文件时报错：OSError: [Errno 22] Invalid argument: ‘\u202aC:\Users\XCB666\Desktop\副本.xlsx’
+
+具体代码如下：
+
+>>>import pandas as pd
+>>>path=r'‪C:\Users\XCB666\Desktop'  #文件存放路径
+>>>data=pd.read_excel(path+'\\'+'副本.xlsx',encoding='gbk',parse_dates=['交易日期'])
+--------------------------------------输出结果---------------------------------------
+OSError                                   Traceback (most recent call last)
+...
+OSError: [Errno 22] Invalid argument: '\u202aC:\\Users\\XCB666\\Desktop\\副本.xlsx'
+
+错误原因：
+ 文件存放在桌面，所以查看文件属性，并从属性-安全中复制了文件路径，并将其直接粘贴在代码中。
+ 
+ 解决方法：
+ （1）重新手动输入文件路径；
+ （2）将文件存放到其他文件夹。
+

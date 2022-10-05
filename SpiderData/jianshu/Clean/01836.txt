@@ -1,0 +1,40 @@
+Python开发很好，但性能在中期成为了瓶颈。Numba据说性能极佳，因此在试着一个最简单的KNN算法时，原作是《机器学习实战》，加上了Numba的JIT装饰器几乎是各种报错。
+
+函数式写法易报错
+
+例子代码是这样写的，在函数上加JIT是有问题的：
+
+maxCount = 0
+  
+    for key, value in classCount.items():
+        if value > maxCount:
+            maxCount = value
+            maxIndex = key
+
+return maxIndex
+
+但稍微有一点点经验的Python程序员也可能会写成这个样子
+
+maxIndex = max(classCount.items(), key=lambda x: x[0])[0]
+
+这样写有问题吗？没有，但Numba的JIT一样报错。
+
+3.解决第一个问题
+
+那么1到底是什么问题，写过静态语言的程序员应该知道，即使不用声明变量类型，至少也要声明一下变量吧，因此，例子代码明显没有声明maxIndex，于是我猜着加上了声明，初始化为None,像这样
+
+maxCount = 0
+    maxIndex = None
+    for key, value in classCount.items():
+        if value > maxCount:
+            maxCount = value
+            maxIndex = key
+
+return maxIndex
+
+竟然跑通了....这是什么鬼......。
+
+然而更加令人失望的是，本来3秒的程序硬生生跑到12秒。这当然是因为代码复用部分太少导致的（我只是猜的）。不过的确在别的地方有时候加个numba会更好。有时又是pypy更好，cython提升不会太大，和C++配合的话成本太高了。号称要打败C++的Rust语言的cpython库连例子都build失败就更别说了。而Grumpy把Python翻译成Go支持也太弱了，况且因为Python解释型特性我也不期待它能在编译期提高性能太多。
+
+当然numba依然作为一个不可忽视的重要工具，此文先到这里，以后继续深入再逐一逐一把所有的坑踩完。
+

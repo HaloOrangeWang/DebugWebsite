@@ -1,0 +1,69 @@
+
+背景
+
+Python 3.9
+
+pip 21.2.3
+
+poetry 1.1.8
+
+
+执行了命令，导出 requirements.txt
+
+poetry export  -f requirements.txt --output requirements.txt
+
+
+查看 requirements.txt
+
+每个库都有 hash 加密字段
+
+
+执行 pip install 命令
+
+pip3 install --no-cache-dir --upgrade  -r requirements.txt
+
+就报错了
+
+
+排查思路
+
+卸载 cffi 库重新安装，不行
+
+重新生成 requirements.txt 文件再安装，不行
+
+没则，google 搜下，搜到类似问题的 issue，看来是已知问题，并且 poetry 官方也还没修复好，只提供了规避方法
+
+https://github.com/actions/virtual-environments/issues/2245
+
+
+解决方案
+
+poetry export命令中传递此标志 --without-hashes
+
+poetry export --without-hashes -f requirements.txt --output requirements.txt
+
+我使用的是这个办法，实践过的确可以，适用于使用 poetry 的小伙伴
+
+后面的这几种场景还没试过
+
+
+场景一
+
+停止使用 pip --contstraints标志传递带有固定散列的包
+
+
+场景二
+
+如果直接使用 pip 则将其固定到 20.3 之前的版本
+
+python -m pip install --upgrade pip==20.2.4
+
+
+场景三
+
+如果正在使用其他 virtualenv 依赖于 pip 的东西，请确保将其版本固定
+
+python -m pip install --upgrade virtualenv==20.0.26
+
+或者使用环境变量 VIRTUALENV_PIP=20.2.4
+

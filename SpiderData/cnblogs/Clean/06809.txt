@@ -1,0 +1,18 @@
+
+错误记录
+
+使用Flask-sqlalchemy操作数据时报错： "Data too long for column 'chapter_list' at row 1"
+
+在网上找了很久，发现不是编码问题，也不是字符集的问题。
+
+于是根据报错提示同时测试一下数据长度，发现是：125968（Text是6万多），果然超标了。于是上网找长字段，发现了还有其他的字段，对应MEDIUMTEXT，LONGTEXT
+
+
+解决方法
+
+方法：替换字段。
+
+替换原来的db.Text
+
+里面还有很多的mysql字段，可以找自己需要的
+

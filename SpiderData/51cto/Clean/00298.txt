@@ -1,0 +1,25 @@
+和Java的CLASSPATH 用法一样
+
+设置PYTHONPATH可以解决import找不到自定义模块的问题
+
+通常我会将所有的脚本文件都统一放在一个目录下，比如: /home/dir
+
+将顶层目录设置到路径中就可以, 导入的时候从顶层目录下的模块开始导入
+
+
+方式一: 全局设置
+
+放在 /etc/profile.d/ 目录下（登录时执行）
+ 或者 /etc/bashrc 文件中（运行时执行）
+
+export PYTHONPATH=$PYTHONPATH:/home/dir
+
+
+方式二: 单文件设置
+
+放在文件顶部，import之前
+
+import sys
+
+sys.path.append('/home/dir')
+

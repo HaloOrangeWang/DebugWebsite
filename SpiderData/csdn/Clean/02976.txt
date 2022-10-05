@@ -1,0 +1,41 @@
+python中有一个列表，错误提示如下：
+
+AssertionError: 3 columns passed, passed data had 100 columns
+
+出错位置：
+
+foo = [
+    [1,2,3...],
+    [a,b,c...],
+    [aa,bb,cc...]
+]
+df = pandas.DataFrame(foo, columns=headers)  // where headers is ['id', 'fname', 'lname']
+df = pandas.DataFrame(foo, columns=[foo[0], foo[1], foo[2]])
+
+出错原因：
+ 该错误来自于使用pandas.DataFrame构造函数时每个子列表被解释为一行的事实.您可以从标题和列表中创建字典：
+
+import pandas as pd
+headers = ['id', 'fname', 'name']
+df = pd.DataFrame(dict(zip(headers, foo)))
+
+df
+#fname  id  lname
+#0   a   1     aa
+#1   b   2     bb
+#2   c   3     cc
+#3   d   4     dd
+#4   e   5     ee
+
+或转置列表：
+
+df = pd.DataFrame(list(zip(*foo)), columns=headers)
+
+df
+#  id   fname   lname
+#0  1       a      aa
+#1  2       b      bb
+#2  3       c      cc
+#3  4       d      dd
+#4  5       e      ee
+

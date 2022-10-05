@@ -1,0 +1,36 @@
+问题：socket模块获取ip失败报错
+
+In [64]: import socket
+
+In [71]: socket.gethostname()
+Out[71]: 'web01'
+
+In [72]: host_name = socket.gethostname()
+
+In [73]: socket.gethostbyname(host_name)
+---------------------------------------------------------------------------
+gaierror Traceback (most recent call last)
+<ipython-input-73-52ba2e5a9213> in <module>()
+----> 1 socket.gethostbyname(host_name)
+
+gaierror: [Errno -2] Name or service not known
+
+　
+
+解决办法：
+修改配置文件/etc/hosts，增加主机名与IP解析，如下：10.0.0.22   web01
+
+(venv1) [root@web01 bin]# cat /etc/hosts
+127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1 localhost localhost.localdomain localhost6 localhost6.localdomain6
+10.0.0.22 web01
+
+　　
+
+即可解决！！！！！
+
+In [74]: socket.gethostbyname(host_name)
+Out[74]: '10.0.0.22'
+
+　　
+

@@ -1,0 +1,28 @@
+使用execjs执行js代码报错
+
+报错信息如下：
+
+Exception in thread Thread-1:
+
+Traceback (most recent call last):
+
+File "E:\codes\python\lib\threading.py", line 917, in _bootstrap_inner
+
+self.run()
+
+File "E:\codes\python\lib\threading.py", line 865, in run
+
+self._target(*self._args, **self._kwargs)
+
+File "E:\codes\python\lib\subprocess.py", line 1238, in _readerthread
+
+buffer.append(fh.read())
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 41: illegal multibyte sequence
+
+根据报错信息知道是编码的问题，执行subprocess.py时出错，在pycharm中点击报错信息中的subprocess.py跳转到相应的函数
+
+解决方式：
+
+在subprocess.py文件中，有个__init__()初始化函数，在该文件的656行，修改参数encoding='utf-8'，程序运行不再报错。
+

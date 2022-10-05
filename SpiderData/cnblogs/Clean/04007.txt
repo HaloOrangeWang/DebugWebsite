@@ -1,0 +1,8 @@
+python使用xlwt报错String longer than 32767 characters
+
+项目中使用xlwt模块来写xlsx文件，今天遇到String longer than 32767 characters的错误，查阅资料发现Excel单元格最大支持32767个字符，最终得到两种解决方案xlsxwriter和openpyxl。
+
+最开始我使用openpyxl方式写excel文件，发现如果单元格内容有一些特殊字符是会抛出openpyxl.utils.exceptions.IllegalCharacterError错误，我使用pandas.to_excel也是抛出同样的错误，说明pandas.to_excel默认也是使用openpyxl方法，特殊字符如果能够人为把控可以自行处理，不行的话就得使用xlsxwriter方法。
+
+使用xlsxwriter和xlwt差不多，它在单元格字符大小超过32767时会进行truncate所以不会报错。
+

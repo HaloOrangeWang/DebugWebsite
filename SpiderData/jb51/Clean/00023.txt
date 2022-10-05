@@ -1,0 +1,55 @@
+目前，在使用python处理一个nc文件绘制一个风场图时，出现了以下报错
+
+虽然图片画出来了，但是很丑而且没有理想的填充颜色！
+
+但是不知道为啥，但是参考画图过程，分析这个其中的Z应该指的绘制等高线中的这个函数：matplotlib.pyplot contourf  中使用到的Z！
+
+而这个函数的用法为
+
+coutour([X, Y,] Z,[levels], **kwargs)
+
+在这里提出，matplotlib.pyplot contourf 是用来绘制三维等高线图的，不同点是contour（）是绘制轮廓线。而contourf()则会填充轮廓。除非有其他说明，否则两个版本的函数是相同的。
+
+是在Z中的坐标值。
+
+当X,Y,Z都是二维数组时，它们的形状必须相同，若是一维数组，则X的长度为Z的列数，Y的长度为Z的行数，一般来说创建numpy.meshgrid()
+
+很显然，在这个函数用法中，如果要画出等高线，核心函数就是plt.contourf()，但在这个函数中输入的参数是x,y对应的网格数据以及此网格对应的高度值，因此我们调用np.meshgrid(x,y)把x,y值转换成网格数据：
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+  
+# 计算x,y坐标对应的高度值
+def f(x, y):
+ return (1-x/2+x**3+y**5) * np.exp(-x**2-y**2)
+ 
+# 生成x,y的数据
+n = 256
+x = np.linspace(-3, 3, n)
+y = np.linspace(-3, 3, n)
+ 
+# 把x,y数据生成mesh网格状的数据，因为等高线的显示是在网格的基础上添加上高度值
+X, Y = np.meshgrid(x, y)
+ 
+# 填充等高线
+plt.contourf(X, Y, f(X, Y))
+# 显示图表
+plt.show()
+
+于是我分析了我的代码中的contourf中对应的X,Y和Z，才发现果然问题出现在这里：
+
+cp=ax.contourf(lon,lat,ws[i,::],zorder=0,transform=ccrs.PlateCarree(),cmap=cmap,levels=levels,extend='both')
+
+这段代码在完成三维数组的绘制时完全没有问题，但是不巧的是，我这次绘制的是四维数组，而其中的ws[i,::]则未取定其中的两维，使得该Z=ws[i,::]，理论上来说属于一个三维的数组，所以才会报错。
+
+而我们只需要把这个四维数组取定其中的两维，使得该Z属于一个二维数组即可，已知我的数据中第二维为我恰好需要将之取定为500hpa，所以将这句代码改为：
+
+cp=ax.contourf(lon,lat,ws[i,0,::],zorder=0,transform=ccrs.PlateCarree(),cmap=cmap,levels=levels,extend='both')
+
+霍！这不就画出来了嘛！
+
+初次见面，请多关照！希望能解决你的一点小烦恼哦！
+
+到此这篇关于python报错TypeError: Input z must be 2D, not 3D的解决方法的文章就介绍到这了,更多相关python报错解决方法内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

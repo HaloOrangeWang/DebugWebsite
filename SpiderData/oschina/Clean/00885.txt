@@ -1,0 +1,24 @@
+
+原因
+
+如果使用的是#!/usr/local/bin/python3这种方式，就会出现 “/usr/local/bin/python3^M: bad interpreter: 没有那个文件或目录” 错误：
+
+如果使用的是#!/usr/bin/env python3这种方式，就会出现“没有那个文件或目录3”错误：
+
+出错的原因就是代码的每一行最后都多了3^M，这是由于我在Windows上编写的代码，然后放到Linux上时就会出错。
+
+然而打开代码来看是正常的，但是用使用 cat -v 命令查看文件就可以看到，行末都有一个^M符号。
+
+
+解决方案
+
+运行下面的命令，替换掉^M符号，重新生成一个文件：
+
+cat -v oldfile.py | sed -e '1,$s/\^M$//g' > newfile.py
+
+然后就可以正常运行了。
+
+参考：
+
+[1]【python自动化运维】运行python脚本报错： /usr/bin/python3^M: bad interpreter: No such file or directory解决方法
+

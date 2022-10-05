@@ -1,0 +1,38 @@
+开始时版本信息：
+
+　　python 3.6   +   ce_oracle 6
+
+最终版本信息：
+
+　　python 3.5   + ce_oracle 5.2
+
+　　ce_oracle版本问题
+
+　　cx_Oracle-5.2.1-12c.win-amd64-py3.5     5.2.1是指cx_oracle的版本，12c是指Oracle的版本，py3.5是指python的版本
+
+　　1.开始安装的是cx_oracle 6，但是在django下运行时候，报错
+
+　　　　
+
+　　　　　　django.db.utils.DatabaseError: ORA-28009: connection as SYS should be as SYSDBA or SYSOPER
+
+　　Google了一下发现原因
+
+　　　原因：在使用django连接Oracle时候不能使用SYS用户，sys登陆必须使用SYSDBA角色登陆，所以需要使用其他的用户，我是自己新创建了一个用户，然后问题解决
+
+　　2.再次尝试运行程序，报错：
+
+　　　　　　AttributeError: 'cx_Oracle.Cursor' object has no attribute 'numbersAsStrings'
+
+　　在官网查询之后发现
+
+从5.3开始的版本就不再使用numberAsStrings属性了，所以尝试使用5.2版本
+
+但是有发现，从5.3开始才支持使用python3.6
+
+所以卸载本机上的python3.6
+
+重新安装 python 3.5
+
+问题解决！！！
+

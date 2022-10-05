@@ -1,0 +1,91 @@
+转载自https://blog.csdn.net/wangzhitou/article/details/104551227/
+
+遇到的报错
+1、ANDROID_HOME is NOT set!
+2、JAVA_HOME is NOT set!
+修改环境变量：open -e .bash_profile
+#JAVA_HOME
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home
+export CLASSPATH=.:JAVAHOME/lib/dt.jar: JAVA_HOME/lib/dt.jar:JAVA 
+H
+​	
+ OME/lib/dt.jar:JAVA_HOME/lib/tools.jar
+export PATH=JAVAHOME/bin: JAVA_HOME/bin:JAVA 
+H
+​	
+ OME/bin:PATH
+
+#ANDROID_HOM：
+export ANDROID_HOME=/Users/uxin/Library/Android/sdk
+export PATH=ANDROIDHOME: ANDROID_HOME:ANDROID 
+H
+​	
+ OME:PATH
+export PATH=${PATH}:/Users/issuser/Library/Android/sdk/platform-tools:/Users/issuser/Library/Android/sdk/tools
+然后更新刚配置的环境变量：source .bash_profile
+
+3、opencv4nodejs cannot be found.
+cmake --version 查看cmake是否安装
+已安装执行：npm -g install opencv4nodejs 安装opencv4nodejs
+
+4、解决 mjpeg-comsumer cannot be found的问题
+安装：npm i -g mjpeg-consumer
+
+5、ffmpeg cannot be found
+输入brew install ffmpeg即可解决
+
+6、idb and idb_companion are not installed
+命令如下：
+brew tap facebook/fb
+brew install idb-companion
+pip3.6 install fb-idb
+说明：执行 pip3.6 install fb-idb可能会报-bash: pip3.6: command not found
+解决办法:
+配置环境变量
+执行 open .bash_profile打开添加
+export PYTHON_HOME=/home/dbuser/Python-3.7.3
+export PATH=PYTHONHOME/bin: PYTHON_HOME/bin:PYTHON 
+H
+​	
+ OME/bin:PATH
+
+Python-3.7.3这里是自己安装的Python版本哦，要改成自己的，同样
+
+pip3.7这里也是要改成自己的Python版本
+后执行使之生效：
+source ~/.bash_profile
+在执行pip3.7就OK了。
+source .bash_profile刷新
+
+7、applesimutils cannot be found
+brew tap wix/brew
+brew install applesimutils
+
+8、bundletool.jar cannot be found
+在https://github.com/google/bundletool/releases 下载bundletool.jar，
+改名成这个bundletool
+在android sdk目录下，创建bundle-tool目录，把jar包放入，
+在终端切换到当前目录下
+并执行chmod +x bundletool.jar命令给jar包加权限，
+
+windows就找安装包-属性-安全-去加读写改权限
+
+修改环境变量，path后追加，:$ANDROID_HOME/bundle-tools/，
+
+####git 方法
+
+Thank you very much . I've solved this after i update appium-doctor to 1.10.0
+
+We have to add system environment variables manually.
+
+just like this
+
+and PATH like this:
+
+Then you'll find bundletool. jar
+
+source .bash_profile刷新
+————————————————
+版权声明：本文为CSDN博主「wangzhitou」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/wangzhitou/article/details/104551227/
+

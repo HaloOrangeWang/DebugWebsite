@@ -1,0 +1,326 @@
+一，异常处理
+
+在程序运行的过程中，如果发生了错误，可以事先约定返回一个错误代码，这样，就可以知道是否有错，以及出错的原因。
+
+高级语言通常都内置了一套try...except...finally...的错误处理机制，Python也不例外
+
+import traceback
+def calc(a,b):
+   res = a/b
+   return res
+def main():
+   money = input('输入多少钱：')
+   months = input('还几个月：')
+   try:
+      res = calc(int(money),int(months))
+   except ZeroDivisionError as e:  #try里面的代码如果出错了，走except里面的代码
+      traceback.print_exc()#只是输出报错的详细信息而已
+      print('还款的月数不能小于1',e)
+   except ValueError as e:
+      print('输入必须是整数，%s'%e)
+   except Exception as e:  #捕获所有的异常
+      print('未知错误！%s'%e)
+   else:#没有出错的情况下走else
+      print('每个月应该还%s'%res)
+   finally:#
+      print('finally..')
+   print('END')
+main()
+输出结果：
+
+输入多少钱：500
+还几个月：0
+还款的月数不能小于1 division by zero
+finally..
+END
+
+输出报错的详细信息：traceback.print_exc()
+
+Traceback (most recent call last):
+
+File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 9, in main
+ res = calc(int(money),int(months))
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 3, in calc
+ res = a/b
+ZeroDivisionError: division by zero
+
+当我们认为某些代码可能会出错时，就可以用try来运行这段代码，如果执行出错，则后续代码不会继续执行，
+
+而是直接跳转至错误处理代码，即except语句块，执行完except后，如果有finally语句块，则执行finally语句块，至此，执行完毕。
+
+如果没有错误发生，except语句块不会被执行，但是finally如果有，则一定会被执行（可以没有finally语句）。
+
+二，常见的异常
+
+AttributeError： 试图访问一个对象没有的属性，比如foo.x，但是foo没有属性x
+IOError：输入 / 输出异常，一般是无法打开文件
+ImportError： 无法导入模块或包，一般是路径问题或名称错误
+IndentationError：代码没有正确对齐，属于语法错误
+IndexError：下标索引超出序列边界，比如x只有三个元素，却试图访问x[3]
+KeyError：试图访问字典里不存在的键
+KeyboardInterrupt：Ctrl + C被按下
+NameError：使用一个还未被赋予对象的变量
+SyntaxError： 语法错误
+TypeError： 传入对象类型与要求的不符
+UnboundLocalError：试图访问一个还未被设置的局部变量，一般是由于在代码块外部还有另一个同名变量
+ValueError： 传入一个调用者不期望的值，即使值的类型是正确的
+
+Python所有的错误都是从BaseException类派生的，常见的错误类型和继承关系看这里：
+
+https://docs.python.org/3/library/exceptions.html#exception-hierarchy
+
+三，调用栈
+
+如果错误没有被捕获，它就会一直往上抛，最后被Python解释器捕获，打印一个错误信息，然后程序退出
+
+def foo(s):
+    return 10 / int(s)
+
+def bar(s):
+    return foo(s) * 2
+
+def main():
+    bar('0')
+
+main()
+输出结果：
+
+Traceback (most recent call last):#告诉我们这是错误的跟踪信息
+  File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 10, in <module>
+    main() #调用main()出错了，在代码文件err.py的第10行代码，但原因是第8行：
+  File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 8, in main
+    bar('0') #调用bar('0')出错了，在代码文件err.py的第8行代码，但原因是第5行：
+  File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 5, in bar
+    return foo(s) * 2 #原因是return foo(s) * 2这个语句出错了，但这还不是最终原因，继续往下看：
+  File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 2, in foo
+    return 10 / int(s)#原因是return 10 / int(s)这个语句出错了，这是错误产生的源头，因为下面打印了：
+ZeroDivisionError: division by zero
+#根据错误类型ZeroDivisionError，我们判断，int(s)本身并没有出错，但是int(s)返回0，
+# 在计算10 / 0时出错，至此，找到错误源头。
+四，记录错误
+
+如果不捕获错误，自然可以让Python解释器来打印出错误堆栈，但程序也被结束了。既然我们能捕获错误，
+
+就可以把错误堆栈打印出来，然后分析错误原因，同时，让程序继续执行下去。
+
+Python内置的logging模块可以非常容易地记录错误信息：
+
+import logging
+
+def foo(s):
+    return 10 / int(s)
+
+def bar(s):
+    return foo(s) * 2
+
+def main():
+    try:
+        bar('0')
+    except Exception as e:
+        logging.exception(e)
+
+main()
+print('END')
+同样是出错，但程序打印完错误信息后会继续执行，并正常退出：
+
+END
+ERROR:root:division by zero
+Traceback (most recent call last):
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 11, in main
+ bar('0')
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 7, in bar
+ return foo(s) * 2
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 4, in foo
+ return 10 / int(s)
+ZeroDivisionError: division by zero
+
+通过配置，logging还可以把错误记录到日志文件里，方便事后排查。
+
+五，抛出错误
+
+主动抛出异常，就是我们在代码里面让它自动抛出一个异常，然后捕捉到，比如说我们在写自动化测试脚本的时候，
+
+结果和预期不符合，就可以主动抛出一个异常信息，然后捕捉到，做其他的处理，主动抛出异常使用raise关键字。
+
+因为错误是class，捕获一个错误就是捕获到该class的一个实例。因此，错误并不是凭空产生的，而是有意创建并抛出的。Python的内置函数会抛出很多类型的错误，我们自己编写的函数也可以抛出错误。
+
+如果要抛出错误，首先根据需要，可以定义一个错误的class，选择好继承关系，然后，用raise语句抛出一个错误的实例：
+
+class FooError(ValueError):
+    pass
+
+def foo(s):
+    n = int(s)
+    if n==0:
+        raise FooError('invalid value: %s' % s)
+    return 10 / n
+
+foo('0')
+执行，可以最后跟踪到我们自己定义的错误：
+
+Traceback (most recent call last):
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 10, in <module>
+ foo('0')
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 7, in foo
+ raise FooError('invalid value: %s' % s)
+__main__.FooError: invalid value: 0
+
+注：只有在必要的时候才定义我们自己的错误类型。如果可以选择Python已有的内置的错误类型（比如ValueError，TypeError），尽量使用Python内置的错误类型
+
+def foo(s):
+    n = int(s)
+    if n==0:
+        raise ValueError('invalid value: %s' % s)
+    return 10 / n
+
+def bar():
+    try:
+        foo('0')
+    except ValueError as e:
+        print('ValueError!')
+        raise
+
+bar()
+输出结果：
+
+ValueError!
+Traceback (most recent call last):
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 14, in <module>
+ bar()
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 9, in bar
+ foo('0')
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 4, in foo
+ raise ValueError('invalid value: %s' % s)
+ValueError: invalid value: 0
+
+在bar()函数中，我们明明已经捕获了错误，但是，打印一个ValueError!后，又把错误通过raise语句抛出去了
+
+捕获错误目的只是记录一下，便于后续追踪。但是，由于当前函数不知道应该怎么处理该错误，所以，最恰当的方式是继续往上抛，让顶层调用者去处理。
+
+好比一个员工处理不了一个问题时，就把问题抛给他的老板，如果他的老板也处理不了，就一直往上抛，最终会抛给CEO去处理。
+
+raise语句如果不带参数，就会把当前错误原样抛出。此外，在except中raise一个Error，还可以把一种类型的错误转化成另一种类型：
+
+def main():
+   try:
+      10 / 0
+   except ZeroDivisionError:
+      raise ValueError('input error!')
+main()
+输出结果：
+
+Traceback (most recent call last):
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 3, in main
+ 10 / 0
+ZeroDivisionError: division by zero
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 6, in <module>
+ main()
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 5, in main
+ raise ValueError('input error!')
+ValueError: input error!
+
+只要是合理的转换逻辑就可以，但是，决不应该把一个IOError转换成毫不相干的ValueError。
+
+
+小结
+
+Python内置的try...except...finally用来处理错误十分方便。出错时，会分析错误信息并定位错误发生的代码位置才是最关键的。
+
+程序也可以主动抛出错误，让调用者来处理相应的错误。但是，应该在文档中写清楚可能会抛出哪些错误，以及错误产生的原因。
+
+import logging
+# logging.basicConfig(level=logging.INFO)
+s = '0'
+n = int(s)
+logging.info('n = %d' % n)
+print(10 / n)
+输出结果：
+
+Traceback (most recent call last):
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 6, in <module>
+ print(10 / n)
+ZeroDivisionError: division by zero
+
+logging.info()就可以输出一段文本。运行，发现除了ZeroDivisionError，没有任何信息
+
+import logging
+logging.basicConfig(level=logging.INFO)#允许你指定记录信息的级别,有debug，info，warning，error等几个级别
+s = '0'
+n = int(s)
+logging.info('n = %d' % n)
+print(10 / n)
+输出结果：
+
+INFO:root:n = 0
+Traceback (most recent call last):
+ File "C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py", line 6, in <module>
+ print(10 / n)
+ZeroDivisionError: division by zero
+
+写日志封装函数
+
+import logging
+from logging import handlers
+
+class Logger(object):
+   level_relations = {
+      'debug': logging.DEBUG,
+      'info': logging.INFO,
+      'warning': logging.WARN,
+      'error': logging.ERROR,
+      'crit': logging.CRITICAL
+   }  # 日志级别关系映射
+
+def __init__(self, fp, level='debug', when='midnight', interval=1, backCount=5, encoding='utf-8'):
+      '''
+      :param fp:日志文件路径
+      :param level: 日志级别 默认是debug
+      :param when: 分割日志的单位 S 秒、M 分、 H 小时、 D 天、 W 每星期（interval==0时代表星期一）、midnight 每天凌晨
+      :param interval: 时间间隔 默认每天凌晨
+      :param backCount: 备份文件个数 默认5个
+      :param encoding: 日志文件编码
+      '''
+      self.level = self.level_relations.get(level)
+      self.logger = logging.getLogger(fp)
+      self.logger.setLevel(self.level)
+      fmt = logging.Formatter('%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+      sh = logging.StreamHandler()
+      sh.setFormatter(fmt)
+      sh.setLevel(self.level)
+      th = handlers.TimedRotatingFileHandler(fp, when=when, interval=interval, backupCount=backCount,
+                                    encoding=encoding)
+      th.setFormatter(fmt)
+      th.setLevel(self.level)
+      self.logger.addHandler(th)
+      self.logger.addHandler(sh)
+
+def debug(self, msg):
+      self.logger.debug(msg)
+
+def info(self, msg):
+      self.logger.info(msg)
+
+def warning(self, msg):
+      self.logger.warning(msg)
+
+def error(self, msg):
+      self.logger.error(msg)
+
+def crit(self, msg):
+      self.logger.critical(msg)
+
+if __name__ == '__main__':
+   l = Logger('a.log')  # 实例化
+   l.info('infomation')  # 调用
+   l.debug('debug')
+   l.error('xxx')
+输出结果：
+
+2018-02-10 14:54:28,296 - C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py[line:40] - INFO: infomation
+2018-02-10 14:54:28,296 - C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py[line:37] - DEBUG: debug
+2018-02-10 14:54:28,296 - C:/Users/lidal/PycharmProjects/llq-code/day7/练习.py[line:46] - ERROR: xxx
+

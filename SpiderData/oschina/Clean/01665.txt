@@ -1,0 +1,81 @@
+安装nltk
+
+pip install nltk
+
+安装完之后，报错
+
+>>> from nltk.corpus import brown
+>>> brown.words()
+Traceback (most recent call last):
+  File "D:\soft\python3.6\lib\site-packages\nltk\corpus\util.py", line 80, in __load
+    try: root = nltk.data.find('{}/{}'.format(self.subdir, zip_name))
+  File "D:\soft\python3.6\lib\site-packages\nltk\data.py", line 675, in find
+    raise LookupError(resource_not_found)
+LookupError:
+**********************************************************************
+  Resource [93mbrown[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+[31m>>> import nltk
+  >>> nltk.download('brown')
+  [0m
+  Searched in:
+    - 'C:\\Users\\WYXCz/nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - 'D:\\soft\\python3.6\\nltk_data'
+    - 'D:\\soft\\python3.6\\share\\nltk_data'
+    - 'D:\\soft\\python3.6\\lib\\nltk_data'
+    - 'C:\\Users\\WYXCz\\AppData\\Roaming\\nltk_data'
+**********************************************************************
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "D:\soft\python3.6\lib\site-packages\nltk\corpus\util.py", line 116, in __getattr__
+    self.__load()
+  File "D:\soft\python3.6\lib\site-packages\nltk\corpus\util.py", line 81, in __load
+    except LookupError: raise e
+  File "D:\soft\python3.6\lib\site-packages\nltk\corpus\util.py", line 78, in __load
+    root = nltk.data.find('{}/{}'.format(self.subdir, self.__name))
+  File "D:\soft\python3.6\lib\site-packages\nltk\data.py", line 675, in find
+    raise LookupError(resource_not_found)
+LookupError:
+**********************************************************************
+  Resource [93mbrown[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+[31m>>> import nltk
+  >>> nltk.download('brown')
+  [0m
+  Searched in:
+    - 'C:\\Users\\WYXCz/nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - 'D:\\soft\\python3.6\\nltk_data'
+    - 'D:\\soft\\python3.6\\share\\nltk_data'
+    - 'D:\\soft\\python3.6\\lib\\nltk_data'
+    - 'C:\\Users\\WYXCz\\AppData\\Roaming\\nltk_data'
+**********************************************************************
+
+原因是需要执行nltk.download()下载数据集
+
+# 更改下载目录
+nltk.download(download_dir=r'D:\soft\python3.6\share\nltk_data')
+
+又试： nltk.download()，but：
+
+于是去官网直接下载：https://github.com/nltk/nltk_data。
+
+下载packages就好，放入之前报错中的目录，记得这里将 packages 重命名成 nltk_data。
+
+参考：https://blog.csdn.net/Siramisu/article/details/102961329
+ https://blog.csdn.net/u010099177/article/details/102900515
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

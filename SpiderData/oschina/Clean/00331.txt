@@ -1,0 +1,65 @@
+
+异常解读
+
+该异常的格式一般为：
+
+re.error: unknown extension ?<n at position 一个位置数字
+
+本异常看文字提示能大概猜出 BUG 问题所在，属于正则表达式中位置模板内容。出现的位置是 <?，例如下述代码就会报错。
+
+import re
+pattern = re.compile(r'a(?<code>\d+)')
+match = pattern.search("a123456")
+print(match)
+
+
+异常解决方案
+
+修改办法比较容易，是因为在 re 模块中进行分组命名时，符号写对即可，具体格式为 ?P<名称>。
+ 修改代码如下：
+
+import re
+pattern = re.compile(r'a(?P<code>\d+)')
+match = pattern.search("a123456")
+print(match.group('code'))
+
+
+附录
+
+本系列文章只供记录 Python 日常开发过程中 偶遇 BUG，提供给学生作为参考数据与解决方案用，属于记录型博客，有缘分看到的读者希望可解决你的问题。
+
+错误提示样板，可以与你的错误进行比对。
+
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\threading.py", line 917, in _bootstrap_inner
+    self.run()
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\threading.py", line 865, in run
+    self._target(*self._args, **self._kwargs)
+  File "e:/crawl100/xiaoke1/mingxing.py", line 57, in get_list
+    get_detail(detail_url)
+  File "e:/crawl100/xiaoke1/mingxing.py", line 18, in get_detail
+    r'<h1>(?<name>.*?)<span>(?P<type>.*?)</span></h1>', html)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\re.py", line 183, in search
+    return _compile(pattern, flags).search(string)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\re.py", line 286, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\sre_compile.py", line 764, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\sre_parse.py", line 930, in parse
+    p = _parse_sub(source, pattern, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\sre_parse.py", line 426, in _parse_sub
+    not nested and not items))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\sre_parse.py", line 731, in _parse
+    len(char) + 2)
+re.error: unknown extension ?<n at position 5
+
+
+爬虫 100 例课程宣传
+
+爬虫百例教程导航链接 ： https://blog.csdn.net/hihell/article/details/86106916
+
+本文分享 CSDN - 梦想橡皮擦。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

@@ -1,0 +1,28 @@
+今天，要在新环境里运行一个python脚本，遇到下面的报错：
+
+/usr/lib/python2.7/site-packages/urllib3/util/ssl_.py:160: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a new......
+
+报错跟安全策略相关，网上搜了下，是因为python版本的原因（用的是python2.7.5），解决办法要么升级python 版本，要么安装requests，
+
+本着牵动最小的原则，决定采用后者，如下：
+
+pip install requests[security]
+
+安装完成后，重新运行python脚本，还是一样的报错，又尝试了
+
+pip install pyopenssl ndg-httpsclient pyasn1（等同于安装requests）
+
+安装完成后，重新运行python脚本，还是一样的报错，想到一个惯用伎俩——upgrade
+
+pip install --upgrade requests[security]
+
+安装完成后，重新运行python脚本，果然，不再报InsecurePlatformWarning错了
+
+题外话：InsecurePlatformWarning的错没有了，但又报了另一个错CryptographyDeprecationWarning，详细信息如下：
+
+/usr/lib64/python2.7/site-packages/cryptography/hazmat/primitives/constant_time.py:26: CryptographyDeprecationWarning: Support for your Python version is deprecated. The next version of cryptography will remove support. Please upgrade to a 2.7.x release that supports hmac.compare_digest as soon as possible.
+
+utils.DeprecatedIn23
+
+提醒升级python版本，但此时脚本不涉及安全的情况下，能够正常往下执行。
+

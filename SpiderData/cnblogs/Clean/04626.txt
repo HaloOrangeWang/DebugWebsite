@@ -1,0 +1,41 @@
+【前提】：
+
+win10下python3和python2共存环境，但是环境变量只配置了python3
+
+【问题】：
+
+用pip安装一个包
+执行pip2 install xxx的时候报错
+Fatal error in launcher: Unable to create process using '"'
+
+执行pip3 install xxx的时候报同样的错误
+Fatal error in launcher: Unable to create process using '"'
+
+【解决】：
+python2 -m pip install XXX
+python3 -m pip install XXX
+
+报了新的错误 ：
+
+Could not fetch URL https://pypi.org/simple/xlsxwriter/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='pypi.org', port=443): Max retries exceeded with url: /simple/xlsxwriter/ (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self signed certificate in certificate chain (_ssl.c:1056)'))) - skipping
+
+研究了好久只知道是证书的错误~按照网上的各种指导尝试了如下方案
+
+1.第一种尝试方式:直接下载get-pip.py文件,执行命令python get-pip.py 结果是:失败
+
+2.第二种尝试方式:加上--trusted-host 执行 pip --trusted-host pypi.python.org install xxx 结果是:失败
+
+3.第三种尝试:发现是url的来源的问题,换成了国内的pip源就可以正常安装了,我使用的是:pip install xlrd -i http://pypi.douban.com/simple --trusted-host pypi.douban.com,结果:失败
+
+1)http://mirrors.aliyun.com/pypi/simple/ 阿里云
+
+2)https://pypi.mirrors.ustc.edu.cn/simple/  中国科技大学
+
+3) http://pypi.douban.com/simple/  豆瓣
+
+4) https://pypi.tuna.tsinghua.edu.cn/simple/ 清华大学
+
+5)  http://pypi.mirrors.ustc.edu.cn/simple/ 中国科学技术大学
+
+4.第四种尝试:思考了一下混合了两个问题的解决方法，使用命令python -m pip install xlsxwriter  --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org ，结果：成功
+

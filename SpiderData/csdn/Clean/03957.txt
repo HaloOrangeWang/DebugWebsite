@@ -1,0 +1,20 @@
+# 引用requests库
+import requests
+# 引用BeautifulSoup库
+from bs4 import BeautifulSoup
+
+headers = {
+            'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+        }
+url ='http://www.xiachufang.com/explore/'
+res = requests.get(url,headers)
+# 解析数据
+print(res.status_code)
+bs_foods = BeautifulSoup(res.text,'html.parser')
+info = bs_foods.find_all('div',class_='info pure-u')
+print(info)
+
+print(res.status_code)打印状态码发现是404，代表请求所希望得到的资源没有在服务器上被发现，没有信息能够告诉用户这个状况到底是暂时的还是永久的。
+
+需要加入请求头
+

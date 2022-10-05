@@ -1,0 +1,30 @@
+如下所示：
+
+ImportError: cannot import name ‘Bar' from ‘pyecharts.charts' (D:\Anaconda\lib\site-packages\pyecharts\charts_init_.py)
+
+首先报错如上。
+
+第一步，我安装了库文件，发现没用。
+
+后来我看到有0.5和1.0+版本之后的区别，再次安装1.0+的库还是没用。
+
+只能追本溯源了。
+
+按照D:\Anaconda\lib\site-packages\pyecharts\charts_init_.py
+
+找到__init__.py的文件
+
+我把
+
+from pyecharts.charts import Bar
+
+改成了
+
+from pyecharts.charts.basic_charts.bar import Bar
+
+然后就可以了。
+
+神奇！
+
+以上这篇jupyter notebook引用from pyecharts.charts import Bar运行报错就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

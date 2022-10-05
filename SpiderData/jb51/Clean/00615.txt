@@ -1,0 +1,91 @@
+在实际使用python时，我们会将一些公共的东西写到一些基础模块中，供其他模块去调用，这时会去import自定义的一些基础模块，然后来导入。
+
+自己写好了脚本，然后导入，导入的情况分为以下情况：
+
+1. 运行的模块与需要调用自定义基础模块在同一文件夹下
+
+2. 自定义模块与所需要调用自定义模块的文件不在同一文件夹下
+
+
+一、同一文件夹下
+
+这时的调用就较为简单了，直接导入即可
+
+from deal_excel import copy_sheetWrite, row_commonWrite
+from deal_time import minus_date
+
+
+但是这个时候在PyCharm中显示的是报错
+
+但是运行程序是不会报错的
+
+为了让在PyCharm中不报错，可以将包/文件夹设为 sources Root
+
+现在就不报错了
+
+
+在cmd命令中执行也是成功的
+
+如果在模块前面加上包名（下面有个__init__.py）或者文件夹名
+
+from msydwork.deal_excel import copy_sheetWrite, row_commonWrite
+from msydwork.deal_time import minus_date
+
+PyCharm中显示不报错，运行程序成功
+
+但是在cmd命令中运行却是失败的
+
+所以对于处于同一文件夹下的情况：直接导入模块；为了PyCharm中不报错，将包/文件夹设为sources Root
+
+
+二、处于不同文件夹下面
+
+在PyCharm中是不会报错而且执行成功，是由于将deal_excel、deal_time所在包设为sources Root：
+
+这时在cmd命令中是执行失败的
+
+在PyCharm中是不会报错而且执行成功另外一种方法：导包时全路径（可以不设sources Root）
+
+这时在cmd命令中也是报错的
+
+为了让代码在cmd命令中执行成功，需要将自定义基础模块的文件夹/包添加到Python的库路径中。
+
+
+三、找到本地库的路径，然后将文件拷进去即可
+
+拷贝到\Lib\site-packages中
+
+PyCharm中是不会报错而且执行成功
+
+cmd命令中执行成功
+
+
+四、手动给python添加搜索路径
+
+在python安装目录的\Lib\site-packages文件夹中建立一个.pth文件，内容为自己写的库绝对路径
+
+这个时候PyCharm中是会报错的，但是执行是成功的
+
+cmd命令是执行成功的。
+
+还有一种方法导入完整路径：
+
+将根目录设为搜索路径
+
+这时候不管在PyCharm还是cmd执行都是成功的
+
+所以对于处于不同一文件夹下的情况：先手动给python添加搜索路径（根目录），然后直接导入模块全路径；
+
+
+在这里说一句Python的包搜索路径
+
+Python会在以下路径中搜索它想要寻找的模块：
+
+1. 程序所在的文件夹
+
+2. 标准库的安装路径
+
+3. 操作系统环境变量PYTHONPATH所包含的路径
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

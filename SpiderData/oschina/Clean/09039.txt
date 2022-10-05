@@ -1,0 +1,33 @@
+这里介绍下grpc各种报错以及解决方案
+
+
+io.grpc.StatusRuntimeException:　UNIMPLEMENTED
+
+这个错误网上很多，大部分情况下 是由于方法找不到，即客户端与服务端proto的内容或者版本不一致，这里只需要改成一致，一般问题都能解决
+
+
+DEADLINE_EXCEEDED: deadline exceeded after 149944644ns
+
+这种错误明细我这里就不打印了，这里一般是读取数据超时， 问题原因：一般是grpc超时时间设置短了，或者下游服务响应超时。 解决方案：修改grpc超时时间，或者检查grpc服务端是否有问题
+
+
+Exception:UNAVAILABLE: upstream request timeout
+
+问题原因：这里可以理解为连接超时，这里说明健康检查也超时
+
+解决方案：检查grpc服务端是否有问题。
+
+
+INTERNAL: Received unexpected EOS on DATA frame from server
+
+问题原因：这里可翻译为收到了空消息，这里可能是服务端没响应
+
+解决方案：检查端口是否对应上，服务是否正常，特别是docker中的端口映射配置是否正确。
+
+
+io.grpc.StatusRuntimeException: UNKNOWN
+
+问题原因： 从字面意思是未知错误，这个是服务端反馈，主要是服务端报了一些未知异常，比如说参数传的有问题等
+
+解决方案： 检查客户端传参是否有个别异常，打印出有问题参数
+

@@ -1,0 +1,60 @@
+问题描述
+
+最近想要将服务器上的Python2.7升级成3.x的版本时。使用了如下命令：
+
+（1）强制删除已安装python及其关联
+# rpm -qa|grep python|xargs rpm -ev --allmatches --nodeps
+
+（2）删除残余文件
+# whereis python|xargs rm -frv
+
+执行命令后导致服务器上的yum命令和python命令都无法使用。出现以下报错：
+
+[root@test ~]# python -V
+-bash: /usr/bin/python: No such file or directory
+
+[root@test ~]# yum
+-bash: /usr/bin/yum: No such file or directory
+
+解决方案
+
+1.创建目录用来存放rpm包：
+
+mkdir /usr/local/src/python
+
+查看系统版本：
+
+lsb_release -a
+
+查看位数
+
+getconf LONG_BIT
+
+2.进入目录，使用wget分别下载python以及yum的rpm包
+
+http://vault.centos.org/ 这个地址可以下载不同版本系统对应的包（注意：一定要和系统的版本号对应）
+
+可以看到我们的系统版本是7.5.1804，这里下载以下文件
+
+3.执行以下命令，开始安装
+
+rpm -Uvh --replacepkgs lvm2-python-libs*.rpm --nodeps --force
+
+rpm -Uvh --replacepkgs libxml2-python*.rpm --nodeps --force
+
+rpm -Uvh --replacepkgs python*.rpm --nodeps --force
+
+rpm -Uvh --replacepkgs rpm-python*.rpm yum*.rpm --nodeps --force
+
+说明：--nodeps --force表示仅安装当前的，不考虑安装所需的依赖
+
+4.测试python是否可用
+
+python命令正常
+
+5.测试yum是否可用
+
+yum命令正常
+
+至此centos7.5重新安装python2.7及yum完成。
+

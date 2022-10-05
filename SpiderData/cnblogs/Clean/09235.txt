@@ -1,0 +1,57 @@
+使用pyspark的sparkSession.sql操作hive表数据时遇到问题：
+
+jupyter代码：
+spark = SparkSession.builder.appName('hivetest').enableHiveSupport().config(conf=conf).getOrCreate()
+spark.sql('use toutiao')
+
+即进入数据库toutiao，但报错：
+AnalysisException: Database 'toutiao' not found;
+
+这里报错不是很清晰，将代码转至pycharm以便打印更多报错信息：
+Unable to instantiate org.apache.hadoop.hive.ql.metadata.SessionHiveMetaStoreClient
+
+这个报错是因为spark找不到hive的元数据，我们知道hive的数据分为元数据和实体数据。其中元数据表示数据的结构信息，可以有三种保存方式，实体数据保存在hdfs中，这里不细讲。
+我是将元数据保存在了mysql中，故我在hive-site.xml中的配置时这样的：
+<configuration>
+        <property>
+                <name>javax.jdo.option.ConnectionURL</name>
+                <value>jdbc:mysql://xxx:53306/hive?characterEncoding=UTF-8</value>
+        </property>
+        <property>
+                <name>javax.jdo.option.ConnectionDriverName</name>
+                <value>com.mysql.jdbc.Driver</value>
+        </property>
+        <property>
+                <name>javax.jdo.option.ConnectionUserName</name>
+                <value>root</value>
+        </property>
+        <property>
+                <name>javax.jdo.option.ConnectionPassword</name>
+                <value>xxx</value>
+        </property>
+</configuration>
+
+并且将mysql-connector-java-5.1.49.jar放入到了hive的lib目录下。
+
+jupyter代码：
+
+即进入数据库toutiao，但报错：
+
+这里报错不是很清晰，将代码转至pycharm以便打印更多报错信息：
+
+这个报错是因为spark找不到hive的元数据，我们知道hive的数据分为元数据和实体数据。其中元数据表示数据的结构信息，可以有三种保存方式，实体数据保存在hdfs中，这里不细讲。
+
+我是将元数据保存在了mysql中，故我在hive-site.xml中的配置时这样的：
+
+并且将mysql-connector-java-5.1.49.jar放入到了hive的lib目录下。
+
+解决方案：
+就是说，只要spark能够获取到hive的元数据，它就能找到hive的实体数据。为了让spark能够识别hive的元数据，我们需要将hive的hive-site.xml复制一份到spark/conf下，以及mysql-connector-java-5.1.49.jar到spark/jars下。
+不用重启spark，在有代码请求时spark自动读hive-site.xml并使用mysql驱动到mysql中读取元数据。
+
+解决方案：
+
+就是说，只要spark能够获取到hive的元数据，它就能找到hive的实体数据。为了让spark能够识别hive的元数据，我们需要将hive的hive-site.xml复制一份到spark/conf下，以及mysql-connector-java-5.1.49.jar到spark/jars下。
+
+不用重启spark，在有代码请求时spark自动读hive-site.xml并使用mysql驱动到mysql中读取元数据。
+

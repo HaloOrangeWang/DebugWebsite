@@ -1,0 +1,102 @@
+
+安装时候的各种问题
+
+系统 ： Centos 7.4  nginx
+
+安装Certbot完毕
+
+0.如果是阿里云服务器，不添加443端口，即便是添加证书成功也是无法访问的
+
+流程：
+
+进入阿里云控制台，点击实例的更多->网络和安全组->安全组配置->配置规则->添加安全组规则，否则无法访问网站
+
+记得重启 阿里云 实例的服务器
+
+1.执行 certbot --nginx报错
+
+ImportError: 'pyOpenSSL' module missing required functionality. Try upgrading to v0.14 or newer.
+
+方法：
+
+百度，bing上搜一堆解决方式，有的方式是有来无回型，需要提前备份，有风险
+
+这个感觉还行，没有什么后遗症
+
+yum install http://cbs.centos.org/kojifiles/packages/pyOpenSSL/16.2.0/3.el7/noarch/python2-pyOpenSSL-16.2.0-3.el7.noarch.rpm
+
+原贴位置
+
+2.执行 certbot --nginx报错
+
+pkg_resources.DistributionNotFound: The 'certbot==1.0.0' distribution was not found and is required by the application
+
+方法：
+
+pip install certbot==1.0.0
+
+3.错误：DistributionNotFound: The 'urllib3<1.23,>=1.21.1' distribution was not found and is required by requests
+
+方法：
+
+pip install 'urllib3<1.23,>=1.21.1'
+
+4.错误：cryptography 1.7.2 (/usr/lib64/python2.7/site-packages), Requirement.parse('cryptography>=2.8'), set(['PyOpenSSL']))
+
+方法：
+
+pip install 'cryptography>=2.8'
+
+如果，在错的死去活来之后，发现可以 执行 certbot 了，说明安装成功了，不过不算完，还有错误会等着你
+
+5.执行 certbot -nginx 报错：
+
+The nginx plugin is not working; 
+there may be problems with your existing configuration.
+The error was: NoInstallationError("Could not find a usable 'nginx' binary. Ensure nginx exists, the binary is executable, and your PATH is set correctly.",)
+
+方法：
+
+路径错误，添加软连接 ，简单的说，就是Certbot指向 /usr/bin/nginx 与 /etc/nginx
+
+此外下面代码 中
+
+/usr/local/webserver/nginx/sbin/nginx与/usr/local/webserver/nginx/conf/ 需要根据自己服务器，具体填写路径
+
+ln -s /usr/local/webserver/nginx/sbin/nginx /usr/bin/nginx
+ln -s /usr/local/webserver/nginx/conf/ /etc/nginx
+
+6.在执行 certbot -nginx 不报错，在逐步添写配置后，报错：
+
+An unexpected error occurred:
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe7 in position 2: ordinal not in range(128)
+Please see the logfiles in /var/log/letsencrypt for more details.
+
+方法：
+
+python2.7 对于中文编码解析有误，找到对应报错文件，找到上面的 /var/log/letsencrypt路径，查看log信息
+
+File "/usr/lib/python2.7/site-packages/certbot_nginx/_internal/nginxparser.py", line 97, in __str__
+    return ''.join(self)
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe7 in position 2: ordinal not in range(128)
+2020-02-08 13:53:16,554:ERROR:certbot._internal.log:An unexpected error occurred:
+
+找到问题文件，我这边是nginxparser.py，在代码最后面添加
+
+#!coding=utf-8
+import sys
+defaultencoding = 'utf-8'
+if sys.getdefaultencoding() != defaultencoding:
+    reload(sys)
+    sys.setdefaultencoding(defaultencoding)
+
+7.使用 certbot-nginx 安装报错，但不退出NGINX configured with OpenSSL alternatives is not officiallysupported by Certbot.
+
+问题现象：可以访问https网站了，但是无法打开页面
+
+也许是我自己服务器的问题
+
+方法：
+
+慎重进行后续尝试了，否则你就要看如果 卸载证书的步骤了
+

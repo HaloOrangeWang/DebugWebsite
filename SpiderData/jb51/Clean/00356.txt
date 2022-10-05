@@ -1,0 +1,57 @@
+今天拉了一个使用了tornado的项目在本地跑，按照源码作者的步骤配置完，运行，直接报错了，要求环境Python3.6+，我装的是Python3.8，理论上应该直接正常运行的，报错信息：
+
+Traceback (most recent call last):
+
+File "ice_server.py", line 150, in <module>
+
+RunServer.run_server(port=p, host=h)
+
+File "ice_server.py", line 125, in run_server
+
+tornado_server.start()
+
+File "D:\PycharmProjects\ice\venv\lib\site-packages\tornado\tcpserver.py", line 244, in start
+
+self.add_sockets(sockets)
+
+File "D:\PycharmProjects\ice\venv\lib\site-packages\tornado\tcpserver.py", line 165, in add_sockets
+
+self._handlers[sock.fileno()] = add_accept_handler(
+
+File "D:\PycharmProjects\ice\venv\lib\site-packages\tornado\netutil.py", line 279, in add_accept_handler
+
+io_loop.add_handler(sock, accept_handler, IOLoop.READ)
+
+File "D:\PycharmProjects\ice\venv\lib\site-packages\tornado\platform\asyncio.py", line 100, in add_handler
+
+self.asyncio_loop.add_reader(fd, self._handle_events, fd, IOLoop.READ)
+
+File "C:\Users\huan\AppData\Local\Programs\Python\Python38\lib\asyncio\events.py", line 501, in add_reader
+
+raise NotImplementedError
+
+NotImplementedError
+
+一番谷歌原来对于这个问题tornado的参与者们已经收到了很多反馈，有个回复里这么说：
+
+Python 3.8 asyncio is going to make the "proactor" event loop the default, instead of the current "selector" event loop. This is a problem for Tornado because the proactor event loop doesn't support the unix-style add_reader APIs that Tornado uses.
+
+Anyone using Tornado 5+ on windows with python 3.8 will need to configure asyncio to use the selector event loop; we'll have to document this. We should also try to detect the use of a proactor event loop and give a clear error message
+
+大概意思Python3.8的asyncio改变了循环方式，因为这种方式在windows上不支持相应的add_reader APIs，就会抛出NotImplementedError错误。
+
+解决办法
+
+找到这个项目使用的python环境的lib\site-packages，做下面的修改，在path-to-python\lib\site-packages\tornado\platform\asyncio.py开头添加代码：
+
+import sys
+
+if sys.platform == 'win32':
+  asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+这样就可以正常运行了。
+
+总结
+
+到此这篇关于Python3.8运行tornado项目报NotImplementedError错误的文章就介绍到这了,更多相关Python3.8运行tornado项目报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

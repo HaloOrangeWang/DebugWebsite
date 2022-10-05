@@ -1,0 +1,71 @@
+
+1.　页面报错  Error connecting to database: Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock' (2)
+
+我的数据库sock文件在这     /data/mysql/mysql.sock
+
+[root@bash-5 ~]# mkdir /var/lib/mysql/
+
+[root@bash-5 ~]# ln -s /data/mysql/mysql.sock /var/lib/mysql/mysql.sock
+
+[root@bash-5 ~]# ll /var/lib/mysql/mysql.sock  
+lrwxrwxrwx 1 root root 22 Feb 14 19:30 /var/lib/mysql/mysql.sock -> /data/mysql/mysql.sock
+
+
+2.　Zabbix ( proxy ) poller processes more than 75% busy 问题
+
+一：重启zabbix-server 结合定时任务
+
+service zabbix-server restart
+
+crontab -e 新加一个定时任务：
+
+@daily service zabbix-server restart > /dev/null 2>&1
+
+二：编辑Zabbix Server的配置文件/etc/zabbix/zabbix_server.conf，找到配置StartPollers的段落：
+
+直接在这增加一行：   StartPollers=10
+
+Proxy的在这里:
+
+### Option: StartProxyPollers
+# Number of pre-forked instances of pollers for passive proxies.
+#
+# Mandatory: no
+# Range: 0-250
+# Default:
+# StartProxyPollers=1
+StartProxyPollers=5
+
+将参数配置改成多少取决于服务器的性能和监控的数量。内存足够的话可以设置高些
+
+
+3.　Zabbix value cache working in low memory mode
+
+[root@localhost zabbix] vi /etc/zabbix/zabbix_server.conf
+### Option: CacheSize
+# Size of configuration cache, in bytes.
+# Shared memory size for storing host, item and trigger data.
+#
+# Mandatory: no
+# Range: 128K-2G
+# Default:
+# CacheSize=8M
+CacheSize=256M
+
+[root@localhost zabbix]# systemctl restart zabbix-server
+
+
+4.　Zabbix value cache working in low memory mode
+
+修改 zabbix_server.conf配置文件，定位到ValueCacheSize，然后调高ValueCacheSize大小，大小根据自己环境调整
+
+### Option: ValueCacheSize
+# Size of history value cache, in bytes.
+# Shared memory size for caching item history data requests.
+# Setting to 0 disables value cache.
+#
+# Mandatory: no
+# Range: 0,128K-64G
+# Default:
+ValueCacheSize=64M       ####默认为8M
+

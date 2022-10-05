@@ -1,0 +1,146 @@
+自定义模板
+
+403
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <title>403-禁止访问</title>
+</head>
+<body>
+HTTP 403 - 禁止访问
+</body>
+</html>
+
+404
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <title>404-无法找到文件</title>
+</head>
+<body>
+HTTP 404- 无法找到文件
+</body>
+</html>
+
+500
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <title>500-服务器错误</title>
+</head>
+<body>
+HTTP 500 - 内部服务器错误
+</body>
+</html>
+
+编写视图
+
+# 全局403、404、500错误自定义页面显示
+def page_not_found(request):
+ return render(request, '404.html')
+
+def page_error(request):
+ return render(request, '500.html')
+
+def permission_denied(request):
+ return render(request, '403.html')
+
+修改url
+
+from .views import page_error, page_not_found, permission_denied
+
+urlpatterns = [
+ # ...
+]
+
+# 定义错误跳转页面
+handler403 = permission_denied
+handler404 = page_not_found
+handler500 = page_error
+
+尝试使用无权限用户访问，看是否会显示该页面
+
+如果不对，修改settings.py中的DEBUG的值
+
+DEBUG = False
+
+注：若是DEBUG=True，有些情况下则不会生效
+
+Http404抛出异常
+
+raise Http404('资源不存在<id:{}>，请访问 xxx 查看')
+
+模板中捕获异常信息
+
+使用{{ exception }}即可捕获异常信息，转换为html代码{{ exception|safe }}，可以根据这些代码中的id等，得到跳转的链接，参考
+
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<style type="text/css">
+ .pic {
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+ }
+</style>
+<head>
+ <meta charset="UTF-8">
+ <title>404-无法找到文件</title>
+ <link href="//cdn.bootcss.com/toastr.js/latest/css/toastr.min.css" rel="external nofollow" rel="stylesheet">
+</head>
+<body>
+<a href="//blog.starmeow.cn" rel="external nofollow" ><img class="pic" src="{% static 'errors/404.gif' %}"></a>
+<p hidden>{{ exception|safe }}</p>
+
+<script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="//cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+<script>
+
+toastr.options = { // toastr配置
+  "closeButton": true,
+  "debug": false,
+  "progressBar": true,
+  "positionClass": "toast-top-center",
+  "showDuration": "400",
+  "hideDuration": "1000",
+  "timeOut": "7000",
+  "extendedTimeOut": "1000",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+ };
+
+$(function () {
+  let redirect_url = $('#redirect_url').text();
+  if (redirect_url.indexOf('//') === 0 || redirect_url.indexOf('http') === 0) { // 一链接开头才跳转
+   toastr.warning('{{ exception|safe }}', '跳转中');
+   setTimeout(function () {
+    //这里写时间到后执行的代码
+    $(location).attr('href', redirect_url);
+   }, 3000);
+  }
+ })
+
+</script>
+</body>
+</html>
+
+后端
+
+raise Http404('访问资源不存在，即将跳转 <span id="redirect_url">{}</span>'.format('blog.starmeow.cn'))
+
+那么当出现404错误是，jquery就获取该di的值，如果是//或者是http开头，表明可能是个链接（后端请限制格式），前端直接跳转
+
+到此这篇关于Django自定义全局403、404、500错误页面的示例代码的文章就介绍到这了,更多相关Django 403、404、500错误页面内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

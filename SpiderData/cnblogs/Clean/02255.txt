@@ -1,0 +1,61 @@
+
+一、安装方法
+
+
+方法一：
+
+1.管理员身份启动命令行（运行--->cmd）
+
+2.pip install 库的绝对路径和库的详细名称 ；或者运用cd命令跳转到下载好的库所在的位置然后pip install 库的详细名称
+
+3.wait等待安装完成
+
+
+方法二：
+
+1.管理员身份启动命令行（快捷键是WIN+R）
+
+2.直接pip install +模块名+-U
+
+
+总结：以上两种方法推荐方法二，比较简单，在安装模块名时候可以在后面加上==和版本号，指定版本安装。
+
+
+二、安装过程中报错
+
+1.is not a supported wheel on this platform（平台不支持这个库）
+
+原因一：下载的库不是python对应的版本，库名中的cp27代表python2.7.x支持的，其他的同理
+
+原因二：pip不支持库的文件名格式，下面举一个自己遇到过的例子
+
+　　　　背景：安装psutil进程和系统实用工具库一直没有安装成功，下载的是psutil-5.4.7-cp34-cp34m-win32.whl这个版本。
+
+　　　　解决方法：首先查看pip支持的库文件名格式，在shell中输入import pip; print(pip.pep425tags.get_supported()) （如果这个不行就输入import pip._internal;print(pip._internal.get_supported())）可以获取到pip支持的文件名还有版本，我这里如下：
+
+1 >>> import pip; print(pip.pep425tags.get_supported())
+2 [('cp34', 'none', 'win32'), ('cp34', 'none', 'any'), ('cp3', 'none', 'any'), ('cp33', 'none', 'any'), ('cp32', 'none', 'any'), ('cp31', 'none', 'any'), ('cp30', 'none', 'any'), ('py34', 'none', 'any'), ('py3', 'none', 'any'), ('py33', 'none', 'any'), ('py32', 'none', 'any'), ('py31', 'none', 'any'), ('py30', 'none', 'any')]
+
+从上可以看到本版本的pip支持的文件名格式并没有我们下载好的库文件的格式，所以一直报错，将下载好的库文件名改成psutil-5.4.7-cp34-none-win32.whl就能够运行，还有个办法就是升级pip也能够解决这个问题。
+
+2.PermissionError！PermissionError！PermissionError！
+
+遇到这个错误的时候首先在命令行中运行pip install --user package_name
+
+然后再安装第三方库就能够成功。
+
+最后讲讲如何在命令行中查看pip和python的版本：
+
+使用命令pip --version可以查看pip的版本
+
+使用python2 --version可以查看Python2的版本
+
+使用python3 --version可以查到python3的版本
+
+最后提供一下python第三方库的下载地址：
+
+
+下载第三方包
+
+第三方库地址大全：https://www.lfd.uci.edu/~gohlke/pythonlibs/#pip
+

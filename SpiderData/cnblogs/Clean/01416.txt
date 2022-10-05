@@ -1,0 +1,34 @@
+引用地址：https://www.cnblogs.com/star12111/p/7577413.html
+
+使用Python ，HTMLTestRunner 生成测试报告时，遇到很奇怪的问题，明明运行的结果，没有任何报错，就是不生成测试报告
+
+解决方法
+
+1： filename = ‘E:\testresult.html’，如果是在windows环境，文件名要使用以下几种格式。
+
+①filename = 'E:\\testresult.html’ ②filename = r'E:\testresult.html' ③filename = 'E:/testresult.html'
+
+2：若不是使用with做文件的上下文管理，记得要fp.close() 关闭打开的文件，才可以保存。
+
+fp = open(filename, 'wb') fp.close()
+
+3：第三种就奇葩了，看截图（截图为同一代码）（Pycharm IDE）
+
+图一
+
+图二
+
+如果是以图一方式运行，就不会有报告生成，至于原因,可能是因为if name == ‘main‘。的原因
+
+2016年11月25日09:01:08，大概知道什么原因了，因为Pycharm 自带测试框架，在右上角，
+
+点击Edit Configurations→Python tests→选中你要删除的项目
+
+删除，这样就不会自动执行unittest。
+
+4:又遇到一种情况，按照以上3个方法都不行，使用快捷键:Ctrl+shift+F10 还是无法生成report，最后在pycharm的右上角，发现了一个按钮如图
+
+这样就可以运行了，⊙﹏⊙汗，完全搞不懂
+
+5:又遇到无法生成测试报告的问题了，按照之前总结的各种方法还是不行，最后，原来就仅仅修改一行代码就可以 了，在此记录下。
+

@@ -1,0 +1,28 @@
+
+问题描述：
+
+在Linux下安装Python时出现一个错误：zipimport.ZipImportError: can't decompress data; zlib not available
+
+详细错误信息：
+
+zipimport.ZipImportError: can't decompress data; zlib not available
+Makefile:1079: recipe for target 'install' failed
+make: *** [install] Error 1
+
+
+问题解决：
+
+这是因为缺少依赖造成的，在安装python之前需要先安装python的依赖环境。
+
+Ubuntu/Debian下需安装的依赖：
+
+sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl
+
+Fedora/CentOS/RHEL(aws ec2)下需安装的依赖：
+
+sudo yum install zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel
+
+安装完成后，需要重新安装一次。具体安装步骤可参见：https://www.cnblogs.com/Jimc/p/10218387.html
+
+本文参考：https://github.com/pyenv/pyenv/wiki/Common-build-problems
+

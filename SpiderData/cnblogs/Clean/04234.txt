@@ -1,0 +1,48 @@
+一、首页运行“HelloWorld”报pybot.bat的问题
+
+command: pybot.bat --argumentfile c:\users\lenovo\appdata\local\temp\RIDEstcrfb.d\argfile.txt --listener C:\Python27\lib\site-packages\robotide\contrib\testrunner\TestRunnerAgent.py:49958:False C:\heyingzi\学习文档\接口自动化\wxWork\myfirstproject
+[Error 2]
+
+Python是安装成功的，环境变量也是配置好的，但是提示pybot不是内部或外部命令
+
+这时去确认python安装目录下的\ Scripts下是否有pybot.bat这个文件，这才是解决这个问题的重点。
+在该目录下自己创建一个pybot.txt的文件，输入下面内容并保存修改为.bat后缀
+
+@Echo off
+python -m robot.run %*
+
+这时候再去运行一下case，就ok了。
+
+二、导入Selenium2Library与RequestsLibrary测试库失败
+
+运行case后界面报错 from robot.variables import GLOBAL_VARIABLES ImportError: cannot import name GLOBAL_VARIABLES
+解决：
+Selenium2Library 为版本过低的1.5.0，先uninstall ,再install 1.8.0或者更高的版本,就不报错了
+
+pip uninstall robotframework-selenium2library
+
+pip install robotframework-selenium2library==1.8.0
+
+这个不报错了，开始报Importing test library 'Selenium2Library' failed: ImportError: No module named urllib3
+
+urllib3是python的一个组件，安装目录中也有这个文件夹，但可能是安装过程中出了什么问题，导致没有效果。
+
+于是使用pip install urllib3命令安装，安装不成功，尝试直接从网上下载这个包下来安装，pip setup.py install, 这次成功了。
+
+再次去查看测试库，都由红色变成黑色字体了。搞定！
+
+三、关于命令ride.py打不开RF，而是打开pycharm编辑器问题
+
+这种情况是由于默认打开pycharm导致，更改打开文件ride.py的打开方式即可（D:\InstallFile\Python\Python37-32\Scripts）
+
+四、执行时报command命令错误
+
+command: robot -t --argumentfile C:\Users\ADMINI~1.WIN\AppData\Local\Temp\RIDEsfzm1s7p.d\argfile.txt --listener d:\installfile\python\python37-32\lib\site-packages\robotide\contrib\testrunner\TestRunnerAgent.py:53603:False D:\auto-test\新业务
+[ ERROR ] Parsing '-C' failed: File or directory to execute does not exist.
+
+尝试了多种方法，在Scripts目录下加一个pybot.bat 文件 ，查看环境变量是否添加，查看pybot等等均没有成功
+
+后面找到一篇博文，说可能原因1：Execution Profile 选错，试了一下果然成功了，泪奔的心都有了
+
+Execution Profile选择“pybot"执行，选择robot会执行失败！！！
+

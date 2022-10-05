@@ -1,0 +1,26 @@
+1、ssl.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:600)
+解决办法：
+关闭ssl验证，执行下面的命令
+conda config --set ssl_verify false
+
+2、ARM-Linux系统安装miniconda3后，conda create -n clock python=3.5.2 找不到python
+Fetching package metadata: ....
+Error: No packages found in current linux-armv7l channels matching: python 3.5.2*
+You can search for this package on anaconda.org with
+    anaconda search -t conda python 3.5.2*
+You may need to install the anaconda-client command line client with
+
+conda install anaconda-client
+
+解决方法：
+增加树莓派的源
+conda config --add channels rpi
+conda create --name py36 python=3.6
+
+3、在python虚拟环境中用conda安装nb_conda_kernels报错
+    conda install nb_conda_kernels
+ImportError: cannot import name 'secure_write'
+
+解决办法：
+pip install --upgrade jupyter_client
+

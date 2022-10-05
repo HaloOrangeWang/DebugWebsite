@@ -1,0 +1,55 @@
+
+1.使用Selenium_Grid连接hub和Node后在hub运行python脚本时报错：
+
+错误出现原因；未在node节点配置环境变量PATH
+
+错误解决方案：开始—环境变量-配置中，添加一项环境变量，内容为webdriver存放的路径
+
+
+2.运行python脚本调用webdriver服务打开浏览器后报错：
+
+错误出现原因：chrome开启了自动更新，导致旧版webdriver不可用
+
+错误解决方案：下载最新版的webdriver以适配chrome
+
+selenium-webdriver 官方下载地址
+
+
+3.加载页面时执行点击操作报错：
+
+
+selenium.common.exceptions.WebDriverException: Message: unknown error:
+
+错误出现原因：页面图层未加载完就执行点击操作
+
+错误解决方案：使用等待方法 WebDriverWait（）/time.sleep()/，判断某个网页的等待的新图层消失不可见，再继续后面动作
+
+
+5.执行代码时报资源获取不到的错ResourceWarning：
+
+错误出现原因：未知
+
+错误解决方案：import warning，并在unittest 的setup模块加一行代码：
+
+warnings.simplefilter("ignore", ResourceWarning)
+
+
+6.执行多个子用例时，部分用例执行时报错：获取不到指定参数：
+
+错误出现原因：页面图层未加载完就执行点击操作
+
+错误解决方案：使用等待方法 WebDriverWait（）/time.sleep()/，判断某个网页的等待的新图层消失不可见，再继续后面动作
+
+
+7.使用selenium-Grid时，node节点连接hub节点时报错：
+
+错误出现原因：当将虚拟机作为Node节点操作时，Hub节点获取到到的Ip参数不为本机网络连接的真实IP，而是虚拟机的IP地址，
+
+错误解决方案：应手动打开电脑的网络设置，查看本地连接的IPV4地址，并将其填入命令行-hub 的内容；
+
+8.使用了全局变量时，报参数获取不到的错：
+
+错误出现原因：全局变量未在函数内声明、全局变量与局部变量重名
+
+错误解决方案：在函数内添加 global XXXX,并且将全局变量写为大写方便区分；
+

@@ -1,0 +1,24 @@
+对近期的数据库配置进行一个记录，方便我以后查阅。
+
+我的Django项目配备的是Mysql的数据库，平时使用的工具是VS Code，推荐安装Mysql插件，效果不错：
+
+下面是在项目的setting.py中配置的Mysql连接数据：
+
+在MySQL中已有数据，Django项目需要读取已有的数据库，生成对应的Model类，其执行代码如下
+
+python manage.py inspectdb > appName/models.py
+
+上面代码的appName为项目的app名称，需要注意的是生成的文件要保存为UTF-8编码格式，要不然会报错。
+
+在VS Code中按F1 搜索Change File Encoding，选择Save With中的UTF-8即可。
+
+而翻过来，根据Model类在数据库中生成数据库表需要使用：
+
+#makemigrations是提交model.py文件的改变
+python manage.py makemigrations
+
+#migrate是将makemigrations的改变提交到数据库
+python manage.py migrate
+
+这样就直接在数据库中生成了表
+

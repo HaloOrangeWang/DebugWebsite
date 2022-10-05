@@ -1,0 +1,24 @@
+第一种方案（90%情况下，大部分帖子都是这个）
+一般报错到代码都是自己写到代码，代码上添加
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+第二种方案，引用到包出现错误
+在python的lib\site-packages文件夹下新建一个sitecustomize.py
+cat sitecustomize.py #添加如下内容，设置编码为utf8
+
+#encoding=utf8  
+import sys
+reload(sys) 
+sys.setdefaultencoding('utf8')
+参考：https://www.cnblogs.com/kevingrace/p/5893121.html
+
+第三种方案 进入python终端，执行如下命令
+import sys, codecs, locale; print str(sys.stdout.encoding);
+是否是utf8（ubuntu系统）
+如果不是，
+则修改环境变量PYTHONIOENCODING为utf8
+执行：export PYTHONIOENCODING=utf-8
+

@@ -1,0 +1,692 @@
+
+一、包
+
+1，什么是包？
+
+把解决一类问题的模块放在同一个文件夹里-----包
+
+2，包是一种通过使用‘.模块名’来组织python模块名称空间的方式。
+
+　　１. 无论是import形式还是from...import形式，凡是在导入语句中（而不是在使用时）遇到带点的，都要第一时间提高警觉：这是关于包才有的导入语法
+
+　　2. 包是目录级的（文件夹级），文件夹是用来组成py文件（包的本质就是一个包含__init__.py文件的目录）
+
+　　3. import导入文件时，产生名称空间中的名字来源于文件，import 包，产生的名称空间的名字同样来源于文件，即包下的__init__.py，导入包本质就是在导入该文件
+
+3，强调：
+
+　　1. 在python3中，即使包下没有__init__.py文件，import 包仍然不会报错，而在python2中，包下一定要有该文件，否则import 包报错
+
+　　2. 创建包的目的不是为了运行，而是被导入使用，包只是模块的一种形式而已，包即模块
+
+4，注意事项
+
+　　1.关于包相关的导入语句也分为import和from ... import ...两种，但是无论哪种，无论在什么位置，在导入时都必须遵循一个原则：凡是在导入时带点的，点的左边都必须是一个包，否则非法。可以带有一连串的点，如item.subitem.subsubitem,但都必须遵循这个原则。
+
+　　2.对于导入后，在使用时就没有这种限制了，点的左边可以是包,模块，函数，类(它们都可以用点的方式调用自己的属性)。
+
+　　3.对比import item 和from item import name的应用场景：
+　　如果我们想直接使用name那必须使用后者。
+
+glance/                   #Top-level package
+
+├── __init__.py      #Initialize the glance package
+
+├── api                  #Subpackage for api
+
+│   ├── __init__.py
+
+│   ├── policy.py
+
+│   └── versions.py
+
+├── cmd                #Subpackage for cmd
+
+│   ├── __init__.py
+
+│   └── manage.py
+
+└── db                  #Subpackage for db
+
+├── __init__.py
+
+└── models.py
+
+目录结构
+
+5，import
+
+我们在与包glance同级别的文件中测试
+
+1 import glance.db.models
+2 glance.db.models.register_models('mysql')
+
+6，from ... import ...
+
+需要注意的是from后import导入的模块，必须是明确的一个不能带点，否则会有语法错误，如：from a import b.c是错误语法
+
+我们在与包glance同级别的文件中测试 ：
+
+from glance.db import models
+models.register_models('mysql')
+from glance.db.models import register_models
+register_models('mysql')
+
+7，__init__.py文件
+
+不管是哪种方式，只要是第一次导入包或者是包的任何其他部分，都会依次执行包下的__init__.py文件(我们可以在每个包的文件内都打印一行内容来验证一下)，这个文件可以为空，但是也可以存放一些初始化包的代码。
+
+8，绝对导入和相对导入
+
+最顶级包glance是写给别人用的，然后在glance包内部也会有彼此之间互相导入的需求，这时候就有绝对导入和相对导入两种方式：
+
+绝对导入：以glance作为起始
+
+相对导入：用.或者..的方式最为起始（只能在一个包中使用，不能用于不同目录内）
+
+例如：我们在glance/api/version.py中想要导入glance/cmd/manage.py
+
+在glance/api/version.py
+
+#绝对导入
+from glance.cmd import manage
+manage.main()
+
+#相对导入
+from ..cmd import manage
+manage.main()
+
+特别需要注意的是：可以用import导入内置或者第三方模块（已经在sys.path中），但是要绝对避免使用import来导入自定义包的子模块(没有在sys.path中)，应该使用from... import ...的绝对或者相对导入,且包的相对导入只能用from的形式。
+
+from glance.api import versions
+
+'''
+执行结果:
+ImportError: No module named 'policy'
+'''
+
+'''
+分析:
+此时我们导入versions在versions.py中执行
+import policy需要找从sys.path也就是从当前目录找policy.py,
+这必然是找不到的
+'''
+
+glance/
+
+├── __init__.py      from glance import api
+                             from glance import cmd
+                             from glance import db
+
+├── api
+
+│   ├── __init__.py  from glance.api import policy
+                              from glance.api import versions
+
+│   ├── policy.py
+
+│   └── versions.py
+
+├── cmd                 from glance.cmd import manage
+
+│   ├── __init__.py
+
+│   └── manage.py
+
+└── db                   from glance.db import models
+
+├── __init__.py
+
+└── models.py
+
+绝对导入
+
+glance/
+
+├── __init__.py      from . import api  #.表示当前目录
+                     from . import cmd
+                     from . import db
+
+├── api
+
+│   ├── __init__.py  from . import policy
+                     from . import versions
+
+│   ├── policy.py
+
+│   └── versions.py
+
+├── cmd              from . import manage
+
+│   ├── __init__.py
+
+│   └── manage.py    from ..api import policy   
+                     #..表示上一级目录，想再manage中使用policy中的方法就需要回到上一级glance目录往下找api包，从api导入policy
+
+└── db               from . import models
+
+├── __init__.py
+
+└── models.py
+
+相对导入
+
+9，单独导入包
+
+1 #glance/__init__.py
+2 from . import cmd
+3 
+4 #glance/cmd/__init__.py
+5 from . import manage
+
+10，软件开发规范
+
+#=============>bin目录：存放执行脚本
+#start.py
+import sys,os
+
+BASE_DIR=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+
+from core import core
+from conf import my_log_settings
+
+if __name__ == '__main__':
+    my_log_settings.load_my_logging_cfg()
+    core.run()
+
+#=============>conf目录：存放配置文件
+#config.ini
+[DEFAULT]
+user_timeout = 1000
+
+[egon]
+password = 123
+money = 10000000
+
+[alex]
+password = alex3714
+money=10000000000
+
+[yuanhao]
+password = ysb123
+money=10
+
+#settings.py
+import os
+config_path=r'%s\%s' %(os.path.dirname(os.path.abspath(__file__)),'config.ini')
+user_timeout=10
+user_db_path=r'%s\%s' %(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),\
+                     'db')
+
+#my_log_settings.py
+"""
+logging配置
+"""
+
+import os
+import logging.config
+
+# 定义三种日志输出格式 开始
+
+standard_format = '[%(asctime)s][%(threadName)s:%(thread)d][task_id:%(name)s][%(filename)s:%(lineno)d]' \
+                  '[%(levelname)s][%(message)s]' #其中name为getlogger指定的名字
+
+simple_format = '[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d]%(message)s'
+
+id_simple_format = '[%(levelname)s][%(asctime)s] %(message)s'
+
+# 定义日志输出格式 结束
+
+logfile_dir = r'%s\log' %os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # log文件的目录
+
+logfile_name = 'all2.log'  # log文件名
+
+# 如果不存在定义的日志目录就创建一个
+if not os.path.isdir(logfile_dir):
+    os.mkdir(logfile_dir)
+
+# log文件的全路径
+logfile_path = os.path.join(logfile_dir, logfile_name)
+
+# log配置字典
+LOGGING_DIC = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': standard_format
+        },
+        'simple': {
+            'format': simple_format
+        },
+    },
+    'filters': {},
+    'handlers': {
+        #打印到终端的日志
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',  # 打印到屏幕
+            'formatter': 'simple'
+        },
+        #打印到文件的日志,收集info及以上的日志
+        'default': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',  # 保存到文件
+            'formatter': 'standard',
+            'filename': logfile_path,  # 日志文件
+            'maxBytes': 1024*1024*5,  # 日志大小 5M
+            'backupCount': 5,
+            'encoding': 'utf-8',  # 日志文件的编码，再也不用担心中文log乱码了
+        },
+    },
+    'loggers': {
+        #logging.getLogger(__name__)拿到的logger配置
+        '': {
+            'handlers': ['default', 'console'],  # 这里把上面定义的两个handler都加上，即log数据既写入文件又打印到屏幕
+            'level': 'DEBUG',
+            'propagate': True,  # 向上（更高level的logger）传递
+        },
+    },
+}
+
+def load_my_logging_cfg():
+    logging.config.dictConfig(LOGGING_DIC)  # 导入上面定义的logging配置
+    logger = logging.getLogger(__name__)  # 生成一个log实例
+    logger.info('It works!')  # 记录该文件的运行状态
+
+if __name__ == '__main__':
+    load_my_logging_cfg()
+
+#=============>core目录：存放核心逻辑
+#core.py
+import logging
+import time
+from conf import settings
+from lib import read_ini
+
+config=read_ini.read(settings.config_path)
+logger=logging.getLogger(__name__)
+
+current_user={'user':None,'login_time':None,'timeout':int(settings.user_timeout)}
+def auth(func):
+    def wrapper(*args,**kwargs):
+        if current_user['user']:
+            interval=time.time()-current_user['login_time']
+            if interval < current_user['timeout']:
+                return func(*args,**kwargs)
+        name = input('name>>: ')
+        password = input('password>>: ')
+        if config.has_section(name):
+            if password == config.get(name,'password'):
+                logger.info('登录成功')
+                current_user['user']=name
+                current_user['login_time']=time.time()
+                return func(*args,**kwargs)
+        else:
+            logger.error('用户名不存在')
+
+return wrapper
+
+@auth
+def buy():
+    print('buy...')
+
+@auth
+def run():
+
+print('''
+购物
+查看余额
+转账
+    ''')
+    while True:
+        choice = input('>>: ').strip()
+        if not choice:continue
+        if choice == '1':
+            buy()
+
+二、异常处理
+
+1，程序中难免出现错误，而错误分成两种：
+
+　　1.语法错误（这种错误，根本过不了python解释器的语法检测，必须在程序执行前就改正）
+
+#语法错误示范一
+if
+
+#语法错误示范二
+def test:
+    pass
+
+#语法错误示范三
+print(haha
+
+语法错误
+
+　　2.逻辑错误（逻辑错误）
+
+#用户输入不完整(比如输入为空)或者输入非法(输入不是数字)
+num=input(">>: ")
+int(num)
+
+#无法完成计算
+res1=1/0
+res2=1+'str'
+
+2，什么是异常
+
+异常就是程序运行时发生错误的信号
+
+　　
+
+3，python中的异常种类
+
+　在python中不同的异常可以用不同的类型（python中统一了类与类型，类型即类）去标识，不同的类对象标识不同的异常，一个异常标识一种错误
+
+　　
+
+l=['egon','aa']
+l[3]
+
+dic={'name':'egon'}
+dic['age']
+
+s='hello'
+int(s)
+
+4,常用异常
+
+AttributeError 试图访问一个对象没有的树形，比如foo.x，但是foo没有属性x
+IOError 输入/输出异常；基本上是无法打开文件
+ImportError 无法引入模块或包；基本上是路径问题或名称错误
+IndentationError 语法错误（的子类） ；代码没有正确对齐
+IndexError 下标索引超出序列边界，比如当x只有三个元素，却试图访问x[5]
+KeyError 试图访问字典里不存在的键
+KeyboardInterrupt Ctrl+C被按下
+NameError 使用一个还未被赋予对象的变量
+SyntaxError Python代码非法，代码不能编译(个人认为这是语法错误，写错了）
+TypeError 传入对象类型与要求的不符合
+UnboundLocalError 试图访问一个还未被设置的局部变量，基本上是由于另有一个同名的全局变量，
+导致你以为正在访问它
+ValueError 传入一个调用者不期望的值，即使值的类型是正确的
+
+常用异常
+
+5，更多异常
+
+ArithmeticError
+AssertionError
+AttributeError
+BaseException
+BufferError
+BytesWarning
+DeprecationWarning
+EnvironmentError
+EOFError
+Exception
+FloatingPointError
+FutureWarning
+GeneratorExit
+ImportError
+ImportWarning
+IndentationError
+IndexError
+IOError
+KeyboardInterrupt
+KeyError
+LookupError
+MemoryError
+NameError
+NotImplementedError
+OSError
+OverflowError
+PendingDeprecationWarning
+ReferenceError
+RuntimeError
+RuntimeWarning
+StandardError
+StopIteration
+SyntaxError
+SyntaxWarning
+SystemError
+SystemExit
+TabError
+TypeError
+UnboundLocalError
+UnicodeDecodeError
+UnicodeEncodeError
+UnicodeError
+UnicodeTranslateError
+UnicodeWarning
+UserWarning
+ValueError
+Warning
+ZeroDivisionError
+
+更多异常
+
+
+三、异常处理
+
+1，什么是异常？
+
+异常发生之后
+
+异常之后的代码就不执行了
+
+2，什么是异常处理
+
+python解释器检测到错误，触发异常（也允许程序员自己触发异常）
+
+程序员编写特定的代码，专门用来捕捉这个异常（这段代码与程序逻辑无关，与异常处理有关）
+
+如果捕捉成功则进入另外一个处理分支，执行你为其定制的逻辑，使程序不会崩溃，这就是异常处理
+
+3，如何进行异常处理？
+
+首先须知，异常是由程序的错误引起的，语法上的错误跟异常处理无关，必须在程序运行前就修正
+
+
+一： 使用if判断式
+
+正常的计划：
+
+num1=input('>>: ') #输入一个字符串试试
+int(num1)
+
+#_*_coding:utf-8_*_
+__author__ = 'Linhaifeng'
+
+num1=input('>>: ') #输入一个字符串试试
+if num1.isdigit():
+    int(num1) #我们的正统程序放到了这里,其余的都属于异常处理范畴
+elif num1.isspace():
+    print('输入的是空格,就执行我这里的逻辑')
+elif len(num1) == 0:
+    print('输入的是空,就执行我这里的逻辑')
+else:
+    print('其他情情况,执行我这里的逻辑')
+
+'''
+问题一：
+使用if的方式我们只为第一段代码加上了异常处理，但这些if，跟你的代码逻辑并无关系，这样你的代码会因为可读性差而不容易被看懂
+
+问题二：
+这只是我们代码中的一个小逻辑，如果类似的逻辑多，那么每一次都需要判断这些内容，就会倒置我们的代码特别冗长。
+'''
+
+使用if判断进行异常处理
+
+总结：
+
+1.if判断式的异常处理只能针对某一段代码，对于不同的代码段的相同类型的错误你需要写重复的if来进行处理。
+
+2.在你的程序中频繁的写与程序本身无关，与异常处理有关的if，会使得你的代码可读性极其的差
+
+3.if是可以解决异常的，只是存在1,2的问题，所以，千万不要妄下定论if不能用来异常处理。
+
+
+二：python为每一种异常定制了一个类型，然后提供了一种特定的语法结构用来进行异常处理
+
+
+part1:基本语法
+
+try:
+     被检测的代码块
+except 异常类型：
+     try中一旦检测到异常，就执行这个位置的逻辑
+
+f = open('a.txt')
+
+g = (line.strip() for line in f)
+for line in g:
+    print(line)
+else:
+    f.close()
+
+#读文件例2
+try:
+    f = open('a.txt')
+    g = (line.strip() for line in f)
+    print(next(g))
+    print(next(g))
+    print(next(g))
+    print(next(g))
+    print(next(g))
+except StopIteration:
+    f.close()
+
+'''
+next(g)会触发迭代f，依次next(g)就可以读取文件的一行行内容，无论文件a.txt有多大，同一时刻内存中只有一行内容。
+提示：g是基于文件句柄f而存在的，因而只能在next(g)抛出异常StopIteration后才可以执行f.close()
+'''
+
+
+part2:异常类只能用来处理指定的异常情况，如果非指定异常则无法处理。
+
+# 未捕获到异常，程序直接报错
+ 
+s1 = 'hello'
+try:
+    int(s1)
+except IndexError as e:
+    print e
+
+
+part3:多分支
+
+s1 = 'hello'
+try:
+int(s1)
+except IndexError as e:
+print(e)
+except KeyError as e:
+print(e)
+except ValueError as e:
+print(e)
+
+
+part4:万能异常 在python的异常中，有一个万能异常：Exception，他可以捕获任意异常，即：
+
+s1 = 'hello'
+try:
+    int(s1)
+except Exception as e:
+    print(e)
+
+为什么不直接用万能异常？分两种情况去看：
+
+1.如果你想要的效果是，无论出现什么异常，我们统一丢弃，或者使用同一段代码逻辑去处理他们，那么骚年，大胆的去做吧，只有一个Exception就足够了。
+
+s1 = 'hello'
+try:
+    int(s1)
+except Exception,e:
+    '丢弃或者执行其他逻辑'
+    print(e)
+
+#如果你统一用Exception，没错，是可以捕捉所有异常，但意味着你在处理所有异常时都使用同一个逻辑去处理（这里说的逻辑即当前expect下面跟的代码块）
+
+Exception
+
+2.如果你想要的效果是，对于不同的异常我们需要定制不同的处理逻辑，那就需要用到多分支了。
+
+#多分支
+s1 = 'hello'
+try:
+    int(s1)
+except IndexError as e:
+    print(e)
+except KeyError as e:
+    print(e)
+except ValueError as e:
+    print(e)
+
+#多分支+Exception
+s1 = 'hello'
+try:
+    int(s1)
+except IndexError as e:
+    print(e)
+except KeyError as e:
+    print(e)
+except ValueError as e:
+    print(e)
+except Exception as e:
+    print(e)
+
+
+part5:异常的其他机构
+
+s1 = 'hello'
+try:
+    int(s1)
+except IndexError as e:
+    print(e)
+except KeyError as e:
+    print(e)
+except ValueError as e:
+    print(e)
+#except Exception as e:
+#    print(e)
+else:
+    print('try内代码块没有异常则执行我')
+finally:
+    print('无论异常与否,都会执行该模块,通常是进行清理工作')
+
+
+part6:主动触发异常
+
+try:
+    raise TypeError('类型错误')
+except Exception as e:
+    print(e)
+
+
+part7:自定义异常
+
+class EvaException(BaseException):
+    def __init__(self,msg):
+        self.msg=msg
+    def __str__(self):
+        return self.msg
+
+try:
+    raise EvaException('类型错误')
+except EvaException as e:
+    print(e)
+
+
+part8：try..except的方式比较if的方式的好处
+
+try..except这种异常处理机制就是取代if那种方式，让你的程序在不牺牲可读性的前提下增强健壮性和容错性
+
+异常处理中为每一个异常定制了异常类型（python中统一了类与类型，类型即类），对于同一种异常，一个except就可以捕捉到，可以同时处理多段代码的异常（无需‘写多个if判断式’）减少了代码，增强了可读性
+
+使用try..except的方式
+
+1：把错误处理和真正的工作分开来
+2：代码更易组织，更清晰，复杂的工作任务更容易实现；
+3：毫无疑问，更安全了，不至于由于一些小的疏忽而使程序意外崩溃了；
+

@@ -1,0 +1,35 @@
+参考菜鸟教程学习，Python CGI编程时
+
+https://www.runoob.com/python3/python3-cgi-programming.html
+
+前面的执行都是顺利的。当使用Post从前端获取数据发送到后端时，发现使用教程中的方法不能正常访问html。
+
+访问自定义的html     浏览器中输入http://localhost/TE/Python_CGI.html ，报错！
+
+
+Internal Server Error
+
+The server encountered an internal error or misconfiguration and was unable to complete your request.
+
+Please contact the server administrator at admin@example.com to inform them of the time this error occurred, and the actions you performed just before this error.
+
+More information about this error may be available in the server error log.
+
+然后网上各种查找资料，更改conf的配置都没有解决这个问题。后续发现应该是url输入错误，因为conf中定义了
+
+DocumentRoot "${SRVROOT}/htdocs"
+
+所以输入localhost会进入默认的html页面（index.html）(修改了index.html的名称发现还是能进，具体跳转待确定)
+
+所以输入的url不应该是教程中的添加/test/这种文件夹路径的。
+
+直接输入http://localhost/Python_CGI.html
+
+Apache会自动访问html等文件根目录htdocs文件夹，在该文件夹下存放自己编写的html文件，Python_CGI.html，浏览器可以直接访问。
+
+html中定义了action，会直接调用Apache指定目录下的.py文件（该目录的权限应该在conf中已经放开，参考cgi-bin文件夹的权限设置）
+
+点击html中的提交会自动将文本框中的参数传递到后端的.py文件中，页面并调转到http://localhost/cgi-bin/Python_CGI.py，显示出传递的参数内容。
+
+记录如上，方便你我。
+

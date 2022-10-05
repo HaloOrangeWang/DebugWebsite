@@ -1,0 +1,74 @@
+
+jupyter notebook报错: zsh: command not found; bad interpreter; Error executing Jupyter command 'notebook'
+
+
+问题描述
+
+
+系统
+
+macOS Catalina 10.15.7 (我认为大部分linux版本是适用此种解决方法的，windows不知道)
+
+
+背景
+
+我一般都是在terminal里直接跑python，为什么不用anaconda啥的主要怕麻烦。 但是这样的话，我在使用pip3 install jupyter --user 以及 pip3 install IPython --user之后无法在terminal 里直接
+
+去呼出notebook。报的错是 zsh: command not found
+
+
+添加路径
+
+首先，macOS Catalina 终端已经改成了zsh，所以我们需要将jupyter的路径添加到PATH里。
+
+Name: jupyter
+
+Version: 1.0.0
+
+Summary: Jupyter metapackage. Install all the Jupyter components in one go.
+
+Home-page: http://jupyter.org
+
+Author: Jupyter Development Team
+
+Author-email: jupyter@googlegroups.org
+
+License: BSD
+
+Location: /Users/xxx/Library/Python/3.8/lib/python/site-packages
+
+Requires: jupyter-console, notebook, qtconsole, ipywidgets, ipykernel, nbconvert
+
+Required-by:
+
+可以发现location为/Users/xxx/Library/Python/3.8/lib/python/site-packages
+
+添加这么一句
+
+export PATH="/Users/xxx/Library/Python/3.8/bin:$PATH"
+
+然后重载命令
+
+
+修改指定的python版本
+
+然而，这样修改完之后，我试图jupyter notebook，又出现了新的问题
+
+zsh: /Users/xxx/Library/Python/3.8/bin/jupyter: bad interpreter: /applications/xcode.app/contents/developer/usr/bin/python3: no such file or directory
+
+发现他说这个interpreter是找不到了，我一看，是我之前安装的xcode里的python3环境，不过我已经卸载了。 我就希望能够指定python版本，也就是/usr/bin/python3去运行jupyter。 经过一段时间的摸索，发现他指定python版本的方法是在文件的头部指定了路径，所以我们先修改一下jupyter文件，
+
+把第一行改成了#!/usr/bin/python3
+
+然后继续jupyter notebook 还是不work，报的错为
+
+Error executing Jupyter command 'notebook': [Errno 2] No such file or directory
+
+我感觉这个错误在于它本来是把jupyter notebook翻译成jupyter-notebook 在执行，我们可以修改jupyter-notebook后再执行一下
+
+把第一行改成了#!/usr/bin/python3
+
+然后jupyter notebook
+
+成功呼出。
+

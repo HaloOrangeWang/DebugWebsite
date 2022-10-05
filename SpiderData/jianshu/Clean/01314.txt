@@ -1,0 +1,107 @@
+
+情况一：tophat2必须在python2.7下安装，选择在conda内创个小环境即可：
+
+
+安装tophat2
+
+##下载
+wget http://ccb.jhu.edu/software/tophat/downloads/tophat-2.1.0.Linux_x86_64.tar.gz
+
+##解压
+tar -zxvf tophat-2.1.0.Linux_x86_64.tar.gz
+
+##加入环境变量path
+export PATH=/home/u20111230014/workspace/software/tophat-2.1.0.Linux_x86_64/:$PATH
+
+
+激活conda，为tophat创建适合它的python2.7
+
+conda create --name python27 python=2.7 -y
+conda activate python27
+
+
+在此时python2.7的环境下，进入tophat-2.1.0.Linux_x86_64目录下
+
+cd tophat-2.1.0.Linux_x86_64
+
+找到tophat，vim tophat进行修改
+
+
+找到你的python2 ：whereis python2
+
+(python27) [u20111230014@cpu10 tophat-2.1.0.Linux_x86_64]$ whereis python2
+python2: /usr/bin/python2 /usr/bin/python2.7 /usr/lib/python2.7 /usr/lib64/python2.7 /usr/include/python2.7 /home/u20111230014/miniconda3/envs/python27/bin/python2 /home/u20111230014/miniconda3/envs/python27/bin/python2.7-config /home/u20111230014/miniconda3/envs/python27/bin/python2.7 /home/public/software/miniconda2/bin/python2 /home/public/software/miniconda2/bin/python2.7-config /home/public/software/miniconda2/bin/python2.7
+
+选择conda下安装的python2.7环境路径 /home/u20111230014/miniconda3/envs/python27/bin/python2
+
+
+将tophat文件的第一句#!/usr/bin/env python
+
+改为 /home/u20111230014/miniconda3/envs/python27/bin/python2  后保存
+
+PS: 路径必须要带上/bin/python2
+
+tophat2 -h测试即可！
+
+
+另一种情况：
+
+报错：Error: Could not find Bowtie 2 index files (genome.*.bt2) 或 Warning: Could not find FASTA file bowtie2_index/GRCm39_index.fa但不提示error，照常preparing reads，但生成不出有效文件，报错如下：
+[2022-02-21 00:23:56] Beginning TopHat run (v2.1.1)
+-----------------------------------------------
+[2022-02-21 00:23:56] Checking for Bowtie
+                  Bowtie version:        2.2.5.0
+[2022-02-21 00:23:58] Checking for Bowtie index files (genome)..
+[2022-02-21 00:23:58] Checking for reference FASTA file
+        Warning: Could not find FASTA file bowtie2_index/GRCm39_index.fa
+[2022-02-21 00:23:58] Reconstituting reference FASTA file from Bowtie index
+  Executing: /home/public/software/miniconda2/bin/bowtie2-inspect bowtie2_index/GRCm39_index > Top
+hat_Cufflinks_DPP-0_clean.fq/tmp/GRCm39_index.fa
+[2022-02-21 00:25:32] Generating SAM header for bowtie2_index/GRCm39_index
+[2022-02-21 00:25:36] Preparing reads
+         left reads: min. length=50, max. length=345, 29935913 kept reads (1 discarded)
+[2022-02-21 00:31:57] Mapping left_kept_reads to genome GRCm39_index with Bowtie2 
+[2022-02-21 00:50:15] Mapping left_kept_reads_seg1 to genome GRCm39_index with Bowtie2 (1/14)
+
+
+解决方法：
+
+在含有具体fasta文件的bowtie2_index文件夹内，重新对GRCm39.fa作一次软连接，命名为GRCm39_index.fa
+[u20111230014@cpu10 bowtie2_index]$ ln -s GRCm39.fa GRCm39_index.fa
+
+再配上slurm系统下的脚本，即可，如下：
+
+PS:   go_FPKM_SE.sh,  序列DPP-0_clean.fq，注释文件GRCm39.gtf，bowtie2_index文件夹必须在同一个文件夹内
+[u20111230014@cpu10 GRCm39]$ more tophat.slurm 
+#!/bin/bash
+#SBATCH -J Job.SRR8777   
+#SBATCH -p dna             
+#SBATCH -N 1  
+#SBATCH --mem=50G               
+#SBATCH --cpus-per-task=25    
+#SBATCH -t 1-10:00:00        
+#SBATCH -o Out.SRR8777   
+#SBATCH --mail-user=394710725@qq.com
+
+go_FPKM_SE.sh 24 DPP-0_clean.fq GRCm39.gtf bowtie2_index/GRCm39_index
+
+成功！
+
+[u20111230014@cpu10 GRCm39]$ go_FPKM_SE.sh 24 DPP-0_clean.fq GRCm39.gtf bowtie2_index/GRCm39_index
+Usage:
+   go_FPKM_SE.sh Threads Read1.fq transcriptome-index bowtie2-index
+
+Running info
+Read:       DPP-0_clean.fq
+Annotation: GRCm39.gtf
+Genome:     bowtie2_index/GRCm39_index
+
+[2022-02-21 14:29:28] Beginning TopHat run (v2.1.1)
+-----------------------------------------------
+[2022-02-21 14:29:28] Checking for Bowtie
+                  Bowtie version:        2.2.5.0
+[2022-02-21 14:29:28] Checking for Bowtie index files (genome)..
+[2022-02-21 14:29:28] Checking for reference FASTA file
+[2022-02-21 14:29:28] Generating SAM header for bowtie2_index/GRCm39_index
+[2022-02-21 14:29:32] Preparing reads
+

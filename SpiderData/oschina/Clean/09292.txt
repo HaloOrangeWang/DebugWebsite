@@ -1,0 +1,60 @@
+jenkins源码管理，添加SSH地址后报错：
+
+　　Could not read from remote repository.
+
+　　Please make sure you have the correct access rights and the repository exists.
+
+有的在使用SSH地址，在jenkins上拉取Gitlab上的项目，可能会报错：
+
+这是刚添加完gitlab地址，就报的错。
+
+也有可能此时没有报错，但是在进行jenkins构建的时候，报错：
+
+Started by GitLab push by AngelSXD
+Started by GitLab push by AngelSXD
+Building in workspace /var/jenkins_home/workspace/swapping
+using credential 798371b9-6a3d-44bf-b752-713db6a9920a
+Cloning the remote Git repository
+Cloning repository git@192.168.92.130:8090/root/swapping.git
+ > /usr/bin/git init /var/jenkins_home/workspace/swapping # timeout=10
+Fetching upstream changes from git@192.168.92.130:8090/root/swapping.git
+ > /usr/bin/git --version # timeout=10
+using GIT_SSH to set credentials 
+ > /usr/bin/git fetch --tags --progress git@192.168.92.130:8090/root/swapping.git +refs/heads/*:refs/remotes/origin/*
+ERROR: Timeout after 10 minutes
+ERROR: Error cloning remote repo 'origin'
+hudson.plugins.git.GitException: Command "/usr/bin/git fetch --tags --progress git@192.168.92.130:8090/root/swapping.git +refs/heads/*:refs/remotes/origin/*" returned status code 128:
+stdout: 
+stderr: Terminated
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+
+at org.jenkinsci.plugins.gitclient.CliGitAPIImpl.launchCommandIn(CliGitAPIImpl.java:2042)
+    at org.jenkinsci.plugins.gitclient.CliGitAPIImpl.launchCommandWithCredentials(CliGitAPIImpl.java:1761)
+    at org.jenkinsci.plugins.gitclient.CliGitAPIImpl.access$400(CliGitAPIImpl.java:72)
+    at org.jenkinsci.plugins.gitclient.CliGitAPIImpl$1.execute(CliGitAPIImpl.java:442)
+    at org.jenkinsci.plugins.gitclient.CliGitAPIImpl$2.execute(CliGitAPIImpl.java:655)
+    at hudson.plugins.git.GitSCM.retrieveChanges(GitSCM.java:1152)
+    at hudson.plugins.git.GitSCM.checkout(GitSCM.java:1192)
+    at hudson.scm.SCM.checkout(SCM.java:504)
+    at hudson.model.AbstractProject.checkout(AbstractProject.java:1208)
+    at hudson.model.AbstractBuild$AbstractBuildExecution.defaultCheckout(AbstractBuild.java:574)
+    at jenkins.scm.SCMCheckoutStrategy.checkout(SCMCheckoutStrategy.java:86)
+    at hudson.model.AbstractBuild$AbstractBuildExecution.run(AbstractBuild.java:499)
+    at hudson.model.Run.execute(Run.java:1810)
+    at hudson.maven.MavenModuleSetBuild.run(MavenModuleSetBuild.java:543)
+    at hudson.model.ResourceController.execute(ResourceController.java:97)
+    at hudson.model.Executor.run(Executor.java:429)
+ERROR: Error cloning remote repo 'origin'
+Finished: FAILURE
+
+解决方法：
+
+1.gitlab上拉取地址正确无误
+
+2.各个必要的插件都安装成功
+
+在确保了上面两点都无误的情况下，可以改用Http地址去clone项目！！！！！！！
+

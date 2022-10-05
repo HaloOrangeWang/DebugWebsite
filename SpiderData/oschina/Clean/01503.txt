@@ -1,0 +1,311 @@
+
+1 错误原因
+
+
+1.1 报错全部信息：
+
+cv2.error: OpenCV(4.0.1) D:\Build\OpenCV\opencv_contrib-4.0.1\modules\xfeatures2d\src\sift.cpp:1207: error: (-213:The function/feature is not implemented) This algorithm is patented and is excluded in this configuration; Set OPENCV_ENABLE_NONFREE CMake option and rebuild the library in function 'cv::xfeatures2d::SIFT::create'
+
+
+1.2 报错信息分解：
+
+1、  cv2.error: OpenCV(4.0.1) D:\Build\OpenCV\opencv_contrib-4.0.1\modules\xfeatures2d\src\sift.cpp:1207:
+
+错位代码定位
+
+2、  error: (-213:The function/feature is not implemented)
+
+error 代号，函数 / 功能无法实现
+
+3、 This algorithm is patented and is excluded in this configuration; Set OPENCV_ENABLE_NONFREE CMake option and rebuild the library in function 'cv::xfeatures2d::SIFT::create'
+
+error 信息，该算法（SIFT）已经获得专利，在此配置中不包括，设置 OPENCV_ENABLE_NONFREE CMake 选项并在函数 ' cv :: xfeatures2d :: SIFT :: create ' 中重建库
+
+
+2 修缮工程（守城）
+
+该修改工程属于消极防御，记为守城之策。
+
+
+2.1 方案一：安装opencv-contrib-python
+
+采用 opencv-contrib-python 而非 opencv-python 。在 opencv-contrib-python 版本中含有额外模块（ Extra modules ），而 opencv-python 版本中只含有基础模块。
+
+网上有人说是 SIFT 申请了算法专利保护，所以就将 SIFT 放置在了 Extra modules 模块中，故安装 opencv-contrib-python 是能用的。
+
+当然这个说法也是对的，官网【点击查看】上确实看到 Extra modules 中包含有  xfeatures2d. Extra 2D Features Framework 函数 / 功能。
+
+
+2.2 方案二：版本问题
+
+有人按照方案一操作，依据不可行，所以又出现了版本问题，确切地说 opencv-contrib-python 3.4.3.18 之前是有效的。因为我在寻找解决办法时，好多解决办法都是降低版本至 3.4.3.16。完美解决该问题。但 - 但 - - 但 - - - 但这是2019 年 03 月 09 日。
+
+由于我想的是越高的版本其算法应该会越好，bug 应该也越小。所以不想降低版本来实施运算；所以这个解决方案没有采用。
+
+网上到处都是赋值粘贴的，也不注明出处。
+
+
+2.3 方案三：按照报错信息去解决
+
+写下一段插曲，算是反思吧。
+
+查找原因顺序是，
+
+1、先检索了报错代码，出现了方案一和方案二中的问题解决方案，这种方案撰写时间是在2018年下半年和2019年出现的，虽然并不是库文件版本越新越好，但是新版本的迭代优化总归是有所成效的。所以没有采用这些方案。
+
+2、检索报错信息中的解决方案：Set OPENCV_ENABLE_NONFREE CMake option and rebuild the library in function 'cv::xfeatures2d::SIFT::create'。出现了惊人的效果，真正的解决措施才徐徐拉开序幕.....
+
+该修缮工程比较大，兹另起章节，详见下段 3。
+
+
+3 修缮工程（攻城）
+
+该修缮工程（实为上文的方案 3 ，在此段展开撰述）为积极攻伐，属为攻城之计。
+
+
+3.1 下载安装包及工具
+
+
+3.1.1 CMake
+
+其实这个无所谓版本，我选择最新的。
+
+首先下载 cmake 文件。请依据自己需求 【点击下载】
+
+下载 next - > next 安装，在安装的过程中注意有一项默认 “ 是否添加到PATH ” 默认是就行，要不还要手段添加 PATH。
+
+安装完毕后打开即可。
+
+
+3.1.2 opencv 被编译对象
+
+之所以下载 opencv 各种包，主要是因为原安装包 .whl 不具备被 CMake 的编译条件，缺少CMakelist.txt 文件。
+
+安装后下载拟编译的文件，由于需要编译的文件中必须包含 CMakeList.txt 文件，（我打开可以被编译的文件发现——每一个被编译的文件夹下面都有一个CMakeList.txt 文件）
+
+先是下载了官网的安装包【点击下载网址，下拉即可看到，由于这个是4.0.0版本的，随着时间延伸，连接可能会失效，失效时候直接去官网就行，我只是将二级目录连接放着了】Documentation、Sources、Win pack （说白了，除了没有 IOS pack 的我都下载了），注意：opencv-4.0.0-vc14_vc15.exe 的安装格式其实相当于解压。
+
+同时为了还下载了 GitHub 上的文件，分别为 opencv 和 opencv_contrib ，
+
+其实，下载 GitHub 上的 opencv 和 opencv_contrib 就可以了。
+
+
+3.2 编译
+
+
+3.2.1 编译过程的小插曲（出现的问题）
+
+
+3.2.1.1 缺少 CMakeLists.txt 文件
+
+由于在编译时不知道是编译的那个文件，同时知道 .whl 文件与 .rar 文件一样，安装和解压类似。所以先找安装文件opencv_python-4.0.1+contrib-cp36-cp36m-win_amd64.whl 练练手。
+
+先将 opencv_python-4.0.1+contrib-cp36-cp36m-win_amd64.whl 文件后缀改为 .rar ，解压后，导入CMake 文件输入路径中，随便输入一个保存路径。点击 Configure 。结果报错！缺少 CMakeList.txt 文件。
+
+
+3.2.1.2 对比安装前后文件
+
+是不是安装后的文件比安装文件增加了 CMakeLists.txt 文件，所以造成 " 练手 “ 失败。
+
+打开 Everything 软件 --> 键入CMakeLists.txt
+
+发现CMakeList.txt 只存在于 tensorflow 中，安装的 opencv 中压根没有。
+
+
+3.2.1.2 查找源文件
+
+既然其他文件中存在，而 opencv_contrib_python 中没有，那把 tensorflow 文件中的 CMakeLists.txt 拷贝到 opencv_contrib_python 中是否可行 ？逐一打开CMakeLists.txt 文件，发现内容 “ 非常丰富 ” ，文件存在又多，肯定不是 “ 上上签 ” ；继续踏上“ 征途 ”。
+
+打开 opencv 的官方网站 GitHub 。我们发现包含有 CMakeList.txt 文件。惊喜大门缓缓开启！
+
+
+3.2.2 编译（失败）
+
+开始就编译 3.2.2.1 opencv-4.0.0-vc14_vc15.exe 解压文件 和3.2.2.2 opencv-4.0.0.zip 解压文件，均失败。这个失败可能不是文件本身造成的，很有可能刚开始 CMake 编译，有些该注意的地方没注意造成的，基于失败的经验，开始编译GitHub 下载的 opencv 和 opencv_contrib 文件。历经波折、终于可以使用了。
+
+
+3.2.2.1 opencv-4.0.0-vc14_vc15.exe
+
+解压后文件分为
+
+简单地说
+
+build - 其可以直接被使用的，属于成品。将其 “ (D:\Software安装目录) \ opencv ( 解压文件后的根目录 ) \ build \ python \ cv2 \ python-3.6 ” 文件夹中的 cv2.cp36-win_amd64.pyd 文件直接拷贝到 “ (C:\Users\***\AppData\Local\Programs  Python程序的安装目录) \ Python \ Python36 \ Lib \ site-packages ” 文件夹中即可实现 opencv 的使用。
+
+sources - 不能直接作为程序直接使用，属于半成品。打开这个文件夹，可以看到 CMakeLists.txt 文件，而 build 文件中没有该文件。这说明sources 文件中的内容可被 CMake 工具编译。
+
+
+3.2.2.2 opencv-4.0.0.zip
+
+该文件解压后，也含有 CMakeLists.txt 文件，其实仔细对比 3.2.2.1 opencv-4.0.0-vc14_vc15.exe 中的 sources 文件，文件夹中的内容是一样的。
+
+
+3.2.3 编译（成功）
+
+
+3.2.3.1 打开 CMake
+
+
+3.2.3.2 首先编译基本库 opencv-master
+
+具体入下图
+
+注意：
+
+1、填入路径（browse Source） 的文件夹下必须有 CMakeList.txt 文件。
+
+对比下图，第一幅图是正确的；第二幅图是错误的，会报错。
+
+2 、输出路径是自建的，如果没有该文件夹，CMake 会帮你创建并写入相关文件。
+
+
+当在最下的窗口中出现如下图所示内容时，待变 configure 成功。
+
+此意味基本库的编译完成
+
+
+3.2.3.3 再次编译Extra modules（opencv_contrib-master）
+
+在 Search 对话框中输入 PATH  ，或直接输入 OPENCV_EXTRA_MODULES_PATH（不区分大小写），找到 OPENCV_EXTRA_MODULES_PATH 后在 Value 中填入opencv_contrib-master 的文件中的 modules 路径，否则会不成功。
+
+填入后，如下图所示
+
+点击 Configure ，继续运行。
+
+注意：
+
+在该添加地址时，一定要区分好 / \ 两个符号关系。直接复制粘贴的文件路径是 （反斜杠 \）
+
+D:\Software\opencv_contrib-master\opencv_contrib-master\modules
+
+必须将其改为（正斜杠 /）
+
+D:/Software/opencv_contrib-master/opencv_contrib-master/modules
+
+否则会报错。Windows 10 CMake | OPENCV_EXTRA_MODULES_PATH | Bug #11655
+
+CMake Error at cmake/OpenCVModule.cmake:368 (_glob_locations):
+  Syntax error in cmake code at
+
+E:/opencv_github/opencv/cmake/OpenCVModule.cmake:368
+
+when parsing string
+
+E:\opencv_github\opencv_contrib\modules
+
+Invalid character escape '\o'.
+Call Stack (most recent call first):
+  modules/CMakeLists.txt:7 (ocv_glob_modules)
+
+备注：
+
+输出路径不要改变，该图中的输出路径与上图中的输出路径不同是因为我已经编译过了（重新编译很费时间），为了截图显示效果才改变的，输出路径始终不变！！！
+
+同样出现下图，意味 Extend Modules 导入成功！
+
+
+
+3.2.3.4 Set OPENCV_ENABLE_NONFREE
+
+这个是要解决的重要事情。
+
+在 Search 栏输入OPENCV_ENABLE_NONFREE，在其值Value中点击选中即可。如下图所示
+
+选择完毕后再点击 Configure 。
+
+
+3.2.3.5 点击 Generate
+
+直到点击 Generate 才算完成。
+
+（若不进行 Generate ，× 掉 CMake，软件会问你是否保存）
+
+Generate 后暂时先不要关闭 CMake 。待 VS 编译时再关闭。
+
+
+3.2.3.6 其他
+
+有博客上说可以将 GitHub 下载的 opencv_master 和 opencv_contrib-master 解压到一个文件中进行编译，这个尝试的比较早，失败了。具体的失败原因不知道，也可能是方法可行而具体的细节没处理好造成的；但不排除这种方法本征上是行不通的。
+
+
+3.2.4 其他
+
+在 CMake 编译的过程中，看文件输出过程可知，其会自动搜寻电脑中的语言工具，如我电脑上是 python 3.6， 它会红色字体显示没有找到 python2.7，找到的是 python 。属于自动匹配吧。如果电脑上装的是 Java，CMake 编译时应该也能搜寻到的。
+
+
+4 VS 编译
+
+
+4.1 安装 VS
+
+我安装的最新版本 VS 2019 。
+
+安装 VS2019 之后，打开页面会显示 已安装 / 可用 两个选项，点击可用的最后个人版点击安装即可（由于安装过了，安装前没有截图，只能展示安装后的效果。）。
+
+点击安装后选择 C++ 桌面版，如下图所示
+
+这是我安装个人版之后为了展示效果安装的小型团体的过程步骤。首次选择只需点击 安装 即可。
+
+安装之后关闭就行了。也可以选择性打开。
+
+附：
+
+已安装
+
+可用
+
+
+4.2 文件编译
+
+一直没有关闭 CMake。点击 CMake 文件中的 Open Project 按钮。如下图所示
+
+点击后跳转到 VS 2019。关闭 CMake，有文件上这样说的，反正没成功的时候都没有关闭 CMake，最后一次把所有问题解决后也看到有这样的博文，就关闭了，具体是否与CMake 有关，不得而知。
+
+选择生成 --> 批生成。
+
+打开批生成对话框
+
+将图中选项选中，并选择 生成 或 重新生成。
+
+（没有细究 生成 和 重新生成的区别，第一次时候选择是生长，后续操作我都选择了重新生成）
+
+中间过程
+
+最后完成 生成，见下图
+
+出现这个情况，也不用惊慌，我尝试，可以使用。
+
+
+5 使用文件
+
+找到 build 文件夹，找到 cv2.cp36-win_amd64.pyd 文件，我的文件地址 D:\ Software\build\lib\python3\Release
+
+将该.pyd 文件复制到python文件的 site-packages 文件夹中即可。我的文件地址为C:\Users\***\AppData\Local\Programs\Python\Python36\Lib\site-packages
+
+此时可以正常使用 SIFT了。
+
+注意：文件夹中的 cv2.cp36-win_amd64.pyd 文件可以移动，但是编译完成的文件夹既不能修改名称也不能移动，否则会报错，找不到 CV 模块位置。
+
+
+6 参考
+
+Windows 10 CMake | OPENCV_EXTRA_MODULES_PATH | Bug #11655，解决了输入路径的正斜杠 / 与反斜杠 \ 问题
+
+win7 32位 安装opencv-python后，运行时提示 "from .cv2 import *: DLL load failed: 找不到指定的模块" 的解决办法 感觉有用，其实我没有参考
+
+VS2013+CMake+OpenCV 环境搭建 写的很好，有较多的参考内容
+
+OpenCV4.0 + OpenCV_contrib4.0编译 写的很好，有较多的参考内容
+
+【win+OpenCV3.4.1+opencv_contrib编译】SIFT错误Error: The function/feature is not implemented（表现：报异常）写的很简介，就一句话。
+
+OpenCV3.4.5 安装contrib模块 边吐槽编写
+
+Windows上使用CMake 有好多CMake的用法可以帮助理解
+
+CMake（二）—— Windows下使用CMake 有启发
+
+cmake: Visual Studio 15 2017 could not find any instance of Visual Studio 当时安装VS 2019，一直启动不了，后来才知道需要启动开发工具采用，只安装VS是不行的，它只是一个平台，比如还可以作为 python 的 IDE
+
+CMake + OpenCV3.4.1 + VS2017静态编译 当时检索到的内容，内容具有一定参考性。
+

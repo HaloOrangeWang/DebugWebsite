@@ -1,0 +1,52 @@
+1、问题记录
+
+　　工作流配置画模板的时候保存成功但是部署报错。
+
+　　IE下 activiti工作流解析xml报错 type "path" must be followed by either attribute specifications, ">" or "/>"
+
+　　Chrome和Firefox正常
+
+2、问题定位
+
+　　2.1  服务端是同一台服务器同一个实例，IE报错，谷歌没报错，先检查比对两个浏览器在服务端的报文
+
+　　　　执行：服务端比对IE请求和谷歌请求报文，内容格式基本相同。检查path标签是否闭合。
+
+　　　　结果：所有path标签都以>或/>闭合，用compare beyond比对仅是属性值的不同。内容太多，比对工具也没法很清晰的比对不同的地方。
+
+　　2.2 比对法不好比对结果，用xmlspy来校验IE下xml数据
+
+　　　　
+
+　　　　结果：IE的xml中svg的属性marker-end和marker-start的值中有双引号嵌套双引号的情况  "url("#....")" ，下一步定位为什么IE下属性值会出现双引号
+
+　　2.3、分析WEB前端代码，找到nodevalue取值，再找到nodevalue赋值的地方
+
+　　　　
+
+　　　　
+
+　　2.4、这里可以看到markerEndUrl是没有带引号的，而调用setAttributeNS方法后，path上的属性就变成 "url("#....")"
+
+　　　　IE： "url(#....)" setAttributeNS后："url("#....")"
+
+　　　　Chrome： "url(#....)" setAttributeNS后："url(#....)"
+
+　　　　
+
+3、问题解决
+
+　　　　3.1 setAttributeNS方法初步定为是IE内核上nativecode，寻找polyfill
+
+　　　　　　结果：百度 谷歌 stackflow上没有找到很好的解决方法，转为在取值时修改双引号
+
+　　　　3.2 对marker-end和marker-start取值时特殊处理
+
+　　　　
+
+结尾：定为问题还是从报错的上下文开始定位，一开始以为是IE的编码问题，再请求部分绕了很大一圈。
+
+　　xml的问题用一些xml校验工具比较实在，类似json的数据也是
+
+　　setAttributeNS这种IE和Chrome下有差异的处理方法 ，猜测是因为（）引起，毕竟有很多场景下元素上会有 onclick="fun('aaa')"，这里不知道是不是IE做了多余的处理。     有知道准确答案的同学麻烦解惑下，谢谢~
+

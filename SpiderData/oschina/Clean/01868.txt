@@ -1,0 +1,114 @@
+在写爬取页面a标签下href属性的时候，有这样一个问题，如果a标签下没有href这个属性则会报错，如下：
+
+百度了有师傅用正则匹配的，方法感觉都不怎么好，查了BeautifulSoup的官方文档，发现一个不错的方法，如下图：
+
+官方文档链接：https://beautifulsoup.readthedocs.io/zh_CN/v4.4.0/
+
+has_attr() 这个方法可以判断某标签是否存在某属性，如果存在则返回 True
+
+解决办法：
+
+为美观使用了匿名函数
+
+soup_a = soup.find_all(lambda tag:tag.has_attr('href'))
+
+最终实现爬取页面 url 脚本如下：
+
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+# Author:Riy
+
+import time
+import requests
+import sys
+import logging
+from bs4 import BeautifulSoup
+from requests.exceptions import RequestException
+from multiprocessing import Process, Pool
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(levelname)-10s: %(message)s',
+)
+
+class down_url:
+    def download(self, url):
+        '''爬取url'''
+        try:
+            start = time.time()
+            logging.debug('starting download url...')
+            response = requests.get(url)
+            page = response.content
+            soup = BeautifulSoup(page, 'lxml')
+            soup_a = soup.select('a')
+            soup_a = soup.find_all(lambda tag:tag.has_attr('href'))
+            soup_a_href_list = []
+            # print(soup_a)
+            for k in soup_a:
+                # print(k)
+                soup_a_href = k['href']
+                if soup_a_href.find('.'):
+                    # print(soup_a_href)
+                    soup_a_href_list.append(soup_a_href)
+            print(f'运行了{time.time()-start}秒')
+        except RecursionError as e:
+            print(e)
+        return soup_a_href_list
+
+def write(soup_a_href_list, txt):
+        '''下载到txt文件'''
+        logging.debug('starting write txt...')
+        with open(txt, 'a', encoding='utf-8') as f:
+            for i in soup_a_href_list:
+                f.writelines(f'{i}\n')
+        print(f'已生成文件{txt}')
+
+def help_memo(self):
+        '''查看帮助'''
+        print('''
+        -h or --help 查看帮助
+        -u or --url  添加url
+        -t or --txt  写入txt文件
+        ''')
+
+def welcome(self):
+        '''欢迎页面'''
+        desc = ('欢迎使用url爬取脚本'.center(30, '*'))
+        print(desc)
+
+def main():
+    '''主函数'''
+    p = Pool(3)
+    p_list = []
+    temp = down_url()
+    logging.debug('starting run python...')
+    try:
+        if len(sys.argv) == 1:
+            temp.welcome()
+            temp.help_memo()
+        elif sys.argv[1] in {'-h', '--help'}:
+            temp.help_memo()
+        elif sys.argv[1] in {'-u ', '--url'} and sys.argv[3] in {'-t', '--txt'}:
+            a = temp.download(sys.argv[2])
+            temp.write(a, sys.argv[4])
+        elif sys.argv[1] in {'-t', '--txt'}:
+            print('请先输入url！')
+        elif sys.argv[1] in {'-u', '--url'}:
+            url_list = sys.argv[2:]
+            print(url_list)
+            for i in url_list:
+                a = p.apply_async(temp.download, args=(i,))
+                p_list.append(a)
+            for p in p_list:
+                print(p.get())
+        else:
+            temp.help_memo()
+
+print('输入的参数有误！')
+    except Exception as e:
+        print(e)
+        temp.help_memo()
+
+if __name__ == '__main__':
+    main()
+

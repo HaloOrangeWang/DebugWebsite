@@ -1,0 +1,31 @@
+
+起因
+
+最近产品要做一个Widget小组件，产品的要求必须安排。于是我新创建了一个OC项目，然后创建了一个Widget Extension。直接运行编译，发编译器报以下错误：
+
+ld: Assertion failed: (reconstituted == (accumulator - _options.machHeaderVmAddr())), function setFixup64, file OutputFile.cpp, line 2864.
+
+ld: Assertion failed: (reconstituted == (accumulator - _options.machHeaderVmAddr())), function setFixup64, file OutputFile.cpp, line 2864.
+
+
+解决过程
+
+查找资料在官方论坛发现了同样错误，但是没有给出解决方案。
+
+后面通过修改了项目的Projet 支持的最低版本由iOS 15 改为iOS14可以编译通过。
+
+Type 'Provider' does not conform to protocol 'IntentTimelineProvider'
+
+Cannot find 'ConfigurationIntent' in scope
+
+导致Xcode自动生成的是CNConfigurationIntent.swift，该文件路径是：
+
+/Users/用户名/Library/Developer/Xcode/DerivedData/项目名称/Build/Intermediates.noindex/项目名称.build/Debug-iphonesimulator/widget的名称Extension.build/DerivedSources/IntentDefinitionGenerated/widget的名称/CNConfigurationIntent.swift
+
+因为项目主工程是OC，我们在Widget中创建了两个OC文件与桥接文件CNHotWidget-Bridging-Header后，编译发现又开始报错。
+
+Type 'Provider' does not conform to protocol 'IntentTimelineProvider'
+Cannot find 'CNConfigurationIntent' in scope
+
+解决这个问题，需要我们在桥接文件CNHotWidget-Bridging-Header中引入#import "CNConfigurationIntent.h"。
+

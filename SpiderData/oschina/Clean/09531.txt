@@ -1,0 +1,16 @@
+在没有配置数据库的时候， 直接启动springBoot 项目 会有报错
+
+Description:
+
+Failed to configure a DataSource: 'url' attribute is not specified and no embedded datasource could be configured.
+
+Reason: Failed to determine a suitable driver class
+
+这是因为springBoot 在启动的时候， spring boot默认会加载org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration类，DataSourceAutoConfiguration类使用了@Configuration注解向spring注入了dataSource bean。因为工程中没有关于dataSource相关的配置信息，当spring创建dataSource bean因缺少相关的信息就会报错。
+
+解决方法（红色字体， 是添加的东西）
+
+@SpringBootApplication(exclude={DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+
+其中exclude 表示排除， 不包含一些东西
+

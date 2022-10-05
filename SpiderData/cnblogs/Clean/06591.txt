@@ -1,0 +1,60 @@
+本文主要内容是python下opencv库的安装过程，涉及我在安装时遇到的问题，并且，将从网上搜集并试用的一些解决方案进行了简单的汇总，记录下来。
+
+由于记录的是我第一次安装opencv库的过程，所以内容涵盖可能不全面，如果有出错的地方请务必指正。下面进入主题。
+
+关于python的下载安装不再赘述，python的版本号是我们在opencv库的安装过程中需要用到的，cmd运行python可以进行查看。
+
+通常，我们使用pip命令来安装扩展库。
+
+打开cmd运行
+
+pip install opencv-python
+
+pip会自动安装最新版本的opencv-python。
+
+但有时使用该命令可能会报错，因为最新版本的opencv与你安装的python版本不一定兼容，这时可以考虑从网上下载对应版本的whl文件，将其放在python安装目录下，再使用pip命令进行离线安装。具体操作步骤如下：
+
+1.查看自己的电脑环境。
+
+以我自己为例，电脑操作系统是64位win10，python版本为3.7.0。
+
+2.下载合适的opencv版本。
+
+可以到清华大学开源软件镜像站里下载opencv-python，一定要选择和你的python版本匹配的whl文件，否则会安装失败。
+
+https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/opencv-python/
+
+例如，我下载的是opencv_python-3.4.2.17-cp37-cp37m-win_amd64.whl，其中，opencv_python指扩展库名，cp37指适配的python版本，win_amd64是电脑操作系统位数。
+
+3.离线安装。
+
+将下载好的whl文件移到python安装目录的Scripts文件夹下，打开cmd使用cd命令切换到Scripts，再使用pip命令离线安装whl文件。如：
+
+pip install opencv_python-3.4.2.17-cp37-cp37m-win_amd64.whl
+
+注意：
+
+（1）一定要离线安装，否则会出错。
+
+（2）不要更改whl的文件名。
+
+（3）安装时一定记得添上最后的.whl。
+
+安装完成后进入Python\Lib\site-packages目录下，发现多了两个文件夹：cv2和opencv_python-3.4.2.17.dist-info，这两个文件夹就是whl文件解压出来的结果。
+
+4.查看opencv是否已成功安装。
+
+运行python环境，输入
+
+import cv2
+
+如果没有报错说明安装成功，你可以通过输入cv2.__version__来查看自己安装的opencv版本。
+
+如果报错说明还有问题要解决，通常显示错误为：ImportError:DLL load fail:找不到指定模块。出现这种情况一般有以下几个原因：
+
+（1）opencv没有安装成功，可以尝试重新安装。
+
+（2）缺少MSVCP140.DLL这个模块，可以在控制面板的卸载程序中查看你的电脑是否已经安装了Visual C++2015 redistributable，如果没有请移步官网下载安装：https://www.microsoft.com/en-us/download/details.aspx?id=48145。
+
+（3）没有在你的python安装目录下运行python，比如当你直接打开cmd，在C盘下运行python，但你的python并没有安装在C盘，这时就会报错。解决方案是在“开始”菜单栏里搜索python或IDLE进入，然后import cv2；或者用cd命令切换到python安装目录下，运行python环境，再import cv2。例如我的python是安装在D盘的，切换到D盘后也不要直接运行python，而是先cd python，进入python安装目录后，再运行python。
+

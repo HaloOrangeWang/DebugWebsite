@@ -1,0 +1,160 @@
+
+前言
+
+文章首发于个人公号：可乐python说
+
+最近，需要使用 Python 实现一些自动化办公的业务，之前使用过其他的包，但存在一些局限性，于是本次选择 win32com 来实现，环境是 win10，首先我们安装 pywin32。
+
+pip install pywin32
+
+安装过程很顺利，并无异常出现，于是开心的码上 demo ，运行时居然报错了，一顿折腾后，于是就有了这篇文章。
+
+
+Demo 示例代码
+
+import win32com
+
+app = win32com.client.Dispatch('Word.Application')
+# 打开文件并展示
+app.Visible = True
+app.Documents.Open("F:\\learning\\wincom32_demo\\demo.doc")
+
+
+运行报错
+
+运行时报如下错误：
+
+File "F:/learning/wincom32_demo/win32com_demo.py", line 5, in <module>
+    app = win32com.client.Dispatch('Word.Application')
+AttributeError: module 'win32com' has no attribute 'client'
+
+Process finished with exit code 1
+
+报错信息提示 win32com 模块没有 client 属性，于是我做了如下尝试，因为之前遇到过类似的情况，我首先考虑的是版本问题，卸载、重装，反反复复。
+
+
+降低版本尝试
+
+pip install pywin32==227
+pip install pywin32==226
+pip install pywin32==225
+pip install pywin32==224
+pip install pywin32==223
+pip install pywin32==222
+...
+
+逐个降版本，依然不可行。
+
+版本降到 222 时，提示缺少 Dll 文件，那是不是相关 C++ 的依赖需要更新完善呢，我检查电脑上的 Microsoft Visual C++ 相关依赖，貌似是不够全，于是我安装了相关的依赖。
+
+
+完善 C++ 相关依赖
+
+完善前我的电脑只要 2015 版本的依赖，如下图：
+
+[图片上传失败...(image-c87c14-1597809584716)]
+
+借用完善工具 MSVBCRT_AIO_2018.05.13_X86 X64.exe，一次性完善相关依赖，傻瓜式操作，直接下一步即可，完善后结果如下：
+
+
+离线包方式安装
+
+前面尝试在命令行中安装的方式，并没有解决报错问题，现在试试离线包的方式:
+
+1、先从 pypi 下载离线包  pywin32 228 版本，下载的文件名为 pywin32-228-cp36-cp36m-win32.whl
+
+2、进入下载目录，打开命令行工具执行以下命令
+
+pip install pywin32-228-cp36-cp36m-win32.whl
+
+3、安装成功，报错仍然存在
+
+
+源码浏览
+
+在 win32com 模块中，明明可以看到 client 模块，为啥导入使用时，就会报错呢？
+
+进入 win32com 的初始化文件中 __init__.py 文件中看看 ，首先导入 其他几个模块 win32api、pythoncom
+
+import win32api, sys, os
+import pythoncom
+
+其他代码也并没有找到相关的有用信息
+
+# flag if we are in a "frozen" build.
+_frozen = getattr(sys, "frozen", 1==0)
+# pythoncom dumbly defaults this to zero - we believe sys.frozen over it.
+if _frozen and not getattr(pythoncom, "frozen", 0):
+    pythoncom.frozen = sys.frozen
+
+# Add support for an external "COM Extensions" path.
+#  Concept is that you can register a seperate path to be used for
+#  COM extensions, outside of the win32com directory.  These modules, however,
+#  look identical to win32com built-in modules.
+#  This is the technique that we use for the "standard" COM extensions.
+#  eg "win32com.mapi" or "win32com.axscript" both work, even though they do not
+#  live under the main win32com directory.
+__gen_path__ = ''
+__build_path__ = None
+### TODO - Load _all_ \\Extensions subkeys - for now, we only read the default
+### Modules will work if loaded into "win32comext" path.
+
+def SetupEnvironment():
+    HKEY_LOCAL_MACHINE = -2147483646 # Avoid pulling in win32con for just these...
+    KEY_QUERY_VALUE = 0x1
+    # Open the root key once, as this is quite slow on NT.
+    try:
+        keyName = "SOFTWARE\\Python\\PythonCore\\%s\\PythonPath\\win32com" % sys.winver
+        key = win32api.RegOpenKey(HKEY_LOCAL_MACHINE , keyName, 0, KEY_QUERY_VALUE)
+    except (win32api.error, AttributeError):
+        key = None
+        
+    try:
+        found = 0
+        if key is not None:
+            try:
+                __path__.append( win32api.RegQueryValue(key, "Extensions" ))
+                found = 1
+            except win32api.error:
+                # Nothing registered
+                pass
+        if not found:
+            try:
+                __path__.append( win32api.GetFullPathName( __path__[0] + "\\..\\win32comext") )
+            except win32api.error:
+                # Give up in disgust!
+                pass
+    ...
+
+
+改变策略
+
+1、改变导包方式如下：
+
+# 直接导入 win32com 下的 client
+import win32com.client
+
+app = win32com.client.Dispatch('Word.Application')
+app.Visible = True
+app.Documents.Open("F:\\learning\\wincom32_demo\\demo.doc")
+
+或者（与上面效果一样）
+
+from win32com.client import Dispatch
+app = Dispatch('Word.Application')
+app.Visible = True
+app.Documents.Open("F:\\learning\\wincom32_demo\\demo.doc")
+
+2、运作成功，可正常打开准备的 Word 文件，报错消除、问题解决
+
+
+结语
+
+通过一顿折腾，总算处理了这个 bug ，bug 虐我千百遍，我待 bug 如初恋。
+
+回过头来，会发现，其实这只是一个小问题，但排查、处理起来却需要不少时间。
+
+在日常工作、生活中，不也是如此吗，在经历众多尝试仍不能成功时，不妨停下脚步，静一静、思考些许，换个角度看待问题，改变策略处理问题，也许问题就可被轻松解决。
+
+希望这次分享能给遇到类似问题的朋友一些帮助，更多相关文章请前往公号：可乐python说 ，再会。
+

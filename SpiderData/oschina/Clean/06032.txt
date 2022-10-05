@@ -1,0 +1,41 @@
+问题：想要将字典直接转为DataFrame格式时，除了字典外没有传入其他参数时，会报错 ValueError: If using all scalar values, you must pass an index
+
+import pandas as pd
+dict_data = {'name':'nxf','age':24}
+data = pd.DataFrame(dict_data)
+print(data)
+
+错误原因：直接将标称属性为value的字典转成dataframe时，需要设定index
+
+解决方法：
+
+（1）直接在创建DataFrame时设置index
+
+import pandas as pd
+dict_data = {'name':'nxf','age':24}
+data = pd.DataFrame(dict_data,index=[0])
+print(data)
+
+（2）通过from_dict函数将value为标称变量的字典转换为DataFrame对象
+
+dict_data = {'name':'nxf','age':24}
+data = pd.DataFrame.from_dict(dict_data,orient='index')
+print(data)
+
+（3）输入字典时不要让Value为标称属性，把Value转换为list对象再传入即可
+
+dict_data = {'name':['nxf'],'age':[24]}
+data = pd.DataFrame.from_dict(dict_data,orient='index').T
+print(data)
+
+（4）直接将key和value取出来，都转换成list对象
+
+dict = {'name':'nxf','age':24}
+print(list(dict.items()))
+data = pd.DataFrame(list(dict.items()))
+print(data)
+
+参考文献：
+
+【1】Python常见错误：ValueError: If using all scalar values, you must pass an index（四种解决方案）
+

@@ -1,0 +1,24 @@
+{
+    "err_msg": {
+        "text": "语法错误def async(n, base_type, timeout=None): ^ SyntaxError: invalid synta...",
+        "lines": ["title"],
+        "weight": [1]
+    },
+    "scene": {
+        "text": "python3下tomorow模块 @thread",
+        "lines": ["title"],
+        "weight": [1]
+    },
+    "solve": [
+        {
+            "text": "async是python关键字，源代码换个函数名，比如async_tm。\n\nfrom tomorrow import threads\n\ndef add_case(case_path=casepath, rule=\"test*.py\"):\n\npass\n\n@threads(5)\ndef run_case(all_case, report_path=reportpath, nth=0):\n\n'''执行所有的用例, 并把结果写入测试报告'''\n\npass",
+            "lines": [14, 16, 18, 20, 22, 23, 25, 27],
+            "weight": [1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        },
+        {
+            "text": "async是python关键字，源代码换个函数名，比如async_tm。\n\ndef async_mc(n, base_type, timeout=None):\n    def decorator(f):\n        if isinstance(n, int):\n            pool = base_type(n)\n        elif isinstance(n, base_type):\n            pool = n\n        else:\n            raise TypeError(\n                \"Invalid type: %s\"\n                % type(base_type)\n            )\n        @wraps(f)\n        def wrapped(*args, **kwargs):\n            return Tomorrow(\n                pool.submit(f, *args, **kwargs),\n                timeout=timeout\n            )\n        return wrapped\n    return decorator\n\ndef threads(n, timeout=None):\n    return async_mc(n, ThreadPoolExecutor, timeout)",
+            "lines": [29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 51, 52],
+            "weight": [1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        }
+    ]
+}

@@ -1,0 +1,49 @@
+原文链接：(1条消息) 安装pip报错Traceback (most recent call last): File "get-pip.py", line 22318, in <module> main()_festone000的专栏-CSDN博客
+
+首选说明，我全部注释了Ubuntu自带的源，全改成了aliyun的源头，并且出于F墙状态
+
+deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+
+某些源可能找不到这个 python3-distutils 包，反正至少上面这个可以找到，当前日期2019年12月27日。
+
+问题背景：
+WSL Ubuntu，自带python 3.6.7，想要安装pip环境，以便进一步安装其他环境。
+但是现在试图安装pip的过程中报错:
+
+先下载get-pip.py 文件。
+执行命令 python3 get-pip.py,报错。
+报错内容如下
+
+如下图:
+
+
+解决办法：
+
+在这个页面找到了办法。
+
+Issue with “python3 get-pip.py --user” with python 3.6.7 #43
+
+找到办法的楼层如图：
+
+于是，
+
+先执行这一条命令，sudo apt-get install python3-distutils
+
+然后得到这样一个东西 python3-distutils_3.6.9-1~18.04_all.deb
+
+再执行之前的python3 get-pip.py命令即可。
+执行后如图
+
+然后pip可用，就不上图了。
+
+然后pip可用，就不上图了。
+

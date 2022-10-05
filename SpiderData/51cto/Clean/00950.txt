@@ -1,0 +1,62 @@
+这几天兼职测试工程师，有一个WebService服务，虽然SoapUI提供了很好的WS服务测试功能，但是作为一个有理想有追求的程序员，怎么可以放弃任何一个写代码的机会呢，于是，一个用python写自动化测试脚本的我就诞生了。
+
+SoapUI的官网 https://www.soapui.org/  里面也有源码，有兴趣的可以研究一下WS调用的内部原理。
+
+suds是一个基于SOAP的python客户端，可以实时地读取wsdl的内容，进而可以调用wsdl里定义的WebService服务，就可以满足我测试的需求啦（当然它不只是用来做测试的）
+
+首先要安装suds，可以通过pip来安装这个模块
+
+pip install suds
+
+完成安装后就可以在python代码里通过import suds使用相关的功能。
+
+常规的使用方法
+
+简单类型的参数可以直接传递，比如string，boolean，int
+
+比如下面调用doSomething服务方法
+
+复杂对象类型需要通过client提供的工厂方式来生成
+
+比如
+
+上面的simpleService是自己写的例子，用来说明suds的简单使用。
+
+那么问题来了，实际测试的WebService中定义了多个schema，每个schema拥有不同的并且定义的类型之间互相嵌套，比如：
+
+ns0中定义了A类型的对象，ns1中定义了B类型的对象， 且A对象中有一个属性是B类型的
+
+Class A {
+
+private Class B;
+
+}
+
+通过client.factory.create(‘ns0:A’)构造A对象，报以下错误：
+
+An error occured while building a instance of (ns3:A).  As a result
+
+the object you requested could not be constructed.  It is recommended
+
+that you construct the type manually using a Suds object.
+
+Please open a ticket with a description of this error.
+
+Reason: Type not found: ‘(B, http://****************, )'
+
+刚开始以为是B在wsdl里没有定义，后来用client.factory.create(‘ns1:B’)来创建B对象是成功的。
+
+搜了很多资料都只是关于怎么使用suds的，没有提及这个问题，苦思冥想，后来突然看到wsdl里<wsld:types>标签下定义了很多个schema，怀疑是不是跨schema引用会找不到类型，所以报了TypeNotFound。于是去找了官方文档，https://fedorahosted.org/suds/
+
+发现创建client对象的方法中有一个options参数，里面有一个bool类型的值autoblend
+
+文档的说明是Flag that ensures that the schema(s) defined within the WSDL import each other.
+
+意思是说这个参数是使得wsdl中定义的schema互相引入，所以可能之前的猜测是正确的
+
+带着试一试的心态改了代码 client = suds.client.Client(url, autoblend = True)
+
+Bingo！成功。
+
+总结：归根接地是没有好好理解WebService的原理和机制，尤其是对WSDL内容的不熟悉，导致了没有第一时间意识到问题所在。有空好好研究一下WSDL的解析原理，以及为什么会有schema相互引入这么一回事儿。
+

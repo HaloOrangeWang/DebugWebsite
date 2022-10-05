@@ -1,0 +1,61 @@
+新增了个文件store.js:
+
+//本地存储的工具库
+if(!window.localStorage){
+	alert('你的浏览器不支持localStorage');
+}
+var store ={
+	setItem(key,value){
+		window.localStorage.setItem(key,JSON.stringify(value));
+	},
+	getItem(key){
+		return JSON.parse(window.localStorage.getItem(key));
+	},
+	removeItem(key){
+		window.localStorage.removeItem(key);
+	}
+}
+
+export default store;
+
+　　
+
+页面报错:
+NuxtServerError
+render function or template not defined in component: anonymous
+
+注释掉if语句就没有问题了：
+
+//本地存储的工具库
+// if(!window.localStorage){
+// 	alert('你的浏览器不支持localStorage');
+// }
+var store ={
+	setItem(key,value){
+		window.localStorage.setItem(key,JSON.stringify(value));
+	},
+	getItem(key){
+		return JSON.parse(window.localStorage.getItem(key));
+	},
+	removeItem(key){
+		window.localStorage.removeItem(key);
+	}
+}
+
+export default store;
+
+　由于nuxt服务端渲染，会出现：
+
+
+Window is not defined
+
+我自己在defalut.vue里用window的时候出现这个错误。
+
+解决这个，就要：
+
+if (process.browser) {
+//这里有window对象
+}
+
+　　
+

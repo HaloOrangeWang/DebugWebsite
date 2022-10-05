@@ -1,0 +1,71 @@
+1、解压源码包
+
+2、配置源码包
+./configure
+
+3、编译和安装源码包
+make && make install
+
+问题一、在编译和安装的过程中报错
+ModuleNotFoundError: No module named '_ctypes'
+
+原因：其实是缺少了一个新需要的开发包libffi-devel，安装后即可
+
+解决的方法：
+
+yum install libffi-devel -y
+
+问题二、在使用pip 安装模块时遇到以下问题：
+
+利用pip命令安装一些模块时，遇到的报错信息如下：
+
+pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+
+python 3.7 及以后的版本，在源码编译安装python时，需要修改源代码
+
+python3.7 以后的版本需要先修改源码包里面的Setup文件再编译
+解决的方法是：
+安装 python的时候修改了源码包里面的
+Modules/Setup.dist
+Modules/Setup
+这2个文件，解除了下面代码的注释，并将SSL路径制定为新版本openssl的安装路径
+```{.line-numbers}
+_socket socketmodule.c
+SSL=/usr/local/openssl
+_ssl _ssl.c -DUSE_SSL -I$(SSL)/include -I$(SSL)/include/openssl -L$(SSL)/lib -lssl -lcrypto
+```
+
+原因：
+
+1、openssl 没有安装，或都安装的版本低，python3.7 要求openssl 的版本要在1.0.1以上
+
+可以通过源码安装的方式把openssl 的版本升级到1.0.1以上，我安装的是1.1.1
+
+2、可能是openssl-devel 没有安装。
+
+可以用rpm -q 来检查
+
+解决的方法：
+
+1、安装openssl以后，还需要把python3.7 进行重新编译，而且在配置的过程中要加上--with-openssl=DIR (openssl的安装目录，我安装的openssl 是放在了/usr/local/openssl)
+
+重新配置：
+
+./configure  --enable-optimizations  --with-openssl=/usr/local/openssl
+
+重新编译安装：
+
+make && make install
+
+2、测试
+
+cmd 窗口
+
+python3 进入python
+
+import ssl  没有报错说明安装ssl好了
+
+pip 安装模块也不会再报找不到SSL 模块了。
+
+安装python 前需要安装一些依赖包：
+

@@ -1,0 +1,65 @@
+1.安装anaconda--方便更改环境
+
+
+Anacond下载
+
+下载地址：https://www.anaconda.com/download/
+
+安装:两个选项全部勾选
+
+测试安装是否成功：
+
+用管理员模式打开cmd输入 conda --version
+
+
+管理虚拟环境
+
+创建名为tensorflow1的环境，Python版本为3.5：
+
+conda create -n tensorflow1 python=3.5
+
+激活conda环境：
+
+activate tensorflow1
+
+安装tensorflow：安装的是cpu版本
+
+pip install tensorflow
+
+下载并安装pycharm2018
+
+2018中使用conda环境：
+
+找到conda创建的环境的位置，添加该环境下的python.exe
+
+代码测试：
+
+import tensorflow as tf
+
+hello = tf.constant('hello,tensorf')
+sess = tf.Session()
+print(sess.run(hello))
+
+问题：由于所用的TensorFlow版本为2.0，使用
+
+sess = tf.Session()
+
+会报错：
+
+sess = tf.Session()
+AttributeError: module 'tensorflow' has no attribute 'Session'
+
+修改方式：源代码改为
+
+sess = tf.compat.v1.Session()
+
+更改回可能还会报错：
+
+需要在开头添加代码：
+
+tf.compat.v1.disable_eager_execution()
+
+　　总结：最后成功的代码为
+
+　　
+

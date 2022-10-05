@@ -1,0 +1,24 @@
+tensorflow.python.framework.errors_impl.InvalidArgumentError: Feature: input_ids0 (data type: int64) is required but could not be found. [[{{node ParseSingleExample/ParseSingleExample}}]] [[node IteratorGetNext (defined at /usr/local/lib/python3.5/dist-packages/tensorflow_estimator/python/estimator/util.py:110) ]]
+
+　　
+
+错误原因 tfrecord写读不一致
+
+原代码：
+
+features[f'input_ids{i}'] = tf.train.Feature(
+        int64_list=tf.train.Int64List(value=list(input_ids.astype(np.int64))))
+
+我错改为：
+
+features['input_ids{i}'] = tf.train.Feature(
+        int64_list=tf.train.Int64List(value=list(input_ids.astype(np.int64))))
+
+
+直接去掉 features[f'input_ids{i}']的‘f’，导致本来是循环的里面的index的‘i’成为str而不是变量了
+
+报错修改后：
+
+features['input_ids%d' % (i)] = tf.train.Feature(
+        int64_list=tf.train.Int64List(value=list(input_ids.astype(np.int64))))
+

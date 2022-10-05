@@ -1,0 +1,51 @@
+
+异常处理
+
+
+认识异常
+
+　　异常是一个事件，该事件会在程序执行过程中发生，一般情况下，在python中无法处理程序时就会发生异常，当Python脚本发生异常时，我们需要捕获并处理异常，否则程序就会终止执行
+
+　　try:
+
+　　　　可能会出错的语句
+
+　　except Exception as e:
+
+　　　　异常处理
+
+
+处理异常
+
+　　常见的错误和异常：
+
+　
+
+a=[12,14,1,5,28,"a",6,25]
+
+for i in a:
+    print("---",i)
+    try:                    #可能会报错或出现异常的代码
+        print(3/i)
+    except Exception as e:    #捕获异常,Exception就是捕获到的异常对象
+        print("出现错误,错误是:",e)    #出现异常时执行的语句
+    else:                    #没有出现异常
+        print("正常")    
+    finally:                #无论是否有异常，都会执行的语句,一般用来释放资源
+        print("--本次结束")
+
+
+抛出自定义异常
+
+def modPwd(pwd):
+    if len(pwd)<8:
+        ex=Exception("密码不能低于8位数")
+        raise ex      #抛出异常
+    else:
+        print("密码设置成功")
+
+try:
+    modPwd("123456")
+except Exception as e:    #捕获异常
+    print("错误:",e)
+

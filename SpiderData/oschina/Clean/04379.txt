@@ -1,0 +1,34 @@
+To Json的关键字主要功能是将Python字典和Json格式进行互相转换，
+
+参数说明：
+
+content   被转换的对象
+        pretty_print 默认是false，将Content 从Json转换为字典类型，如果定义为true，将Content从字典类型转换为Json
+
+这个关键字主要是使用Python的Json类库两个方法，dumps方法（将字典转换为Json），loads方法（将Json转换为字典）。
+
+这样问题就来了，在需要使用To_Json将字典转换为JSON时，就给pretty_print赋值为True。在关键字源码中判断pretty_print为True时，会调用_json_pretty_print。
+
+_json_pretty_print代码：
+
+def _json_pretty_print(self, content):
+        """ Pretty print a JSON object
+        
+        'content'  JSON object to pretty print
+        """
+        temp = json.loads(content)
+        return json.dumps(temp, sort_keys=True, indent=4, separators=(',', ': '))
+
+可以看到_json_pretty_print方法中会先将content先进行loads方法，但content当前不是Json对象的，就会报错：TypeError: expected string or buffer
+
+临时解决办法，把_json_pretty_print修改为：
+
+def _json_pretty_print(self, content):
+        """ Pretty print a JSON object
+        
+        'content'  JSON object to pretty print
+        """
+        return json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
+
+这样to_json关键字当pretty_print=true，会将字典类型的content转换为Json对象
+

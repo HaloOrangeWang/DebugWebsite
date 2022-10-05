@@ -1,0 +1,106 @@
+
+问题描述
+
+问题的起因来自于一段正则替换。为了从一段HTML代码里面提取出正文，去掉所有的HTML标签和属性，可以写一个Python函数：
+
+import re
+
+def remove_tag(html):
+    text = re.sub('<.*?>', '', html, re.S)
+    return text
+
+这段代码的使用了正则表达式的替换功能re.sub。这个函数的第一个参数表示需要被替换的内容的正则表达式，由于HTML标签都是使用尖括号包起来的，因此使用<.*?>就可以匹配所有<xxx yyy="zzz">和</xxx>。
+
+第二个参数表示被匹配到的内容将要被替换成什么内容。由于我需要提取正文，那么只要把所有HTML标签都替换为空字符串即可。第三个参数就是需要被替换的文本，在这个例子中是HTML源代码段。
+
+至于re.S，在4年前的一篇文章中我讲到了它的用法：Python正则表达式中的re.S。
+
+现在使用一段HTML代码来测试一下：
+
+import re
+
+def remove_tag(html):
+    text = re.sub('<.*?>', '', html, re.S)
+    return text
+
+source_1 = '''
+<div class="content">今天的主角是<a href="xxx">kingname</a>，我们掌声欢迎！</div>
+'''
+
+text = remove_tag(source_1)
+print(text)
+
+运行效果如下图所示，功能完全符合预期
+
+再来测试一下代码中有换行符的情况：
+
+import re
+
+def remove_tag(html):
+    text = re.sub('<.*?>', '', html, re.S)
+    return text
+
+source_2 = '''
+<div class="content">
+    今天的主角是
+    <a href="xxx">kingname</a>
+    ，我们掌声欢迎！
+</div>
+'''
+text = remove_tag(source_2)
+print(text)
+
+运行效果如下图所示，完全符合预期。
+
+经过测试，在绝大多数情况下，能够从的HTML代码段中提取出正文。但也有例外。
+
+
+例外情况
+
+有一段HTML代码段比较长，内容如下：
+
+<img></span><span>遇见kingname</span></a ><a  ><span class='url-icon'>< img '></span><span >温柔</span></a ><a  ><span >#青南#</span></a > <br />就在这里…<br />我的小侯爷呢？？？
+
+运行效果如下图所示，最后两个HTML标签替换失败。
+
+一开始我以为是HTML里面的空格或者引号引起的问题，于是我把HTML代码进行简化：
+
+<img></span><span>遇见kingname</span></a><a><span><img></span><span>温柔</span></a><a><span>#青南#</span></a><br/>就在这里…<br/>我的小侯爷呢
+
+问题依然存在，如下图所示。
+
+而且更令人惊讶的是，如果把第一个标签<img>删了，那么替换结果里面就少了一个标签，如下图所示。
+
+实际上，不仅仅是删除第一个标签，前面任意一个标签删了都可以减少结果里面的一个标签。如果删除前面两个或以上标签，那么结果就正常了。
+
+
+答疑解惑
+
+这个看起来很奇怪的问题，根本原因在re.sub的第4个参数。从函数原型可以看到：
+
+def sub(pattern, repl, string, count=0, flags=0)
+
+第四个参数是count表示替换个数，re.S如果要用，应该作为第五个参数。所以如果把remove_tag函数做一些修改，那么结果就正确了:
+
+def remove_tag(html):
+    text = re.sub('<.*?>', '', html, flags=re.S)
+    return text
+
+那么问题来了，把re.S放在count的位置，为什么代码没有报错？难道re.S是数字？实际上，如果打印一下就会发现，re.S确实可以作为数字：
+
+>>> import re
+>>> print(int(re.S))
+16
+
+现在回头数一数出问题的HTML代码，发现最后多出来的两个<br>标签，刚刚好是第17和18个标签，而由于count填写的re.S可以当做16来处理，那么Python就会把前16个标签替换为空字符串，从而留下最后两个。
+
+至此问题的原因搞清楚了。
+
+这个问题没有被及早发现，有以下几个原因：
+
+被替换的HTML代码是代码段，大多数情况下HTML标签不足16个，所以问题被隐藏。
+
+re.S是一个对象，但也是数字，count接收的参数刚好也是数字。在很多编程语言里面，常量都会使用数字，然后用一个有意义的大写字母来表示。
+
+re.S 处理的情况是<div class="123" \n> 而不是<div class="123">\n</div>但测试的代码段标签都是第二种情况，所以在代码段里面实际上加不加re.S效果是一样的。
+

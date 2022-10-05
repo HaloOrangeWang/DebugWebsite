@@ -1,0 +1,47 @@
+今天终于把python中蛋疼的编码问题整明白了记录下,和大家分享一下
+
+对于python2 系统默认编码是ASCII ,不支持中文的,如果出现中文就报错SyntaxError: Non-ASCII character ,所以需要指定# -*- coding:utf-8 -*-   指定后文件编码就变成了UTF-8,这样的话假如终端编码也是UTF-8,那么输出没问题
+
+如果终端编码是gbk,那么输出是乱码 ,解决方式要先解码为unicode然后再编码为终端编码gbk
+
+# -*- coding:utf-8 -*-
+
+s = '人生苦短'
+print s.decode('utf-8').encode("gbk")
+
+注意在decode()时一定要指定由什么方式来解码,如果不指定python2默认以系统编码asci去解码 这样的话就会报错UnicodeDecodeError: 'ascii' codec can't decode byte 0xe4
+
+如果上述直接写s.encode(''gbk")那么Python2就会以系统编码asci先去解码那样就会报错
+
+总结python2 先要decode("指定编码") 先转换成unicode码 然后再encode("编码")成你想要的编码 这样乱码问题就解决了,还有一种方式就是不用decode()或者在decode()不指定编码那么还想让python系统不以asci解码就要设置默认的系统编码通过sys这个模块
+
+# -*- coding:utf-8 -*-
+
+所以python2中字符串的两种数据类型是str 和unicode
+
+=============================================
+
+在python3中 字符串的两种数据类型是str 和bytes
+
+python3文件编码默认是utf-8  通过sys.getdefaultencoding() 可以看到 ,但是文件里的数据编码其实是unicode编码 证明这一点的方法就是假设在代码中 s = '人生苦短' print(s)   在windows下cmd终端编码先设置成gbk那么在终端打印时应该是乱码才对
+
+因为代码里是utf-8 终端是gbk肯定是乱码,但是出乎意料的是在终端可以正常显示并没有乱,那这一点就可以说明Python3中默认编码是unicode编码并不是utf-8 所以在python3中对于中文来说不管在什么平台下都不用去编码解码了因为unicde万国通用码它本身就支持中文
+
+但是如果非要编码也可以,但是发现如果编码了显示的是bytes类型的数据了
+
+In [1]: a = '人生苦短'
+
+In [2]: a.encode('utf-8')
+Out[2]: b'\xe4\xba\xba\xe7\x94\x9f\xe8\x8b\xa6\xe7\x9f\xad'
+
+这时还想将bytes类型的数据转换成字符串就需要
+
+In [4]: a.encode('utf-8').decode('utf-8')
+Out[4]: '人生苦短'
+
+发现python3中encode的时候会编码为bytes型数据
+
+decode()的时候会解码为str型数据
+
+总结:python3中默认编码就是unicode码不管你在哪个平台下输出都不会乱码就不用再去手动编码解码了
+

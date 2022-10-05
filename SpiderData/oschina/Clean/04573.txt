@@ -1,0 +1,31 @@
+环境：python2.7 13 +selenium (3.4.3)
+
+报错如下：
+ Traceback (most recent call last):
+   File "TestStart.py", line 17, in <module>
+   File "DataDrawout.pyo", line 10, in <module>
+   File "PackFunction.pyo", line 3, in <module>
+   File "selenium\webdriver\__init__.pyo", line 18, in <module>
+   File "selenium\webdriver\firefox\webdriver.pyo", line 34, in <module>
+   File "selenium\webdriver\remote\webdriver.pyo", line 25, in <module>
+   File "selenium\webdriver\remote\webelement.pyo", line 40, in <module>
+   File "pkgutil.pyo", line 591, in get_data
+ IOError: [Errno 2] No such file or directory: 'selenium\\webdriver\\remote\\getAttribute.js'
+
+解决方法：
+ C:\Python27\Lib\site-packages\selenium\webdriver\remote\webelement.py中
+ getAttribute_js = pkgutil.get_data(__package__, 'getAttribute.js').decode('utf8')
+ isDisplayed_js = pkgutil.get_data(__package__, 'isDisplayed.js').decode('utf8')
+
+修改为：
+ import sys
+
+frozen = getattr(sys, 'frozen', '')
+ if not frozen:
+     getAttribute_js = pkgutil.get_data(__package__, 'getAttribute.js').decode('utf8')
+     isDisplayed_js = pkgutil.get_data(__package__, 'isDisplayed.js').decode('utf8')
+ else:
+     approot = os.path.dirname(sys.executable)
+     getAttribute_js = open(os.path.join(approot, 'getAttribute.js'), 'rb').read().decode('utf8')
+     isDisplayed_js = open(os.path.join(approot, 'isDisplayed.js'), 'rb').read().decode('utf8')
+

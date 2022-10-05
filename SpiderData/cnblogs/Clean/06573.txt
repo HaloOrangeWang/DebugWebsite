@@ -1,0 +1,12 @@
+说明docker环境不支持中文输出,可以进入容器创建一个中文文件夹,判断是否为?????
+
+如果确认直接在dockerfile中添加如下参数即可
+
+RUN yum install kde-l10n-Chinese -y
+
+RUN yum install glibc-common -y
+
+RUN localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
+
+ENV LC_ALL zh_CN.UTF-8
+

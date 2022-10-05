@@ -1,0 +1,23 @@
+报错情况  点击跳转路由时，重复点击
+
+
+Avoided redundant navigation to current location: "/".
+
+大致意思： 避免重复跳转至同一个路由"/"
+
+查资料发现解决的办法有两种：
+
+1.vue-router版本高了，会报这个错误，可以装低版本的路由，例如vue-router@3.0
+
+2.就是我下面的解决办法，在router的index.ts中重写push方法，抛出错误即可，用replace写的跳转就重写replace方法就行。
+
+//解决重复路由跳转报错
+
+const originalPush = VueRouter.prototype.push
+
+VueRouter.prototype.push = function push (location) {
+
+return (originalPush.call(this, location) as any).catch(err => err)
+
+}
+

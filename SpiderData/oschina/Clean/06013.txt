@@ -1,0 +1,44 @@
+批量更新sql
+
+<update id="updateAutoAppraiseInfo" parameterType="Object">
+ <foreach collection="appraises" item="appraise" index="appraises" separator=";">
+ UPDATE project_auto_appraise SET
+ <trim suffixOverrides=",">
+ <if test="appraise.artificialValuation != null and appraise.artificialValuation != '' ">
+ artificial_valuation=#{appraise.artificialValuation},
+ </if>
+ <if test="appraise.difference != null and appraise.difference != ''">
+ difference=#{appraise.difference},
+ </if>
+ <if test="appraise.remark != null and appraise.remark != ''">
+ remark=#{appraise.remarks},
+ </if>
+ </trim>
+ WHERE sum_project_id=#{sumProjectId} AND media_code = #{appraise.mediaType}
+ </foreach>
+ </update>
+
+看起来并没有什么问题，但是运行会发现报错，错误信息如下
+
+org.springframework.jdbc.BadSqlGrammarException: 
+### Error updating database. Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UPDATE project_auto_appraise SET
+ artificial_valuation=201 
+ WHERE sum_proj' at line 5
+### The error may involve com.jd.dlink.dao.mapper.project.ProjectAutoAppraiseMapper.updateAutoAppraiseInfo-Inline
+### The error occurred while setting parameters
+### SQL: UPDATE project_auto_appraise SET artificial_valuation=? WHERE sum_project_id=? AND media_code = ? ; UPDATE project_auto_appraise SET artificial_valuation=? WHERE sum_project_id=? AND media_code = ?
+### Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UPDATE project_auto_appraise SET
+ artificial_valuation=201 
+ WHERE sum_proj' at line 5
+; bad SQL grammar []; nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UPDATE project_auto_appraise SET
+ artificial_valuation=201 
+ WHERE sum_proj' at line 5
+
+调试之后，发现只要传一个值进去就没有问题，就是list的成员只有一个。就想着是数据库配置的问题
+
+将数据库配置修改为 jdbc.url=jdbc:mysql://127.0.0.1:3306/datebase?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&allowMultiQueries=true
+
+新增了 &allowMultiQueries=true 意为 允许批量更新
+
+就 ok 了
+

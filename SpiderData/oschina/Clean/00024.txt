@@ -1,0 +1,57 @@
+问题描述:
+
+已经安装的Python版本为3.6.1, 在公司网络环境运行.
+
+CMD中安装第三方模块pyperclip时候, 报错'No matching distribution found for pyperclip'.
+
+如下:
+
+C:\Users\Csnow\AppData\Local\Programs\Python\Python36\Scripts>pip install py
+perclip
+Collecting pyperclip
+  Retrying (Retry(total=4, connect=None, read=None, redirect=None)) after connec
+tion broken by 'ConnectTimefoutError(<pip._vendor.requests.packages.urllib3.conne
+ction.VerifiedHTTPSConnection object at 0x0000000003BB5A20>, 'Connection to pypi
+.python.org timed out. (connect timeout=15)')': /simple/pyperclip/
+  Retrying (Retry(total=3, connect=None, read=None, redirect=None)) after connec
+tion broken by 'ConnectTimeoutError(<pip._vendor.requests.packages.urllib3.conne
+ction.VerifiedHTTPSConnection object at 0x0000000003BB5B70>, 'Connection to pypi
+.python.org timed out. (connect timeout=15)')': /simple/pyperclip/
+  Retrying (Retry(total=2, connect=None, read=None, redirect=None)) after connec
+tion broken by 'ConnectTimeoutError(<pip._vendor.requests.packages.urllib3.conne
+ction.VerifiedHTTPSConnection object at 0x0000000003BB5C18>, 'Connection to pypi
+.python.org timed out. (connect timeout=15)')': /simple/pyperclip/
+  Retrying (Retry(total=1, connect=None, read=None, redirect=None)) after connec
+tion broken by 'ConnectTimeoutError(<pip._vendor.requests.packages.urllib3.conne
+ction.VerifiedHTTPSConnection object at 0x0000000003BB5860>, 'Connection to pypi
+.python.org timed out. (connect timeout=15)')': /simple/pyperclip/
+  Retrying (Retry(total=0, connect=None, read=None, redirect=None)) after connec
+tion broken by 'ConnectTimeoutError(<pip._vendor.requests.packages.urllib3.conne
+ction.VerifiedHTTPSConnection object at 0x0000000003BB54E0>, 'Connection to pypi
+.python.org timed out. (connect timeout=15)')': /simple/pyperclip/
+  Could not find a version that satisfies the requirement pyperclip (from versio
+ns: )
+No matching distribution found for pyperclip
+
+解决思路:
+
+使用ping命令发现所有包都timeout, 说明可能防火墙拦截, CMD数据传输没通过网页浏览器的proxy.
+
+更换网络连接, 选择不经过公司防火墙的网络(例如手机热点), 问题解决, pip成功安装且出现升级提示.
+
+C:\Users\Csnow\AppData\Local\Programs\Python\Python36\Scripts>pip install py
+perclip
+Collecting pyperclip
+  Downloading pyperclip-1.6.0.tar.gz
+Installing collected packages: pyperclip
+  Running setup.py install for pyperclip ... done
+Successfully installed pyperclip-1.6.0
+You are using pip version 9.0.1, however version 9.0.3 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' comm
+and.
+
+Python IDLE中运行导入该模块的命令成功(没有出现报错).
+
+>>> import pyperclip
+>>>
+

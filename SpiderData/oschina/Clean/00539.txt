@@ -1,0 +1,56 @@
+　　Python的错误异常在大部分IDE编辑器中则可以直接显示出来，便于开发人员的调试及修改工作，对初学者也比较友好。
+
+　　Python中包含错误和异常两种情况，错误主要是常见的语法错误SyntaxError，并且在错误提示中会有倒三角箭头的修改指示位置；python中的另外一种错误提醒叫做异常，指的是在语法和表达式上并没有错误，运行时会发生错误的情况。在python中，语法错误是直接显示在相关终端窗口，而异常可以进行错误提示，也可以进行捕捉处理。
+
+1 ##如下方代码不完整，则会报出语法错误的提示
+2 def foo:
+3     
+4     #下方为内容错误的信息提示
+5     def foo:
+6     
+7     SyntaxError: invalid syntax
+
+　　因为在程序执行时，异常报错提示可能会影响到输出结果的显示，此时就可以使用try:...except:...进行异常处理，将错误直接输出打印，而不是以报错的形式显示。在python中有很多不同的异常提示方法，官方成为异常类，所有异常类都基于BaseException。大家也可以在官方文档中查看详细的继承关系图，在一般处理异常的情况下，大多使用Exception与其子类异常，如下就是使用Exception输出程序执行异常的代码示例。
+
+1 try:
+2     #被除数不能为0，相关错误类型为ZeroDivisionError
+3     print(1/0)
+4 #使用Exception可以将错误信息直接输出
+5 except Exception as e:
+6     print(e)
+
+　　使用Exception下的NameError代码示例：
+
+1 try:
+2     print(a)
+3 except NameError as n:
+4     print(n)
+
+　　还有一些异常错误信息是模块中自带的错误，比如urllib.error中的HTTPError和URLError，以及json中的JSONDecodeError等。查看底层实现源码可以看出这些异常也是基于Exception，相当于这些模块主动抛出一个自定义的异常信息，所以也是可以通过Exception进行输出。
+
+　　既然在模块可以从代码中实现主动抛出异常错误信息，那我们也可以根据自己的需求去抛出相应的异常提示信息。这时候就使用到了raise，代码示例如下，我们可以在raise中添加一个基类，紧挨基类去添加一个关于异常信息的提示，提示内容可以为汉语，但是尽量不要使用。
+
+1 #raise相关用法
+2 try:
+3     aaa
+4 except BaseException as e:
+5     #raise 抛出异常，自定义错误的说明
+6     raise SyntaxError('Syntax Error') from e
+7 #输出的错误结果信息为：变量a未被定义，和主动抛出的异常及说明
+
+　　try:...except:...语句还可以结合finally进行使用，无论输出try语句中的正确代码，还是输出except中的错误信息，finally都会进行输出打印输出
+
+1 #finally的用法
+2 try:
+3     aaa
+4     print(1/1)
+5 except Exception as e:
+6     print(e)
+7 #只要有finally，无论正常执行还是报错，都会执行finally中的内容
+8 finally:
+9     print(123)
+
+　　try:...except:..除了可以使用raise抛出异常，和finally进行结合使用，还可以结合else进行使用，else用来返回输出正确信息，但正确内容大多写在try语句中，所以else并不常用；try:...except:..语句也可以根据实际情况添加多个except进行处理不同的异常信息，关于更多的用法，大家还可以通过“百度一下”学习更多内容。
+
+　　以上内容主要帮助大家使用try:...except:...处理异常的方法，如果不清楚使用哪一种异常方法，可以使用通用异常Exception，也可以在except中打印自己定义的错误信息。在出现异常的情况下程序有可能会中断执行，而使用异常处理，则可以跳过这些异常继续执行正确的代码；异常处理也可以添加自定义的错误信息，在工作中方便与同事之间的配合，这些都是使用异常处理的好处。
+

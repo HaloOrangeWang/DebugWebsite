@@ -1,0 +1,254 @@
+在使用pyinstaller的--key参数加密python文件遇到了一系列问题.
+
+执行pyinstaller.exe -key xxxx -F hellow.py,报错
+
+报错提示需要pycrypto库,运行pip install pycrypto之后出现了报错
+
+Collecting pycrypto
+  Using cached https://files.pythonhosted.org/packages/60/db/645aa9af249f059cc3a368b118de33889219e0362141e75d4eaf6f80f163/pycrypto-2.6.1.tar.gz
+Installing collected packages: pycrypto
+    Running setup.py install for pycrypto ... error
+    ERROR: Command errored out with exit status 1:
+     command: 'c:\users\xxxxxx\appdata\local\programs\python\python37\python.exe' -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'C:\\Users\\xxxxxx\\AppData\\Local\\Temp\\pip-install-h6xa5sa0\\pycrypto\\setup.py'"'"'; __file__='"'"'C:\\Users\\xxxxxx\\AppData\\Local\\Temp\\pip-install-h6xa5sa0\\pycrypto\\setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record 'C:\Users\xxxxxx\AppData\Local\Temp\pip-record-bhsyohto\install-record.txt' --single-version-externally-managed --compile
+         cwd: C:\Users\xxxxxx\AppData\Local\Temp\pip-install-h6xa5sa0\pycrypto\
+    Complete output (183 lines):
+    running install
+    running build
+    running build_py
+    creating build
+    creating build\lib.win-amd64-3.7
+    creating build\lib.win-amd64-3.7\Crypto
+    copying lib\Crypto\pct_warnings.py -> build\lib.win-amd64-3.7\Crypto
+    copying lib\Crypto\__init__.py -> build\lib.win-amd64-3.7\Crypto
+    creating build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\hashalgo.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\HMAC.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\MD2.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\MD4.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\MD5.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\RIPEMD.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\SHA.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\SHA224.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\SHA256.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\SHA384.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\SHA512.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    copying lib\Crypto\Hash\__init__.py -> build\lib.win-amd64-3.7\Crypto\Hash
+    creating build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\AES.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\ARC2.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\ARC4.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\blockalgo.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\Blowfish.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\CAST.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\DES.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\DES3.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\PKCS1_OAEP.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\PKCS1_v1_5.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\XOR.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    copying lib\Crypto\Cipher\__init__.py -> build\lib.win-amd64-3.7\Crypto\Cipher
+    creating build\lib.win-amd64-3.7\Crypto\Util
+    copying lib\Crypto\Util\asn1.py -> build\lib.win-amd64-3.7\Crypto\Util
+    copying lib\Crypto\Util\Counter.py -> build\lib.win-amd64-3.7\Crypto\Util
+    copying lib\Crypto\Util\number.py -> build\lib.win-amd64-3.7\Crypto\Util
+    copying lib\Crypto\Util\py3compat.py -> build\lib.win-amd64-3.7\Crypto\Util
+    copying lib\Crypto\Util\randpool.py -> build\lib.win-amd64-3.7\Crypto\Util
+    copying lib\Crypto\Util\RFC1751.py -> build\lib.win-amd64-3.7\Crypto\Util
+    copying lib\Crypto\Util\winrandom.py -> build\lib.win-amd64-3.7\Crypto\Util
+    copying lib\Crypto\Util\_number_new.py -> build\lib.win-amd64-3.7\Crypto\Util
+    copying lib\Crypto\Util\__init__.py -> build\lib.win-amd64-3.7\Crypto\Util
+    creating build\lib.win-amd64-3.7\Crypto\Random
+    copying lib\Crypto\Random\random.py -> build\lib.win-amd64-3.7\Crypto\Random
+    copying lib\Crypto\Random\_UserFriendlyRNG.py -> build\lib.win-amd64-3.7\Crypto\Random
+    copying lib\Crypto\Random\__init__.py -> build\lib.win-amd64-3.7\Crypto\Random
+    creating build\lib.win-amd64-3.7\Crypto\Random\Fortuna
+    copying lib\Crypto\Random\Fortuna\FortunaAccumulator.py -> build\lib.win-amd64-3.7\Crypto\Random\Fortuna
+    copying lib\Crypto\Random\Fortuna\FortunaGenerator.py -> build\lib.win-amd64-3.7\Crypto\Random\Fortuna
+    copying lib\Crypto\Random\Fortuna\SHAd256.py -> build\lib.win-amd64-3.7\Crypto\Random\Fortuna
+    copying lib\Crypto\Random\Fortuna\__init__.py -> build\lib.win-amd64-3.7\Crypto\Random\Fortuna
+    creating build\lib.win-amd64-3.7\Crypto\Random\OSRNG
+    copying lib\Crypto\Random\OSRNG\fallback.py -> build\lib.win-amd64-3.7\Crypto\Random\OSRNG
+    copying lib\Crypto\Random\OSRNG\nt.py -> build\lib.win-amd64-3.7\Crypto\Random\OSRNG
+    copying lib\Crypto\Random\OSRNG\posix.py -> build\lib.win-amd64-3.7\Crypto\Random\OSRNG
+    copying lib\Crypto\Random\OSRNG\rng_base.py -> build\lib.win-amd64-3.7\Crypto\Random\OSRNG
+    copying lib\Crypto\Random\OSRNG\__init__.py -> build\lib.win-amd64-3.7\Crypto\Random\OSRNG
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest
+    copying lib\Crypto\SelfTest\st_common.py -> build\lib.win-amd64-3.7\Crypto\SelfTest
+    copying lib\Crypto\SelfTest\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\common.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_AES.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_ARC2.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_ARC4.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_Blowfish.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_CAST.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_DES.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_DES3.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_pkcs1_15.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_pkcs1_oaep.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\test_XOR.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    copying lib\Crypto\SelfTest\Cipher\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Cipher
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\common.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_HMAC.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_MD2.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_MD4.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_MD5.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_RIPEMD.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_SHA.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_SHA224.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_SHA256.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_SHA384.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\test_SHA512.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    copying lib\Crypto\SelfTest\Hash\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Hash
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest\Protocol
+    copying lib\Crypto\SelfTest\Protocol\test_AllOrNothing.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Protocol
+    copying lib\Crypto\SelfTest\Protocol\test_chaffing.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Protocol
+    copying lib\Crypto\SelfTest\Protocol\test_KDF.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Protocol
+    copying lib\Crypto\SelfTest\Protocol\test_rfc1751.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Protocol
+    copying lib\Crypto\SelfTest\Protocol\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Protocol
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest\PublicKey
+    copying lib\Crypto\SelfTest\PublicKey\test_DSA.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\PublicKey
+    copying lib\Crypto\SelfTest\PublicKey\test_ElGamal.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\PublicKey
+    copying lib\Crypto\SelfTest\PublicKey\test_importKey.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\PublicKey
+    copying lib\Crypto\SelfTest\PublicKey\test_RSA.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\PublicKey
+    copying lib\Crypto\SelfTest\PublicKey\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\PublicKey
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest\Random
+    copying lib\Crypto\SelfTest\Random\test_random.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random
+    copying lib\Crypto\SelfTest\Random\test_rpoolcompat.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random
+    copying lib\Crypto\SelfTest\Random\test__UserFriendlyRNG.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random
+    copying lib\Crypto\SelfTest\Random\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest\Random\Fortuna
+    copying lib\Crypto\SelfTest\Random\Fortuna\test_FortunaAccumulator.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\Fortuna
+    copying lib\Crypto\SelfTest\Random\Fortuna\test_FortunaGenerator.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\Fortuna
+    copying lib\Crypto\SelfTest\Random\Fortuna\test_SHAd256.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\Fortuna    copying lib\Crypto\SelfTest\Random\Fortuna\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\Fortuna
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest\Random\OSRNG
+    copying lib\Crypto\SelfTest\Random\OSRNG\test_fallback.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\OSRNG
+    copying lib\Crypto\SelfTest\Random\OSRNG\test_generic.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\OSRNG
+    copying lib\Crypto\SelfTest\Random\OSRNG\test_nt.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\OSRNG
+    copying lib\Crypto\SelfTest\Random\OSRNG\test_posix.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\OSRNG
+    copying lib\Crypto\SelfTest\Random\OSRNG\test_winrandom.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\OSRNG
+    copying lib\Crypto\SelfTest\Random\OSRNG\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Random\OSRNG
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest\Util
+    copying lib\Crypto\SelfTest\Util\test_asn1.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Util
+    copying lib\Crypto\SelfTest\Util\test_Counter.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Util
+    copying lib\Crypto\SelfTest\Util\test_number.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Util
+    copying lib\Crypto\SelfTest\Util\test_winrandom.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Util
+    copying lib\Crypto\SelfTest\Util\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Util
+    creating build\lib.win-amd64-3.7\Crypto\SelfTest\Signature
+    copying lib\Crypto\SelfTest\Signature\test_pkcs1_15.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Signature
+    copying lib\Crypto\SelfTest\Signature\test_pkcs1_pss.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Signature
+    copying lib\Crypto\SelfTest\Signature\__init__.py -> build\lib.win-amd64-3.7\Crypto\SelfTest\Signature
+    creating build\lib.win-amd64-3.7\Crypto\Protocol
+    copying lib\Crypto\Protocol\AllOrNothing.py -> build\lib.win-amd64-3.7\Crypto\Protocol
+    copying lib\Crypto\Protocol\Chaffing.py -> build\lib.win-amd64-3.7\Crypto\Protocol
+    copying lib\Crypto\Protocol\KDF.py -> build\lib.win-amd64-3.7\Crypto\Protocol
+    copying lib\Crypto\Protocol\__init__.py -> build\lib.win-amd64-3.7\Crypto\Protocol
+    creating build\lib.win-amd64-3.7\Crypto\PublicKey
+    copying lib\Crypto\PublicKey\DSA.py -> build\lib.win-amd64-3.7\Crypto\PublicKey
+    copying lib\Crypto\PublicKey\ElGamal.py -> build\lib.win-amd64-3.7\Crypto\PublicKey
+    copying lib\Crypto\PublicKey\pubkey.py -> build\lib.win-amd64-3.7\Crypto\PublicKey
+    copying lib\Crypto\PublicKey\RSA.py -> build\lib.win-amd64-3.7\Crypto\PublicKey
+    copying lib\Crypto\PublicKey\_DSA.py -> build\lib.win-amd64-3.7\Crypto\PublicKey
+    copying lib\Crypto\PublicKey\_RSA.py -> build\lib.win-amd64-3.7\Crypto\PublicKey
+    copying lib\Crypto\PublicKey\_slowmath.py -> build\lib.win-amd64-3.7\Crypto\PublicKey
+    copying lib\Crypto\PublicKey\__init__.py -> build\lib.win-amd64-3.7\Crypto\PublicKey
+    creating build\lib.win-amd64-3.7\Crypto\Signature
+    copying lib\Crypto\Signature\PKCS1_PSS.py -> build\lib.win-amd64-3.7\Crypto\Signature
+    copying lib\Crypto\Signature\PKCS1_v1_5.py -> build\lib.win-amd64-3.7\Crypto\Signature
+    copying lib\Crypto\Signature\__init__.py -> build\lib.win-amd64-3.7\Crypto\Signature
+    Skipping optional fixer: buffer
+    Skipping optional fixer: idioms
+    Skipping optional fixer: set_literal
+    Skipping optional fixer: ws_comma
+    running build_ext
+    warning: GMP or MPIR library not found; Not building Crypto.PublicKey._fastmath.
+    building 'Crypto.Random.OSRNG.winrandom' extension
+    creating build\temp.win-amd64-3.7
+    creating build\temp.win-amd64-3.7\Release
+    creating build\temp.win-amd64-3.7\Release\src
+    D:\Visual Studio\Microsoft Visual Studio\Professional\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MT -Isrc/ -Isrc/inc-msvc/ -Ic:\users\lenovo\appdata\local\programs\python\python37\include -Ic:\users\lenovo\appdata\local\programs\python\python37\include "-ID:\Visual Studio\Microsoft Visual Studio\Professional\VC\Tools\MSVC\14.23.28105\ATLMFC\include" "-ID:\Visual Studio\Microsoft Visual Studio\Professional\VC\Tools\MSVC\14.23.28105\include" "-ID:\Windows Kits\10\include\10.0.18362.0\ucrt" "-ID:\Windows Kits\10\include\10.0.18362.0\shared" "-ID:\Windows Kits\10\include\10.0.18362.0\um" "-ID:\Windows Kits\10\include\10.0.18362.0\winrt" "-ID:\Windows Kits\10\include\10.0.18362.0\cppwinrt" /Tcsrc/winrand.c /Fobuild\temp.win-amd64-3.7\Release\src/winrand.obj
+    winrand.c
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(27): error C2061: 语法错误: 标识符“intmax_t”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(28): error C2061: 语法错误: 标识符“rem”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(28): error C2059: 语法错误:“;”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(29): error C2059: 语法错误:“}”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(31): error C2061: 语法错误: 标识符“imaxdiv_t”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(31): error C2059: 语法错误:“;”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(41): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(42): error C2146: 语法错误: 缺少“)”(在标识符“_Number”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(42): error C2061: 语法错误: 标识符“_Number”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(42): error C2059: 语法错误:“;”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(43): error C2059: 语法错误:“)”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(46): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(47): error C2146: 语法错误: 缺少“)”(在标识符“_Numerator”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(47): error C2061: 语法错误: 标识符“_Numerator”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(47): error C2059: 语法错误:“;”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(47): error C2059: 语法错误:“,”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(49): error C2059: 语法错误:“)”
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(51): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(57): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(64): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(70): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(77): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(83): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(90): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    D:\Windows Kits\10\include\10.0.18362.0\ucrt\inttypes.h(96): error C2143: 语法错误: 缺少“{”(在“__cdecl”的前面)
+    error: command 'D:\\Visual Studio\\Microsoft Visual Studio\\Professional\\VC\\Tools\\MSVC\\14.23.28105\\bin\\HostX86\\x64\\cl.exe' failed with exit status 2
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: 'c:\users\lenovo\appdata\local\programs\python\python37\python.exe' -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'C:\\Users\\LENOVO\\AppData\\Local\\Temp\\pip-install-h6xa5sa0\\pycrypto\\setup.py'"'"'; __file__='"'"'C:\\Users\\LENOVO\\AppData\\Local\\Temp\\pip-install-h6xa5sa0\\pycrypto\\setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record 'C:\Users\LENOVO\AppData\Local\Temp\pip-record-bhsyohto\install-record.txt' --single-version-externally-managed --compile Check the logs for full command output.
+
+听从网上建议,用pycryptodome代替pycrypto,使用pip安装成功
+
+然后再使用pyinstaller.exe -key xxxx -F hellow.py
+
+加密打包成功,无报错,但在运行hellow.exe时,出现了错误,如下
+
+Traceback (most recent call last):
+  File "c:\users\xxxxxx\appdata\local\programs\python\python37\lib\site-packages\PyInstaller\loader\pyimod03_importers.py", line 438, in get_code
+    return self._pyz_archive.extract(fullname)[1]
+  File "c:\users\xxxxxx\appdata\local\programs\python\python37\lib\site-packages\PyInstaller\loader\pyimod02_archive.py", line 371, in extract
+    obj = zlib.decompress(obj)
+zlib.error: Error -3 while decompressing data: incorrect header check
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "site-packages\PyInstaller\loader\pyiboot01_bootstrap.py", line 25, in <module>
+  File "c:\users\xxxxxx\appdata\local\programs\python\python37\lib\site-packages\PyInstaller\loader\pyimod03_importers.py", line 607, in exec_module
+    bytecode = self.get_code(spec.loader_state)
+  File "c:\users\xxxxxx\appdata\local\programs\python\python37\lib\site-packages\PyInstaller\loader\pyimod03_importers.py", line 440, in get_code
+    raise ImportError('Loader FrozenImporter cannot handle module ' + fullname)
+ImportError: Loader FrozenImporter cannot handle module os
+[13708] Failed to execute script pyiboot01_bootstrap
+
+初看很像是requests库数据压缩问题,后经研究发现并不是requests库问题,问题是出在了pycryptodome库上.通过一番寻找,发现了一个解决这个问题的博客
+
+(参考博客:https://blog.csdn.net/qq_16166591/article/details/100624505)
+
+pip uninstall pycryptodome,卸载pycryptodome按照该博客安装了pycrypto,安装pycrypto成功后执行pyinstaller.exe -key xxxx -F hellow.py
+
+发现仍然有报错:
+
+78 INFO: PyInstaller: 3.4
+78 INFO: Python: 3.7.4
+79 INFO: Platform: Windows-10-10.0.17763-SP0
+Traceback (most recent call last):
+  File "c:\users\xxxxxx\appdata\local\programs\python\python37\lib\runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+  File "c:\users\xxxxxx\appdata\local\programs\python\python37\lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\xxxxxx\AppData\Local\Programs\Python\Python37\Scripts\pyinstaller.exe\__main__.py", line 7, in <module>
+  File "c:\users\lenovo\appdata\local\programs\python\python37\lib\site-packages\PyInstaller\__main__.py", line 109, in run
+    spec_file = run_makespec(**vars(args))
+  File "c:\users\xxxxxx\appdata\local\programs\python\python37\lib\site-packages\PyInstaller\__main__.py", line 56, in run_makespec
+    spec_file = PyInstaller.building.makespec.main(filenames, **opts)
+  File "c:\users\xxxxxx\appdata\local\programs\python\python37\lib\site-packages\PyInstaller\building\makespec.py", line 385, in main
+    is_version_acceptable = LooseVersion(Crypto.__version__) >= LooseVersion('2.4')
+AttributeError: module 'Crypto' has no attribute '__version__'
+
+报错信息提示大意是没有发现Crypto的版本号,直接采用一个暴力一点的办法:按照错误提示,在python37\lib\site-packages\PyInstaller\building\目录中找到makespec.py文件,修改源码,将is_version_acceptable = LooseVersion(Crypto.__version__) >= LooseVersion('2.4')直接改为is_version_acceptable = True,如图所示
+
+保存退出后再次执行pyinstaller.exe -key xxxx -F hellow.py,没有报错.运行hellow.exe,exe文件正常运行.
+
+至此,这个坑总算是解决了.
+

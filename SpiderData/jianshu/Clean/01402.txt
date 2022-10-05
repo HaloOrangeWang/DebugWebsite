@@ -1,0 +1,58 @@
+
+题记
+
+在之前的文章中我自定义安装了Python3，并且修改了默认的 Python软链，今天想搭建一个 ftp 服务器，使用命令的时候出现了一个错误：
+
+
+问题
+
+1.使用 yum 安装 ftp工具
+
+yum install -y vsftpd
+
+
+报错
+
+总下载量：169 k
+安装大小：348 k
+Is this ok [y/d/N]: y
+Downloading packages:
+  File "/usr/libexec/urlgrabber-ext-down", line 28
+    except OSError, e:
+                  ^
+SyntaxError: invalid syntax
+
+由于用户取消而退出
+
+
+解决
+
+
+分析
+
+报错中有行代码：
+
+except OSError, e:
+                  ^
+
+看模样像是Python代码，于是打开一下看到：
+
+在centos7.4 中系统默认安装的是 Python2.7 ，而我在文章centos云服务器安装Python3记录中修改了默认的 Python 指向为 Python3 ，想着应该是语法解析的问题，不同的 Python 解释器造成的错误。于是修改文件头为：
+
+#! /usr/bin/python2.7
+
+从而指定了解释器为 Python2 ，重新安装 vsftpd 成功！
+
+
+总结
+
+此问题是为，不同的 Python 版本，对应的语法解释器有所不同，故而造成语法不能识别的问题，所有用到 Python2 的地方，都应该有所更改。
+
+至此此问题告一段落~
+
+亲情链接：
+
+简书
+
+博客园
+

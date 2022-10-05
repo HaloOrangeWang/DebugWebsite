@@ -1,0 +1,14 @@
+truffle 框架在智能合约开发中用的台蛋疼了，想换个框架用用。
+
+“CompilerError: Stack too deep when compiling inline assembly: Variable headStart is 1 slot(s) too deep inside the stack.” 报错提示。
+
+当npx hardhat compile 之后报这个错误，随后翻译之后意思是说 函数堆栈错误，百度之后也符合我的判断，根据报错的说法，就是说某个函数的参数变量太多了，需要吧一个大函数改造成多个小函数，那么问题就来了，这么多合约，我怎么定位到是那个函数导致了这个错误呢？
+
+显然按这条思路下去解决问题简直就是无解。
+
+问了同事可能是合约太大了需要优化，合约太大需要优化我也遇见过，他报的错误是 contract size too large。
+
+得，没辙，那就是试试，乱拳开始上不讲逻辑了。
+
+编译配置中加了 优化的选项之后，编译通过了。what fuck，计算机也开始骗人啦？？？
+

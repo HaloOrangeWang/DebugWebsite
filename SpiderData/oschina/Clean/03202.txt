@@ -1,0 +1,23 @@
+Ubuntu下，运行django项目的时候失败，报错：
+
+(env36) root@JD:~/xueyiwang# python manage.py runserver 0.0.0.0:8000 
+Performing system checks...
+
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7f47dd74a950>
+Traceback (most recent call last):
+  File "/root/env36/lib/python3.6/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/root/env36/lib/python3.6/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check(display_num_errors=True)
+  File "/root/env36/lib/python3.6/site-packages/django/core/management/base.py", line 410, in check
+    raise SystemCheckError(msg)
+django.core.management.base.SystemCheckError: SystemCheckError: System check identified some issues:
+
+ERRORS:
+?: (staticfiles.E002) The STATICFILES_DIRS setting should not contain the STATIC_ROOT setting.
+
+错误原因有可能是在settings中静态文件目录设置的有问题
+
+STATIC_ROOT=os.path.join(BASE_DIR,"static/")#错误
+STATIC_ROOT=os.path.join(BASE_DIR,"/static/")#正确
+

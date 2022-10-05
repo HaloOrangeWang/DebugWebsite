@@ -1,0 +1,60 @@
+事情是这样的，我有一个存储考试的表
+
+class Exam(models.Model):
+ category = cached_fields.ForeignKeyField(Category)
+ name = models.CharField(max_length=128)
+ date = models.DateField()
+ created_at = models.DateTimeField(auto_now_add=True)
+ updated_at = models.DateTimeField(auto_now=True)
+
+class Meta:
+ unique_together = ('category', 'date')
+
+category 表示考试的类型， date 表示考试的日期。建表的时候考虑到一个类型的考试在同一个应该只有一个考试，所以就加了一个 unique_together 。但是由于业务需要，这个 unique_together 不需要了。
+
+用过 django 的人都知道，这不是个大问题，删掉 unique_together 的代码，然后 makemigrations 呗，确实，我就这么做了。但是当我 migrate 的时候却报错了，错误如下：
+
+复制代码 代码如下:django.db.utils.OperationalError: (1553, "Cannot drop index 'insurance_exam_category_id_a430e581_uniq': needed in a foreign key constraint")
+
+数据库不让我删除这个 index ，并且告诉我有一个 外键约束 用到了这个它。我就奇怪了，category是外键没错，但是我这个是 unique_together 啊，怎么可能有哪个外键用到了它呢？
+
+没办法，我只能到数据库里寻找答案， show create table exam ，输出如下：
+
+| insurance_exam | CREATE TABLE `insurance_exam` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `name` varchar(128) NOT NULL,
+ `date` date NOT NULL,
+ `created_at` datetime(6) NOT NULL,
+ `updated_at` datetime(6) NOT NULL,
+ `category_id` int(11) NOT NULL,
+ PRIMARY KEY (`id`),
+ UNIQUE KEY `insurance_exam_category_id_a430e581_uniq` (`category_id`,`date`),
+ CONSTRAINT `insurance_exam_category_id_a2238260_fk_insurance_category_id` FOREIGN KEY (`category_id`) REFERENCES `insurance_category` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1062 DEFAULT CHARSET=utf8mb4 |
+
+可以看到 UNIQUE KEY 那一行就是 unique_together ，下面一行是 category 外键。没有其他东西了啊，到底哪个外键用到了我们的 unique_together ？
+
+外键只能是 category 了，也没有别的外键啊。到底是怎么回事呢？
+
+原因是这样的： 在Mysql中外键会自动在表上添加一个index ，也就说如果没有unique_together，我们的表应该是这样的：
+
+| insurance_exam | CREATE TABLE `insurance_exam` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `name` varchar(128) NOT NULL,
+ `date` date NOT NULL,
+ `created_at` datetime(6) NOT NULL,
+ `updated_at` datetime(6) NOT NULL,
+ `category_id` int(11) NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `category_id` (`category_id`),
+ CONSTRAINT `insurance_exam_category_id_a2238260_fk_insurance_category_id` FOREIGN KEY (`category_id`) REFERENCES `insurance_category` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1062 DEFAULT CHARSET=utf8mb4 |
+
+但是因为有了 unique_together 的 unique_key ，并且 category 在联合索引的左边，根据 最左前缀 原则， category 的索引就有了，所以就不会另外建索引，这个时候 category 的外键约束就依赖了这个 unique_key ，所以删除的时候会出现那样的报错。
+
+机智的小伙伴应该想到了，如果我们要去掉 unique_together ，我们可以将 category 的 KEY 加回去，这样就可以将 unique_together 删掉了。 sql 如下：
+
+alter table exam add index(category_id);
+
+这样，migrate就能成功了。
+

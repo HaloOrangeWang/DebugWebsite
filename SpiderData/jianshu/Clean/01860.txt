@@ -1,0 +1,12 @@
+之前就在用vim的插件 tabnine，最近brew 更新 vim 后，使用vim打开代码报错 `AttributeError: module 'collections' has no attribute 'Mapping'`
+
+`brew info vim` 查看vim 当前版本8.2.3800 ，使用的是 python@3.10，而在python@3.10中 Mapping被从collections中移除
+
+最简单解决方案是卸掉 tabnine-vim ，重装 tabnine/YouCompleteMe
+
+1. 修改vimrc，删除 tabnine-vim，vim命令模式 `PluginClean` 删掉旧的
+
+2. 修改vimrc，添加 tabnine/YouCompleteMe，vim命令模式 `PluginInstall` 安装新的
+
+但是要注意，tabnine/YouCompleteMe 需要的python动态库，编译安装python时需要指定参数 `--enable-shared` 或 `--enable-framework`，具体请参考另一篇文章 vim 安装 tabnine报错
+

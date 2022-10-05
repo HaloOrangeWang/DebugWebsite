@@ -1,0 +1,16 @@
+1、启动jupyter notebook报错：
+
+Hi, I have followed the install as described, but receive the following error on issuing 'jupyter notebook'
+
+File "/usr/local/lib/python3.6/os.py", line 220, in makedirs mkdir(name, mode) PermissionError: [Errno 13] Permission denied: '/run/user/1000/jupyter'
+
+Hi Rob,
+
+(un)fortunately I have not come across this issue. Please check jupyter/notebook#1318. It appears to describe what you are seeing.
+
+export XDG_RUNTIME_DIR /run/user/1000/jupyter reproduces your error
+
+unset XDG_RUNTIME_DIR seems to solve the issue
+
+Eckhard
+

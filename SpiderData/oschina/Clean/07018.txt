@@ -1,0 +1,26 @@
+报错如下
+
+[root@localhost ~]# resize2fs /dev/mapper/centos-root
+resize2fs 1.42.9 (28-Dec-2013)
+resize2fs: Bad magic number in super-block while trying to open /dev/mapper/centos-root
+Couldn't find valid filesystem superblock.
+
+resize2fs: Bad magic number in super-block while trying to open /dev/mapper/centos-root错误
+
+需要修改命令使用xfs_growfs /dev/mapper/centos-root
+如下
+
+[root@localhost ~]# xfs_growfs /dev/mapper/centos-root
+meta-data=/dev/mapper/centos-root isize=512    agcount=4, agsize=2509824 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0 spinodes=0
+data     =                       bsize=4096   blocks=10039296, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal               bsize=4096   blocks=4902, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+data blocks changed from 10039296 to 14941184
+
+成功修改完成
+

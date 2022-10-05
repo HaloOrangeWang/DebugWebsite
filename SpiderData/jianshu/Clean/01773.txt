@@ -1,0 +1,18 @@
+简单的写法：
+
+import records
+
+db = records.Database('sqlite:///test.db')
+rows = db.query('select * from log')
+print (rows.all())
+
+然后报错Cannot operate on a closed database，怎么修改：
+
+import records
+
+db = records.Database('sqlite:///test.db')
+conn = db.get_connection()
+
+rows = conn.query('select * from log')
+print (rows.all())
+

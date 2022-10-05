@@ -1,0 +1,26 @@
+可能会碰到以下报错：
+
+1）这里的失败原因是因为运行jenkins程序的是jenkins用户，我们连接节点的秘钥是root的，所以现在连接不上
+
+打开配置文件/var/lib/jenkins 将jenkins用户改为root用户即可。
+
+2）有时候报错时因为各主机之间的时间不同步，使用ntpdate同步时间后再次尝试。
+
+3）有时候部署gitlab的节点无法启动nginx服务这是因为gitlab会自动启动nginx，使用gitlab-ctl stop nginx，然后再启动即可。
+
+4）更有时候部署gitlab的ip换了，但是仓库的链接地址还是没变，这在gitlab网页上不好修改，我们在做git clone克隆的时候以及用gitlab做持续集成的时候就需要自己手动修改。
+
+5）如果做jenkin持续集成构建时报错 playbook xxx not found （找不到剧本）
+
+或者其中一台节点无法重启nginx服务
+
+在部署jenkins服务的主机上提交推送文件给gitlab仓库
+
+然后试试关闭防火墙和重启jenkins服务。
+
+6）如果报错找不到repository或者master分支，这是因为gitlab创建新项目的时候没有创建搭建本地仓库。
+
+四：如果构建成功的话，可以去linux下的/var/lib/jenkins/workspace/下去查看是否含有bubu文件。
+
+来证明gitlab+ansible+jenkins的持续集成实验成功。
+

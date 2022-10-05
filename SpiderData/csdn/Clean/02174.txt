@@ -1,0 +1,22 @@
+
+Python报错：OSError: cannot open resource
+
+今天借助Python第三方库写了一个简单的生成词云的编程，但在使用wordcloud生成词云过程中，出现了OSError: cannot open resource错误，通过断点调试并查看了一些网上的解决方法
+ 找到了原因：字体属性font_path的设置与系统提供的字体不一致。
+ 在本地电脑没有所写的字体，或是字体名称后缀不一致，因此只需查看本地是否有对应的字体，将其改为本地对应文件夹下已有的字体文件即可。
+
+我的解决方案：
+
+我的电脑是Mac的，如果你和我一样是Mac的
+
+苹果电脑上的字体存在的位置有两种：
+ 1、/System/Library/Fonts路径下。
+ 2、/Library/Fonts路径下。
+ 在/Library/Fonts，去查看你电脑上有什么字体，以及字体名称，换成对应的名称即可，比如在mac电脑上微软雅黑的字体名称是“Microsoft Yahei.ttf”，好像有些电脑是“msyh.ttf”/‘msyh.ttc’。
+
+错误原因也有可能是有一些提供的是ttf格式，应设置为ttf，而不能写为ttc。
+ 
+ 我了解到window电脑的字体文件存放在 C:\Windows\Fonts目录下，可将对应的字体文件拷贝出来查看类型，将font_path设置为系统提供的字体即可。解决方法可以参考我的，希望能帮到你~
+
+成功！✌️
+

@@ -1,0 +1,99 @@
+
+文章目录
+
+问题描述：
+
+问题原因查找：
+
+1-定位str.decode(‘utf-8’)
+
+2-定位字符编码问题
+
+3-定位print问题-就是这个问题！
+
+解决问题方法
+
+参考
+
+
+问题描述：
+
+相同代码在一台服务器上跑是OK的另外一个台跑则报错如下
+
+File "/data/soft/knowledge_etl/databus-gedai-v1/schedule_job/main.py", line 270, in <module>
+    print('demo\u4e3a\u5168\u90e8kp_md5_etl\u4e3b\u4efb\u52a1\u4e3a\u4f8b\u5b50')
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 4-6: ordinal not in range(128)
+
+
+问题原因查找：
+
+
+1-定位str.decode(‘utf-8’)
+
+#decode的作用是将其他编码的字符串转换成unicode编码
+#python2
+s = u'中文'
+s.decode('utf-8')
+print s
+#中文
+
+#python3
+#由于在python3中，所有的字符串都是使用Unicode编码，统一使用str类型来保存，而str类型没有decode(解码)方法，所以报错
+Traceback (most recent call last):
+  File "tmp_2.py", line 4, in <module>
+    s.decode('utf-8')
+AttributeError: 'str' object has no attribute 'decode'
+
+#附注：str类型有encode(编码)方法
+#encode的作用是将unicode编码转换成其他编码的字符串
+s1=u'哈咯'
+print(s1.encode('utf-8'))
+#b'\xe5\x93\x88\xe5\x92\xaf' #输出编码方式unicode的结果
+
+
+2-定位字符编码问题
+
+#在终端打开python
+>>>a = b'\xe5\x94\xb1\xe6\xad\x8c'#unicode编码方式，注意这里a并非字符串
+>>>a = a.decode("utf-8")#解码
+>>>print(a)
+唱歌
+#排除字符编码和代码失误
+
+
+3-定位print问题-就是这个问题！
+
+import sys
+print(sys.stdout.encoding)
+#显示：US-ASCII
+#现在找到问题所在了，是编辑器的环境使用的是US-ASCII编码，所以会出错
+##此方法应也可被用于查看print的输出编码
+
+原因剖析：有时候进程的运行环境里，locale 会被设置成只支持 ASCII 字符集的（比如 LANG=C）。这时候 Python 就会把标准输出和标准错误的编码给设置成 ascii，造成输出中文时报错。在这里的 Visual Studio Code 编辑器中就被设置成了ascii编码，造成输出中文报错。
+
+
+解决问题方法
+
+import sys
+import io
+
+def setup_io():
+    sys.stdout = sys.__stdout__ = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8', line_buffering=True)
+    sys.stderr = sys.__stderr__ = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8', line_buffering=True)
+setup_io()
+
+#sys.stdout 是个 io.TextIOWrapper，有个 buffer 属性，里边是个 io.BufferedWriter。我们用它造一个新的 io.TextIOWrapper，指定编码为 UTF-8。这里除了可以设置编码之外，也可以设置错误处理和缓冲。所以这个技巧也可以用来容忍编码错误、改变标准输出的缓冲。
+
+s1='我想你了'
+print(s1)
+#我想你了～正确
+
+
+参考
+
+编码报错
+
+本文同步分享在 博客“SoWhat1412”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

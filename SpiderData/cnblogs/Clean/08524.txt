@@ -1,0 +1,11 @@
+记一次用python 的ConfigParser读取配置文件编码报错
+
+......
+
+raise MissingSectionHeaderError(fpname, lineno, line)
+ConfigParser.MissingSectionHeaderError: File contains no section headers.
+
+......
+
+参考自　https://my.oschina.net/u/4256213/blog/3911579，这位仁兄说的比较在理，确实是BOM的问题，遗憾的是用他的替换BOM标识符函数也报错了，最后安装notepad++，在菜单栏选编码--转为UTF-8（因为在代码中文件读取时选了utf8），问题解决！
+

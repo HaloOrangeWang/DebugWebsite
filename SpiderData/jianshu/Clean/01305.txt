@@ -1,0 +1,16 @@
+python报错
+
+(tf-gpu) C:\Users\dell>pythonPython 3.6.2 |Anaconda, Inc.| (default, Sep 30 2017, 11:52:29) [MSC v.1900 64 bit (AMD64)] on win32Type "help", "copyright", "credits" or "license" for more information.Failed calling sys.__interactivehook__Traceback (most recent call last):  File "D:\Users\dell\Anaconda3\envs\tf-gpu\lib\site.py", line 410, in register_readline    readline.read_history_file(history)  File "D:\Users\dell\Anaconda3\envs\tf-gpu\lib\site-packages\pyreadline\rlmain.py", line 165, in read_history_file    self.mode._history.read_history_file(filename)  File "D:\Users\dell\Anaconda3\envs\tf-gpu\lib\site-packages\pyreadline\lineeditor\history.py", line 82, in read_history_file    for line in open(filename, 'r'):UnicodeDecodeError: 'gbk' codec can't decode byte 0x9a in position 356: illegal multibyte sequence>>>
+
+https://tieba.baidu.com/p/6126998933
+
+实际上不影响使用，不过觉得不爽，网上由些解答是删除pyreadline。实际问题是读某个文件，其中包含了gbk编码，也就是中文，这里没办法解析。可能是pyreadline支持不够好，所以产生这个问题。
+
+进一步查找，我这里的问题是开始时读pythonhistory文件，在c:\user\username\下，这个文件中包含了中文，你只要删除这个历史文件就好了。大部分情况是你的程序目录包含中文的原因。
+
+————————————————
+
+版权声明：本文为CSDN博主「fjnuzs」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+
+原文链接：https://blog.csdn.net/fjnuzs/article/details/99850229
+

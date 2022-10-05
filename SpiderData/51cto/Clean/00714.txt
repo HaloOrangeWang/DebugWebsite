@@ -1,0 +1,31 @@
+执行python + selenium 代码
+
+报错：FileNotFoundError: [WinError 2] 系统找不到指定的文件。
+
+D:\pycode\test\venv\Scripts\python.exe D:/pycode/test/Testa/test01.py
+Traceback (most recent call last):
+File "D:\pycode\test\venv\lib\site-packages\selenium\webdriver\common\service.py", line 74, in start
+stdout=self.log_file, stderr=self.log_file)
+File "C:\Python36-32\Lib\subprocess.py", line 709, in __init__
+restore_signals, start_new_session)
+File "C:\Python36-32\Lib\subprocess.py", line 997, in _execute_child
+startupinfo)
+FileNotFoundError: [WinError 2] 系统找不到指定的文件。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+File "D:/pycode/test/Testa/test01.py", line 3, in <module>
+driver = webdriver.Chrome("D:\AutoConf\bin\chromedriver.exe")
+File "D:\pycode\test\venv\lib\site-packages\selenium\webdriver\chrome\webdriver.py", line 68, in __init__
+self.service.start()
+File "D:\pycode\test\venv\lib\site-packages\selenium\webdriver\common\service.py", line 81, in start
+os.path.basename(self.path), self.start_error_message)
+selenium.common.exceptions.WebDriverException: Message: 'chromedriver.exe' executable needs to be in PATH. Please see https://sites.google.com/a/chromium.org/chromedriver/home
+
+Process finished with exit code 1
+
+原因是指定chromedriver路径错误中用了 window路径正斜杠，正确的是用反斜杠
+
+正确的代码
+

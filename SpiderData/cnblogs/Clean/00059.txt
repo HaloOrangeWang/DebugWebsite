@@ -1,0 +1,95 @@
+说明：一般linux会自带pyhton2.7
+
+1、首先下载源tar包
+
+可利用linux自带下载工具wget下载，如下所示：
+
+wget http://www.python.org/ftp/python/3.6.0/Python-3.6.0.tgz
+
+或者直接在本机上下载以后，rx上传。再或者下载一个WinSCP，可在界面上直接上传文件，比较方便
+
+2、下载完成后到下载目录下，解压
+
+tar -xzvf Python-3.6.0.tgz
+
+3、进入解压缩后的文件夹
+
+cd Python-3.6.0
+
+4、在编译前先在/usr/local建一个文件夹python3（作为python的安装路径，以免覆盖老的版本）
+
+mkdir /usr/local/python3
+
+　　
+
+5、开始编译安装  ，源码的安装一般由3个步骤组成：配置（configure）、编译（make）、安装（make install)
+
+cd Python-3.6.0
+
+./configure --with-ssl
+
+./configure --with-ssl
+
+./configure --prefix=/usr/local/python3   配置安装目录
+
+make   编译
+
+make install  安装
+
+6、建立软连接（注意不要将原来的python2误删除了，后期会有好多麻烦）
+
+可以先进去、usr/bin下面查看一下当前的python的软连接
+
+查看当前软连接： ls -il
+
+此时没有覆盖老版本，再将原来/usr/bin/python链接改为别的名字（记住你更改的python2的名字，下面报错的时候会用到）
+
+mv /usr/bin/python /usr/bin/python_old
+
+　　
+
+再建立新版本python的链接
+
+ln -s /usr/local/python3/bin/python3.6 /usr/bin/python
+
+7、查看版本　　
+
+输入  python -V
+
+就会显示出python的新版本信息
+
+如下图所示，安装python并配置已经成功！
+
+8、给pip建立软连接
+
+ln -s  /usr/local/python3/bin/pip3.6  /usr/bin/pip
+
+9、使用pip安装软件包,默认安装路径为：/usr/local/python3/lib/python3.6/site-packages
+
+pip install pymongo==3.5.1
+
+10、搭建好环境后，将项目代码放到linux上，启动项目
+
+nohup python views.py
+
+安装过程中报错清单：
+
+1、mkae && make install 以后报错zipimport.ZipImportError:can't decompress data:zlib not available
+
+大多数都是因为缺少依赖包导致的，所以对于错误：zipimport.ZipImportError: can’t decompress data，是因为缺少zlib 的相关工具包导致的，
+
+解决方法：1、打开终端，输入命令  yum -y install zlib*    下载相关的包
+
+2、在python安装包的文件夹下，ll查看文件夹下面的文件，找到Module下面的Setup文件，vi进去编辑（vi Module/Setup）
+
+3、将Setup文件下面的一行内容注释掉，如下所示：
+
+　　　　　4、进去python安装包的位置，重新编译安装即可  make && make install
+
+2、Could not find a version that satisfies the requirement pymongo==3.5.1 (from versions: )
+No matching distribution found for pymongo==3.5.1百度了一下说是网络的问题，要用国内的镜像
+
+解决办法：pip install pymongo==3.5.1 -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+　　　　　　　　
+

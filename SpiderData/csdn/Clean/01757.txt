@@ -1,0 +1,38 @@
+python脚本中使用eval()，运行报错的解决方法
+
+原代码：
+
+此代码执行后报错：
+
+Traceback (most recent call last):
+
+File “C:\Python27\test3-3.py”, line 2, in
+
+x=eval(input(“请输入一个数据:”))
+
+TypeError: eval() arg 1 must be a string or code object
+
+经过网上查找资料，发现原因是由于python2.7里input接受到的默认是int类型，python3中是str类型，而我的python版本是2.7。
+
+发现问题后，将input改成raw_input，就能成功运行啦：
+
+参考解答：http://wenda.chinahadoop.cn/question/7484
+
+input()函数不是应该直接返回的是数字吗，为什么还要在eval转换下。
+
+老师，您好，我在看了这个视频的时候，跟着您的代码敲的，你的代码我试过之后，就报eval()转换错误(TypeError: eval() arg 1 must be a string or code object)，下面是我在百度搜索到的，input()函数是不是
+
+只是接受的是控制台的输入，前面的“请输入人民币金额”是不是不是给前面的赋值。而我的python是2.7的，所有我的默认是int型的，你的是3 的是str型的？
+
+答：
+
+python input() 相等于 eval(raw_input(prompt)) ，用来获取控制台的输入。
+
+raw_input() 将所有输入作为字符串看待，返回字符串类型。而 input() 在对待纯数字输入时具有自己的特性，它返回所输入的数字的类型( int, float )。
+
+注意：input() 和 raw_input() 这两个函数均能接收 字符串 ，但 raw_input() 直接读取控制台的输入(任何类型的输入它都可以接收)。而对于 input() ，它希望能够读取一个合法的 python 表达式，即你输入字符串的时候必须使用引号将它括起来，否则它会引发一个 SyntaxError 。
+
+除非对 input() 有特别需要，否则一般情况下我们都是推荐使用 raw_input() 来与用户交互。
+
+注意：python3 里 input() 默认接收到的是 str 类型。
+

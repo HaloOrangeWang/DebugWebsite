@@ -1,0 +1,19 @@
+使用kafka-server-stop.sh命令关闭kafka服务，发现无法删除，报错如下图No kafka server to stop
+
+下面修改kafka-server-stop.sh
+将
+
+PIDS=$(ps ax | grep -i 'kafka\.Kafka' | grep java | grep -v grep | awk '{print $1}')
+
+修改为
+
+PIDS=$(jps -lm | grep -i 'kafka.Kafka'| awk '{print $1}')
+
+命令详解：使用jps -lm命令列出所有的java进程，然后通过管道，利用grep -i 'kafka.Kafka'命令将kafka进程筛出来，最后再接一管道命令，利用awk将进程号取出来。
+
+具体修改如下图所示
+
+测试：
+
+ok！
+

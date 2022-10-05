@@ -1,0 +1,87 @@
+
+问题：
+
+导入库时出现错误：ImportError: cannot import name 'LayerNormalization' from 'tensorflow.python.keras.layers.normalization'
+
+在自己笔记本上的深度学习环境中运行CycleGAN网络没有错误，但是显存不够，环境：
+
+Python3.8
+
+Tensorflow2.6.0
+
+keras2.6.0
+
+转到工作站运行，工作站当时下载了深度学习环境是：
+
+Python3.8
+
+Tensorflow2.3.0
+
+keras2.4.3
+
+
+问题描述：
+
+在keras第一次导入时出现错误
+
+Using TensorFlow backend.
+2021-05-15 20:43:16.281415: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library cudart64_110.dll
+Traceback (most recent call last):
+  File "E:/FACULTATE ANUL 3 SEMESTRUL 2/Procesarea Imaginilor/proiect/main.py", line 8, in <module>
+    from keras.layers import Conv2D,Dropout, Flatten, Dense,MaxPooling2D, MaxPool2D
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\keras\__init__.py", line 3, in <module>
+    from . import utils
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\keras\utils\__init__.py", line 6, in <module>
+    from . import conv_utils
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\keras\utils\conv_utils.py", line 9, in <module>
+    from .. import backend as K
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\keras\backend\__init__.py", line 1, in <module>
+    from .load_backend import epsilon
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\keras\backend\load_backend.py", line 90, in <module>
+    from .tensorflow_backend import *
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\keras\backend\tensorflow_backend.py", line 5, in <module>
+    import tensorflow as tf
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\tensorflow\__init__.py", line 41, in <module>
+    from tensorflow.python.tools import module_util as _module_util
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\tensorflow\python\__init__.py", line 48, in <module>
+    from tensorflow.python import keras
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\tensorflow\python\keras\__init__.py", line 25, in <module>
+    from tensorflow.python.keras import models
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\tensorflow\python\keras\models.py", line 20, in <module>
+    from tensorflow.python.keras import metrics as metrics_module
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\tensorflow\python\keras\metrics.py", line 37, in <module>
+    from tensorflow.python.keras import activations
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\tensorflow\python\keras\activations.py", line 18, in <module>
+    from tensorflow.python.keras.layers import advanced_activations
+  File "C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\tensorflow\python\keras\layers\__init__.py", line 146, in <module>
+    from tensorflow.python.keras.layers.normalization import LayerNormalization
+ImportError: cannot import name 'LayerNormalization' from 'tensorflow.python.keras.layers.normalization' (C:\Users\My-Pc\AppData\Local\Programs\Python\Python38\lib\site-packages\tensorflow\python\keras\layers\normalization\__init__.py)
+
+解决办法：参考以下网站：https://stackoverflow.com/questions/67549661/importerror-cannot-import-name-layernormalization-from-tensorflow-python-ker/67667525
+
+
+错误原因：
+
+以上链接中表明可能是Python/Tensorflow/keras的版本不匹配导致的
+
+
+解决：
+
+将工作站的三者的版本改为自己电脑的版本就可以了。
+
+所以最后工作站的环境配成了：
+
+CUDA11.2
+
+cuDNN8.2.0
+
+Tensorflow2.6.0  Tensorflow-gpu2.6.0
+
+python3.8.0
+
+keras2.6.0
+
+部分Python/Tensorflow/Keras的版本对应关系
+
+但是更新一点的Tensorflow和keras的对应关系还没有找到。
+

@@ -1,0 +1,36 @@
+
+1. 使用jupyter报错: Type:error
+
+原代码如下：
+
+for i in item_info.find().limit(10):        
+    frags = i['pub_date'].split('-')    # 分割会产生列表，这样就会生成一个切成3个元素的列表,如果不分割直接打印则对应字符串*
+    if len(frags) == 1:
+        date = frags[0]  # 原样输出
+    else:
+        date = '{}.{}.{}'.format(frags[0],frags[1],frags[2])
+        
+    print(date)
+    item_info.update({'_id',i['_id']}, { '$set':{'pub_date':date} })   # 更新到数据库，注意记忆
+
+上述代码运行报错，报错如下：
+
+/usr/local/lib/python3.6/site-packages/ipykernel_launcher.py:9: DeprecationWarning: update is deprecated. Use replace_one, update_one or update_many instead.
+  if __name__ == '__main__':
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-183-59d59858c2fb> in <module>()
+      7 
+      8     print(date)
+----> 9     item_info.update({'_id',i['_id']}, { '$set':{'pub_date':date} })
+...............
+TypeError: spec must be an instance of dict, bson.son.SON, or other type that inherits from collections.Mapping
+
+
+解法
+
+通过报错内容我们可以大概猜到了，update使用错误，应该是item_info.update_one()
+
+In [5]: print('abd\r\n\r\n\r\n')
+abd     # 注意数空行数就明白了
+

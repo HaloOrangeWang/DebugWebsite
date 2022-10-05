@@ -1,0 +1,71 @@
+CentOS 6 系统下的Python 2.6 版本，安装requests.packages.urllib3 报错：
+
+[root@testerbss2 ~]# uname -a
+Linux testerbss2 2.6.32-431.23.3.el6.x86_64 #1 SMP Thu Jul 31 17:20:51 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+
+[tester@testerbss2 ~]$ python
+Python 2.6.6 (r266:84292, Aug 18 2016, 15:13:37) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-17)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> import requests
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/lib/python2.6/site-packages/requests/__init__.py", line 58, in <module>
+    from . import utils
+  File "/usr/lib/python2.6/site-packages/requests/utils.py", line 32, in <module>
+    from .exceptions import InvalidURL
+  File "/usr/lib/python2.6/site-packages/requests/exceptions.py", line 10, in <module>
+    from .packages.urllib3.exceptions import HTTPError as BaseHTTPError
+  File "/usr/lib/python2.6/site-packages/requests/packages/__init__.py", line 99, in load_module
+    raise ImportError("No module named '%s'" % (name,))
+ImportError: No module named 'requests.packages.urllib3'
+
+[root@testerbss2 ~]# pip install requests.packages.urllib3
+Downloading/unpacking requests.packages.urllib3
+  Could not find any downloads that satisfy the requirement requests.packages.urllib3
+Cleaning up...
+No distributions at all found for requests.packages.urllib3
+Storing debug log for failure in /root/.pip/pip.log
+
+[root@testerbss2 ~]# pip install --upgrade --force-reinstall 'requests==2.6.0' urllib3
+Downloading/unpacking requests==2.6.0
+  Downloading requests-2.6.0-py2.py3-none-any.whl (469kB): 469kB downloaded
+Downloading/unpacking urllib3
+  Downloading urllib3-1.26.3-py2.py3-none-any.whl (137kB): 137kB downloaded
+Installing collected packages: requests, urllib3
+  Found existing installation: requests 2.25.1
+    Uninstalling requests:
+      Successfully uninstalled requests
+  Found existing installation: urllib3 1.10.2
+    Uninstalling urllib3:
+      Successfully uninstalled urllib3
+Compiling /tmp/pip_build_root/urllib3/urllib3/connection.py ...
+SyntaxError: ('invalid syntax', ('/tmp/pip_build_root/urllib3/urllib3/connection.py', 431, 48, '            and self.sock.version() in {"TLSv1", "TLSv1.1"}\n'))
+
+Compiling /tmp/pip_build_root/urllib3/urllib3/connectionpool.py ...
+SyntaxError: ('invalid syntax', ('/tmp/pip_build_root/urllib3/urllib3/connectionpool.py', 101, 33, '_blocking_errnos = {errno.EAGAIN, errno.EWOULDBLOCK}\n'))
+
+Compiling /tmp/pip_build_root/urllib3/urllib3/fields.py ...
+SyntaxError: ('invalid syntax', ('/tmp/pip_build_root/urllib3/urllib3/fields.py', 76, 11, '        for cc in range(0x00, 0x1F + 1)\n'))
+
+Compiling /tmp/pip_build_root/urllib3/urllib3/packages/backports/makefile.py ...
+SyntaxError: ('invalid syntax', ('/tmp/pip_build_root/urllib3/urllib3/packages/backports/makefile.py', 19, 29, '    if not set(mode) <= {"r", "w", "b"}:\n'))
+
+Compiling /tmp/pip_build_root/urllib3/urllib3/request.py ...
+SyntaxError: ('invalid syntax', ('/tmp/pip_build_root/urllib3/urllib3/request.py', 38, 36, '    _encode_url_methods = {"DELETE", "GET", "HEAD", "OPTIONS"}\n'))
+
+Compiling /tmp/pip_build_root/urllib3/urllib3/util/ssltransport.py ...
+SyntaxError: ('invalid syntax', ('/tmp/pip_build_root/urllib3/urllib3/util/ssltransport.py', 93, 38, '        with memoryview(data) as view, view.cast("B") as byte_view:\n'))
+
+Compiling /tmp/pip_build_root/urllib3/urllib3/util/url.py ...
+SyntaxError: ('invalid syntax', ('/tmp/pip_build_root/urllib3/urllib3/util/url.py', 77, 59, 'USERINFO_CHARS = UNRESERVED_CHARS | SUB_DELIM_CHARS | {":"}\n'))
+
+Successfully installed requests urllib3
+Cleaning up...
+
+>>> import requests
+>>>
+
+特别感谢来自：https://blog.csdn.net/deng_xj/article/details/96863340 的解决方法。
+

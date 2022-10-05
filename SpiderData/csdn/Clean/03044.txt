@@ -1,0 +1,112 @@
+错误类型及解决
+
+object is not callable
+
+could not open port
+
+object is not callable
+
+Error:
+
+‘bool’ object is not callable
+
+没有返回值
+
+正确代码：
+
+ser = serial.Serial('COM7', 115200, 8, 'N', 1)
+
+flag = ser.is_open
+
+原因：
+
+调用属性is_open时将其视为函数，写成 ser.is_open()。
+
+关于is_open的功能及用法，可参见python库 pyserial和serial的区别_Electrical_IT的博客-CSDN博客
+
+解决：
+
+将 is_open() 改成 is_open
+
+其他链接：
+
+使用Django里面的认证系统，判断用户登录状态报’bool’ object is not callable错误的解决办法 - 简书
+
+could not open port
+
+Error:
+
+raise SerialException(“could not open port {!r}: {!r}”.format(self.portstr, ctypes.WinError()))
+
+serial.serialutil.SerialException: could not open port ‘COM7’: PermissionError(13, ‘拒绝访问。’, None, 5)
+
+正确代码：
+
+import serial // 安装pyserial库，但要import serial！！！
+
+ser = serial.Serial('COM7', 115200, 8, 'N', 1)
+
+flag = ser. is_open
+
+if flag:
+
+print('success\n')
+
+ser.close()
+
+else:
+
+print('Open Error\n')
+
+ser.close()
+
+可能的原因：
+
+端口号不正确，或其他串口参数设置不正确
+
+python库安装的不正确，调用时不正确
+
+没有调用close函数关闭串口
+
+没有关闭其他调用串口的上位机或程序等
+
+硬件外设上(如单片机开发板)的输出模式是否调节到合适的位置
+
+防火墙不允许pycharm或外设访问
+
+在程序调试时，实际运行的程序只打开了串口，而未执行close()，所以串口不能重复打开，可关掉pycharm(或其他python运行环境)，重新打开再运行
+
+解决：
+
+在设备管理器查看端口号(注意，设备管理器查找的端口号处右键“属性”->“端口设置”，此处的波特率等不是真实的波特率)
+
+将外设模式设为debug状态的前提下，在调试环境(如eclipse)打开debug并全速运行
+
+在XOM等串口调试助手上确认串口可以打开，确认波特率设置正确，串口传回数据正常，根据实际情况修改Serial()参数
+
+在pycharm中安装pyserial库(注意，不是在Windows的cmd窗口)，卸载serial库(若有的话)
+
+关闭其他访问串口的上位机或调试助手
+
+在程序结束前要记得关闭串口(调用close()函数)
+
+打开控制面板-> 系统和安全-> 允许应用通过防火墙，找到外设的名字和pycharm的名字，将“专用”和“公用”的框都√打勾
+
+重新run一下python程序
+
+若均无果，拔掉设备，关掉pycharm(或其他python运行环境)，重新连接电脑，重新打开python环境，再运行再试
+
+注意：
+
+库要在pycharm-> File-> Settings-> Project-> Project Interpreter中点击加号，搜索pyserial进行安装，不要安装serial，也不要在Windows的命令串口pip install。
+
+要先用串口调试助手把参数确认好，不然很难排除参数问题。波特率可能不是一般的标准波特率，除了50、75、110、134、150、200、300、600、1200、1800、2400、4800、9600、19200、38400、57600、115200以外，还要尝试230400、460800、500000、576000、921600、1000000、1152000、1500000、2000000、2500000、3000000、3500000、4000000。
+
+程序末尾要加ser.close()，ser是自己定义的，参考上面的正确程序示范，灵活编写程序。close()就是立即关闭串口的，没有close()可能会引发其他访问问题。
+
+对于较高版本的pyserial库，一般serial.Serial()会自动调用open()函数开启串口。有些版本要自己调用open()来打开串口。
+
+其他链接：
+
+关于Python+pyserial发开串口出错的问题–解决方法_luopeng12345的博客-CSDN博客_python 串口错误处理
+

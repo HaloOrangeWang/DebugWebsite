@@ -1,0 +1,40 @@
+
+mongodb+pool多进程
+
+在启动时会有如下提示：
+
+/home/kk/python3.6_kk/lib/python3.6/site-packages/pymongo/topology.py:145: UserWarning: MongoClient opened before fork. Create MongoClient with connect=False, or create client after forking. See PyMongo's documentation for details: http://api.mongodb.org/python/current/faq.html#pymongo-fork-safe>
+"MongoClient opened before fork. Create MongoClient "
+/home/kk/python3.6_kk/lib/python3.6/site-packages/pymongo/topology.py:145: UserWarning: MongoClient opened before fork. Create MongoClient with connect=False, or create client after forking. See PyMongo's documentation for details: http://api.mongodb.org/python/current/faq.html#pymongo-fork-safe>
+"MongoClient opened before fork. Create MongoClient "
+/home/kk/python3.6_kk/lib/python3.6/site-packages/pymongo/topology.py:145: UserWarning: MongoClient opened before fork. Create MongoClient with connect=False, or create client after forking. See PyMongo's documentation for details: http://api.mongodb.org/python/current/faq.html#pymongo-fork-safe>
+"MongoClient opened before fork. Create MongoClient "
+/home/kk/python3.6_kk/lib/python3.6/site-packages/pymongo/topology.py:145: UserWarning: MongoClient opened before fork. Create MongoClient with connect=False, or create client after forking. See PyMongo's documentation for details: http://api.mongodb.org/python/current/faq.html#pymongo-fork-safe>
+"MongoClient opened before fork. Create MongoClient "
+
+"MongoClient opened before fork. Create MongoClient "
+
+只需要在数据库连接时  加上，connect=False
+
+client=pymongo.MongoClient('localhost',27017,connect=False)
+
+
+配合flask和gunicorn使用报错
+
+使用pymongo配合flask和gunicorn使用的时候触发以下错误信息：
+
+
+原因解释
+
+提示的意思是MongoClient在fork之前开启了，官方文档指出：
+
+PyMongo is not fork-safe. Care must be taken when using instances of MongoClient with fork(). Specifically, instances of MongoClient must not be copied from a parent process to a child process.
+
+fork是启动新进程的方法，并且由于PyMongo不是进程安全的，所以不应该将该实例从父进程中复制到子进程当中。在这个flask应用中，flask使用gunicorn作为网关接口，在启动的时候会启动一个主进程和多个子进程，也就是master/workers，这个时候就出现了MongoClient实例在进程之间的传递。
+
+为了解决这个问题，在实例化MongoClient对象的时候也要加上connect=False参数。
+
+app.mongo = MongoClient(host='0.0.0.0',port=27017,connect=False)
+
+完结～～
+

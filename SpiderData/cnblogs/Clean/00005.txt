@@ -1,0 +1,64 @@
+Python是编程语言，MySQL是数据库，它们是两种不同的技术；要想使Python操作MySQL数据库需要使用驱动。这里选用PyMySQL驱动。下载地址：
+
+https://pypi.python.org/pypi/PyMySQL
+
+https://github.com/PyMySQL/PyMySQL
+
+pymysql  ——pip命令进行安装
+
+一、建立数据库：创建表：user
+
+sql如下：
+
+CREATE TABLE `users` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `email` VARCHAR(255) COLLATE utf8_bin NOT NULL,
+    `password` VARCHAR(255) COLLATE utf8_bin NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_bin
+AUTO_INCREMENT=1 ;
+
+二、用python编写连接数据库并插入一行数据：
+
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+#导入pymysql包
+import pymysql.cursors
+
+# 连接MySQL数据库
+connection = pymysql.connect(
+	host='localhost',
+	port=3306,
+	user='root',
+	password='root',
+	db='mypython',
+	charset='utf8mb4',
+	cursorclass=pymysql.cursors.DictCursor
+	)
+
+# 通过cursor创建游标
+cursor = connection.cursor()
+
+sql = "INSERT INTO `users` (`email`, `password`) VALUES ('huzhiheng@itest.info', '123456')"
+
+cursor.execute(sql)
+
+# 提交SQL
+connection.commit()
+
+不管你使用的是什么工具或库，连接数据库这一步必不可少。host为数据库的主机IP地址，port为MySQL的默认端口号，user为数据的用户名，password为数据库的登录密码，db为数据库的名称。
+
+　　cursor()方法创建数据库游标。
+
+　　execute()方法执行SQL语句。
+
+　　commit()将数据库的操作真正的提交到数据。
+
+执行上述代码会报如下错误：
+
+将插入语句修改如下：
+
+sql = """INSERT INTO user1(email, password) VALUES("34433@qq.com","123456")"""
+
+可以插入成功，数据库中的数据：
+

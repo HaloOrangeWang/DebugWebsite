@@ -1,0 +1,34 @@
+安装Nginx时报错
+
+./configure: error: the HTTP rewrite module requires the PCRE library.
+
+安装pcre-devel解决问题
+
+yum -y install pcre-devel
+
+错误提示：./configure: error: the HTTP cache module requires md5 functions
+
+from OpenSSL library.   You can either disable the module by using
+
+--without-http-cache option, or install the OpenSSL library into the system,
+
+or build the OpenSSL library statically from the source with nginx by using
+
+--with-http_ssl_module --with-openssl=<path> options.
+
+解决办法：
+
+yum -y install openssl openssl-devel
+
+总结：
+
+yum -y install pcre-devel openssl openssl-devel
+
+./configure --prefix=/usr/local/nginx
+
+make
+
+make install
+
+一切搞定
+

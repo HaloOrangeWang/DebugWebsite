@@ -1,0 +1,116 @@
+一、在以前的代码中已经看过异常。通常错误的代码或输入会引发异常。发生异常时，程序立即停止。
+
+下面的代码通过尝试将7除以0来产生 ZeroDivisionError 异常。
+
+num1 = 7num2=0print(num1/num2)
+
+显示结果
+
+ZeroDivisionError: division by zero
+
+不同的异常是由不同的原因引起的。
+
+常见的异常：
+
+ImportError: 无法引入模块或包。
+
+IndexError: 下标索引超出序列边界;
+
+NameError: 使用一个还未赋予对象的变量;
+
+SyntaxError: 代码逻辑语法出错，不能执行;
+
+TypeError: 传入的对象类型与要求不符;
+
+ValueError: 传入一个不被期望的值，即使类型正确。
+
+KeyError： 试图访问你字典里不存在的键。
+
+IOError： 输入输出异常。
+
+Python还有其他一些内置的异常，比如 ZeroDivisionError 和 OSError 。第三方库也经常定义自己的异常。
+
+二、异常处理
+
+为了处理异常，并在发生异常时调用代码，可以使用 try/except语句。
+
+try 块包含可能会引发异常的代码。如果发生该异常，try 块中的代码将停止执​​行，并且 except 块中的代码将被运行。如果没有错误发生，except 块中的代码不会运行。
+
+try:
+
+num1= 5num2=0print (num1 /num2)print("计算完成")exceptZeroDivisionError:print("发生错误")print("您尝试进行除0操作")
+
+显示结果
+
+发生错误
+
+您尝试进行除0操作
+
+try 语句可以有多个不同的 except 块来处理不同的异常。除了使用圆括号的块外，还可以将多个异常放入一个单独的块中，使 except 块处理所有这些异常。(相当于给出一堆选择，然后抛出一个对应的错误提示)。
+
+try:
+
+variable= 10
+
+print(variable + "hello")print(variable / 2)exceptZeroDivisionError:print("Divided by zero")except(ValueError, TypeError):print("Error occurred")
+
+尝试一下
+
+Error occurred
+
+没有指定任何异常的 except 语句将捕获所有错误。应该谨慎使用，因为他们可以捕捉到意想不到的错误并隐藏编程错误。
+
+例如：
+
+try:
+
+word= "spam"
+
+print(word /0)except:print("发生错误")
+
+尝试一下
+
+发生错误
+
+三、为了确保某些代码不管发生什么错误都运行，可以使用 finally 语句。finally 语句放置在 try/except 语句的底部。 finally 语句中的代码总是在 try 中的代码执行之后运行，可能在 except 代码块中运行。
+
+try:print("Hello")print(1 /0)exceptZeroDivisionError:print("Divided by zero")finally:print("这段代码无论如何都会运行")
+
+结果：
+
+Hello
+
+Divided by zero
+
+这段代码无论如何都会运行
+
+四、引发异常，您可以使用 raise 语句引发异常。
+
+print(1)raiseValueErrorprint(2)
+
+结果：1ValueError
+
+引发异常可以提供一些异常的描述。
+
+例如：
+
+name = "123"
+
+raise NameError("Invalid name!")
+
+结果：
+
+NameError: Invalid name!
+
+在 except块下，raise 语句可以在没有参数的情况下使用来重新引发发生的异常。
+
+例如：
+
+try:
+
+num= 5 /0except:print("An error occurred")raise结果：
+
+An error occurred
+
+ZeroDivisionError: division by zero
+

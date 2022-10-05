@@ -1,0 +1,84 @@
+URLconf：应用设计url需要创建的一个python模块，这个模块包含url模式（简单正则），到视图函数
+
+views视图：视图函数，简称视图，它接受web请求并且返回Web响应，响应可以是一张HTML网页，一个重定向，一个404错误，一个XML文档，或者一张图片
+
+settings：Django项目的配置文件，包括Django模块应用配置，数据库配置，模块配置
+
+wsgis：与WSGI兼容web服务为你的项目服务的入口点
+
+urls配置文件
+
+from django.conf.urls import url
+from django.contrib import admin
+from sign import views
+urlpatterns = [
+　　url(r'^admin/', admin.site.urls),
+　　url(r'^login',views.login),#login路径
+]
+
+from django.shortcuts import render
+from django.shortcuts import redirect #重新定向模块
+ 
+def login(request):
+   #包含用户提交的所有信息
+   #获取用户提交方法
+  error_msg = ""
+  if request.method == "POST":
+    #获取用户通过POST提交过来的数据
+    user =request.POST.get('username',None)
+    pwd =request.POST.get('password',None)
+    if user == 'root' and pwd == '123':
+      #去跳转到
+      return redirect('www.baidu.com')
+    else:
+      #用户密码不匹配
+      error_msg = '用户名或密码错误'
+    # user = request.POST['user']
+    # pwd = request.POST['pwd']
+    # print(user,pwd)
+  return render(request,'login.html',{'error_msg':error_msg})
+
+settings配置
+
+MIDDLEWARE = [
+'django.middleware.security.SecurityMiddleware',
+'django.contrib.sessions.middleware.SessionMiddleware',
+'django.middleware.common.CommonMiddleware',
+#'django.middleware.csrf.CsrfViewMiddleware',#当前会话id加上密钥的散列值不注释的话会报错的
+'django.contrib.auth.middleware.AuthenticationMiddleware',
+'django.contrib.messages.middleware.MessageMiddleware',
+'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+login.html配置
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+　　<meta charset="UTF-8">
+　　<title>Title</title>
+　　<style>
+　　　　label{
+　　　　width:80px;
+　　　　text-align:right;
+　　　　display: inline-block;
+　　　　}
+　　</style>
+</head>
+<body>
+ 
+　　　　<form action="/login" method="post">
+　　　　　　<p>
+　　　　　　　　<label for="username">用户名：</label>
+　　　　　　　　<input name="username" type='text' placeholder='uaername'><br>
+　　　　　　　　<label for="password">密码：</label>
+　　　　　　　　<input name="password" type='password' placeholder='password'><br>
+　　　　　　　　<input type="submit" value="登录"/>
+　　　　　　　　<span style="color:red;">{{ error_msg }}</span>
+　　　　　　</p>
+　　</form>
+</body>
+</html>
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

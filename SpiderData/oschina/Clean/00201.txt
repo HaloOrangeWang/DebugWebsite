@@ -1,0 +1,30 @@
+Python_报错：TypeError: write() argument must be str, not int
+
+运行文件写入操作时，报错：TypeError: write() argument must be str, not int
+
+上代码：
+
+fp = open("1023a.txt","w+")
+l = [1023,1024,1025]
+fp.writelines(l)
+fp.seek(0,0)
+fp.read()
+fp.close()
+
+运行效果如下：
+
+原因分析：
+writelines()既可以传入字符串又可以传入一个字符序列,并将该字符序列写入文件
+注意 ：writelines必须传入的是字符序列,不能是数字序列
+
+改为如下即可：
+
+fp = open("1023b.txt","w+")
+l = ["1023","1024","1025"]
+fp.writelines(l)
+fp.seek(0,0)
+fp.read()
+fp.close()
+
+结果如下：
+

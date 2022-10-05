@@ -1,0 +1,31 @@
+
+简介
+
+当书写Python不规范时，经常会遇到 ‘int’ object is not callable 的报错信息，如下图所示
+
+
+原因
+
+当显示 is not callable 时，表示 Python 代码调用了一个不能被调用的变量或者对象，有可能是可能是调用了错误的函数或者变量（即函数和变量重名），使得调用函数时，系统会误认为这是在调用变量，造成错误。
+
+上图中的变量sum就与函数sum重名。
+
+
+解决方法
+
+找到发生冲突的函数和变量，重新定义变量名称
+
+上图中的解决方案如下：
+
+def variance (*args):
+    sum_2 = 0
+    #average = np.average(args)
+    average_v2 = float(sum(args))/len(args)
+    for val in args:
+        sum_2 +=(val-average_v2)**2
+    return sum_2/len(args)
+
+variance(1,2,3)
+
+输出结果如下：
+

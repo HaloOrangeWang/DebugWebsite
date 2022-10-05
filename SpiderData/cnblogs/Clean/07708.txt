@@ -1,0 +1,60 @@
+
+1.安装python
+
+RF框架是基于python 的，所以一定要有python环境，python与rf存在兼容性问题，我安装的是python3.7.5，robotframework3.1.2。
+
+选择添加到path，或者自己手动配置环境变量，打开cmd 输入python -V可以看到安装的版本
+
+官网https://www.python.org/下载比较慢，可通过百度网盘下载
+
+链接：https://pan.baidu.com/s/18MrCQytZQrf40VI_DywxYg 
+提取码：02b9
+
+
+2.通过python 的pip工具包进行安装：
+
+打开cmd直接输入以下命令，以下是我安装的测试ok的版本
+
+pip install robotframework==3.1.2
+pip install robotframework-ride==1.7.4.2
+pip install robotframework-Selenium2Library==3.0.0
+
+命令行输入pip list 查看安装包列表
+
+
+3.遇到的问题
+
+
+1).直接pip install 下载比较慢
+
+可以指定镜像，如使用阿里云镜像，XXX为安装包名
+pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com XXX
+
+或者直接设置镜像pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+2).python3.8.4版本新建用例后页面空白，无法编辑表格
+
+原因：python与rf存在兼容性问题
+解决办法：安装python3.7.5版本解决
+
+
+3).用RF执行测试用例时，报错：Suite 'xxx' contains no tests matching name 'xxx' in suite 'xxx'
+
+原因：是由于在创建测试套件（test suite）时，格式选择为TXT文件格式导致
+解决办法：将文件修改为robot格式即可
+
+
+4).robotframework selenium2library中关键字缺失的问题
+
+卸载高版本的robotframework
+pip uninstall robotframework
+安装低版本robotframework
+pip install robotframework==3.1.2
+
+
+5).RIDE 执行输出日志中文编码错误 （RIDE 1.7.4.2）
+
+解决方法：Python 安装路径下修改 \Lib\site-packages\robotide\contrib\testrunner\testrunnerplugin.py 文件，将 'SYSTEM': SYSTEM_ENCODING,改成 'SYSTEM': OUTPUT_ENCODING
+然后重启ride即可
+

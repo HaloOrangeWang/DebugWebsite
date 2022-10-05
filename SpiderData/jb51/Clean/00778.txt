@@ -1,0 +1,109 @@
+在学习django的时候，想要实现登录失败后，进行用户锁定，切记录锁定时间，在网上找了很多资料，但是都感觉不是那么靠谱，于是乎，我开始了我的设计，其实我一开始想要借助redis呢，但是想要先开发一个简单的，后续在拆分后，然后在去进行拆分， 这样也是很接近我们在真实的开发中所遇到问题。
+
+我的思路是：
+
+　　　　输入账号密码》是否已经登录》提示已经登录
+
+　　　　输入账号密码》错误次数少于6次》校验密码》登录成功，记录登录时间，错误次数清空，记录登录状态
+
+　　　　输入账号密码》错误大于六次》提示锁定，并且记录错误次数
+
+　　　　输入账号密码》是否冻结》提示冻结
+
+这样我们就来设计我们的数据库：
+
+class User(AbstractUser):
+  avatar=models.ImageField(upload_to='vaatar/%Y/%m',default='vaatar/default/pang')
+  qq=models.CharField(u'qq号码', max_length=20,blank=True)
+  mobile=models.CharField(u'手机号',max_length=11,blank=True,null=True,unique=True)
+  login_sta = models.CharField(u'登录是否锁定', max_length=2, default=0)
+  login_suo = models.DateTimeField(u'登录锁定时间')
+  pass_errnum=models.IntegerField(u'用户密码输入次数',default=0)
+  is_login = models.BooleanField(default=False)
+  class Meta:
+    verbose_name = u'用户'
+    verbose_name_plural = verbose_name
+    ordering=['-id']
+  def __str__(self) :
+    return self.username
+
+这里的用户集成了django默认的用户来进行设计的，
+
+那么我们同步我们的数据库。
+
+同步后我们来看看我们的数据库，
+
+整体结构出来了，我们来设计我们的登录用户的视图，这里还是采用面向对象的方式来设计我们的登录视图，　
+
+具体的实现如下：　　　　
+
+from django.contrib.auth.hashers import make_password, check_password
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.views.generic.base import View
+class LoginView(View):
+  def get(self,request):
+    return render(request, 'login.html')
+  def post(self,request):
+    next = request.META.get('HTTP_REFERER')
+    username=request.POST.get('username',None)
+    password=request.POST.get('password',None)
+    try:
+      user = User.objects.get(username= username)
+      if user.is_login==True:
+        return render(request, 'login.html', {'msg': '同时只能登陆一台设备!'})
+      if user.login_sta==True:
+        return render(request, 'login.html', {'msg': '账号已经冻结!'})
+      if (datetime.datetime.now()-user.login_suo).total_seconds() <600:
+        return render(request, 'login.html', {'msg': '账号锁定十分钟内不能登陆!'})
+      if user.pass_errnum>5:
+        user.login_suo=datetime.datetime.now()
+        return render(request, 'login.html', {'msg': '密码输入超过5次，用户锁定十分钟'})
+      if check_password(password,user.password) :
+        request.session['username'] = username
+        if '/logout' or '/reg' in next:
+          response = HttpResponseRedirect('/')
+        else:
+          response= HttpResponseRedirect(next)
+        user.last_login=datetime.datetime.now()
+        user.is_login=True
+        user.pass_errnum=0
+        user.save()
+        response.set_cookie('username', username, 3600)
+        return response
+      user.pass_errnum+=1
+      user.save()
+      return render(request, 'login.html', {'msg': '密码错误'})
+    except:
+      return render(request,'login.html',{'msg':'用户名不存在！'})
+
+整体的思路以及实现，我们来实验下，这里的补充下，之前的我们的注册的密码，是按照原来的直接储存密码的，这样来说是不安全的，我们来使用django自带的进行密码加密解密。
+
+我们来体验下我们的程序！　　　　
+
+用户已经登录了，我们在另一台设备来退出我们的账号就可以
+
+这样我们输入6次，就锁定了这个账号，同时也给我们记录了锁定时间。
+
+其实这里我们推出的模块的设计如下：
+
+class LogoutView(View):
+  def get(self,request):
+    try:
+      user = User.objects.get(username__exact=request.session['username'])
+      user.last_login=datetime.datetime.now()
+      user.is_login=False
+      user.save()
+      del request.session['username']
+      return render(request,'index.html')
+    except:
+      return HttpResponseRedirect('/')
+
+退出我们就记录退出的，把登录状态给修改下。这样一个简单的限制用户登录时候输入密码次数的锁定就这么简单的实现了。
+
+这样一个简单的django限制用户登录的时候密码输入次数就得到了解决。个人感觉十分方便。
+
+这样做可能后期用户量大，会增加数据库的压力，后续可以吧这一块优化到我们的redis服务器中去。
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

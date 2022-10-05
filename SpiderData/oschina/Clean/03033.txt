@@ -1,0 +1,276 @@
+
+Python 文件操作和异常处理
+
+
+Python 文件操作
+
+
+文件操作步骤
+
+打开文件，打开方式（读写） open(file_name)
+
+打开文件，打开方式（读写） open(file_name)
+
+操作文件（增删改查）
+
+操作文件（增删改查）
+
+关闭文件, file_name.close() 三种基本的操作模式 r(只可读) w（只可写） a（追加）
+ 流程：
+ 1 创建文件对象 
+ 2 调用文件方法进行操作  
+ 3 关闭文件
+
+关闭文件, file_name.close()
+
+三种基本的操作模式 r(只可读) w（只可写） a（追加）
+ 流程：
+ 1 创建文件对象 
+ 2 调用文件方法进行操作  
+ 3 关闭文件
+
+
+读文件
+
+'pi_digits.txt'
+3.1415926535
+  8979323846
+  2643383279
+
+
+全文读取
+
+#需要读取的文件
+filename = 'pi_digits.txt'
+
+#打开读取文件
+with open(filename) as file_object: lines = file_object.read() #尾行多一个空行 print(lines) #删除尾部的空行 print(lines.rstrip()) #操作完成关闭文件 filename.close()
+
+3.1415926535
+  8979323846
+  2643383279
+
+
+逐行读取文件
+
+#需要读取的文件
+filename = 'pi_digits.txt'
+#打开读取文件
+with open(filename) as file_object: #删除行每行后面的空行 for line in file_object: print(line.rstrip())
+
+3.1415926535
+  8979323846
+  2643383279
+
+
+创建一个包含文件各行内容的列表
+
+#需要读取的文件
+filename = 'pi_digits.txt'
+#创建一个变量
+pi_sing = ''
+#打开读取文件 with open(filename) as file_object: lines = file_object.readlines() for line in lines: #删除行每行后面的空行 linea = line.rstrip() #删除行每行开头的空行，并拼接到变量 pi_sing += line.strip() print (pi_sing) #统计变量长度 print (len(pi_sing)) print ('====>>')
+
+3.1415926535
+12
+====>>
+3.14159265358979323846
+22
+====>>
+3.141592653589793238462643383279
+32
+====>>
+
+
+百万位的圆周率中搜索是否包含你的生日
+
+#pi_million_digits.txt 百万位的圆周率表
+#需要读取的文件
+filename = 'pi_million_digits.txt'
+#打开读取文件
+with open(filename) as file_object: lines = file_object.readlines() #创建一个变量 pi_string = '' for line in lines: #删除行每行开头的空行，并拼接到变量 pi_string += line.strip() #输入一个变量 birthday = input("Enter your birthday, in the form mmddyy: ") #if判断是否纯在内容中 if birthday in pi_string: print("Your birthday appears in the first million digits of pi!") else: print("Your birthday does not appear in the first million digits of pi.")
+
+Enter your birthday, in the form mmddyy: 11111111111111111111111111
+Your birthday does not appear in the first million digits of pi.
+
+
+写文件
+
+写入操作方式：
+
+r：读取文件
+w：清空写入文件
+a：追加写入文件
+r+：文件读写模式
+
+
+写入空文件
+
+#打开空文件并写入内容
+with open(filename, 'w') as file_object: file_object.write('\nI Love programming!')
+
+I Love programming!
+
+追加写入多行内容
+
+##打开空文件并写入内容
+ with open(filename, 'a') as file_object: #每行添加换行符 file_object.write("I also love finding meaning in large datasets.\n") file_object.write("I love creating apps that can run in a browser.\n")
+
+I Love programming!
+I also love finding meaning in large datasets.
+I love creating apps that can run in a browser.
+
+注意：写入多行时注意使用换行符 “\n” 文件打开后光标默认停在文件最后一个字符位
+
+
+Python 异常处理
+
+Python 异常处理：指程序执行过程中各种原因造成的程序中断或挂死。
+
+Python 异常处理：指程序执行过程中各种原因造成的程序中断或挂死。
+
+python中使用try_except模块来处理这些意外情况，try_except模块让程序执行指定的操作，同时反馈python发生了什么错误。
+
+python中使用try_except模块来处理这些意外情况，try_except模块让程序执行指定的操作，同时反馈python发生了什么错误。
+
+使用try_except模块即便异常发生也不会退出程序而是会继续运行，显示你编写的友好错误消息。
+
+使用try_except模块即便异常发生也不会退出程序而是会继续运行，显示你编写的友好错误消息。
+
+
+处理异常
+
+处理流程：
+
+获取异常信息类型
+
+将异常类型添加到try_except模块中判断，避免程序崩溃。
+
+try_except模块的使用使错误页面更友好
+
+异常信息类型获取
+
+#代码
+print (5/0)
+
+#报错   
+    print (5/0)
+ZeroDivisionError: division by zero
+
+报错类型：ZeroDivisionError
+
+将异常类型添加到try_except模块中判断
+
+try:
+    print (5/0)
+except ZeroDivisionError: print ("You can't divide by zero")
+
+程序正常执行友好提示错误
+
+You can't divide by zero
+
+
+try_except模块中else代码块
+
+需要在tty代码块中执行成功的代码，在继续运行的需要通过else代码块告诉程序。
+
+tty：判断代码是否会引发错误
+except：将错误信息告诉程序
+else：将校验后的代码，交由程序运行
+
+代码实例一：
+
+判断是否是输入的整数
+
+判断是否整数除以“0”
+
+python中不允许一个数字除以“0”
+
+print("Give me two numbers, and I'll divide them.")
+print("Enter 'q' to quit.")
+
+while True: first_number = input("\nFirst number: ") if first_number == 'q': break second_number = input("Second number: ") try: answer = int(first_number) / int(second_number) except ZeroDivisionError: print("You can't divide by 0!") #可以使用多个except提示错误类型 except ValueError: print("You can'tinvalid literal for int()!") else: print(answer)
+
+Give me two numbers, and I'll divide them.
+Enter 'q' to quit.
+
+First number: 5 Second number: 2 2.5 First number: 0 Second number: 0 You can't divide by 0! First number: 0.8 Second number: 0 You can'tinvalid literal for int()!
+
+代码实例二：
+
+判断文件是否存在
+
+#文件名称
+filename = 'alice.txt'
+
+try:
+    with open(filename) as f_obj: contents = f_obj.read() except FileNotFoundError as e: msg = "Sorry, the file " + filename + " does not exist." print(msg)
+
+Sorry, the file alice.txt does not exist.
+
+代码实例三：
+
+判断文件是否存在
+
+分析存在的文件中包含了大致多少个单词
+
+def count_words(filename):
+    """Count the approximate number of words in a file.分析存在的文件中包含了大致多少个单词""" try: with open(filename) as f_obj: contents = f_obj.read() except FileNotFoundError: pass else: # Count approximate number of words in the file. words = contents.split() num_words = len(words) print("The file " + filename + " has about " + str(num_words) + " words.") filenames = ['alice.txt', 'siddhartha.txt', 'moby_dick.txt', 'little_women.txt'] for filename in filenames: count_words(filename)
+
+The file alice.txt has about 29461 words.
+The file siddhartha.txt has about 42172 words. The file little_women.txt has about 189079 words.
+
+
+使用json存储数据
+
+模块json能够将简单的python数据结构转存到文件中，并在程序再次运行时加载该文件中的数据，也可以使用json在python程序之间分享数据。
+
+json数据格式并非python专用
+
+
+json模块的读写功能
+
+json.dump() 存储数据 json.load() 读取数据
+
+json模块的写功能
+
+import json
+
+numbers = [2, 3, 5, 7, 11, 13] filename = 'numbers.json' with open(filename, 'w') as file_object: json.dump(numbers, file_object)
+
+列表numbers被写入numbers.json文件中
+
+[2, 3, 5, 7, 11, 13]
+
+json模块的读功能
+
+import json
+
+filename = 'numbers.json'
+with open(filename) as file_object:
+    numbers = json.load(file_object)
+    
+print(numbers)
+
+读出umbers.json文件中的信息
+
+[2, 3, 5, 7, 11, 13]
+
+
+使用json保存和读取用户生成的数据和重构
+
+用户生成数据如果不以某种方式保存，当程序停止时会出现数据信息丢失现象。json模块很好的解决了这个问题。
+
+import json
+
+def get_stored_username(): """Get stored username if available. 如果存储了用户名，就获取他""" filename = 'username.json' try: with open(filename) as f_obj: username = json.load(f_obj) except FileNotFoundError: return None else: return username def get_new_username(): """Prompt for a new username. 提示输入用户名""" username = input("What is your name? ") filename = 'username.json' with open(filename, 'w') as f_obj: json.dump(username, f_obj) return username def greet_user(): """Greet the user by name. 问候用户并指出用户名""" username = get_stored_username() if username: print("Welcome back, " + username + "!") else: username = get_new_username() print("We'll remember you when you come back, " + username + "!") greet_user()
+
+首次执行代码：
+
+What is your name? yunlei
+We'll remember you when you come back, yunlei!
+
+再次执行代码：
+
+Welcome back, yunlei!
+

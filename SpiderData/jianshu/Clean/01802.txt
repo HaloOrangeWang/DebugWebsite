@@ -1,0 +1,27 @@
+
+vim 安装 tabnine/YouCompleteMe 插件后打开任意代码报错 "found static Python library"... "but a dynamic one is required"...
+
+mac 通过 brew 装有 vim(8.2.3800)，插件管理使用 vim-plug，vim 自动安装依赖 python@3.10 ，其他自己安装python通过pyenv管理
+
+通过 PlugInstall 安装 tabnine/YouCompleteMe后打开代码YCM报错
+
+提示说需要动态库但默认安装的python不包含。通过 brew info 查看安装的python@3.10位置，通过python执行 `import sysconfig; sysconfig.get_config_vars('Py_ENABLE_SHARED')` 发现确实没有指定  `--enable-shared (or --enable-framework)` 安装参数
+
+首先使用 brew 重装 python@3.10 尝试使用参数 -s 通过源码或-i交互方式添加 编译参数 `--enable-shared`，但安装后查看未生效
+
+然后尝试通过指定版本的python 编译安装 tabnine/YouCompleteMe：
+
+1. 终端添加环境变量 `export PYTHON_CONFIGURE_OPTS="--enable-framework"`
+
+2. pyenv安装新带动态库的python `pyenv install 3.9.9`
+
+3. 切到vim YCM目录 `cd ~/.vim/plugged/YouCompleteMe`
+
+4. 确保当前的YCM代码是新的全的 `git pull && git submodule update --init --recursive`（如果submodule不全可能报错 `ERROR - ycm_core library not detected`）
+
+5. 指定当前目录使用新安装的python3.9.9 `pyenv local 3.9.9`
+
+6. 根据需要(支持c、go)编译安装 YCM `./install.py --clangd-completer --go-completer`， 如果支持的语言都安装 `./install.py --all`
+
+如果全提示OK，那就是👌了
+

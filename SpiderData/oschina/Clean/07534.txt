@@ -1,0 +1,62 @@
+
+前言
+
+在Ubuntu中搭建openwrt编译环境时，安装完了需要的软件之后，我们执行命令检查依赖是否满足，
+
+make defconfig
+
+有时会出现以下警告：
+
+ihid@ubuntu:~/chaos_calmer$ make defconfig
+Checking 'working-make'... ok.
+Checking 'case-sensitive-fs'... ok.
+Checking 'gcc'... ok.
+Checking 'working-gcc'... ok.
+Checking 'g++'... ok.
+Checking 'working-g++'... ok.
+Checking 'ncurses'... ok.
+Checking 'zlib'... ok.
+Checking 'libssl'... ok.
+Checking 'tar'... ok.
+Checking 'find'... ok.
+Checking 'bash'... ok.
+Checking 'patch'... ok.
+Checking 'diff'... ok.
+Checking 'cp'... ok.
+Checking 'seq'... ok.
+Checking 'awk'... ok.
+Checking 'grep'... ok.
+Checking 'getopt'... ok.
+Checking 'stat'... ok.
+Checking 'md5sum'... ok.
+Checking 'unzip'... ok.
+Checking 'bzip2'... ok.
+Checking 'wget'... ok.
+Checking 'perl'... ok.
+Checking 'python'... ok.
+Checking 'svn'... ok.
+Checking 'git'... failed.
+Checking 'file'... ok.
+Checking 'openssl'... ok.
+Checking 'ldconfig-stub'... ok.
+
+Build dependency: Please install Git (git-core) >= 1.6.5
+
+/home/ihid/chaos_calmer/include/prereq.mk:12: recipe for target 'prereq' failed
+Prerequisite check failed. Use FORCE=1 to override.
+/home/ihid/chaos_calmer/include/toplevel.mk:140: recipe for target 'staging_dir/host/.prereq-build' failed
+make: *** [staging_dir/host/.prereq-build] Error 1
+
+明明我们已经安装了git，却显示我们未安装，只是openwrt里面prereq-build.mk的一个bug，我们可以通过打patch的方法来修复它。
+
+
+解决办法
+
+下载patch文件：https://gitlab.labs.nic.cz/turris/openwrt/uploads/0673001b14ab1d1769604ff0ce7d8781/git-version-check-fix.patch
+
+将文件复制到/home/ihid/chaos_calmer/include路径下
+
+在当前路径下执行命令patch < git-version-check-fix.patch
+
+回到chaos_calmer主目录，再次检查依赖，发现没，没有问题了。
+

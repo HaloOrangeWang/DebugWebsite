@@ -1,0 +1,33 @@
+Django报错 no such table: main.auth_user__old
+
+
+在admin后台添加文章的时候报错
+
+Django 2.0，去查了一下，报错的原因是Django 版本低了，sqlite3数据库兼容的问题。
+
+
+解决办法：
+
+升级Django 到2.1.5
+
+pip install django==2.1.5 -i https://pypi.doubanio.com/simple
+
+直接输命令就行了，会自动卸载2.0版本的。
+
+
+删除migrations 文件夹
+
+
+删除 sqlite 数据库
+
+先迁移默认的app
+
+python manage.py migrate
+
+再迁移自己的app myblos
+
+
+重新新建管理员账号、密码
+
+重新进去添加文章就可以了
+

@@ -1,0 +1,74 @@
+
+1. 由于主项目A.py调用 ./codes/b.py 和c.py 作为模块，导致报错，找不到 b 和 c （A.py 和codes 在同一文件夹下）
+
+
+主程序A.py原来调用命令为：
+
+from codes import *
+
+修改为：
+
+import sys
+
+sys.path.append('./codes')
+
+import b
+
+import c
+
+运行
+
+pyinstaller -p ./codes/ A.py
+
+
+2. 运行dist中A，继续报错：
+
+找不到 typedefs 模块，修改：
+
+pyinstaller -p ./codes/ prPred.py --hidden-import sklearn.neighbors.typedefs
+
+
+3. 运行dist中A，继续报错：
+
+libmkl_intel_thread.so: undefined symbol: omp_get_num_procs
+
+找到libiomp5.so所在路径，修改：
+
+pyinstaller -p ./codes/ prPred.py --hidden-import sklearn.neighbors.typedefs --add-binary "/xxx/xxxx/xxxx/lib/libiomp5.so:."
+
+
+4. 继续报错
+
+参考（https://blog.csdn.net/Iv_zzy/article/details/107462210?utm_medium=distribute.pc_relevant_bbs_down.none-task--2~all~first_rank_v2~rank_v28-2.nonecase&depth_1-utm_source=distribute.pc_relevant_bbs_down.none-task--2~all~first_rank_v2~rank_v28-2.nonecase）
+
+(https://blog.csdn.net/m0_37477175/article/details/82146996)
+
+找不到调用的外部csv文件，本项目中是A.py 调用codes文件夹中的b.py 和c.py， 而b.py 调用model文件夹中的c.csv，c.py 调用model文件夹中的d.csv，修改b.py为：
+
+cur_path = os.path.abspath(__file__)
+
+parent_path = os.path.abspath(os.path.dirname(cur_path) + os.path.sep +"..")
+
+c_path = os.path.join(parent_path,'model/c.csv') ##model和codes 在同一文件夹中
+
+x = pd.read_csv(c_path,index_col=0,header=0)
+
+c.py 修改类似
+
+同时将model 放入dist 的A 的执行程序的上层中，确保打包的dist中的A 可以找到model
+
+将dist中A放入环境变量，运行。
+
+
+参考 https://blog.csdn.net/weixin_44128511/article/details/95372044
+
+在*.spec文件中增加两行(添加在原文件第二行)，对递归深度进行设置:
+
+import sys
+
+sys.setrecursionlimit(100000)
+
+执行
+
+pyinstaller  *.spec
+

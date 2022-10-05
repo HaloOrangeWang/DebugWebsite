@@ -1,0 +1,60 @@
+技术栈win7+python3+selenium
+
+之前有个需求需要实现自动化提流程，为了在任何电脑都能实现该功能，特此写了个爬虫，并将其打包成EXE文件，但在点击EXE文件是出现了问题
+
+
+点击exe文件终端小黑窗一闪而过
+
+为了看到终端是否有报错可以在该exe文件目录下输入cmd执行终端，并在终端中输入exe文件名称如下
+
+
+回车后会看到报错
+
+一开始怎么也无法找到错误所致（因为在虚拟环境都有导入selenium包），后来索性直接在windows环境下pip install selenium,成功的解决了这个问题。
+
+在自己电脑上终于可以跑成功了，但是把文件发到其他电脑上就有另一个问题了
+
+Microsoft Windows [版本 10.0.17763.805]
+(c) 2018 Microsoft Corporation。保留所有权利。
+
+C:\Users\jiazhiqiang-phq\Desktop\OA\dist>msg.exe
+Traceback (most recent call last):
+ File "site-packages\selenium\webdriver\common\service.py", line 76, in start
+ File "subprocess.py", line 709, in __init__
+ File "subprocess.py", line 997, in _execute_child
+FileNotFoundError: [WinError 2] 系统找不到指定的文件。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+ File "msg.py", line 125, in <module>
+ File "msg.py", line 10, in msg
+ File "site-packages\selenium\webdriver\chrome\webdriver.py", line 73, in __init__
+ File "site-packages\selenium\webdriver\common\service.py", line 83, in start
+selenium.common.exceptions.WebDriverException: Message: 'chromedriver' executable needs to be in PATH. Please see https://sites.google.com/a/chromium.org/chromedriver/home
+
+[5880] Failed to execute script msg
+
+原因是谷歌浏览器对应的驱动不同（我本地驱动配置了相对应的谷歌驱动的环境变量，所以代码中并没有写驱动的绝对路径）
+
+解决方法下载对应的驱动放到exe文件同级目录下就好啦！
+
+补充：使用pyinstaller将python程序打包成exe执行文件时遇到模块找不到的问题解决办法
+
+在使用pyinstaller对python程序进行打包后，若打包的主程序中调用自编模块(有时第三方模块也会出现同样问题)，运行exe文件出现模块找不到的问题。
+
+这样就不能将打包后的exe文件 在其他电脑上运行。
+
+
+解决办法是：
+
+打包时加入你自编模块(或第三方模块所在文件夹路径)，笔者程序中调用了shiyanshi自编模块，在D:\Pycharm\Program路径下。
+
+因此打包时需要添加路径进行打包。
+
+使用pyinstaller ***.py -F -p D:\Pycharm\Program命令在主程序所在文件目录下进行打包，即可解决模块找不到的问题。
+
+可以正常运行。
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

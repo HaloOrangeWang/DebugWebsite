@@ -1,0 +1,326 @@
+错误总是在所难免。编写可预见和处理错误的脚本可让您节省大量时间，同时避免很多令人头疼的问题。当工具返回错误消息时，ArcPy 会生成系统错误或异常。在 Python 中，您能够提供多种可用于处理异常的结构和方法。当然，也会由于其他与地理处理工具不相关的原因导致脚本失败。同时需要以适当的方式发现和处理这些问题。以下部分会提供一些方法，这些方法介绍了 Python 异常处理的基础知识。
+
+当工具发出错误消息时，ArcPy 会生成
+
+try-except 语句
+
+try-except 语句可用于封装整个程序或只封装代码的特定部分来捕捉和标识错误。如果 try 语句中发生错误，则会引发异常，然后会执行 except 语句下的代码。使用基本的 except 语句是最基本的错误处理方式。
+
+在以下代码中，由于未提供所需的 buffer_distance_or_field 参数，导致except 语句来捕捉错误，然后获取并打印缓冲生成的错误消息。请注意，只有在缓冲返回错误后才会执行 except 块。
+
+import arcpy
+
+import sys
+
+try:
+
+# Execute the Buffer tool
+
+#
+
+arcpy.Buffer_analysis("c:/transport/roads.shp", "c:/transport/roads_buffer.shp")
+
+except Exception:
+
+e = sys.exc_info()[1]
+
+print(e.args[0])
+
+# If using this code within a script tool, AddError can be used to return messages
+
+# back to a script tool. If not, AddError will have no effect.
+
+arcpy.AddError(e.args[0])
+
+try 语句有一个可选的 finally 子句，可用于无论是否出现异常都始终应该执行的任务。下例中，ArcGIS 3D Analyst 扩展模块 通过 finally 子句检入，从而确保始终都会检入该扩展模块。
+
+class LicenseError(Exception):
+
+pass
+
+import arcpy
+
+try:
+
+if arcpy.CheckExtension("3D") == "Available":
+
+arcpy.CheckOutExtension("3D")
+
+else:
+
+# Raise a custom exception
+
+#
+
+raise LicenseError
+
+arcpy.env.workspace = "D:/GrosMorne"
+
+arcpy.HillShade_3d("WesternBrook", "westbrook_hill", 300)
+
+arcpy.Aspect_3d("WesternBrook", "westbrook_aspect")
+
+except LicenseError:
+
+print "3D Analyst license is unavailable"
+
+except arcpy.ExecuteError:
+
+print(arcpy.GetMessages(2))
+
+finally:
+
+# Check in the 3D Analyst extension
+
+#
+
+arcpy.CheckInExtension("3D")raise 语句
+
+上一个示例可用于处理代码中发生的异常。在某些情况下，可能需要创建自定义的异常。此时，可使用 raise 语句。在以下代码中，在识别出输入要素类未包含任何要素时使用了 raise 语句。从严格意义上来说，这并不属于错误，而只是使用代码来预防的一种情况。
+
+class NoFeatures(Exception):
+
+pass
+
+import arcpy
+
+import os
+
+import sys
+
+arcpy.env.overwriteOutput = True
+
+fc = arcpy.GetParameterAsText(0)
+
+try:
+
+# Check that the input has features
+
+#
+
+result = arcpy.GetCount_management(fc)
+
+if int(result[0]) > 0:
+
+arcpy.FeatureToPolygon_management(
+
+fc, os.path.join(os.path.dirname(fc), 'out_poly.shp'))
+
+else:
+
+# Raise custom exception
+
+#
+
+raise NoFeatures(result)
+
+except NoFeatures:
+
+# The input has no features
+
+#
+
+print('{} has no features'.format(fc))
+
+except:
+
+# By default any other errors will be caught here
+
+#
+
+e = sys.exc_info()[1]
+
+print(e.args[0])ExecuteError 类
+
+地理处理工具失败时会抛出 arcpy.ExecuteError 异常的错误）归为一组，而将所有其他异常类型归为一组。然后，可分别采用不同的方式处理这些错误，如下面的代码中所示：
+
+import arcpy
+
+import sys
+
+try:
+
+result = arcpy.GetCount_management("C:/invalid.shp")
+
+# Return geoprocessing specific errors
+
+#
+
+except arcpy.ExecuteError:
+
+arcpy.AddError(arcpy.GetMessages(2))
+
+# Return any other type of error
+
+except:
+
+# By default any other errors will be caught here
+
+#
+
+e = sys.exc_info()[1]
+
+print(e.args[0])traceback
+
+在较大较复杂的脚本中，可能很难确定错误的确切位置。可以将 Python 的 sys 和 traceback 模块结合使用来找出错误的准确位置和原因，这种方法可以较为准确地标识出错误的原因，从而节省您宝贵的调试时间。
+
+# Import the required modules
+
+#
+
+import arcpy
+
+import sys
+
+import traceback
+
+arcpy.env.workspace = "C:/Data/myData.gdb"
+
+try:
+
+arcpy.CreateSpatialReference_management()
+
+#--------------------------
+
+# Your code goes here
+
+#
+
+# See the table below for examples
+
+#--------------------------
+
+except arcpy.ExecuteError:
+
+# Get the tool error messages
+
+#
+
+msgs = arcpy.GetMessages(2)
+
+# Return tool error messages for use with a script tool
+
+#
+
+arcpy.AddError(msgs)
+
+# Print tool error messages for use in Python/PythonWin
+
+#
+
+print(msgs)
+
+except:
+
+# Get the traceback object
+
+#
+
+tb = sys.exc_info()[2]
+
+tbinfo = traceback.format_tb(tb)[0]
+
+# Concatenate information together concerning the error into a message string
+
+#
+
+pymsg = "PYTHON ERRORS:\nTraceback info:\n" + tbinfo + "\nError Info:\n" + str(sys.exc_info()[1])
+
+msgs = "ArcPy ERRORS:\n" + arcpy.GetMessages(2) + "\n"
+
+# Return python error messages for use in script tool or Python Window
+
+#
+
+arcpy.AddError(pymsg)
+
+arcpy.AddError(msgs)
+
+# Print Python error messages for use in Python / Python Window
+
+#
+
+print(pymsg)
+
+print(msgs)
+
+如果使用了上述代码并且地理处理工具发生了错误（如输入无效），则会引发
+
+except 语句。此语句将使用 except 语句。该语句将获取 traceback 对象并打印相应的系统错误消息，
+
+而不是打印地理处理消息。
+
+下面列出了可替换到上述代码中的三条不同的代码行预计会产生的错误。第一个示例产生了地理处理工具错误，会打印出 traceback 信息和地理处理错误消息。第二个和第三个示例与地理处理并不相关，只会打印 traceback 信息。
+
+代码产生的错误arcpy.GetCount_management("")PYTHON ERRORS:
+
+Traceback info:
+
+File "c:\temp\errortest.py", line 10, in
+
+arcpy.GetCount_management("")
+
+Error Info:
+
+Failed to execute. Parameters are not valid.
+
+ERROR 000735: Input Rows: value is required
+
+Failed to execute (GetCount).
+
+ArcPy ERRORS:
+
+Failed to execute. Parameters are not valid.
+
+ERROR 000735: Input Rows: value is required
+
+Failed to execute (GetCount).
+
+x = "a" + 1PYTHON ERRORS:
+
+Traceback info:
+
+File "c:\temp\errortest.py", line 10, in
+
+x = "a" + 1
+
+Error Info:
+
+cannot concatenate 'str' and 'int' objects
+
+float("a text string")PYTHON ERRORS:
+
+Traceback info:
+
+File "c:\temp\errortest.py", line 10, in
+
+float("a text string")
+
+Error Info:
+
+invalid literal for float(): a text string错误结果从结果对象获取错误消息
+
+有关
+
+result = arcpy.GetCount_management("c:/data/rivers.shp")
+
+如果调用 GetCount_management 引发了异常，则不会创建 Result 对象。这表示无法从 Result 对象中检索错误消息。
+
+import arcpy
+
+try:
+
+result = arcpy.GetCount_management("c:/data/rivers.shp")
+
+# Return Geoprocessing specific errors
+
+# (this method is incorrect!)
+
+except arcpy.ExecuteError:
+
+arcpy.AddError(result.getMessages(2))
+
+上述代码失败，并显示消息 name 'result' is not defined。这是由于 Result 对象因工具失败而无法进行创建。因为未创建 Result 对象，因此会在尝试使用 getMessages 方法时引发 Python 错误。注:
+
+即使在工具失败的情况下，也会创建通过调用 ArcGIS for Server 上的地理处理服务所创建的 Result 对象。仅当工具在本地运行且引发错误时，创建 Result 对象才会失败。有关使用结果对象的详细信息，请参阅从地理处理工具获取结果。
+

@@ -1,0 +1,54 @@
+
+报错
+
+Traceback (most recent call last):
+
+File "prepare_data.py", line 9, in <module>
+
+import soundfile
+
+File "/usr/local/lib/python2.7/dist-packages/soundfile.py", line 142, in <module>
+
+raise OSError('sndfile library not found')
+
+OSError: sndfile library not found
+
+
+以为是版本问题，重装之后报错
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "/usr/local/lib/python2.7/dist-packages/soundfile.py", line 267, in <module>
+
+_snd = _ffi.dlopen('sndfile')
+
+File "/usr/local/lib/python2.7/dist-packages/cffi/api.py", line 141, in dlopen
+
+lib, function_cache = _make_ffi_library(self, name, flags)
+
+File "/usr/local/lib/python2.7/dist-packages/cffi/api.py", line 802, in _make_ffi_library
+
+backendlib = _load_backend_lib(backend, libname, flags)
+
+File "/usr/local/lib/python2.7/dist-packages/cffi/api.py", line 797, in _load_backend_lib
+
+raise OSError(msg)
+
+OSError: ctypes.util.find_library() did not manage to locate a library called 'sndfile'
+
+
+报错原因
+
+缺少libsndfile，查看 SoundFile官网，发现需要安装libsndfile
+
+On Linux, you need to install libsndfile using your distribution’s package manager, for example sudo apt-get install libsndfile1.
+
+
+解决办法
+
+sudo apt-get install libsndfile1
+
+（之前用的时候直接pip install soundflie 就可以了，不记得有这一步。。。）
+

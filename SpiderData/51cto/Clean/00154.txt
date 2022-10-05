@@ -1,0 +1,30 @@
+系统： CentOS-6.4-x86_64
+
+Python ： Python 3.4.5 和 Python 3.5.2
+
+安装 MySQL-python ，结果出错：
+
+ImportError: No module named 'ConfigParser'
+
+Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-build-ry1be27_/mysql-python/
+
+原因：
+
+在 Python 3.x 版本后，ConfigParser.py 已经更名为 configparser.py 所以出错！
+
+可以看看系统中的 python 命令 ，系统自带个 python 2.6。
+
+[plain] view plain copy
+
+[root@centos]# ls /usr/bin/python*
+
+/usr/bin/python  /usr/bin/python2  /usr/bin/python2.6
+
+[root@centos]#
+
+[root@centos]# python2.6 -V
+
+Python 2.6.6
+
+[root@centos]#
+

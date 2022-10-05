@@ -1,0 +1,26 @@
+
+Windows安装open3d
+
+通常情况下是pip install open3d，然而实际上这样安装会报错。即使是在Prompt安装也一样。错误情况看下面，现在是正常的安装步骤，一共需要安装两个，一个是open3d，另一个是open3d-python
+
+
+ERROR: Cannot uninstall 'terminado'. It is a distutils installed project and......
+
+在命令行安装open3d时大概会遇到这样的错误，这个时候需要加点料，把安装命令改为：
+
+
+AttributeError: 'module' object has no attribute 'read_point_cloud'
+
+这是在运行open3d时会报的错误。除此之外还有一种报错：
+
+AttributeError: 'open3d.geometry.PointCloud()' object has no attribute 'voxel_down_sample'
+
+这都是同一类报错，均为版本问题导致。
+
+建议：卸载重装，或是更新到最新版本。如果都不行就用anaconda创建一个虚拟环境安装open3d和open3d-python。
+
+
+import open3d时报错
+
+本人遇到的是numpy版本问题导致的报错，因此只需要用pip install numpy==1.21重新安装numpy即可。
+

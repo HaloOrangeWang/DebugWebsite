@@ -1,0 +1,18 @@
+具体错误日志如下:
+
+The resulting error log is as follows
+Traceback (most recent call last): File "train.py", line 441, in <module> train() # train normally File "train.py", line 324, in train dataloader=testloader) File "F:\train\yolov3hat\test.py", line 85, in test inf_out, train_out = model(imgs) # inference and training outputs File "D:\Program Files\Python\Python37\lib\site-packages\torch\nn\modules\module.py", line 532, in __call__ result = self.forward(*input, **kwargs) File "F:\train\yolov3hat\models.py", line 260, in forward return torch.cat(io, 1), p RuntimeError: invalid argument 0: Sizes of tensors must match except in dimension 1. Got 7 and 85 in dimension 2 at C:/w/1/s/windows/pytorch/aten/src\THC/generic/THCTensorMath.cu:71
+
+
+解决办法:
+
+解决办法:
+
+你输入的图像数据的维度不完全是一样的，比如是训练的数据有100组，其中99组是256*256，但有一组是384*384，这样会导致Pytorch的检查程序报错
+
+另外一个则是比较隐晦的batchsize的问题，Pytorch中检查你训练维度正确是按照每个batchsize的维度来检查的，比如你有1000组数据（假设每组数据为三通道256px*256px的图像），batchsize为4，那么每次训练则提取(4,3,256,256)维度的张量来训练，刚好250个epoch解决(250*4=1000)。但是如果你有999组数据，你继续使用batchsize为4的话，这样999和4并不能整除，你在训练前249组时的张量维度都为(4,3,256,256)但是最后一个批次的维度为(3,3,256,256)，Pytorch检查到(4,3,256,256) != (3,3,256,256)，维度不匹配，自然就会报错了，这可以称为一个小bug。
+
+本次我提出的问题:
+
+你应该检查你的 yolov3的配置文件中 全连接层的配置情况
+

@@ -1,0 +1,16 @@
+python连接informix只能通过jdbc（需要先部署java环境。我试过到IBM上下载ODBC但结局是失败的），在执行pytest时发现有一串报错（大致是下面的这样）：
+
+但整个项目可以正常执行，因影响到了最终allure的测试报告显示的成功率，主管让我想办法。我首先在自己的demo项目中用同样的方法连接informix，并没有报错。所以想到是pytest的问题?但
+
+在百度、csdn、bing、StackOverflow查找无果后，我终于在github上的jpype（python调用java的包）项目的issue找到解决方法：https://github.com/jpype-project/jpype/issues/561
+
+提问人与作者讨论了挺多内容，最后发现是jvm启动时会触发异常，以检查其挂钩是否已安装（The first thing that it does when starting up the JVM is triggering an exception to check if the hook is installed）
+
+而pytest安装了自己的挂钩干预了java的挂钩（But it appears possible that pytest installs its own hooks which interfere with the Java hooks）
+
+所以pytest捕获到这个异常，并打印出来了。
+
+解决方法：在pytest.ini的addopts添加-p no:faulthandler，以禁用这种故障处理
+
+官方文档：https://docs.pytest.org/en/latest/usage.html#fault-handler
+

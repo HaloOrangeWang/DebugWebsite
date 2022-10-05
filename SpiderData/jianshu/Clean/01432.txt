@@ -1,0 +1,18 @@
+最后Stackoverflow上面的大神解决了问题：
+
+https://stackoverflow.com/questions/12218229/my-config-h-file-not-found-when-intall-mysql-python-on-osx-10-8/12233148
+
+brew install mysql
+
+brew unlink mysql
+
+brew install mysql-connector-c
+
+sed -i -e 's/libs="libs -lmysqlclient -lssl -lcrypto"/g' /usr/local/bin/mysql_config
+
+pip install MySQL-python
+
+brew unlink mysql-connector-c
+
+brew link --overwrite mysql
+

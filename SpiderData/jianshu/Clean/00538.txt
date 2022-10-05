@@ -1,0 +1,34 @@
+next 服务器端渲染，配置 CSS Module 的 webpack 打包编译，出现了已经警告，提示说服务器端的 className 和 客户端打包编译之后的 className 不一致导致匹配不上。
+
+Warning: Prop `className` did not match. Server: "video-react-controls-enabled video-react-paused video-react-fluid video-react-user-active video-react-workinghover video-react" Client: "video-react-controls-enabled video-react-paused video-react-fluid video-react-user-active video-react"
+
+报错信息：
+
+
+解决方案:服务器端 CSS 的 webpack 配置
+
+// 在.webpackrc.js 文件添加rule,关键点是  esModule: false
+  "rules": [
+      {
+          test: /\.css?$/,
+          use: ['isomorphic-style-loader', {
+                loader: 'css-loader',
+                options: {
+                  importLoaders: 1,
+                  esModule: false,    // 禁掉css强制转换
+                  modules: {
+                      // 自定义生成的类名
+                      localIdentName: '[name]_[local]_[hash:base64:5]',
+                  }
+                }
+          }]
+      }
+  ],
+
+
+若不生效
+
+退出vscode,重启服务
+
+关闭浏览器，重新访问，清掉缓存
+

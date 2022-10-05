@@ -1,0 +1,119 @@
+
+报错背景：
+
+CDH集群中，将kafka和Flume整合，将kafka的数据发送给Flume消费。
+
+启动kafka的时候正常，但是启动Flume的时候出现了报错现象。
+
+
+报错现象：
+
+DH-5.15.1-1.cdh5.15.1.p0.4/lib/hadoop/lib/native:/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/lib/hbase/bin/../lib/native/Linux-amd64-64
+19/05/15 14:58:09 INFO zookeeper.ZooKeeper: Client environment:java.io.tmpdir=/tmp
+19/05/15 14:58:09 INFO zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+19/05/15 14:58:09 INFO zookeeper.ZooKeeper: Client environment:os.name=Linux
+19/05/15 14:58:09 INFO zookeeper.ZooKeeper: Client environment:os.arch=amd64
+19/05/15 14:58:09 INFO zookeeper.ZooKeeper: Client environment:os.version=3.10.0-862.el7.x86_64
+19/05/15 14:58:09 INFO zookeeper.ZooKeeper: Client environment:user.name=root
+19/05/15 14:58:09 INFO zookeeper.ZooKeeper: Client environment:user.home=/root
+19/05/15 14:58:09 INFO zookeeper.ZooKeeper: Client environment:user.dir=/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/flume-ng/conf.empty
+19/05/15 14:58:09 INFO zookeeper.ZooKeeper: Initiating client connection, connectString=192.168.52.26:2181 sessionTimeout=30000 watcher=org.I0Itec.zkclient.ZkClient@2ad96f71
+19/05/15 14:58:09 INFO zkclient.ZkClient: Waiting for keeper state SyncConnected
+19/05/15 14:58:09 INFO zookeeper.ClientCnxn: Opening socket connection to server master/192.168.52.26:2181. Will not attempt to authenticate using SASL (unknown error)
+19/05/15 14:58:09 INFO zookeeper.ClientCnxn: Socket connection established, initiating session, client: /192.168.52.26:60816, server: master/192.168.52.26:2181
+19/05/15 14:58:09 INFO zookeeper.ClientCnxn: Session establishment complete on server master/192.168.52.26:2181, sessionid = 0x36ab52d38c20b13, negotiated timeout = 30000
+19/05/15 14:58:09 INFO zkclient.ZkClient: zookeeper state changed (SyncConnected)
+19/05/15 14:58:10 INFO zkclient.ZkEventThread: Terminate ZkClient event thread.
+19/05/15 14:58:10 INFO zookeeper.ZooKeeper: Session: 0x36ab52d38c20b13 closed
+19/05/15 14:58:10 INFO kafka.KafkaSource: Group ID was not specified. Using flume as the group id.
+19/05/15 14:58:10 INFO zookeeper.ClientCnxn: EventThread shut down
+19/05/15 14:58:10 INFO sink.DefaultSinkFactory: Creating instance of sink: hdfsSink, type: hdfs
+19/05/15 14:58:10 INFO node.AbstractConfigurationProvider: Channel memoryChannel connected to [kafkaSource, hdfsSink]
+19/05/15 14:58:10 INFO node.Application: Starting new configuration:{ sourceRunners:{kafkaSource=PollableSourceRunner: { source:org.apache.flume.source.kafka.KafkaSource{name:kafkaSource,state:IDLE} counterGroup:{ name:null counters:{} } }} sinkRunners:{hdfsSink=SinkRunner: { policy:org.apache.flume.sink.DefaultSinkProcessor@414aa552 counterGroup:{ name:null counters:{} } }} channels:{memoryChannel=org.apache.flume.channel.MemoryChannel{name: memoryChannel}} }
+19/05/15 14:58:10 INFO node.Application: Starting Channel memoryChannel
+19/05/15 14:58:10 INFO node.Application: Waiting for channel: memoryChannel to start. Sleeping for 500 ms
+19/05/15 14:58:10 INFO instrumentation.MonitoredCounterGroup: Monitored counter group for type: CHANNEL, name: memoryChannel: Successfully registered new MBean.
+19/05/15 14:58:10 INFO instrumentation.MonitoredCounterGroup: Component type: CHANNEL, name: memoryChannel started
+19/05/15 14:58:10 INFO node.Application: Starting Sink hdfsSink
+19/05/15 14:58:10 INFO node.Application: Starting Source kafkaSource
+19/05/15 14:58:10 INFO kafka.KafkaSource: Starting org.apache.flume.source.kafka.KafkaSource{name:kafkaSource,state:IDLE}...
+19/05/15 14:58:10 INFO zookeeper.ZooKeeper: Initiating client connection, connectString=192.168.52.26:2181 sessionTimeout=30000 watcher=org.I0Itec.zkclient.ZkClient@6bbdc6fd
+19/05/15 14:58:10 INFO zkclient.ZkEventThread: Starting ZkClient event thread.
+19/05/15 14:58:10 INFO zkclient.ZkClient: Waiting for keeper state SyncConnected
+19/05/15 14:58:10 INFO zookeeper.ClientCnxn: Opening socket connection to server master/192.168.52.26:2181. Will not attempt to authenticate using SASL (unknown error)
+19/05/15 14:58:10 INFO zookeeper.ClientCnxn: Socket connection established, initiating session, client: /192.168.52.26:60890, server: master/192.168.52.26:2181
+19/05/15 14:58:10 INFO instrumentation.MonitoredCounterGroup: Monitored counter group for type: SINK, name: hdfsSink: Successfully registered new MBean.
+19/05/15 14:58:10 INFO instrumentation.MonitoredCounterGroup: Component type: SINK, name: hdfsSink started
+19/05/15 14:58:10 INFO zookeeper.ClientCnxn: Session establishment complete on server master/192.168.52.26:2181, sessionid = 0x36ab52d38c20b14, negotiated timeout = 30000
+19/05/15 14:58:10 INFO zkclient.ZkClient: zookeeper state changed (SyncConnected)
+19/05/15 14:58:10 INFO consumer.ConsumerConfig: ConsumerConfig values: 
+    auto.commit.interval.ms = 5000
+    auto.offset.reset = latest
+    bootstrap.servers = [master:9092, worker1:9092, worker2:9092]
+    check.crcs = true
+    client.id = 
+    connections.max.idle.ms = 540000
+    enable.auto.commit = false
+    exclude.internal.topics = true
+    fetch.max.bytes = 52428800
+    fetch.max.wait.ms = 500
+    fetch.min.bytes = 1
+    group.id = flume
+    heartbeat.interval.ms = 3000
+    interceptor.classes = null
+    internal.leave.group.on.close = true
+    key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+    max.partition.fetch.bytes = 1048576
+    max.poll.interval.ms = 300000
+    max.poll.records = 500
+    metadata.max.age.ms = 300000
+    metric.reporters = []
+    metrics.num.samples = 2
+    metrics.recording.level = INFO
+    metrics.sample.window.ms = 30000
+    partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor]
+    receive.buffer.bytes = 65536
+    reconnect.backoff.ms = 50
+    request.timeout.ms = 305000
+    retry.backoff.ms = 100
+    sasl.jaas.config = null
+    sasl.kerberos.kinit.cmd = /usr/bin/kinit
+    sasl.kerberos.min.time.before.relogin = 60000
+    sasl.kerberos.service.name = null
+    sasl.kerberos.ticket.renew.jitter = 0.05
+    sasl.kerberos.ticket.renew.window.factor = 0.8
+    sasl.mechanism = GSSAPI
+    security.protocol = PLAINTEXT
+    send.buffer.bytes = 131072
+    session.timeout.ms = 10000
+    ssl.cipher.suites = null
+    ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+    ssl.endpoint.identification.algorithm = null
+    ssl.key.password = null
+    ssl.keymanager.algorithm = SunX509
+    ssl.keystore.location = null
+    ssl.keystore.password = null
+    ssl.keystore.type = JKS
+    ssl.protocol = TLS
+    ssl.provider = null
+    ssl.secure.random.implementation = null
+    ssl.trustmanager.algorithm = PKIX
+    ssl.truststore.location = null
+    ssl.truststore.password = null
+    ssl.truststore.type = JKS
+    value.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+
+19/05/15 14:58:10 WARN consumer.ConsumerConfig: The configuration 'timeout.ms' was supplied but isn't a known config.
+19/05/15 14:58:10 INFO utils.AppInfoParser: Kafka version : 0.10.2-kafka-2.2.0
+19/05/15 14:58:10 INFO utils.AppInfoParser: Kafka commitId : unknown
+
+
+报错原因：
+
+这个报错并不是Flume的原因，而是kafka的锅。kafka由于某些原因报错，导致Flume连接kafka的时候报错。解决报错的时候需要去定位并解决kafka的报错。
+
+
+报错解决：
+
+未解决。。。
+

@@ -1,0 +1,76 @@
+程序运行中，可能会遇到BUG、用户输入异常数据以及其它环境的异常，这些都需要开发者进行处理。
+
+Python有一套内置的异常处理机制，同时PDB提供了调试代码的功能。
+
+1、错误处理
+
+在一般的程序处理中，可以对函数的返回值进行检查，是否返回了约定的错误码。例如系统程序调用的错误码一般是-1，成功返回0。但是这种方式必须使用大量的代码来判断是否出错。所以高级语言内置了try...except...finally的错误机制。
+
+class Solution(object):
+    def aDivisionb(self,a,b):
+        try:
+            print('try...')
+            r = a/b
+            print('result = %d'%r)
+        except ValueError as e:
+            print('ValueError: ',e)
+        except ZeroDivisionError as e:
+            print('ZeroDivisionError: ',e)
+        else:
+            print('no error!')
+        finally:
+            print('finally...')
+        print('END...')
+
+if __name__ == '__main__':
+    Test = Solution()
+    Test.aDivisionb(10,2)
+    print('------------------')
+    Test.aDivisionb(10,0)
+
+当我们认为某些代码可能会出错时，就可以用try来运行这段代码，如果执行出错，则后续代码不会执行，而是直接跳转至错误代码，即except语句块，执行完except后，如果有finally语句块，则执行finally语句块，至此，执行完毕。如果发生了不同的错误类型，可以由不同的except语句块处理，可以没有finally语句块。
+
+Python中的错误也是类，所有的错误类型都继承自BaseException，常见的错误类型和继承关系参考文档。
+
+2、log日志记录错误
+
+有关log的更多使用方法请自行百度
+
+class Solution(object):
+    def aDivisionb(self,a,b):
+        try:
+            print('try...')
+            r = a/b
+            print('result = %d'%r)
+        except ValueError as e:
+            print('ValueError: ',e)
+        except ZeroDivisionError as e:
+            print('ZeroDivisionError: ',e)
+        else:
+            print('no error!')
+        finally:
+            print('finally...')
+        print('END...')
+
+if __name__ == '__main__':
+    Test = Solution()
+    Test.aDivisionb(10,2)
+    print('------------------')
+    Test.aDivisionb(10,0)
+
+ERROR：root：division by zero 是log打印的
+
+使用logging不仅可以抛出错误，还可以输出文件。
+
+import logging
+logging.basicConfig(level=logging.INFO)
+
+s = '0'
+n = int(s)
+logging.info('n= %d ' % n)
+print(10/n)
+
+这就是logging的好处，他允许你指定记录信息的级别，有debug、info、warning、error等几个级别，当我们指定level=INFO时，logging.debug就不起作用了。同理，指定level=WARNING后，debug、info就不起作用了。这样以来，你就可以放心输出不同级别的信息，也不用删除，最后统一控制输出哪个级别的信息。
+
+logging的另一个好处就是通过简单的配置，一条语句可以同时输出到不同的地方，比如Console和文件
+

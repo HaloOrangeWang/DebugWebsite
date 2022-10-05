@@ -1,0 +1,63 @@
+
+问题描述：
+
+　　使用springboot连接数据库，启动的时候报错：testWhileIdle is true, validationQuery not set。但是不影响系统使用，数据库等一切访问正常。
+
+　　application.properties数据源配置如下：
+
+　　spring.datasource.username=root
+　　spring.datasource.password=
+　　spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+　　spring.datasource.initial-size=1
+　　spring.datasource.maximum-pool-size=10
+　　spring.datasource.connection-timeout=5000
+
+
+问题分析：
+
+　　查了这句话的意思：空闲的时候进行检测是开启的，但是检测的查询语句没有设置。大致意思就是说，当数据库没有接收到请求时，会进行数据库连接检测，检查数据库是否还是连着的。检查数据库是否断开需要发送sql语句。报错是说这个sql语句没有设置。
+
+　　那么解决思路有两个：
+
+　　　　1、设置不进行空闲时连接检测。
+
+　　　　2、开启空闲时连接检测，并设置检测用的sql语句。
+
+　　先查了资料，说testWhileIdle默认是false的，这是竟然是true，整个代码搜索了一下，也没有见到设置testWhileIdle的地方，推测应该是版本不一样，新版本jar包里面默认设置为true。
+
+　　好吧，先不管这些，既然都是数据库的设置，那么应该可以在配置数据源的时候加上这些配置，网上搜索了配置的写法，如下：
+
+　　spring.datasource.test-while-idle=true
+　　spring.datasource.validation-query=SELECT 1
+
+　　但是发现还是不起作用，仍然报错。
+
+　　有些不可理解，同样是数据源的配置，为什么上面的连接url、用户名、密码可以生效，下面的就不生效呢？
+
+　　再次搜索答案，发现有介绍了：
+
+　　springboot1.4取消spring.datasource.type
+
+　　在新版本中，validationQuery没有自动注入，那么就需要手动声明datasource bean。至于怎么写，可以看上面的文章。
+
+　　主要是手动注入DruidDataSource，声明一个配置类，数据源各个值都注入进去，返回DruidDataSource。
+
+　　再启动，系统不报错了！
+
+　　最后查看了DruidDataSource源代码，
+
+　　public static final String DEFAULT_VALIDATION_QUERY = null;
+
+　　果然，DruidDataSource默认testWhileIdle=true，并且validationQuery设置为空。
+
+
+总结：
+
+　　1、首先要理解错误，明白错误的意思。
+
+　　2、从错误出发，分析导致错误的原因，针对这些能找到哪些解决方法。
+
+　　3、再搜索资料，网上的资料都太乱了，版本不一致、环境不一样等有很多影响因素，需要一一进行实验。
+
+　　4、看源代码也是很不错的解决问题办法。
+

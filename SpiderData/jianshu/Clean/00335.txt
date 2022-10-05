@@ -1,0 +1,52 @@
+
+创建wkwebview的时候注册js中的交互方法
+
+WKUserContentController *wkUController = [[WKUserContentController alloc] init];
+  [wkUController addScriptMessageHandler:weakScriptMessageDelegate name:@"finish"];
+
+
+在wkwebview的代理中监听js方法
+
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    if ([message.name isEqualToString:@"finish"]) {
+        NSString *messageJson = [NSString stringWithFormat:@"%@", message.body];
+        NSData *data = [messageJson dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];    
+        if (json && [json isKindOfClass:[NSDictionary class]]) {    
+            self.callBack = json[@"callback"];
+        }
+        [self handleJSMessageFinishWithBody:message.body];
+        return;
+    }
+}
+
+
+如果需要给h5回传数据，需要找到callback方法，callback方法可以是写死的，或者是通过message下发的，最好的就是js下发此方法
+
+- (void)handleJSMessageFinishWithBody:(id)body {
+    NSDictionary * resultDic = @{@"success":@"1"};
+    NSString *callBack = [NSString stringWithFormat:@"%@('%@')", self.callBackName, [self noWhiteSpaceString:[resultDic JSONString]]];
+    NSLog(@"callBack:%@",callBack);
+    [self.webView evaluateJavaScript:callBack completionHandler:^(id _Nullable obj, NSError * _Nullable error) {
+        NSLog(@"JS回调：-- %@  %@", obj, error);
+        self.callBackName = nil;
+    }];
+}
+- (NSString *)noWhiteSpaceString:(NSString*)newString{
+  //去除掉首尾的空白字符和换行字符
+    newString = [newString stringByReplacingOccurrencesOfString:@"\r" withString:@""];
+    newString = [newString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+    newString = [newString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];  
+    newString = [newString stringByReplacingOccurrencesOfString:@" " withString:@""];
+    return newString;
+}
+
+如果发生报错：
+
+Error Domain=WKErrorDomain Code=4 "发生 JavaScript 异常" UserInfo={WKJavaScriptExceptionLineNumber=1, WKJavaScriptExceptionMessage=SyntaxError: Unexpected EOF, WKJavaScriptExceptionColumnNumber=0,
+
+请一定要检查回传参数：resultDic转换json之后是否带空格，这个会引起此报错！！！
+
+
+ios回传参数只能传递一个，所以必须将多参数存为字典的形式，再转为json形式回传。
+

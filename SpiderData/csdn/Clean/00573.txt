@@ -1,0 +1,52 @@
+在使用python的multiprocess库时，如果在主进程中的处理子进程的返回函数callback或者处理子进程的错误的函数errorbackerror中抛出异常，则子进程无法退出。
+ （1）errorcallback中抛出异常
+
+import multiprocessing
+import os
+import time
+import traceback
+
+def work(args):
+    try:
+        time.sleep(1)
+        print(os.get_pid())
+    except Exception as e:
+    	# 子进程报错
+        a += 1
+        print(traceback.format_exc(3))
+
+def callback(args):
+    print(args)
+
+def errorcallback(args):
+	# 处理子进程错误的函数报错
+	a = 1/0
+    print(args)
+
+def task():
+    pool =  multiprocessing.Pool(processes=2)
+    for i in range(10):
+        res = pool.apply_async(work,args=(i,),callback=callback,error_callback=errorcallback)
+    # for r in res.get():
+    #     print(r)
+    pool.close()
+    pool.join()
+  
+task()
+
+运行时：
+ 
+ （2）解决办法
+ 在errorcallback中使用try…except…
+
+import traceback
+def errorcallback(args):
+    try:
+        a = 1/0
+        print(args)
+    except:
+        print(traceback.format_exc(3))
+
+(3) 总结
+ 在主进程中的处理子进程的返回函数callback或者处理子进程的错误的函数errorbackerror中使用try…except …去保证其一定能运行成功，避免子进程阻塞等待。
+

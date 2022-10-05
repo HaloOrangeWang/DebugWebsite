@@ -1,0 +1,336 @@
+作者：FishStudy520
+
+
+前言
+
+在开发中，有时，我们花了几个小时写的js 代码，在浏览器调试一看，控制台一堆红……瞬间一万头草泥马奔腾而来。
+
+至此，本文主要记录js 常见的一些错误类型，以及常见的报错信息，分析其报错原因，并给予处理方法。并且将介绍几种捕获异常的方法。
+
+
+常见的错误类型
+
+
+常见的错误
+
+含义：超出了最大的堆栈大小
+
+为什么报错?
+
+在使用递归时消耗大量堆栈，导致游览器抛出错误，因为游览器给分配的内存不是无限的。举个栗子
+
+function pow(x, n) {
+ return x * pow(x, n - 1);
+}
+pow(10,5)
+
+处理办法
+
+使用递归的时候，设定一个条件来终止递归，否则会无限循环，直到用尽调用堆栈空间为止。
+
+function pow(x, n) {
+  if (n == 1)  return x
+  return x * pow(x, n - 1);
+}
+pow(10,5)
+
+含义：“x”未定义
+
+为什么报错？
+
+当你引用一个没有定义的变量时，抛出一个ReferenceError; 当你使用变量的时候，这个变量必须要声明，或者你可以确保它在你当前的脚本或作用域 (scope) 中可用。
+
+举个栗子
+
+// 变量未声明
+console.log(a)
+fn()
+// 错误的作用域   
+function sum() {
+  let number1 = 20,number2 = 30;
+  return number1 + number2;
+}
+console.log(number1)
+
+处理办法
+
+// 变量未声明
+let a;
+function fn() {};
+console.log(a);
+fn();
+
+// 错误的作用域
+let number1 = 20, number2 = 30;
+function sum() {
+   return number1 + number2;
+}
+console.log(number1)
+
+含义: 标识符已申明
+
+为什么报错？
+
+某个变量名称已经作为参数出现了，又在使用let再次声明。举个栗子
+
+// let 重复声明
+let a = 0;
+let a = 2;
+
+// 在函数中参数已经出现，函数里使用let重新声明
+function fn(arg) {
+ let arg = []
+}
+
+含义：捕获无效或意外的标记
+
+为什么报错？
+
+代码中有非法的字符或者缺少必要的标识符号，比如减号 ( - ) 与连接符 ( – ) ，或者是英文双引号 ( " ) 与中文双引号 ( “ )。
+
+举个栗子
+
+// 遗漏的字符
+let str = 'string;
+let colors = ['#000', #333', '#666'];
+
+// 使用特殊字符
+let str1 = 'string";
+let str2 = 5#5;
+
+// 错配字符(使用中文引号字符)
+let str3 = ‘string’;
+
+处理办法
+
+检查是否有特殊字符或者是否遗漏一些字符。
+
+含义：意外的终止输入
+
+为什么报错？
+
+代码中某些地方的括号或引号不匹配缺失，缺少()、[]、{}等。
+
+举个栗子
+
+// 缺少括号
+if(true)
+let obj = {id: 1
+let arr = [1,2,3
+
+// 缺少结束符号
+(function () {
+    console.log('hello world')
+}()
+
+处理办法
+
+检查是否有特殊字符或者是否遗漏一些字符,括号需要配对出现。
+
+6、TypeError: Cannot read property 'x' of undefined
+
+TypeError: Cannot set property 'x' of undefined
+
+含义：无法读取属性‘x’, 无法设置属性 'x'
+
+为什么报错？
+
+访问或设置未定义(undefined)或null值的属性时会发生这种报错。
+
+举个栗子
+
+// undefined
+let a = undefined
+a.id // 读取
+a.id = 1 // 设置
+// null
+let b = null 
+b.id  // 读取
+b.id = 2 // 设置
+null.filter(item=>item)
+
+处理办法
+
+有一些方法可以避免这种错误。一种简单且适用于小型属性链的方法是使用逻辑运算符&&。
+
+let obj = undefined
+console.log(obj&&obj.id)
+
+含义：表示 ‘x’不是构造函数
+
+为什么报错？
+
+使用不是构造器的对象或者变量来作为构造器使用。
+
+比如：new 10。
+
+举个栗子
+
+let Car = 1;
+new Car();
+new Math();
+
+处理办法
+
+使用正确的构造函数。
+
+Generator functions 也不能作为构造器来使用。
+
+function Car(make, model, year) {
+  this.make = make;
+  this.model = model;
+  this.year = year;
+}
+
+含义：正则表达式标志无效
+
+为什么报错？
+
+在代码中出现了无效的正则表达式的标记。
+
+举个栗子
+
+let reg = /foo/bar;
+
+处理办法
+
+let reg = /foo/g;
+
+含义：无效的Url
+
+为什么报错？
+
+在使用ajax 请求时url错误，导致请求失败。
+
+举个栗子
+
+function createXHR(url) {
+      let xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.send('user=admin');
+      xhr.onreadystatechange = function () {
+      }
+  }
+  createXHR('http://192.168.10.8080') // 错误url
+  createXHR('http:/192.168.10:8080/open') // 缺少 /,注：有些游览器会自动补全
+
+处理办法
+
+检查url 请求是否正确，保证请求路径的完整。
+
+createXHR('http://192.168.10:8080')
+
+
+异常调试及捕获
+
+try/catch，Js中处理异常的一种模式，try用于可能会发生错误的代码，catch对错误的处理。
+
+try{
+  // 可能会导致错误的代码
+}catch(error) {
+  // 错误处理
+}
+
+举个栗子
+
+try{
+  console.log(a)
+}catch(error) {
+   // 打印错误信息
+  console.log(error)  // ReferenceError: a is not defined
+}
+
+throw，用来抛出一个用户自定义的异常，执行将被停止。
+
+function getUserName(name) {
+    if(!name) throw new Error('用户名无效');
+    return name;
+}
+getUserName()
+
+Promise 的异常处理,Promise执行中，本身自带try...catch的异常处理，出错时，将错误Rejact函数。
+
+new Promise((resolve, reject) => {
+   throw new Error('error!');
+}).catch(alert);
+
+console.log() 方法,在浏览器中，使用console.log打印JavaScript的值。
+
+let value = '你最棒了，点个赞呗！'
+console.log(value)
+
+debugger 断点调试，用于停止执行 JavaScript，并调用调试函数。
+
+let value = 15;
+debugger
+document.querySelector('body').innerhtml = '你最棒了，点个赞呗！'
+
+总结 报错的时候别慌，有时候就是那么简单，根据这些代码敲一敲，熟悉一些常用的报错信息，便于在报错的时候快速的定位到报错原因。希望对面的小可爱们有所收获。
+
+1. JavaScript 重温系列（22篇全） 
+         
+ 
+         
+         
+         2. ECMAScript 重温系列（10篇全） 
+         
+ 
+         
+         
+         3. JavaScript设计模式 重温系列（9篇全） 
+         
+         
+         4.  
+         正则 / 框架 / 算法等 重温系列（16篇全） 
+         
+         
+         5.  
+         Webpack4 入门（上） 
+         ||  
+         Webpack4 入门（下） 
+         
+         
+         6.  
+         MobX 入门（上） 
+          ||   
+         MobX 入门（下） 
+         
+         
+         7. 8 
+         0+篇原创系列汇总 
+         
+       
+   
+      
+      
+      
+  
+     
+     
+     
+ 
+    
+    
+    
+ 
+    
+    
+    
+ 
+    
+    
+    回复“加群”与大佬们一起交流学习~
+ 
+    
+    
+    点击“阅读原文”查看 100+ 篇原创文章
+
+回复“加群”与大佬们一起交流学习~
+
+点击“阅读原文”查看 100+ 篇原创文章
+
+本文分享自微信公众号 - 前端自习课（FE-study）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

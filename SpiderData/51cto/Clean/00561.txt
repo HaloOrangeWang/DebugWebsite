@@ -1,0 +1,29 @@
+Python使用时，遇到了这样的报错：
+
+warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+
+第一步：下载FFmpeg文件
+下载网址，点击（https://ffmpeg.zeranoe.com/builds/）
+如果网页下载太慢，可以复制链接放到迅雷或者其他下载器进行下载
+
+第二步：把安装包解压到相应的文件夹中
+小编解压到了
+
+D:\soft2\python\Pythonfiles\Lib\site-packages\ffmpeg\ffmpeg-4.2-win64-static\bin
+
+第三步：配置环境
+我的电脑——>右键，属性——>高级系统设置——>高级——>环境变量——>系统变量的path
+——>编辑——>新建——>输入ffmpeg.exe的路径
+（小编是D:\soft2\python\Pythonfiles\Lib\site-packages\ffmpeg\ffmpeg-4.2-win64-static\bin）
+
+第四步：更改utils文件
+Python报错时出现这样：
+我们顺着这个路径找到这个文件，打开编辑
+里面有个函数是这样的：
+添加一个语句：
+append的是ffmpeg.exe的路径，然后保存
+注意：添加路径时把路径中的“\”全部改成“//”或者在路径的引号前加个r
+
+这样就解决了！
+

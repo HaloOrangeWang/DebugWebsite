@@ -1,0 +1,113 @@
+1.最近在大佬的blog上发现我们的装饰器除了可以用来进行统计日志还能帮我们抓异常，这样脚本也能非常的美观（偷懒），可以杜绝满屏的try....except的情况（不考虑性能）
+
+import  traceback
+def catch_error(fuck):
+    # 这个慎用， 如果当前两个函数都用了这个 真报错了不好定位，日志有点乱
+    @wraps(fuck)
+    def deroter(self,*args,**kwargs):
+        self.log("执行——装饰器包装")
+        self.log(str(fuck.__name__))
+        try:
+            result=fuck(self,*args,**kwargs)
+            return result
+        except Exception as e:
+            print("好兄弟，报错了")
+            print(traceback.format_exc())
+            self.log(str(fuck.__name__))
+            self.log("相关参数\n"+str(args)+"\n"+str(kwargs))
+            self.log("完毕but报错了\n"+traceback.format_exc())
+    return deroter
+
+出处！大佬博客
+
+2.动态创建不同的类，
+
+def make_class(class_name):
+    class C():
+        def print_class_name(self):
+            print(class_name)
+    C.__name__=class_name
+    return C
+
+c1,c2= list(map(make_class,['c1','c2']))
+
+c1=c1()
+print(c1,'实例')
+print(c2,'类')
+
+3.利用装饰器和装饰器，给类的每个函数都增加一个装饰器
+
+import functools
+
+def dector(func):
+    @functools.wraps(func)  #加了这个运行会报错
+    def warp(self,*args,**kwargs):
+        print('被修饰了')
+        return func(self,*args,**kwargs)
+    return warp
+
+class MY_metadclass(type):
+    def __new__(cls, cls_name,cls_base,cls_attr):
+        cls_attr_ex={}
+        for k,v in cls_attr.items():
+            if not k.startswith('__'):
+                cls_attr_ex[k]=dector(v)
+            else:
+                cls_attr_ex[k]=v
+        return super(MY_metadclass,cls).__new__(cls,cls_name,cls_base,cls_attr_ex)
+
+class bb(metaclass=MY_metadclass):
+    def __init__(self,name,age):
+        self.name=name
+        self.age=age
+
+def myxx(self):
+        print(self.name,self.age)
+
+c=bb("爸爸",25)
+c.myxx()
+# print(c.myxx().__name__)
+print(callable(c.myxx.__name__))
+print(c.myxx.__name__)
+
+# -*- coding: utf-8 -*-
+'''
+// ┏┓　　　┏┓
+// ┏┛┻━━━┛┻┓
+// ┃　　　　　　　┃ 　
+// ┃　　　━　　　┃
+// ┃　┳┛　┗┳　┃
+// ┃　　　　　　　┃
+// ┃　　　┻　　　┃
+// ┃　　　　　　　┃
+// ┗━┓　　　┏━┛
+//     ┃　　　┃ 神兽保佑　　　　　　　　
+//     ┃　　　┃ 代码无BUG！
+//     ┃　　　┗━━━┓
+//     ┃　　　　　　　┣┓
+//     ┃　　　　　　　┏┛
+//     ┗┓┓┏━┳┓┏┛
+//     ┃┫┫　┃┫┫
+//     ┗┻┛　┗┻┛
+import sys
+sys.path.append("..")
+
+def function():  
+    print(sys._getframe().f_code.co_filename)  #当前位置所在的文件名  
+    print(sys._getframe().f_code.co_name)      #当前位置所在的函数名  
+    print(sys._getframe().f_lineno)            #当前位置所在的行号  
+@用途   柯南探店的上传图片
+
+'''
+
+import requests
+import base64
+import time,datetime
+from codes35_api_jiekuan.make_string import data_generator
+import json
+from codes35_api_jiekuan.bilibili.my_base import API_Base
+from codes35_api_jiekuan.mit_to_mysql import operatr_mysql
+import functools
+
+baseurl = "https://tst-zxxm-api.gqichina.net"
+

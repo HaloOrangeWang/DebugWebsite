@@ -1,0 +1,27 @@
+　　今天在使用python3.7中的pymssql 连接sqlserver的时候遇到的问题：
+
+　　pymssql.OperationalError: (20009, b'DB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (SZS\\SQLEXPRESS)\n')　
+
+　　现在已经解决，特地来进行记录。
+
+
+　　1.在使用的python连接sql server的时候，先进行以下配置：
+
+　　sql server配置管理器--->SQL Server 网络配置---->选择当前使用的实例------>开启TCP/IP---->找到当前的动态端口号（当前是51091），如下图：
+
+
+　　2.代码如下：
+
+
+　　3.执行上方代码结果如下，没有报错
+
+
+　　4.注意点
+
+conn = pymssql.connect(host='localhost',server='SZS\SQLEXPRESS', port='51091', user='sa', password='123', database='mysql')  # 或者
+conn = pymssql.connect(host='szs',server='SZS\SQLEXPRESS', port='51091', user='sa', password='123', database='mysql')
+
+　　1.在写上面的连接字符串的时候，需要host和server分开，host代表当前的主机名，如自己的pc名或者直接写localhost；
+
+　　2.port为第一张图中的51091，如果不写，默认为1433，如果当前的数据库实例不是使用1433的端口，就会报错；
+

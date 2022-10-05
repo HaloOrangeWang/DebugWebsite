@@ -1,0 +1,65 @@
+关键字： NoneType no attribute
+
+关键字： NoneType no attribute
+
+问题描述：通过PaddlePaddle构建了训练模型，使用了自定义的数据集对模型进行训练，出现'NoneType' object has no attribute 'imread'报错
+
+问题描述：通过PaddlePaddle构建了训练模型，使用了自定义的数据集对模型进行训练，出现'NoneType' object has no attribute 'imread'报错
+
+报错代码段：
+
+报错代码段：
+
+import paddle.v2 as paddle
+
+img, label = sample
+img = paddle.image.load_image(img) #报错
+img = paddle.image.simple_transform(img, 70, self.imageSize, True)
+return img.flatten().astype('float32'), label
+
+报错图片：
+
+报错输出：
+
+File "/work/code/MyReader.py", line 14, in train_mapper
+img = paddle.image.load_image(img) 
+File "/usr/local/lib/python2.7/dist-packages/paddle/v2/image.py", line 159, in load_image im = cv2.imread(file, flag) 
+AttributeError: 'NoneType' object has no attribute 'imread'
+
+复现方式：
+ 旧版的PaddlePaddle使用paddle.v2的load_image方法读入图像数据时就会报出AttributeError: 'NoneType' object has no attribute 'imread'错误
+
+复现方式：
+ 旧版的PaddlePaddle使用paddle.v2的load_image方法读入图像数据时就会报出AttributeError: 'NoneType' object has no attribute 'imread'错误
+
+解决方案：
+ 该问题是由opencv引起的，安装最新的opencv解决上述问题，具体操作为：
+
+解决方案：
+ 该问题是由opencv引起的，安装最新的opencv解决上述问题，具体操作为：
+
+sudo apt-get install -y libopencv-dev #安装opencv
+
+sudo pip install -U opencv-python #安装opencv的python库
+
+问题分析：
+ 这个报错是由img = paddle.image.load_image(img)引起的，即paddle本身的方法引发了该错误，如果PaddlePaddle使用方式没错，而且又是新版的，那么最有可能的问题就是环境依赖问题。每一款PaddlePaddle在发布之前都会经专业的测试团队内测，确保框架本身的稳定性，虽然无法保证PaddlePaddle绝对稳定，但可以保证PaddlePaddle在大多数常规环境是可以正常运行的，所以遇到PaddlePaddle本身的错误，可以先考虑环境依赖问题，如果环境依赖没有问题，再把眼光发在PaddlePaddle本身。
+
+PaddlePaddle的load_image方法用于加载图像，读入图像数据时使用了opencv，即该方法依赖opencv，而报错'NoneType' object has no attribute 'imread'则表明opencv缺少imread方法，尝试安装最新的opencv即可解决该问题。
+
+问题拓展：
+ OpenCV的全称是Open Source Computer Vision Library，是一个跨平台的计算机视觉库。OpenCV是由英特尔公司发起并参与开发，以BSD许可证授权发行，可以在商业和研究领域中免费使用。OpenCV可用于开发实时的图像处理、计算机视觉以及模式识别程序。该程序库也可以使用英特尔公司的IPP进行加速处理。
+
+OpenCV主要分为2版与3版，3版的OpenCV相对2版有较大的修改，且不向后兼容，所以在使用时要注意区分。
+
+OpenCV经过多年的发展在图像处理方面已经非常成熟，PaddlePaddle部分图像处理相关的方法抽象于OpenCV，在保证易用的同时保证了稳定。
+
+目前PaddlePaddle的docker镜像中并没有安装OpenCV，在使用PaddlePaddle的Docker镜像进行图像方面的处理时需要先安装OpenCV。
+
+问题研究：
+ 我们常见的RGB图像可以看成对应的三维矩阵，处理时可以使用数据处理方面的库来进行处理，比如numpy，这样对图像就可以进行很多操作了，比如常见的平滑处理就是将每个像素点的值等比压缩到0~1之间，而将图像读入成三维矩阵的工具就是OpenCV，当然不止OpenCV，但OpenCV算是最强大的图像处理工具，它可以实现对图像的各种变化，OpenCV底层使用了C++来编写，这保证了它在图像处理方面的速度。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

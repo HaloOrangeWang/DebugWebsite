@@ -1,0 +1,27 @@
+原自然语言调用示例：
+
+https://help.aliyun.com/document_detail/70504.html?spm=a2c4g.11186623.6.553.Qcxf9V#h2-python-4
+
+调试阿里云 SDK 发送 request 的时候遇到问题：
+
+/usr/local/lib/python3.6/site-packages/aliyunsdkcore/auth/utils/md5_tool.py in _get_md5(content)
+     32 def _get_md5(content):
+     33     m = hashlib.md5()
+---> 34     m.update(bytearray(content, "utf-8"))
+     35     return m.digest()
+
+TypeError: encoding or errors without a string argument
+
+Google 后找到答案：Python3 的 base64.b64encode() 不需要重新 decode 再 encode 故修改这个文件：
+
+/usr/local/lib/python3.6/site-packages/aliyunsdkcore/auth/utils/md5_tool.py
+
+in _get_md5(content)
+     32 def _get_md5(content):
+     33     m = hashlib.md5()
+---> 34     #m.update(bytearray(content, "utf-8"))
+---> 35     m.update(content)
+     36     return m.digest()
+
+问题解决。
+

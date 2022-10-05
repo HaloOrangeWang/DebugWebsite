@@ -1,0 +1,14 @@
+今天,PySide2获取line控件的值时,出现错误,看了一下python并不能直接从读取qt的string转int,要先转float再转int。
+
+int()函数是可以将字符串转换为整形，但是这个字符串如果是带小数点，就会出现报错.
+
+a = int(value)
+
+报错：
+
+ValueError: invalid literal for int() with base 10: ***
+
+解决：
+
+a= int(float(value))
+

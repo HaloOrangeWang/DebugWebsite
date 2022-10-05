@@ -1,0 +1,165 @@
+
+pytorch runtime error: CUDNN_STATUS_MAPPING_ERROR
+
+
+Python 基础教程--pytorch 报错
+
+
+以创建Pytorch为例
+
+======================================================================
+
+（For more information, please go to Alan D. Chen , upgrading~~）
+
+Anaconda与conda区别
+
+conda可以理解为一个工具，也是一个可执行命令，其核心功能是包管理与环境管理。包管理与pip的使用类似，环境管理则允许用户方便地安装不同版本的python并可以快速切换。 conda的设计理念——conda将几乎所有的工具、第三方包都当做package对待，甚至包括python和conda自身 Anaconda则是一个打包的集合，里面预装好了conda、某个版本的python、众多packages、科学计算工具等等。
+
+======================================================================
+
+这个问题的出现的原因有很多：
+
+RuntimeError: CUDNN_STATUS_MAPPING_ERROR
+
+这是一份非常重要的参考资料！
+
+
+1.深度学习的batchsize选取过大。
+
+错误的提示信息如下：
+
+https://img-blog.csdnimg.cn/20200531104843333.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xiajIzaGFvMQ==,size_16,color_FFFFFF,t_70
+
+先说解决方法：
+
+1.将batchsize继续调小，直到不出现问题
+
+2.添加如下代码：
+
+原因分析：
+
+可能是cudnn的一个bug，由Conv3d layer引起的。
+
+参考文献：
+
+https://github.com/pytorch/pytorch/issues/27588
+
+TIPS：
+
+
+pytorch torch.backends.cudnn设置作用
+
+cuDNN使用非确定性算法，并且可以使用torch.backends.cudnn.enabled = False来进行禁用
+
+如果设置为torch.backends.cudnn.enabled =True，说明设置为使用使用非确定性算法
+
+然后再设置：
+
+那么cuDNN使用的非确定性算法就会自动寻找最适合当前配置的高效算法，来达到优化运行效率的问题
+
+一般来讲，应该遵循以下准则：
+
+如果网络的输入数据维度或类型上变化不大，设置 torch.backends.cudnn.benchmark = true 可以增加运行效率；
+
+如果网络的输入数据在每次 iteration 都变化的话，会导致 cnDNN 每次都会去寻找一遍最优配置，这样反而会降低运行效率。
+
+所以我们经常看见在代码开始出两者同时设置：
+
+这句话的意思是不用 cudnn 加速了。
+
+GPU，CUDA，cudnn 的关系是：
+
+CUDA 是 NVIDIA 推出的用于自家 GPU 的并行计算框架，只能在 NVIDIA 的GPU 上运行，而且只有当要解决的计算问题是可以大量并行计算的时候才能发挥 CUDA 的作用。
+
+cuDNN 是 NVIDIA 打造的针对深度神经网络的加速库，是一个用于深层神经网络的 GPU 加速库。如果你要用 GPU 训练模型，cuDNN 不是必须的，但是一般会采用这个加速库。
+
+参考：GPU，CUDA，cuDNN的理解
+
+cudnn 默认会使用，既然目前解决不了匹配问题，就先不用了。这样 gpu 照样能工作，但可能没有用上 cudnn 那么快。
+
+
+2.并没有将构建的model放置在cuda(),GPU 上来跑。
+
+将训好的模型的参数赋值给另外一个网络，
+
+在测试赋值是否正确的时候，在
+
+output = model(input)
+
+1
+
+一直报错：
+
+runtime error: CUDNN_STATUS_MAPPING_ERROR
+
+1
+
+多方调试无果。
+
+参考failed to enqueue CUDNN_STATUS_MAPPING_ERROR
+
+参考RuntimeError: CUDNN_STATUS_MAPPING_ERROR,
+
+才发现是model没有放在 gpu上，而Input在 gpu上。增加
+
+model = model.cuda()
+
+.cuda() 一定放在model确定的最后一步，后面直接就是，model 的应用。
+
+
+3.pytorch 、torchvision、 CUDA（和cudatoolkits）版本不匹配
+
+首先，要知道自己的服务器安装的CUDA的版本：
+
+两条命令二选一：
+
+1.cat /usr/local/cuda/version.txt
+
+2.或者 nvcc -V(V大写)
+
+CUDA版本的选择适合GPU硬件有关系的，这个没什么好说的。
+
+其次根据CUDA的版本选择pytorch 、torchvision（cudatoolkits）的版本。
+
+你可以选择一劳永逸的办法：https://pytorch.org/
+
+在INSTALL PYTORCH	模块中选择对应的版本，然后执行	Run this Command语句。当实际情况是，我们因为程序适配的问题，不得不使用不同版本的pytorch 、torchvision、 CUDA，当然在推荐版本的附近可以浮动选择版本，但是版本差别过大，就会报错。
+
+
+Pytorch版本、CUDA版本与显卡驱动版本的对应关系
+
+参考链接：INSTALLING PREVIOUS VERSIONS OF PYTORCH
+
+解决PyTorch与CUDA版本不匹配
+
+
+1.CUDA驱动和CUDAToolkit对应版本
+
+
+2.CUDA及其可用PyTorch对应版本（参考官网，欢迎评论区补充）
+
+注：虽然有的卡CUDA版本可更新至新版本，且PyTorch也可对应更新至新版本。但有的对应安装包无法使用，有可能是由于卡太旧的原因。
+
+
+3.安装指导
+
+（1）指定安装PyTorch版本
+
+当已知CUDA版本时，可根据表2直接查询到对应版本PyTorch，运行conda install pytorch=X.X.X -c pytorch即可安装指定版本PyTorch。此命令由conda决定与PyTorch对应的CUDAToolkit。但不能保证PyTorch可正常使用，CUDAToolkit版本不适配显卡驱动，即可能导致CUDAToolkit版本高于CUDA驱动。
+
+（2）指定CUDAToolkit版本
+
+首先运行nvidia-smi查询CUDA驱动版本，再根据1查询到对应CUDAToolkit版本，再运行conda install pytorch cudatoolkit=X.X -c pytorch即可安装指定CUDAToolkit版本的PyTorch。
+
+（3）同时指定PyTorch和CUDAToolkit版本
+
+如果你十分确定CUDA版本以及对应PyTorch和CUDAToolkit对应版本可运行conda install pytorch=X.X.X cudatoolkit=X.X -c pytorch
+
+安装完成后可使用python查看
+
+————————————————
+
+原文链接：https://blog.csdn.net/kellyroslyn/article/details/109668001
+
+Tongji University Lab songfaxing->efficientdet-AlanNets:
+

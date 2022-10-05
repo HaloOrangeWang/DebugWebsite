@@ -1,0 +1,41 @@
+前提：
+
+使用Django自带的test进行单元测试。
+
+问题描述：
+
+运行：python manage.py test，报错，出现数据库乱码的现象，报错如下：
+
+Creating test database for alias 'default'...
+
+Got an error creating the test database: (1007, u"Can't create database 'test_yd_zy_bank'; database exists")
+
+Type 'yes' if you would like to try deleting the test database 'test_yd_zy_bank', or 'no' to cancel: yes
+
+Destroying old test database 'default'...
+
+(1366, u"Incorrect string value: '\\xE7\\xA4\\xBA\\xE4\\xBE\\x8B...' for column 'func_name' at row 1")
+
+.............
+
+django.db.utils.InternalError: (1366, u"Incorrect string value: '\\xE5\\x8A\\x9F\\xE8\\x83\\xBD...' for column 'name' at row 1")
+
+其中name字段加入了中文，导致乱码。
+
+错误分析：
+
+test生成的临时数据库默认不是utf8，不支持中文，导致错误。尝试过修改项目数据库的字符编码，并没有效果，因为test使用的数据库数据是临时生成的，并不适用项目配置的数据库
+
+解决办法：
+
+在settings.py中添加对database的描述，设置字符编码默认设置:
+
+'TEST_CHARSET': 'utf8',        
+'TEST_COLLATION': 'utf8_general_ci',
+
+最后改完如下：
+
+最后，再次运行python manage.py test，成功。
+
+补充 ：自定义测试数据库名字时的配置如下
+

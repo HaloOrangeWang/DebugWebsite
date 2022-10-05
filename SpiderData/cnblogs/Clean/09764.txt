@@ -1,0 +1,54 @@
+1、安装robotframework-ride的方法
+
+（1）可以官方到本地后解压缩进行安装（下载地址：https://github.com/robotframework/RIDE）
+
+　　1）下载压缩包到本地后，解压缩
+
+　　2）cmd进入到解压缩的目录中，输入python setup.py install进行安装
+
+注意：这种方法安装前需安装对应版本的wxPython、setuptool、robot framework等
+
+（2）也可以直接输入命令进行安装（推荐使用这种）：pip install -U https://github.com/robotframework/RIDE/archive/master.zip
+
+使用该命令安装时，会自动先安装一些需要的依赖包，如图
+
+2、创建RIDE快捷方式
+
+（1）安装完成时，会有一个弹窗，问是否创建桌面快捷方式，点击“是”即可，在桌面就会生成一个RIDE的快捷方式图标
+
+（2）若安装后没来得及点“是”来创建快捷方式，还可以手动创建。
+
+在桌面鼠标右键，选择新建-快捷方式，在弹出框中输入对象的位置：F:\.....\Python\Python38-32\pythonw.exe  -c "from robotide import main; main()"
+
+　　点击下一步后，输入快捷方式的名称，点击完成即可
+
+　　点击下一步后，输入快捷方式的名称，点击完成即可
+
+（3）创建快捷方式后可以修改快捷方式的图标，选中快捷方式--右键--属性-快捷方式，点击更改图标
+
+F:\Users\...\Programs\Python\Python38-32\Lib\site-packages\robotide\widgets
+
+选中所有文件，打开想要更换的图标，确定-应用即可
+
+3、安装完robotride后发现还缺失了对应的包
+
+安装完成后，查看到还缺失了“wheel”包
+
+于是需要进行安装wheel，输入pip install wheel进行安装
+
+4、双击桌面图标，双击后无响应，打不开界面
+
+进入到python安装目录Scripts文件目录下，执行命令python ride.py来打开发现报错了
+
+AttributeError: No attribute or settings with name 'show_message_log' found
+
+Error in atexit._run_exitfuncs:
+
+wx._core.wxAssertionError: C++ assertion "GetEventHandler() == this" failed at ..\..\src\common\wincmn.cpp(470) in wxWindowBase::~wxWindowBase(): any pushed event handlers must have been removed
+
+解决方法：在python安装目录下F:\...\Python\Python38-32\Lib\site-packages\robotide\preferences目录下找到settings.cfg文件，使用编辑工具打开，找到[Test Runner]，在最后加入一行代码show_message_log = True，保存后再重新输入命令或直接点击桌面图标就能打开界面了。
+
+打开的界面如下：
+
+参考：https://stackoverflow.com/questions/65939449/robot-framework-cant-start-ride-on-macos
+

@@ -1,0 +1,16 @@
+在Windows10上使用dbca配置oracle19.3.0.0时，报错DBT-50000 无法检查可用内存
+
+查找官方文档2631718.1，发现是由于bug导致的报错
+
+现象：When create a 19c database, during the memory allocation portion in "Specify configuration option" it throws an DBT-50000 error.
+
+It looks like Doc ID 2543754.1, but in this environment did not set the ORA_CRS_HOME environment variable.
+
+原因：This issue is caused by Bug 29686671.
+
+处理方法：Run dbca with "-J-Doracle.assistants.dbca.validate.ConfigurationParams=false"
+
+在运行dbca时带上后面的参数：
+
+dbca -J-Doracle.assistants.dbca.validate.ConfigurationParams=false
+

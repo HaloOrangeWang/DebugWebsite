@@ -1,0 +1,42 @@
+　　
+
+参考
+
+【https://blog.csdn.net/wangchao701123/article/details/57084244】
+
+　　问题：报错【syntaxerror non-ascii character xe7】
+
+　　据说这是错误是，当在Python 2.X文件中写中文注释或输出中文时候，经常会出现编译错误（在Python 3.X中没有这种错误。）
+
+　　这是因为Python 2.X的默认编码文件是用ASCII码，如果想要编译通过，则只需要在文件开头加入一行代码将文件存成UTF-8格式即可。
+
+　　问题：报错【nicodeDecodeError: 'ascii' codec can't decode byte 0xe6 in position 0: 】
+
+　　还是编码环境问题。【见解决步骤二】
+
+【解决方法：步骤一】
+
+　　采用在开头加上【# -*- coding:utf-8 -*-  】
+
+# -*- coding:utf-8 -*-
+
+　　或者
+
+#coding=utf-8
+
+【解决方法：步骤二】
+
+　　有时候在开头加了【# -*- coding:utf-8 -*-  】，也依旧报错。怎么办？【报错为：nicodeDecodeError: 'ascii' codec can't decode byte 0xe6 in position 0:。。。。。。ordinal not in range(128)】
+
+　　
+
+　　解决方法：
+
+　　在Python程序最前面加上以下语句：
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+　　将默认编码设置为utf-8
+

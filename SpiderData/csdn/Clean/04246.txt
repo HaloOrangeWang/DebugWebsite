@@ -1,0 +1,26 @@
+我正在尝试运行一个python脚本,它使用由postlinker创建的二进制文件(xFiles.bin.addr_patched).但是,我收到了这个错误.
+
+File "abc.py", line 74, in ParseCmd
+
+shutil.copy(gOptions.inputX, gWorkingXFile)
+
+File "/usr/lib/python2.6/shutil.py", line 89, in copy
+
+copymode(src, dst)
+
+File "/usr/lib/python2.6/shutil.py", line 66, in copymode
+
+os.chmod(dst, mode)
+
+OSError: [Errno 1] Operation not permitted: 'myPath/xFiles.bin.addr_patched'
+
+当我通过ls -l检查了这个xFiles.bin的权限时,它显示了这一点
+
+-rwxrwxrwx 1 nobody nogroup
+
+我认为错误是因为这个文件是由其他一些应用程序创建的,我正在运行的python脚本无法访问它.由于我是ubuntu的初学者,我真的不知道如何修复它.对于如何解决这个问题,有任何的建议吗？
+
+解决了：
+
+作为答案之一建议：chown用户名：groupname文件名修复此问题
+

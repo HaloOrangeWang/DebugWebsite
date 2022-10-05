@@ -1,0 +1,63 @@
+com.mongodb.MongoQueryException: Query failed with error code 96 and error message 'Executor error during find command: OperationFailed: Sort operation used more than the maximum 33554432 bytes of RAM. Add an index, or specify a smaller limit.' on server
+
+调用方法如下：
+
+protected <T> List<T> findByPage(Class clazz, String collectionName, int pageNum, int pageSize, String queryStr, String orderKey, Boolean asc){
+        if(StringUtils.isBlank(orderKey)){
+            orderKey = "createTime";
+        }
+        try {
+            Iterator<Class> articleMainList = (Iterator<Class>) mongodbService.getJongo()
+                    .getCollection(collectionName).find(queryStr).sort("{" + orderKey + ":" + (asc ? "1" : "-1") + "}")
+                    .skip((pageNum - 1) * pageSize).limit(pageSize).as(clazz);
+            return IteratorUtils.toList(articleMainList);
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+　　
+
+原因比较明确：Sort operation used more than the maximum 33554432 bytes of RAM.，33554432 bytes算下来正好是32Mb，而mongodb的sort操作是把数据拿到内存中再进行排序的，为了节约内存，默认给sort操作限制了最大内存为32Mb，当数据量越来越大直到超过32Mb的时候就自然抛出异常了！解决方案有两个思路，一个是既然内存不够用那就修改默认配置多分配点内存空间；一个是像错误提示里面说的那样创建索引。
+首先说如何修改默认内存配置，在Mongodb命令行窗口中执行如下命令即可：
+
+db.adminCommand({setParameter:1, internalQueryExecMaxBlockingSortBytes:335544320}) //不推荐使用
+
+在 mongo 使用过程中遇到了一个问题，需求就是要对mongo 库中查询到数据进行分页，mongo库我们知道都会存储大容量的数据，刚开始使用的 skip 和 limit 联合使用的方法，来达到截取所需数据的功能，这种方法在库里数据容量小的情况下完全可以胜任，但是如果库里数据多的话，上面两个方法就不好使了，就像题目中那个错误，这时会报一个 Query failed with error code 96 and error message 'Executor error during find command:OperationFailed: Sort operation used more than the maximum 33554432 bytes of RAM.Add an index, or specify a smaller limit.' 
+按照错误提示，知道这是排序的时候报的错，因为 mongo 的 sort 操作是在内存中操作的，必然会占据内存，同时mongo 内的一个机制限制排序时最大内存为 32M，当排序的数据量超过 32M,就会报上面的这个错，解决办法就像上面提示的意思，一是加大 mongo 的排序内存，这个一般是运维来管，也有弊端，就是数据量如果再大，还要往上加。另一个办法就是加索引，这个方法还是挺方便的。创建索引及时生效，不需要重启服务。 
+创建索引也不难， 
+db.你的collection.createIndex({“你的字段”: -1})，此处 -1 代表倒序，1 代表正序； 
+db.你的collecton.getIndexes(); 
+这两个语句，第一个是添加索引，第二个是查询索引，如果查看到你刚才添加的那个索引字段，就说明索引添加成功了。这时候在你的程序里再运用 sort 方法的话，这样就不会报错而且速度很快。 
+添加索引会带来一定的弊端，这样会导致数据插入的时候相对之前较慢，因为索引会占据空间的。综上考虑，根据实际情况判断采用合适的方法。 
+案例： 
+mongodb执行如下语句
+
+db.three_province_poi_v9.find({ "sum_n.sum_4_x":{ $gt:0} } ).sort({"sum_n.sum_4_x":-1})
+
+报错如下：
+
+Error: error: {
+    "ok" : 0,
+    "errmsg" : "Executor error during find command: OperationFailed: Sort operation used more than the maximum 33554432 bytes of RAM. Add an index, or specify a smaller limit.",
+    "code" : 96,
+    "codeName" : "OperationFailed"
+}
+
+　　
+
+按照前面所述：执行
+
+db.three_province_poi_v9.createIndex({"sum_n.sum_4_x": -1})
+
+　　
+
+则在执行语句，即可得到结果
+
+python 下pymongo执行
+
+db_first.three_province_poi_v9.find({"sum_n.sum_4_x":{ "$gt":0} } ).sort([("sum_n.sum_4_x",-1)])
+
+　　
+

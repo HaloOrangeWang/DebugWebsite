@@ -1,0 +1,48 @@
+导入100W的Csv数据，使用OpenCsv解析工具解析Csv，发现报错
+
+报错内容
+
+com.opencsv.exceptions.CsvMalformedLineException: Unterminated quoted field at end of CSV line. Beginning of lost text: [XXXXX...]
+
+at com.opencsv.CSVReader.readNext(CSVReader.java:355) ~[opencsv-4.6.jar!/:na]
+
+解析代码
+
+CSVParser csvParser = new CSVParserBuilder().build();
+try (CSVReader readerCsv = new CSVReaderBuilder(new InputStreamReader(csv)).withCSVParser(csvParser).build()) {
+    String[] lines;
+    while ((lines = readerCsv.readNext()) != null) {
+        doRead(lines);
+    }
+} catch (CsvValidationException e) {
+    throw new IOException(e);
+}
+
+报错位置发生在英文逗号处，一开始怀疑是英文逗号解析问题
+
+Csv 文本报错位置
+
+"2018-04-28 00:40:43","xxx,XXXXX"
+
+去掉当前位置英文逗号导入仍旧失败
+
+后来查看源码发现默认的 CSVParser 会对反斜杠""进行处理
+
+这导致了解析Csv逻辑与源文件不同
+
+后来使用了 RFC4180Parser 问题解决
+
+RFC4180Parser rfc4180Parser = new RFC4180ParserBuilder().build();
+try (CSVReader readerCsv = new CSVReaderBuilder(new InputStreamReader(csv)).withCSVParser(rfc4180Parser).build()) {
+    String[] lines;
+    while ((lines = readerCsv.readNext()) != null) {
+        doRead(lines);
+    }
+} catch (CsvValidationException e) {
+    throw new IOException(e);
+}
+
+参考文档：（RFC4180标准文档）https://datatracker.ietf.org/doc/html/rfc4180
+
+到此这篇关于使用OpenCsv导入大数据量报错的问题 的文章就介绍到这了,更多相关OpenCsv导入大数据量报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

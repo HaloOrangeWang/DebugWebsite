@@ -1,0 +1,58 @@
+按要求进入 ginger 目录，并拷贝了Pipfile文件，然后执行pipenv install ，报下边的错误（以下为完整报错）， python 版本 3.6.7
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/project.py", line 527, in _parse_pipfile
+    return tomlkit.parse(contents)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/tomlkit/api.py", line 49, in parse
+    return Parser(string).parse()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/tomlkit/parser.py", line 146, in parse
+    key, value = self._parse_table()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/tomlkit/parser.py", line 958, in _parse_table
+    item = self._parse_item()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/tomlkit/parser.py", line 270, in _parse_item
+    return self._parse_key_value(True)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/tomlkit/parser.py", line 339, in _parse_key_value
+    raise self.parse_error(EmptyKeyError)
+tomlkit.exceptions.EmptyKeyError: Empty key at line 21 col 0
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.6/bin/pipenv", line 11, in <module>
+    sys.exit(cli())
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/click/core.py", line 764, in __call__
+    return self.main(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/click/core.py", line 717, in main
+    rv = self.invoke(ctx)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/click/core.py", line 1137, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/click/core.py", line 956, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/click/core.py", line 555, in invoke
+    return callback(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/click/decorators.py", line 64, in new_func
+    return ctx.invoke(f, obj, *args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/click/core.py", line 555, in invoke
+    return callback(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/click/decorators.py", line 17, in new_func
+    return f(get_current_context(), *args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/cli/command.py", line 254, in install
+    editable_packages=state.installstate.editables,
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/core.py", line 1741, in do_install
+    pypi_mirror=pypi_mirror,
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/core.py", line 574, in ensure_project
+    pypi_mirror=pypi_mirror,
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/core.py", line 494, in ensure_virtualenv
+    python = ensure_python(three=three, python=python)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/core.py", line 394, in ensure_python
+    python = project.required_python_version
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/project.py", line 243, in required_python_version
+    required = self.parsed_pipfile.get("requires", {}).get(
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/project.py", line 509, in parsed_pipfile
+    parsed = self._parse_pipfile(contents)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/project.py", line 531, in _parse_pipfile
+    return toml.loads(contents)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pipenv/vendor/toml/decoder.py", line 227, in loads
+    original, i)
+toml.decoder.TomlDecodeError: Found invalid character in key name: '('. Try quotin
+

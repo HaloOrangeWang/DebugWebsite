@@ -1,0 +1,69 @@
+启动错误：
+
+1.WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add ‘vm.overcommit_memory = 1′ to /etc/sysctl.conf and then reboot or run the command ‘sysctl vm.overcommit_memory=1′ for this to take effect.
+ 2.WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+
+解决方法：
+
+第一个警告两个方式解决(overcommit_memory)
+
+1.  vi /etcsysctl.conf
+
+vm.max_map_count = 262144
+ vm.overcommit_memory = 1
+
+sysctl -p 生效
+
+2.  echo 1 > /proc/sys/vm/overcommit_memory  不需要启机器就生效
+
+第二个警告解决
+
+vi /etcsysctl.conf
+
+net.core.somaxconn= 1024
+
+sysctl -p 生效
+
+内核参数说明
+
+net.core.somaxconn是linux中的一个kernel参数，表示socket监听（listen）的backlog上限。
+ backlog是socket的监听队列，当一个请求（request）尚未被处理或建立时，他会进入backlog。
+ 而socket server可以一次性处理backlog中的所有请求，处理后的请求不再位于监听队列中。
+ 当server处理请求较慢，以至于监听队列被填满后，新来的请求会被拒绝。
+ 所以说net.core.somaxconn限制了接收新 TCP 连接侦听队列的大小。
+ 对于一个经常处理新连接的高负载 web服务环境来说，默认的 128 太小了。大多数环境这个值建议增加到 1024 或者更多。
+
+overcommit_memory参数说明：
+ 设置内存分配策略（可选，根据服务器的实际情况进行设置）
+ /proc/sys/vm/overcommit_memory
+ 可选值：0、1、2。
+ 0， 表示内核将检查是否有足够的可用内存供应用进程使用；如果有足够的可用内存，内存申请允许；否则，内存申请失败，并把错误返回给应用进程。
+ 1， 表示内核允许分配所有的物理内存，而不管当前的内存状态如何。
+ 2， 表示内核允许分配超过所有物理内存和交换空间总和的内存
+
+注意：redis在dump数据的时候，会fork出一个子进程，理论上child进程所占用的内存和parent是一样的，比如parent占用 的内存为8G，这个时候也要同样分配8G的内存给child,如果内存无法负担，往往会造成redis服务器的down机或者IO负载过高，效率下降。所 以这里比较优化的内存分配策略应该设置为 1（表示内核允许分配所有的物理内存，而不管当前的内存状态如何）。
+
+这里又涉及到Overcommit和OOM。
+
+什么是Overcommit和OOM：
+ 在Unix中，当一个用户进程使用malloc()函数申请内存时，假如返回值是NULL，则这个进程知道当前没有可用内存空间，就会做相应的处理工作。许多进程会打印错误信息并退出。
+
+Linux使用另外一种处理方式，它对大部分申请内存的请求都回复”yes”，以便能跑更多更大的程序。因为申请内存后，并不会马上使用内存。这种技术叫做Overcommit。
+ 当内存不足时，会发生OOM killer(OOM=out-of-memory)。它会选择杀死一些进程(用户态进程，不是内核线程)，以便释放内存。
+
+Overcommit的策略：
+ Linux下overcommit有三种策略(Documentation/vm/overcommit-accounting)：
+ 0. 启发式策略。合理的overcommit会被接受，不合理的overcommit会被拒绝。
+ 1. 任何overcommit都会被接受。
+ 2. 当系统分配的内存超过swap+N%*物理RAM(N%由vm.overcommit_ratio决定)时，会拒绝commit。
+ overcommit的策略通过vm.overcommit_memory设置。
+ overcommit的百分比由vm.overcommit_ratio设置。
+
+# echo 2 > /proc/sys/vm/overcommit_memory
+ # echo 80 > /proc/sys/vm/overcommit_ratio
+
+当oom-killer发生时，linux会选择杀死哪些进程：
+ 选择进程的函数是oom_badness函数(在mm/oom_kill.c中)，该函数会计算每个进程的点数(0~1000)。
+ 点数越高，这个进程越有可能被杀死。
+ 每个进程的点数跟oom_score_adj有关，而且oom_score_adj可以被设置(-1000最低，1000最高)。
+

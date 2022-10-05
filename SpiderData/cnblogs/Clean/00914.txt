@@ -1,0 +1,44 @@
+在用RobotFramework Selenium该工具驱动打开浏览器的过程中，遇到了一些问题，走了一些弯路，现将问题整理出来，希望给有遇到类似问题的小伙伴们一些参考。
+
+1、Q：采用RobotFramework Selenium驱动打开浏览器，提示：Message: Malformed URL: www.baidu.com is not a valid URL。
+
+用例如下图所示：
+
+A：输入的网址必须是http://www.baidu.com，为完整的URL才可以。
+
+2、Q：我的selenium版本为3.11.0，火狐的版本为23，用RFS驱动打开火狐浏览器时，提示;
+
+WebDriverException:Message:'geckodriver'executable needs to be in Path
+
+安装环境如图：
+
+A：geckodriver是一原生态的第三方浏览器，对于selenium3.x版本都会使用geckodriver来驱动firefox，所以需要下载geckodriver.exe,
+
+下载地址：https://github.com/mozilla/geckodriver/releases
+
+下载完成后，将该驱动放在Python的安装路径下，如：D:\Program Files\Python，该路径需添加到环境变量中。
+
+驱动配置完成后，重新运行，提示：
+
+SessionNotCreatedException: Message: Unable to find a matching set of capabilities
+
+根据网上百度的方法，升级火狐至56版本，问题解决。
+
+（有个小伙伴安装的也是selenium3.11.0，但是她不需要安装该驱动也可以正常用robotframework selenium打开IE浏览器，有点奇怪。不过可能其他环境有点不一致吧。）
+
+3、Q：电脑操作系统为：Windows7 64位 旗舰版，Internet Explorer 11，selenium版本为：3.11.0
+
+从网络上下载对应的64位IE驱动，放在对应的路径下之后，运行，报错：
+
+关闭报错窗口后，提示：
+
+[WARN] Keyword 'Capture Page Screenshot' could not be run on failure:No browser is open.
+
+A：猜测可能是因为驱动不匹配导致的。
+
+采用网上百度的方法都试了一遍，都不可以。
+
+https://blog.csdn.net/jichuang123/article/details/53008581
+
+最后想起来，64位的操作系统，本身会存在32位和64位的浏览器。我电脑上驱动打开的可能是32位的浏览器。故将驱动换成与selenium版本对应的32驱动之后，重新尝试，问题解决。
+

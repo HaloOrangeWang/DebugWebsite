@@ -1,0 +1,18 @@
+# ll /usr/bin/python
+
+python python2 python2.6 python2.7 python.bak
+ 1，这里先备份原来的/usr/bin/python 为python.bak
+ 2，然后 ln -sf /usr/local/python/bin/python2.6 /usr/bin/python
+
+尝试解决方法：
+
+因为yum是用Python写的。而且使用当前系统Python版本（Python2.7.5）。所以 需要修改：
+
+vi /usr/bin/yum
+
+首行改成  #!/usr/bin/python2.7 否则yum无法使用。报错：no module named yum
+
+vi /usr/libexec/urlgrabber-ext-down
+
+首行改成： #! /usr/bin/python2.7
+

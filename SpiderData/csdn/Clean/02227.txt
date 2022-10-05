@@ -1,0 +1,36 @@
+简介：python程序在执行时，有时候由于某些模块冲突或者是定时器冲突，会出现很多奇怪的错误，为此我们需要让python程序在退出时免受这些问题的干扰。
+
+(1) 常用的信号类型：
+
+SIGINT     终止进程     中断进程，不可通过signal.signal()捕捉(相当于Ctrl+C)  
+SIGTERM    终止进程     软件终止信号，可通过signal.signal()捕捉(默认信号，当os.kill()没有指明信号类型时，默认的是该信号)  
+SIGKILL    终止进程     杀死进程，不可捕捉(相当于linux下的kill命令，windows下使用会抛出异常)  
+SIGALRM    闹钟信号     可以通过signal.alarm()和os.kill()发送该信号，可通过signal.signal()捕捉  
+SIGQUIT    退出进程     和SIGTERM类似，可通过signal.signal()捕捉
+
+(2) 常用的信号处理函数：
+
+signal.signal(signalnum, handler)   #设置信号处理的函数
+
+signal.alarm(timesout)   #用于向自身发送信号
+
+os.kill  #用于发送终止信号
+
+(3) 如何解决python强制退出报错解决方法
+
+import signal
+
+def Quit(signum, frame):
+	print 'Quit TEST\n'
+	sys.exit()
+
+signal.signal(signal.SIGINT, Quit)
+signal.signal(signal.SIGTERM, Quit)
+
+如此，使用ctrl+c退出程序将不会再报一些异常错误信息。
+
+参考文章： http://man7.org/linux/man-pages/man7/signal.7.html
+ 参考文章：https://docs.python.org/2/library/signal.html#module-signal
+ 参考文章：https://segmentfault.com/a/1190000007505471
+ 参考文章：http://www.tiaozhanziwo.com/archives/688.html
+

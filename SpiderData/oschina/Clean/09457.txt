@@ -1,0 +1,129 @@
+
+iOS开发运行报错、常见问题
+
+
+一、报错与警报
+
+1、错误代码：No architectures to compile for (ONLY_ACTIVE_ARCH=YES, active arch=x86_64, VALID_ARCHS=armv7 armv7s)
+
+build 这个target的时候命令行报错。可以在 build setting 中，搜索bitcode,并吧 enable bitcode 设置为 NO.
+
+2、ld:framework not found IOKit
+
+终端输入以下2行内容：
+
+Shell
+
+cd/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/IOKit.framework sudo ln -s Versions/A/IOKit .
+
+1
+
+2
+
+3
+
+cd/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/IOKit.framework
+
+sudo ln -s Versions/A/IOKit .
+
+其中，如果不行，从文件夹中慢慢打开看下路径对不对，如果像有修改Xcode名称的，注意如 “xcode 5” [有空格” “的记得在终端中加上 “”这个符号]；
+
+3**、**程序没问题，运行报错：Directory not empty
+
+位于/Users/你电脑名/Library/Developer/Xcode/DerivedData下的缓存文件占很大的缓存空间，如果长时间 不删除xcode下的缓存文件，就会导致硬盘空间越来越小直到Directory not empty。删除了缓存文件再运行就不会再报错。
+
+或者，直接clean一次就可以了。
+
+4、如果遇到编译错误类似：Undefined symbols for architecture armv7:
+
+“OBJC_CLASS$_ASIHTTPRequest”，先检查上述的依赖代码是否已加入编译列表，如未加入，依次点击Target->Build Phases->Compile Sources，点击底部“+”添加上述代码。
+
+如果遇到编译错误类似：Undefined symbols for architecture armv7: “_inflateEnd”, referenced from，则应该是缺少依赖libz.dylib，添加方法：依次点击Target->Build Phases->Compile Sources，点击底部“+”，在弹出的列表中输入libz，添加搜索结果中最新版本即可。
+
+5.but did not return a nonzero exit code to indicate failure
+
+日志类似：
+
+解决：
+
+选择 Build Settings 菜单，把compress PNG files 改成NO。
+
+6.Undefined symbols for architecture i386:
+
+日志类似：（缺少BJGKPaintMapViewController文件的引用）
+
+原因：xcode项目import文件时，会根据project.pbxproj来查找，查找不到文件的引用则会有上述的错误。图中就是 BJGKPaintCommand文件对BJGKPaintMapViewController类的引用找不到。常常在多人合作开发的时候，svn提交不 规范导致的project.pbxproj发生错误，使得文件的引用不在project.pbxproj文件中。
+
+解决方案：
+
+a.点击Build Phases，如果是缺少的xxx是类名，则在Complie Sources中加入该文件。若缺少类库，则在Link Binary With Libraries中加入该类库。例如图中是缺少 “BJGKPaintMapViewController”，这个是类名。
+
+b.或者直接把需要引用这个缺少类/库的原文件去掉引用，笔者就是多调用了BJGKPaintCommand类文件，所以把它去掉，也就不需要补上BJGKPaintMapViewController类的引用了。
+
+7、**问题: ld/ warning/ directory not found for option从项目中删除了某个目录、文件以后，编译出现警告信息：_ld: warning: directory not found for option“XXXXXX”：**_
+
+有时候已经从项目中删除了文件和文件夹还是报这个警告，虽然没有发生错误，但是看着很不舒服。。
+
+去掉警告的办法如下：
+
+1选择工程, 编译的 (targets)
+
+2选择 Build Settings 菜单
+
+3如下查找 Library Search Paths 和 Framework Search Paths， 删掉编译报warning的路径即OK。
+
+更新–>
+
+8.Xcode7打包，iOS9真机闪退，如何解决？** **
+
+答：点击链接->【Xcode7打包，iOS9真机闪退，如何解决】
+
+
+二、常见问题：
+
+
+1.模拟器的目录：
+
+点击“Finder->前往->资源库->Developer->Xcode->DerivedData”，【看不到“资源库”？点击“前往”，看到菜单栏时，按“Option”就看到了.】
+
+或者点击“Finder->前往->前往文件夹”，输入：
+
+”/Users/你当前登陆的用户名/Library/Application Support/iPhone Simulator/“
+
+
+2.Xcode构建项目多，内存占用大，如果清除缓存？
+
+a.App被XCode Build在这里：
+
+点击“Finder->前往->资源库->Developer->Xcode->DerivedData”，
+
+或者，点击“Finder->前往->前往文件夹”，输入： “/Users/你当前登陆的用户名/Library/Developer/Xcode/DerivedData”（冒号没有的）
+
+b.连接真机生成的文件，可以全部删掉或者把不常用的版本删掉，再次连接设备会自动生成:
+
+“~/Library/Developer/Xcode/iOS DeviceSupport”
+
+c.app打包生成的文件，可以删掉不需要的项目打包文件:
+
+“~/Library/Developer/Xcode/Archives”。
+
+以上都可以把不需要的app项目删除。或者定时删除旧的项目。
+
+3.Xcode项目模拟器上png格式的本地图片正常显示，真机调试不显示：
+
+可能有2个原因:
+
+(1).图片的初始状态，不是png的，被自己直接就改成png了。这样模拟器OK，真机就有问题。
+
+可以使用Mac 系统自带的图片预览导出一下，（就是双击图片，点击左上角：文件->导出->png格式），再重新导入就行了。
+
+(2).真机上文件名是区分大小写的，而模拟器上面是不区分的，所以模拟器可以，真机不行;
+
+更新–>
+
+4.项目更改一部分资源或者修改部分数据后，再次运行模拟器还是原来的效果，没有发生变化：（例如提示找不到某些头文件。）
+
+按一下:Product -> Clean ,应该是清除一下再编译；
+
+每次项目有数据修改，重新运行前，我都会clean一下，避免因为缓存出现的错误…这个经常用，但是clean真正的意思我还没读懂它.
+

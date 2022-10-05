@@ -1,0 +1,83 @@
+jquery3.1.1，怎么用的时候报错Uncaught TypeError: a.indexOf is not a function，换成1.9就可以了！
+使用的时候是用一个刮奖的插件，代码如下：
+
+<script src="jquery-3.1.1.min.js"></script>
+<script src="wScratchPad.min.js"></script>
+<script>
+  $("#mask_index").wScratchPad({
+    size        : 40,
+    bg          : "",
+    fg          : "p1_bg.jpg",
+    realtime    : false,
+    scratchDown : null,
+    scratchUp   : function(e, percent){
+      if(percent > 2){
+        this.clear();
+        this.enable("enabled", false);
+        $("#mask_index").hide(300);
+      }
+    },
+    scratchMove : function(e, percent){
+      console.log(percent);
+    },
+    cursor: "crosshair"
+  });
+</script>
+
+只要换回1.9就没问题了，插件也不需要用3.1，只是好奇新版本有什么不一样的？
+
+我把你的问题复现了一下，然后开始debug，先说下思路，我能看到jq里哪里出错了，但不知道是哪里跳到那里的
+
+参照你说的这个库的demo一个个的排除掉可能的参数引起的错误，发现是fg参数引起的错误，如果是色值就不会报错，说明是图片的处理代码出了问题
+
+参照你说的这个库的demo一个个的排除掉可能的参数引起的错误，发现是fg参数引起的错误，如果是色值就不会报错，说明是图片的处理代码出了问题
+
+找到处理fg的代码，格式化代码，是这里的问题
+
+找到处理fg的代码，格式化代码，是这里的问题
+
+a(new Image)
+.attr("src", this.options.fg)
+.load(function () {
+    b.ctx.drawImage(this, 0, 0, c, d), b.$img.show()
+})
+
+3.debugger一下，果然是从这里到了报错的地方
+
+4.对比jq高低版本的这段代码
+
+3.1.1是这样的
+
+r.fn.load = function (a, b, c) {
+     var d, e, f, g = this,
+     h = a.indexOf(" ");
+
+1.9.0是这样的
+
+st.fn.load = function (e, n, r) {
+if ("string" != typeof e && Rn) return Rn.apply(this, arguments);
+var i, o, a, s = this,
+    u = e.indexOf(" ");
+
+报错也正是你说的位置，可以看到1.9.0比3.1.1多了一个处理，相信是经过这个处理，e.indexOf这个方法没有报错
+
+5.两段代码运行到这里的变量都是这样，
+
+这是1.9.0经过处理的变量情况
+
+这是3.1.1没经过处理的变量情况
+
+ps:
+
+碰巧遇到高版本jquery报此错，百度一番，看到一位外国网友很好的回答。具体如下：
+
+This error might be caused by jquery event aliases like .load, .unload or .error deprecated since jQuery 1.8. Look for these aliases in your code and replace them with .on() to register listeners instead. Example:
+
+$(window).load(function(){...});
+
+becomes:
+
+$(window).on('load', function(){ ...});
+
+大概意思：$(window).load(function(){})在高版本中已经废弃，
+

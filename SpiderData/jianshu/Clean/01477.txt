@@ -1,0 +1,178 @@
+1.首次执行python_repos.py时API调用报错
+
+url= 'http://api.github.com/search/repositories?q=language:python&sort=stars'
+
+r = requests.get(url)
+
+print("Status code:", r.status_code)
+
+报错如下：
+
+Traceback (most recent call last):
+
+File "/home/happy/.local/lib/python3.6/site-packages/urllib3/connection.py", line 160, in _new_conn
+
+(self._dns_host, self.port), self.timeout, **extra_kw
+
+File "/home/happy/.local/lib/python3.6/site-packages/urllib3/util/connection.py", line 84, in create_connection
+
+raise err
+
+File "/home/happy/.local/lib/python3.6/site-packages/urllib3/util/connection.py", line 74, in create_connection
+
+sock.connect(sa)
+
+BlockingIOError: [Errno 11] Resource temporarily unavailable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "/home/happy/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 677, in urlopen
+
+chunked=chunked,
+
+File "/home/happy/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 392, in _make_request
+
+conn.request(method, url, **httplib_request_kw)
+
+File "/usr/lib/python3.6/http/client.py", line 1281, in request
+
+self._send_request(method, url, body, headers, encode_chunked)
+
+File "/usr/lib/python3.6/http/client.py", line 1327, in _send_request
+
+self.endheaders(body, encode_chunked=encode_chunked)
+
+File "/usr/lib/python3.6/http/client.py", line 1276, in endheaders
+
+self._send_output(message_body, encode_chunked=encode_chunked)
+
+File "/usr/lib/python3.6/http/client.py", line 1042, in _send_output
+
+self.send(msg)
+
+File "/usr/lib/python3.6/http/client.py", line 980, in send
+
+self.connect()
+
+File "/home/happy/.local/lib/python3.6/site-packages/urllib3/connection.py", line 187, in connect
+
+conn = self._new_conn()
+
+File "/home/happy/.local/lib/python3.6/site-packages/urllib3/connection.py", line 172, in _new_conn
+
+self, "Failed to establish a new connection: %s" % e
+
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x7f81aebdbdd8>: Failed to establish a new connection: [Errno 11] Resource temporarily unavailable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "/home/happy/.local/lib/python3.6/site-packages/requests/adapters.py", line 449, in send
+
+timeout=timeout
+
+File "/home/happy/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 727, in urlopen
+
+method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+
+File "/home/happy/.local/lib/python3.6/site-packages/urllib3/util/retry.py", line 446, in increment
+
+raise MaxRetryError(_pool, url, error or ResponseError(cause))
+
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='api.github.com', port=80): Max retries exceeded with url: /search/repositories?q=language:python&sort=stars (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f81aebdbdd8>: Failed to establish a new connection: [Errno 11] Resource temporarily unavailable',))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "python_repos.py", line 7, in <module>
+
+r = requests.get(url)
+
+File "/home/happy/.local/lib/python3.6/site-packages/requests/api.py", line 76, in get
+
+return request('get', url, params=params, **kwargs)
+
+File "/home/happy/.local/lib/python3.6/site-packages/requests/api.py", line 61, in request
+
+return session.request(method=method, url=url, **kwargs)
+
+File "/home/happy/.local/lib/python3.6/site-packages/requests/sessions.py", line 530, in request
+
+resp = self.send(prep, **send_kwargs)
+
+File "/home/happy/.local/lib/python3.6/site-packages/requests/sessions.py", line 643, in send
+
+r = adapter.send(request, **kwargs)
+
+File "/home/happy/.local/lib/python3.6/site-packages/requests/adapters.py", line 516, in send
+
+raise ConnectionError(e, request=request)
+
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='api.github.com', port=80): Max retries exceeded with url: /search/repositories?q=language:python&sort=stars (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f81aebdbdd8>: Failed to establish a new connection: [Errno 11] Resource temporarily unavailable',))
+
+解决方法：安装requests的security extras：pip install -U requests[security]
+
+参考来源：https://www.360kuai.com/pc/91b0cd52c65bc2f68?cota=4&kuai_so=1&tj_url=so_rec&sign=360_57c3bbd1&refer_scene=so_1
+
+2. 解决上述问题后，再执行脚本，画图报错：
+
+Traceback (most recent call last):
+
+File "python_repos.py", line 50, in <module>
+
+chart.render_to_file('bar_descriptions.svg')
+
+File "/home/happy/.local/lib/python3.6/site-packages/pygal/graph/public.py", line 114, in render_to_file
+
+f.write(self.render(is_unicode=True, **kwargs))
+
+File "/home/happy/.local/lib/python3.6/site-packages/pygal/graph/public.py", line 52, in render
+
+self.setup(**kwargs)
+
+File "/home/happy/.local/lib/python3.6/site-packages/pygal/graph/base.py", line 217, in setup
+
+self._draw()
+
+File "/home/happy/.local/lib/python3.6/site-packages/pygal/graph/graph.py", line 933, in _draw
+
+self._plot()
+
+File "/home/happy/.local/lib/python3.6/site-packages/pygal/graph/bar.py", line 146, in _plot
+
+self.bar(serie)
+
+File "/home/happy/.local/lib/python3.6/site-packages/pygal/graph/bar.py", line 116, in bar
+
+metadata)
+
+File "/home/happy/.local/lib/python3.6/site-packages/pygal/util.py", line 233, in decorate
+
+metadata['label'])
+
+File "/home/happy/.local/lib/python3.6/site-packages/pygal/_compat.py", line 61, in to_unicode
+
+return string.decode('utf-8')
+
+AttributeError: 'NoneType' object has no attribute 'decode'
+
+解决方法：将
+
+plot_dict = {
+
+'value': repo_dict['stargazers_count'],
+
+'label': repo_dict['description'],
+
+'xlink': repo_dict['html_url'],
+
+}
+
+中的 'label': repo_dict['description'] 改为 'label': str(repo_dict['description'])
+
+参考来源：https://blog.csdn.net/weixin_42427638/article/details/80640817
+

@@ -1,0 +1,22 @@
+Oracle专有的插入数据报错：
+
+出错的语句为：
+
+sql = "insert into mytable values(%s,%s,%s)"
+
+cursor.execute(sql, data)
+
+结果就出现了“ORA-01036: 非法的变量名/编号”的错误。
+
+解决方法：
+
+将传参的占位符改为    “:1, :2, :3”
+
+修改后的语句为：
+
+sql = "insert into mytable values(:1, :2, :3)"
+
+cursor.execute(sql, data)
+
+再次执行运行后，问题解决。成功插入
+

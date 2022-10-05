@@ -1,0 +1,35 @@
+pip install Pillow
+
+该问题排查有以下几种情况：
+
+未安装 Pillow库
+
+scipy版本不对
+ ImportError: cannot import name ‘imread’ from ‘scipy.misc’
+
+是由于 imread is deprecated in SciPy 1.0.0, and will be removed in 1.2.0.
+ Use imageio.imread instead.
+
+处理方法： 首先pip3 install imageio;
+
+然后 import imageio
+
+代码里imageio.imread()处理
+
+conda环境下，
+ 使用pip安装是安装到本地环境，使用pip3是安装到系统环境下。
+
+(py3.6) T4 01_code >pip3 -V
+pip 19.3.1 from /usr/local/lib/python3.7/site-packages/pip (python 3.7)
+(py3.6) T4 01_code >pip -V
+pip 19.3.1 from /home/suy/.conda/envs/py3.6/lib/python3.6/site-packages/pip (python 3.6)
+
+第三种解决方法：
+ Use imageio.imread instead.
+
+pip3 install imageio;
+
+然后 import imageio
+
+代码里imageio.imread()处理
+

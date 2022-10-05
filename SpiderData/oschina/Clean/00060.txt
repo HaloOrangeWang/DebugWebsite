@@ -1,0 +1,75 @@
+Python_报错：
+
+line XXX, in join
+ assert self._state in (CLOSE, TERMINATE)
+AssertionError
+
+源码：
+
+#encoding=utf-8
+import time
+from multiprocessing import Pool
+def run(fn):
+    #fn: 函数参数是数据列表的一个元素
+    time.sleep(1)
+    return fn * fn
+
+if __name__ == "__main__":
+    testFL = [1,2,3,4,5,6]
+    print ('Single process execution sequence:') #顺序执行(也就是串行执行，单进程)
+    s = time.time()
+    for fn in testFL:
+        run(fn)
+    e1 = time.time()
+    print(u"顺序执行时间：",int(e1-s))
+
+print('concurrent:') #创建多个进程，并行执行
+    pool = Pool(5) #创建拥有5个进程数量的进程池
+    #testFL:要处理的数据列表，run：处理testFL列表中数据的函数
+    rl = pool.map(run,testFL)
+    #pool.close()#关闭进程池，不再接受新的任务,join之前必须加上close(),否则会报错
+    pool.join()#主进程阻塞等待子进程的退出
+    e2 = time.time()
+    print(u"并行执行时间：",int(e2 - e1))
+    print(rl)
+
+原因：在进程池操作join()时。需在前面加上pool.close()即可
+
+#encoding=utf-8
+import time
+from multiprocessing import Pool
+def run(fn):
+    #fn: 函数参数是数据列表的一个元素
+    time.sleep(1)
+    return fn * fn
+
+if __name__ == "__main__":
+    testFL = [1,2,3,4,5,6]
+    print ('Single process execution sequence:') #顺序执行(也就是串行执行，单进程)
+    s = time.time()
+    for fn in testFL:
+        run(fn)
+    e1 = time.time()
+    print(u"顺序执行时间：",int(e1-s))
+
+print('concurrent:') #创建多个进程，并行执行
+    pool = Pool(5) #创建拥有5个进程数量的进程池
+    #testFL:要处理的数据列表，run：处理testFL列表中数据的函数
+    rl = pool.map(run,testFL)
+    pool.close()#关闭进程池，不再接受新的任务,join之前必须加上close(),否则会报错
+    pool.join()#主进程阻塞等待子进程的退出
+    e2 = time.time()
+    print(u"并行执行时间：",int(e2 - e1))
+    print(rl)
+
+结果：
+
+D:\Python36\python.exe D:/Python36/test_mysql/test_0810_01.py
+Single process execution sequence:
+顺序执行时间： 6
+concurrent:
+并行执行时间： 2
+[1, 4, 9, 16, 25, 36]
+
+Process finished with exit code 0
+

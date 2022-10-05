@@ -1,0 +1,31 @@
+19/06/06 16:09:26 INFO hdfs.DFSClient: Exception in createBlockOutputStream
+java.io.IOException: Bad connect ack with firstBadLink as 192.168.56.120:50010
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.createBlockOutputStream(DFSOutputStream.java:1456)
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.nextBlockOutputStream(DFSOutputStream.java:1357)
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:587)
+19/06/06 16:09:26 INFO hdfs.DFSClient: Abandoning BP-1551374179-192.168.56.119-1559807706695:blk_1073741825_1001
+19/06/06 16:09:26 INFO hdfs.DFSClient: Excluding datanode 192.168.56.120:50010
+19/06/06 16:09:26 INFO hdfs.DFSClient: Exception in createBlockOutputStream
+java.io.IOException: Bad connect ack with firstBadLink as 192.168.56.121:50010
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.createBlockOutputStream(DFSOutputStream.java:1456)
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.nextBlockOutputStream(DFSOutputStream.java:1357)
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:587)
+19/06/06 16:09:26 INFO hdfs.DFSClient: Abandoning BP-1551374179-192.168.56.119-1559807706695:blk_1073741826_1002
+19/06/06 16:09:26 INFO hdfs.DFSClient: Excluding datanode 192.168.56.121:50010
+
+　　在执行上传文件的时候报错，提示 `Bad connect ack with firstBadLink`, 看到跟从节点的通信失败了，并不是由于文件大小引起的，通信失败想到是防火墙可能没有关闭，查看一下防火墙状态，发现防火墙是开着的，所以通信失败。把防火墙关闭之后，在重新上传就成功了。
+
+centos7 查看防火墙状态
+
+firewall-cmd --state
+
+关闭防火墙
+
+systemctl stop firewalld.service
+
+禁用防火墙，开启不再启动。
+
+systemctl disable firewalld.service
+
+关闭防火墙之后在次上传成功。
+

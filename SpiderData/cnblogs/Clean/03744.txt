@@ -1,0 +1,70 @@
+由于需要在一台老ubuntu电脑上安装jupyter供演示，不能修改python、不能更新python版本的限制情况下，选择了在系统原有版本python2.7.5下安装。
+
+如果高版本或者可自行修改权限的情况下，直接anaconda安装即可
+
+可参考cv2环境安装
+
+
+1.安装jupyter
+
+为了在python2.7.5下安装jupyter，需要先自信安装ipython内核。这主要是由于自动pip所安装的ipython 6.0.0仅仅支持python3了。
+
+随后安装jupyter notebook
+
+此时如果出现报错，先修改jupyter版本：
+
+pip install jupyter==0.7.1
+
+随后如果出现类似报错：
+
+ImportError: Tornado requires an up-to-date SSL module
+
+这意味着tornado版本不对，需要手动强制安装低版本：
+
+随后再运行jupyter安装：
+
+pip install jupyter
+
+
+2.jupyter 启动
+
+如果为中文系统，则会由于解码错误报错,类似下面的错误：
+
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe5 in position 4: ordinal not in range(128)
+
+此时应该修改系统的默认语言：
+
+首先在对应python环境的/lib/python2.7/site-packages/中新建一个文件sitecustomize.py用于修改系统默认编码，并在其中写入如下内容保存：
+
+随后会到控制台，进行环境变量修改：
+
+随后启动jupyter notebook即可：
+
+jupyter notebook
+
+20190521补充:  利用指令LANGUAGE=en_US jupyter notebook可以直接修改环境变量启动,  环境ubuntu14.04(中文) python2.7.6
+
+ref:
+
+Tornado：https://blog.csdn.net/awyyauqpmy/article/details/82824589
+
+DecoderError：
+
+https://blog.csdn.net/farphone/article/details/85801266
+
+https://www.jianshu.com/p/516eb2a57ee6
+
+https://blog.csdn.net/meat2008/article/details/79185999
+
+https://blog.csdn.net/jiao_mrswang/article/details/83183550
+
+https://github.com/jupyter/notebook/issues/287
+
+SNIMissingWarning和InsecurePlatformWarning警告
+
+numpy.linalg.lstsq
+
+ubuntu16.04 refer jupyter
+
+python gettext
+

@@ -1,0 +1,51 @@
+import cv2 as cv
+import numpy as np
+
+# 鼠标操作，鼠标选中源图像中需要替换的位置信息
+def mouse_action01(event, x, y, flags, param_array):
+    cv.imshow('collect img_before coordinate', img_before_copy)
+    if event == cv.EVENT_LBUTTONUP:
+        # 画圆函数，参数分别表示原图、坐标、半径、颜色、线宽(若为-1表示填充)
+        # 这个是为了圈出鼠标点击的点
+        cv.circle(img_before_copy, (x, y), 2, (0, 0, 255), -1)
+        # 用鼠标单击事件来选择坐标
+        # 将选中的四个点存放在集合中，在收集四个点时，四个点的点击顺序需要按照 img_src_coordinate 中的点的相对位置的前后顺序保持一致
+        print(f'{x}, {y}')
+        param_array.append([x, y])
+
+if __name__ == '__main__':
+    # 加载运动前的图像
+    img_before = cv.imread('D:\\school\\graduation\\experimental\\pnp\\mofang_change_01.jpg', cv.IMREAD_COLOR)
+    img_before_copy = np.tile(img_before, 1)
+    before_coordinate = []
+    cv.namedWindow('collect img_before coordinate',0)
+    cv.setMouseCallback('collect img_before coordinate', mouse_action01, before_coordinate)
+    while True:
+        if cv.waitKey(20) == 27:        # 当采集到四个点后，可以按esc退出鼠标采集行为
+            break
+    print(before_coordinate)
+    imgPoints = np.asarray(before_coordinate, dtype = np.float64)
+
+print("===========================")
+
+# 输入对应点的世界坐标、内参矩阵、畸变矩阵
+    objPoints = np.asarray([[0, 0, -266], [55, 0, -266], [55, 55, -266], [0, 55, -266]], dtype = np.float64)
+    cameraMatrix = np.asarray([[770, -36, 320], [0, 843, 112], [0, 0, 1]], dtype = np.float64)
+    distCoeffs = np.asarray([0.1669, -0.4716, -0.1152, 0.0152, 1.3477], dtype = np.float64)
+
+# pnp算法
+    retval, rvec, tvec = cv.solvePnP(objPoints, imgPoints, cameraMatrix, distCoeffs)
+
+print(f'rvec:{rvec}')
+    print(f'tvec:{tvec}')
+
+搞了一下午一直有这个报错，怎么改参数类型也不对，最后发现加上, dtype = np.float64就好了
+
+Traceback (most recent call last):
+
+File "D:\learnpython\pythonlearning\pnp.py", line 61, in <module>
+
+retval, rvec, tvec = cv.solvePnP(objPoints, imgPoints, cameraMatrix, distCoeffs)
+
+cv2.error: OpenCV(4.5.5) D:\a\opencv-python\opencv-python\opencv\modules\calib3d\src\solvepnp.cpp:833: error: (-215:Assertion failed) ( (npoints >= 4) || (npoints == 3 && flags == SOLVEPNP_ITERATIVE && useExtrinsicGuess) || (npoints >= 3 && flags == SOLVEPNP_SQPNP) ) && npoints == std::max(ipoints.checkVector(2, CV_32F), ipoints.checkVector(2, CV_64F)) in function 'cv::solvePnPGeneric'
+

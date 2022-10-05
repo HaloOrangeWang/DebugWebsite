@@ -1,0 +1,92 @@
+错误类型1  json.decoder.JSONDecodeError: Invalid control character
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Author  : jia666
+# Time    : 2021/5/7 16:03
+
+import json
+#TODO 1 json.decoder.JSONDecodeError: Invalid control character
+s = '{"id":"2261", "text":"啦啦啦人贩子给力\n啊[cai晃头]"}'
+
+#json_data = json.loads(s) # 错误复现
+json_data = json.loads(s, strict=False) #正确使用
+print(json_data)
+
+'''正确的使用
+json_data = json.loads(s, strict=False)
+-----------------------------------------------------------------------------
+如果strict为false（默认值为True），则字符串中允许使用控制字符。
+此上下文中的控制字符是那些字符代码在0–31范围内的字符，
+包括“\t”（制表符）、“\n”、“r”和“\0”。
+'''
+
+错误类型2 json.decoder.JSONDecodeError: Invalid \escape
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Author  : jia666
+# Time    : 2021/5/7 16:03
+import json
+
+# TODO 2 json.decoder.JSONDecodeError: Invalid \escape
+s = '{"id":"2261", "text":"#李宇春奥迪之夜#我葱巨美~~~今天现场的灯牌实在是太BH咯~~\(≧▽≦)/~啦啦啦人贩子给力\n啊[cai晃头]"}'
+#json_data = json.loads(s, strict=False) #错误复现
+json_data = json.loads(s.replace('\\','\\\\'), strict=False) #正确使用
+print(json_data)
+
+错误类型3 json.decoder.JSONDecodeError: Expecting ','
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Author  : jia666
+# Time    : 2021/5/7 16:03
+import json
+
+# TODO 3 json.decoder.JSONDecodeError: Expecting ','
+s0 = '{"id":"2261", "text":"#李宇春奥迪之夜#我葱巨美~~~今天现场的灯牌实在是太BH咯~~\(≧▽≦)/~啦啦啦人贩子给力\n啊[cai晃头]"'
+s1 = '{"id":"2261", "text":"#李宇春奥迪之夜#我葱巨美~~~今天现场的灯牌实在是太BH咯~~\(≧▽≦)/~啦啦啦人贩子给力\n啊[cai晃头]"}'
+#json_data = json.loads(s0.replace('\\','\\\\'), strict=False) #错误复现
+json_data = json.loads(s1.replace('\\','\\\\'), strict=False) #正确使用
+print(json_data)
+'''
+比较两个s0与s1，你会发现s0，最后少一个}，无法构成字典，导致不能解析
+因此多检查获取的数据格式是否正确
+'''
+
+错误类型4 json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Author  : jia666
+# Time    : 2021/5/7 16:03
+import json
+
+#TODO 4 json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes
+s1 = {"id":"2261"}
+#json_data = json.loads(str(s1), strict=False) #错误复现
+json_data = json.loads(json.dumps(s1), strict=False) #正确使用
+print(json_data)
+'''
+json.loads() ,要求json串格式中必须的双引号！！
+字典转字符串：
+方法一： json.dumps() ,不管字典里是单引号还是双引号，都可以用json.dumps()转换成字符串，且转后都为双引号！
+方法二： str ()，用str将字典转成字符串后，双引号变成了单引号
+'''
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Author  : jia666
+# Time    : 2021/5/8 10:47
+# -*- coding: utf-8 -*-
+
+import demjson
+import json
+s = '{test:0,a:"000001_Unit_1. Hi,Birdie.mp3",b:"000005_Unit_2. Good morning,Miss Wang..mp3",c:"000008_Unit_3. What\'s your name_.mp3"}'
+#json_data=json.loads(s) #错误复现
+
+data1 = demjson.decode(s)
+data2 = demjson.encode(data1)
+json_data=json.loads(data2) 
+print(json_data)
+

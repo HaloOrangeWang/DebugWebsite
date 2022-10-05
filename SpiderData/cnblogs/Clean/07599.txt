@@ -1,0 +1,16 @@
+python升级到3.7.5后，使用pip安装时候报错如下：
+
+WARNING: pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+Looking in indexes: https://pypi.douban.com/simple/
+Collecting ncclient 　　
+
+解决方案：
+
+1、安装zlib和openssl，详见：https://www.cnblogs.com/luckjinyan/p/13124422.html
+
+2、修改Python安装包源文件：去掉选中白色部分前面的注释
+
+vi ./Modules/Setup.dist
+
+3、编译安装python：./configure prefix=/usr/local/python3
+

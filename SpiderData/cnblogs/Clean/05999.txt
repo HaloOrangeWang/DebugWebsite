@@ -1,0 +1,48 @@
+
+前言
+
+最近用pyinstaller打包的时候一直报“failed to execute script main”。
+
+最终使用“pyinstaller --hidden-import=pkg_resources -F main.py” 顺利打包。
+
+注意：语句中的“-F”一定要大写
+
+
+转载原文
+
+本文转载自pyinstaller打包运行报错failed to execute script main
+
+pyqt5写完win32 应用程序后，经过pyinstaller打包成单个文件，运行弹出错误提示框：failed to execute script main
+
+pycharm中pyinstaller打包参数：
+
+Program:C:\Python\Python35\Scripts\pyinstaller.exe
+
+Parameters: -w -F $FileName$
+
+Working directory: $FileDir$
+
+分析：
+
+经google，发现pyinstaller 有--hidden-import 选项
+
+--hidden-import MODULENAME, --hiddenimport MODULENAME
+
+Name an import not visible in the code of the
+
+script(s). This option can be used multiple times.
+
+解决：
+
+打包时加上 --hidden-import=queue
+
+即Parameters配置修改为：
+
+Parameters:--hidden-import=queue -w -F $FileName$
+
+eg:
+
+pyinstaller --hidden-import=queue -w -F main.py
+
+在其他地方看到这种用法，可以尝试下，本人未验证：pyinstaller --hidden-import=pkg_resources -F main.py
+

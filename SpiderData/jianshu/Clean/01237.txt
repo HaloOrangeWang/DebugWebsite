@@ -1,0 +1,58 @@
+大家好，我还是那个在家带孩子的宝妈，那个有态度的tester（伪测试）
+
+我今天来说说，各位刚刚开始学习python的时候经常遇到的几个问题，思考来源于虫师的书籍，如果对大家有所帮助，非常开心。
+
+缩进错误
+
+python语言最具特色的是使用缩进来标明成块的代码，在python中，对程序的缩进有严格的要求，一般建议使用四个空格，当然有人也愿意用tab键也是没有问题的，只是在一个项目中，建议要么使用4个空格，要么使用tab，绝对不要混用，否则可能出现缩进报错的几率很高。
+
+如果代码中出现异常信息IndentationError: expected an indented block，请不要惊慌，你代码中缩进出问题了。下面我们写一个制造一个异常情况
+
+def dict_to_set(dict_ob,set_ob):
+    for key, value in dict_ob.items():
+    set_ob.add(key)    #这里缩进有问题
+        if isinstance(value, dict):
+            dict_to_set(value, set_ob)
+        elif isinstance(value, list):
+            for li in value:
+                dict_to_set(li,set_ob)
+    return set_ob
+if __name__ == "__main__":
+    dict01 = {"name":"ting","pass":"123","family":[{"name":"tian","age":1},{"name":"zhou","age":26}]}
+    my_set = set()
+    print(dict_to_set(dict01,my_set))
+
+执行结果：
+
+引包错误
+
+这里只需要说明一下，python的引包机制首先从当前目录开始找是否存在你引入的包名，如果存在就会优先引用当前目录下的文件。
+
+也就是说，如果我在a.py文件中使用import unittest，如果当前目录下存在一个unittest.py的文件，那么我就不能成功的使用py内置的unittest模块了。
+
+所以，大家在命名文件名的时候一定要注意，不要和python自带的模块名冲突。
+
+编码错误
+
+在开发python程序的时候，会涉及3个方面的编码
+
+python程序文件编码，可以在程序的开头使用#coding=utf-8进行申明
+
+python程序运行环境编码
+
+python读取外部文件，网页的编码
+
+最容易出现问题的情况就是当python读取外部文件，网页的时候，首先我们要确定读取的文件，网页的编码格式，然后通过decode()和encode()方法来进行编码转换
+
+decode（解码）：作用是将其他编码的字符串转换成Unicode编码
+
+encode（编码）：是将unicode编码转换成其他编码的字符串
+
+学会分析错误
+
+我们在编写代码的时候，肯定会经常遇到一大堆的报错，那么掌握读取错误信息的方法是非常重要的，一般我们需要遵循两个点，一是找到自己写的程序（文件名，所在行，所在函数，出错地方），二是看最终的错误提示，根据上面亮点，就可以轻松的锁定范围，找到问题所在了。
+
+写在后面的话
+
+真的很感谢互联网，让我有机会向这么多有经验的前辈学习。
+

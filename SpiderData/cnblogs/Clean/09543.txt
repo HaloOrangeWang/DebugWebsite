@@ -1,0 +1,73 @@
+今天安装了一天的locust，最后在要放弃的时候，突然就成功了，让我松了一口气，唉，好事多磨哦。现在将我遇到的坑写出来，给各位同样踩坑的童鞋一个参考。
+
+首先，简单介绍下locust，它是一款开源负载测试工具。这个工具是否适合你，要根据实际情况来看，如果你对编程了解比较多，有一定的编程能力和逻辑思维能力，那么选择locust，可以完全替代jmeter。如果编程能力较弱，那还是建议选择jmeter吧，毕竟jmeter是用组件来编写脚本。而locust是基于时间，通过python代码完成测试脚本，监控和测试结果展示都有局限性，需要二次开发。
+
+然后，说说我的locust的安装之旅，就这样艰难的开始了，我知道locust是和python搭档，所以我预先安装python，我之前安装过python，安装包还在，就直接安装了，安装成功之后，发现是32位的，但是完全可用，就没管它。接着按照locust的安装步骤来安装，在运行窗口敲代码 pip install locustio，安装失败，我首先想到的是python和我的系统不匹配造成的，于是我就把刚才安装的32位的卸载了，又去官网下载了，最新版本的python。重新安装了之后，还是不成功，百度了一下，好多人说可能不支持这个版本，好嘛，继续去下载了python3.8。结果问题依然存在，我就确定不是python版本问题了，还是针对报错来解决吧。但是网上有搜不到原因，很多说的都是只言片语，根本解决不了我的问题。我就根据报错信息，加上我的理解，再加上百度，一点一点的修正。
+
+一、安装篇
+
+pip install locustio，出现如图的错误，提示没有wheel包，也就是没有安装wheel.
+
+安装wheel，pip install wheel，这个倒是很快就安装了。
+
+接着安装locust，因为下载慢会导致失败，所以加了源地址 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple locustio
+
+　　提示没有安装VC++组件，就去下载安装了VC++，这个下载地址提供给大家，安装就是傻瓜式安装，下一步，下一步就可以了。不过比较占空间，没报这个就不要安装。
+
+　　 资源链接：https://pan.baidu.com/s/1YMOaTZzS-gthZkqfD0H8ow     提取码：rk7s
+
+再次安装，还是报错
+
+　　百度了一下，需要升级，pip install -U setuptools
+
+　　
+
+　　升级成功之后，用这个命令安装 pip install -U --pre locustio，开始因为网速慢，导致失败，如图
+
+　　
+
+　　后面又运行了一次，网速跟上了，但是版本不匹配
+
+　　
+
+　　在运行的时候，加上了版本号。pip install -i https://pypi.tuna.tsinghua.edu.cn/simple locustio==0.13.5
+
+　　
+
+　　终于没有报错，安装成功了。
+
+　　
+
+　　最后，总结一下，最好还是根据安装错误提示来修正，网上的方法很多，但都只言片语，不一定就适合你的环境。至于别人说的支持什么版本，其实，根据我的经验看，现在没有那么多的限制，只要和自己的操作系统匹配，可用就行。如果需要分布式测试的话，还要安装 pip install pyzmq。
+
+　　二、调试篇
+
+　　1、在使用中，如果导入以下类
+
+　　from locust import HttpLocust
+
+　　被告知：
+
+　　ImportError: The HttpLocust class has been renamed to HttpUser in version 1.0.
+
+　　应当需要修改为：
+
+　　from locust import HttpUser
+　　
+
+　　2、运行脚本
+
+出现如下报错
+
+注意：此处的 task_set = UserBehavior，
+
+从版本1.0开始，就不支持使用 task_set进行实例化，可能是和内部的一些重名了吧……
+
+所以要改一下，比如 task_create = UserBehavior等等能成功运行的。
+
+三、启动locust
+
+在运行窗口，启动locust
+
+在浏览器输入http://127.0.0.1:8089访问不了的话，就用http://localhost:8089/
+

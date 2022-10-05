@@ -1,0 +1,8 @@
+报错原因与编码有关，pip把下载的临时文件存放在了用户临时文件中，这个目录一般是C:\Users\用户名\AppData\Local\Temp，目录名中有中文，显然ascii这种编码是不支持的，因为我的用户名是中文的所以出现了错误，解决方法：
+
+找到python2.7目录下的Lib文件夹中的ntpath.py文件，打开，找到def join(path, *paths): 这个方法下添加一下两行代码：
+
+reload(sys)
+
+sys.setdefaultencoding('gbk')
+

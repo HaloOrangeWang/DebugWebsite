@@ -1,0 +1,66 @@
+jenkins 搭建完成后，可以浏览器访问： http://localhost:8081/jenkins， 新建任务过程中遇到以下问题：
+
+1. 源码管理不现实git， 只显示无
+
+解决： 插件管理 -  可选插件 - 搜索jenkins的git插件：Git plugin
+
+2. 若插件搜索不到， 需要重新安装下git，并且加到环境变量，重启jenkins后可显示。
+
+3. jenkins 完成后，进行构建，日志输出报错，找不到 module ：
+
+解决1： 本地使用python命令执行脚本，正常。
+
+解决2：登陆服务器，查看路径是否正确，正常。
+
+解决3: 登陆服务器，使用python命令执行脚本，报错：找不到module，怀疑服务器的python版本问题、或者 未安装对应的模块。
+
+解决4：linux安装python3.x，并安装使用的模块，再次执行，不报错。
+
+4. jenkins拉取git代码报错
+
+a. 可能原因如下：
+
+1） jenkins所在机器访问gitlab不通，可ping gitlab.xx.com
+
+2) jenkins所在机器配置gitlab不对，可通过ping gitlab.xx.com查看ip
+
+以上原因可通过配置host解决， 10.xx.xx.xx gitlab.xx.com
+
+3）jenkins与git之间未互通，需要jenkins生存公私钥
+
+a. jenkins生成公私钥， 将jenkins的公钥配置到gitlab到ssh-keys上
+
+b. 将jenkins的私钥配置到jenkins 凭据
+
+问题1：
+
+jenkins超级管理权限设置丢失，导致超级管理员admin账号登录后，不显示系统管理。如下图：
+
+解决方法：
+
+1.取消登录验证。不同的安装方式Jenkins的web校验源码位置不同(我是通过 tomcat+jenkins.war部署)，可以通过find搜索。
+
+2. 拷贝config.xml文件，为config.xml.bak，方式修改错误导致Jenkins不可访问，可以直接恢复文件。
+
+3. 修改配置文件： <useSecurity>true </useSecurity>修改为false
+
+4. 重启Jenkins
+
+5. 再次访问Jenkins，可以看到所有配置，但目前是所有用户都可以做任何事情。
+
+6. 设置Jenkins安全矩阵，再次访问jekins报错：HTTP Status 404 j_acegi_security_check
+
+7. 解决方法：
+
+在设置安全时，把安全域->jenkins专用数据库->允许用户注册，勾上。
+
+8. Jenkins权限设置：
+
+参考：https://blog.csdn.net/langyalaoa/article/details/79711402
+
+参考： https://blog.51cto.com/13859393/2166335
+
+参考：https://www.cnblogs.com/reblue520/p/7130914.html
+
+参考：https://blog.csdn.net/qq_31519989/article/details/108120947
+

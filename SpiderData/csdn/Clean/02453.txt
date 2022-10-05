@@ -1,0 +1,61 @@
+
+[uwsgi] no request plugin is loaded, you will not be able to manage requests.
+
+Problem:
+
+*** Operational MODE: preforking+threaded
+
+no app loaded. going in full dynamic mode
+
+uWSGI is running in multiple interpreter mode ***
+
+!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!
+
+no request plugin is loaded, you will not be able to manage requests.
+
+you may need to install the package for your language of choice, or simply load it with --plugin.
+
+!!!!!!!!!!! END OF WARNING !!!!!!!!!!
+
+这个问题解决方法如下：
+
+$sudo apt-get install uwsgi-plugin-python
+
+已经使用pip install bottle成功安装模块，而且在Python shell可以成功导入，import和from…import均可。
+
+在执行Python脚本时报错ImportError: No module named ***
+
+主要原因有两个：
+
+（1）python 、pip 存在多个版本，或者升级过，我的环境是因为在虚拟机上既装了Python又装了anaconda，pip安装的路径可能不是Python的sys.path。
+
+（2）权限问题，有的是root，有的是非 root权限
+
+解决办法：
+
+就是python执行的时候，会有一个搜索路径，要搜索到才行，安装不同版本，搜索路径可能就错了，那么搜索路径如何查看呢？如下：
+
+import sys
+
+sys.path
+
+接下来问题就简单了，先指明查看到的搜索路径，再利用pip uninstall bottle来卸载之前安装的模块，最后利用pip install bottle再次安装，执行脚本，可以成功运行。
+
+这里介绍两种办法指明路径：
+
+（1）定义环境变量PYTHONPATH
+
+export PYTHONPATH=/usr/local/lib/python2.7/site-packages
+
+（2）直接修改Python脚本使用的解释器（这个很直观）
+
+查看脚本原本的解释器，此时运行有错：
+
+查看默认的Python解释器：
+
+将脚本的解释器换成默认的解释器，运行成功：
+
+参考：
+
+https://blog.csdn.net/cc1949/article/details/78285842
+

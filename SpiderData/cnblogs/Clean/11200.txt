@@ -1,0 +1,24 @@
+
+问题
+
+以学生表为例，TableStudents表中age字段是TextField类型，想要筛选出18岁以上的学生
+
+（问题1）会因为TableStudents.age与18类型不同无法得到正确的结果
+
+查阅SQLite文档发现abs()方法可以从TextField得到对应的数再进行比较
+
+于是在代码中加上abs
+
+（问题2）运行后报错：
+
+TypeError: bad operand type for abs(): 'TextField'
+
+原因是abs()默认是Python自带的方法，不支持这样的转换
+
+
+解决
+
+正确调用peewee的abs方法
+
+解决问题
+

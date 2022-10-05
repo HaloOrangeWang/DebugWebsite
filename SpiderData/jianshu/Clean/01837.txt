@@ -1,0 +1,78 @@
+
+1、安装maker
+
+运行多线程时出现
+
+conda install gcc_linux-64
+
+多线程运行出现如下报错
+
+多线程运行出现如下报错
+
+安装如下软件
+
+conda install openmpi
+# 如果之前装了mpi4py的话要卸载重装一遍。
+conda install mpi4py
+
+
+2、Repeatamask
+
+遇到一个报错
+
+Error: The RMblast engine is not installed in RepeatMasker!</mark>
+
+具体问题为：运行rmblastn的时候找到不libbz2.so.1.0。
+
+参考该解答点击，是因为libbz2.so.1.0 的在linux上版本更新了，所以搜索引擎跟不上，因此需要将/data/pub/wuyudi/miniconda2/envs/repeatmask/lib 中焉有的libbz2.so.1.0 删除，链接过去一个新的libbz2.so.1.0；
+
+具体找libbz2.so.1.0 如下所示
+
+locate libbz2.so.
+
+## 得到很多结果，我选取其中一个
+ln -s /data/pub/wuyudi/miniconda2/envs/repeatmolder/lib/libbz2.so.1.0 ./libbz2.so.1.0
+
+
+3、运行EDTA
+
+运行时，在导入re，json模块时出现
+
+module 'enum' has no attribute 'IntFlag'
+
+是PYTHONPATH的设置错误，在.bashrc中存留有以前使用python2时留下的配置，导致python3不能找到正确的enum位置，注释掉bashrc中相关语句后，清空$PYTHONPATH变量即可：
+
+unset PYTHONPATH
+ #查看是否清空
+ echo $PYTHONPATH
+
+然后即可正常使用，PYTHONPATH是python2中多用的配置，使用python3和conda后一般不再需要
+
+
+4、package ‘xxxx’ is not available 的解决办法
+
+install.packages("LDheatmap", repos='https://mran.microsoft.com/snapshot/2019-02-01/')
+
+添加repos，地址
+
+
+4、EDTA，RMblast engine is not installed in RepeatMasker
+
+删除conda安装的rmblast，重新安装rmblast； 版本2.6.0
+
+
+5、运行repeatModeler 中./BuildDatabase 时报错
+
+Encode.c: loadable library and perl binaries are mismatched (got handshake key 0xce00080, needed 0xde00080)
+
+首先确定安装软件的路径，我是使用conda安装在env下的repeatmolder,  然后手动设置PERL5LIB (运行前，加入即可正常)
+
+PERL5LIB=/data/pub/miniconda2/envs/repeatmolder/lib/perl5/site_perl/5.22.0/x86_64-linux-thread-multi
+
+
+6、运行busco时
+
+ERROR   Cannot write to Augustus config path, please make sure you have write permissions to /.../augustus/config/
+
+在使用别人安装的augustus时，读取其config文件时报错没有权限，只需要将别人的config文件复制在自己目录下即可，这样就有权限了，而后修改august的config的环境变量即可
+

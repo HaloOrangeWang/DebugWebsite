@@ -1,0 +1,40 @@
+又是一个坑，自己埋的坑要自己来踩。。。。。
+
+1、起因：
+
+当前用的是python3，通过pip3安装scrapy。没注意到安装的过程中报错了。
+
+然后直接在dos下面新建scrapy项目，是成功的，也可以成功运行。
+
+2、导致的问题：
+
+当我在eclipse里面建立scrapy项目，但是import scrapy的时候一直报错找不到这个包，在dos里面又是正常的。
+
+然后重启eclipse，重新构建python的运行路径，都不得行。
+
+3、发现问题：
+
+我在dos里面输入了pip3 list,发现根本没有scrapy这个模块！！！o(╯□╰)o
+
+然后我输入pip list,发现有scrapy。。。。原来之前在dos里面新建scrapy的时候，是python2.7里面安装的。。。坑
+
+然后重新安装scrapy，这时才发现安装的时候，报了一个错。
+
+错误信息：building'twisted.test.raiser'extensionerror:MicrosoftVisualC++14.0isrequired.Getitwith"MicrosoftVisualC++BuildTools":http
+
+4、解决问题：
+
+然后根据百度指引，到https://www.lfd.uci.edu/~gohlke/pythonlibs/#twisted下载了一个Twisted‑18.7.0‑cp36‑cp36m‑win_amd64.whl（这里根据你自己系统选择版本）
+
+到你下载的这个文件路径里面执行pip3 install Twisted‑18.7.0‑cp36‑cp36m‑win_amd64.whl，
+
+然后重新安装scrapy，pip3 install scrapy。这次成功了，没有报错。
+
+重新通过eclipse导入scrapy包，成功了。
+
+尴尬。。。。
+
+5、总结：
+
+粗心是大忌！
+

@@ -1,0 +1,32 @@
+1、背景：
+
+启动MariaDB服务，通过python远程访问数据库失败，查询MariaDB日志（systemctl status mariadb）报错信息为：
+
+user: 'unauthenticated' host: '192.168.1.8' (This connection closed normally without authentication)
+
+2、原因：
+
+Mysql为了安全性，在默认情况下用户只允许在本地登录，关闭了远程登录权限
+
+3、解决办法：
+
+两个步骤：
+
+（1）登录mysql
+
+mysql -u sjm -p
+
+（2）允许用户在任何地方进行远程登录，并具有所有库任何操作权限
+
+GRANT ALL PRIVILEGES ON *.* TO 'sjm'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;
+
+（3）查询用户及host：select user,host from mysql.user;
+
+附：
+
+1、python验证连接数据库代码
+
+参考：
+
+https://blog.csdn.net/zhengnz/article/details/6308773
+

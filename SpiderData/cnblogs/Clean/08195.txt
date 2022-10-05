@@ -1,0 +1,27 @@
+而CentOS 7自带的yum采用的是python2.7，当系统将python升级到3.4后，出现语法解释错误
+
+报错
+
+解决办法，升级了本地的python版本后，一般来说我们都使用ln -s把python高版本执行文件链接到/usr/bin 下并保留原有的python版本，一般都是python2或是python2.7（centos7） python2或是python2.6(centos6) ，而原有的yum都是系统初始版本python开发的，所以我们必须将yum的的解释器修改为初始版本
+
+vim /usr/bin/yum
+
+#!/usr/bin/python2
+
+　　
+
+报错
+
+Downloading packages:
+  File "/usr/libexec/urlgrabber-ext-down", line 28
+    except OSError, e:
+                  ^
+SyntaxError: invalid syntax
+
+解决办法同上
+
+vim /usr/libexec/urlgrabber-ext-down
+#! /usr/bin/python2
+
+　　
+

@@ -1,0 +1,34 @@
+1、问题描述
+
+使用python自带的json，将数据转换为json数据时，datetime格式的数据报错：datetimeTypeError: datetime.datetime(2017, 3, 21, 2, 11, 21) is not JSON serializable。
+
+2、解决方法
+
+就是重写构造json类，遇到日期特殊处理，其余的用内置的就行。
+
+import json
+
+import datetime
+
+class DateEncoder(json.JSONEncoder):
+
+def default(self, obj):
+
+if isinstance(obj, datetime.datetime):
+
+return obj.strftime('%Y-%m-%d %H:%M:%S')
+
+elif isinstance(obj, date):
+
+return obj.strftime("%Y-%m-%d")
+
+else:
+
+return json.JSONEncoder.default(self, obj)
+
+使用时，调用上面定义的函数即可，如下：
+
+print json.dumps(self_data, cls=DateEncoder)
+
+原文：https://blog.csdn.net/suibianshen2012/article/details/64444030
+

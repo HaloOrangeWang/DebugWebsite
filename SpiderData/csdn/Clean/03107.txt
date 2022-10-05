@@ -1,0 +1,40 @@
+昨晚搞鼓了一下python的open()打开文件 代码如下
+
+def main():
+
+infile =open("C:\Users\Spirit\Desktop\bc.txt",'r')
+
+data = infile.read()
+
+print(data)
+
+main()
+
+然而结果总报错invaild argument 或者cant found such file ***
+
+查找问题后 发现是由于python中的 ‘\' 是转义符号，要想输出\ 的办法有两种
+
+1 、在\后再加\ 就是\\ 的形式
+
+把第二行改为infile =open("C:\\Users\\Spirit\\Desktop\\bc.txt",'r') 即可
+
+2、在路径前加个 r ，意思是按原始字符处理 。
+
+eg：
+
+infile =open(r"C:\Users\Spirit\Desktop\bc.txt",'r')
+
+好的 文件就可以读取了！
+
+补充知识：Python 使用控制台运行带有相对路径的指令时，是以运行文件为基准，还是以控制台当前路径为基准
+
+答案：以控制台当前路径为基准
+
+如，运行：
+
+python scripts/voc_annotation.py --data_path ./VOC
+
+这条指令时，后面的相对路径是以scripts文件夹为基准路径运行指令，而不是以voc_annotation.py为基准，所以CMD当前路径必须是scripts文件夹
+
+以上这篇浅谈python 调用open()打开文件时路径出错的原因就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持聚米学院。
+

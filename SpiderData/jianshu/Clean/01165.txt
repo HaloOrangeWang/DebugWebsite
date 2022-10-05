@@ -1,0 +1,24 @@
+在将返回结果转成json格式时遇到报错TypeError: Object of type 'bytearray' is not JSON serializable，打印了返回内容，显示返回结果如下：
+
+根据我这里的文件，返回内容有3种都是无法解析成json格式的数据的（bytearray/datetime/decimal），写了一个包含3种数据类型异常处理的解码类文件《MyEncoder.py》，然后再将这个文件导入到目标运行文件《connect_db.py》，并在文件中添加cls函数。如果返回内容中还有其他类型的数据转json异常，则在elif条件下添加转码方法即可。
+
+#coding:utf-8
+import  datetime
+import json
+import decimal
+
+class MyEncoder(json.JSONEncoder):
+
+def default(self,obj):
+        if isinstance(obj,bytearray):   #返回内容如果包含bytearray类型的数据
+            return str(obj,encoding='utf-8')
+        elif isinstance(obj,datetime.datetime): #返回内容如果包含datetime类型的数据
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(obj,decimal.Decimal):   #返回内容如果包含Decimal类型的数据
+            return float(obj)
+        super(DecimalEncoder, self).default(obj)
+
+return json.JSONEncoder.default(self,obj)
+
+处理结果：
+

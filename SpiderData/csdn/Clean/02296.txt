@@ -1,0 +1,27 @@
+​
+ 使用easyocr读取网络验证码时，遇到报错：
+
+cv2.error: Unknown C++ exception from OpenCV code
+
+但是奇怪的是不是每次都会报错，有时可以正确读取并识别，有时无法读取并报错。
+
+对应的代码是这样的：
+
+img_code = Image.open(BytesIO(self.session.get(self.url_code).content))
+img_code.show()
+reader = easyocr.Reader(['en'], gpu=False)
+result = reader.readtext(img_code)
+
+开始我以为是读取格式的问题，看了一下，easyocr可以接受图片文件、字节流、numpy数组或PIL读取的JpegImagePlugin.JpegImageFile，这里使用的是最后一种方式。我换成直接输入bytes也不解决问题。
+
+所以我觉得可能是环境配置问题。我用的是python3.9和opencv-python的最新版本4.5.5.64
+
+解决方法：
+
+pip install opencv-python==4.5.1.48
+ 换成opencv-python版本4.5.1.48即可。应该是opencv高版本没有适配好导致的，也许其他低版本也能用。
+
+参考：https://github.com/JaidedAI/EasyOCR/issues/640
+
+​
+

@@ -1,0 +1,50 @@
+
+问题描述
+
+使用anaconda安装python环境后，启动jupyter报没安装nodejs 5+，具体错误日志如下：
+
+[W 14:28:51.370 NotebookApp] Error loading server extension jupyterlab
+    Traceback (most recent call last):
+      File "D:\Anaconda3\lib\site-packages\jupyterlab\commands.py", line 321, in __init__
+        self._run(['node', 'node-version-check.js'], cwd=HERE, quiet=True)
+      File "D:\Anaconda3\lib\site-packages\jupyterlab\commands.py", line 1165, in _run
+        proc = Process(cmd, **kwargs)
+      File "D:\Anaconda3\lib\site-packages\jupyterlab\process.py", line 73, in __init__
+        self.proc = self._create_process(cwd=cwd, env=env)
+      File "D:\Anaconda3\lib\site-packages\jupyterlab\process.py", line 131, in _create_process
+        cmd[0] = which(cmd[0], kwargs.get('env'))
+      File "D:\Anaconda3\lib\site-packages\jupyterlab\jlpmapp.py", line 59, in which
+        raise ValueError(msg)
+    ValueError: Please install nodejs 5+ and npm before continuing installation. nodejs may be installed using conda or directly from the nodejs website.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+      File "D:\Anaconda3\lib\site-packages\notebook\notebookapp.py", line 1454, in init_server_extensions
+        func(self)
+      File "D:\Anaconda3\lib\site-packages\jupyterlab\extension.py", line 111, in load_jupyter_server_extension
+        info = get_app_info(app_dir)
+      File "D:\Anaconda3\lib\site-packages\jupyterlab\commands.py", line 244, in get_app_info
+        handler = _AppHandler(app_dir, logger)
+      File "D:\Anaconda3\lib\site-packages\jupyterlab\commands.py", line 324, in __init__
+        raise ValueError(msg)
+    ValueError: Please install nodejs 5+ and npm before continuing installation. nodejs may be installed using conda or directly from the nodejs website.
+[I 14:28:51.571 NotebookApp] Serving notebooks from local directory: C:\Users\lqz
+[I 14:28:51.572 NotebookApp] 0 active kernels
+[I 14:28:51.573 NotebookApp] The Jupyter Notebook is running at:
+[I 14:28:51.574 NotebookApp] http://localhost:8888/?token=b58976b7931de2d149edf5ac74271604605822a8b983dcb5
+[I 14:28:51.575 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[C 14:28:51.579 NotebookApp]
+
+Copy/paste this URL into your browser when you connect for the first time,
+    to login with a token:
+        http://localhost:8888/?token=b58976b7931de2d149edf5ac74271604605822a8b983dcb5
+[I 14:28:52.590 NotebookApp] Accepting one-time-token-authenticated connection from ::1
+
+
+解决方法
+
+安装nodejs，使用如下命令：
+
+conda install nodejs
+

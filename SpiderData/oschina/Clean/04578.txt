@@ -1,0 +1,26 @@
+大概是这种问题
+
+running build running build_py running build_ext building'M2Crypto.__m2crypto' extension swigging SWIG/_m2crypto.i to SWIG/_m2crypto_wrap.c swig -python -I/usr/include/python2.7-I/usr/include -includeall -modern -builtin -outdir build/lib.linux-i686-2.7/M2Crypto -o SWIG/_m2crypto_wrap.c SWIG/_m2crypto.i SWIG/_evp.i:12:Error:Unable to find'openssl/opensslconf.h'SWIG/_ec.i:7:Error:Unable to find'openssl/opensslconf.h'error: command 'swig' failed with exit status 1​
+
+由于OSX升级之后连 /usr/include 都没有了，使用命令
+
+​xcode-select --install​
+
+安装xcode命令行工具，多装几次/usr/include就会回来
+
+然而里面还是没有 openssl
+
+然后另外安装openssl 的时候会发现并没有把头文件ln到 /usr/include 里面，无卵用，/usr/include 还是一个不可更改的系统目录
+
+但是我们留意到安装​M2Crypto的时候报错的地方是提示 swig 语句有问题，于是可以修改swig 的寻址路径，如下，妥了：
+
+sudo env LDFLAGS="-L$(brew --prefix openssl)/lib" \
+
+CFLAGS="-I$(brew --prefix openssl)/include" \
+
+SWIG_FEATURES="-cpperraswarn -includeall -I$(brew --prefix openssl)/include" \
+
+pip install m2crypto
+
+亲测成功
+

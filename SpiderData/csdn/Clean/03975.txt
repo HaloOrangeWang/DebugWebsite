@@ -1,0 +1,25 @@
+UnicodeEncodeError: ‘ascii’ codec can’t encode characters in position 20-25: ordinal not in range(128)
+
+python 代码中已经
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+怎么还是提示错误，简直疯了
+
+但是发现这个代码在一台linux上正常，另一台不正常显示，那么代码本身肯定没问题了。
+
+是不是系统的问题？ 
+ 在终端输入 locale命令，如有zh cn 表示已经安装了中文语言 
+ 发现系统本身就没安装汉语包。 
+ 安装 
+ yum groupinstall chinese-support
+
+输入 echo $LANG可以查看当前使用的系统语言
+
+如果只是临时更换linux系统的语言环境，可以通过输入设置 LANG=语言名称， 如中文是 Zn_CN.UTF-8，英文en_US.UTF-8
+
+以上方法是通过修改设置系统默认的语言配置 
+ 如Vi /etc/sysconfig/i18n （注意改好之后重启一下系统）
+

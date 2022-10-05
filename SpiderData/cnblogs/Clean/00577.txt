@@ -1,0 +1,48 @@
+最近开始接触matplotlib,
+
+1.首先安装matplotlib库和其依赖的一些其他库,例如:numpy,scipy和pandas等
+
+2.开始进行简单的编码工作,并在PyCharm中运行,出现如下错误:
+
+解决步骤如下:
+
+前提:
+
+1.导入正确版本的matplotlib库
+
+2.代码最后调用matplotlibku中pyplot.show()方法
+
+3,无其他低级错误
+
+解决步骤:
+
+1.在导入pyplot之前.需要输入如下步骤:
+
+　　import matplotlib as mpl
+
+　　mpl.use('Agg')
+
+　　import matplotlib.pyplot as plt
+
+　　....
+
+2.此时运行python程序,虽然不报错,但是并没有绘图界面弹出
+
+　　在命令号几面输入如下命令:
+
+　　import matplotlib
+
+　　print(matplotlib.get_backend())
+
+　　将得到的字符串结果替换mlp.use('Agg')中Agg'即可
+
+　　例如:我的print(matplotlib.get_backend())结果为TkAgg,替换后为:
+
+　　mpl.use('TkAgg')
+
+3.显示正常
+
+4.至于原因,个人能力有限,无法解释透彻,
+
+有大神直接更改matplotlibrc文件中backend的值(backend选项改成你系统的图形环境),有兴趣的自行摸索
+

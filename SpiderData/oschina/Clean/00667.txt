@@ -1,0 +1,42 @@
+之前第一次编译的时候没有出现问题，第二次重新编译时./configure报错：
+
+File "/usr/lib/python2.7/posixpath.py", line 73, in join
+    path += '/' + b
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe4 in position 13: ordinal not in range(128)
+
+查知可在报错的文件/usr/lib/python/posixpath.py中添加语句
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+解决；
+
+但configure时再次出现类似报错
+
+File "/usr/lib/python2.7/codecs.py", line 896, in open
+    file = __builtin__.open(filename, mode, buffering)
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 13-14: ordinal not in range(128)
+
+在/usr/lib/python2.7/codecs.py中添加上述setdefaultencoding('utf-8')语句，configure时出现另一种报错：
+
+File "/usr/lib/python2.7/codecs.py", line 13, in <module>
+    sys.setdefaultencoding('utf-8')
+LookupError: no codec search functions registered: can't find encoding
+
+所以，这样搞下去没完没了，是不行的啦……
+
+由于有之前（敢于作死）的经验，我知道将系统的默认python版本从原来的2.7链接到3.0就可以解决这个问题。具体操作可参考这篇文章：Linux升级Python至3.x
+
+但我还有一些补充：
+
+1. 如果/usr/bin下已有python3.x的话，建议直接将usr/bin/python软链接到/usr/bin/python3.x（这里我的系统里存的是3.5)。（而不是链接到从源码编译安装得到的/usr/local/bin下的python3.x）
+
+# mv /usr/bin/python /usr/bin/python.bak
+# ln -s /usr/bin/python3.5 /usr/bin/python
+
+2. pqxx编译安装结束后建议将usr/bin/python软链接回/usr/bin/python2.7（恢复原先状态）【以免未来出现一些不可控的状况（血泪的教训.jpg
+
+# mv /usr/bin/python /usr/bin/python.bak
+# ln -s /usr/bin/python2.7 /usr/bin/python
+

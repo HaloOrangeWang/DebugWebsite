@@ -1,0 +1,93 @@
+
+0X01 问题
+
+MySQL-python是python调用MySQL的常用库
+
+通常安装时会遇到某些坑。
+
+EnvironmentError: mysql_config not found
+
+yum -y install mysql-devel
+
+gcc报错
+
+yum install gcc libffi-devel python-devel openssl-devel
+
+一般这样就OK了（装了六七个机器，这样就行了）
+
+但是，在用公司的机器装的时候，装完mysql-devel与gcc系列之后，报错
+
+这真是奇怪的问题，找了许久百度谷歌没有找到答案。
+
+
+0X02 其他安装方式
+
+yum安装
+
+yum install MySQL-python
+
+easy_install MySQL-python
+
+对比起pip安装，yum 和 easy_install 可能会链接到原本的Python版本。
+
+比如我的机器是centos6.6，原装版本是python2.6.6（自己后面装的python2.7），yum调用的python版本也是python2.6.6
+
+所以用yum安装时，MySQL-python直接给装到Python2.6.6里了。
+
+虽然python -> python2.7这类软链接都已经做了，但是安装好还是链接向python2.6.6
+
+如果对Python版本没有2.7的要求，或者centos机器本身的python版本比较高，可以试一下。
+
+期间装了另外的东西
+
+官方mysql-libs
+
+官方MySQL-python
+
+下载到本机后
+
+rz 命令上传到机器
+
+rpm -ivh 安装
+
+
+0X03   找到原因
+
+遍地找不到原因
+
+坐下来冷静思考
+
+我已经装了mysql的依赖——mysql-devel了
+
+这时候报错确实my_config.h
+
+（百度搜索缺失了怎么办，答：装mysql-devel。我已经装了还缺失呢？答：没有这种情况）
+
+而在折腾的过程中，查看了官方mysql-devel，里面是有my_config.h的文件的。
+
+所以想了想，可能是公司的“陈年老源”里蕴含着宝贝的秘密。
+
+重新在官网下载mysql-devel的rpm包
+
+yum 卸载掉公司源安装的mysql-devel
+
+再rpm安装正版的mysql-devel。
+
+pip install mysql-python==1.2.5
+
+OK成功了
+
+吐槽：垃圾公司源，安装完东西里面还缺了个文件，太缺德了，找了一整天的原因，还没有怀疑过公司的源下载的东西不完整。
+
+关键链接资源
+
+mysql-devel-5.1.73-8.el6_8.x86_64.rpm
+
+mysql-5.1.73-8.el6_8 RPM for x86_64
+
+centos6下载正版安装包
+
+centos6下载正版rpm包
+
+后面两个链接来回查找，安装原生包，资源厅全面。
+

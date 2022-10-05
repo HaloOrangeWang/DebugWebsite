@@ -1,0 +1,50 @@
+因公司服务器迁移，需要将服务器断电，重启服务器后，ambari-server无法自启动，于是手动启动ambari-server，报错如下：
+
+[root@devhadoop* ~]# ambari-server start
+
+Using python  /usr/bin/python
+
+Starting ambari-server
+
+Traceback (most recent call last):
+
+File "/usr/sbin/ambari-server.py", line 36, in
+
+from ambari_server.dbConfiguration import DATABASE_NAMES,LINUX_DBMS_KEYS_LIST
+
+File"/usr/lib/python2.6/site-packages/ambari_server/dbConfiguration.py",line 28, in
+
+from ambari_server.serverConfiguration importdecrypt_password_for_alias, get_ambari_properties, get_is_secure, \
+
+File"/usr/lib/python2.6/site-packages/ambari_server/serverConfiguration.py",line 587, in
+
+configDefaults = ServerConfigDefaults()
+
+File"/usr/lib/python2.6/site-packages/ambari_server/serverConfiguration.py",line 500, in __init__
+
+super(ServerConfigDefaultsLinux, self).__init__()
+
+File"/usr/lib/python2.6/site-packages/ambari_server/serverConfiguration.py",line 384, in __init__
+
+self.check_if_directories_writable([self.OUT_DIR, self.PID_DIR])
+
+File"/usr/lib/python2.6/site-packages/ambari_server/serverConfiguration.py",line 436, in check_if_directories_writable
+
+raise FatalException(-1, "Unable toaccess {0} directory. Confirm the directory is created and is writable byAmbari Server user account '{1}'".format(directory, getpass.getuser()))
+
+ambari_commons.exceptions.FatalException: "Fatalexception: Unable to access  directory.Confirm the directory is created and is writable by Ambari Server user account'root', exit code -1"
+
+试了好几次ambari-server start命令，都不好使；重启服务器几次，也仍然是不行。
+
+通过执行以下命令，查看ambari-server的执行用户：
+
+#grep'ambari-server.user' /etc/ambari-server/conf/ambari.properties
+
+ambari-server.user=root
+
+发现，在该台服务器上执行该命令返回为空，查看ambari.properties文件内容，该文件居然是空文件，没有任何内容；于是查看其他ambari正常的服务器上的该文件，发现并不是空的，查询结果返回的是root。这就表明，很可能是因为该文件内容的缺失，导致的该情况！！！这可是一个令人兴奋的发现啊。
+
+于是直接从好用的ambari-server上，将该文件复制到该台服务器上，重新启动ambari-server，果然，可以正常启动ambari-server了，太神奇了！！！不过，不知道为什么这个文件内容会为空，之前都是好好的，只是关闭了服务器，然后又启动了服务器，就这样了！！！
+
+查找了好多资料，都没有相关的解决办法，这个办法是我偶然发现的。也希望这篇文章可以帮助到遇到同样问题的人！！！
+

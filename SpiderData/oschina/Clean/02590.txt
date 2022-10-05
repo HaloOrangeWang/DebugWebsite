@@ -1,0 +1,80 @@
+这个问题得深入python源码才能看。
+
+1 class a:
+2  pass
+3 aa =a()
+4 print dir(aa)#aa只有doc和module属性
+5 print aa.__class__#__main__.a
+
+2.关于os.path和posixpath
+
+以下一段话引用自某网友:
+
+我们可以从sys.modules中找到当前已经加载的模块，sys.modules是一个字典，内部包含模块名与模块对象的映射，该字典决定了导入模块时是否需要重新导入。
+
+最后一句话很关键，该字典决定了导入模块时是否需要重新导入，也就是说，python解释器是参考这个字典来决定导入模块时要不要重新导入。而且导入新模块的同时，将新模块加入该字典。
+
+还有，可用模块的__file__属性查看模块文件的位置
+
+以上两点是需要知道的，下面说问题:
+
+用sys.modules可查看到，(qpython安卓版)
+
+'os.path':<module 'posixpath' from '/data/user/0/com.hipipal.qpyplus/files/lib/python27.zip/posixpath.py'>
+
+'posixpath':<module 'posixpath' from '/data/user/0/com.hipipal.qpyplus/files/lib/python27.zip/posixpath.py'>
+
+'os':<module 'os' from '/data/user/0/com.hipipal.qpyplus/files/lib/python27.zip/os.py'>
+
+可以看到，os是模块而不是那种包含很多模块的文件夹。
+
+而os.path模块就是posixpath模块。这是怎么做到的呢？我猜想，应该是os.py源文件中，有这样一行代码，import posixpath as path
+
+下面我们做个实验验证一下猜想。
+
+c.py
+
+1 print "haha"
+2 def cc():
+3     print "haha"
+
+a.py
+
+1 import c as b
+2 b.cc()
+
+test.py
+
+1 import a
+2 a.b.cc()
+3 import sys
+4 print sys.modules['a']
+5 print sys.modules['c']
+6 print sys.modules['a.b']
+
+将以上仨文件保存，然后运行test.py，下面是运行结果:
+
+haha
+
+haha
+
+haha
+
+<module 'a' from '/storage/emulated/0/qpython/scripts/a.py'>
+
+<module 'c' from '/storage/emulated/0/qpython/scripts/c.py'>
+
+Traceback (most recent call last):
+
+File "/storage/emulated/0/qpython/scripts/test.py", line 7, in <module>
+
+print sys.modules['a.b']
+
+KeyError: 'a.b'
+
+可以看到，a.b等同于c模块，b在a中是c模块的别名，我们可以用a.b来调用c模块的属性和方法。就如同，os.path等同于posixpath模块。
+
+但是最终的问题来了，为什么在字典中存在os.path,却不存在a.b？(客从最后一个报错中看出来)，并且，我们可以直接导入os.path(import os.path)，却不可以import a.b(报错，no module named b)？
+
+这说明，在os.py文件中，除了有import posixpath as path ，还有额外的代码，使得os.path可以直接导入，这些代码究竟是什么，等以后看源码的时候看
+

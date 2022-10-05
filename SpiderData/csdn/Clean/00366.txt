@@ -1,0 +1,34 @@
+搞了半天，好烦啊
+ 因为想要连接客户端，所以使用了paramiko库。但python死活装不上，经过我的努力挣扎，终于装上了
+ 百度了好多说是没有C++编译软件、缺少后缀为 .whl 的安装包、缺少gcc、安装paramiko库必须先安装PyCrypto库等等，我升级了pip，装了.whl安装包，装了Visual C++ Build Tools这个工具，重装了python和pycharm，甚至准备安装MinGW-w64，都没有解决，无语
+ 最后解决方式还是装了.whl安装包，然后pip升级
+
+pip升级使用命令：python -m pip install --upgrade 会报错,如下图：
+ 
+ 此时需要输入命令：easy_install -U pip升级pip运行成功，再输入更新命令没有报错了，（‘easy_install -U 包名’ python老版本中下载更新包命令）
+
+开始安装.whl安装包
+ 忘记是不是这个链接下载的.whl安装包了：https://www.lfd.uci.edu/~gohlke/pythonlibs/
+ （1） 安装之前先查看下本机需要什么版本的安装包，如下图，去下载框里的格式的安装包
+ 
+ （2）下载完之后要把该安装包放在python目录下的Scripts目录下，这一步很重要
+ 然后在该目录下打开cmd，运行pip install Twisted-20.3.0-cp36-cp36m-win32.whl,如下图
+
+因为我本机电脑装了多个python，有2.x和3.x的，在安装过程中总是遇到问题，如
+
+ERROR: Twisted-20.3.0-cp36-cp36m-win_amd64.whl is not a supported wheel on this platform.
+**遇到这个问题需要去第一步检查自己的机器配置（机器是64位的也很有可能需要安装32位的包噢）**
+
+或者我明明安装包是36的，python也是36的，但安装时遇到提示：python 2.x平台不匹配的问题
+ 原因就是因为没有把.whl这个文件放到你想要安装的python库里，我就是因为没有指定目录，直接安装，系统定位到的是2.x的python，导致提示平台不匹配
+ 最后成功安装后，就需要去python环境中添加paramiko库了，或者pip添加
+ 我使用python环境中添加库又报错了，又提示c++编译环境的问题，如
+ 
+ 然后我用pip安装，安装成功了，就很不解。。。
+ 就当我要放弃的时候，环境弄好了。。。。。
+ 原因是因为我安装.whl安装包的环境是python3.6版本的，但我python里使用的是3.7版本的，无语，，不知道哪来这么多python，可能因为我是小白把。。。
+ 然后又重新操作以上步骤。。。
+ 注意每个python版本的.whl安装包都是不一样的，跟自己python版本和机器都有关系，建议安装前都执行第一步操作去检查一下
+
+安装完之后paramiko库安装好了。。。。。
+

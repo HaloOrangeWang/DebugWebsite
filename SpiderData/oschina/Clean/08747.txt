@@ -1,0 +1,26 @@
+执行import sys; print(sys.path)查看python搜索路径，确保自己的模块在python搜索路径中
+
+
+python的搜索路径与包（package）
+
+python的搜索路径其实是一个列表，它是指导入模块时，python会自动去找搜索这个列表当中的路径，如果路径中存在要导入的模块文件则导入成功，否则导入失败：
+
+>>> import sys
+>>> sys.path
+['', 'C:\\Python33\\Lib\\idlelib', 'C:\\Windows\\system32\\python33.zip', 'C:\\Python33\\DLLs', 'C:\\Python33\\lib', 'C:\\Python33', 'C:\\Python33\\lib\\site-packages']
+
+>>> sys.path.append('E:\\python')
+>>> sys.path
+['', 'C:\\Python33\\Lib\\idlelib', 'C:\\Windows\\system32\\python33.zip', 'C:\\Python33\\DLLs', 'C:\\Python33\\lib', 'C:\\Python33', 'C:\\Python33\\lib\\site-packages', 'E:\\python']
+>>>
+
+当安装第三方模块的时候，如果不是按照标准方式安装，则为了能够引用（import）这些模块，必须将这些模块的安装路径添加到sys.path中，有以下几种方法：
+
+最简单的方法：是在sys.path的某个目录下添加路径配置文件，最常见的就是在…/site-package/目录下。路径配置文件的扩展名是”.pth”，其中的每一行包含一个单独的路径，该路径会添加到sys.path列表中（已验证）。”.pth”中的路径既可以是绝对路径，也可以是相对路径，如果是相对路径，则是相对于包含”.pth”文件的路径而言的。
+
+终极解决办法：重新安装python
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

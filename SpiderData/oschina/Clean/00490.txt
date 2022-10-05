@@ -1,0 +1,42 @@
+今日想着装个python3.7 搞搞，结果make install的时候报错了，详细如下：
+
+Traceback (most recent call last):
+  File "/data/tools/Python-3.7.0/Lib/runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+  File "/data/tools/Python-3.7.0/Lib/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/data/tools/Python-3.7.0/Lib/ensurepip/__main__.py", line 5, in <module>
+    sys.exit(ensurepip._main())
+  File "/data/tools/Python-3.7.0/Lib/ensurepip/__init__.py", line 204, in _main
+    default_pip=args.default_pip,
+  File "/data/tools/Python-3.7.0/Lib/ensurepip/__init__.py", line 117, in _bootstrap
+    return _run_pip(args + [p[0] for p in _PROJECTS], additional_paths)
+  File "/data/tools/Python-3.7.0/Lib/ensurepip/__init__.py", line 27, in _run_pip
+    import pip._internal
+  File "/tmp/tmpbrtdl6rw/pip-10.0.1-py2.py3-none-any.whl/pip/_internal/__init__.py", line 42, in <module>
+  File "/tmp/tmpbrtdl6rw/pip-10.0.1-py2.py3-none-any.whl/pip/_internal/cmdoptions.py", line 16, in <module>
+  File "/tmp/tmpbrtdl6rw/pip-10.0.1-py2.py3-none-any.whl/pip/_internal/index.py", line 25, in <module>
+  File "/tmp/tmpbrtdl6rw/pip-10.0.1-py2.py3-none-any.whl/pip/_internal/download.py", line 39, in <module>
+  File "/tmp/tmpbrtdl6rw/pip-10.0.1-py2.py3-none-any.whl/pip/_internal/utils/glibc.py", line 3, in <module>
+  File "/data/tools/Python-3.7.0/Lib/ctypes/__init__.py", line 7, in <module>
+    from _ctypes import Union, Structure, Array
+ModuleNotFoundError: No module named '_ctypes'
+make: *** [install] Error 1
+
+根据报错显示是没有 _ctypes 模块，研究了下，发现需要 tk-devel 和 libffi-devel  包，两个包的介绍如下：
+
+libffi-devel
+
+tk-devel
+
+安装这两个包即可make install
+
+yum -y install libffi-devel  tk-devel
+
+然后继续make install
+
+cd /data/tools/python3.7/
+make install
+
+完美，安装成功了。
+

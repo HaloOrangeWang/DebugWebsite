@@ -1,0 +1,70 @@
+微信公众号："算法与编程之美"，欢迎关注，及时了解更多此系列文章。
+
+问题描述
+
+当我们在一个列表中取数时，我们经常会发生list index out of range的错误，例如我书写的一串代码：
+
+l=map(int,input('请输入一串代码行：').split())
+
+l=list(l)
+
+for a in range(len(l)):
+
+for b in range(len(l)):
+
+if a!=b and l[a]==l[b] and b<a:
+
+l.remove(l[b])
+
+print(s)
+
+在其中的运行过程中会出现list index out of range的错误,这时我们就要进行分析环节了。
+
+解决方案
+
+此处我们要分析list index out of range的错误是一个什么样的错误，经过以上代码的分析我们得知，该错误是因为我们所取的值已经超过了列表的范围所导致的错误，这时，我们可以从代码的源头出发，来进行进一步的解析。首先错误发生在我们所定义的列表l上，因为a，b两个值都是取自l列表，然而在在满足if条件后所执行的条件是移除l[b]，这就会导致l列表元素的减少。从而导致出现错误。
+
+关于该题问题的解决主要还是要避免列表的变化对取值的影响，我的解决方案如下：
+
+l=map(int,input().split())
+
+l=list(l)
+
+s=[]
+
+for a in range(len(l)):
+
+for b in range(len(l)):
+
+if a!=b and l[a]==l[b] and b<a:
+
+s.append(l[b])
+
+l.reverse()
+
+for k in s:
+
+l.remove(k)
+
+l.reverse()
+
+print(l)
+
+创建一个新的列表s，将满足条件的元素放入到列表s中去，然后再依次减去列表l中的满足条件的函数就可了。
+
+结语
+
+总的来说，list index out of range的错误我是利用了列表元素减去的方法来解决，问题不是很难，但掌握方法是关键。
+
+END
+
+实习编辑   |   王文星
+
+责       编   |   王卓越
+
+微信号：算法与编程之美
+
+长按识别二维码关注我们!
+
+温馨提示：​​​​​​点击页面右下角发表评论，期待您的参与！期待您的转发！
+

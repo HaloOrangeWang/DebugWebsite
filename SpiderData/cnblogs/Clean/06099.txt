@@ -1,0 +1,76 @@
+开始学习python，因为MAC本自带2.7，版本较低，下载了python3.8，安装后按照之前博文的方法进行了升级。目前敲入python, 直接进入了python3.8.
+
+但是发现pip3命令无法更新。执行pip3 install --upgrade pip时，报如下错误，蒙头晚上查了一圈方法，折腾很久。
+
+Collecting pip
+  Downloading https://files.pythonhosted.org/packages/54/0c/d01aa759fdc501a58f431eb594a17495f15b88da142ce14b5845662c13f3/pip-20.0.2-py2.py3-none-any.whl (1.4MB)
+     |███████████████████▋            | 880kB 7.4kB/s eta 0:01:16ERROR: Exception:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_vendor/urllib3/response.py", line 397, in _error_catcher
+    yield
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_vendor/urllib3/response.py", line 479, in read
+    data = self._fp.read(amt)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_vendor/cachecontrol/filewrapper.py", line 62, in read
+    data = self.__fp.read(amt)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/http/client.py", line 454, in read
+    n = self.readinto(b)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/http/client.py", line 498, in readinto
+    n = self.fp.readinto(b)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/socket.py", line 669, in readinto
+    return self._sock.recv_into(b)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/ssl.py", line 1241, in recv_into
+    return self.read(nbytes, buffer)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/ssl.py", line 1099, in read
+    return self._sslobj.read(len, buffer)
+socket.timeout: The read operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/cli/base_command.py", line 188, in main
+    status = self.run(options, args)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/commands/install.py", line 345, in run
+    resolver.resolve(requirement_set)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/legacy_resolve.py", line 196, in resolve
+    self._resolve_one(requirement_set, req)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/legacy_resolve.py", line 359, in _resolve_one
+    abstract_dist = self._get_abstract_dist_for(req_to_install)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/legacy_resolve.py", line 305, in _get_abstract_dist_for
+    abstract_dist = self.preparer.prepare_linked_requirement(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/operations/prepare.py", line 195, in prepare_linked_requirement
+    unpack_url(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/download.py", line 1058, in unpack_url
+    unpack_http_url(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/download.py", line 920, in unpack_http_url
+    from_path, content_type = _download_http_url(link,
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/download.py", line 1152, in _download_http_url
+    _download_url(resp, link, content_file, hashes, progress_bar)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/download.py", line 861, in _download_url
+    hashes.check_against_chunks(downloaded_chunks)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/utils/hashes.py", line 75, in check_against_chunks
+    for chunk in chunks:
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/download.py", line 829, in written_chunks
+    for chunk in chunks:
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/utils/ui.py", line 156, in iter
+    for x in it:
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_internal/download.py", line 794, in resp_read
+    for chunk in resp.raw.stream(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_vendor/urllib3/response.py", line 531, in stream
+    data = self.read(amt=amt, decode_content=decode_content)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_vendor/urllib3/response.py", line 496, in read
+    raise IncompleteRead(self._fp_bytes_read, self.length_remaining)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/contextlib.py", line 131, in __exit__
+    self.gen.throw(type, value, traceback)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pip/_vendor/urllib3/response.py", line 402, in _error_catcher
+    raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+WARNING: You are using pip version 19.2.3, however version 20.0.2 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+--------------------------------------------------------------------------------------------------
+
+因为试了网上很多方法都没用，问题就是没关注到文字标黑的部分，别人的问题都跟自己的不一样，需要仔细看自己的报错，超时超时。马上将升级命令换成
+
+pip3 --default-timeout=1000 install --upgrade pip （时间可以从小到打自行设定，一般500就够了）
+
+问题瞬间解决，总结：真心不能盲目着急，仔细查看问题所在，是必修之路。记录在此，点点滴滴，总会进步。
+

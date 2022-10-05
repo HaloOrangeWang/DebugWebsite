@@ -1,0 +1,39 @@
+
+pip 运行报错：
+
+
+关于：Fatal error in launcher: Unable to create process using '"e:\python36\python3.exe"  "E:\python36\Script\pip3.exe"问题
+
+由于安装tensorflow，下载 了Anaconda2环境，自此python有了2.7 和3.6两个版本，同时在tensorflow虚拟环境中安装了python3.5版本用来运行tensorflow。
+
+今天本想安装pytest测试框架，发现pip  运行不了，一直出现上述问题！
+
+
+问题阐述：
+
+　　　上述错误的意思是“在python36文件下找不到python3.exe这个执行文件，或是在python36\Script 文件下找不到pip3.exe这个文件”
+
+　　　（个人教训：但我们的代码出现报错信息时一定要先自己理解一下报错含义，因为如果我们直接上百度查询时一般不会有原问题，只是大致意思相同，要学会辨别和套用方法！！！）
+
+
+解决过程：
+
+　　　我先查询了一下环境变量，如图所示（个人安装不同，请理解大致意思，按实际情况操作！）：
+
+　　接着查看两个版本的python解释器所安装的位置，如下图所示：
+
+发现在python36\ Script\  下pip3.exe 存在，但是 在 python36\ 下 没有python3.exe，只有python.exe 文件！
+
+此时才想起来，为了区分python2 和python3  版本，我将python2.7下python.exe 改为python2.exe；python3.6版本中的python.exe没有改动（其实后来想想好像是改动过，不然也不会出现  “....python3.exe"这个错误）
+
+
+最后解决方法：
+
+　　将python36下面的python.exe 重命名为python3.exe即可！
+
+
+最后cmd终端中测试结果如下：
+
+
+　　
+

@@ -1,0 +1,47 @@
+
+前言：
+
+大家都知道python项目中需要导入各种包（这里的包引鉴于java中的），官话来讲就是Module。
+
+而什么又是Module呢，通俗来讲就是一个模块，当然模块这个意思百度搜索一下都能出来，Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Python 对象定义和Python语句。而Mudule的优点，像可维护性、复用、效率等的就不用再赘述啦，今天我想分享的是在导入外部模板时出现ModuleNotFoundError的错误解决。
+
+拿一个最简单的例子来讲，爬微博热搜榜。相信很多小伙伴在初学python爬虫时有过这个小小的实战，其中就用到了一个比较常用的module就是requests。如果只是将网上的一段代码粘贴到PyCharm里面运行报错就是这个ModuleNotFoundError，这时你在csdn里面搜索这段关键字的话，会出现很多解决文章的，其中pip install requests是最常见的，但很多人跟着文章里面的过程走，却还是没有解决问题。其原因在于pip install requests只是将这个requests模板下载到了Scripts这个文件夹下面，而没有导入在你写的项目中。下面就是这篇小文章的最正文啦。
+
+
+正文：
+
+
+1.pip install requests：
+
+（这只是拿requests模板举例子，对于其他报错出现的未发现的module也同样适用。）
+
+win+r 打开cmd，进入到python的Scripts文件夹，这里不会指令的可以参考我的；
+
+小伙伴们如果找不到文件夹位置的话可以通过开始菜单里面下载的这三个右键找到文件位置：
+
+当然它会先给你转到快捷方式的文件位置，这时候再只需要右键这三个中任意一个打开文件位置就好啦
+
+这时就可以复制Scripts文件夹路径了，这里还有一个小技巧就是点击这个文件夹小图标就可以直接Ctrl+c啦，是不是挺好用的。
+
+现在接着cmd里面的指令来讲，在Scripts下输入pip install requests(这里的requests可以是你想要的任一module)
+
+当出现Successfully installed就表明已经下载好啦，我这个是因为已经下载过requests这个模板，所以会像第一个框框里面写的一样。
+
+
+2.PyCharm里面安装软件包：
+
+这其实是非常重要的一步，我在csdn上面第一次搜索ModuleNotFoundError这个问题解决办法的时候都是只有pip install module名 这一步骤的。下面就继续讲怎么安装这个软件包吧：
+
+打开设置，找到Python Interpreter，点击这个加号
+
+输入你要导入的module名，然后在搜索结果中点击你要的那个模板，最后点击安装
+
+等待数秒后就会出现完成安装啦，这个时候你所需要的module就已经到你的项目中啦。
+
+
+最后：
+
+分享这个module的安装方法其实是想弥补一下在出现的一些千篇一律的文章中所没有究其本的一点点不足吧，“必欲仆效绵薄，非青凤来不可。”希望对看到这篇文章的小伙伴们能有一点帮助！
+
+到此这篇关于Python报:ModuleNotFoundError错误的解决办法的文章就介绍到这了,更多相关Python ModuleNotFoundError错误内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

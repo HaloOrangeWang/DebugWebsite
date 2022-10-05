@@ -1,0 +1,49 @@
+
+pytorch报错：
+
+RuntimeError: Expected object of type Variable[torch.LongTensor] but found type Variable[torch.cuda.ByteTensor] for argument #1 ‘argument1'
+
+
+解决方法：
+
+pytorch框架在存储labels时，采用LongTensor来存储，所以在一开始dataset返回label时，就要返回与LongTensor对应的数据类型，即numpy.int64
+
+补充：使用pytorch遇到的各种问题及解决方案
+
+自己在使用pytorch遇到的各种问题及解决方案：
+
+RuntimeError: Expected object of scalar type Float but got scalar type Double for argument #4 'mat1'
+
+RuntimeError: The size of tensor a (12800) must match the size of tensor b (100) at non-singleton dimension 0
+
+输入维度为12800，输出维度为100，输入输出的维度不一致，正确的例子如下：
+
+inputs = [(1,2,3), (2,3,4)]
+outsputs = [4, 5]
+
+将输入输出的长度改为一致
+
+取tensor的第一个元素
+
+XXX.item() # XXX为tensor对象
+
+tensor中的元素改变数据类型
+
+# 常常因为数据类型出错，要修改数据类型
+XXX.int()
+XXX.float()
+
+补充：Pytorch的Dataloader报错：TypeError: batch must contain tensors, numbers, dicts or lists
+
+具体报错：
+
+TypeError: batch must contain tensors, numbers, dicts or lists; found <class 'PIL.Image.Image'>
+
+loader的代码：
+
+dataloader=torch.utils.data.DataLoader(dataset,batch_size=1,shuffle=True)
+
+表面上看这个代码没有问题，实际上问题出在了dataloader机制的要求上，dataloader要求接收的是一个tensor，而我的dataset没有做transform，所以dataset的getitem函数返回的是一个PIL的Image对象，所以就会报错
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

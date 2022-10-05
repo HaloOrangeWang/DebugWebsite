@@ -1,0 +1,32 @@
+在使用pymsql链接mysql8.0的时候编辑好如下代码
+
+执行之后报错
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'localhost' ([Errno 10109] getaddrinfo failed)")
+
+分析报错内容是在提示我无法连接上MySQL服务器，行，就是说我MySQL服务没开启咯。进到服务里面查看了，MySQL服务的启动情况，是正常开启状态的。其实吧，我也觉得不应该是MySQL服务的问题，因为我客户端现在是可以正常链接MySQL的
+
+网上Google了一番也没有找到任何有价值的资料，所有搜索的词条都是再说你去开启你的MySQL服务。。。。（垃圾信息真多
+
+不知道从哪儿排查，就试着看下源码吧，是不是参数写错了？这一看还真就发现问题所在，下面我贴出来源码中的初始化方法内容
+
+其中参数部分非常明确的告诉了我需要传入一个端口号，否则按照0来处理，好吧，那我就按照顺序重新修改了一遍代码
+
+这次总应该没错了吧，执行之后，的确是没有2003的报错code了，但是来了个新的
+
+AttributeError: module 'socket' has no attribute 'AF_UNIX'
+
+行吧！！！接着看源码，才发现其实是我上面的入参方式有问题，我是按照位置传参的，所以我的编码格式‘utf-8’会被分配给了 参数‘unix_socket’。。。。重新修一下，添加上参数名，不再使用位置传参
+
+结果又开始报另一个错误了T_T
+
+RuntimeError: cryptography is required for sha256_password or caching_sha2_password
+
+继续分析报错，实在提示我啥啥啥密码是需要一个cryptography，这是个什么鬼东西？
+
+原来是一个跟密码相关的模块，好像是MySQL8.0才会需要。。。。（我为什么要把数据库更新到8T_T
+
+python安装这个模块，这里又有个小插曲，pip命令在线安装报错！！！（此处是吐槽功夫墙）最后是下载了离线包，离线安装成功
+
+bingo！！！代码顺利执行，结果完美显示
+

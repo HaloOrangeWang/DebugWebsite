@@ -1,0 +1,26 @@
+Django启动的时候报错
+
+File "/home/hehecat/PycharmProjects/MxShop/MxShop/urls.py", line 23, in <module> from users.views import UserViewSet File "/home/hehecat/PycharmProjects/MxShop/apps/users/views.py", line 13, in <module> from users.models import EmailVerifyCode File "/home/hehecat/PycharmProjects/MxShop/apps/users/models.py", line 8, in <module> class UserProfile(AbstractUser): File "/home/hehecat/anaconda3/envs/restful/lib/python3.6/site-packages/django/db/models/base.py", line 118, in new "INSTALLED_APPS." % (module, name) RuntimeError: Model class users.models.UserProfile doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+
+users的model无法正确引入
+
+根据提示去setting中的INSTALLED_APPS 看看
+
+INSTALLED_APPS = [
+...
+'users.apps.UsersConfig',
+...
+]
+
+'users.apps.UsersConfig' 直接修改为‘users’，正确
+
+那就是apps.UsersConfig有问题了
+
+users/apps.py
+
+class UsersConfig(AppConfig):
+    name = 'app.users'
+    verbose_name = '用户'
+
+name修改name = 'users'为即可
+

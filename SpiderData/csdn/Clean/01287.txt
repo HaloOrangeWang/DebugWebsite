@@ -1,0 +1,25 @@
+导入以下数据报错：
+
+from collections import Iterable
+ 
+print(isinstance('abcdefg', Iterable))  # 查看str是否可迭代
+
+print(isinstance([1,2,3], Iterable))   # 查看list是否可迭代
+
+报错信息如下：
+
+DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
+
+报错信息写的明明白白：instead of from 'collections.abc'
+
+于是：
+
+from collections.abc import Iterable
+
+print(isinstance([1,2,3],Iterable))
+print(isinstance('123',Iterable))
+
+输出：
+True
+True
+

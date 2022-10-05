@@ -1,0 +1,42 @@
+File "/home/harrison/anaconda3/lib/python3.7/site-packages/matplotlib/image.py", line 634, in set_data
+ raise TypeError("Image data cannot be converted to float")
+TypeError: Image data cannot be converted to float
+
+代码如下：
+
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# auth:  harrison time: 15/07/19
+
+import numpy as np
+import scipy.misc as sm
+import matplotlib.pyplot as mp
+
+original = sm.imread('../da_data/lily.jpg', True)
+#提取特征值
+eigvals, eigvecs = np.linalg.eig(original)
+eigvals[50:] = 0
+print(np.diag(eigvals).shape)
+original2 = np.mat(eigvecs) * np.mat(np.diag(eigvals)) * np.mat(eigvecs).I
+mp.figure("Lily Features")
+mp.subplot(121)
+mp.xticks([])
+mp.yticks([])
+mp.imshow(original, cmap='gray')
+
+mp.subplot(122)
+mp.xticks([])
+mp.yticks([])
+mp.imshow(original2, cmap='gray')
+
+mp.tight_layout()
+mp.show()
+
+解决发案：
+　　是因为  original  返回值是复数  包含实数，虚数，  只要在取出实数就ok
+　　
+
+　　mp.imshow(original.real, cmap='gray')
+
+　　mp.imshow(original2.real, cmap='gray')
+

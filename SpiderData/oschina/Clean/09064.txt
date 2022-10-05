@@ -1,0 +1,24 @@
+简单搭建了一个Spring Maven工程就报错:
+
+看到网上说是JDK 7 和 Spring3.x ；JDK编译级别设置成1.7，仍然没有得到解决，采用版本为  3.2.0.RELEASE
+
+<build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+解决方案:
+
+将Spring版本改为3.2之前或者之后的，再次搭建工程，解决报错；
+
+将Spring换成稍低的版本3.0.3.RELEASE报错解决；  (另外3.2.x之前如果使用CGLIB代理需要手动导入CGLIB的依赖，而3.2.x好像是不需要的 )
+

@@ -1,0 +1,28 @@
+1. Could not fetch URL https://pypi.org/simple/djangorestframework/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='pypi.org', port=443): Max retries exceeded with url: /simple/djangorestframework/ (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.")) - skipping
+
+永久性设置，是在用户根目录(~，而非系统根目录 / )下添加配置~/.pip/pip.conf目录添加可信源，如果目录文件不存在，可直接创建。
+
+写入如下内容
+
+加上trusted-host防止pip报警。
+
+2.centos 解决python3.7 安装时No module named _ssl
+
+centos安装python3.7时遇到如下问题，查阅知需要的openssl版本最低为1.0.2，但是centos 默认的为1.0.1，所以需要重新更新openssl
+
+1、安装依赖库：
+
+2、安装最新版本的openssl
+
+注意！openssl配置是用config，而不是configure，另外openssl编译安装依赖zlib动态库，所以一定要shared zlib
+
+自行到官网查阅最新版本~
+
+3、设置环境变量LD_LIBRARY_PATH
+
+这一步一定要有！！LD_LIBRARY_PATH环境变量主要用于指定查找共享库（动态链接库）时除了默认路径之外的其他路径。当执行函数动态链接.so时，如果此文件不在缺省目录下‘/lib' and ‘/usr/lib'，那么就需要指定环境变量LD_LIBRARY_PATH
+
+4、解压python3.7，并安装，一定要指定刚才安装的1.1.1版本的openssl！！！
+
+5、至此python3.7就安装完了，来检验下ssl模块能否被导入吧：
+

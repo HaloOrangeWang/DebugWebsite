@@ -1,0 +1,34 @@
+Traceback (most recent call last):
+  File "test.py", line 63, in <module>
+    samples,labels=pickle.load(f)
+  File "/usr/lib/python2.7/pickle.py", line 1384, in load
+    return Unpickler(file).load()
+  File "/usr/lib/python2.7/pickle.py", line 864, in load
+    dispatch[key](self)
+  File "/usr/lib/python2.7/pickle.py", line 892, in load_proto
+    raise ValueError, "unsupported pickle protocol: %d" % proto
+ValueError: unsupported pickle protocol: 3
+
+原因：
+
+　　用python3生成的data.pkl,结果用python2 load。
+
+解决方法：
+
+　　重新使用python2 dump即可。
+
+原因:
+
+训练样本的图像尺寸太小，在池化层pool5的时候，输入图像的尺寸已经小于kernel核的大小了，经过池化之后，下一步输入就变成了0x0，因此会报错。
+
+运行mnist，执行到create_mnist.sh这一步的时候遇见了一个问题
+
+./create_mnist.sh: 17: ./create_mnist.sh: build/examples/mnist/convert_mnist_data.bin: not found
+
+这个要变换目录才可以
+
+注意：新版caffe都需要从根目录上执行，不然可能会遇到这个错误
+
+ubuntu@ubuntu-PC:~/work/caffe-master$ cp examples/mnist/create_mnist.sh ./
+ubuntu@ubuntu-PC:~/work/caffe-master$ ./create_mnist.sh
+

@@ -1,0 +1,41 @@
+目前tensorflow官方尚未正式支持CUDA 11.1，而RTX30系列显卡已经上市好几个月了，此前尝试过在Ubuntu系统下源码编译tensorflow并在CUDA 11.1环境下使用，但是源码编译流程复杂，并且如果是在windows系统的话更是会遇到很多更麻烦的报错，因此考虑直接安装binary文件并排查报错信息。
+
+首先下载安装好CUDA 11.1和Cudnn 8.0，然后新建一个Python 3.8的Anaconda环境，使用pip安装tensorflow的nightly版本
+
+pip install tf-nightly
+
+安装好之后运行python代码测试：
+
+from tensorflow.python.client import device_lib
+def get_available_gpus():
+  local_device_protos = device_lib.list_local_devices()
+  return [x.name for x in local_device_protos if x.device_type == 'GPU']
+print(get_available_gpus())
+
+结果到最后一句就报错了，如下：
+
+提示缺少dll文件，看到这个文件名，果断能想到是CUDA或者cudnn版本不对的问题，但是已经配置好了CUDA和cudnn的新版本，大概率是可以向下兼容的，推测只是文件名的问题，因此使用以下解决方法。
+
+方法1：
+
+ln "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.1\bin\cusolver64_11.dll" "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.1\bin\cusolver64_10.dll"
+
+方法2：
+
+如果安装git时没有配置ln的话，也可以直接复制上述cusolver64_11.dll这个文件，并粘贴为cusolver64_10.dll。
+
+再回到刚刚的代码运行，就能发现程序成功打开了相关dll文件并正确的读取到了RTX3090显卡信息。
+
+实际运行深度学习网络训练，使用GPU:0进行训练(因为训练代码暂时没有写成支持多GPU)，并打开nvidia-smi，可以看到训练速度很快，以确定训练是运行在GPU上的：
+
+而在windows系统下，通过软件GPU-Z可以更方便的实时查看显卡的负载和温度等详细状态。
+
+
+参考文献
+
+四 ubuntu下训练GPU未工作问题及解决办法
+
+解决Tensorflow：Could not load dynamic library ‘cudart64_101.dll‘；dynamic library ‘cublas64_10.dll‘；
+
+Ubuntu Server 20.04 RTX 3090 编译安装Tensorflow v2.3.0 - 知乎 (zhihu.com)
+

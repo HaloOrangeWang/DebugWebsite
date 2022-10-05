@@ -1,0 +1,55 @@
+问题
+
+最近在工作中发现了一个问题，Python代码一直用着免费的Google翻译API插件googletrans，这两天突然就报错了：
+
+Traceback (most recent call last):
+File "xxx.py", line 5, in <module>
+result = translator.translate("Result from google translator", dest="zh-CN")
+File "/usr/lib/python3.4/site-packages/googletrans/client.py", line 172, in translate
+data = self._translate(text, dest, src)
+File "/usr/lib/python3.4/site-packages/googletrans/client.py", line 75, in _translate
+token = self.token_acquirer.do(text)
+File "/usr/lib/python3.4/site-packages/googletrans/gtoken.py", line 180, in do
+self._update()
+File "/usr/lib/python3.4/site-packages/googletrans/gtoken.py", line 59, in _update
+code = unicode(self.RE_TKK.search(r.text).group(1)).replace('var ', '')
+AttributeError: 'NoneType' object has no attribute 'group'
+
+单独写个测试：
+
+from googletrans import Translator;
+
+if __name__ == "__main__":
+translator = Translator()
+result = translator.translate("Result from google translator", dest="zh-CN")
+print(result.text)
+
+result = translator.translate("使用免费谷歌自动翻译API", dest="en")
+print(result.text)
+
+曝出同样的错误。
+
+解决办法
+
+谷歌爸爸的翻译API接口进行了改动，让一票翻译的软件包不好使了。问题影响是全球性的，所以GayHub上很快就跟进讨论，并提交代码修复。代码在手，方案我有，三步操作让googletrans重新好使：
+
+卸载已有的googletrans;
+
+git克隆最新的代码；
+
+安装包。
+
+打开终端，三个命令搞定问题：
+
+pip uninstall googletrans
+git clone https://github.com/BoseCorp/py-googletrans.git
+cd ./py-googletrans && python setup.py install
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作具有一定的参考学习价值，如果有疑问大家可以留言交流，谢谢大家对脚本之家的支持。
+
+参考
+
+https://stackoverflow.com/questions/52455774/googletrans-stopped-working-with-error-nonetype-object-has-no-attribute-group
+

@@ -1,0 +1,44 @@
+php-fpm报错解决-主要是依赖问题
+
+#问题
+ configure: error: in `/usr/local/php-fpm':
+ configure: error: no acceptable C compiler found in $PATH
+ See `config.log' for more details
+#解决
+yum install -y gcc
+#问题
+configure: error: xml2-config not found. Please check your libxml2 installation.
+#解决
+yum installlibxml2libxml2-devel
+#问题
+configure: error: Cannot find OpenSSL's <evp.h>
+#解决
+yum install -y openssl-devel
+#问题
+checking for cURL in default path... not found
+configure: error: Please reinstall the libcurl distribution -
+    easy.h should be in <curl-dir>/include/curl/
+#解决
+yum install -y libcurl-devel
+#问题
+checking whether to enable JIS-mapped Japanese font support in GD... no
+If configure fails try --with-vpx-dir=<DIR>
+configure: error: jpeglib.h not found.
+#解决
+yum -y install libjpeg-devel
+#问题
+configure: error: mcrypt.h not found. Please reinstall libmcrypt.
+#解决
+yum install -y epel-release
+yum install -y libmcrypt-devel
+#问题
+If configure fails try --with-vpx-dir=<DIR>
+If configure fails try --with-jpeg-dir=<DIR>
+configure: error: png.h not found.
+#解决
+yum install -y libpng-devel
+#问题
+configure: error: freetype-config not found.
+#解决
+yum install -y freetype-devel
+

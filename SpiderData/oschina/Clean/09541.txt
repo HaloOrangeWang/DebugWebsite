@@ -1,0 +1,72 @@
+　　对于网站来说很多页面之间都有着大量的共享模块，如页头，页脚和用户栏等。很多时候为了方便、省事，我们在公共模块写函数，然后在别的页面里调用。但我们在引用公共的js函数时，有些可以引用，有些却报错；这是因为js加载的问题，即当前页面加载完，但有些公共页面却没有加载完就引用公共的js，就会报这个函数没有找到。
+
+引用公共页头的js
+
+结果如下：
+
+引用公共页脚的js
+
+结果如下：
+
+从上面的两个例子，我们可以知道js加载顺序是从上往下的加的，页头先加载-——当前页面——页脚最后，所有当前页面引用了没有加载完成的页脚js就会报“f_public is not defined”
+
+解决方法如下：
+
+$(document).ready(function () {
+        f_public();
+})
+
+当 DOM（文档对象模型） 已经加载，并且页面（包括图像）已经完全呈现时，会发生 ready 事件；即等页脚加载完才调用这个函数。
+
+js中页面执行顺序
+
+1：使用jQuery的$(function){};
+
+2：使用jquery的$(document).ready(function(){});前两者本质上没有区别，第1种是第2种的简写方式。两个是document加载完成后就执行方法。
+
+3：使用jQuery的$(window).load(function(){});
+
+4:使用window.onload = function(){} 第3种和第4种都是等到整个window加载完成执行方法体。两者也没有区别，只是一个使用dom对象，一个使用jQuery对象。
+
+5：在标签上静态绑定onload事件，<body onload="aaa()">等待body加载完成，就会执行aaa()方法。
+
+那么，这五种方式，执行的先后顺序是怎么样的呢？
+
+通过下方代码验证发现：
+
+使用1：jQuery的$(function){}和2：jquery的$(document).ready(function(){});无论位置放置在哪里，总是优先其余三种方式（原因是：这两种方式是在document加载完成后就执行，后三种是等到整个　　window页面加载完成后才执行），这两者之间的执行顺序是谁在上方谁优先执行。
+
+使用3：jQuery的$(window).load(function(){});
+
+　　　　4:window.onload = function bbb(){}这两种方式，总是优先于<body onload="aaa()">执行。他们两者执行顺序也是根据谁在上方谁先执行。
+
+使用5：<body onload="aaa()">总是最后执行。
+
+<script type='text/javascript'>
+
+　　window.onload = function(){
+　　　　alert("页面加载完成====》onload");
+　　}
+
+　　$(window).load(function(){
+　　　　alert("jquery===》window load" );
+　　})
+
+　　$(document).ready(function () {
+　　　　alert("jquery====》document ready");
+　　});
+
+　　$(function(){
+　　　　alert("jquery====》document onload");
+　　});
+
+　　function aaa(){
+　　　　alert("静态标签====》onload");
+　　}
+
+</script>
+
+<body onload="aaa()">
+
+</body>
+

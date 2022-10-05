@@ -1,0 +1,43 @@
+代码很简单，就两行：
+
+import pandas as pd 
+import netCDF4 as nc
+
+dataset = nc.Dataset('20150101.nc')
+
+环境：在VSCode中左下角把原环境的Python 3.6.5 32-bit 切换为Anaconda中的Python 3.6.5 64-bit('base': conda)
+
+过程中有两种错误：（忘记截图了，都是历史记录中的google网页搜索栏找到的搜索记录）
+
+1.选择“在终端中运行python文件”，报错：
+
+File "netCDF4\_netCDF4.pyx", line 2264, in netCDF4._netCDF4.Dataset.__init__
+
+File "netCDF4\_netCDF4.pyx", line 1840, in netCDF4._netCDF4._ensure_nc_success
+
+vscode can't open file '<unprintable file name>': [Errno 2] No such file or directory
+
+2.选择F5进行调试，报错：
+
+无法打开“_netcdf4.pyx”: 找不到文件
+
+注：
+
+之后又运行了另一python文件，显示“[Errno 2] No such file or directory” 错误。使用的语句是open()语句打开.bmp文件。
+
+但此python文件1小时之前在原环境python3.6.5 32-bit下运行成功。
+
+后在VSCode切回32位python时再运行，也是同样的错误。用IDLE运行成功。
+
+【发生此错误之前进行的操作】
+
+改过setting.json，launch.json，用户设置等等，在acanoda下的python 64-bit装了pandas包netCDF4包等等……
+
+解决方法：（搜索了很多文章，改过绝对路径，也自己捣鼓了用户设置，均没用）
+
+　　将VSCode狠心卸载！然后在https://code.visualstudio.com/insiders/上下载.zip包，解压后打开.exe文件。
+
+　　自动打开了卸载前打开的文件夹，之后运行python文件成功。没有什么是重装解决不了的（笑）
+
+　　注：个人使用的是insiders版本，且重装后之前装的中文插件无效，环境语言恢复为英文。
+

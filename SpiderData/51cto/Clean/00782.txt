@@ -1,0 +1,53 @@
+python UnboundLocalError: local variable 'xxx' referenced before assignment
+
+大意就是在变量定义前就引用了变量。
+ 错误代码如下:
+
+def f():
+    print(n)
+    n = 10
+f()
+
+这里还是很清楚，很明白。
+ 然而下面的代码就令人有些头疼：
+
+n = 100
+def f():
+    print(n)
+    n = 10
+f()
+
+虽然定义了变量n，然后在函数内部修改，但是还是报相同的错误。原因在于在函数内部对变量n进行修改后，变量n被python解释器理解为局部变量，就变成和上面代码一样的情况了。
+
+def f():
+    print(n)
+f()
+
+此时由于没有定义变量n，所以报NameError: name ‘n’ is not defined
+ 注意：
+ 一般情况下，在访问变量时，会先查找本地变量，然后是包裹此函数的外部函数内的变量，之后是全局变量，最后是内建作用域的变量，即：L->E->G->B（E不一定存在）。在默认情况下，变量名赋值会在当前作用域创建变量和修改变量。
+ 作用域     英文解释     英文简写
+ 局部作用域（函数内）     Local(function)     L
+ 外部嵌套函数作用域     Enclosing function locals     E
+ 函数定义所在模块作用域     Global(module)     G
+ python内置模块的作用域     Bui     B
+
+示例如下：
+
+v = 100 # 全局作用域
+def fun1():
+    v = 200 # 外部嵌套函数作用域
+    print('fun1.v=', v)
+    print(locals())
+    def fun2():
+        v = 300 # 局部作用域
+        print('fun2.v=', v)
+        print(max) # max函数都没有创建，在内建函数作用域中，只读，不能改变 # 可以在其余三个作用域重新创建。
+        print(locals())
+    fun2()
+        
+fun1()
+print("全局变量.v=", v)
+print(max) # max变量定义在内置模块的作用域，是解释执行器提前定义好的
+print(locals())
+

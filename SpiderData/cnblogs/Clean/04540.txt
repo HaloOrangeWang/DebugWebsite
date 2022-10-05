@@ -1,0 +1,46 @@
+
+一、实验环境
+
+1.Windows7x64_SP1
+
+2.Anaconda2.5.0 + python2.7(anaconda集成，不需单独安装)
+
+
+二、实验步骤
+
+
+2.1 在python中有如下代码：
+
+运行时报错：“TypeError: super() takes at least 1 argument(0 given)”
+
+
+2.2 原因分析
+
+该方法调用super()为在python3中的方法，而此是在python2中运行的，在python3中运行将正常。
+
+在《python编程：从入门到实践》一书中介绍了若想在python2中运行需将
+
+super().__init__(age)
+
+一句改为：
+
+super(son, self).__init__(age)
+
+但我按此方法改后，运行时报错：“TypeError: super() argument 1 must be type, not classobj”
+
+
+2.3 解决方式
+
+上网查询资料后，得知若想要在python2中运行成功，可以改为如下两种方法：
+
+
+方法一
+
+
+方法二
+
+运行后都将得到正确答案：
+
+参考链接：https://stackoverflow.com/questions/9698614/super-raises-typeerror-must-be-type-not-classobj-for-new-style-class
+原文请参考：https://blog.csdn.net/u010812071/article/details/76038833
+

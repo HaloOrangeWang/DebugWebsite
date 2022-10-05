@@ -1,0 +1,53 @@
+解决Julia使用PyPlot库出现ERROR: ArgumentError: hasproperty of NULL PyObject问题
+问题描述问题定位尝试方法解决方法The end
+
+
+解决Julia使用PyPlot库出现ERROR: ArgumentError: hasproperty of NULL PyObject问题
+
+问题描述问题定位尝试方法解决方法The end
+
+问题描述
+
+问题定位
+
+尝试方法
+
+解决方法
+
+The end
+
+
+问题描述
+
+Julia安装完成PyPlot后，在使用时遇到如下问题：
+
+如不解决此问题，会在后续使用PyPlot时，报“ERROR: ArgumentError: hasproperty of NULL PyObject”错误：
+
+具体描述如下：
+
+
+问题定位
+
+主要问题在于调用matplotlib问题，导致PyCall库的编译出现错误，使PyPlot不能正常使用。
+
+
+尝试方法
+
+看到报错信息中set ENV["PYTHON"] to the path/name of the python executable you want to use, run Pkg.build("PyCall")，因此首先尝试了此方法：
+
+但是编译过程中仍报错:
+
+这个方法仍没有解决此问题，报错信息具体为：
+
+
+解决方法
+
+再次观察了初始的报错信息后，发现需要install the Python package containing the matplotlib module，原因在于虽然安装的python3.7存在matplotlib库，但系统中的python3.6未安装matplotlib，而且在编译过程中系统路径的问题，虽然设置了ENV["PYTHON"]指向了python3.7的安装位置，但仍不兼容，因此为系统预安装的python安装matplotlib。
+
+可以看到弹窗绘图窗口，问题得到解决。
+
+
+The end
+
+希望有所帮助，enjoy coding.
+

@@ -1,0 +1,78 @@
+
+Intel MPI环境利用hostfile多主机运行下报错
+
+HYDU_process_mfile_token (../../utils/args/args.c:523): token slots not supported at this time
+HYDU_parse_hostfile (../../utils/args/args.c:597): unable to process token
+mfile_fn (../../ui/mpich/utils.c:446): error parsing hostfile
+ match_arg (../../utils/args/args.c:243): match handler returned error
+HYDU_parse_array (../../utils/args/args.c:269): argument matching returned error
+parse_args (../../ui/mpich/utils.c:4770): error parsing input array
+HYD_uii_mpx_get_parameters (../../ui/mpich/utils.c:5106): unable to parse user arguments
+
+将hostfile文件中指定进程个数的slots参数删去仍然会报错。
+
+之前用C语言的MPI和对应的hostfile尝试集群运行，已经通过验证是没有问题的。
+
+使用IMPI的mpirun就发生了上述问题，还在尝试解决中
+
+似乎和原来的OpenMPI的命令行参数不太一样，尝试了几个都没法之后，只用用命令 /opt/intel/intelpython2/bin/mpirun -help | grep host 来查找所有和host有关的配置参数来看一遍了，输出如下
+
+$ /opt/intel/intelpython2/bin/mpirun -help | grep host
+    -f {name} | -hostfile {name}     file containing the host names
+    -hosts {host list}               comma separated host list
+    -host {hostname}                 host on which processes are to be run
+    -hostos {OS name}                operating system on particular host
+    -perhost <n>                     place consecutive <n> processes on each host
+    -ppn <n>                         stand for "process per node"; an alias to -perhost <n>
+    -grr <n>                         stand for "group round robin"; an alias to -perhost <n>
+    -localhost                       local hostname for the launching node
+
+
+不使用hostfile参数，使用host参数指定唯一主机
+
+前置问题一: 如果只输入 -host 参数指定远程的唯一运行主机，发现会报错:
+
+HYDU_sock_connect (../../utils/sock/sock.c:224): unable to get host address for ServerXXXX (1)
+[proxy:0:0@localhost.localdomain] main (../../pm/pmiserv/pmip.c:468): unable to connect to server ServerXXXX at port 38935 (check for firewalls!)
+
+可能原因： 1. 防火墙未关闭，被防住了 2. 主机名无法解析
+
+在确认防火墙关闭的情况下，注意力集中在主机名解析的问题上 在google上搜索了几个相同问题的链接，最后在StackOverFlow找到了这个问题，参考StackOverFlow相同问题 在主机2上加入对master主机名和IP地址的对应： 在 主机2的/etc/hosts/文件中加入
+ 192.168.xx.xxx MasterName 再使用问题一中提到的命令，可以发现已经正常工作。
+
+##使用不含slots的hostfile文件已经可以正常运行。 但是含有slots参数无法正常解析，是否OpenMPI 和 intel MPI的hostfile文件格式不一致呢 是的，没错，不一致。参考Intel的MPI进程控制说明 intel MPI的hostfiles正确写法应该是 : node0:2 其次，通过亲测，参数要使用 -machinefile 才能有效控制每台机器上的进程个数。更多详细信息请看上述链接。
+
+至此，集群运行MPI的环境问题应该是已经全部解决了。
+
+
+DAPL startup: RLIMIT_MEMLOCK too small
+
+后来多节点并行计算时，发现这样的warning:
+
+[5] DAPL startup: RLIMIT_MEMLOCK too small
+[4] DAPL startup: RLIMIT_MEMLOCK too small
+[2] DAPL startup: RLIMIT_MEMLOCK too small
+[1] DAPL startup: RLIMIT_MEMLOCK too small
+
+使用 ulimit -a命令查看:
+
+$ ulimit -a
+core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 6561
+max locked memory       (kbytes, -l) 64
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 1024
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 4096
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited
+
+可以清楚看到max locked memory (kbytes, -l) 64 应该调大它就不会有这个问题了。更多详情参考此处 关于ulimit命令的使用，参考菜鸟教程Linux ulimit命令 关于max memory locked概念，可以参考此博客 内存锁定值的限制(max locked memory) 这个值只对普通用户起作用,对超级用户不起作用,这个问题是由于CAP_IPC_LOCK造成的. linux对内存是分页管理的,这意味着有不需要时,在物理内存的数据会被换到交换区或磁盘上. 有需要时会被交换到物理内存,而将数据锁定到物理内存可以避免数据的换入/换出. 采用锁定内存有两个理由: 1)由于程序设计上需要,比如oracle等软件,就需要将数据锁定到物理内存. 2)主要是安全上的需要,比如用户名和密码等等,被交换到swap或磁盘,有泄密的可能,所以一直将其锁定到物理内存.
+

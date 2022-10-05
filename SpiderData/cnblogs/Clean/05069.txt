@@ -1,0 +1,29 @@
+因为需要经常处理地理信息文件，所以学习了basemap的使用，但是在导入模块的时候遇到了很多问题。
+
+首先我先说一些我是如何安装basemap的。安装basemap没有遇到阻碍，大概流程如下（我的电脑配置是win10 64位，Anaconda3，Python 3.6）：
+
+（1）一般“pip install basemap”是不起作用的，需要手动下载然后pip：
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/
+
+从上面的网址可以下载需要的python扩展包，我就是从上面下载的  basemap-1.2.1-cp36-cp36m-win_amd64.whl 文件。pyproj也是必须的，我电脑上本来就有，没有下载，没有安装过的也需要吧pyproj扩展包一起下载了；
+
+（2）下载完扩展包之后就在命令窗口切换到存储刚才下载的 .whl 文件的路径下，执行 “pip install ***.whl”,即“pip install pyproj-1.9.6-cp36-cp36m-win_amd64.whl”、“pip install basemap-1.2.1-cp36-cp36m-win_amd64.whl”, 最后显示 successfully installed basemap （版本号），我以为可以用了···
+
+（3）进入python，from mpl_toolkits.basemap import Basemap，没有报错则说明安装成功，可以正常导出该模块。但是，我在导出该模块时报错了，情况如下：
+
+ModuleNotFoundError: No module named 'numpy.core._multiarray_umath'
+Traceback (most recent call last):
+
+File "<ipython-input-1-4fc84cbcc854>", line 2, in <module>
+    from mpl_toolkits.basemap import Basemap
+
+File "D:\anaconda3\lib\site-packages\mpl_toolkits\basemap\__init__.py", line 45, in <module>
+    import _geoslib
+
+SystemError: execution of module _geoslib raised unreported exception
+
+我开始习惯性的把问题定位到最后抛出的问题，不知道_geoslib到底出了啥问题···然后去查了numpy的问题，结果显示可能是模块版本的问题，然后我“pip install --user --upgrade numpy”更新numpy，成功啦！问题解决
+
+总结：模块版本确实会导致各种各样的问题，遇到不止一次版本不匹配的问题了~python程序报错也不要只盯着最后一个问题了，前提是错误不是层层递进的。继续学习basemap~
+

@@ -1,0 +1,82 @@
+
+问题描述
+
+在Linux下使用electron-ssr，客户端可以正常启动，节点能正常更新，但是浏览器访问相关站点时无法连接到代理服务器，无法打开页面；终端设置http proxy后，curl时会产生Connection Error；
+
+
+解决办法
+
+检查日志文件，可以看到产生的报错记录，定位问题
+
+可以看到，在执行python 脚本文件local.py的时候出问题了，脚本文件没有修改过，那么问题有可能就出现在前面的python命令上。在终端输入 Python命令，检查是否可用，不可用的原因有可能是：
+
+系统没有安装python运行环境，那么按照提示进行安装再尝试启动即可
+
+系统没有安装python运行环境，那么按照提示进行安装再尝试启动即可
+
+系统安装了python运行环境，但是启动命令是 python + 版本号，如 python3，那么这个时候输入python是启动不了对应的python运行环境的，这种情况可尝试以下方法解决：
+
+方法一：
+
+从bash转换命令，python转化成python3，重启可能失效
+
+将数据写入.bashrc文件
+
+echo alias python=python3 >> ~/.bashrc
+使环境变量生效
+
+方法二：
+
+从源头更改python的链接文件，推荐这种方法
+
+系统安装了python运行环境，但是启动命令是 python + 版本号，如 python3，那么这个时候输入python是启动不了对应的python运行环境的，这种情况可尝试以下方法解决：
+
+方法一：
+
+从bash转换命令，python转化成python3，重启可能失效
+
+将数据写入.bashrc文件
+
+echo alias python=python3 >> ~/.bashrc
+
+使环境变量生效
+
+方法二：
+
+从源头更改python的链接文件，推荐这种方法
+
+查看已安装的python版本和链接情况：
+ll /usr/bin/python*
+
+查看已安装的python版本和链接情况：
+
+ll /usr/bin/python*
+
+删除原有的Python连接文件
+sudo rm /usr/bin/python
+
+删除原有的Python连接文件
+
+sudo rm /usr/bin/python
+
+建立指向Python3.X的连接
+ln -s /usr/bin/python3 /user/bin/python
+
+建立指向Python3.X的连接
+
+ln -s /usr/bin/python3 /user/bin/python
+
+把路径/usr/bin/加入环境变量PATH中（一般情况下不需要这一步！）
+PATH=/usr/bin:$PATH
+
+把路径/usr/bin/加入环境变量PATH中（一般情况下不需要这一步！）
+
+PATH=/usr/bin:$PATH
+
+
+解决结果
+
+在终端设置http代理 + curl www.google.com，能正常返回内容即代表成功
+
+chrome浏览器设置系统代理后，能正常访问相关站点即代表成功
+

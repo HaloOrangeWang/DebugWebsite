@@ -1,0 +1,121 @@
+在安装完成docker-compose 1.28.0的时候，执行docker-compose -v可能会报缺少glibc2.28，不需要安装python3，这不是python3的问题.
+
+报错信息：Error loading Python lib '/tmp/_MEIluNF4X/libpython3.9.so.1.0': dlopen: /lib64/libc.so.6: version `GLIBC_2.28' not found (required by /tmp/_MEIluNF4X/libpython3.9.so.1.0)
+
+写在前面：
+
+先看完该文章再照着做，至于为什么装个glibc-2.28要升级make和gcc又要装bison呢？
+
+你可以忽略前两步 并且 第三步不执行sudo yum install -y bison。执行 `sudo ../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin` 看一下报错结果就知道了。报错信息写在文章结尾
+
+大概就是会提示你make bison compiler太过老旧。
+
+如果你的make本身就是4.2 那就不用升级make，跳过第二步.
+
+本人centOS 7.
+
+首先先升级gcc
+
+提示：如果你用的zsh（oh my zsh）第三段把bash换成zsh，第三段会把用户切换为root，记得切换回来
+
+yum -y install centos-release-scl
+yum -y install devtoolset-8-gcc devtoolset-8-gcc-c++ devtoolset-8-binutils
+scl enable devtoolset-8 bash
+
+echo "source /opt/rh/devtoolset-8/enable" >>/etc/profile
+
+第二步就是升级make到4.2
+
+wget http://ftp.gnu.org/gnu/make/make-4.2.tar.gz
+
+tar -xzvf make-4.2.tar.gz
+
+cd make-4.2
+
+sudo ./configure
+
+sudo make
+
+sudo make install
+
+sudo rm -rf /usr/bin/make
+
+sudo cp ./make /usr/bin/
+
+make -v
+
+第三步
+
+去官网把glibc-2.28的tar包下下来上传到服务器
+
+http://ftp.gnu.org/gnu/glibc/
+
+可以找到所有glibc的版本.
+
+先执行 sudo yum install -y bison
+
+tar -zxvf glibc-2.28.tar.gz
+
+cd glibc-2.28
+
+#这里最好是mkdir /usr/local/glibc-2.28，cd /usr/local/glibc-2.28，sudo ~/glibc-2.28/configure...............
+
+#主要原因就是安装后不能删除build目录，这也就导致了不能删除家目录的glibc-2.28，官方也是推荐安装在/usr/local/glibc-2.28 的
+
+mkdir build
+
+cd build
+
+sudo ../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin
+
+sudo make   #这个阶段耗时很长，可以喝杯咖啡。
+
+sudo make install
+
+第四步检查是否安装上了glibc-2.28
+
+执行
+
+strings /lib64/libc.so.6|grep ^GLIBC
+
+再执行
+
+ls -l /lib64/libc.so.6
+
+看看输出的有没有glibc-2.28，如果有的话，直接docker-compose -v就可以了.
+
+
+写在最后：
+
+如果报错：error: no acceptable C compiler found in $PATH
+
+请执行第一步
+
+如果报错*** These critical programs are missing or too old: compiler
+
+也是第一步
+
+如果报错These critical programs are missing or too old: make bison compiler
+
+第一步第二步，sudo yum install -y bison
+
+如果报错These critical programs are missing or too old: make compiler python
+
+第一步第二步，sudo yum install -y bison
+
+如果报错These critical programs are missing or too old: make bison
+
+第二步，sudo yum install -y bison
+
+解决完上述错误后，再执行第三第四步，就可以了.
+
+2021-1-22 10:49再次更新
+
+本人更新完glibc后遇到中文乱码的问题，这时候进到build目录，再进到 locale，执行./locale -a  看看能不能找到zh_CN.utf8，理论上是有的
+
+这时候在build目录执行
+
+sudo make localedata/install-locales
+
+等待安装完成就好了
+

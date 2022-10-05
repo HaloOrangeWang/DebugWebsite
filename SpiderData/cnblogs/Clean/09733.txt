@@ -1,0 +1,42 @@
+安装：
+
+pip3 install django==1.11.11
+
+django-admin    #验证是否安装成功
+
+报错：命令行启动项目时，SyntaxError: Generator expression must be parenthesized (widgets.py, line 152)
+
+　　找到widgets去掉逗号，（Python38\Lib\site-packages\django\contrib\admin\widgets.py）
+
+　　
+
+报错：pycharm启动项目时
+
+　　File "D:\Program Files\JetBrains\script\study\study\settings.py", line 57, in <module>
+    　　'DIRS': [BASE_DIR / 'templates'],
+　　TypeError: unsupported operand type(s) for /: 'str' and 'str'
+
+　　找到对应位置，将/改成，
+
+　　
+
+报错：django.db.utils.OperationalError: (1050, "Table '表名' already exists）
+
+　　数据库表字段变更比较频繁。models.py表类中添加了一个class类后。执行manage.py makemigrations 未提示错误信息，但manage.py migrate时进行同步数据库时出现问题;django.db.utils.OperationalError: (1050, "Table '表名' already exists）错误信息。
+
+　　执行：python manage.py migrate myapp --fake　　数据库表结构同步成功。
+
+报错： Incorrect string value: '\xE5\x95\x8A' for column 'name' at row 1
+
+　　修改编码
+
+　　show variables like "%char%";
+
+　　set character_set_database='utf8';　　
+
+　　show create database ttt0312; 　　
+
+　　alter database ttt0312 default character set utf8;　　
+
+　　alter table app01_authordetail modify addr varchar(64 ) character set utf8
+

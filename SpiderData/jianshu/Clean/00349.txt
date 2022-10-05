@@ -1,0 +1,29 @@
+项目中在播放本地视频时，在iOS设备没有问题，但是在Android设备报错 FileNotFoundException，具体报错日志如下：
+
+E/ExoPlayerImplInternal( 4470): Playback error
+E/ExoPlayerImplInternal( 4470):   com.google.android.exoplayer2.ExoPlaybackException: Source error
+E/ExoPlayerImplInternal( 4470):       at com.google.android.exoplayer2.ExoPlayerImplInternal.handleMessage(ExoPlayerImplInternal.java:580)
+E/ExoPlayerImplInternal( 4470):       at android.os.Handler.dispatchMessage(Handler.java:102)
+E/ExoPlayerImplInternal( 4470):       at android.os.Looper.loop(Looper.java:223)
+E/ExoPlayerImplInternal( 4470):       at android.os.HandlerThread.run(HandlerThread.java:67)
+E/ExoPlayerImplInternal( 4470):   Caused by: com.google.android.exoplayer2.upstream.AssetDataSource$AssetDataSourceException: java.io.FileNotFoundException: flutter_assets//asset/video/startvedio.mp4
+E/ExoPlayerImplInternal( 4470):       at com.google.android.exoplayer2.upstream.AssetDataSource.open(AssetDataSource.java:87)
+E/ExoPlayerImplInternal( 4470):       at com.google.android.exoplayer2.upstream.DefaultDataSource.open(DefaultDataSource.java:201)
+E/ExoPlayerImplInternal( 4470):       at com.google.android.exoplayer2.upstream.StatsDataSource.open(StatsDataSource.java:84)
+E/ExoPlayerImplInternal( 4470):       at com.google.android.exoplayer2.source.ProgressiveMediaPeriod$ExtractingLoadable.load(ProgressiveMediaPeriod.java:1016)
+E/ExoPlayerImplInternal( 4470):       at com.google.android.exoplayer2.upstream.Loader$LoadTask.run(Loader.java:417)
+E/ExoPlayerImplInternal( 4470):       at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+E/ExoPlayerImplInternal( 4470):       at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+E/ExoPlayerImplInternal( 4470):       at java.lang.Thread.run(Thread.java:923)
+E/ExoPlayerImplInternal( 4470):   Caused by: java.io.FileNotFoundException: flutter_assets//asset/video/startvedio.mp4
+E/ExoPlayerImplInternal( 4470):       at android.content.res.AssetManager.nativeOpenAsset(Native Method)
+E/ExoPlayerImplInternal( 4470):       at android.content.res.AssetManager.open(AssetManager.java:874)
+E/ExoPlayerImplInternal( 4470):       at com.google.android.exoplayer2.upstream.AssetDataSource.open(AssetDataSource.java:68)
+E/ExoPlayerImplInternal( 4470):       ... 7 more
+
+经过排查发现实例化视频播放器时本地资源路径'asset'前面多了一个‘/’ ：
+
+final VideoPlayerController _videoPlayerController = VideoPlayerController.asset('/asset/video/1.mp4');
+
+在iOS设备上没问题，但是在Android上就变成了错误日志中的 flutter_assets//asset/video/1.mp4 ,变成了2个 /,去掉asset前面的/即可。
+

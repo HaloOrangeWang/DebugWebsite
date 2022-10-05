@@ -1,0 +1,40 @@
+在学习python语言中用json库解析网络数据时，我遇到了两个编译错误：json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes:和json.decoder.JSONDecodeError: Expecting value:。费了一些时间才找到原因，在此记录总结，希望能对学习python的同学有所帮助。
+
+我运行的程序初始如下：
+
+import json
+data='''
+{
+'name' : 'A',
+'phone': { 'type' : 'intl', 'number' : +1 23456 },
+'email' : {'hide' : 'yes'}
+}'''
+info=json.loads(data)
+print("Name:",info["name"])
+print("EmailAttri:",info["email"]["hide"])
+
+运行后报错，显示错误为json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes:，原来数据格式里string类型的数据要用双引号'' ''，而不能用单引号' '。
+
+将里面的单引号一一改过来之后，编译器仍然报错：json.decoder.JSONDecodeError: Expecting value:。我以为是代码格式（缩进）的问题，反复修改后还是报错，这让我百思不得其解，在网上搜索了这一错误的解决方案，也没有找到合适的答案。最后，与老师的源代码逐一仔细比对，发现问题竟然出在"number"这个元素这里，我当时把它的值当作数字，其实在这里+1 23456是string类型，因此需要加上双引号。修改后程序如下，正确运行。
+
+import json
+data='''
+{
+"name" : "A",
+"phone": { "type" : "intl", "number" : "+1 23456" },
+"email" : {"hide" : "yes"}
+}'''
+info=json.loads(data)
+print("Name:",info["name"])
+print("EmailAttri:",info["email"]["hide"])
+
+这个问题还有另一种解决方式，就是将+1 23456改写成123456，int类型，这样就不需要加双引号。
+
+我在网上搜索该问题时，发现有很多人也遇到了json.decoder.JSONDecodeError: Expecting value:这一错误，从我解决的过程中，我认为原因主要是数据的格式不正确。因此，如果是从网上爬取的数据，需要先检查一下数据格式设置是否符合json的要求，这样程序编译才能顺利通过。
+
+更多趣事,python知识，可以关注小编的微信公众号【码农那点事儿】。
+
+总结
+
+以上所述是小编给大家介绍的python中报错"json.decoder.JSONDecodeError: Expecting value:"的解决 ，希望对大家有所帮助，如果大家有任何疑问欢迎给我留言，小编会及时回复大家的！
+

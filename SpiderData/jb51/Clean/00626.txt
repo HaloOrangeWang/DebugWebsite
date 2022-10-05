@@ -1,0 +1,18 @@
+本文分析了Python出现segfault错误解决方法。分享给大家供大家参考，具体如下：
+
+最近python程序在运行过程中偶尔会引发系统segfault的错误，而且是在不定期不同代码段时发生的，所以单步调试没办法确定是哪一行代码的问题。
+
+段错误， 这个现象太离奇了。在系统日志里message中一开始提示为python库的问题，后台有提示过libmysqlclient, 也提示过cjson库引起的。
+
+如果真是在特定硬件环境中python或mysql库会出现问题，那有点说不过去。如果是cjson引起的呢，毕竟cjson不是标准库，出现问题的概率大一点。
+
+【cjson报错如下】
+
+复制代码 代码如下:kernel: [1207747.915932] python[29797]: segfault at 7f3fc280e036 ip 00007f3fc0a35722 sp 00007fff52b6bcd0 error 4 in cjson.so[7f3fc0a32000+5000]
+
+于是把cjson换成了json，python程序之后没出现段错误的问题了。这么不是有点坑么。
+
+更多关于Python相关内容感兴趣的读者可查看本站专题：《Python函数使用技巧总结》、《Python字符串操作技巧汇总》、《Python入门与进阶经典教程》及《Python文件与目录操作技巧汇总》
+
+希望本文所述对大家Python程序设计有所帮助。
+

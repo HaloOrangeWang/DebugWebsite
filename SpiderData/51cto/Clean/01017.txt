@@ -1,0 +1,92 @@
+今天准备在Windows系统上基于python3.6安装一个pycrypto 2.6.1模块，很不幸的报了一堆错误，如下所示：
+
+running install
+
+running build
+
+running build_py
+
+running build_ext
+
+warning: GMP or MPIR library not found; Not building Crypto.PublicKey._fastmath.
+
+building 'Crypto.Random.OSRNG.winrandom' extension
+
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\x86_amd64\cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -Isrc/ -Isrc/inc-msvc/ -IC:\Python36\include -IC:\Python36\include
+
+winrand.c
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(26): error C2061: syntax error: identifier 'intmax_t'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(27): error C2061: syntax error: identifier 'rem'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(27): error C2059: syntax error: ';'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(28): error C2059: syntax error: '}'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(30): error C2061: syntax error: identifier 'imaxdiv_t'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(30): error C2059: syntax error: ';'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(40): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(41): error C2146: syntax error: missing ')' before identifier '_Number'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(41): error C2061: syntax error: identifier '_Number'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(41): error C2059: syntax error: ';'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(42): error C2059: syntax error: ')'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(45): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2146: syntax error: missing ')' before identifier '_Numerator'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2061: syntax error: identifier '_Numerator'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2059: syntax error: ';'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2059: syntax error: ','
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(48): error C2059: syntax error: ')'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(50): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(56): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(63): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(69): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(76): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(82): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(89): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(95): error C2143: syntax error: missing '{' before '__cdecl'
+
+error: command 'C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\BIN\\x86_amd64\\cl.exe' failed with exit status 2
+
+经过一番百度和Google以及尝试终于成功安装pycrypto 2.6.1，具体解决方法如下：
+
+设置Microsoft Visual Studio 14.0的环境变量，如图：
+
+设置Microsoft Visual Studio 14.0的环境变量，如图：
+
+打开cmd，执行如下命令：set CL=/FI"%VCINSTALLDIR%\\INCLUDE\\stdint.h" %CL%
+
+打开cmd，执行如下命令：set CL=/FI"%VCINSTALLDIR%\\INCLUDE\\stdint.h" %CL%
+
+重新安装pycrypto 2.6.1通过cmd进入pycrypto 2.6.1目录，执行python setup.py install
+
+重新安装pycrypto 2.6.1
+
+通过cmd进入pycrypto 2.6.1目录，执行python setup.py install
+
+结果如下所示：成功安装pycrypto 2.6.1。。。。。。。
+
+结果如下所示：
+
+成功安装pycrypto 2.6.1。。。。。。。
+

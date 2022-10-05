@@ -1,0 +1,126 @@
+
+目录
+
+前言
+
+问题总结
+
+问题1问题2问题3问题4问题5问题6
+
+问题1
+
+问题2
+
+问题3
+
+问题4
+
+问题5
+
+问题6
+
+
+前言
+
+博主开始实习了，公司要求转Python，此博客用于记录我入库所遇到的问题，欢迎大家补充解决方法和遇到其他问题！！！（评论区留言，我会加在博客里）
+
+
+问题总结
+
+
+问题1
+
+报错内容：
+
+(156, b"Incorrect syntax near the keyword 'group'.DB-Lib error message 20018, severity 15:\nGeneral SQL Server error: Check messages from the SQL Server\n")
+
+我的代码：
+
+# 插入sql语句
+sql = "insert into test4 (name,group) values (%s,%s)"
+#执行插入操作
+cursor.executemany(sql,dict)
+db.commit()
+
+报错原因：自定义字段名与数据库中的默认字段冲突，keyword ‘group’
+
+解决办法：更改数据库列名（例如改为 “groups”）和 代码更改为groups
+
+
+问题2
+
+报错内容（数据框中的列数与SQL Server表中的列数列名相同，仍然出现以下错误）：
+
+more placeholders in sql than params available
+#翻译：sql中的占位符多于可用的参数,错误原因少加了一些参数导致数据无法存入数据库
+
+我的代码：
+
+# 插入sql语句
+sql = "insert into test4 (name,groups) values (%s,%s)"
+#执行插入操作
+cursor.executemany(sql,dict)
+db.commit()
+
+报错原因：dict列表的数据格式有问题
+
+解决方法：executemany(sql,dict)方法的模板字符串的参数，是一个列表，列表中的每一个元素必须是元组！！！ 例如： [(1,‘小明’),(2,‘zeke’),(3,‘琦琦’)] 或 [(1,‘小明’,2,‘zeke’,3,‘琦琦’)]
+
+
+问题3
+
+报错内容：
+
+executemany() takes exactly 2 positional arguments (3 given)
+#翻译：executemany（）只接受2个位置参数（给定3个）
+
+报错原因：executemany（）只接受2个位置参数（而我给3个）
+
+解决方法：参数只给两个（如果两个参数都必须要，先存入一个列表在传参）
+
+
+问题4
+
+报错内容：
+
+the JSON object must be str, bytes or bytearray, not NoneType
+#翻译：JSON对象必须是str、bytes或bytearray，而不是NoneType
+
+报错原因：JSON对象必须是str、bytes或bytearray，而不是NoneType
+
+解决方法：现在是一个字典，只需要用’’'符号将它转换成字符串就可以了
+
+
+问题5
+
+我的代码：
+
+select TOP 100000 FROM [IPRCloud].[dbo].[TM_AP]
+
+报错内容：
+
+pymssql._pymssql.OperationalError: (156, b"Incorrect syntax near the keyword 'FROM'.DB-Lib error message 20018, severity 15:\nGeneral SQL Server error: Check messages from the SQL Server\n")
+
+报错原因：‘From’ 附近的代码有问题
+
+解决方法：不小心写掉了一个 * 号，一定要仔细！！！
+
+select TOP 100000 * FROM [IPRCloud].[dbo].[TM_AP]
+
+
+问题6
+
+报错内容：
+
+pymssql._pymssql.OperationalError: (8152, b'String or binary data would be truncated.DB-Lib error message 20018, severity 16:\nGeneral SQL Server error: Check messages from the SQL Server\n')
+
+报错原因：引发此错误，则有一个或多个字段的长度不足以容纳要插入的数据，还包括TRIGGER中变量。
+
+解决方法：
+
+1.数据库中各字段长度设置；
+
+2.相应表单设置的触发器；
+
+3.打开即将插入的数据，查看异常长的数据以供参考
+

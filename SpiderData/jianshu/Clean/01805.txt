@@ -1,0 +1,112 @@
+一、在ansible安装完毕后一般需要以SSH的方式连接到需要进行管理的目标主机，一开始遇到了如下问题：
+
+192.168.15.4 | UNREACHABLE! => {
+
+"changed": false,
+
+"msg": "Failed to connect to the host via ssh: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).\r\n",
+
+"unreachable": true
+
+}
+
+192.168.15.55 | UNREACHABLE! => {
+
+"changed": false,
+
+"msg": "Failed to connect to the host via ssh: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).\r\n",
+
+"unreachable": true
+
+原因分析：
+
+没有在ansible管理节点（即安装ansible的节点）上添加目标节点（即需要管理的节点）的ssh认证信息。
+
+解决步骤：
+
+1：管理节点生成SSH-KEY
+
+#ssh-keygen
+
+成功后在~/.ssh/路径下将生成ssh密钥文件：id_rsa及id_rsa.pub
+
+2：添加目标节点的SSH认证信息
+
+#ssh-copy-id root@目标节点IP
+
+这里root是在目标节点上登录的用户，@符号后面接目标节点IP即可，之后会提示输入目标节点root用户密码，输入即可。
+
+添加认证信息后，目标节点主机的~/.ssh/目录下将会出现一个authorized_keys文件，里面包含了ansible管理节点的公钥信息，可以检查一下是否存在。
+
+3：在确定目标主机的SSH认证信息都已正确添加且目标主机的~/.ssh/目录都存在管理节点的公钥信息后，再执行之前出错的ansible ping指令：
+
+#ansible -m ping all
+
+192.168.15.4 | SUCCES对之前未连接的主机进行连结时报错如下：S => {
+
+"changed": false,
+
+"ping": "pong"
+
+}
+
+192.168.15.55 | SUCCESS => {
+
+"changed": false,
+
+"ping": "pong"
+
+}
+
+二、对之前未连接的主机进行连结时报错如下：
+
+[root@puppet ~]# ansible webservers -m command -a 'ls ~' -k
+
+SSH password:
+
+192.168.15.10 | FAILED | rc=0 >>
+
+Using a SSH password instead of a key is not possible because Host Key checking is enabled and sshpass does not support this.  Please add this host's fingerprint to your known_hosts file to manage this host.
+
+解决步骤：
+
+修改ansible.cfg文件
+
+vi /etc/ansible/ansible.cfg
+
+找到以下行，让host_key_checking=False这行生效
+
+# uncomment this to disable SSH key host checking
+
+host_key_checking = False
+
+三、ansible requires a json module, none found!
+
+SSH password:192.168.15.123 | FAILED >> {   "failed": true,   "msg": "Error: ansible requires a json module, nonefound!",   "parsed": false}
+
+解决步骤：
+
+python版本过低，要不升级python要不就升级安装python-simplejson。yum install -y python-simplejson
+
+四、第一次系统初始化运行生成本机ansible用户key时报错
+
+failed: [127.0.0.1] =>{"checksum": "f5f2f20fc0774be961fffb951a50023e31abe920","failed": true}msg: Aborting, target uses selinux but pythonbindings (libselinux-python) aren't installed!FATAL: all hosts have already failed –aborting
+
+解放步骤：
+
+yum install libselinux-python -y
+
+五、使用命令报错
+
+·····Traceback (most recent call last):  File "/usr/bin/ansible", line 197, in <module>    (runner, results) = cli.run(options, args)  File "/usr/bin/ansible", line 163, in run    extra_vars=extra_vars,  File "/usr/lib/python2.6/site-packages/ansible/runner/__init__.py", line 233, in __init__    cmd = subprocess.Popen(['ssh','-o','ControlPersist'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)  File "/usr/lib64/python2.6/subprocess.py", line 639, in __init__    errread, errwrite)  File "/usr/lib64/python2.6/subprocess.py", line 1228, in _execute_child    raise child_exceptionOSError: [Errno 2] No such file or directory
+
+解决步骤：
+
+yum install openssh-clients
+
+原文地址
+
+HP服务器集成 iLO 端口的配置
+
+(出处: 乐维_一站式运维监控管理平台)
+

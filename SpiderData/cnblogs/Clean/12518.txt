@@ -1,0 +1,31 @@
+代码如下：
+
+# 模块
+import requests
+
+# 接口请求地址
+URL = "https://testapi.5eck.cn/goods/*********ByStatus"
+
+# 请求头设置
+head = {"Authorization": "Bearer 4f6*************5-9fbe-58d1c7cf5a2b"}
+
+# 发送无参数请求
+r = requests.get(url=URL, header=head)
+
+# 获取返回的json数据
+result = r.json()
+
+# 打印返回的数据
+print(result)
+
+报错：TypeError: request() got an unexpected keyword argument 'header'
+
+翻译，request（）得到一个意外的关键字参数“header”  意思是，request模块没有关键字参数header，检查后发现，是headers
+
+关键字参数名称是headers，后面有s的
+
+正确如下
+
+# 发送无参数请求
+r = requests.get(url=URL, headers=head)
+

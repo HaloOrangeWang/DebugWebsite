@@ -1,0 +1,54 @@
+1. 在windows 10 安装报错，module 'signal' has no attribute 'SIGALRM'
+
+原因是: Python 的 signal 包只作用于 Linux 和 Mac ，在 Windows 下不启作用。
+
+2. 解决问题的思路
+
+根据日志找到报错的地方
+
+File "E:\developmentsoft\Python37\lib\site-packages\superset\utils\core.py", line 625, in __enter__
+
+#signal.signal(signal.SIGALRM, self.handle_timeout)
+
+AttributeError: module 'signal' has no attribute 'SIGALRM'
+
+新的版本的代码已经由 supsert\utils.py 变更到 superset\utils\core.py
+
+解决方法很简单粗暴，在 superset\utils\core.py 下找到相关代码，把关于signal的模块都注释掉
+
+def __enter__(self):
+
+try:
+
+pass
+
+# signal.signal(signal.SIGALRM, self.handle_timeout)
+
+# signal.alarm(self.seconds)
+
+except ValueError as e:
+
+logging.warning("timeout can't be used in the current context")
+
+logging.exception(e)
+
+def __exit__(self, type, value, traceback):
+
+try:
+
+pass
+
+# signal.alarm(0)
+
+except ValueError as e:
+
+logging.warning("timeout can't be used in the current context")
+
+logging.exception(e)
+
+然后重启superset 就可以了：
+
+3. 总结
+
+中间尝试把源代码注掉，但是都是在重启superset的过程中报错，然后就是代码的粘贴过程中有table键，这个要注意。
+

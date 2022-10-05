@@ -1,0 +1,44 @@
+1、Python安装时出现Could not fetch URL https://pypi.python.org/simple/pool/: There was a problem confirming ...
+
+报错原因：可能是ssl证书没有认证，通过信任可以解决。
+
+pip -trusted-host pypi.python.org install + 要安装的包
+
+2、Python升级带来的yum异常：file "/usr/bin/yum", line 30
+
+#错误代码：
+
+[root@mycentos ~]# yum install ...
+
+报错原因：
+这是因为yum采用python作为命令解释器，这可以从/usr/bin/yum文件中第一行#!/usr/bin/python发现。而python版本之间兼容性不太好，使得2.X版本与3.0版本之间存在语法不一致问题。而CentOS 5自带的yum采用的是python2.4，当系统将python升级到2.6或3.0后，出现语法解释错误。
+
+解决方法一：修改yum的解释器为旧版本python2.6
+
+解决方法二：升级yum，卸载重新安装yum。
+
+3、curl: (35) SSL connect error问题处理
+
+原因：无法在服务器使用curl命令访问https域名,原因是nss版本有点旧了，yum -y update nss更新一下，重新curl即可！
+
+[root@mycentos ~]# yum -y update nss
+
+但是，有的情况下这种方法依然解决不了问题，请参考：https://www.cnblogs.com/hunttown/p/9626353.html
+
+4、使用pip安装包提示TLS证书错误
+
+　　出现这个错误的原因是python.org已经不支持TLSv1.0和TLSv1.1了。更新pip可以解决这个问题。但是如果使用传统的python -m pip install --upgrade pip的方式，还是会出现那个问题。这是一个鸡和蛋的问题，你因为TLS证书的问题需要去升级pip，升pip的时候又因为TLS证书的原因不能下载最新版本的pip。这时候就没有办法了，只能手动的去升级pip。
+
+[root@mycentos ~]# curl https://bootstrap.pypa.io/get-pip.py | python
+
+5、ModuleNotFoundError: No module named 'pip._internal'
+
+[root@mycentos ~]# wget https://bootstrap.pypa.io/get-pip.py --no-check-certificate
+[root@mycentos ~]# python get-pip.py
+
+6、ImportError:No module named 'PIL'
+
+[root@mycentos ~]# pip install pillow
+
+（未完，待续...）
+

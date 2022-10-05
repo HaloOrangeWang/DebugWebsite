@@ -1,0 +1,49 @@
+
+报错解决
+
+ImportError: cannot import name ‘Bar’ from ‘pyecharts’
+
+只是多安装了一个pip install pyecharts_snapshot就解决了
+
+
+使用环境
+
+Python3.5,工具使用Pycharm
+
+
+安装包
+
+
+1.先安装pyecharts==0.5.11
+
+(venv) D:\Python\Python_venu>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyecharts==0.5.11
+
+
+2.再安装 pyecharts_snapshot
+
+(venv) D:\Python\Python_venu>pip install pyecharts_snapshot
+
+
+pyecharts使用
+
+
+1.首行要添加以下两条语句
+
+#coding=utf-8
+from __future__ import unicode_literals
+
+
+2.最终完整语句
+
+#coding=utf-8
+from __future__ import unicode_literals
+
+import os
+from pyecharts import Bar
+
+os.chdir("C:\\Users\\Administrator\\Desktop\\python_data")   ### 设置图片存放的工作路径
+bar = Bar("My first picture", "This is title")
+bar.add("GDP", ["第一年", "第二年", "第三年", "第四年", "第五年", "第六年"], [5, 20, 36, 10, 75, 90])
+# bar.print_echarts_options() # 该行方便调试时使用
+bar.render()
+

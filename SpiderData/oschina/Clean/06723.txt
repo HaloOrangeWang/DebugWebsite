@@ -1,0 +1,83 @@
+
+1. Uncaught TypeError: Cannot read property
+
+如果你是一个JavaScript开发者，这种错误大概你已经见怪不怪了。在Chrome下，当你从一个不存在的对象(undefined)获取属性或则进行函数调用，就会报这样的错。你可以在Chrome浏览器控制台测试：
+
+有很多种原因可以导致这种情况的出现，一个常见的情况是在渲染UI部件的时候，没有正确地初始化状态(state)。我们来看一个真实的例子。在这里我选用React，不过内在的原理同样适用于Angular、Vue或则其它框架。
+
+
+2. TypeError: ‘undefined’ is not an object (evaluating
+
+在Safari下，如果在一个未定义(undefined)的对象上读取属性或则调用函数，就会触发这样的错误。你可以在Safari控制台测试。这个错误根本上来说和第一个在Chrome下的错误是一样的，只是错误的消息不同。
+
+备注：Fundebug早已机智地将这两种情况聚合为一个错误了，更加方便分析，欢迎各位老铁试用！
+
+
+3. TypeError: null is not an object (evaluating
+
+在Safari下，如果你尝试从null读取属性或则调用方法，就会报错。如下：
+
+有趣的是，在JavaScript中，null和undefined是不同的，所以我们看到两个不同的错误消息。Undefined指的是一个变量没有被赋值，而null指的是值为空。我们可以用===来判断：
+
+一种现实中可能的情况就是：如果你尝试在一个DOM元素加载之前使用它。那么DOM API就会返回null。任何处理DOM元素的JS代码都应当在DOM加载完毕之后调用。JS代码是按照代码的顺序从上往下依次解释执行。如果在DOM元素前有脚本，那么在浏览器分析HTML页面的时候，JS代码也在执行了。如果JS代码执行的时候，DOM还没有创建好，那么你会遇到这个错误。
+
+
+4. (unknown): Script error
+
+当未捕获的 JavaScript 错误（通过window.onerror处理程序引发的错误，而不是捕获在try-catch中）被浏览器的跨域策略限制时，会产生这类的脚本错误。 例如，如果您将您的 JavaScript 代码托管在 CDN 上，则任何未被捕获的错误将被报告为“脚本错误” 而不是包含有用的堆栈信息。这是一种浏览器安全措施，旨在防止跨域传递数据，否则将不允许进行通信。
+
+
+5. TypeError: Object doesn’t support property
+
+在IE中，如果调用未定义的方法就会发生这种错误。您可以在IE开发者控制台中进行测试。
+
+相当于 Chrome 中的 “TypeError：”undefined“ is not a function” 错误。 对于相同的错误，不同的浏览器具有不同的错误消息。
+
+在IE里使用JavaScript的命名空间时，就很容易碰到这个错误。发生这个错误十有八九是因为IE无法将当前命名空间里的方法绑定到this关键字上。例如，假设有个命名空间Rollbar，它有一个方法叫isAwesome()。在Rollbar命名空间中，可以直接使用this关键字来调用这个方法：
+
+
+6. TypeError: ‘undefined’ is not a function
+
+在Chrome下，调用一个未定义的函数时就会发生这个错误，可以在Chrome/Mozilla开发者控制台测试：
+
+随着js代码的编码技巧和设计模式越来越复杂，在回调函数、闭包等各种作用域中this的指向的层级也随之增加，这就是js代码中this/that指向容易混淆的原因。
+
+比如下面这段代码：
+
+执行上面的代码会报错：“Uncaught TypeError: undefined is not a function”。因为在调用setTimeout()方法时，实际上是在调用window.setTimeout()。传给setTimeout()的匿名函数的this实际上是window，而window并不包含clearBoard()方法。
+
+
+7. Uncaught RangeError: Maximum call stack
+
+在Chrome里，有几种情况会发生这个错误，其中一个就是函数的递归调用，并且不能终止。这个错误可以在Chrome开发者控制台重现。
+
+还有，如果传给函数的值超出可接受的范围时，也会出现这个错误。很多函数只接受指定范围的数值，例如，Number.toExponential(digits)和Number.toFixed(digits)方法，只接受0到20的数值，而Number.toPrecision(digits)只接受1到21的数值。
+
+
+8. TypeError: Cannot read property ‘length’
+
+在Chrome中，如果读取未定义变量的长度属性，会报错。
+
+如果数组未初始化，或者因为作用域的问题而没有正确地获取到，则可能会遇到此错误。让我们用下面的例子来理解这个错误。
+
+函数的参数名会覆盖全局的变量名。也就是说，全局的testArray被函数的参数名覆盖了，所以在函数体里访问到的是本地的testArray，但本地并没有定义testArray，所以出现了这个错误。
+
+
+9. Uncaught TypeError: Cannot set property
+
+如果对undefined变量进行赋值或读取操作，会抛出“Uncaught TypeError: cannot set property of undefined”异常。
+
+因为test对象不存在，就会抛出“Uncaught TypeError: cannot set property of undefined”异常。
+
+
+10. ReferenceError: event is not defined
+
+当访问一个未定义的对象或超出当前作用域的对象，就会发生这个错误。
+
+
+结论
+
+看到这里，你会发现这十大错误几乎都是null/undefined错误。如果有一个好的静态类型检查系统，比如使用TypeScript可以帮助你在编译的时候就发现问题。如果没有使用TypeScript，那么请多多使用条件语句做判断，防止这种情况出现。
+
+在生产环境中会出现各种不可预期的错误。关键是要及时发现那些影响用户体验的错误，并使用适当的工具快速发现和解决这些问题。Fundebug提供JavaScript的bug监控，助你实时发现bug。通过独创的用户行为记录技术，方便开发者更好地理解为什么出错，如下所示：
+

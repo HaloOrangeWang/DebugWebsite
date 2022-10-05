@@ -1,0 +1,37 @@
+
+报错信息
+
+Exception: Python in worker has different version 2.7 than that in driver 3.6, PySpark cannot run with different minor versions.Please check environment variables PYSPARK_PYTHON and PYSPARK_DRIVER_PYTHON are correctly set.
+
+at org.apache.spark.api.python.BasePythonRunner$ReaderIterator.handlePythonException(PythonRunner.scala:452)
+    at org.apache.spark.api.python.PythonRunner$$anon$1.read(PythonRunner.scala:588)
+    at org.apache.spark.api.python.PythonRunner$$anon$1.read(PythonRunner.scala:571)
+    at org.apache.spark.api.python.BasePythonRunner$ReaderIterator.hasNext(PythonRunner.scala:406)
+    at org.apache.spark.InterruptibleIterator.hasNext(InterruptibleIterator.scala:37)
+    at scala.collection.Iterator$$anon$12.hasNext(Iterator.scala:440)
+    at scala.collection.Iterator$$anon$11.hasNext(Iterator.scala:409)
+    at org.apache.spark.util.Utils$.getIteratorSize(Utils.scala:1820)
+    at org.apache.spark.rdd.RDD$$anonfun$count$1.apply(RDD.scala:1168)
+    at org.apache.spark.rdd.RDD$$anonfun$count$1.apply(RDD.scala:1168)
+    at org.apache.spark.SparkContext$$anonfun$runJob$5.apply(SparkContext.scala:2121)
+    at org.apache.spark.SparkContext$$anonfun$runJob$5.apply(SparkContext.scala:2121)
+    at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:90)
+    at org.apache.spark.scheduler.Task.run(Task.scala:121)
+    at org.apache.spark.executor.Executor$TaskRunner$$anonfun$11.apply(Executor.scala:407)
+    at org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:1363)
+    at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:413)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+    ... 1 more
+
+
+解决办法
+
+在spark配置文件中加入PYSPARK_PYTHON
+
+cd /etc/spark/conf
+vim spark-env.sh
+export PYSPARK_PYTHON=/home/anaconda3/bin/python
+
+然后重启集群即可
+

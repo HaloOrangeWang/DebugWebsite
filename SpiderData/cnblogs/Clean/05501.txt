@@ -1,0 +1,34 @@
+K-Means聚类算法
+
+def randCent(dataSet, k):
+
+m, n = dataSet.shape  # numpy中的shape函数的返回一个矩阵的规模，即是几行几列
+
+centrodids = np.zeros(k, n)
+
+for i in range(k):
+
+index = int(np.random.uniform(0, m))  #
+
+centrodids[i, :] = dataSet[index, :]
+
+return centrodids
+
+报错TypeError: data type not understood
+
+错误在第三行centrodids = np.zeros(k, n)
+
+原来numpy.zeros的用法用错了
+
+numpy.zeros（shape，dtype = float，order ='C' ）
+
+返回给定形状和类型的新数组，并用零填充。
+
+shape:整数或者整数元组例如：（2，1）
+
+dtype：数据类型，可选
+
+order：{‘C’，‘F’}可选，默认C
+
+所以应该吧第三行改成centrodids = np.zeros（(k, n)）
+

@@ -1,0 +1,34 @@
+{
+    "err_msg": {
+        "text": "unzipBestEffort returned null",
+        "lines": ["title"],
+        "weight": [1]
+    },
+    "scene": {
+        "text": "运行nutch",
+        "lines": ["title"],
+        "weight": [1]
+    },
+    "solve": [
+        {
+            "text": "修改文件nutch1.7\\src\\java\\org\\apache\\nutch\\metadata\\HttpHeaders.java，增加一个field：\n\npublic final static String TRANSFER_ENCODING = \"Transfer-Encoding\";",
+            "lines": [46, 48],
+            "weight": [1, 1]
+        },
+        {
+            "text": "修改文件nutch1.7\\src\\plugin\\protocol-http\\src\\java\\org\\apache\\nutch\\protocol\\http\\HttpResponse.java，替换第160行代码readPlainContent(in);为如下代码\n\nString transferEncoding = getHeader(Response.TRANSFER_ENCODING); \nif(transferEncoding != null && \"chunked\".equalsIgnoreCase(transferEncoding.trim())){    \t  \n  readChunkedContent(in, line);  \n}else{\n  readPlainContent(in);  \n}",
+            "lines": [50, 52, 53, 54, 55, 56, 57],
+            "weight": [1, 1, 1, 1, 1, 1, 1]
+        },
+        {
+            "text": "http内容长度限制不能使用负值，只能使用一个大整数：\n\n<property>\n\t<name>http.content.limit</name>\n\t<value>655360000</value>\n</property>",
+            "lines": [59, 61, 62, 63, 64],
+            "weight": [1, 0.5, 0.5, 0.5, 0.5]
+        },
+        {
+            "text": "因为修改了核心代码和插件代码，所以需要重新编译打包发布，执行nutch1.7\\build.xml的默认target：runtime\n\ncd nutch1.7\nant",
+            "lines": [66, 68, 69],
+            "weight": [1, 0.5, 0.5]
+        }
+    ]
+}

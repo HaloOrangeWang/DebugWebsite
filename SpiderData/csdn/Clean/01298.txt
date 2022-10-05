@@ -1,0 +1,21 @@
+DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses import imp
+
+问题原因为 python 3.4后 imp库废弃，采用importlib库，所以更改我们的编译器pycharm的源码文件即可
+
+该目录下....\PyCharm 5.0.4\helpers\pycharm（根据自己安装路径查看）有文件 utrunner.py
+
+1、注释掉 imp，导入 importlib
+
+2、注释 imp.load_source，使用 importlib.machinery.SourceFileLoader 加载模块
+
+import importlib
+///
+#module = imp.load_source(moduleName, fileName)
+module = importlib.machinery.SourceFileLoader(moduleName, fileName).load_module()
+
+只修改1、注释掉 imp，导入 importlib时，还有报错：
+
+module = imp.load_source(moduleName, fileName) NameError: name 'imp' is not defined
+
+再修改2后，解决问题~
+

@@ -1,0 +1,29 @@
+pip install livetest报错截图：
+
+问题原因：存在兼容性问题。
+
+问题解决：
+
+1.下载https://files.pythonhosted.org/packages/de/77/7ab378ff9e62013f1756b64b1553e126ba7b3f3598bc9c5c8fc508c13d55/livetest-0.5.tar.gz
+
+2.修改  \livetest-0.5\livetest\__init__.py
+
+修改import httplib -> import http.client as httplib
+  修改import urlparse  ->  import urllib.parse
+  修改from Cookie import BaseCookie, CookieError -> import http.cookiejar
+
+修改XXXError, e 为XXXError as e
+
+3.修改 \livetest-0.5\setup.py
+
+修改long_description=file('README.rst').read() -> long_description=open('README.rst').read()
+  修改version=livetest.__version__ -> version='0.5'
+  修改author_email=livetest.__author__ -> author_email='storborg@mit.edu'
+
+4.在cmd中切换路径到 \livetest-0.5，执行 python setup.py install，安装成功。
+
+附：修改后的livetest压缩包：
+
+链接：https://pan.baidu.com/s/1p6AUjjbJWJ8e-GQ6h3at2g 
+提取码：w3i3
+

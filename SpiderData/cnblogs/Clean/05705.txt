@@ -1,0 +1,9 @@
+　　发生此报错的原因可能是python序列是非矩形的数据，即在某个维度上数据不能对齐；或者你在使用pandas的数据时直接调用，如：
+
+1 input_data = pd.DataFrame([[1,5,3], [5,2,9]])
+2 train_data = tf.random.shuffle(input_data)
+
+　　将input_data后加values就可以了：
+
+train_data = tf.random.shuffle(input_data.values)
+

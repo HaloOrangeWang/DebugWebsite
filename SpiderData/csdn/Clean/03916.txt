@@ -1,0 +1,38 @@
+12) Trying to use a Python keyword for a variable name. (Causes “SyntaxError: invalid syntax”)
+
+The Python keywords (also called reserved words) cannot be used for variable names. This happens with code like:
+
+class = 'algebra'
+
+The Python 3 keywords are: and, as, assert, break, class, continue, def, del, elif, else, except,False, finally, for, from, global, if, import, in, is, lambda, None, nonlocal, not, or, pass, raise,return, True, try, while, with, yield
+
+13) Using an augmented assignment operator on a new variable. (Causes “NameError: name 'foobar' is not defined”)
+
+Do not assume that variables start off with a value such as 0 or the blank string. A statement with an augmented operator like spam += 1 is equivalent to spam = spam + 1. This means that there must be a value in spam to begin with.
+
+This error happens with code like this:
+
+spam = 0
+
+spam += 42
+
+eggs += 42
+
+14) Using a local variable (with the same name as a global variable) in a function before assigning the local variable. (Causes “UnboundLocalError: local variable 'foobar' referenced before assignment”)
+
+Using a local variable in a function that has the same name as a global variable is tricky. The rule is: if a variable in a function is ever assigned something, it is always a local variable when used inside that function. Otherwise, it is the global variable inside that function.
+
+This means you cannot use it as a global variable in the function before assigning it.
+
+This error happens with code like this:
+
+someVar = 42
+
+def myFunction():
+
+print(someVar)
+
+someVar = 100
+
+myFunction()
+

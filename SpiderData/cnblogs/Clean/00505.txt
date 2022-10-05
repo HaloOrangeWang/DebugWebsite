@@ -1,0 +1,89 @@
+
+C#调用Python
+
+
+环境:Windows 8.1,已经安装Python2.7(C:\Python27),配置了环境变量. 已经安装VS2013,VS2017
+
+
+1.安装IronPython
+
+下载地址http://ironpython.net/download/ 我下载的是IronPython-2.7.4.3261515540.msi
+
+安装目录为:F:\Program Files (x86)\IronPython 2.7
+
+
+2.新建C#项目
+
+打开vs2013,新建控制台程序CSharpCallPython
+
+
+3.添加引用
+
+在CSharpCallPython中添加引用,F:\Program Files (x86)\IronPython 2.7\Platforms\Net40下的IronPython.dll和Microsoft.Scripting.dll
+
+
+4.在CSharpCallPython添加py脚本文件Python1.py,,并选择复制到本地,代码如下
+
+def add(num1,num2):
+    return num1+num2;
+
+
+5.在CSharpCallPython添加代码
+
+ScriptRuntime pyRuntime = Python.CreateRuntime(); //创建一下运行环境
+
+dynamic obj = pyRuntime.UseFile("Python1.py"); //调用一个Python文件
+
+int a = 1, b = 2;
+
+int sum = obj.add(a,b); //调用Python文件中的求和函数
+        Console.Write("Sum:");
+        Console.WriteLine(sum);
+
+运行结果Sum=3
+
+调用到此结束,谢谢大家. 如果这样也许,那么这是不可能的.请看下文
+
+
+6.如何引用第三方库
+
+如何使用os下面的库呢,咱们继续 继续添加py脚本文件python2.py
+
+脚本用处是删除传入的目录的子目录 添加C#代码
+
+运行后,十分抱歉,报错了
+
+“IronPython.Runtime.Exceptions.ImportException”类型的未经处理的异常在 Microsoft.Dynamic.dll 中发生
+
+其他信息: No module named os
+
+找不到OS这个模块
+
+
+7.怎么才能使用OS这个库呢
+
+在python2.py中加入
+
+import sys
+sys.path.append("F:\Program Files (x86)\IronPython 2.7\lib")
+
+代码变成
+
+再次运行,发现子目录删除成功 . 祝贺你.
+
+
+8.代码继续优化
+
+在上面的python代码中,加了
+
+　　sys.path.append("F:\Program Files (x86)\IronPython 2.7\lib")
+
+这在程序发布了的时候,服务器上的路径是会变化的,如果有几十个python文件,难道还要挨个修改这个路径么?想想都恐怖.
+
+所以,可以用下面的方法啦.(先把python文件中的sys.path.append("F:\Program Files (x86)\IronPython 2.7\lib"这句去掉)
+
+在engine中指定库的位置,就不用每个python文件中指定了
+
+
+8.代码继续优化
+

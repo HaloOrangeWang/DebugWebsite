@@ -1,0 +1,43 @@
+在刚开始搞python的时候，相信很多人跟我一样，看看基本语法就觉得自己对python有一定了解了，立马找点能做的需求来实现一下，以示自己的自学能力和理解能力已经击败了全球90%的用户。
+
+but，当你发现 print "hello world!" 的时候， 没有问题。
+
+但是 print "你好，世界！" 的时候，却报错了！ Why？WTF！！！报错信息就像下面这样：
+
+File "C:/Users/PycharmProjects/test/test.py", line 4
+                SyntaxError: Non-ASCII character '\xe4' in file C:/Users/PycharmProjects/test/test.py on line 4,
+
+but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+
+我来告诉你，真相只有一个：
+
+你用的是python2.x版本！
+
+那么为什么python2.x版本会出现这种问题呢？
+
+因为，Python2.x中默认的编码格式是 ASCII 格式，在没修改编码格式时无法正确打印汉字，所以在读取中文时会报错。
+
+好了， 问题原因知道了，那么怎么解决呢？
+
+只要在文件开头加入
+
+# -*- coding: utf-8 -*-
+
+或者
+
+# coding=utf-8
+
+就行了! 就是这么简单，好嗨哟，感觉人生已经达到了巅峰。
+
+需要注意的是：# coding=utf-8 的 = 号两边不要空格。
+
+所以大家在包含中文的代码中，一定要加上其中一句哦！而且还得是文件头部！
+
+反正我现在只要写代码， 开头肯定是先怼上这么一句，以防万一，不仅 装逼 显得专业，而且不会因为不确定后面会不会出现中文而担心！完美！
+
+还要再说一点，就是用python3.x的小伙伴们，不用担心。因为python3.x源码文件本身就是默认UTF-8编码的。
+
+python3.x的小伙伴们用IDE（一般是pycharm）开发的时候，额外需要注意的是，py文件的存储格式一定要改成UTF-8格式的，否则还是会报错的！
+
+切记！
+

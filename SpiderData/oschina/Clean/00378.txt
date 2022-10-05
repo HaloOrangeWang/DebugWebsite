@@ -1,0 +1,84 @@
+
+win10 安装pytorch gpu 及 解决报错"OSError: [WinError 126] 找不到指定的模块"
+
+本机参数
+
+安装CUDA 和 CUDNN
+
+安装pytorch
+
+报错解决
+
+
+本机参数
+
+GPU：Quadro P620
+ CUDA：8.0
+ CUDNN: 11.0.2
+ python: 3.7
+ pytorch: 1.7.0
+
+
+安装CUDA 和 CUDNN
+
+参考网上资源
+ 1、查看显卡是否支持CUDA及支持的版本。here
+ 2、查看CUDA以及Cudnn版本对应关系。here
+ 3、下载相应版本的CUDA和CUDNN并安装。here
+
+
+安装pytorch
+
+1、官网下载
+ 根据CUDA选择合适的版本。
+ 建议选择pip安装，用conda安装实在太慢了。
+
+2、然后把下面的命令复制到anaconda prompt 控制台。然后等下载安装完就好了。
+
+这个包差不多有2G，可以参考网上使用镜像源。不过我就这样用pip安装的时候也还是挺快了。用conda安装就真是龟速一样了。
+
+3、测试安装是否成功。
+
+为了确保PyTorch是否安装成功，我们需要运行简单的样例代码测试，例如打印出随机生成的张量矩阵，以及gpu是否可以使用。
+
+首先在命令行输入python，进入python的解释器，依次输入以下命令，每输入一句回车
+
+import torch
+x = torch.rand(5,3)
+print(x)
+
+输出的内容应该类似于以下：
+
+tensor([[0.3380, 0.3845, 0.3217],
+        [0.8337, 0.9050, 0.2650],
+        [0.2979, 0.7141, 0.9069],
+        [0.1449, 0.1132, 0.1375],
+        [0.4675, 0.3947, 0.1426]])
+
+如果OK，则说明pytorch安装基本成功。
+
+再输入
+
+torch.cuda.is_available()
+
+如果输出“True”，则说明GPU驱动和CUDA可以支持pytorch的加速计算！
+
+恭喜安装成功！
+
+
+报错解决
+
+今天安装的时候，照着上面的步骤下来，刚开始还是报错了。so sad
+
+OSError: [WinError 126] 找不到指定的模块。 Error loading"C:\Users\anaconda3\envs\pytorch\lib\site-packages\torch\lib\asmjit.dll"or one of its dependencies.
+
+但是通过查看文件夹，会发现其实这个文件时存在的。就是不知为什么python没有读取到。
+
+网上有几种办法。比如降低pytorch 版本的。但是我不知道哪些版本适合，一个个试太麻烦，而且怕还要改CUDA版本，嫌麻烦，就没试。
+
+还有改初始化代码的。就是报错的那个文件代码，修改了路径，但是也不行。然后一直找不到原因，拖了一天没搞定。
+
+最后今晚看到一篇文章。安装了Microsoft Visual C++ Redistributable，然后就神奇的可以了。不明觉厉！
+
+虽然不知道是为什么会这样，但是好在问题解决了，又可以快乐debug了！搞定收工！
+

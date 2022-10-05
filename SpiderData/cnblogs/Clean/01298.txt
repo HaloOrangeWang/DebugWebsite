@@ -1,0 +1,12 @@
+使用Python的ftplib模块连接ftp服务器时, 使用cwd()连接含中文的目录,
+
+报错 : UnicodeEncodeError: 'latin-1' codec can't encode characters in position 17-20: ordinal not in range(256)
+
+解决方法 一:修改源码
+
+　　修改ftplib.py: 将encoding='latin-1' 修改为 : encoding='utf-8'
+
+解决方法二:外部修改编码方式
+
+　　cwd(folder.encode('utf-8').decode('latin1'))
+

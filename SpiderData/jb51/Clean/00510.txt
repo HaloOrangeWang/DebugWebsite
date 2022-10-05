@@ -1,0 +1,42 @@
+学习Tensorboard过程中，按照书本中操作，结果在浏览器中报错：No scalar data was found.
+
+通过百度查询，自己琢磨，发现有个小问题觉得写出来供像我这样的菜鸟注意。
+
+我的环境是：window，Anaconda2底下安装python2.7，又加装了tensorfow环境和Python3.5
+
+1、使用Jupyter Note book写代码注意
+
+相对路径：
+
+writer = tf.summary.FileWriter('logs/',sess.graph)，注意单引号
+
+绝对路径：
+
+writer = tf.summary.FileWriter("E:\\MyJupyter\\logs" ,sess.graph)，注意双引号和斜杠
+
+writer = tf.summary.FileWriter("E://MyJupyter//logs" ,sess.graph)，注意双引号和反斜杠
+
+以上三种方法都能在指定位置生成画图文件。
+
+2、进入系统命令模式
+
+通过cmd进入系统命令模式，由于我的Tensorboard没有导入系统环境变量中，所以必须将目录cd到tensorflow中的scripts文件夹，执行里面的tensorboard.exe
+
+具体指令如下图：
+
+前面为我的tensorflow安装路径，后面是画图文件所在路径（也可以用相对路径）
+
+请注意图中一定要输入的反斜杠，反斜杠，反斜杠！！！
+
+我的开始犯的错误是：使用绝对路径时，输入斜杠E:\MyJupyter\logs和E:\\MyJupyter\\logs，都报错：No scalar data was found.折腾了我一个小时。
+
+执行命令结果下图：
+
+3、结果图：用谷歌Chrome浏览器打开链接：http://PC-201707101548：:6006，就可以了
+
+网上说用360浏览器不可以看图，但我用没问题。
+
+可以在Tensorboard的scalars选项卡右下角，可以看你的路径 ，我开始就是被这个斜杠误导了。
+
+以上这篇解决Tensorboard可视化错误:不显示数据 No scalar data was found就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

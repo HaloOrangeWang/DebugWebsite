@@ -1,0 +1,20 @@
+
+nginx 启动报错“var/run/nginx/nginx.pid" no such file or directory
+
+今天刚搭建的nginx服务器启动时，报错“var/run/nginx/nginx.pid" no such file or directory，按照他的意思我在var/run/新建了一个文件夹nginx，重新启动，启动成功。
+
+但是当我虚拟机重启后依然报错“var/run/nginx/nginx.pid" no such file or directory，进入var/run/下的所有文件夹被清空。
+
+
+解决方案:
+
+vim /usr/local/nginx/conf/nginx.conf
+
+将 #pid /logs/nginx.pid 注释去掉，改为 pid /usr/local/nginx/logs/nginx.pid;
+
+在 /usr/local/nginx 目录下创建 logs 目录：mkdir /usr/local/nginx/logs。
+
+mkdir /usr/local/nginx/logs
+
+启动服务就ok了。
+

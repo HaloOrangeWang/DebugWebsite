@@ -1,0 +1,104 @@
+1、不处理：
+
+def foo(s):
+
+return 10 / int(s)
+
+def bar(s):
+
+return foo(s) * 2
+
+def main():
+
+bar(0)
+
+if __name__=='__main__':
+
+main()
+
+print('END')
+
+打印结果分析：程序会被中断，"END"无法打印。打印错误的方法和代码行，打印已内置的错误解说 ZeroDivisionError: division by zero
+
+if __name__=='__main__':这句的作用是判断该方法是不是在本模块调用，如果是，则调用，否则不调用。这样的写法通常用在测试阶段。
+
+2、用try...exception...finally...捕捉
+
+def foo(s):
+
+return 10 / int(s)
+
+def bar(s):
+
+return foo(s) * 2
+
+def main():
+
+try:
+
+print('__name__ = ',__name__)
+
+if __name__=='__main__':
+
+bar(0)
+
+except Exception as e:
+
+print('error definied by myself:invalid value')
+
+#log_test02(e) #这个方法用来配置logging参数信息
+
+#logging.exception(e) #会打印错误信息，并且打印已内置的错误解说。
+
+if __name__=='__main__':
+
+main()
+
+print('END')
+
+打印结果分析：不会中断程序，会打印"END"，打印出自定义错误解说，但是不会打印错误代码行。可配合使用logging，程序照样不会中断。如果有配置logging参数，可以自定义记录错误的详细信息，如log_test02(e)；如果没有配置logging参数，会打印错误代码行，以及已内置的错误解说，如logging.exception(e) 。
+
+3、抛出错误raise....
+
+class FooError(ValueError):
+
+pass
+
+def foo(s):
+
+n = int(s)
+
+if n==0:
+
+raise FooError('invalid value: %s' % s)
+
+return 10 / n
+
+print(foo('0'))
+
+打印结果分析：程序会中断，将错误抛给上一级，无法打印"END"。打印出错误代码行，并打印出自定义错误解说:__main__.FooError: invalid value: 0  。
+
+raise语句不包括异常名称或额外资料时，会重新引发当前异常。如果希望捕获处理一个异常，而又不希望异常在程序代码中消失，可以通过raise重新引发该异常，打印错误行。
+
+def catcher():
+
+try:
+
+fetcher(x, 4)
+
+except:
+
+print "got exception"
+
+raise
+
+总体来说这三种方法的区别在于
+
+程序有无中断
+
+能否自定义错误解说
+
+能否打印错误代码行
+
+能否错误抛出错误
+

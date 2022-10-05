@@ -1,0 +1,29 @@
+使用httprunner时，在windows环境中操作命令python manage.py makemigration正常，打包到Linux下编译报错：
+
+ImportError: Couldn't import Django. Are you sure it's installed and available on your PYTHONPATH environment variable? Did you foa virtual environment?
+即使pip安装了Django还是会报错，手动指定安装与windows一样的版本django 2.0.3仍然只会安装1.11.27，仔细查看Django安装过程就能明白，目前linux安装了2个python版本，django默认链接上了python2：
+
+Installing : pytz-2016.10-2.el7.noarch                                                                                      1/3
+  Installing : python-django-bash-completion-1.11.27-1.el7.noarch                                                             2/3
+  Installing : python2-django-1.11.27-1.el7.noarch                                                                            3/3
+  Verifying  : python2-django-1.11.27-1.el7.noarch                                                                            1/3
+  Verifying  : python-django-bash-completion-1.11.27-1.el7.noarch                                                             2/3
+  Verifying  : pytz-2016.10-2.el7.noarch                                                                                      3/3
+
+Installed:
+  python2-django.noarch 0:1.11.27-1.el7
+
+于是，
+
+1、将python3的文件加入环境变量：
+
+# vi /etc/profile
+
+2、最后一行添加：PATH=$PATH:/opt/python36/bin  (/opt/python36/bin为目前python3的绝对路径）
+
+3、保存退出
+
+4、使配置生效：source /etc/profile
+
+5、接下来就可以正常安装django版本了：pip3 install django==2.1.4
+

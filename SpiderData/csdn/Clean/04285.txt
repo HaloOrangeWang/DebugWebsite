@@ -1,0 +1,58 @@
+
+1.函数举例：
+
+代码：
+
+from sympy import *
+x = symbols('x')  # 声明一个x自变量
+print(integrate(x, (x, -1, 1)))
+
+输出0
+
+解释
+ integrate(函数，（变量，下限， 上限）)
+
+
+2.也可以通过调用函数的方法求解
+
+from sympy import *
+def f(x):
+    return x ** 2 + 1
+
+x = symbols('x')
+f = integrate(f(x), (x, -1, 1))
+print(f)
+
+输出8/3
+
+
+3.常见错误：
+
+from sympy import *
+import math
+def f(x):
+    return math.exp(x)
+
+x = symbols('x')
+f = integrate(f(x), (x, -1, 1))
+print(f)
+
+如果使用上述方法将会报错：can't convert expression to float
+
+正确写法ru如下：
+
+from sympy import *
+import math
+def f(x):
+    return math.e ** x  # 修改这里，使用exp函数会报错
+
+x = symbols('x')
+f = integrate(f(x), (x, -1, 1))
+print(f)
+
+输出2.35040238728760
+
+问题已解决，但我不是很清楚原因，可能是因为调用了第三方库exp导致错误，而integrate又不允许这样做。最好的方法就是函数中尽量不要调用第三方库，如果有知道具体原因的可以评论区回复。
+
+感谢：
+

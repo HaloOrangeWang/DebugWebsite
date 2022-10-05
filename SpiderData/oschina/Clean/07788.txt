@@ -1,0 +1,45 @@
+报错com.mysql.cj.exceptions.InvalidConnectionAttributeException
+
+详细内容
+
+1 java.sql.SQLException: The server time zone value '�й���׼ʱ��' is unrecognized or represents more than one time zone. You must configure either the server or JDBC driver (via the serverTimezone configuration property) to use a more specifc time zone value if you want to utilize time zone support.
+ 2 FATAL ERROR in native method: JDWP on checking for an interface, jvmtiError=JVMTI_ERROR_WRONG_PHASE(112)
+ 3     at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:129)
+ 4     at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:97)
+ 5     at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:89)
+ 6     at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:63)
+ 7     at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:73)
+ 8     at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:76)
+ 9     at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:835)
+10     at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:455)
+11     at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:240)
+12     at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:199)
+13     at java.sql.DriverManager.getConnection(DriverManager.java:664)
+14     at java.sql.DriverManager.getConnection(DriverManager.java:247)
+15     at com.java.mysql.test.TestDB.getConnection(TestDB.java:22)
+16     at com.java.mysql.test.TestDB.runTest(TestDB.java:26)
+17     at com.java.mysql.test.TestDB.main(TestDB.java:45)
+18 Caused by: com.mysql.cj.exceptions.InvalidConnectionAttributeException: The server time zone value '�й���׼ʱ��' is unrecognized or represents more than one time zone. You must configure either the server or JDBC driver (via the serverTimezone configuration property) to use a more specifc time zone value if you want to utilize time zone support.
+19     at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+20     at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+21     at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+22     at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+23     at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:61)
+24     at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:85)
+25     at com.mysql.cj.util.TimeUtil.getCanonicalTimezone(TimeUtil.java:132)
+26     at com.mysql.cj.protocol.a.NativeProtocol.configureTimezone(NativeProtocol.java:2243)
+27     at com.mysql.cj.protocol.a.NativeProtocol.initServerSession(NativeProtocol.java:2267)
+28     at com.mysql.cj.jdbc.ConnectionImpl.initializePropsFromServer(ConnectionImpl.java:1319)
+29     at com.mysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(ConnectionImpl.java:966)
+30     at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:825)
+31     ... 8 more
+32 JDWP exit error JVMTI_ERROR_WRONG_PHASE(112): on checking for an interface [util.c:1313]
+
+解决方法：数据库url中地址要配置“serverTimezone=UTC”
+
+扩展：MySQL jdbc 6.0 版本以上必须配置“serverTimezone”参数
+
+UTC代表的是全球标准时间
+
+若我们使用的时间是北京时区也就是东八区，领先UTC八个小时。url的时区使用中国标准时间。也是就serverTimezone=Asia/Shanghai
+

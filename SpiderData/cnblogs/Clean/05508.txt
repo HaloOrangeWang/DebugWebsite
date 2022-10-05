@@ -1,0 +1,36 @@
+由于要使用Python3实现des3加密要使用pycrypto模块，所以使用pip install pycrypto 来安装，然后就常规性掉坑。安装报错“Microsoft Visual C++14.0 is required”。具体错误如下图：
+
+根据错误提示地址准备下载“Microsoft Visual C++14.0”，结果访问页面404，WHAT?ARE YOU KIDDING ME?
+
+然后网上搜索根据该地址下载到：https://devblogs.microsoft.com/python/unable-to-find-vcvarsall-bat/
+
+下载的文件是这样的一个东西：
+
+1、安装
+
+2、配置环境变量：设置Microsoft Visual Studio 14.0的环境变量 VCINSTALLDIR 变量值 C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC（默认安装位置，请根据自己的安装位置确定）如图：
+
+3、在上面安装路径中执行 vcvarsall.bat 脚本
+
+4、win+R运行cmd，执行命令set CL=/FI”%VCINSTALLDIR%\INCLUDE\stdint.h” %CL%
+
+5、然后执行pip install pycrypto，又报错了。C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h  intmax_t 等问题。脑壳疼。。。
+
+解决办法：
+
+1、将C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\stdint.h文件拷贝到C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\目录下；
+
+2、修改C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\inttypes.h文件，如下图：
+
+原文件13行是这样的：
+
+13 #include <stdint.h>
+
+修改后：
+
+13 #include "stdint.h"
+
+3、win+R运行cmd，执行命令set CL=/FI”%VCINSTALLDIR%\INCLUDE\stdint.h” %CL%
+
+4、执行pip install pycrypto，成功安装。
+

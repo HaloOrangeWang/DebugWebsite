@@ -1,0 +1,96 @@
+前言
+
+本文的文字及图片来源于网络,仅供学习、交流使用,不具有任何商业用途,如有问题请及时联系我们以作处理。
+
+以下文章来源于SAMshare，作者SonerYıldırım
+
+每个软件程序员的梦想是编写一个可以平稳运行的程序。但是，起初情况并非如此。发生错误时，将停止执行代码。
+
+意外的情况或状况可能会导致错误。Python将这些情况视为异常，并根据异常类型引发不同类型的错误。
+
+ValueError，TypeError，AttributeError和SyntaxError是这些异常的一些示例。好消息是Python还提供了处理异常的方法。
+
+考虑以下要求用户输入数字并打印数字平方的代码。
+
+a = int(input("Please enter a number:"))print(f'{a} squared is {a*a}')
+
+只要输入是数字，它就可以正常工作。但是，如果用户输入一个字符串，python将引发ValueError：
+
+我们可以在代码中实现try-except块，以更好地处理此异常。例如，我们可以向用户返回更简单的错误消息，或者要求他们提供其他输入。
+
+try:
+
+a= int(input("Please enter a number:"))print(f'{a} squared is {a*a}')except:print("Wrong input type! You must enter a number!")
+
+在上述情况下，代码会更清楚地告知用户有关错误的信息。
+
+如果由于try块中的代码引发了异常，则执行将继续使用except块中的语句。因此，由程序员决定如何处理异常。
+
+普通的try-except块将捕获任何类型的错误。但是，我们可以更具体一些。例如，我们可能只对特定类型的错误感兴趣，或者希望以不同方式处理不同类型的错误。
+
+可以使用except语句指定错误的类型。考虑下面的代码，要求用户从列表中输入一个数字。然后，它根据输入从字典返回一个名称。
+
+dict_a = {1:'Max', 2:'Ashley', 3:'John'}
+
+number= int(input(f'Pick a number from the list: {list(dict_a.keys())}'))
+
+如果用户输入的数字不在给定列表中，我们将收到KeyError。如果输入的不是数字，我们将得到ValueError。我们可以使用两个except语句来处理这两种情况。
+
+try:
+
+dict_a= {1:'Max', 2:'Ashley', 3:'John'}
+
+number= int(input(f'Pick a number from the list:
+
+{list(dict_a.keys())}'))
+
+print(dict_a[number])exceptKeyError:print(f'{number} is not in the list')exceptValueError:print('You must enter a number!')
+
+Python还允许引发您自己的异常。这是自定义默认异常的一种。raise关键字和错误类型用于创建您自己的异常。
+
+try:
+
+a= int(input("Please enter a number:"))print(f'{a} squared is {a*a}')except:raise ValueError("You must enter a number!")
+
+如果是非数字输入，这是错误消息。
+
+ValueError: You must enter a number!
+
+让我们做另一个例子，展示如何在函数中使用try-except块。
+
+avg_value函数返回数字列表的平均值。
+
+a = [1, 2, 3]defavg_value(lst):
+
+avg= sum(lst) /len(lst)return avgprint(avg_value(a))
+
+如果我们将一个空列表传递给此函数，则它将给出ZeroDivisionError，因为空列表的长度为零。
+
+我们可以在函数中实现try-except块来处理此异常。
+
+defavg_value(lst):try:
+
+avg= sum(lst) /len(lst)returnavgexcept:print('Warning: Empty list')return 0
+
+如果列表为空，该函数将显示警告并返回0。
+
+a =[]print(avg_value(a))#Warning: Empty list#0
+
+try和except块用于处理异常。断言用于确保条件与功能要求兼容。
+
+如果断言为假，则该函数不会继续。因此，断言可以是防御性编程的示例。程序员确保一切都按预期进行。
+
+让我们在avg_value函数中实现断言。我们必须确保列表不为空。
+
+defavg_value(lst):assert not len(lst) == 0, 'No values'avg= sum(lst) /len(lst)return avg
+
+如果列表的长度为零，则该函数立即终止。否则，它将持续到结束。
+
+如果assert语句中的条件为false，则将引发AssertionError：
+
+a =[]print(avg_value(a))
+
+AssertionError: No values
+
+断言对于查找代码中的错误非常有用。因此，它们可用于支持测试。
+

@@ -1,0 +1,29 @@
+{
+    "err_msg": {
+        "text": "Something is already running on port 3000",
+        "lines": ["title"],
+        "weight": [1]
+    },
+    "scene": {
+        "text": "react-create-app",
+        "lines": [2],
+        "weight": [1]
+    },
+    "solve": [
+        {
+            "text": "查看端口是否被占用：命令执行\n\n找到端口\n\nlsof -wni tcp:3098\n\n显示\n\nnode    29197 didi   27u  IPv4 0x6586eff0033e8267      0t0  TCP *:umm-port (LISTEN)\n\nkill 杀掉进程\n\nkill 29197",
+            "lines": [8, 10, 12, 14, 16, 18, 20],
+            "weight": [1, 1, 0.5, 1, 0.5, 1, 0.5]
+        },
+        {
+            "text": "换端口：修改package.json 配置，配置其他端口号\n\n// mac 直接配置`PORT=3001` ；windows 配置应该是 `set PORT=3001 & `\n\"scripts\": {\n   \"start\": \"PORT=3001 react-scripts start\",\n   \"build\": \"react-scripts build\",\n   \"test\": \"react-scripts test\",\n   \"eject\": \"react-scripts eject\"\n },",
+            "lines": [23, 25, 26, 27, 28, 29, 30, 31],
+            "weight": [1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        },
+        {
+            "text": "配置hosts文件（一般用于：后续更改端口后依旧会提示对应端口被占用）\n\n// 配置\n127.0.0.1   localhost",
+            "lines": [34, 36, 37],
+            "weight": [1, 0.5, 0.5]
+        }
+    ]
+}

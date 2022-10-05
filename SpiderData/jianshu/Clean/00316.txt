@@ -1,0 +1,60 @@
+locale 命令结果：
+
+[root@0d77323f6fb2 ~]# locale -a
+
+locale: Cannot set LC_CTYPE to default locale: No such file or directory
+
+locale: Cannot set LC_MESSAGES to default locale: No such file or directory
+
+locale: Cannot set LC_COLLATE to default locale: No such file or directory
+
+C
+
+C.utf8
+
+POSIX
+
+dnf安装软件报错
+
+[root@0d77323f6fb2 ~]# dnf install -y --enablerepo=powertools rpmdevtools
+
+Failed to set locale, defaulting to C.UTF-8
+
+CentOS Linux 8 - AppStream                      83 B/s | 38 B  00:00
+
+Error: Failed to download metadata for repo 'appstream': Cannot prepare internal mirrorlist: No URLs                                                                          in mirrorlist
+
+dnf update结果
+
+[root@0d77323f6fb2 ~]# dnf update
+
+Failed to set locale, defaulting to C.UTF-8
+
+CentOS Linux 8 - AppStream                                29 B/s | 38 B  00:01
+
+Error: Failed to download metadata for repo 'appstream': Cannot prepare internal mirrorlist: No URLs in mirrorlist
+
+yum 安装软件报错
+
+[root@0d77323f6fb2 ~]# yum install glibc-langpack-zh
+
+Failed to set locale, defaulting to C.UTF-8
+
+CentOS Linux 8 - AppStream                                                                                                17 B/s | 38 B  00:02
+
+Error: Failed to download metadata for repo 'appstream': Cannot prepare internal mirrorlist: No URLs in mirrorlist
+
+解决方法
+
+cd /etc/yum.repos.d/
+
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+
+sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
+yum update -y
+
+locale -a结果
+
+[root@0d77323f6fb2 /]# locale -aCC.utf8en_AGen_AUen_AU.utf8en_BWen_BW.utf8en_CAen_CA.utf8en_DKen_DK.utf8en_GBen_GB.iso885915en_GB.utf8en_HKen_HK.utf8en_IEen_IE@euroen_IE.utf8en_ILen_INen_NGen_NZen_NZ.utf8en_PHen_PH.utf8en_SC.utf8en_SGen_SG.utf8en_USen_US.iso885915en_US.utf8en_ZAen_ZA.utf8en_ZMen_ZWen_ZW.utf8POSIX
+

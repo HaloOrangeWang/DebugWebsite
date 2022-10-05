@@ -1,0 +1,30 @@
+一个 Python 脚本有如下获取当前终端行列宽度的一行代码：
+
+columns, rows = os.get_terminal_size()
+
+大部分情况是正常的如：
+
+./hubble_bench.py --help
+hubble_bench.py
+
+Usage:
+    ./hubble_bench.py --issue_type=<issue_type>
+
+Options:
+    --issue_type=<issue_type> cpu_high_load, bufferpool_too_small, io_high_usage, net_high_usage, high_concurrency, slow_query, meta_lock, deadlock, large_uncommitted, seckill, connection_grow
+    --thread_min=<thread_min>
+    --thread_max=<thread_max>
+
+但假如后面接管道就报错了：
+
+./hubble_bench.py --help | less
+Traceback (most recent call last):
+  File "./hubble_bench.py", line 40, in <module>
+    columns, rows = os.get_terminal_size()
+OSError: [Errno 22] Invalid argument
+
+后面发现改成用 shutil 来代替 os 模块就可以了:
+
+columns, rows = shutil.get_terminal_size()
+``
+

@@ -1,0 +1,39 @@
+今天运行一个声音混合的程序，使用python 的AudioSegment.from_mp3（mp3path） 报错了.
+
+我百度了一下说是缺少文件ffmpeg.exe和ffprobe.exe然后我就下载了windows的【https://github.com/BtbN/FFmpeg-Builds/releases?page=3】
+
+我用的是python3.6，下载了好几个
+
+使用第一种方案：
+
+直接在代码中添加
+
+AudioSegment.converter = r"E:\s\ffmpeg-N-104843-gf176669a37-win64-lgpl-shared\ffmpeg-N-104843-gf176669a37-win64-lgpl-shared\bin\ffmpeffmpeg.exe"
+    AudioSegment.ffprobe = r"E:\s\ffmpeg-N-104843-gf176669a37-win64-lgpl-shared\ffmpeg-N-104843-gf176669a37-win64-lgpl-shared\bin\ffprobe.exe"
+
+　　然后运行，，失败，尝试了三个都失败了。。。
+
+使用第二中方案：
+
+直接复制这两个exe文件到项目运行目录，使用第三个失败了。。
+
+然后使用第二个里面的两个exe文件成功了！！！我都快放弃了~竟然成功了
+
+另一个问题：本文件夹有一个声音合并函数，内部调用，运行是可以的，但是其他文件（不同文件夹）调用这个函数死活调不通，即使不传参数也不行。。。
+
+然后我把这两个exe文件又复制到那个py文件所在的文件夹才可以运行。。。。不知道什么原因。。
+
+附：
+
+　音频混合（不是拼接）：
+
+　
+
+　　
+
+参考：
+
+https://blog.csdn.net/xiaoxifei/article/details/105295288
+
+https://www.jianshu.com/p/75cbbefca085
+

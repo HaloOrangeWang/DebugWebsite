@@ -1,0 +1,104 @@
+不少同学经常使用windows系统但是在linux系统中不知道如何解决问题，本章节就为你解析在Linux系统解决pip安装mysqlclient报错如何解决。
+
+---
+
+title: "各主流Linux系统解决pip安装mysqlclient报错"
+
+date: 2020-02-10 23:10
+
+tags:
+
+- Python
+
+---
+
+##   一 CentOS（红帽）
+
+```python
+
+#CentOS有Python、Mysql的开发工具包，安装后使用pip安装mysqlclient即可
+
+yum install mysql-devel
+
+yum install python-devel
+
+#yum install python36-devel
+
+pip install mysqlclient
+
+```
+
+## 二  Ubuntu
+
+```python
+
+#Ubuntu的话，也是安装一些Mysql的依赖或开发库
+
+apt-get install libmysql-dev
+
+apt-get install libmysqlclient-dev
+
+apt-get install python-dev #python3要装python3-dev
+
+pip install mysqlclient
+
+#此时如果遇到如下错误
+
+Collecting mysqlclient
+
+Using cached  https://files.pythonhosted.org/packages/f4/f1/3bb6f64ca7a429729413e6556b7ba5976df06019a5245a43d36032f1061e/mysqlclient-1.4.2.post1.tar.gz
+
+Complete output from command python setup.py egg_info:
+
+Traceback (most recent call last):
+
+File "<string>", line 1, in <module>
+
+ModuleNotFoundError: No module named 'setuptools'
+
+\----------------------------------------
+
+Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-build-p8wpb1kf/mysqlclient/
+
+#需要安装一下setuptools包，直接pip install setuptools==33.1.1，python3的话就pip3，看你的系统。
+
+```
+
+## 三 Windows
+
+```python
+
+#win下看人品，人品好直接成功，人品不好就废，在win下的话解决方案很多：
+
+#1 anaconda
+
+直接下载使用anaconda，创建虚拟环境来进行开发
+
+#2 whl包安装
+
+#或者到pipy下载相对应的whl包，使用pip安装即可，具体包的版本和适用平台自行查询就好
+
+到这个地址下载自己版本对应的资源
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#mysqlclient
+
+#查看是否成功
+
+#直接使用pip list命令查看所有已安装包，确定是否安装成功，效果如下：
+
+pip list
+
+Package        Version
+
+-------------------- --------
+
+......
+
+mysqlclient      1.4.2
+
+......
+
+有的话就表明安装成功。
+
+```
+

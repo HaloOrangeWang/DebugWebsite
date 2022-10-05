@@ -1,0 +1,103 @@
+1、在Django提交表单时报错：Django提交表单报错：
+
+CSRF token missing or incorrect
+
+具体报错页面如下：
+
+2、有道词典翻译后如下：
+
+通常，当存在真正的跨站点请求伪造时，或者Django的CSRF机制没有被正确使用时，就会出现这种情况。至于邮递表格，你须确保:
+
+您的浏览器正在接受cookie。
+
+视图函数将一个请求传递给模板的呈现方法。
+
+在模板中，每个POST表单中都有一个{% csrf_token %}模板标记，目标是一个内部URL。
+
+如果您没有使用CsrfViewMiddleware，那么您必须在任何使用csrf_token模板标签的视图以及那些接受POST数据的视图上使用csrf_protect。
+
+该表单有一个有效的CSRF令牌。在登录另一个浏览器选项卡或登录后单击back按钮之后，您可能需要使用表单重新加载页面，因为登录后令牌会旋转。
+
+您将看到这个页面的帮助部分，因为在Django设置文件中有DEBUG = True。将其更改为False，将只显示初始错误消息。
+
+您可以使用CSRF_FAILURE_VIEW设置自定义这个页面。
+
+3、解决办法：
+
+（1）、确定项目底下的settings.py文件，是否存在django.middleware.csrf.CsrfViewMiddleware：
+
+MIDDLEWARE = [
+  'django.middleware.security.SecurityMiddleware',
+  'django.contrib.sessions.middleware.SessionMiddleware',
+  'django.middleware.common.CommonMiddleware',
+  'django.middleware.csrf.CsrfViewMiddleware',
+  'django.contrib.auth.middleware.AuthenticationMiddleware',
+  'django.contrib.messages.middleware.MessageMiddleware',
+  'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+（2）、如果确定settings.py文件有配置了，还是报错，就要在form表单底下加一行代码：
+
+{% csrf_token %}
+
+这样应该就不会报上面错误了，以上内容仅供学习参考，谢谢！
+
+补充知识：Django中csrf token验证原理
+
+我多年没维护的博客园，有一篇初学Django时的笔记，记录了关于django-csrftoekn使用笔记，当时几乎是照抄官网的使用示例，后来工作全是用的flask。博客园也没有维护。直到我的博客收到了如下评论，确实把我给问倒了，而且我也仔细研究了这个问题。
+
+1. Django是怎么验证csrfmiddlewaretoken合法性的？
+
+2. 每次刷新页面的时候<input>中的csrf的value都会更新，每次重复登录的时候cookie的csrf令牌都会刷新，那么这两个csrf-token有什么区别？
+
+image.png
+
+CSRF(Cross Site Request Forgery protection)，中文简称跨站请求伪造。
+
+django 第一次响应来自某个客户端的请求时，会在服务器端随机生成一个 token，把这个 token 放在 cookie 里。然后每次 POST 请求都会带上这个 token，
+
+这样就能避免被 CSRF 攻击。
+
+这样子看起来似乎没毛病，但是评论中的第三个问题，每次刷新页面，form表单中的token都会刷新，而cookie中的token却只在每次登录时刷新。我对csrftoken的验证方式起了疑问，后来看了一段官方文档的解释。
+
+When validating the ‘csrfmiddlewaretoken' field value, only the secret, not the full token, is compared with the secret in the cookie value. This allows the use of ever-changing tokens. While each request may use its own token, the secret remains common to all.
+
+This check is done by CsrfViewMiddleware.
+
+官方文档中说到，检验token时，只比较secret是否和cookie中的secret值一样，而不是比较整个token。
+
+我又有疑问了，同一次登录，form表单中的token每次都会变，而cookie中的token不便，django把那个salt存储在哪里才能保证验证通过呢。
+
+直到看到源码。
+
+def _compare_salted_tokens(request_csrf_token, csrf_token):
+  # Assume both arguments are sanitized -- that is, strings of
+  # length CSRF_TOKEN_LENGTH, all CSRF_ALLOWED_CHARS.
+  return constant_time_compare(
+    _unsalt_cipher_token(request_csrf_token),
+    _unsalt_cipher_token(csrf_token),
+  )
+
+def _unsalt_cipher_token(token):
+  """
+  Given a token (assumed to be a string of CSRF_ALLOWED_CHARS, of length
+  CSRF_TOKEN_LENGTH, and that its first half is a salt), use it to decrypt
+  the second half to produce the original secret.
+  """
+  salt = token[:CSRF_SECRET_LENGTH]
+  token = token[CSRF_SECRET_LENGTH:]
+  chars = CSRF_ALLOWED_CHARS
+  pairs = zip((chars.index(x) for x in token), (chars.index(x) for x in salt))
+  secret = ''.join(chars[x - y] for x, y in pairs) # Note negative values are ok
+  return secret
+
+token字符串的前32位是salt， 后面是加密后的token， 通过salt能解密出唯一的secret。
+
+django会验证表单中的token和cookie中token是否能解出同样的secret，secret一样则本次请求合法。
+
+同样也不难解释，为什么ajax请求时，需要从cookie中拿取token添加到请求头中。
+
+网上有不少关于django csrf token验证原理的文章都是错的，是因为他们根本不知道csrf-token的结构组成，我也是卡在第三条评论那.然后看了官方文档，和CsrfViewMiddleware中间件源码然后才恍然大悟。
+
+以上这篇解决Django提交表单报错:CSRF token missing or incorrect的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

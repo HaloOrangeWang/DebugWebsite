@@ -1,0 +1,78 @@
+
+Django操作ORM小笔记
+
+
+报错内容：
+
+You are trying to add a non-nullable field 'mobile' to user without a default; we can't do that (the database needs something to popula te existing rows). Please select a fix:
+
+Provide a one-off default now (will be set on all existing rows with a null value for this column)
+
+Quit, and let me add a default in models.py Select an option:
+
+models.py内容如下：
+
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号')
+    class Meta:
+        db_table = 'users'
+        verbose_name = '用户'
+        verbose_name_plural = verbose_name
+    def __str__(self):
+        return self.username
+
+这个模型类继承了AbstractUser类，这个类默认提供了很多属性，比如username、first_name、email等，但是没有mobile属性。
+
+因此这里的mobile是我们自己加的。
+
+当新加的mobile属性这样写时：
+
+mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号')
+
+由于没有指定该字段的默认值，即没有指定这个字段是否可以为空，所以django会有这样的提示。
+
+
+解决方案：
+
+
+方案①
+
+输入1，手动指定默认值为当前时间(timezone.now为带时区的当前时间，格式：2015-07-10 14:11:19.936835+00:00)，迁移就会继续。
+
+$ python manage.py makemigrations
+
+You are trying to add a non-nullable field 'mobile' to user without a default; we can't do that (the database needs something to popula
+te existing rows).
+Please select a fix:
+ 1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+ 2) Quit, and let me add a default in models.py
+Select an option: 1
+Please enter the default value now, as valid Python
+The datetime and django.utils.timezone modules are available, so you can do e.g.
+
+timezone.now
+
+Type 'exit' to exit this prompt
+>>> timezone.now
+Migrations for 'user':
+  easybook/apps/user/migrations/0006_user_mobile.py
+    - Add field mobile to user
+    
+$ python manage.py migrate
+
+
+方案②
+
+输入2，退出当前对话，返回修改mobile属性的指定方式：
+
+mobile = models.CharField(max_length=11, unique=True, null=True, verbose_name='手机号') # 增加null=True，即允许此字段为空
+
+$ python manage.py makemigrations
+Migrations for 'user':
+  easybook/apps/user/migrations/0008_user_mobile.py
+    - Add field mobile to user
+$ python manage.py migrate
+

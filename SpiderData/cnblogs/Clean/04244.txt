@@ -1,0 +1,32 @@
+在Python中用pandas读取csv文件并对csv里面的数据进行处理的时候，有可能会遇到这样的错误：
+
+TypeError: invalid type comparison
+
+无效的类型比较
+
+这时可以去打印一下你的dataframe中的数据看看
+
+1、可能有些条目中没有数据，打印时它会显示成nan，而nan是没有办法和任何数据进行比较的，它不和任何值相等，包括他自己（因此也可以用 a ！= a 来判断a是否是nan）。
+
+所以在后面的数据处理中如果进行了比较操作则会报错：
+
+TypeError: invalid type comparison
+解决办法，在读取csv的时候加上参数
+
+keep_default_na=False
+这样没有数据的条目就会被识别为空字符’ ‘而不是nan了
+
+2、可能你的dataframe中不同列的数据类型不一样，不如有的被识别为str，有的被识别为int，虽然它们看起来都是数字，但在后面进行比较的话也同样会报错
+
+这时候可以加一个参数
+
+converters={'from':str,'to':str} # 把from列和to列都转换为str类型
+
+converters的解释为：
+
+converters : dict, default None 
+Dict of functions for converting values in certain columns. Keys can either 
+be integers or column labels
+
+类型相同后就可以一起比较啦
+

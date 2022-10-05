@@ -1,0 +1,113 @@
+
+前言
+
+有很多小伙伴会跑来交流群问我们，为什么在 AirtestIDE 可以跑通的脚本，转用 Pycharm 来执行就会出现一大堆问题，难道 Airtest 的脚本只能够在 AirtestIDE 上面跑吗？
+
+答案当然是否定的。 Airtest 实际上也是基于 python 语法的测试框架，所以在 Pycharm 上面跑 Airtest 脚本当然是可以的。
+
+但是对于 pycharm 新手来说，有可能会遇到以下问题：
+
+1.环境中未安装 Airtest 库，导致找不到模块
+
+2.未在脚本中连接设备
+
+3.Airtest 的截图文件使用相对路径时，程序找不到
+
+4.在 pycharm 运行完脚本不知道后怎么看 airtest 的报告
+
+
+1.环境中未安装Airtest库，导致找不到模块
+
+之前在官网上看过我们 “本地环境跑Airtest脚本” 这个教程的童鞋都知道，使用本地 python 环境跑 Airtest 或者 poco 脚本之前，需要先安装上这俩个库（使用 pip install airtest 和 pip install pocoui 来安装）。
+
+在 Pycharm 上面跑 Airtest 脚本也是如此，必须保证脚本运行环境下装有 Airtest 库，才可以跑 Airtest 相关的脚本，否则就会出现很多童鞋都反馈过的问题 -- 找不到 Airtest 模块：
+
+
+① 如何检查pycharm的运行环境中有没有安装Airtest库呢？
+
+我们可以打开pycharm，依次选择左上角的 文件-->设置，然后在弹出的设置框中选择 项目-->Project Interpreter ：
+
+然后可以看到 pycharm 当前使用的 python 环境以及该环境中装有的第三方库。可以看到示例图中的 python 环境是没有安装 airtest 库的，如果在该环境下跑 airtest 的脚本，就会报 no module named airtest 的错误。
+
+解决办法很简单，在 package 那一行的最右边，点击 +，输入 Airtest ，然后再点击 install package 安装即可。
+
+安装完成之后会提示安装成功：
+
+
+② 虚拟环境问题
+
+还有些童鞋反馈，他们在本地某个 python 环境上是装好了 airtst 库的，但是在 pycharm 上新建了一个基于这个本地 python 的环境，却始终找不到这个 airtest 库。
+
+这个就涉及到了 pycharm 的虚拟环境的问题。新建环境默认建的是虚拟环境，这个虚拟环境的意思基于本地某个 python 环境，复制了一个不带任何第三方包的 干净的Python虚拟环境 ，已经安装到本地 Python 环境中的所有第三方包都不会复制过来。
+
+所以这就是为什么尽管童鞋们在本地环境上安装了 airtest 库，并在 pycharm 根据这个本地 python 来新建环境的时候，并不会带上 airtest 库的原因。
+
+如果不想使用虚拟环境，而是想要用本地的 python 环境来跑脚本，我们可以设置使用现有的 python 环境，这样就可以引入完整的带有安装好的第三方库的环境了：
+
+
+2.未在脚本中连接设备
+
+在 AirtestIDE 中，我们可以在设备窗口中一键连接上我们的测试设备，然后再在脚本编辑窗口录制 Airtest 脚本即可。
+
+但是在 pycharm 编写 Airtest 脚本的时候，童鞋们往往忘记在初始化脚本的时候添加设备连接参数，导致运行 Airtest 脚本时出现各种设备未连接的报错，其中典型的报错有：
+
+下面举几个添加设备参数的例子：
+
+# 方法一：在auto_setup()接口添加设备
+auto_setup(__file__,devices=["Android://127.0.0.1:5037/SJE5T17B17"])
+
+# 方法二：用connect_device()方法连接设备
+dev = connect_device("Android://127.0.0.1:5037/SJE5T17B17")
+
+# 方法三：用init_device()方法连接设备
+init_device(platform="Android",uuid="SJE5T17B17")
+
+以上三种方法任选其一即可，另外这三个接口的详细使用方法，我们在往期推文 “用1行代码搞定自动化测试的设备连接问题” 中有详细介绍，有需要的童鞋可以认真看一下~
+
+对于使用了备选连接参数才可以正常连接上的设备，比如模拟器、MIUI11等，我们也需要在连接设备的字符串后面加上这些连接参数（以 auto_setup 接口为例）：
+
+auto_setup(__file__,devices=["Android://127.0.0.1:5037/79d03fa?cap_method=JAVACAP&&ori_method=ADBORI"])
+
+
+3.airtest的截图文件使用相对路径时，程序找不到
+
+在AirtestIDE录制截图脚本的时候，截图文件都默认保存在当前脚本的所在路径下，且截图脚本上默认填写的路径也是相对路径：
+
+touch(Template(r"tpl1590718697837.png", rgb=True, record_pos=(-0.383, 0.717), resolution=(1080, 1920)))
+
+程序可以根据这个相对路径找到截图文件的原因在于，我们利用 auto_setup(__file__) 初始化脚本的时候，传入了一个 basedir （参数值为__file__，即当前脚本所在路径），程序会默认根据这个 basedir 去寻找脚本中存在的相对路径。
+
+所以当我们在 pycharm 上新建项目，并把在 AirtestIDE 上跑通的测试脚本复制粘贴过来时，这个 basedir 就变成了 pycharm 新建项目的所在路径，程序会根据新建项目的所在目录去寻找截图脚本中的相对路径。
+
+因此我们要把脚本中用到的截图文件，也复制到新建项目的所在目录下，这样才可以让程序根据截图脚本上的相对路径正确找到我们的截图文件。
+
+如果我们没有一并把截图文件复制到新建项目的目录下，就直接运行脚本，会出现 airtest.aircv.error.FileNotExistError: File not exist: tpl1590718697837.png 的报错：
+
+当然我们也可以选择把截图脚本上面的相对路径，改成绝对路径，这样程序也能够根据绝对路径找到我们的截图文件：
+
+touch(Template(r"D:/test/tpl1590718697837.png", rgb=True, record_pos=(-0.383, 0.717), resolution=(1080, 1920)))
+
+
+4.在pycharm运行完脚本不知道怎么看airtest的报告
+
+之前我们在使用 AirtestIDE 的时候，运行完脚本以后，我们就可以点击顶部菜单栏上的查看报告按钮，帮助我们快捷地生成并打开相应的html报告。
+
+但在 pycharm 执行完脚本以后，就没有什么快捷按钮帮助我们生成报告了，所以需要生成报告的童鞋，务必记住在要在脚本中调用生成报告的接口来帮助我们生成报告，以 simple_report() 这个生成报告的接口为例，我们可以使用如下方式生成 airtest 的报告：
+
+# generate html report
+from airtest.report.report import simple_report
+simple_report(__file__, logpath=True)
+
+simple_report() 的详细使用方法可以参考我们的往期推文 “从.air脚本到纯.py脚本的距离究竟有多远” ，里面不仅详细介绍了 simple_report() 的使用方法，还给我们介绍了脚本初始化接口 auto_setup() 的详细用法。
+
+
+① 脚本报错导致最后的生成报告语句没有执行
+
+有些童鞋把生成脚本的语句放在了脚本的最后面，希望跑完测试脚本以后，能够生成一个测试报告。但是有时候程序还没有运行到生成报告的脚本时就报错了，导致程序终止运行，最终没有生成报告。
+
+其实我们是希望不论测试用例能不能执行通过，都可以给我们一个报告反馈，所以我们可以使用 try-finally 语句，无论是否发生异常都将执行最后的代码：
+
+Airtest官网：http://airtest.netease.com/
+Airtest教程官网：https://airtest.doc.io.netease.com/
+搭建企业私有云服务：https://airlab.163.com/b2b
+

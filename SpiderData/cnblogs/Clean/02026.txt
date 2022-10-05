@@ -1,0 +1,49 @@
+原地址：https://blog.csdn.net/liuqinshouss/article/details/78696032
+
+
+1 说明
+
+本篇中使用的opencv版本为3.3，python使用的版本为3.6。
+
+
+2.问题描述
+
+本人小白一枚，由于毕业论文做图像识别方面的内容，所以最近才开始学习python，老师指导我用opencv做图片去噪处理，所以最近才知道opencv是干嘛用的，opencv才安装好,想尝试一下简单的使用opencv读取、显示和存储一个图片。然而一开始就给了我一个下马威。
+
+开始代码如下，只涉及到图片的读取和显示：
+
+运行后报了这个错误：
+
+cv2.imshow('image',img)
+
+cv2.imshow('image',img)
+
+cv2.error: C:\projects\opencv-python\opencv\modules\highgui\src\window.cpp:325: error: (-215) size.width>0 && size.height>0 in function cv::imshow
+
+cv2.error: C:\projects\opencv-python\opencv\modules\highgui\src\window.cpp:325: error: (-215) size.width>0 && size.height>0 in function cv::imshow
+
+百度了一下：原因是因为文件路径错误，未读取到图片。但是我反复确认我的图片路径没有错误，所以想到会不会是中文的字符编码问题导致读取不到图片，于是我在D盘下放了一张英文命名的图片，就修改了代码的path改为‘D:/ Hydrangeas.jpg’,再次运行上述代码，结果如下：
+
+成功读取并显示，则表明我的猜想是正确的，是因为路径的中文编码导致图片读取不成功。
+
+
+3.解决办法
+
+但是可惜的是，小白我并没有解决办法，于是又问度娘，寻找python3中opencv读取中文名称的解决办法。
+最后在一个知乎的问答中找到了答案：
+ 链接如下：https://www.zhihu.com/question/67157462/answer/251754530
+
+最后在一个知乎的问答中找到了答案：
+
+链接如下：https://www.zhihu.com/question/67157462/answer/251754530
+
+我尝试了，果然能成功读取中文路径与中文名称的图片，事实证明该方法是正确的。然而这位答主的回答居然没有赞，我果断的给她点了个赞，不知为何题主竟然都没赞。
+
+然后又在另一个知乎问答下发现了另一个，包括opencv读取和存储中文名称和路径的方法：
+
+附上链接：https://www.zhihu.com/question/47184512
+
+尝试后，果然都是对的，感谢知乎，感谢两位大佬！
+
+附上我修改后的代码：
+

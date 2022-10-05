@@ -1,0 +1,44 @@
+
+编译出错libicui18n.so.58: undefined reference to `__cxa_throw_bad_array_new_length@CXXABI_1.3.8'
+
+
+环境
+
+Ubuntu 14.04 + GCC 4.8 + libstdc++6 +Anaconda3
+
+
+问题
+
+在编译时候报错，提示：
+
+conda3/lib/libicui18n.so.58: undefined reference to `__cxa_throw_bad_array_new_length@CXXABI_1.3.8'
+conda3/lib/libicui18n.so.58: undefined reference to `operator delete(void*, unsigned long)@CXXABI_1.3.9'
+
+这个是ubuntu环境
+
+搜索了相关资料，这是因为需要编译的时候链接到libstdc++6，解决方案如下:
+
+一.首先安装libstdc++6
+
+apt-get install libstdc++6
+
+然后在编译的时候加入-DCMAKE_EXE_LINKER_FLAGS='-static-libstdc++'选项：
+
+cmake .. -DCMAKE_EXE_LINKER_FLAGS=’-static-libstdc++’
+
+yum install libstdc++6
+
+/usr/lib64/python2.7/site-packages/pycurl.so: undefined symbol: CRYPTO_num_locks
+
+解决方法：
+
+使用ldconfig -p | grep curl查看libcurl.so的链接情况
+
+分别查看libcurl.so.4链接的文件
+
+删除其中高版本的，这里删的是libcurl.so.4.5.0
+
+删除之后使用命令ldconfig重新加载
+
+加载完成后使用ldconfig -p | grep curl查看libcurl.so的链接情况，保证只有一个libcurl.so.4，如图:
+

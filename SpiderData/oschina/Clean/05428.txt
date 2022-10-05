@@ -1,0 +1,84 @@
+BUG触发时的完整报错内容（本地无关路径用已经用 **** 隐去）：
+
+**************\lib\site-packages\bs4\builder\_htmlparser.py:78: UserWarning: unknown status keyword 'end ' in marked section
+  warnings.warn(msg)
+Traceback (most recent call last):
+  File "**************/test.py", line 5, in <module>
+    bs = BeautifulSoup(html, 'html.parser')
+  File "**************\lib\site-packages\bs4\__init__.py", line 281, in __init__
+    self._feed()
+  File "**************\lib\site-packages\bs4\__init__.py", line 342, in _feed
+    self.builder.feed(self.markup)
+  File "**************\lib\site-packages\bs4\builder\_htmlparser.py", line 247, in feed
+    parser.feed(markup)
+  File "D:\Program Files\Python37\lib\html\parser.py", line 111, in feed
+    self.goahead(0)
+  File "D:\Program Files\Python37\lib\html\parser.py", line 179, in goahead
+    k = self.parse_html_declaration(i)
+  File "D:\Program Files\Python37\lib\html\parser.py", line 264, in parse_html_declaration
+    return self.parse_marked_section(i)
+  File "D:\Program Files\Python37\lib\_markupbase.py", line 160, in parse_marked_section
+    if not match:
+UnboundLocalError: local variable 'match' referenced before assignment
+
+在解析HTML时，标签开始部分使用形如 <!-[if IE eq 9]> 的浏览器判断标识符，结束时结束标签<![end if]->(正确的开始和结束标签应该为<!--[if IE 9]> 和 <![endif]-->)无法正常匹配关闭即可触发。 触发BUG的示例代码如下：
+
+from bs4 import BeautifulSoup
+
+html = """
+<!-[if IE eq 9]>
+    <a href="https://www.shwww.net/">https://www.shwww.net/</a>
+<![end if]->
+"""
+
+bs = BeautifulSoup(html, 'html.parser')
+
+在 Python 3.7.0 版本中，触发BUG部分的代码存在于 \Lib\_markupbase.py 中的 146 行的 parse_marked_section 方法，该方法代码如下： https://github.com/python/cpython/blob/bb9ddee3d4e293f0717f8c167afdf5749ebf843d/Lib/_markupbase.py#L160
+
+def parse_marked_section(self, i, report=1):
+        rawdata= self.rawdata
+        assert rawdata[i:i+3] == '<![', "unexpected call to parse_marked_section()"
+        sectName, j = self._scan_name( i+3, i )
+        if j < 0:
+            return j
+        if sectName in {"temp", "cdata", "ignore", "include", "rcdata"}:
+            # look for standard ]]> ending
+            match= _markedsectionclose.search(rawdata, i+3)
+        elif sectName in {"if", "else", "endif"}:
+            # look for MS Office ]> ending
+            match= _msmarkedsectionclose.search(rawdata, i+3)
+        else:
+            self.error('unknown status keyword %r in marked section' % rawdata[i+3:j])
+        if not match:
+            return -1
+        if report:
+            j = match.start(0)
+            self.unknown_decl(rawdata[i+3: j])
+        return match.end(0)
+
+由于错误的HTML代码未正确关闭，使得流程判断既没有进入 if sectName in {"temp", "cdata", "ignore", "include", "rcdata"}: 和 elif sectName in {"if", "else", "endif"}: ，而是报出一个错误 UserWarning: unknown status keyword 'end ' in marked section warnings.warn(msg) 后执行到 if not match ，而此时 match 未申明，故而触发错误。
+
+此BUG存在于多个Python版本中，修复方法，在 if sectName in {"temp", "cdata", "ignore", "include", "rcdata"}: 之前预定义一个match变量即可： https://github.com/python/cpython/blob/bb9ddee3d4e293f0717f8c167afdf5749ebf843d/Lib/_markupbase.py#L152
+
+def parse_marked_section(self, i, report=1):
+        rawdata= self.rawdata
+        assert rawdata[i:i+3] == '<![', "unexpected call to parse_marked_section()"
+        sectName, j = self._scan_name( i+3, i )
+        if j < 0:
+            return j
+        match = None
+        if sectName in {"temp", "cdata", "ignore", "include", "rcdata"}:
+            # look for standard ]]> ending
+            match= _markedsectionclose.search(rawdata, i+3)
+        elif sectName in {"if", "else", "endif"}:
+            # look for MS Office ]> ending
+            match= _msmarkedsectionclose.search(rawdata, i+3)
+        else:
+            self.error('unknown status keyword %r in marked section' % rawdata[i+3:j])
+        if not match:
+            return -1
+        if report:
+            j = match.start(0)
+            self.unknown_decl(rawdata[i+3: j])
+        return match.end(0)
+

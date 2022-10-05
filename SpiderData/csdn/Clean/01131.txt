@@ -1,0 +1,26 @@
+使用Python读取文件时：
+
+fh = open('mbox.txt')
+
+如果显示报错：
+ FileNotFoundError: [Errno 2] No such file or directory: 'mbox.txt'
+ 可能和编辑器的工作区有关。
+ 例如我使用的编辑器是VSCode，会以打开的整个文件夹Python为工作区，文件的路径默认相对工作区，而不是py文件所在的文件夹。
+ 例如：报错时文件的分布为：
+
+Python
+└── Using Databases with Python
+     ├── Week-1
+     ├── Week-2
+     │  └── 2.1.py
+     │  └── mbox.txt
+     ├── Week-3
+     ├── Week-4
+     └── Week-5
+
+这时若要打开文件，应当填写文件相对于工作区的路径：
+
+fh = open('Using Databases with Python/Week-2/mbox.txt')
+
+便不会再报错。
+

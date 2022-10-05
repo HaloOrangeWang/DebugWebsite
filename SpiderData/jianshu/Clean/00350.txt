@@ -1,0 +1,62 @@
+import 'ant-design-vue/dist/antd.less';
+
+main.js 引入以上文件出现问题
+
+Syntax Error:
+
+// https://github.com/ant-design/ant-motion/issues/44
+.bezierEasingMixin();
+^
+Inline JavaScript is not enabled. Is it set in your options?
+      Error in C:\Users\62711\code\gitcode\eaproject\node_modules\ant-design-vue\lib\style\color\bezierEasing.less (line 110, column 0)
+
+@ ./node_modules/ant-design-vue/dist/antd.less 4:14-188 15:3-20:5 16:22-196
+ @ ./src/main.js
+ @ multi (webpack)-dev-server/client?http://192.168.110.99:8081&sockPath=/sockjs-node (webpack)/hot/dev-server.js ./src/main.js
+
+1.在vue.config.js文件里填入
+
+css:{
+    requireModuleExtension: true,
+    loaderOptions:{
+      less:{
+          javascriptEnabled: true,
+          modifyVars: {
+            //在此处设置，也可以设置直角、边框色、字体大小等
+               'primary-color': '#68BDA8',
+        }
+      }
+    }
+  }
+
+填入以后我的版本运行出现报错
+
+error  in ./node_modules/ant-design-vue/dist/antd.less
+
+Syntax Error: ValidationError: Invalid options object. Less Loader has been initialized using an options object that does not match the API schema.        
+ - options has an unknown property 'modifyVars'. These properties are valid:
+   object { lessOptions?, additionalData?, sourceMap?, webpackImporter? }
+
+@ ./node_modules/ant-design-vue/dist/antd.less 4:14-188 15:3-20:5 16:22-196
+ @ ./src/main.js
+ @ multi (webpack)-dev-server/client?http://192.168.110.99:8080&sockPath=/sockjs-node (webpack)/hot/dev-server.js ./src/main.js
+
+这里就是版本不同写法不同了,这个解决方案是3.x版本的, 4.x版本需要再加一层lessoption,这个报错里面也有说到
+
+css:{
+    requireModuleExtension: true,
+    loaderOptions:{
+      less:{
+        lessOptions:{
+          javascriptEnabled: true,
+          modifyVars: {
+            //在此处设置，也可以设置直角、边框色、字体大小等
+               'primary-color': '#68BDA8',
+            },
+        }
+      }
+    }
+  }
+
+更正以后就运行成功
+

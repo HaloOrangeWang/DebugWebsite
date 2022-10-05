@@ -1,0 +1,43 @@
+Vue出现该错误的原因很可能是因为请求服务器获取数据是异步的，请求回来的时候已经开始渲染页面，若此时定义的数据为空也就是没有该数据的属性，则其中的属性值为undefined。
+
+比如说以下代码：
+
+var  vm = new Vue({
+   el: "#app",
+   data: {
+      reData: {}
+   },
+   methods: {
+
+}
+})
+
+<div class="detail">
+    <div class="head">{{reData.data.content}}</div>
+</div>
+
+{{reData.data}}不会报错，它是一个undefined，但{{reData.data.content}}会报错，因为这就相当于undefined.content，因此会报错。
+
+解决方式有两种，一种是在数据初始化的时候将data也进行初始化声明，若reData下有多个属性则全部声明出来，如下：
+
+var  vm = new Vue({
+   el: "#app",
+   data: {
+      reData: {
+         data: {},
+         info: {}
+      }
+   },
+   methods: {
+
+}
+})
+
+第二种是做一个v-if的判断，如下：
+
+<div class="detail" v-if="reData.data">
+    <div class="head">{{reData.data.content}}</div>
+</div>
+
+注意：这里只能用v-if而不能用v-show，因为v-show控制的是节点的display属性，节点实际还存在，同样也会报错。
+

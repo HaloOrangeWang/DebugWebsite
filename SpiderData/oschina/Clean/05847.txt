@@ -1,0 +1,16 @@
+使用ab对网站进行压力测试,开始设置并发500,可以正常使用,当设置并发为1000,则报错:
+
+apr_socket_recv: Connection reset by peer (104)
+
+改服务端apache的maxclients参数,调大最大打开文件数,都不解决问题,最后才发现是因为ab的源码对ab的并发有限制,修改源码重新编译apache:
+
+修改源码support目录下的ab.c文件，大概在1369行,修改为:
+
+return;
+} else {
+//apr_err("apr_socket_recv", status);
+bad++;
+close_connection(c);
+return;
+}
+

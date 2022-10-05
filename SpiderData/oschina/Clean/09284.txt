@@ -1,0 +1,18 @@
+出现情景：
+
+ica_classify 表中主键 ica_classify_id 为 website_commodity_information 表的外键
+
+表结构略
+
+在使用mybatis往表website_commodity_information 中插入数据的时候，外键约束报错
+
+### Error updating database.  Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot add or update a child row: a foreign key constraint fails (`cweb/website_commodity_information`, CONSTRAINT `website_commodity_information_ibfk_3` FOREIGN KEY (`ica_classify_id`) REFERENCES `ica_classify` (`ica_classify_id`) ON UPDATE CASCADE)
+
+这个问题遇到了两次，这次长点记性记录一下
+
+插入数据时website_commodity_information表中的`ica_classify_id的值
+
+必须是与ica_classify表中某一主键相对应，否则就会报错。
+
+这块因为只注意到一个表 没注意到关联表没有数据所以出现了问题
+

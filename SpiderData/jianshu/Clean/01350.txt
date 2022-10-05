@@ -1,0 +1,42 @@
+测试代码：
+
+#coding:utf-8
+import jpype
+
+class Jiami:
+    def __init__(self):
+        jvmpath=jpype.getDefaultJVMPath()
+        print(jvmpath)
+        jarpath=r'D:\python_workscape\xht_jktest\run\util\jarpath'
+        self.keypath=r'D:\python_workscape\xht_jktest\run\util\key\xhmpos_private_key_1024-ceshi.pem'
+        jpype.startJVM(jvmpath,"-ea","-Djava.class.path=%s"%jarpath,"-Djava.ext.dirs=%s"%jarpath)
+        self.Aesutil=jpype.JClass("com.ielpm.pay.util.AESUtil")
+        self.Rsautil=jpype.JClass("com.ielpm.pay.util.RSAUtil")
+
+'''加密'''
+    def data_encrypt(self,encKey,data):
+        key=self.Rsautil.decryptKey(encKey,self.keypath)
+        print(key)
+        data_encrypt=self.Aesutil.encrypt(key,data)
+        print(data_encrypt)
+        return data_encrypt
+
+'''解密'''
+    def data_decrypt(self,encKey,data):
+        key = self.Rsautil.decryptKey(encKey, self.keypath)
+        print(key)
+        data_decrypt=self.Aesutil.decrypt(key,data)
+        print(data_decrypt)
+        return data_decrypt
+
+if __name__=="__main__":
+    encKey="wsiR+TyOKWjsFgcpmlHR1DEdC3SgNRm0l8QNt2bMAT+CnYVw0ihqwN+JcQzvkI5kAe4aDQU8xRg/MGeqMKJ66a7YD8mLqf2PVJ+YGbjsfqjAvigfvRdl8byalMRh15Y/LZYsAfXA8nnEq6eY2UQG4RF5CclP6JmFIg0PZgs0SOE="
+    data='18300000001'
+    a=Jiami()
+    a.data_encrypt(encKey,data)
+    #a.data_decrypt(encKey,data)
+
+检查内容和key没有问题，但是一直报错Illegal key size or default parameters
+
+网上查了原因是jdk没有支持256位密钥加密的jar包，需要替换包。
+

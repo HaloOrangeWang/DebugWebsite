@@ -1,0 +1,67 @@
+想在Linux上安装python 的requests包，报错 找不到文件源。
+
+[tester@Linux tools]$ yum install python-requests -y
+Loaded plugins: security
+You need to be root to preform this command.
+
+[root@Linux yum.repos.d]# yum install python-requests -y
+Loaded plugins: security
+Setting up Install Process
+Repository rabbitmq_erlang is listed more than once in the configuration
+Repository rabbitmq_erlang-source is listed more than once in the configuration
+http://mirrors.cloud.aliyuncs.com/epel/6/x86_64/repodata/repomd.xml: [Errno 14] PYCURL ERROR 22 - "The requested URL returned error: 404 Not Found"
+Trying other mirror.
+To address this issue please refer to the below wiki article
+
+https://wiki.centos.org/yum-errors
+
+If above article doesn't help to resolve this issue please use https://bugs.centos.org/.
+
+Error: Cannot retrieve repository metadata (repomd.xml) for repository: epel. Please verify its path and try again
+
+[root@Linux ~]# cat /etc/yum.repos.d/CentOS-Base.repo
+[base]
+name=CentOS-6
+failovermethod=priority
+baseurl=http://mirrors.aliyun.com/centos-vault/6.5/os/x86_64/
+gpgcheck=0
+
+[roam2free@Linux tools]$ uname -a 
+Linux Linux 2.6.32-431.23.3.el6.x86_64 #1 SMP Thu Jul 31 17:20:51 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+
+[roam2free@Linux tools]$ python
+Python 2.6.6 (r266:84292, Jan 22 2014, 09:42:36) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-4)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+
+解决思路一：
+
+百度到 https://blog.csdn.net/dantadanta/article/details/106964051，给出的解决方法为：
+
+1，登陆root帐号
+
+2，cd /etc/yum.repos.d
+
+3，mv CentOS-Base.repo CentOS-Base.repo.bak
+4，wget http://mirrors.aliyun.com/repo/Centos-7.repo
+5，mv Centos-7.repo CentOS-Base.repo
+6， yum clean all
+7， yum makecache
+8，yum update
+
+4~5步骤可以wget一步到位的
+
+如果你是6开头的centos版本，那么只要将上面的所有7改为6即可
+
+注意一般会备份一个原有的CentOS-Base.repo，我将其命名为CentOS-Base2.repo
+
+但还是同样的错，发现那个404的地址没有切换成功，所以得证我的配置文件没生效
+
+后来将CentOS-Base2.repo改名为CentOS-Base2.repo.bak后才生效不再报错
+
+解决思路二：
+
+直接在Linux环境表 使用python命令安装即可：
+
+[tester@Linux tools]$ pip install requests
+

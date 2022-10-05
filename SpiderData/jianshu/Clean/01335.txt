@@ -1,0 +1,22 @@
+json.decoder.JSONDecodeError: Expecting value: line 1 column 98 (char 97)
+
+这是由于原来的字符串不符合json格式规范造成的，可能存在以下原因：
+
+数据是否存在
+
+json中不支持单引号，必须是双引号格式
+
+python中的关键字True不可以出现在json字符串中
+
+Python字典与json数据格式的区别和联系
+
+python dict 字符串用单引号，json强制规定双引号。
+
+python dict 里可以嵌套tuple, json里只有arrayjson.dumps({1:2}) 的结果是 {“1”:2}，而python中的json模块函数：json.dumps((1,2)) 的结果是[1,2]
+
+json key name 必须是字符串, python 是hashable, {(1,2):1} 在python里是合法的,因为tuple是-  -  hashable type;{[1,2]:1} 在python里TypeError: unhashable “list”
+
+json: true false null ；python:,True False None
+
+Python中提供了json.loads()转换函数，方便json数据的调用。
+

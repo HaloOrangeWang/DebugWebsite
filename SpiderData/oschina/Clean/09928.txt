@@ -1,0 +1,494 @@
+点击蓝字
+
+关注求勾搭
+
+前言：Oracle WebLogic中间件在网站部署过程中经常会使用到。该产品系列的核心是Oracle WebLogic服务器，它是一个功能强大和可扩展的Java EE服务器。今天整理了在运维过程中经常会遇到的各种报错以及解决方法，纯技术干货，希望能够对正在学习weblogic过程中的您提供帮助。
+
+weblogic有两种部署方式，单点模式和集群模式，单点模式直接创建一个域，在控制台进行程序部署即可；而集群模式分为admin（管理）节点和Managed（被管理）节点，管理节点通过控制台对被管节点进行管理，程序部署在被管节点的集群上。不论是单点模式，还是集群模式，常见的报错基本一致。
+
+基本概念
+
+Domain ：
+
+域是作为单元进行管理的一组相关的 WebLogic Server 资源。一个域包含一个或多个 WebLogic Server 实例，这些实例可以是集群实例、非群集实例，或者是集群与非群集实例的组合。一个域可以包含多个集群。域还包含部署在域中的应用程序组件、此域中的这些应用程序组件和服务器实例所需的资源和服务。应用程序和服务器实例使用的资源和服务示例包括计算机定义、可选网络通道、连接器和启动类。
+
+Domain 中包含一个特殊的 WebLogic 服务器实例，叫做 Administration Server，这是我们配置管理Domain中所有资源的核心。通常，我们称加入Domain中的其他实例为 Managed Server，所有的Web应用、EJB、Web Services和其他资源都部署在这些服务器上。
+
+Administration Server ：
+
+管理服务器是控制整个域配置的中心操作节点，管理服务器维护着整个域 的配置并将配置分配到每个被管理服务器 Managed Server 中。我们可以通过三个渠道访问管理服务器：Admin Server console、Oracle WebLogic Scripting Tool WLST、JMX客户端（通过WebLogic提供的API来实现），最后我们还可以通过SNMP协议来监控Admin Server的状态。
+
+Managed Server ：
+
+被管理服务器是一个WebLogic Server的实例，他从Admin Server那里获取配置信息。通常在Managed Server上部署自己的服务、组件或应用。基于性能考虑，Managed Server维护着一份只读的域配置文件，当服务启动的时候，会从Admin Server上同步配置文件信息，如果配置文件发生了改变，Admin Server也会将改变推送到Managed Server上。
+
+下面我们看看常见的weblogic报错，weblogic的日志中，我们可以通过BEA开头的报错code进行问题查找。
+
+1
+
+管理节点报错BEA-000386
+
+通过nohup ./startWebLogic.sh  &命令启动管理节点后，tail -f nohup.out查看日东日志，发现日志上存在BEA-000386报错，具体日志如下：
+
+<2019-10-12 下午05时22分21秒 CST> <Notice> <WebLogicServer> <BEA-0OO365> <Server state changed to STARTING>
+
+<2019-10-12 下午05时22分21秒 CST> <Info> <WorkManager> <BEA-002900> initializing self-tuning thread poo1>
+
+<2019-10-12 下午05时22分21秒 CST> <Notice> <Log Management <BEA-170019> <The server log file /weblogic/user_projects/domains/admindoiiiain/servers/AdminServer/logs/AdminServer.log is opened. All ;erver side log events will be written to this file.>
+
+<2019-10-12 下午05时22分22秒 CST> <Critical> <WebLogicServer> <BEA-000386> <Server subsystem failed. Reason: java.lang.AssertionError: Could not obtain the localhost address. The most likely cause is an error in the network configuration of this machine.
+
+<Notice> <Log Management <BEA-170019> <The server log file java.lang.AssertionError: Could not obtain the localhost address. The most likely cause is an error in the network configuration of this machine.
+
+at weblogic.server.channels.AddressUtils$AddressMaker.getLocalHost(AddressUtils.java:38)
+
+at weblogic.server.channels.AddressUtils$AddressMaker.<clinit>(AddressUtils.java:33)
+
+at weblogic.server.channels.AddressUtils.getIPAny(AddressUtils.java:154)
+
+at weblogic.protocol.configuration.ChannelHelper.checkConsistency(ChannelHelper.java:61)
+
+at weblogic.server.channels.ChannelService.start(ChannelService.java:207)
+
+Truncated. see log file for complete stacktrace
+
+Caused By: java.net.UnknownHostException: weblogic1: weblogic1
+
+at java.net.InetAddress.getLocalHost(InetAddress.java:1360)
+
+at weblogic.server.channels.AddressUtils$AddressMaker.getLocalHost(AddressUtils.java:36)
+
+at weblogic.server.channels.AddressUtils$AddressMaker.<clinit>(AddressUtils.java:33)
+
+at weblogic.server.channels.AddressUtils.getIPAny(AddressUtils.java:154)
+
+at weblogic.protocol.configuration.ChannelHelper.checkConsistency(ChannelHelper.java:61)
+
+Truncated. see log file for complete stacktrace
+
+>
+
+<2019-10-12 下午05时22分22秒 CST> <Notice> <WebLogicServer> <BEA-000365> <Server state changed to FAILED>
+
+<2019-10-12 下午05时22分22秒 CST> <Error> <WebLogicServer> <BEA-000383> <A critical service failed. The server will shut itself down>
+
+日志上有一个描述很重要，Could not obtain the localhost address，通过查阅资料，发现是由于/etc/hosts没有配置本机服务地址导致出现此错误。
+
+原始配置：
+
+[root@weblogic1 ~]# cat /etc/hosts
+
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+增加主机名和eth0对应关系，修改如下：
+
+[root@weblogic1 ~]# cat /etc/hosts
+
+127.0.0.1   localhost
+
+192.168.101.2 weblogic1
+
+::1         localhost
+
+再次重启管理节点，正常启动
+
+2
+
+Managed节点BEA-141196报错
+
+使用命令nohup ./startManagedWebLogic.sh webserver01 http://10.199.132.12:8801 &启动被管节点，webserver01 为被管节点服务名，出现BEA-141196报错。
+
+.security.allowCryptoJDefaultPRNG=true>
+
+<Dec 8, 2018 3:55:38 PM PST> <Info> <WebLogicServer> <BEA-000377> <Starting WebLogic Server with Java HotSpot(TM) 64-Bit Server VM Version 20.45-b01 from Sun Microsystems Inc.>
+
+java.io.IOException: [DeploymentService:290066]Error occurred while downloading files from admin server for deployment request "1,544,313,339,787". Underlying error is: "null"
+
+at weblogic.deploy.service.datatransferhandlers.HttpDataTransferHandler.getDataAsStream(HttpDataTransferHandler.java:86)
+
+at weblogic.deploy.service.datatransferhandlers.DataHandlerManager$RemoteDataTransferHandler.getDataAsStream(DataHandlerManager.java:165)
+
+at weblogic.deploy.internal.targetserver.datamanagement.ConfigDataUpdate.doDownload(ConfigDataUpdate.java:75)
+
+at weblogic.deploy.internal.targetserver.datamanagement.DataUpdate.download(DataUpdate.java:56)
+
+at weblogic.deploy.internal.targetserver.datamanagement.Data.prepareDataUpdate(Data.java:97)
+
+at weblogic.management.provider.internal.RuntimeAccessDeploymentReceiverService.downloadFiles(RuntimeAccessDeploymentReceiverService.java:920)
+
+at weblogic.management.provider.internal.RuntimeAccessDeploymentReceiverService.updateFiles(RuntimeAccessDeploymentReceiverService.java:879)
+
+at weblogic.management.provider.internal.RuntimeAccessDeploymentReceiverService.handleRegistrationResponse(RuntimeAccessDeploymentReceiverService.java:728)
+
+at weblogic.management.provider.internal.RuntimeAccessDeploymentReceiverService.registerHandler(RuntimeAccessDeploymentReceiverService.java:699)
+
+at weblogic.management.provider.internal.RuntimeAccessDeploymentReceiverService.start(RuntimeAccessDeploymentReceiverService.java:169)
+
+at weblogic.t3.srvr.ServerServicesManager.startService(ServerServicesManager.java:462)
+
+at weblogic.t3.srvr.ServerServicesManager.startInStandbyState(ServerServicesManager.java:167)
+
+at weblogic.t3.srvr.T3Srvr.initializeStandby(T3Srvr.java:883)
+
+at weblogic.t3.srvr.T3Srvr.startup(T3Srvr.java:570)
+
+at weblogic.t3.srvr.T3Srvr.run(T3Srvr.java:471)
+
+at weblogic.Server.main(Server.java:71)
+
+<Dec 8, 2018 3:55:40 PM PST> <Error> <Management> <BEA-141196> <The managed server could not update the configuration files during the registration with the deployment service. The update failed due to an exception:
+
+weblogic.management.DeploymentException: Exception occured while downloading files
+
+at weblogic.deploy.internal.targetserver.datamanagement.ConfigDataUpdate.doDownload(ConfigDataUpdate.java:83)
+
+at weblogic.deploy.internal.targetserver.datamanagement.DataUpdate.download(DataUpdate.java:56)
+
+at weblogic.deploy.internal.targetserver.datamanagement.Data.prepareDataUpdate(Data.java:97)
+
+at weblogic.management.provider.internal.RuntimeAccessDeploymentReceiverService.downloadFiles(RuntimeAccessDeploymentReceiverService.java:920)
+
+解决方法：
+
+从日志Exception occured while downloading files可以看出，被管节点从管理节点同步配置文件时出现异常，参照网上资料将管理节点目录/Oracle/Middleware/user_projects/domains/admindomain/security/SerializedSystemIni.dat的文件拷贝到受控服务器security对应目录下，再次重启，被管节点正常启动。
+
+3
+
+内存溢出报错
+
+weblogic的启动内存参数如果没有设置，会使用默认的内存参数启动，我们可以通过调整启动内存参数解决此问题。编辑/Oracle/Middleware/user_projects/domains/webdomain01/bin/startWebLogic.sh文件，增加如下内存参数
+
+export USER_MEM_ARGS="-server -d64 -Xmx2048m -Xms2048m -XX:PermSize=256m -XX:+UseParallelGC -XX:ParallelGCThreads=12 -XX:+UseParallelOldGC -XX:+UseParallelOldGC -XX:ReservedCodeCacheSize=128m -XX:+HeapDumpOnOutOfMemoryError -Xloggc:./logs/$SERVER_NAME/$SERVER_NAME.gc.$$.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Djava.security.egd=file:/dev/./urandom -XX:ErrorFile=./logs/java_error$$.log"
+
+-XX:PermSize参数调大后问题解决。
+
+4
+
+BEA-149205,服务为Admin状态
+
+weblogic控制台上集群状态显示为admin状态，正常情况下应该为running
+
+<Dec 10. 2018 6:24:17 P11 PST> <Notice> <WebLogicServer> <BEA-000365> <Server state changed to STANDBY>
+
+<Dec 10. 2018 6:24:17 P11 PSi> <Notice> <WebLogicServer> <BEA-000365> <Server state changed to STARTING>
+
+<Dec 10. 2018 6:24:25 P11 PSi> <Error> <Deployer> .c8EA-149205> <Failed to initialize the application jdbc/ZBDataSource due to error weblogic.application.ModuLeException: .
+
+weblogic.application.ModuleException:
+
+at weblogic.jdbc.module.)DocNodule.prepare(J080lodule.java:327)
+
+at weblogic.application,internal,flow. ModuleListenerlnvoker. p repa reOloduleListenerlnvoker. java: 199)
+
+at weblogic.application.internal.flow.DeployinentCallbackFlow$1.next(DeployuientCallbackFl.ow. java :517)
+
+at weblogic.application.utils.StateMachineDriver.nextState(StateMachineOriver.java:52)
+
+Truncated. see log file for complete stacktrace
+
+Caused By: weblogic.common.ResourceException: weblogic.comion.ResourceException: Could not create pool connection. The DBMS driver exception was: Listener refused the connection with the foll
+
+owing error:
+
+ORA-12505. TNS:listener does not currently know of SID given in connect descriptor
+
+at weblogic.jdbc.common.internal.ConnectionEnvFactory.createResource(ConnectionEnvFactory.java:285)
+
+at weblogic.co.mon. resourcepool.ResourcePoollmpl.makeResources(ResourcePoollmpl.java:1323)
+
+at weblogic.coion. resourcepool.ResourcePoolImp1..iiakeesources(ResourcePoolImpl.java:1240)
+
+at weblogic . coion. resourcepool .ResourcePoollmpl . start(ResourcePoolliipl .java :251)
+
+at weblogic.jdbc.common.internal.ConnectionPool.doStart(ConnectionPool.java:1329)
+
+Truncated. see log file for complete stacktrace
+
+<Dec 10. 2018 6:24:25 P11 PSI> <Emergency> <DepLoyer> ‘c8EA.149259> <Server sbfwebserverer in cluster •cluster_web is being brought up in aiinistration state due to failed deployments.>
+
+<Dec 10. 2018 6:24:26 PM PSi> <Notice> <Log Management> <8EA-170027> <The Server has established connection with the Domain level Diagnostic Service successfully.>
+
+<Dec 10. 2018 6:24:26 P11 PST> <Notice> <Cluster> <BEA-000197> <Listening for announcements from cluster using unicast cluster messaging>
+
+<Dec 10. 2018 6:24:26 P11 PST> <Notice> <Cluster> <BEA-000133> <Waiting to synchronize with other running members of cluster_web.>
+
+<Dec 10. 2918 6:24:56 PM PST> <Notice> <Server> <BEA-902613> <Channel Default’ is now listening on 192.168.191.2:8811 for protocols iiop. t3. CLLJSTER-BI)ADCAST. idap. srnp. http.>
+
+<Dec 10. 2018 6:24:56 P11 PSi> <Notice> <WebLogicServer> <8EA-000330> <Started WebLogic Managed Server webserver0l for domain admindamain running in Production Mode>
+
+<Dec 10. 2018 6:24:57 P11 PSi> <Notice> <WebLogicServer> <8EA-000365> <Server state changed to ADMIN>
+
+<Dec 10. 2018 6:24:57 P11 PST> <Notice> <WebLogicServer> <BEA-000360> <Server started in ADMIN mode>
+
+weblogic控制台上显示服务器为admin，从日志上也可以看到initialize the application jdbc/ZBDataSource数据源初始化失败，控制台配置的数据源无法连接导致，数据库问题解决后，域正常启动。
+
+5
+
+BEA-000362报错
+
+控制台创建持久化存储后，启动被管节点出现如下报错。
+
+<Dec 11. 2018 1:19:38 AM PST> <Notice> <Log Management> <8EA-170019> <The server log file /weblogic/useryrojects/domains/webdomain02/servers/webservero2/Logs/webserver02.log is open
+
+ed All, server side log events will be written to this file.>
+
+<Dec 11. 2018 1:19:39 AM PST> <Emergency> <Store> <BEA-280060> <The persistent store LSDIAGNOSTICS encountered a fatal, error, and it must be shut down: weblogØ ., C
+
+Exception: [Store:2801051The persistent file store "WLS_DIAGNOSTICS" cannot open file WLS_DIAGNOSTICS0OO0O0.DAT. - weblogic . store. PersistentSto reFatalException: [Sto re: 280105] The persistent file store ..S_DIAGNOSTICS cannot open file — at weblogic .store.io .file.FileStorelO.open(FileStorelO.java :128)
+
+at weblogic.store.internal .PersistentStorelmpl.. recoverStoreConnections(PersistentStorelmpL.java :435)
+
+at weblogic.store.interrial.PersistentStorelmpl.open(PersistentStorelmpl.java:423)
+
+at weblogic.store.xa.PersistentStoreManagerXA.createfileStore(PersistentStorelianagerXA.java:117)
+
+at webtogic .diagnostics .archive.DiagnosticSto reRepository.getStore(DiagnosticStoreRepository. java :91)
+
+Truncated. see log file for complete stacktrace
+
+Caused By: java.io.IoException: Error from fcntl() for file locking Resource temporarily unavailable. errno=11
+
+at weblogic.store.io.file.direct.DirectloNative.openconsiderLock(Native Method)
+
+at weblogic.store.io.file.direct.DirectFileChannel.<init>(DirectFilechannel.java:54)
+
+at weblogic.store.io.file.direct.DirectlOl4anager.open(DirectlOl4anager.java:179)
+
+at weblogic.store.io.fiLe.StoreFite.openlnternal(StoreFite.java:138)
+
+at weblogic.store.io.fiLe.StoreFile.open(StoreFile.java:161)
+
+Truncated. see log file for complete stacktrace
+
+No matching store mbean found for =WLS_DIA1OSTICS. must be a default store.
+
+<Dec 11. 2018 1:19:39 NI PST> <Critical> <WebLogicServer> <SEA-000362> <Server failed. Reason
+
+There are 1 nested errors:
+
+weblogic . diagnostics .lifecycle.DiagnosticCo.ponentLifecycteException: weblogic . sto re.PersistentSto refatatException: [Store: 2801051The persistent file store LS_DIAGNOSTIcS cannot open file b&S_DIAGNOSTICS000000.DAT.
+
+at webtogic .diagnostics.lifecycle.ArchiveLifecyclelmpl . initialize(ArchiveLifecyclelmpl java :97)
+
+at weblogic.diagnostics.lifecycLe.DiagnosticFoundationService.start(DiagnosticFoundationService.java :108)
+
+at weblogic .t3.srvr .SubsysteiiRequest. run(SubsystemRequest .java :64)
+
+at weblogic.work.Executemread.execute(ExecuteThread.java:263)
+
+at weblogic.work.ExecuteThread.run(ExecuteThread.java:221)
+
+Caused by: weblogic.store.PersistentStoreFataLException: [Store:2801051The persistent file store t.S_DIAGNOSTICS cannot open file WLS_DIAGNOSTICS0OOOOO.DAT.
+
+解决办法：找到WLS_DIAGNOSTICS000000.DAT这个文件，删除后再启动weblogic。
+
+[weblogic@weblogic2 weblogic]$ find ./ -name WLS_DIAGNOSTICSOOOOOO.DAT
+
+...
+
+[weblogic@weblogic2 weblogic]$ rm ./user_projects/domains/webdomain01/servers/webserver02/data/store/diagnostics/WLS_DIAGNOSTICS000000.DAT
+
+此问题的根源是被管节点的重启脚本中没有删除缓存导致。
+
+/oracle/Middleware/user_projects/domains/webdomain01/servers/webserver01目录下cache，data，stage和tmp目录需要删除。
+
+6
+
+BEA-101162和BEA-149231
+
+这个报错经常出现在程序war包部署和升级重启时发生报错，具体报错如下：
+
+<Jun 8, 2020 8:42:35 PM CST> <Warning> <HTTP> <BEA-101162> <User defined listener com.oracle.weblogic.wsee.wrapper.org.springframework.web.context.ContextLoaderListener failed: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'testConnectionFactory' defined in URL [zip:/weblogic/user_projects/domains/webdomain01/servers/webserver01/tmp/_WL_user/test-service-web-ear/nzlkck/war/WEB-INF/lib/test-service-size-web-1.0.014-SNAPSHOT.jar!/spring/jms/lhjydzfk-jms-context.xml]: Invocation of init method failed; nested exception is javax.naming.NameNotFoundException: While trying to lookup 'jms.testConnectionFactory' didn't find subcontext 'jms'. Resolved ''; remaining name 'jms/testConnectionFactory'.
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'testConnectionFactory' defined in URL [zip:/weblogic/user_projects/domains/webdomain01/servers/webserver01/tmp/_WL_user/test-service-web-ear/nzlkck/war/WEB-INF/lib/test-service-size-web-1.0.014-SNAPSHOT.jar!/spring/jms/lhjydzfk-jms-context.xml]: Invocation of init method failed; nested exception is javax.naming.NameNotFoundException: While trying to lookup 'jms.testConnectionFactory' didn't find subcontext 'jms'. Resolved ''; remaining name 'jms/testConnectionFactory'
+
+at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1628)
+
+at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:555)
+
+at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:483)
+
+at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:306)
+
+at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:230)
+
+Truncated. see log file for complete stacktrace
+
+Caused By: javax.naming.NameNotFoundException: While trying to lookup 'jms.testConnectionFactory' didn't find subcontext 'jms'. Resolved ''; remaining name 'jms/testConnectionFactory'
+
+at weblogic.jndi.internal.BasicNamingNode.newNameNotFoundException(BasicNamingNode.java:1148)
+
+at weblogic.jndi.internal.BasicNamingNode.lookupHere(BasicNamingNode.java:253)
+
+at weblogic.jndi.internal.ServerNamingNode.lookupHere(ServerNamingNode.java:182)
+
+at weblogic.jndi.internal.BasicNamingNode.lookup(BasicNamingNode.java:206)
+
+at weblogic.jndi.internal.WLEventContextImpl.lookup(WLEventContextImpl.java:254)
+
+Truncated. see log file for complete stacktrace
+
+>
+
+<Jun 8, 2020 8:42:35 PM CST> <Error> <Deployer> <BEA-149231> <Unable to set the activation state to true for the application 'test-service-web-ear'.
+
+weblogic.application.ModuleException:
+
+at weblogic.servlet.internal.WebAppModule.startContexts(WebAppModule.java:1531)
+
+at weblogic.servlet.internal.WebAppModule.start(WebAppModule.java:488)
+
+at weblogic.application.internal.flow.ModuleStateDriver$3.next(ModuleStateDriver.java:425)
+
+at weblogic.application.utils.StateMachineDriver.nextState(StateMachineDriver.java:52)
+
+at weblogic.application.internal.flow.ModuleStateDriver.start(ModuleStateDriver.java:119)
+
+Truncated. see log file for complete stacktrace
+
+Caused By: javax.naming.NameNotFoundException: While trying to lookup 'jms.testConnectionFactory' didn't find subcontext 'jms'. Resolved ''; remaining name 'jms/testConnectionFactory'
+
+出现上面报错，从日志上看是ConnectionFactory不能解析，导致程序包无法active.
+
+主要分下面三种情况
+
+weblogic控制台创建的连接工厂名字错误，程序包调用时无法识别；
+
+weblogic控制台创建的连接工厂名字错误，程序包调用时无法识别；
+
+连接工厂创建后，没有指定目标服务器，或者少指定目标节点；
+
+连接工厂创建后，没有指定目标服务器，或者少指定目标节点；
+
+重启节点没有清理缓存。
+
+重启节点没有清理缓存。
+
+7
+
+BEA-090402和BEA-000386
+
+密码问题也是weblogic启动过程中出现概率较多的问题，管理节点重启出现如下报错
+
+nohup ./startWebLogic.sh &
+
+<Apr 16, 2019 2:50:46 PM CST> <Critical> <Security> <BEA-090402> <Authentication denied: Boot identity not valid; The user name and/or password from the boot identity file (boot.properties) is not valid. The boot identity may have been changed since the boot identity file was created. Please edit and update the boot identity file with the proper values of username and password. The first time the updated boot identity file is used to start the server, these new values are encrypted.>
+
+<Apr 16, 2019 2:50:46 PM CST> <Critical> <WebLogicServer> <BEA-000386> <Server subsystem failed. Reason: weblogic.security.SecurityInitializationException: Authentication denied: Boot identity not valid; The user name and/or password from the boot identity file (boot.properties) is not valid. The boot identity may have been changed since the boot identity file was created. Please edit and update the boot identity file with the proper values of username and password. The first time the updated boot identity file is used to start the server, these new values are encrypted.
+
+weblogic.security.SecurityInitializationException: Authentication denied: Boot identity not valid; The user name and/or password from the boot identity file (boot.properties) is not valid. The boot identity may have been changed since the boot identity file was created. Please edit and update the boot identity file with the proper values of username and password. The first time the updated boot identity file is used to start the server, these new values are encrypted.
+
+at weblogic.security.service.CommonSecurityServiceManagerDelegateImpl.doBootAuthorization(CommonSecurityServiceManagerDelegateImpl.java:960)
+
+at weblogic.security.service.CommonSecurityServiceManagerDelegateImpl.initialize(CommonSecurityServiceManagerDelegateImpl.java:1054)
+
+at weblogic.security.service.SecurityServiceManager.initialize(SecurityServiceManager.java:888)
+
+at weblogic.security.SecurityService.start(SecurityService.java:141)
+
+at weblogic.t3.srvr.SubsystemRequest.run(SubsystemRequest.java:64)
+
+Truncated. see log file for complete stacktrace
+
+Caused By: javax.security.auth.login.FailedLoginException: [Security:090304]Authentication Failed: User weblogic javax.security.auth.login.FailedLoginException: [Security:090302]Authentication Failed: User weblogic denied
+
+at weblogic.security.providers.authentication.LDAPAtnLoginModuleImpl.login(LDAPAtnLoginModuleImpl.java:261)
+
+at com.bea.common.security.internal.service.LoginModuleWrapper$1.run(LoginModuleWrapper.java:110)
+
+at java.security.AccessController.doPrivileged(Native Method)
+
+at com.bea.common.security.internal.service.LoginModuleWrapper.login(LoginModuleWrapper.java:106)
+
+at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+
+Truncated. see log file for complete stacktrace
+
+>
+
+<Apr 16, 2019 2:50:46 PM CST> <Notice> <WebLogicServer> <BEA-000365> <Server state changed to FAILED>
+
+<Apr 16, 2019 2:50:46 PM CST> <Error> <WebLogicServer> <BEA-000383> <A critical service failed. The server will shut itself down>
+
+首先可能是密码文件发生变动，按照常规方法解决，修改/oracle/Middleware/user_projects/domains/admindomain/servers/AdminServer/security目录下boot.properties文件（修改前记得请备份），重启验证。
+
+如果重启后boot.properties文件中密码还是明文，则证明密码文件DefaultAuthenticatorInit.ldift无法对boot文件加密，采用重置密码方式解决，步骤如下。
+
+备份文件
+
+备份文件
+
+cd /oracle/Middleware/user_projects/domains/admindomain
+
+mv DefaultAuthenticatorInit.ldift DefaultAuthenticatorInit.ldift-bak
+
+重新生成DefaultAuthenticatorInit.ldift文件
+
+重新生成DefaultAuthenticatorInit.ldift文件
+
+java -cp /oracle/Middleware/wlserver_10.3/server/lib/weblogic.jar weblogic.security.utils.AdminAccount weblogic ceshi2015 .（注：空格后加逗号）
+
+[weblogic@weblogic1 security]$ java -cp /oracle/Middleware//wlserver_10.3/server/lib/weblogic.jar weblogic.security.utils.AdminAccount weblogic ceshi2015 .
+
+[weblogic@weblgoic1 security]$ ll
+
+total 40
+
+-rw-rw-r-- 1 weblogic weblogic  3301 Sep 12  2019 DefaultAuthenticatorInit.ldift
+
+-rw-rw-r-- 1 weblogic weblogic  3301 Aug 27  2019 DefaultAuthenticatorInit.ldift.bak
+
+-rw-r----- 1 weblogic weblogic  2398 Mar  4  2019 DefaultRoleMapperInit.ldift
+
+-rw-r----- 1 weblogic weblogic    64 Mar  4  2019 SerializedSystemIni.dat
+
+-rw-r----- 1 weblogic weblogic 22654 Mar  4  2019 XACMLRoleMapperInit.ldift
+
+再次删除缓存重启成功，被管节点可以通过拷贝管理节点DefaultAuthenticatorInit.ldift文件到被管进行处理。
+
+总结：上述报错类型归纳了weblogic运维过程总常见的问题，实际工作过程中，可以通过在重启脚本中设置删除缓存命令，避免出现不必要的运维问题。一般报错可以通过BEA-xxx进行搜索。
+
+往期精选
+
+July  2020
+
+Dockerfile构建Tomcat镜像
+
+Dockerfile构建Tomcat镜像
+
+Docker修改容器文件的几种方法
+
+Docker修改容器文件的几种方法
+
+如何在Apache中禁用SSLv3?
+
+如何在Apache中禁用SSLv3?
+
+Oracle设置定时清理归档
+
+Oracle设置定时清理归档
+
+Linux系统内核升级
+
+Linux系统内核升级
+
+Linux系统镜像下载大全
+
+Linux系统镜像下载大全
+
+文字：原创
+
+扫描二维码
+
+关注我们
+
+微信公众号 : 运维之美
+
+你“在看”我吗？
+
+本文分享自微信公众号 - 运维之美（ywzm8976）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

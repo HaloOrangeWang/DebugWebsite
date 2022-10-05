@@ -1,0 +1,15 @@
+
+项目场景：
+
+解决报错：cv2.error: OpenCV(4.5.5) D:\a\opencv-python\opencv-python\opencv\modules\core\src\arithm.cpp:214: error: (-209:Sizes of input arguments do not match)
+ 我在写一个处理图片文件名的代码时遇到报错说输入输出不匹配，但是我debug可以通过错误断点，因此可以知道是某一张图片出了问题，如果用debug可能就要几百上千次才能找出错误。
+
+源代码是fr_img = cv2.bitwise_and(r, mask_item)报错，加入try函数后，记得在print（e）的地方打断点（其他地方不要打）。这个时候再调式会出现下面结果：
+ 
+ 可以看见我想要的尺寸是（384，512），但是这时候b不是这个尺寸。并且e出现error了，点开发现在144.jpg出错，打开文件夹发现自己多了一张图片，删掉后程序正常。最后把try去掉还原代码即可。
+
+try:
+    fr_img = cv2.bitwise_and(r, mask_item)
+except BaseException as e:
+    print(e)
+

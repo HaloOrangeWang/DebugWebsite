@@ -1,0 +1,38 @@
+由于Python的datetime和time中的_strptime方法不支持多线程，运行时会报错：AttributeError: _strptime
+
+code:
+
+会报错误：AttributeError: 'module' object has no attribute '_strptime'
+
+解决方案：
+
+1.在调用_strptime的地方加锁(推荐)
+
+方式1.
+
+方式2：
+
+LOCK = thread.allocate_lock()
+
+LOCK.acquire()
+
+datetime.datetime.strptime("20100101","%Y%m%d")
+
+LOCK.release()
+
+2、在线程启动前调用一次_strptime（原因是报了这个错），不是很推荐
+
+方式1、import _strptime
+
+方式2、在调用线程前执行一次： datetime.datetime.strptime("20100101","%Y%m%d")。(似乎对我们不合适)
+
+参考资料：
+
+http://www.cnblogs.com/dkblog/archive/2012/12/31/2840536.html
+
+https://bugs.python.org/issue7980
+
+https://stackoverflow.com/questions/32245560/module-object-has-no-attribute-strptime-with-several-threads-python
+
+https://stackoverflow.com/questions/2427240/thread-safe-equivalent-to-pythons-time-strptime
+

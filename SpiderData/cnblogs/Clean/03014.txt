@@ -1,0 +1,58 @@
+安装顺序
+
+　　scrapy 需要的依赖很多。首先需要   twisted  如果没有这个 直接安装  scrapy  会报错 要求你安装一个 vis 14 还是什么的环境，那个东西如果真的要装要 6g
+
+　　但是用 twisted 可以绕过，因此需要先把 twisted 装上 ，但是 twisted  的安装不支持 pip 我们只能用下载下来本地安装
+
+http://www.lfd.uci.edu/~gohlke/pythonlibs/#twisted
+
+　　twisted  的安装需要装 wheel
+
+pip3 install wheel
+
+　　要想本地安装 twisted 必须要装 pywin32 的支持才可以
+
+pip3 install pywin32
+
+　　然后才可以安装 twisted 在这里会有一些其他的报错
+
+pip install Twisted‑18.4.0‑cp36‑cp36m‑win_amd64.whl
+
+　　最后安装 scrapy
+
+pip3 install scrapy
+
+报错汇总
+
+直接安装 scrapy 报错
+
+　　如果会有这样的报错要求你装  Visual C++ 14.0 因此我们需要用到 twisted
+
+error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools": http://landinghub.visualstudio.com/visual-cpp-build-tools
+
+安装 twisted 报错
+
+　　这个报错意味着你下错包了。或者你的环境不支持你的下载包类型
+
+　　
+
+　　如果是你的python 是 win32 要用这个方式查看一下支持的类型
+
+>>> import pip
+>>> print(pip.pep425tags.get_supported())
+
+　　如果是有报错说明你的不是 win32 而是 amd64
+
+　　
+
+　　 amd64 的查看方式是
+
+>>> import pip._internal
+>>> print(pip._internal.pep425tags.get_supported())
+
+　　由此可见确实没有 cp36，但是是支持 cp37，因此重新下载 cp37 即可
+
+　　这样就安装成功了
+
+　　然后再安装 scrapy 就基本上没有问题了
+

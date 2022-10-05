@@ -1,0 +1,66 @@
+
+问题描述
+
+aiohttp 的 getting started 入门案例是这样写的
+
+运行结果为
+
+看上去没问题，但是在 Python3.7 后对 asyncio 进行了改进，可以直接调用 asyncio.run() 执行协程程序，而不需管底层 API 如事件循环 loop 的操作，所以上述代码的
+
+可以直接替换为
+
+Linux 和 Mac 上这样运行是没问题的，但是在 Windows 上运行会报如下错误
+
+
+原因分析
+
+像 aiohttp 这类第三方协程库都是依赖于标准库 asyncio 的，而 asyncio 对 Windows 的支持本来就不好。Python3.8 后默认 Windows 系统上的事件循环采用 ProactorEventLoop （仅用于 Windows ）这篇文档描述了其在 Windows 下的缺陷：https://docs.python.org/zh-cn/3/library/asyncio-platforms.html#windows 👈
+
+引发异常的函数是 _ProactorBasePipeTransport.__del__ ，所以 aiohttp 铁定使用了 _ProactorBasePipeTransport，并且在程序退出释放内存时自动调用了其__del__ 方法
+
+就是上述一串连环反应最终抛出了 RuntimeError: Event loop is closed
+
+一般的协程程序是不会使用 _ProactorBasePipeTransport 的，所以下面的代码还是可以正常的运行
+
+我特意写了个装饰器来验证这一点：
+
+正常执行，没有使用 _ProactorBasePipeTransport
+
+先打印 call _ProactorBasePipeTransport.__del__ 然后报错，说明使用了 _ProactorBasePipeTransport
+
+
+解决方案
+
+如果执意要在 Windows 下继续开发，有这几个方案可以选择
+
+
+1. 不要使用 run 函数
+
+既然 _ProactorBasePipeTransport 会在程序结束后自动关闭事件循环，那就不要用 run 函数了，用官网的例子，乖乖使用 loop 吧
+
+
+2. 替换事件循环
+
+在调用 run 函数前，替换默认的 ProactorEventLoop 为 SelectorEventLoop
+
+但是 SelectorEventLoop 是有一些缺点的，比如不支持子进程等
+
+
+3. 忽略异常
+
+这是 Github 上一个外国大佬的方法，在不改变源码的前提下，使用装饰器忽略掉异常
+
+更详细的信息可以在这个 issue 上找到：https://github.com/aio-libs/aiohttp/issues/4324 👈
+
+相关链接：
+
+https://github.com/aio-libs/aiohttp/issues/4324
+
+https://stackoverflow.com/questions/45600579/asyncio-event-loop-is-closed-when-getting-loop
+
+https://docs.python.org/zh-cn/3/library/asyncio-platforms.html#windows
+
+https://bugs.python.org/issue39232
+
+喜欢我的文章的话，欢迎关注👇点赞👇评论👇收藏👇	谢谢支持！！！
+

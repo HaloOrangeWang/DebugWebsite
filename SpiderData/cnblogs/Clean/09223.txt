@@ -1,0 +1,20 @@
+问题场景:  当执行 python manage.py migrate 操作时, 报错 (1051, "Unknown table 'xxx'"),  这时数据库中是没有 'xxx' 这个表的
+
+解决:
+
+1. 先将 models.py 中你更新失败的表给注释掉
+
+2. 注释掉后执行
+
+python manage.py makemigrations
+
+python manage.py migrate --fake
+
+3. 上面执行成功后再将 models.py 中的表注释取消
+
+4. 取消注释后执行
+
+python manage.py makemigrations
+
+python manage.py migrate
+

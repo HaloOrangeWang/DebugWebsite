@@ -1,0 +1,20 @@
+Python 报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 0: illegal multibyte sequence
+
+在运行序列化（pickle）相关功能时报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 0: illegal multibyte sequence
+
+上代码：
+
+>>> fp = open("a.txt","r+")
+>>> import pickle
+>>> pickle.load(fp)
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 0: illegal multibyte sequence
+
+原因分析：序列化操作时，文件模式不正确，改为“rb+”，即可
+
+解决：
+
+改成如下方法即可
+

@@ -1,0 +1,53 @@
+django static文件夹下面的内容方法不了 出现404 500错误
+
+需要查看自己的settings文件确保有一下内容
+
+import os
+PROJECT_ROOT = os.path.dirname(__file__)
+
+DEBUG = True
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+
+os.path.join(PROJECT_ROOT, 'static'),
+)
+
+STATICFILES_FINDERS = (
+  'django.contrib.staticfiles.finders.FileSystemFinder',
+  'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
+
+如果项目是使用eclipse启动的django工程 settings文件中的DEBUG 值要等于True 静态文件才能访问？这一点不太明白
+
+如果需要部署到web站点上需要在apache中配置静态文件映射
+
+<VirtualHost *:80>
+   ServerName www.mydjangosite.com
+   ServerAlias mydjangosite.com
+   ServerAdmin fake@mydjangosite.com
+
+DocumentRoot /path/to/mydjangosite
+   <Directory /path/to/mydjangosite>
+       Options FollowSymLinks
+       AllowOverride None
+       Order allow,deny
+       allow from all
+   </Directory>
+
+Alias /static/ /path/to/mydjangosite/static/
+   <Directory /path/to/mydjangosite/static>
+       Order allow,deny
+       allow from all
+   </Directory>
+
+# The following installs the Django WSGI app
+   WSGIDaemonProcess www.mydjangosite.com processes=2 threads=15 display-name=%{GROUP}
+   WSGIProcessGroup www.mydjangosite.com
+   WSGIScriptAlias / /path/to/mydjangosite/wsgi.py
+
+</VirtualHost>
+
+感谢阅读，希望能帮助到大家，谢谢大家对本站的支持！
+

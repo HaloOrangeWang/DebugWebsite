@@ -1,0 +1,39 @@
+
+问题描述
+
+使用 azure-spring-boot-starter-storage 来上传文件到 Storage Blob中，并把应用部署到Azure 中国区的Spring Cloud服务后，调用上传文件的接口报错:  java.net.UnknownHostException: xxxxxxxx.blob.core.windows.net: Name or service not known
+
+使用的依赖为：
+
+<dependency>
+    <groupId>com.microsoft.azure</groupId>
+    <artifactId>spring-starter-azure-storage</artifactId>
+    <version>1.2.8</version>
+</dependency>
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.3.5.RELEASE</version>
+    <relativePath/>
+</parent>
+
+
+问题解决
+
+从错误来分析，这是使用到了SDK中默认Global Azure Storage的Endpoint导致，在中国区，正确的Blob Endpoint为：xxxxxxxx.blob.core.chinacloudapi.cn
+
+根据查看官方文档，对 azure storage的spring boot引用的storage 依赖名称为 com.azure.spring:azure-spring-boot-starter-storage，而当前错误的应用中引用的是 com.microsoft.azure: spring-starter-azure-storage
+
+根据文档建议修改后，上传文件问题“Name not known”得以解决。
+
+
+参考资料
+
+Spring Boot Starter for Azure Storage: https://docs.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-boot-starter-java-app-with-azure-storage
+
+当在复杂的环境中面临问题，格物之道需：浊而静之徐清，安以动之徐生。 云中，恰是如此!
+
+分类: 【Azure Spring Cloud】
+
+标签: Azure Developer, Azure Spring Cloud, blob.core.windows.net: Name or service not known
+

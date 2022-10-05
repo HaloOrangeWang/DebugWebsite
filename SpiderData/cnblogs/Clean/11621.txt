@@ -1,0 +1,394 @@
+
+一.文件操作(针对另一个模块的操作)
+
+我们对文件的操作，一般情况下，分为三种情况
+
+打开open()
+
+操作(读read()，写write())
+
+关闭close()
+
+
+我们对文件的操作，一般情况下，分为三种情况
+
+打开open()
+
+
+打开open()
+
+操作(读read()，写write())
+
+
+操作(读read()，写write())
+
+关闭close()
+
+
+关闭close()
+
+现在有一个文件inde.txt
+
+hello world
+
+r:只读模式
+
+f=open("index.txt","r")
+print(f.read())
+f.close()
+
+输出结果：
+
+hello world
+
+
+r:只读模式
+
+f=open("index.txt","r")
+print(f.read())
+f.close()
+
+输出结果：
+
+hello world
+
+w:只写模式【不可读，不存在就创建，存在就清空内容】
+
+f=open("index.txt","w")
+f.write("hello python")
+f.close()
+
+文件inde.txt内容更改为：
+
+hello python
+
+
+w:只写模式【不可读，不存在就创建，存在就清空内容】
+
+f=open("index.txt","w")
+f.write("hello python")
+f.close()
+
+文件inde.txt内容更改为：
+
+hello python
+
+x:只写模式【不可读，不存在就创建，存在就报错】
+
+f=open("index.txt","x")
+f.write(",hello python")
+f.close()
+
+运行就会报错：（因为这个文件是存在的）
+
+Traceback (most recent call last):
+  File "F:\python\code\testshare\练习\share\share.py", line 4, in <module>
+    f=open("index.txt","x")
+FileExistsError: [Errno 17] File exists: 'index.txt'
+
+
+x:只写模式【不可读，不存在就创建，存在就报错】
+
+f=open("index.txt","x")
+f.write(",hello python")
+f.close()
+
+运行就会报错：（因为这个文件是存在的）
+
+a:增加模式【可读，不存在就创建，存在只增加内容】
+
+f=open("index.txt","a")
+f.write(",hello python")
+f.close()
+
+文件inde.txt内容更改为：
+
+hello world,hello python
+
+
+a:增加模式【可读，不存在就创建，存在只增加内容】
+
+f=open("index.txt","a")
+f.write(",hello python")
+f.close()
+
+文件inde.txt内容更改为：
+
+hello world,hello python
+
+"+"表示可以同时读写某个文件（index.txt文件内容为“hello world”）
+
+r+：读写
+
+f=open("index.txt","r+")
+print(f.read())
+f.write(",hello python")
+f.close()
+
+输出结果为：
+
+hello world
+
+文件内容更改为：
+
+hello world,hello python
+
+
+"+"表示可以同时读写某个文件（index.txt文件内容为“hello world”）
+
+r+：读写
+
+f=open("index.txt","r+")
+print(f.read())
+f.write(",hello python")
+f.close()
+
+输出结果为：
+
+hello world
+
+文件内容更改为：
+
+hello world,hello python
+
+
+r+：读写
+
+输出结果为：
+
+hello world
+
+文件内容更改为：
+
+hello world,hello python
+
+w+：写读（只能写不能读）
+
+f=open("index.txt","w+")
+f.write("hello python")
+f.close()
+
+文件内容更改为：
+
+hello python
+
+
+w+：写读（只能写不能读）
+
+f=open("index.txt","w+")
+f.write("hello python")
+f.close()
+
+文件内容更改为：
+
+hello python
+
+x+:写读(文件存在就报错，文件不存在就创建并添加内容，只能写不能读)
+
+f=open("login.txt","x+")
+f.write("hello python")
+f.close()
+
+
+x+:写读(文件存在就报错，文件不存在就创建并添加内容，只能写不能读)
+
+f=open("login.txt","x+")
+f.write("hello python")
+f.close()
+
+a+:写读(文件的基础上添加内容，只能写不能读)
+
+f=open("index.txt","a+")
+f.write("\nhello python")
+f.close()
+
+文件内容更改为：
+
+hello world
+hello python
+
+
+a+:写读(文件的基础上添加内容，只能写不能读)
+
+f=open("index.txt","a+")
+f.write("\nhello python")
+f.close()
+
+文件内容更改为：
+
+hello world
+hello python
+
+文件操作中常用的一些方法
+
+print(f.readline())    # 打印一行
+print(f.readline(5))   # 打印前5个字符
+print(f.tell())        # 打印当前指针位置
+print(f.read())        # 读完文件后，指针在最尾处
+f.seek(0)              # 如要重头到尾再读，文件指针须先回到文件头(0-文件头,默认值; 1-当前位置; 2-文件尾)
+print(f.read())        # 重读文件
+print(f.encoding)      # 打印当前使用的字符编码
+print(f.name)          # 打印文件名
+print(f.flush())       # 刷新
+f.truncate()           # 清空文件
+f.truncate(12)         # 从头开始，第12个字符后截断并清除
+
+with open("user.txt","r") as f:
+for item in f.readlines():
+print(item.strip())   #输出并取消空格
+
+
+文件操作中常用的一些方法
+
+在文件操作中，我们打开的文件操作完都需要关闭，我们可以使用with上下文的方式代替关闭文件的操作
+
+
+在文件操作中，我们打开的文件操作完都需要关闭，我们可以使用with上下文的方式代替关闭文件的操作
+
+文件内容为
+
+hello world
+hello python
+
+hello world
+hello python
+
+读取该文件：
+
+with open("index.txt","r") as f:
+    for item in f.readlines():
+        print(item.strip())
+
+输出：
+
+hello world
+hello python
+
+with open("index.txt","r") as f:
+    for item in f.readlines():
+        print(item.strip())
+
+输出：
+
+hello world
+hello python
+
+
+二.异常处理
+
+程序在执行的过程中，都会存在异常的情况，和设计测试用例的思想一样，需要考虑被测功能点的正常功能点和异常功能点
+
+
+程序在执行的过程中，都会存在异常的情况，和设计测试用例的思想一样，需要考虑被测功能点的正常功能点和异常功能点
+
+Python的异常类具体如下
+
+
+Python的异常类具体如下
+
+异常处理执行过程：
+
+
+异常处理执行过程：
+
+如果try执行正常，代码就执行到else的逻辑，再执行finally
+
+
+如果try执行正常，代码就执行到else的逻辑，再执行finally
+
+如果try执行异常，代码就执行到expect的逻辑，再执行finally
+
+
+如果try执行异常，代码就执行到expect的逻辑，再执行finally
+
+实战1
+
+def func(a,b):  #定义函数和函数的形式参数
+    try:
+        print(a/b)
+    except Exception as e:   #捕获所有异常
+        print(e.args)
+    else:
+        print("try执行正确，才能够被执行")
+    finally:
+        print("不管查询执行是否正常，都会被执行")
+func(1,0)
+func(2,"a")
+
+输出结果：
+
+('division by zero',)
+不管查询执行是否正常，都会被执行
+("unsupported operand type(s) for /: 'int' and 'str'",)
+不管查询执行是否正常，都会被执行
+
+
+实战1
+
+输出结果：
+
+实战2
+
+def func(a,b):
+    try:
+        return a/b
+    except Exception as e:   #捕获所有异常
+        return e.args
+    except ZeroDivisionError as z:
+        print("分母不能为0")
+'''当第一个函数符合条件之后，代码就不会继续执行下去'''
+print(func(1,0))
+
+输出：
+
+('division by zero',)
+
+
+实战2
+
+输出：
+
+('division by zero',)
+
+实战3
+
+import json
+def out():
+    username = input("输入账号:\n")
+    password = input("输入密码:\n")
+    return username,password
+def register():
+    '''注册'''
+    username,password=out()
+    temp=username+"|"+password
+    with open("user.txt","w") as f:
+        f.write(temp)
+    print("注册成功")
+
+def login():
+    '''登录'''
+    username,password=out()
+    with open("user.txt","r") as f:
+        list1=str(f.read()).split("|")
+    if username==list1[0] and password==list1[1]:
+        print("登录成功")
+    else:
+        print("账号密码错误")
+if __name__ == '__main__':
+    while True:
+        try:
+            a=int(input("1.注册 2.登录 3.退出\n"))
+        except:
+            print("请输入正确内容")
+            continue   #继续执行
+        else:
+            if a == 1:
+                register()
+            elif a == 2:
+                login()
+            elif a == 3:
+                break
+
+
+实战3
+

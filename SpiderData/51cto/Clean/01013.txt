@@ -1,0 +1,68 @@
+在写一个python程序，用finally处理异常的时候，报了“UnboundLocalError: local variable 'log_f' referenced before assignment”错误。log_f是一个日志文件的对象。概要代码如下
+
+try:
+
+t = paramiko.Transport((host_name,port))
+
+ssh = paramiko.SSHClient()
+
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+t.connect(username=user_name,password=password)
+
+ssh.connect(host_name,port,user_name,password)
+
+sftp = paramiko.SFTPClient.from_transport(t)
+
+log_f = open(log_name,'a')
+
+........................
+
+except Exception,msg:
+
+print "transfile error"
+
+print str(msg)
+
+finally:
+
+log_f.close()
+
+t.close()
+
+ssh.close()
+
+上网查了一下，发现原因如下：如果ssh连接远程服务器出现异常的话，下面的log_f = open(log_name,'a')就不会被执行，及log_f这个文件句柄就不会存在，这样在finally里执行 log_f.close()就会报上面的错误，因为这个文件对象不存在。为了解决这个问题，只需把打开日志文件的操作，放到创建ssh连接前面即可，修改后的代码如下
+
+try:
+
+log_f = open(log_name,'a')
+
+t = paramiko.Transport((host_name,port))
+
+ssh = paramiko.SSHClient()
+
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+t.connect(username=user_name,password=password)
+
+ssh.connect(host_name,port,user_name,password)
+
+sftp = paramiko.SFTPClient.from_transport(t)
+
+........................
+
+except Exception,msg:
+
+print "transfile error"
+
+print str(msg)
+
+finally:
+
+log_f.close()
+
+t.close()
+
+ssh.close()
+

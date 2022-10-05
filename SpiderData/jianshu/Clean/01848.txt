@@ -1,0 +1,64 @@
+
+安装
+
+因为最近因为其他软件需要Pyhton 2.7，所以在安装过程中碰到不少的坑，其中opensll就是一个，python的安装需要ssl模块的支持，才能编译出pip，很多时间都会报错。
+
+安装方法有两种，
+
+第一种很简单；
+
+yum install openssl-devel
+
+第二种则是源码安装，常规的安装过程是：
+
+
+1. 下载安装包
+
+https://www.openssl.org/source             # openssl 官网，可查询当前最高版本
+wget https://www.openssl.org/source/openssl-1.1.1c.tar.gz  #下载
+
+
+2. 解压与安装
+
+tar zxvf openssl-1.1.1c.tar.gz
+cd openssl-1.1.1c
+./config --prefix=`pwd`     #这里我安装的是当前目录，如果是root权限安装的话，可不带--prefix
+make && make install        # 安装
+
+
+3. 测试
+
+which openssl                   #查看软件位置
+ldd /usr//bin/openssl       #查看所需要的库文件
+openssl version -a          #查看openssl版本
+
+
+报错
+
+
+报错信息1（安装过程中）：
+
+cp: ‘e_os2.h’ and ‘./openssl-1.0.2j/include/openssl/e_os2.h’ are the same file
+
+这个报错主要是因为安装目录与源码目录为同一目录，导致两者发生冲突，需要修改下config的参数prefix，只需prefix的目录与当前目前不相同即可。
+
+./config --prefix=/public/home/guocc/software/openssl_build --openssldir=`pwd`
+make && make install
+
+安装后的可执行文件会在/public/home/guocc/software/openssl_build
+
+
+报错信息2（python 2.7 安装过程中）：
+
+*** WARNING: renaming "_ssl" since importing it failed: libssl.so.1.0.0: cannot open shared object file: No such file or directory
+
+Failed to build these modules:
+_curses_panel      _hashlib           _ssl
+
+编译时，须在config添加shared参数，表示产生动态库：
+
+./config shared --prefix=/public/home/guocc/software/openssl_build --openssldir=`pwd`
+make && make install
+
+openssl的安装没有产生动态库，需要重新编译，编译完成后我们的lib文件就会有动态库libcrypto.so.1.0.0。
+

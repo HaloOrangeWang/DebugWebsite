@@ -1,0 +1,43 @@
+docker: Error response from daemon: pull access denied 报错解决
+
+1、系统平台
+
+虚拟机安装 Ubuntu 20.04.3 LTS
+
+2、启动 docker 服务
+
+查看安装 docker  版本信息，查看已安装的镜像系统。
+
+3、启动 jenkins 容器
+
+发现启动过程报错了，启动的容器没有正常启动运行，报错信息如下：
+
+root@scm:/home/scm# docker run 642f3fdb1
+ Unable to find image '642f3fdb1:latest' locally
+ docker: Error response from daemon: pull access denied for 642f3fdb1, repository does not exist or may require 'docker login': denied: requested access to the resource is denied.
+ See 'docker run --help'.
+ root@scm:/home/scm#
+
+经过排查处理，也没有发现啥不正常的异常问题，最后没有办法，只能使用重新启动大法了。
+
+4、重新启动 jenkins 容器
+
+# docker restart 642f3fdb1c
+
+642f3fdb1c
+ root@scm:/home/scm# docker ps -ls
+ CONTAINER ID   IMAGE       COMMAND                  CREATED        STATUS         PORTS                                                    NAMES       SIZE
+ 642f3fdb1cd2   2a4bbe50c   "/sbin/tini -- /usr/…"   17 hours ago   Up 6 seconds   50000/tcp, 0.0.0.0:19090->8080/tcp, :::19090->8080/tcp   myjenkins   3.37MB (virtual 444MB)
+ root@scm:/home/scm#
+ root@scm:/home/scm# docker ps |grep jenkins
+ 642f3fdb1cd2   2a4bbe50c   "/sbin/tini -- /usr/…"   17 hours ago   Up 18 seconds   50000/tcp, 0.0.0.0:19090->8080/tcp, :::19090->8080/tcp   myjenkins
+ root@scm:/home/scm#
+ root@scm:/home/scm# docker ps |grep my
+ 642f3fdb1cd2   2a4bbe50c   "/sbin/tini -- /usr/…"   17 hours ago   Up 23 seconds   50000/tcp, 0.0.0.0:19090->8080/tcp, :::19090->8080/tcp   myjenkins
+ root@scm:/home/scm#
+ root@scm:/home/scm#
+
+容器启动正常，打开浏览器访问容器。
+
+访问也都一切正常，报错问题解决。
+

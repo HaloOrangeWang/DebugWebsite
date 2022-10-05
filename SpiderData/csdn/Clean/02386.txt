@@ -1,0 +1,80 @@
+
+目录
+
+错误1：导入自定义类不成功
+
+出现原因解决办法
+
+出现原因解决办法
+
+出现原因
+
+解决办法
+
+错误2：导入自定义模块报错ImportError
+
+出现原因解决办法
+
+出现原因解决办法
+
+出现原因
+
+解决办法
+
+
+错误1：导入自定义类不成功
+
+如果当前路径 /root/ 存在Code.py文件，该文件中有函数FunctionA以及类ClassA
+
+ps: 可以使用下面语句查看当前路径
+
+>>> import os
+>>> os.getcwd()
+
+返回
+
+‘/root’
+
+此时命令行输入
+
+>>> from Code import FunctionA, ClassA
+
+报错
+
+ImportError: cannot import name ‘FunctionA’ from ‘Code’ (/root/Code.py)
+
+
+出现原因
+
+首先确定函数名及路径是否正确，确认后发现该路径明明存在对应文件和对应函数，但是仍会报错，原因是函数FunctionA或者类ClassA是在打开命令行窗口之后定义的, 就是在打开命令行之前Code.py中没有FunctionA或者ClassA，打开命令行之后再定义FunctionA或者ClassA即会报错。
+
+
+解决办法
+
+重新打开命令行窗口运行导入模块命令
+
+
+错误2：导入自定义模块报错ImportError
+
+如果当前路径存在Code.py文件，该文件中有函数FunctionA以及类ClassA
+
+>>> from .Code import FunctionA, ClassA
+
+命令行输入上面语句会报错
+
+ImportError: attempted relative import with no known parent package
+
+
+出现原因
+
+python命令行模式（或者自带的IDLE编辑器）默认不存在包-模块层级关系，因此无法识别父类包（但是可以使用相对位置定义文件）
+
+
+解决办法
+
+使用绝对位置导入包
+ 首先导入os模块，使用os.getcwd()确定当前运行目录（导入方式见错误1）
+ 确定该路径存在Code.py文件后使用下面绝对路径语句导入
+
+>>> from Code import FunctionA, ClassA
+

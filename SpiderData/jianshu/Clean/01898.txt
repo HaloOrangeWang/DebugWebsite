@@ -1,0 +1,69 @@
+今天在用pyinstaller打包的时候,遇到一个报错
+
+File /home/username/anaconda3/envs/envname/lib/python3.5/site-packages/PyInstaller/loader/pyimod03_importers.py
+   exec(bytecode, module.__dict__)
+File "site-packages/astor/__init__.py",line 24,in <model>
+FileNotFoundError: [Errno 2] no such file or directory:"/temp/_MEI24122/astor/VERSION
+
+这里看到pyinstaller有一个很奇怪的骚操作,要去系统临时文件夹里面找一个VERSION文件
+
+
+1. 寻找"罪魁祸首"
+
+根据错误提示定位到下列文件line 24
+
+/home/username/anaconda3/envs/envname/lib/python3.5/site-packages/astor/__init__.py
+
+发现这里通过读取外部文件的方式获取软件版本信息
+
+ROOT = os.path.dirname(__file__)
+with open(os.path.join(ROOT, 'VERSION')) as version_file:
+    __version__ = version_file.read().strip()
+
+pyinstaller在打包的时候默认情况下是不会把外部文件打包的,只会放在临时文件夹中供临时调用
+
+当临时文件被系统自动清除的时候,调用可执行文件就会报错
+
+
+2. 解决方法
+
+astor软件包读取自身版本信息,这行代码并没有什么用（准确地说，是没有被其他地方调用）
+
+直接把上述三行代码注释掉,重新打包即可
+
+当然，更加正式的做法，是把这个版本文件的完整路径添加到待打包文件的spec文件里的Analysis[data]选项中
+
+具体方法可以出门左转，参考我之前的一篇文章，见下方第二个参考资料
+
+
+3. what' more
+
+为什么同样的文件打包，我之前在另一台电脑的虚拟机上没有遇到这个情况
+
+网上有小伙伴说是astor版本的原因, 0.8.1版本会遇到这个问题,可以通过降版本的方式解决
+
+我打开另一台电脑的虚拟机,首先查看了一下astor的版本
+
+>> pip list | grep astor
+astor            0.7.1
+
+果然是低版本程序
+
+然后找到相应的文件 astor/__init__.py,果然有新发现
+
+__version__ = '0.7.1'
+
+大功告成, 原因、解决方案算是都找到了
+
+至于这个astor到底是干啥的，据说是个Python资源管理工具
+
+反正网上资料很少，官网也没看懂，贴上官网地址，有兴趣的小伙伴可以研究一下
+
+参考资料:
+
+python3.7 pyinstaller 打包exe可执行文件报错
+
+pyinstaller打包动态库
+
+astor官网
+

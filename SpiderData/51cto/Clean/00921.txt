@@ -1,0 +1,218 @@
+1.select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno
+
+select sql_id,
+       sql_text,
+       version_count,
+       loads,
+       hash_value,
+       address,
+       plan_hash_value,
+       old_hash_value,
+       last_active_child_address
+  from v$sqlarea a
+ where a.sql_id='3xs7qxkpb25r6';
+ 
+       SQL_ID    SQL_TEXT                                                                              VERSION_COUNT        LOADS    HASH_VALUE          ADDRESS        PLAN_HASH_VALUE       OLD_HASH_VALUE    LAST_ACTIVE_CHILD_ADDRESS
+1    3xs7qxkpb25r6    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno       4              6       2863732454        0000000E29F609B8    3183754604             3808660663          0000000DBAF910F0
+
+2.
+  select sql_id,
+        a.sql_text,
+        a.LOADED_VERSIONS,
+        a.hash_value,
+        a.ADDRESS,
+        a.OLD_HASH_VALUE,
+        a.plan_hash_value,
+        a.child_number,
+        a.child_address
+   from v$sql a
+  where a.sql_id = '3xs7qxkpb25r6';
+  
+    SQL_ID    SQL_TEXT                                                                          LOADED_VERSIONS    HASH_VALUE        ADDRESS          OLD_HASH_VALUE    PLAN_HASH_VALUE    CHILD_NUMBER    CHILD_ADDRESS
+1    3xs7qxkpb25r6    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno    1            2863732454    0000000E29F609B8    3808660663           3183754604    0               0000000DF7455E30
+2    3xs7qxkpb25r6    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno    1            2863732454    0000000E29F609B8    3808660663           3183754604    1               0000000DF26C6480
+3    3xs7qxkpb25r6    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno    1            2863732454    0000000E29F609B8    3808660663            3183754604    2               0000000DBAF910F0
+4    3xs7qxkpb25r6    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno    1            2863732454    0000000E29F609B8    3808660663            3144792666    3               0000000DBB241668
+
+select * from TABLE(DBMS_XPLAN.DISPLAY_CURSOR('3xs7qxkpb25r6',0));
+  
+  PLAN_TABLE_OUTPUT
+SQL_ID  3xs7qxkpb25r6, child number 0
+-------------------------------------
+select esbflowno from esb2_trans_log where 
+esbserviceflowno=:esbserviceflowno
+ 
+Plan hash value: 3183754604
+ 
+-------------------------------------------------------------------------------------------------------------
+| Id  | Operation             | Name                | Rows  | Bytes | Cost (%CPU)| Time     | Pstart| Pstop |
+-------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT      |                     |       |       |   623K(100)|          |       |       |
+|   1 |  PARTITION RANGE ALL  |                     |  1444K|    64M|   623K  (1)| 02:04:44 |     1 |     9 |
+|*  2 |   INDEX FAST FULL SCAN| IDX1_ESB2_TRANS_LOG |  1444K|    64M|   623K  (1)| 02:04:44 |     1 |     9 |
+-------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   2 - filter(SYS_OP_C2C("ESBSERVICEFLOWNO")=:ESBSERVICEFLOWNO)
+
+PLAN_TABLE_OUTPUT
+SQL_ID  3xs7qxkpb25r6, child number 1
+-------------------------------------
+select esbflowno from esb2_trans_log where 
+esbserviceflowno=:esbserviceflowno
+ 
+Plan hash value: 3183754604
+ 
+-------------------------------------------------------------------------------------------------------------
+| Id  | Operation             | Name                | Rows  | Bytes | Cost (%CPU)| Time     | Pstart| Pstop |
+-------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT      |                     |       |       |   610K(100)|          |       |       |
+|   1 |  PARTITION RANGE ALL  |                     |  1464K|    65M|   610K  (1)| 02:02:06 |     1 |     9 |
+|*  2 |   INDEX FAST FULL SCAN| IDX1_ESB2_TRANS_LOG |  1464K|    65M|   610K  (1)| 02:02:06 |     1 |     9 |
+-------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   2 - filter(SYS_OP_C2C("ESBSERVICEFLOWNO")=:ESBSERVICEFLOWNO)
+
+PLAN_TABLE_OUTPUT
+SQL_ID  3xs7qxkpb25r6, child number 2
+-------------------------------------
+select esbflowno from esb2_trans_log where 
+esbserviceflowno=:esbserviceflowno
+ 
+Plan hash value: 3183754604
+ 
+-------------------------------------------------------------------------------------------------------------
+| Id  | Operation             | Name                | Rows  | Bytes | Cost (%CPU)| Time     | Pstart| Pstop |
+-------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT      |                     |       |       |   610K(100)|          |       |       |
+|   1 |  PARTITION RANGE ALL  |                     |  1464K|    65M|   610K  (1)| 02:02:06 |     1 |     9 |
+|*  2 |   INDEX FAST FULL SCAN| IDX1_ESB2_TRANS_LOG |  1464K|    65M|   610K  (1)| 02:02:06 |     1 |     9 |
+-------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   2 - filter(SYS_OP_C2C("ESBSERVICEFLOWNO")=:ESBSERVICEFLOWNO)
+
+PLAN_TABLE_OUTPUT
+SQL_ID  3xs7qxkpb25r6, child number 3
+-------------------------------------
+select esbflowno from esb2_trans_log where 
+esbserviceflowno=:esbserviceflowno
+ 
+Plan hash value: 3144792666
+ 
+-----------------------------------------------------------------------------------------------------------
+| Id  | Operation           | Name                | Rows  | Bytes | Cost (%CPU)| Time     | Pstart| Pstop |
+-----------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT    |                     |       |       |    28 (100)|          |       |       |
+|   1 |  PARTITION RANGE ALL|                     |     1 |    47 |    28   (0)| 00:00:01 |     1 |     9 |
+|*  2 |   INDEX RANGE SCAN  | IDX1_ESB2_TRANS_LOG |     1 |    47 |    28   (0)| 00:00:01 |     1 |     9 |
+-----------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   2 - access("ESBSERVICEFLOWNO"=:ESBSERVICEFLOWNO)
+
+a.
+ 20.5.101.31_/root>python testesb.py 
+<type 'unicode'>
+[('esbapp1-esb_in-20180920083825-542762',), ('esbapp1-esb_in-20180920083825-542776',), ('esbapp4-esb_in-20180920083824-540272',), ('esbapp3-esb_in-20180920083830-541070',), ('esbapp2-esb_in-20180920083830-545483',)]
+20.5.101.31_/root>cat testesb.py 
+import cx_Oracle
+esbserviceflowno=u'10102020180920010158019945'
+print type(esbserviceflowno);
+dbuser='esbdata'
+dbpass='esbdata'
+dbip='1.1.1.1'
+dbservice='esbdb'
+conn = cx_Oracle.connect(dbuser,dbpass,dbip+'/'+dbservice)
+cursor = conn.cursor()
+cursor.prepare("""select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno""" ) 
+cursor.execute(None,{'esbserviceflowno':esbserviceflowno})
+
+d={}
+info = cursor.fetchall()
+print info
+You have mail in /var/spool/mail/root
+20.5.101.31_/root>
+20.5.101.31_/root>
+20.5.101.31_/root>
+20.5.101.31_/root>
+20.5.101.31_/root>python testesb.py 
+<type 'unicode'>
+[('esbapp1-esb_in-20180920083825-542762',), ('esbapp1-esb_in-20180920083825-542776',), ('esbapp4-esb_in-20180920083824-540272',), ('esbapp3-esb_in-20180920083830-541070',), ('esbapp2-esb_in-20180920083830-545483',)]
+20.5.101.31_/root>
+
+select sql_id,
+       sql_text,
+       version_count,
+       loads,
+       hash_value,
+       address,
+       plan_hash_value,
+       old_hash_value,
+       last_active_child_address
+  from v$sqlarea a
+ where a.sql_id='3xs7qxkpb25r6';
+ 
+ 
+SQL_ID       3xs7qxkpb25r6
+SQL_TEXT    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno
+VERSION_COUNT    4
+LOADS          6
+HASH_VALUE    2863732454
+ADDRESS    0000000E29F609B8
+PLAN_HASH_VALUE    3183754604
+OLD_HASH_VALUE    3808660663
+LAST_ACTIVE_CHILD_ADDRESS    0000000DBAF910F0
+
+select sql_id,
+        a.sql_text,
+        a.LOADED_VERSIONS,
+        a.hash_value,
+        a.ADDRESS,
+        a.OLD_HASH_VALUE,
+        a.plan_hash_value,
+        a.child_number,
+        a.child_address
+   from v$sql a
+  where a.sql_id = '3xs7qxkpb25r6';
+  
+     SQL_ID              SQL_TEXT    LOADED_VERSIONS    HASH_VALUE    ADDRESS    OLD_HASH_VALUE    PLAN_HASH_VALUE    CHILD_NUMBER    CHILD_ADDRESS
+1    3xs7qxkpb25r6    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno    1    2863732454    0000000E29F609B8    3808660663    3183754604    0    0000000DF7455E30
+2    3xs7qxkpb25r6    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno    1    2863732454    0000000E29F609B8    3808660663    3183754604    1    0000000DF26C6480
+3    3xs7qxkpb25r6    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno    1    2863732454    0000000E29F609B8    3808660663    3183754604    2    0000000DBAF910F0
+4    3xs7qxkpb25r6    select esbflowno from esb2_trans_log where esbserviceflowno=:esbserviceflowno    1    2863732454    0000000E29F609B8    3808660663    3144792666    3    0000000DBB241668
+
+select * from TABLE(DBMS_XPLAN.DISPLAY_CURSOR('3xs7qxkpb25r6',2));
+  
+PLAN_TABLE_OUTPUT
+SQL_ID  3xs7qxkpb25r6, child number 2
+-------------------------------------
+select esbflowno from esb2_trans_log where 
+esbserviceflowno=:esbserviceflowno
+ 
+Plan hash value: 3183754604
+ 
+-------------------------------------------------------------------------------------------------------------
+| Id  | Operation             | Name                | Rows  | Bytes | Cost (%CPU)| Time     | Pstart| Pstop |
+-------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT      |                     |       |       |   610K(100)|          |       |       |
+|   1 |  PARTITION RANGE ALL  |                     |  1464K|    65M|   610K  (1)| 02:02:06 |     1 |     9 |
+|*  2 |   INDEX FAST FULL SCAN| IDX1_ESB2_TRANS_LOG |  1464K|    65M|   610K  (1)| 02:02:06 |     1 |     9 |
+-------------------------------------------------------------------------------------------------------------
+ 
+Predicate Information (identified by operation id):
+---------------------------------------------------
+ 
+   2 - filter(SYS_OP_C2C("ESBSERVICEFLOWNO")=:ESBSERVICEFLOWNO)
+ 
+类型为<type 'unicode'>，此时走的是index fast full scan
+

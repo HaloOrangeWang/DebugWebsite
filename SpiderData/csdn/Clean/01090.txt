@@ -1,0 +1,28 @@
+如果自己单独升级了python,或者有多个版本的python时,便有可能出现此问题.
+
+问题表象为:报错:undefined symbol: PyUnicodeUCS2_AsUTF8String或者undefined symbol: PyUnicodeUCS4_AsUTF8String.
+
+根本原因时python和某个你用的库编译时指定的UCS编码方式不对.
+
+编译python时,可以通过指定--enable-unicode[=ucs[24]]来选择使用UCS2或者UCS4.
+
+如果你的错误是undefined symbol: PyUnicodeUCS2_AsUTF8String,说明你的python编译时使用的是UCS4,反之依然.
+
+解决方案两个:1,重新编译python,2,重新编译库.
+
+选择一般是重新编译库.
+
+如果使用的是./configure这样的编译方式,如果你的./configure --help没有unicode的选择,那么在./configure之后,
+
+在config.h内增加#define Py_UNICODE_SIZE 4,然后再make,make install之类的,就搞定拉.
+
+原理如下:
+
+在头文件/usr/include/python2.7/unicodeobject.h内:
+
+#ifndef Py_UNICODE_WIDE
+
+# define PyUnicode_AsUTF8String PyUnicodeUCS2_AsUTF8String
+
+python2.7.11默认是使用UCS2.
+

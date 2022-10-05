@@ -1,0 +1,53 @@
+1. pyspark读csv文件后无法显示中文
+
+#pyspark读取csv格式时，不能显示中文
+df = spark.read.csv(r"hdfs://mymaster:8020/user/root/data_spark.csv", schema=schema)
+
+#解决方法，加入encoding='gbk'，即
+df = spark.read.csv(r"hdfs://mymaster:8020/user/root/data_spark.csv", schema=schema, encoding='gbk')
+
+2. 查看和修改默认编码格式
+
+import sys
+#查看默认编码格式
+print(sys.getdefaultencoding())
+
+#修改编码格式
+sys.setdefaultencoding('utf8')
+
+#参考：https://blog.csdn.net/abc_321a/article/details/81945577
+
+3. pyspark导入spark
+
+原因：python中没有默认的sparksession，需要导入
+
+#方法
+from pyspark import SparkContext
+from pyspark.sql.session import SparkSession
+
+4. Pyspark引入col函数出错，ImportError: cannot import name 'Col' from 'pyspark.sql.functions'
+
+#有人建议的是，不过我用的时候会报错
+from pyspark.sql.functions import col
+
+#后来测试了一种方式可以用
+from pyspark.sql import Row, column
+
+5. Exception: Python in worker has different version 2.6 than that in driver 3.7, PySpark cannot run with different minor versions.
+
+6. 在Red hat上使用pip3 安装pandas的时候出错：pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+
+原因：python 3.7版本会出现这个问题，是因为openssl的版本比较低
+
+方法：必须先升级openssl，然后重新编译或者安装python，顺序要注意
+
+升级openssl和编译python可参考：https://www.cnblogs.com/jasonLiu2018/articles/10730605.html
+
+注意：./configure --prefix=/usr/local/python3 --with-openssl=/usr/local/openssl 是先cd到python解压后的目录，再使用的，例如解压目录是当前目录的：Python-3.7.0，则先在命令行执行 cd Python-3.7.0，进入该目录，执行上述./configure代码，/usr/local/python3是python将要安装的目录，/usr/local/openssl是openssl已安装的目录；然后直接依次：make, make install重装python。
+
+升级openssl可参考：
+
+https://www.cnblogs.com/caibao666/p/9698842.html
+
+https://www.cnblogs.com/mqxs/p/9103031.html
+

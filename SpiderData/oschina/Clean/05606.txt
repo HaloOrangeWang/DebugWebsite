@@ -1,0 +1,20 @@
+1.报错关键代码如下：
+
+Exception in thread "main" 2019-04-28 03:53:04,339 main ERROR No log4j2 configuration file found.
+
+SettingsException[Failed to load settings from [elasticsearch.yml]]; nested: ParsingException[Failed to parse object: expecting token of type [START_OBJECT] but found [VALUE_STRING]];
+
+Caused by: ParsingException[Failed to parse object: expecting token of type [START_OBJECT] but found [VALUE_STRING]]
+
+　　报错原因：是你的elasticsearch.yml文件中的key/value值写错了，重新检查或者将其他可以正常启动的机器中的文件发送到报错机器，并修改节点名、ip等即可
+
+2.报错关键代码如下：
+
+failed to send join request to master
+
+nested: IllegalArgumentException[can't add node
+
+found existing node
+
+　　报错原因：这是启动从节点时报错，可以看出提示报错找到存在节点，原因是本人先安装了ES的单节点模式，然后将主节点的ES目录发送到了从节点，导致ES目录下的data目录中存储的数据是主节点的，所以删除dasa目录下的nodes文件集，重启从节点即可。
+

@@ -1,0 +1,14 @@
+这个问题很奇怪，在服务器上执行一个写数据库的python文件，正常执行，但是使用java的ssh进行调用脚本，发现就是不执行数据库的写入，然后使用了try except的方式，打印了错误信息，发现报错：
+
+'ascii' codec can't encode characters in position 0-15: ordinal not in range(128)
+
+解决方案：
+
+在python文件中加入以下3句话
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+　　
+

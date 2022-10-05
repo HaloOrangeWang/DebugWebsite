@@ -1,0 +1,156 @@
+语法错误
+
+所谓语法错误，也就是你写的代码不符合编程规范，无法被识别与执行，比如下面这个例子：
+
+if name is not None
+
+print(name)
+
+If 语句漏掉了冒号，不符合 Python 的语法规范，所以程序就会报错invalid syntax。
+
+异常
+
+异常则是指程序的语法正确，也可以被执行，但在执行过程中遇到了错误，抛出了异常，比如下面的 3 个例子：
+
+10 / 0
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+ZeroDivisionError: integer division or modulo by zero
+
+order * 2
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+NameError: name 'order' is not defined
+
+1 + [1, 2]
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+TypeError: unsupported operand type(s) for +: 'int' and 'list'
+
+异常列表参考文档
+
+常用异常名称
+
+FileNotFoundError
+
+KeyError
+
+ImportError
+
+IndexError # 索引越界异常，如果 index 不是整数报 TypeError
+
+KeyError # 是指字典中的键找不到
+
+KeyboardInterrupt # Control-C 捕捉
+
+NameError # 局部或者全局变量没有找到
+
+UnicodeEncodeError
+
+UnicodeDecodeError
+
+exception ValueError
+
+ZeroDivisionError
+
+FileExistsError
+
+FileNotFoundError
+
+InterruptedError
+
+IsADirectoryError
+
+NotADirectoryError
+
+PermissionError
+
+异常处理
+
+第一种写法
+
+try:
+
+db = DB.connect('') # 可能会抛出异常
+
+try:
+
+raw_data = DB.queryData('') # 可能会抛出异常
+
+except DBQueryDataError as err:
+
+print('DB query data error: {}'.format(err))
+
+except DBConnectionError as err:
+
+print('DB connection error: {}'.format(err))
+
+except:
+
+print('Unexpected error:', sys.exc_info()[0])
+
+finally:
+
+pass
+
+需要注意，当程序中存在多个 except block 时，最多只有一个 except block 会被执行。换句话说，如果多个 except 声明的异常类型都与实际相匹配，那么只有最前面的 except block 会被执行，其他则被忽略。
+
+第二种写法
+
+try:
+
+db = DB.connect('') # 可能会抛出异常
+
+raw_data = DB.queryData('') # 可能会抛出异常
+
+except (DBConnectionError, DBQueryDataError) err:
+
+print('Error: {}'.format(err))
+
+except:
+
+print('Unexpected error:', sys.exc_info()[0])
+
+finally:
+
+pass
+
+两种写法实现的效果是一致的，但第二种写法更简洁
+
+异常处理中，还有一个很常见的用法是 finally，经常和 try、except 放在一起来用。无论发生什么情况，finally block 中的语句都会被执行，哪怕前面的 try 和 except block 中使用了 return 语句。
+
+用户自定义异常
+
+前面的例子里充斥了很多 Python 内置的异常类型，下面这个例子，创建了自定义的异常类型 MyInputError，定义并实现了初始化函数和 str 函数(直接 print 时调用)：
+
+class MyInputError(Exception):
+
+"""Exception raised when there're errors in input"""
+
+def __init__(self, value): # 自定义异常类型的初始化
+
+self.value = value
+
+def __str__(self): # 自定义异常类型的string表达形式
+
+return ("{} is invalid input".format(repr(self.value)))
+
+try:
+
+raise MyInputError(1) # 抛出MyInputError这个异常
+
+except MyInputError as err:
+
+print('error: {}'.format(err))
+
+error: 1 is invalid input
+

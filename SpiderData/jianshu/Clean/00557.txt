@@ -1,0 +1,38 @@
+
+最近使用react-create-app的时候，启动报错Something is already running on port 3000. 3000端口被占用，解决办法如下：
+
+
+注：若更改端口后依旧会提示对应端口被占用，请参考3
+
+
+1、查看端口是否被占用：命令执行
+
+找到端口
+
+lsof -wni tcp:3098
+
+显示
+
+node    29197 didi   27u  IPv4 0x6586eff0033e8267      0t0  TCP *:umm-port (LISTEN)
+
+kill 杀掉进程
+
+kill 29197
+
+
+2、换端口：修改package.json 配置，配置其他端口号
+
+// mac 直接配置`PORT=3001` ；windows 配置应该是 `set PORT=3001 & `
+"scripts": {
+   "start": "PORT=3001 react-scripts start",
+   "build": "react-scripts build",
+   "test": "react-scripts test",
+   "eject": "react-scripts eject"
+ },
+
+
+3、配置hosts文件（一般用于：后续更改端口后依旧会提示对应端口被占用）
+
+// 配置
+127.0.0.1   localhost
+

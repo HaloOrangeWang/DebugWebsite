@@ -1,0 +1,347 @@
+
+1、文件读取和写入
+
+shell 主要利用管道命令读取和写入文件，python主要是利用open函数，write函数完成
+
+import os
+
+import os
+
+data=open(finename)
+
+data=open(finename)
+
+print(data.readline());
+
+print(data.readline());
+
+data.close()
+
+data.close()
+
+通过open打开文件，得到文件对象，通过for循环输出每行，如下代码所示：
+
+[nxuser@PSjamsBond-0-0-0 ~]$ vi readfile.py
+#!/bin/python
+import os
+data=open("readme.txt")
+for line in data:
+  print(line)
+data.close()
+
+输出如下：为什么间隔那么大？？？
+
+[nxuser@PSjamsBond-0-0-0 ~]$ python readfile.py
+
+aaa
+
+bbb
+
+ccc
+
+ddddddddd
+
+Shell读取文件如下，利用管道命令作为输入：
+
+[nxuser@PSjamsBond-0-0-0 ~]$ vi readfile.sh
+#!/bin/bash
+
+cat readme.txt| 
+while read line
+  do
+
+echo $line
+
+done
+  
+[nxuser@PSjamsBond-0-0-0 ~]$ ./readfile.sh 
+aaa
+bbb
+ccc
+ddddddddd
+
+python读取文件后，可以获取文件的更多信息，如名称，扩展名， 访问模式等：
+
+[nxuser@PSjamsBond-0-0-0 ~]$ vi readfile.py
+#!/bin/python
+import os
+
+filename=raw_input("please input filename:");
+print(filename)
+#access mode , is buffer
+fo=open(filename,"r")
+for line in fo:
+  print(line)
+#
+print("the file name is: "),fo.name
+print("the file mode is:"),fo.mode
+
+fo.close()
+
+python写入文件，利用write函数，但是文件的模式应该为可写入的，比如r+,w+,wb等
+
+#!/bin/python
+import os
+
+filename=raw_input("please input filename:");
+print"the input file name is",(filename)
+#access mode , is buffer
+fo=open(filename,"r+")
+for line in fo:
+  print(line)
+#
+print("the file name is: "),fo.name
+print("the file mode is:"),fo.mode
+
+# write file
+
+fo.write("python is greate!!!")
+
+fo.close()
+
+shell写入文件通过管道命令实现:
+
+通过两个管道命令就可以实现：
+
+1.  >  符号表示将信息写入文件中
+
+2.    >> 符号表示在已有的文件中添加信息
+
+#!/bin/bash
+
+read -p "please input file name:"  filename
+
+cat $filename|
+while read line
+  do
+
+echo $line
+
+done
+
+echo "shell is powerful" >>$filename
+
+read函数读取指定字节数，不指定读取全部，此函数注意指针的位置，如果循环输出后进行读取，内容肯定为空，因为指针位于文件末尾，此时需要从头开始，利用seek函数，可以利用tell查询指针位置
+
+#!/bin/python
+import os
+
+filename=raw_input("please input filename:");
+print"the input file name is",(filename)
+
+#access mode , is buffer
+fo=open(filename,"r+")
+
+for line in fo:
+  print(line)
+#
+print("the file name is: "),fo.name
+print("the file mode is:"),fo.mode
+
+# write file
+
+#fo.write("python is greate!!!")
+
+#read function
+# the position is at the end of file, so the read result is empty
+# Need to reset the position to zero
+
+str=fo.read(20)
+print("the result of read function is :"),str,fo.tell()
+
+fo.seek(0,0)
+
+print("the result of read function is :"),str,fo.tell()
+
+str=fo.read(20)
+
+print("the result of read function is :"),str,fo.tell()
+
+fo.close()
+
+输出如下
+
+[nxuser@PSjamsBond-0-0-0 ~]$ python readfile.py 
+please input filename:readme.txt
+the input file name is readme.txt
+aaa
+
+bbb
+
+ccc
+
+ddddddddd
+
+python is greate!!!shell is powerful
+
+python is greate!!!python is greate!!!
+the file name is:  readme.txt
+the file mode is: r+
+the result of read function is :  97
+the result of read function is :  0
+the result of read function is : aaa
+bbb
+ccc
+dddddddd 20
+
+
+2. 文件及目录操作
+
+通过os模块实现文件重命名，删除，目录等操作，新建由open函数完成。
+
+[nxuser@PSjamsBond-0-0-0 ~]$ vi fileanddirectory.py
+#!/bin/python
+
+import os
+
+fo=open("testfile.txt","w+")
+
+os.rename("testfile.txt","newtestfile.txt")
+
+os.remove("newtestfile.txt")
+
+#os.mkdir("kerry")
+
+os.chdir("/home/nxuser")
+
+print "the current director is:", os.getcwd()
+
+是否存在判断
+
+os.path.isfile()
+
+os.path.exists()
+
+#!/bin/python
+
+import os
+
+fo=open("testfile.txt","w+")
+
+isExist=os.path.isfile("testfile.txt")
+
+print("the vaule of isExist is :"),isExist
+
+os.rename("testfile.txt","newtestfile.txt")
+
+os.remove("newtestfile.txt")
+
+try:
+ os.mkdir("kerry")
+except OSError:
+ pass
+
+dirExist=os.path.exists("./kerry")
+print("the value of dirExist is:"),dirExist
+
+os.chdir("/home/nxuser")
+
+print "the current director is:", os.getcwd()
+
+File 对象方法: file对象提供了操作文件的一系列方法。
+
+File 对象方法: file对象提供了操作文件的一系列方法。
+
+OS 对象方法: 提供了处理文件及目录的一系列方法。
+
+OS 对象方法: 提供了处理文件及目录的一系列方法。
+
+
+3. 键盘输入
+
+shell键盘输入利用read，  -p参数指定提示语，
+
+read  -p "please input"  filename
+
+[nxuser@PSjamsBond-0-0-0 ~]$ vi readfile.sh
+#!/bin/bash
+
+read -p "please input file name:"  filename
+
+cat $filename|  
+while read line
+  do
+
+echo $line
+
+done
+
+python利用raw_input 和input函数
+
+[nxuser@PSjamsBond-0-0-0 ~]$ vi readfile.py
+#!/bin/python
+import os
+
+filename=raw_input("please input filename:");
+print(filename)
+data=open(filename)
+for line in data:
+  print(line)
+data.close()
+
+此处利用input报错，不知为何？？？？
+
+使用input和raw_input都可以读取控制台的输入，input()只能接受int,float或由它们组成的表达式，并且返回运算结果
+
+详见此文：http://blog.csdn.net/wusuopubupt/article/details/23680491
+
+
+4. 异常管理
+
+try:
+
+你的代码逻辑
+
+except:
+
+异常处理逻辑
+
+try:
+
+你的代码逻辑
+
+except IOError:
+
+异常处理逻辑
+
+#!/bin/python
+import os
+
+filename=raw_input("please input filename:");
+print"the input file name is",(filename)
+
+#access mode , is buffer
+try:
+ fo=open(filename,"r+")
+except IOError:
+   print("can not find file")
+else:
+   print("this is in else ")
+finally:
+
+print("this is in finally ")
+
+raise TypeError("my type error")
+
+输出如下：
+
+[nxuser@PSjamsBond-0-0-0 ~]$ python readfile.py
+
+please input filename:aaa
+
+the input file name is aaa
+
+can not find file
+
+this is in finally
+
+Traceback (most recent call last):
+
+File "readfile.py", line 18, in <module>
+
+raise TypeError("my type error")
+
+TypeError: my type error
+
+shell中除了退出码判断执行情况外，利用trap命令捕获异常，此处不详细介绍
+

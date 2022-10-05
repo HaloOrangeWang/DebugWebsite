@@ -1,0 +1,41 @@
+扩展字段目前有两种方法:
+
+扩展字段 新建一张表->然后与原有表创建一对一关系
+
+继承django.contrib.auth.models下的AbstractUser类 ,重写User类
+
+两种方式都是官方文档提到的,,实现方法可以在官网以及搜索引擎搜到各大佬的博客上,我今天只分享一下自己遇到的问题及解决方法
+
+我采用的是第2种, 重写User的方法,但是在迁移数据库的时候,遇到问题,
+
+编写好其它表之后,发现User表中字段需要添加于是在models.py 文件中添加了 ExUser类
+
+在settings.py文件中添加
+
+添加完成后执行python manage.py makemigrations  然后报错
+
+django.db.migrations.exceptions.CircularDependencyError: auth.0011_update_proxy_permissions, myqpp.0002_exuser_post
+
+或者执行 python manage.py migrate 报错
+
+ValueError: Related model 'myapp.ExUser' cannot be resolved
+
+然后开始各种查找资料,在官网的介绍中说
+
+
+Changing to a custom user model mid-project¶
+
+Changing AUTH_USER_MODEL after you've created database tables is significantly more difficult since it affects foreign keys and many-to-many relationships, for example.
+
+This change can't be done automatically and requires manually fixing your schema, moving your data from the old user table, and possibly manually reapplying some migrations. See #25313 for an outline of the steps.
+
+Due to limitations of Django's dynamic dependency feature for swappable models, the model referenced by AUTH_USER_MODEL must be created in the first migration of its app (usually called 0001_initial); otherwise, you'll have dependency issues.
+
+In addition, you may run into a CircularDependencyError when running your migrations as Django won't be able to automatically break the dependency loop due to the dynamic dependency. If you see this error, you should break the loop by moving the models depended on by your user model into a second migration. (You can try making two normal models that have a ForeignKey to each other and seeing how makemigrations resolves that circular dependency if you want to see how it's usually done.)
+
+大致的意思就是 项目写到一半,修改自定义用户模型,文中提到,在第一次创建数据库的时候,最好就已经开始使用自定义用户模型,否则等执行一次python manage.py makemigrations命令创建了0001_initial.py文件之后,,会形成一堆依赖关系,,想修改auth,就没有自动化了,,只能手动修改,并且会动态依赖会成为循环.............总之一句话,不好改了
+
+如果被逼无奈,,可以去尝试 #25313,,里面提供了好多方法,可以一试.
+
+我的选择是,,直接删库,,并且把migrations 文件夹下的除了__init__.py之外的文件清空,,重新创建数据库就行了
+

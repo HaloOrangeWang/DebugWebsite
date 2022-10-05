@@ -1,0 +1,16 @@
+[root@controller ~]# glance image-create --name "examimage" --disk-format "qcow2" --container-format bare --progress < /root/CentOS-68.qcow2
+
+下面是执行上面命令所报错：
+You must provide a username via either --os-username or env[OS_USERNAME]
+此时需要执行：source /etc/keystone/admin-openrc.sh
+
+[root@controller ~]# glance image-create --name "examimage" --disk-format "qcow2" --container-format bare --progress < /root/CentOS-68.qcow2 
+public endpoint for image service not found
+
+此时执行：openstack service create --name glance --description "OpenStack Image" image
+openstack endpoint create --region RegionOne image public http://controller:9292
+openstack endpoint create --region RegionOne image internal http://controller:9292
+openstack endpoint create --region RegionOne image admin http://controller:9292
+systemctl restart openstack-glance-api.service 
+systemctl restart openstack-glance-registry.service
+

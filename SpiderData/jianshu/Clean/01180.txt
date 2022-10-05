@@ -1,0 +1,30 @@
+需要使用Python跑一些模型
+
+直接使用 pip install xgboost安装，会报如下错误：
+
+Command "python setup.py egg_info" failed with error code 1
+
+于是查找相应资料，使用Git成功安装。步骤如下：
+
+cd ~ 
+git clone --recursive https://github.com/dmlc/xgboost
+cd xgboost ; bash build.sh
+cd python-package; sudo python setup.py install
+rm -rf xgboost
+
+显示Finished processing dependencies for xgboost==0.6即安装成功。我的Python版本是2.7。
+
+如果没有安装gcc，还需要先安装gcc。
+
+brew install gcc
+
+顺便也介绍 Anaconda 安装 xgboost 的命令
+
+conda install py-xgboost
+
+参考资料:
+
+http://blog.csdn.net/u014365862/article/details/73739857
+
+http://blog.csdn.net/honorin/article/details/70162962
+

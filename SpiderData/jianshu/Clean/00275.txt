@@ -1,0 +1,41 @@
+
+Mac版SourceTree创建新仓库时克隆账号密码报错
+
+之前用SourceTree就出现过这种问题，当时因为出现密码输入询问窗口以为是让输入Bitbucket的密码结果就报错了，克隆不了新的仓库，并且也没有找到更改HTTPS克隆账号密码的入口。就通过sourcetree_2.7.6版本重新进行，因为这个版本的sourcetree可以找到更改克隆密码的入口。
+
+这两天又遇到同样的问题有了更高级的解决方法。
+
+
+问题描述
+
+
+Mac上的SourceTree新建仓库，从URL克隆，要求输入设置的克隆账号的密码：
+
+
+云仓库设置的URL克隆账号（就是这个账号的密码）
+
+
+密码输入错误后会报错，新建仓库失败
+
+remote ：账号或密码错误，常见处理方案请参看：……
+fatal: Authentication failed for ‘https:/…git/’
+
+
+解决方法
+
+
+先退出SourceTree的运行；
+
+
+从Finder（ommand+shift+G）前往路径~/Library/Preferences/ ，找到com.torusknot.SourceTreeNotMAS.plist文件，并删除
+
+删除com.torusknot.SourceTreeNotMAS.plist文件
+
+
+步骤1、2完成后打开SourceTree重新从URL克隆，此时会再弹出克隆密码输入询问窗口，正确输入克隆密码就可以了。
+
+
+打开Mac的钥匙串访问应用
+
+然后再启动SourceTree重新进行第3步创建新的仓库就可以了。
+

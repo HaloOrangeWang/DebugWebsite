@@ -1,0 +1,65 @@
+转载Linux报错audit: backlog limit exceeded_sunny05296的博客-CSDN博客
+
+
+现象说明：
+
+Linux ssh连接不上，能ping通，登录界面报错提示 audit: backlog limit exceeded
+
+audit:backlog limit exceeded
+audit:backlog limit exceeded
+audit:backlog limit exceeded
+audit:backlog limit exceeded
+audit:backlog limit exceeded
+audit:backlog limit exceeded
+audit:backlog limit exceeded
+audit:backlog limit exceeded
+...
+
+
+造成原因分析：
+
+该错误为 Linux Kernel logs，问题的原因是audit服务在繁忙的系统中进行审计事件操作，缓冲区存在瓶颈，导致系统接近崩溃。
+
+
+背景介绍：
+
+audit是linux系统中用于记录用户底层调用情况的服务，用来记录用户执行的open，exit等系统调用行为，并会将记录写到日志文件中。 audit可以通过使用 auditctl 命令来添加或删除audit规则，可以设置针对某个用户进行记录，或针对某个进程的进行记录。
+
+主要命令： auditctl audit 规则&系统管理工具，用来获取状态，增加删除监控规则 ausearch 查询audit log工具 aureport 输出audit系统报告
+
+
+解决办法：
+
+可以尝试增大 audit buffer 来解决该问题。
+
+Linux 默认内存分页大小为 4096 Bytes，通过下面命令可以获取分页大小：getconf PAGE_SIZE，可以设置为分页的N倍数
+
+查看帮助信息 auditctl -h
+
+查看当前默认配置 auditctl -s
+
+backlog_limit 320 #我Centos7.1默认只为320
+
+优化audit服务修改buffer大小 auditctl -b 8192 如果不设置系统默认为64Bytes
+
+
+设置永久生效：
+
+方法1）修改规则配置
+
+vim /etc/audit/audit.rules
+-D
+-b 8192
+-f 1
+
+参数说明： -D 删除所有规则 -b 设置audit缓冲大小，若缓冲占满了，则kernel会发出一个失败标记 -f [0|1|2] 设置audit获取错误的等级。有0/1/2三个值。0是不输出日志；1为输出printk日志；2为最高级、会输出大量日志信息 -e [0|1] 启用/禁用audit审核
+
+方法2） 也可以直接在自启动中设置
+
+chmod u+x /etc/rc.d/rc.local
+vim /etc/rc.d/rc.local
+auditctl -b 8192
+
+
+Buy me a cup of coffee :)
+

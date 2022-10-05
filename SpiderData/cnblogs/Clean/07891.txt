@@ -1,0 +1,21 @@
+
+在执行命令python manage.py migrate时报错：django.db.utils.InternalError: (1091, “Can’t DROP ‘cre_time’; check that column/key exists”)
+
+解读这段报错的意思是无法删除cre_time这条属性，因为数据表中已经不存在这个属性字段了。
+在网上找的相关的解决办法：https://www.cnblogs.com/wangkun122/articles/10407415.html
+
+但我的文件中不存在刪除的相关代码：
+
+后来想了想，我的上个文件中有删除的代码
+
+我把这段代码注释后，执行python manage.py migrate后问题解决
+
+为什么会这样呢
+以为我上次在执行python manage.py migrate 时terminal那里卡住了，我就直接把pycharm给关了
+但Django已经帮我把我想删除的字段删除了，但还没有执行0003.py文件
+所以我在0004中要求修改字段时，Django要把0003文件也执行一下，但表中的字段已经被删除了，这时就会报错，把003文件中的删除相关的代码注释掉即可
+
+这时Django会把003和004一起执行一下：
+
+问题解决
+

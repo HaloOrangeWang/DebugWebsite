@@ -1,0 +1,42 @@
+【问题描述】
+
+　　【BRAT使用】读取自己的txt标注时，brat出现报错KeyError: u'\u7535 、error: [Errno 32] Broken pipe、IndexError: list index out of range
+
+【参考】
+
+【解决方案】
+
+　　其实brat使用的很简单，不需要改动你的data文件夹权限，简单粗暴的把你的数据文件夹放到它自带的examples或者tutorial文件夹下面就好，就不会有权限问题。
+
+　　你的data文件夹，假设文件名为：data/examples/mytest_data，文件夹下面需要有4个东西：
+
+　　——annotation.conf
+
+　　——LICENSE
+
+　　——mydata1.txt
+
+　　——mydata1.ann
+
+　　把你的brat目录下的 ./server/src/ 文件夹里的projectconfig.py文件的163行改为支持中文：
+
+　　把163行改为：
+
+　　n=re.sub(u'[ ^a-zA-Z\u4e00-\u9fa5<>,0-9_-]','_',n)
+
+　　
+
+　　有人说是在163行新建一行键入以上内容，我则是直接把原来的n=xxxxx那一段给去掉了，目前看来好像没有啥问题。
+
+=======================================
+
+　　当读取中文txt仍就报错时，你要注意是不是txt的名字是中文的，如果是那么把txt名字改为纯字母，即可。这样，brat就会读取txt，里面显示的就是我想要的中文，然后就可以了。　　
+
+=======================================
+
+　　使用brat时，python运行standalone.py文件，然后在浏览器打开brat在线地址，我记得是127.xxx开头的网址。
+
+　　找到你的文件夹，打开你的txt，鼠标滑到右上角，点击login去登陆，然后选择你的txt上的文字就可以开始标注了。
+
+待补充，其他
+

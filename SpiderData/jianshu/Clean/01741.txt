@@ -1,0 +1,34 @@
+进行接口数据处理，或者单纯的字符串转换为字典报错会提示一个NameError的错误：NameError: name ‘null’ is not defined，字符串中“ null ”是一个比较复杂的定义，相信学过编程的都知道。那么在Python怎么处理呢？
+
+
+问题：Python字符串转换为字典报错：NameError: name ‘null’ is not defined
+
+
+解决：使用json模块的loads()方法
+
+import json
+str = ''' {
+      "num": 654321,
+      "numId": null,
+      "Name": "简书",
+      "netId": null,
+      "Shorthand": null,
+      "bonus": 0
+    }
+    '''
+str_json = json.loads(str)
+print(str_json)
+
+打印的结果：
+
+{
+  'num': 654321,
+  'numId': None,
+  'Name': '简书',
+  'netId': None,
+  'Shorthand': None,
+  'bonus': 0
+}
+
+转换后，Python自动把 null 转换为了Python支持的None，进行处理。
+

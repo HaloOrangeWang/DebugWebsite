@@ -1,0 +1,8 @@
+原链接：https://blog.csdn.net/vito21/article/details/53490435
+
+今天爬一个网站的内容，在写入TXT文件时，某些页面总是报UnicodeEncodeError: ‘gbk’ codec can’t encode character错误，网上找了半天也没找到解决办法。
+
+后来终于找到了解决办法，十分简单:在f = open('英语练习.txt','a+',encoding='utf-8') 里加上encoding='utf-8'这个参数就行了。
+
+出错的原因是网页及python的编码都是utf-8，在写进txt时Windows默认转码成gbk，遇到某些gbk不支持的字符就会报错。在打开文件时就声明编码方式为utf-8就能避免这个错误。
+

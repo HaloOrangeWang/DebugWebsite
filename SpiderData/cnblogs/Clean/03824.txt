@@ -1,0 +1,14 @@
+原因：matplotlib的backend中的FltkAgg, GTK, GTKAgg, GTKCairo, TkAgg , Wx or WxAgg这几个backend都要求有GUI图形界面的
+
+首先查看了一下本机matplotlib的默认backend为：
+
+但是因为我上面没有GUI，所以会报错：RuntimeError: Invalid DISPLAY variable
+
+为了解决这个问题，在代码中添加上：
+
+plt.switch_backend('agg')
+
+解决方法：指定不需要GUI的backend（Agg, Cairo, PS, PDF or SVG）
+
+然后问题就解决了
+

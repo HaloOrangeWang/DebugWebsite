@@ -1,0 +1,32 @@
+
+pip更新及Requirement already up-to-date解决方法
+
+
+pip更新
+
+
+更新命令
+
+将pip更新版本 1 python -m pip install --upgrade pip
+
+将pip更新版本
+
+1 python -m pip install --upgrade pip
+
+
+Requirement already up-to-date
+
+在pycharm的虚拟环境中，特别容易出现运行更新pip的命令后，提示要求己经更新，但实际上查看版本还是没更新成功的情况：
+
+直接使用pip install --upgrade pip命令还会出现 下面提示:
+
+这简直是死循环了，使用python -m pip install --upgrade pip -vvv
+
+报了一大堆信息，然而也没有什么卵用。
+
+后来细想有可能是因为我之前是使用pycharm尝试升级虚拟环境里的pip版本，显示是成功升级到18.0了的缘故。
+
+于是大胆尝试将pip-18.0.dist-info目录删除后，继续在虚拟环境下重新更新pip，终于成功！
+
+这个报错告诉我，尽量选择在cmd命令行下手动更新pip或其它软件包，而不要选择在pycharm的界面下直接用鼠标点升级……
+

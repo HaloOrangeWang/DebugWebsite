@@ -1,0 +1,126 @@
+
+一、文件的介绍
+
+1.例如：HTML、TXT、File等
+
+2.文件的作用：保存数据存放在磁盘
+
+
+二、文件的打开与关闭
+
+1.读文件：
+
+方式一：
+
+f = open('文件', 'r',encoding='utf-8')    	#,encoding='utf-8'解决读文件中文报错
+
+print(f.read())
+
+方式二：
+
+readlines：一次性读出文件所有内容
+
+f=open("a.txt",'r',encoding='utf-8')
+
+print(f.readlines())
+
+方式三：
+
+readline：一行一行的读出文件内容
+
+f=open("a.txt",'r',encoding='utf-8')
+
+print(f.readline())
+
+2.读取长度限制
+
+content=f.read(8)
+
+print(content)
+
+3.写文件：
+
+方式一：
+
+f=open('文件名.txt','w')
+
+f.write("要写入的信息")
+
+f.close()
+
+方式二：
+
+f=open('b.txt','a')  #追加写入数据
+
+f.write("新的数据")
+
+f.close()
+
+4.二进制读写
+
+with open("照片.jpg","rb") as 对象:
+
+变量名 = 对象.read()
+
+print(变量名)
+
+5.文件和文件夹的操作
+
+1.文件操作
+
+1).文件重命名
+
+import os
+
+os.rename("要修改的文件.txt","新文件.txt")
+
+2).删除文件
+
+import os
+
+os.remove("要删除的文件")
+
+3).创建文件夹
+
+import os
+
+os.mkdir("文件夹名")
+
+4)获取当前目录
+
+print(os.getcwd())
+
+6.异常（其实就是正常运行的程序发生了一个错误）
+
+1）try (运行的语句)
+
+except（后面是异常）
+
+else(后面没有异常)
+
+2）try finally(总会执行)
+
+7.模块(是一个Python文件，以.py 结尾，包含了Python 对象定义和Python语句)
+
+1)import
+
+1))   import aa    ( #aa是文件名，test2是aa文件里面的一个方法)
+
+aa.test2()
+
+2))  开平方根
+
+import math
+
+print(math.sqrt(4))  #2
+
+2)from...import
+
+from  要调用的文件  import 文件里面方法()
+
+from modname import *  #调用文件里的所有方法
+
+8.Python中的包
+
+简单地说其实包就是文件夹，文件夹下面必须存在init.py文件
+

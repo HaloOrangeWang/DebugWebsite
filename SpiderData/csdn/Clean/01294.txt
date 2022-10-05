@@ -1,0 +1,36 @@
+TypeError: Cannot create a consistent method resolution
+
+这个报错的因为在函数继承类时，有一个类与父类继承的类重复啦～
+
+例如：
+
+class A:
+
+pass
+
+class B(A):
+
+pass
+
+class C(A,B):
+
+pass
+
+runtest=C()
+
+运行后报错：TypeError: Cannot create a consistent method resolution
+
+解决方案：
+
+class C(A，B):
+
+pass
+
+改为：
+
+class C(B):
+
+pass
+
+再次运行这个问题就解决啦～～
+

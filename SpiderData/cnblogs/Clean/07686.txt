@@ -1,0 +1,33 @@
+
+问题：
+
+C:\Program Files (x86)\JetBrains\PyCharm 5.0.4\helpers\pycharm\utrunner.py:2: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+import imp
+
+运行时总是提示imp报错，但是不会影响脚本运行，网上搜索一下资料后，发现问题。
+
+
+原因：
+
+因为imp 从 Python 3.4 之后弃用了，所以可以使用 importlib 代替
+
+
+解决：
+
+首先找到地址文件，即C:\Program Files (x86)\JetBrains\PyCharm 5.0.4\helpers\pycharm\utrunner.py
+
+打开utrunner.py文件
+
+有两个地方需要修改：
+
+1. 第2行，将imp   替换成 importlib
+#import imp 
+import importlib
+
+2.第42行，注释 imp.load_source，使用 importlib.machinery.SourceFileLoader 加载模块
+
+#module = imp.load_source(moduleName, fileName)
+module = importlib.machinery.SourceFileLoader(moduleName, fileName).load_module()
+
+这样，再次运行后就不会提示 import imp错误了~
+

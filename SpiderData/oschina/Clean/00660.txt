@@ -1,0 +1,64 @@
+执行如下程序报错
+
+import pytest
+
+@pytest.fixture()
+def user():
+    print("获取用户名")
+    a = "zt"
+    return a
+
+def test_1(user):
+    assert user == "zt"
+
+if __name__ == "__main__":
+    pytest.main(["-s","test_fixture1.py"])
+
+Testing started at 10:34 ...
+D:\Python\PycharmProjects\venv\Scripts\python.exe "D:\Program Files (x86)\JetBrains\PyCharm 2018.1.2\helpers\pycharm\_jb_pytest_runner.py" --path D:/Python/Simulat_instruction_report/Smart_interface_test/Smart/learn/test_fixture1.py
+Launching py.test with arguments D:/Python/Simulat_instruction_report/Smart_interface_test/Smart/learn/test_fixture1.py in D:\Python\Simulat_instruction_report\Smart_interface_test\Smart\learn
+
+Traceback (most recent call last):
+  File "D:\Program Files (x86)\JetBrains\PyCharm 2018.1.2\helpers\pycharm\_jb_pytest_runner.py", line 31, in <module>
+    pytest.main(args, plugins_to_load)
+  File "D:\Program Files (x86)\python\lib\site-packages\_pytest\config\__init__.py", line 58, in main
+    config = _prepareconfig(args, plugins)
+  File "D:\Program Files (x86)\python\lib\site-packages\_pytest\config\__init__.py", line 196, in _prepareconfig
+    pluginmanager=pluginmanager, args=args
+  File "D:\Program Files (x86)\python\lib\site-packages\pluggy\hooks.py", line 284, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File "D:\Program Files (x86)\python\lib\site-packages\pluggy\manager.py", line 67, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File "D:\Program Files (x86)\python\lib\site-packages\pluggy\manager.py", line 61, in <lambda>
+    firstresult=hook.spec.opts.get("firstresult") if hook.spec else False,
+  File "D:\Program Files (x86)\python\lib\site-packages\pluggy\callers.py", line 203, in _multicall
+    gen.send(outcome)
+  File "D:\Program Files (x86)\python\lib\site-packages\_pytest\helpconfig.py", line 93, in pytest_cmdline_parse
+    config = outcome.get_result()
+  File "D:\Program Files (x86)\python\lib\site-packages\pluggy\callers.py", line 80, in get_result
+    raise ex[1].with_traceback(ex[2])
+  File "D:\Program Files (x86)\python\lib\site-packages\pluggy\callers.py", line 187, in _multicall
+    res = hook_impl.function(*args)
+  File "D:\Program Files (x86)\python\lib\site-packages\_pytest\config\__init__.py", line 675, in pytest_cmdline_parse
+    self.parse(args)
+  File "D:\Program Files (x86)\python\lib\site-packages\_pytest\config\__init__.py", line 854, in parse
+    self._preparse(args, addopts=addopts)
+  File "D:\Program Files (x86)\python\lib\site-packages\_pytest\config\__init__.py", line 799, in _preparse
+    self._initini(args)
+  File "D:\Program Files (x86)\python\lib\site-packages\_pytest\config\__init__.py", line 729, in _initini
+    config=self,
+  File "D:\Program Files (x86)\python\lib\site-packages\_pytest\config\findpaths.py", line 130, in determine_setup
+    rootdir, inifile, inicfg = getcfg([ancestor], config=config)
+  File "D:\Program Files (x86)\python\lib\site-packages\_pytest\config\findpaths.py", line 34, in getcfg
+    iniconfig = py.iniconfig.IniConfig(p)
+  File "D:\Program Files (x86)\python\lib\site-packages\py\_vendored_packages\iniconfig.py", line 54, in __init__
+    tokens = self._parse(iter(f))
+  File "D:\Program Files (x86)\python\lib\site-packages\py\_vendored_packages\iniconfig.py", line 82, in _parse
+    for lineno, line in enumerate(line_iter):
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xa1 in position 110: illegal multibyte sequence
+
+Process finished with exit code 1
+Empty test suite.
+
+pytest.ini 文件不是GBK格式，更改格式
+

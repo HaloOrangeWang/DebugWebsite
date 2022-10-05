@@ -1,0 +1,48 @@
+Python编程中raise可以实现报出错误的功能，而报错的条件可以由程序员自己去定制。在面向对象编程中，可以先预留一个方法接口不实现，在其子类中实现。如果要求其子类一定要实现，不实现的时候会导致问题，那么采用raise的方式就很好。而此时产生的问题分类是NotImplementedError。
+
+写一段代码如下：
+
+class ClassDemo:
+
+def test_demo(self):
+
+raise NotImplementedError("my test: not implemented!")
+
+程序运行结果：
+
+E:\01_workspace\02_programme_language\03_python\OOP\2017\08\10>pythonerror_demo.py
+
+Traceback (mostrecent call last):
+
+File "error_demo.py", line 9, in<module>
+
+inst.test_demo()
+
+File "error_demo.py", line 3, intest_demo
+
+raise NotImplementedError("my test:not implemented!")
+
+NotImplementedError:my test: not implemented!
+
+从上面的运行结果可以看出，程序识别到了这个方法并没有在子类中实现却被调用了。从代码报错的行数来看，只有这个子类的实例化对象调用相应的方法的时候才会报错。这样的推测结论也很容易通过代码修改测试得到验证，此处不再验证。
+
+进一步修改代码：
+
+class ClassDemo:
+
+def test_demo(self):
+
+raise NotImplementedError("my test: not implemented!")
+
+在新的代码中，子类中实现了对test_demo方法的设计。程序的运行结果如下：
+
+E:\01_workspace\02_programme_language\03_python\OOP\2017\08\10>pythonerror_demo.py
+
+OKOKOOK!
+
+从程序的执行结果可以看出，只要相应的方法接口进行了实现，在执行的时候未实施的错误便不会报出。
+--------------------- 
+作者：grey_csdn 
+来源：CSDN 
+原文：https://blog.csdn.net/grey_csdn/article/details/77074707?utm_source=copy
+

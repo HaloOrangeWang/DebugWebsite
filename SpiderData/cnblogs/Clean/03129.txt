@@ -1,0 +1,24 @@
+在搭建好的caffe环境下运行Python报错：ImportError:No module named _caffe
+
+报错原因：由于caffe的Python环境变量未配置好
+
+解决方案：
+
+方法1
+
+import os,sys
+
+caffe_root='/home/wangyanayng/caffe
+
+os.chdir(caffe_root)  #os.chdir()用于改变当前工作目录到指定的路径
+
+sys.path.insert(0,caffe_root+'python)
+
+方法2
+
+确保先重新make下pycaffe,然后 将python的路径配置到环境变量中 
+make pycaffe -j8 
+vim ~/.bashrc 
+加入 export PYTHONPATH=/SSD所在目录/caffe/python 
+source ~/.bashrc
+

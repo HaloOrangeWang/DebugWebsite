@@ -1,0 +1,51 @@
+在运行keras代码的时候，出现了以下的错误：
+
+Traceback (most recent call last):
+  File "segnet_train.py", line 254, in <module>
+    train(args)  
+  File "segnet_train.py", line 210, in train
+    model = SegNet()  
+  File "segnet_train.py", line 134, in SegNet
+    model.add(MaxPooling2D(pool_size=(2,2)))  
+  File "/usr/local/lib/python2.7/dist-packages/keras/engine/sequential.py", line 181, in add
+    output_tensor = layer(self.outputs[0])
+  File "/usr/local/lib/python2.7/dist-packages/keras/engine/base_layer.py", line 457, in __call__
+    output = self.call(inputs, **kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/keras/layers/pooling.py", line 205, in call
+    data_format=self.data_format)
+  File "/usr/local/lib/python2.7/dist-packages/keras/layers/pooling.py", line 268, in _pooling_function
+    pool_mode='max')
+  File "/usr/local/lib/python2.7/dist-packages/keras/backend/tensorflow_backend.py", line 3978, in pool2d
+    data_format=tf_data_format)
+  File "/home/ys/.local/lib/python2.7/site-packages/tensorflow/python/ops/nn_ops.py", line 2154, in max_pool
+    name=name)
+  File "/home/ys/.local/lib/python2.7/site-packages/tensorflow/python/ops/gen_nn_ops.py", line 4640, in max_pool
+    data_format=data_format, name=name)
+  File "/home/ys/.local/lib/python2.7/site-packages/tensorflow/python/framework/op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "/home/ys/.local/lib/python2.7/site-packages/tensorflow/python/util/deprecation.py", line 454, in new_func
+    return func(*args, **kwargs)
+  File "/home/ys/.local/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 3155, in create_op
+    op_def=op_def)
+  File "/home/ys/.local/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 1731, in __init__
+    control_input_ops)
+  File "/home/ys/.local/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 1579, in _create_c_op
+    raise ValueError(str(e))
+ValueError: Negative dimension size caused by subtracting 2 from 1 for 'max_pooling2d_2/MaxPool' (op: 'MaxPool') with input shapes: [?,1,128,128].
+
+Keras的图片处理文档中给出：
+dim_ordering: One of {“th”, “tf”}. “tf” mode means that the images should have shape (samples, height, width, channels), “th” mode means that the images should have shape (samples, channels, height, width). It defaults to the image_dim_ordering value found in your Keras config file at ~/.keras/keras.json. If you never set it, then it will be “tf”.
+
+即：
+
+关于图片的维度顺序有两种类型，分别是“th”和”tf“，它们的差别如下：
+
+图片维序类型为 th 时（dim_ordering='th'）： 输入数据格式为[samples][channels][rows][cols]；
+
+图片维序类型为 tf 时（dim_ordering='tf'）：输入数据格式为[samples][rows][cols][channels]；
+
+在Keras里默认的是“tf”顺序，如果想要改为“th”顺序，需要手动在前面加上如下代码：
+
+　　from keras import backend as K
+　　K.set_image_dim_ordering('th')
+

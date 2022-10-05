@@ -1,0 +1,38 @@
+
+问题出现描述
+
+Opencv : 4.3
+
+CUDA: 11.1
+
+Ubuntu 18.04
+
+编译支持CUDA的OpenCV， CMake命令和报错内容如下：
+
+其中一些变量是python是虚拟环境相关的，在激活虚拟环境后运行如下命令获得，编译时取消激活防止库冲突。
+
+报错内容如下：
+
+
+解决办法
+
+先按照OpenCV安装时CUDA_nppi_LIBRARY (ADVANCED) 报错处理方法的方法更改，但是依旧报错。
+
+先按照OpenCV安装时CUDA_nppi_LIBRARY (ADVANCED) 报错处理方法的方法更改，但是依旧报错。
+
+解决办法来自stackoverflow: Build OpenCV-4.0.0 with cuda 11 on Ubuntu 18.04
+
+只需要在cmake命令中添加-D CUDA_nppicom_LIBRARY=true这个未定义的变量即可。
+
+解决办法来自stackoverflow: Build OpenCV-4.0.0 with cuda 11 on Ubuntu 18.04
+
+只需要在cmake命令中添加-D CUDA_nppicom_LIBRARY=true这个未定义的变量即可。
+
+更新时间：2021.07.21 20:03
+
+这里-D CUDA_nppicom_LIBRARY=true 不合理， ture不是一个有效的库文件名称，建议随机选一个本机有的库，比如改成-D CUDA_nppicom_LIBRARY=stdc++ 防止链接库时导致找不到libtrue.so报错
+
+完整命令：
+
+结果：
+

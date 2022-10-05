@@ -1,0 +1,32 @@
+python中的中文编码一直以来都是一个极为头大的问题，经常抛出编码转换的异常，python中的str和unicode到底是一个什么东西呢？在python中提到unicode，一般指的是unicode对象，例如'哈哈'的unicode对象为u'\u54c8\u54c8'，而str，是一个字节数组，这个字节数组表示的是对unicode对象编码(可以是utf-8、gbk、cp936、GB2312)后的存储的格式。这里它仅仅是一个字节流，没有其它的含义，如果你想使这个字节流显示的内容有意义，就必须用正确的编码格式，解码显示
+
+例如：
+
+>>> A = u"你好"
+>>> A_UTF8 = A.encode("utf-8")
+>>> print A_UTF8
+浣犲ソ
+>>> A_GBK = A.encode("gbk")
+>>> print A_GBK
+你好
+>>> A_UTF8
+'\xe4\xbd\xa0\xe5\xa5\xbd'
+>>> A_GBK
+'\xc4\xe3\xba\xc3'
+    对于unicode对象"你好"进行编码，编码成一个utf-8编码,A_UTF8就是是一个字节数组，存放的就是'\xe4\xbd\xa0\xe5\xa5\xbd'，但是这仅仅是一个字节数组，不能通过print语句输出成你好.因为print语句它的实现是将要输出的内容传送了操作系统，操作系统会根据系统的编码对输入的字节流进行编码，这就解释了为什么utf-8格式的字符串"你好"，输出的是"浣犲ソ"，因为 '\xe4\xbd\xa0\xe5\xa5\xbd'用GB2312去解释，其显示的出来就是"浣犲ソ"。str记录的是字节数组，只是某种编码的存储格式，至于输出到文件或是打印出来是什么格式，完全取决于其解码的编码将它解码成什么样子。这里再对print进行一点补充说明：当将一个unicode对象传给print时，在内部会将该unicode对象进行一次转换，转换成本地的默认编码（可能是这样子的）
+
+decode和encode
+
+字符串在Python内部的表示是unicode编码,在做编码转换时，通常需要以unicode作为中间编码，即先将其他编码的字符串解码（decode）成unicode，再从unicode编码（encode）成另一种编码。            例:str1.decode('gb2312')，表示将gb2312编码的字符串str1转换成unicode
+
+str2.encode('gb2312')，表示将unicode编码的字符串str2转换成gb2312编码。
+
+转码的时候一定要先搞明白，字符串str是什么编码，然后decode成unicode，然后再encode成其他编码,在utf8的文件中，该字符串就是utf8编码，如果是在gbk的文件中，则其编码为gbk。这种情况下，要进行编码转换，都需 要先用decode方法将其转换成unicode编码，再使用encode方法将其转换成其他编码。通常，在没有指定特定的编码方式时，都是使用的系统默认编码创建的代码文件。
+
+如果一个字符串已经是unicode了，再进行解码则将出错，因此通常要对其编码方式是否为unicode进行判断：
+    isinstance(s, unicode) #用来判断是否为unicode
+
+例子：解决windows下python FTPClient下载中文文件名出错的问题
+
+　　
+

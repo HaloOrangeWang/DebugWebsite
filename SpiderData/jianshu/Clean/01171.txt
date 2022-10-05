@@ -1,0 +1,15 @@
+
+Flask 跨域设置 返回码大于400是报错The 'Access-Control-Allow-Origin' header contains multiple values
+
+Flask 开启跨域设置很简单，只需要在app的初始化方法里写上一个after_request里面加上一些headers就可以了，但是如果我们在添加headers的时候使用了response.headers.add(),就会导致：返回码大于400是报错The 'Access-Control-Allow-Origin' header contains multiple values。这是因为使用了response.headers.add()会添加多个Access-Control-Allow-Origin的value，而通过response.headers['Access-Control-Allow-Origin']方式设置，则只会保留一个！
+
+以下是参考代码：
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,session_id')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS,HEAD')
+    # 这里不能使用add方法，否则会出现 The 'Access-Control-Allow-Origin' header contains multiple values 的问题
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+

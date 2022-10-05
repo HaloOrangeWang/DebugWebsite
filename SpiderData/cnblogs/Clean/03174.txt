@@ -1,0 +1,12 @@
+问题参考 TypeError: inner() got multiple values for keyword argument 'ax'
+
+这时因为ax不是plt.plot()的一个有效的参数。原因是plt.plot()会调用当前活跃的axes的plot方法，和plt.gca().plot()是相同的。因此在调用时axes就被给定了。
+
+Solution: Don't use ax as argument to plt.plot(). Instead,
+
+call plt.plot(...) to plot to the current axes. Set the current axes with plt.sca(), or
+
+directly call the plot() method of the axes. ax.plot(...)
+
+Mind that in the example from the question, ax is not an axes. If this is confusing, name it differently,
+

@@ -1,0 +1,40 @@
+django版本：2.2.6
+
+python版本：3.7.4
+
+mysql版本：5.7
+
+搭建django 跟着github教程走到这一步
+
+但是实际到了下一步执行python manage.py migrate 迁移数据库就会报错，网上搜索可能是版本不兼容，最新的django2.2就是这种问题 会默认链接mysqlclient，换到2.1.5可解决。懒得换了，打算直接用mysqlclient，当我执行 pip install mysqlclient    安装时 ，又出错
+
+这里解决办法有两个
+
+1.下载visual c++14安装后再执行上边的命令
+
+2.直接下载mysqlclient安装文件（https://www.lfd.uci.edu/~gohlke/pythonlibs/#mysqlclient）
+
+我用的第二种方法，因为下载visual c++14本身体积比较大 安装时间也长好像还要重启电脑，
+
+那么下载哪个呢
+
+cp后接python版本， 请与你的python版本对应
+
+win32 - 只有默认32位
+
+带amd是指电脑处理器为amd, 不带可以理解为intel处理器的
+
+下载后再执行pip install xxx（文件路径）  我是直接放在当前目录下执行了
+
+pip install mysqlclient-1.4.4-cp37-cp37m-win32.whl
+
+成功安装！
+
+然后记得把之前添加的pymysql.install_as_MySQLdb()  这句代码删掉， 再执行python manage.py migrate    数据库迁移就能成功了。
+
+参考链接
+
+https://www.cnblogs.com/sheshouxin/p/10920255.html
+
+https://www.cnblogs.com/sjy18039225956/p/9241458.html
+

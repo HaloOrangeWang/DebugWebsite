@@ -1,0 +1,48 @@
+
+1. Django和python版本信息
+
+Django版本：Django 1.11(可通过pip list命令查看)
+
+python版本：Python 3.7.6(可通过python --version命令查看)
+
+客户机操作系统版本：Windows 10 家庭中文版
+
+
+2. 问题描述
+
+
+2.1 在Windows上安装Django
+
+
+2.2 新建Django项目
+
+
+2.3 启动Django，报错如下
+
+
+2.4 问题产生原因和解决方案
+
+问题原因
+
+django 1.11版本和python3.7版本不兼容, 2.0版本以后的Django修复了这个问题
+
+解决方案1
+
+修改\You_local_Path\python-3.7.6\Lib\site-packages\django\contrib\admin\widgets.py，去掉图片中的逗号即可(这里采用该种解决方案)
+
+
+2.5 采用方案1后，重启Django成功
+
+通过浏览器访问，页面显示正常，问题消除
+
+虽然页面能正常显示了，但是输出信息中存在报错，因此到项目目录下执行命令：python manage.py migrate
+
+完成后，重启Django项目，报错消失，如下：
+
+
+3 第一个展示指定页面的Django项目
+
+修改urls.py文件中的内容(直接使用下面的内容替换掉该页面中的代码即可)，如下，这种是Django定义好的模板，按照要求写就行
+
+启动Django项目，并在浏览器中访问，结果如下：
+

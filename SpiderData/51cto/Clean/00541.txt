@@ -1,0 +1,39 @@
+公司部署了Zscaler, 所有的internet traffic都通过Zscaler代理以保证数据安全。 带来的一个问题就是，Python访问的流量被中转到了Zscaler，会提示证书报错。
+
+报错信息如下
+
+报错信息如下
+
+pip install requests
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1123)'))': /simple/requests/
+WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1123)'))': /simple/requests/
+WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1123)'))': /simple/requests/
+
+临时解决方案如下，添加 --trusted-host参数给pip，这样可以忽略证书验证，但是仍然会产生警告。
+
+临时解决方案如下，添加 --trusted-host参数给pip，这样可以忽略证书验证，但是仍然会产生警告。
+
+pip install requestes --trusted-host pypi.org --trusted-host files.pythonhosted.org
+Collecting requestes
+
+Downloading requestes-0.0.1.tar.gz (1.4 kB)
+Using legacy 'setup.py install' for requestes, since package 'wheel' is not installed.
+Installing collected packages: requestes
+
+Running setup.py install for requestes ... done
+Successfully installed requestes-0.0.1
+WARNING: You are using pip version 20.2.3; however, version 21.0.1 is available.
+You should consider upgrading via the 'c:\program files\python39\python.exe -m pip install --upgrade pip' command.
+
+一劳永逸的解决方法是添加代理服务器的根证书到Python的Cert Store，方法如下
+
+一劳永逸的解决方法是添加代理服务器的根证书到Python的Cert Store，方法如下
+
+Windows上的Python自动包含PIP和Certifi，这是用于证书验证的默认证书捆绑包。
+
+获取Zscaler Proxy CA root cert并导入到 ""C:\Program Files\Python39\Lib\site-packages\pip\_vendor\certifi\cacert.pem""即可解决问题。
+
+根据安装的python版本的不同，路径可能有些许不同。
+
+再次执行pip安装第三方模块就不会报错了。
+

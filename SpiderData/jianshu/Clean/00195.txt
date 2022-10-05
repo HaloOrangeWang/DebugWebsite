@@ -1,0 +1,23 @@
+
+问题分析
+
+Python程序执行中，出现导入第三方包失败报错，如下所示：
+
+Traceback (most recent call last):
+  File "myproject2.py", line 4, in <module>
+    from flask_sqlalchemy import SQLAlchemy
+  File "/root/myproject2/myprojectenv2/lib/python3.8/site-packages/flask_sqlalch                                       emy/__init__.py", line 16, in <module>
+    from sqlalchemy import event, inspect, orm
+ImportError: cannot import name 'inspect' from 'sqlalchemy' (C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\site-packages\sqlalchemy\util\__init__.py)
+
+原因是python调用程序文件名称，与被调用模块的名称相同，出现了命名冲突。
+
+
+解决方案
+
+方案1、如果python调用程序是自己开发的程序，可以修改调用程序的名称。
+
+方案2、如果调用程序也是第三方包，不能简单修改名称，可以执行以下命令，重新安装模块的不同版本来解决。
+
+pip install --upgrade --force-reinstall flask-sqlalchemy sqlalchemy
+

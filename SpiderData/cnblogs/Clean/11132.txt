@@ -1,0 +1,209 @@
+根据编程经验的不同，我们在运行程序时可能经常或者偶尔碰到下面这些问题，仔细观察后会发现这些问题无一例外都出现了一个相同的短语，很容易就可以发现，这个短语就是"relative import"。
+ValueError: attempted relative import beyond top-level package
+# 翻译：试图在顶级包之外进行相对导入
+
+ImportError: attempted relative import with no known parent package
+# 翻译：尝试相对导入，但没有已知的父包
+
+ValueError: Attempted relative import in non-package
+# 翻译：试图在非包中进行相对导入
+
+SystemError: Parent module '' not loaded, cannot perform relative import
+# 翻译：父模块'xxx'未加载，不能执行相对导入。
+
+根据编程经验的不同，我们在运行程序时可能经常或者偶尔碰到下面这些问题，仔细观察后会发现这些问题无一例外都出现了一个相同的短语，很容易就可以发现，这个短语就是"relative import"。
+
+既然关于相对导入的报错提示，说明我们在代码中一定用到了相对导入的语法。下面先简单介绍一下相对导入的概念，随后详细介绍相对导入可能的问题和原理，最后给出上面提到的每个报错的解决方案。
+
+
+绝对导入
+
+既然要介绍相对导入，那必然绕不开绝对导入。绝对导入的格式为 import A.B 或 from A import B
+
+下面是绝对导入的一些🌰：
+
+
+相对导入
+
+相对导入格式为 from .A import B 或 from ..X import Y， . 代表当前包， .. 代表上层包， ... 代表上上层包，依次类推。
+
+相对导入的一些案例如下所示：
+
+相对导入基于当前模块的名称。由于主模块的名称始终为"__main__"，因此用作 Python 应用程序主模块的模块必须始终使用绝对导入。主模块所在文件夹不会被视作package，因此除了主模块外，与主模块处在同个文件夹的模块（也就是同级的模块）也必须使用绝对导入。
+
+还有个更专业的说法： 相对导入使用模块的名称属性来决定模块在包层次结构中的位置，如果模块的名称不包含任何包信息（例如：模块名称为'main'），那么相对导入则被解析为最顶层的位置，不管这个时候这个模块实际上位于文件系统中的什么位置。
+
+乍一看是不是觉得云里雾里，感觉每个字都认识，但就是不知道是什么意思，没关系，看完本文就理解了。加油💪🏻。
+
+
+包package
+
+文件夹被python解释器视作package需要满足两个条件：
+
+1、文件夹中必须有__init__.py文件，该文件可以为空，但必须存在该文件。
+
+2、不能作为顶层模块来执行该文件夹中的py文件（即不能作为主函数的入口）。顶层模块即是我们通常说的"main"方法所在的模块及其同级模块，其中"main"也常被称为主模块，即主模块所在文件夹不会被视作package。主模块的同级package被python解释器视为顶级包（也就是top-level package）。
+
+如果想要导入顶层包更上层的包或者模块，需要将包路径添加到sys.path中
+
+第一点很容易理解，下面详细介绍一下第二点。
+
+
+脚本 & 模块？（script vs module）
+
+python有两种加载文件的方法：一种是作为顶层的脚本，另一种是当做模块。如果你直接执行这个程序，那么这个文件就被当做是顶层脚本来执行了，在命令行里面输入 python myfile.py 就是这个情况。如果你输入python -m myfile.py或者在其他的文件当中使用import来导入这个文件的时候，它就被当做模块来导入。在同一时间里，只有一个主模块，主模块常被称为顶层脚本，顶层脚本可以这样解释：它是一个能够让你的程序从这里开始的python文件。
+
+
+将模块作为脚本执行
+
+test_script.py
+
+脚本中的__main__="name"下的代码仅在模块作为“主”文件执行时才运行：
+
+如果module是作为导入的模块，则不会执行该模块的__main__代码：
+
+这通常用于为模块提供方便的用户界面，或用于测试目的（将模块作为脚本执行测试套件运行）。
+
+
+模块的名称
+
+当一个文件被加载进来，它就有一个名称（这个名称存储在__name__属性当中）。如果这个文件被当做一个主模块来执行，那么它的名字就是__main__。如果它被当做一个模块加载，那么它的名称就是文件名称，加上它所在的包名，以及所有的顶层的包名，这些名称中间是用点号隔开的。
+
+比如下面的例子
+
+比如你导入moduleX（from package.subpackag1 import moduleX），它的名称就package.subpackage1.mouleX。如果你导入moduleA的时候（from package import moduleA），它的名称就是package.moudleA。
+
+（注：这里是使用包导入,即把package以及里面的所有文件看做一个包，导入的时候使用from xxx import yyy的形式来进行，我们调用第三方包的时候就是这种情况），
+
+但是，当你直接从命令行里面运行moduleX的时候，他的名称则被替换为__main__。如果你直接从命令行运行moduleA，它的名称也是__main__。当一个模块被当做一个顶层脚本来执行的时候，它原来的名称则会被__main__取代。
+
+
+结论
+
+当一个模块的名称中没有包，也就是只有文件名的时候，说明这个模块是一个顶层模块。顶层模块中不能使用相对导入。相对导入使用模块的名称属性来决定模块在包层次结构中的位置，相对导入能向上相对多少级，完全取决于模块名称中有多少层。
+
+当你运行交互式的解释器的时候，交互式进程的名称永远是__main__，因此你不能在交互式进程当中使用相对导入。相对导入只能在模块文件当中使用。
+
+参考： python相对包导入报“Attempted relative import in non-package”错误
+
+
+解决方案：
+
+
+1、ImportError: attempted relative import with no known parent package
+
+导致这个问题的原因： 主模块或者同级模块用到了相对导入，且引用了主模块所在包。因为主模块所在包不会被python解释器视为package，在python解释器看来主模块所在的包就是一个未知的父包，所以如果不小心以相对导入的方式引用到了，就会报with no known parent package这个错误。
+
+
+案例一
+
+主模块的同级模块在使用相对导入时引入了主模块所在包的案例
+
+运行main.py，运行结果如下
+
+
+案例二
+
+主模块在使用相对导入时引入了主模块所在包的案例
+
+运行main.py，运行结果如下
+
+
+方案一：
+
+解决方案也很简单，将相对导入给成绝对导入即可，上面这个案例只需要把from .去掉即可。比如第一个案例
+
+运行main.py
+
+
+方案二
+
+案例2只能使用改为绝对导入这种方式，但是案例一还有一种解决方式是把main.py文件移动到TestModule文件夹外面，使之与TestModule文件夹平级，这样TestModule即会被解析器视为一个package，在其他模块中使用相对导入的方式引用到了也不会报错。
+
+
+2、ValueError: attempted relative import beyond top-level package
+
+导致这个问题的原因： 主模块所在同级包的子模块在使用相对导入时引用了主模块所在包。因为主模块所在包不会被python解释器视为package，主模块的同级package被视为顶级包（也就是top-level package），所以主模块所在包其实是在python解释器解析到的顶层包之外的，如果不小心以相对导入的方式引用到了，就会报beyond top-level package这个错误。
+
+一个案例：
+
+python main.py
+
+这个问题同样有两个解决方案
+
+
+方案一：
+
+把main.py移动到TestModule文件夹外面，使之与TestModule平级，这样TestModule即会被解析器视为一个package，在其他模块中使用相对导入的方式引用到了也不会报错。
+
+运行main.py
+
+
+方案二：
+
+tom.py中将TestModule包加入到sys.path变量中，并使用绝对导入的方式导入Kate包，修改后的tom.py内容如下：
+
+运行结果如下
+
+关于为什么已经把TestModule加入了包查找路径还需要使用绝对导入来导入Kate的的解释：
+
+从上面的运行结果可以看出，tom_brother.py的模块名还是Tom.tom_brother，模块名并没有因为把TestModule加入了包查找路径就发生改变，而相对导入是根据模块名来确定的，如果模块名中没有TestModule，那还是不能使用绝对导入的方式来导入Kate，所以必须使用绝对导入的方式来导入Kate包
+
+
+3、ValueError: Attempted relative import in non-package
+
+
+4、SystemError: Parent module ' ' not loaded, cannot perform relative import
+
+3和4这两个报错的原因是一样的，都是把使用了相对导入的module当做主模块而直接运行了，即直接运行的脚本中包含了相对导入。但是我按这种方式操作了一下，发现无论怎么操作，报错提示始终是上面的第一个报错，即ImportError: attempted relative import with no known parent package。
+
+后来发现是python 版本的问题，
+
+python2在直接运行的脚本中使用相对导入时会报ValueError: Attempted relative import in non-package这个错误，
+
+python3.x（没测3.x具体是哪个版本）到python3.5报错SystemError: Parent module '' not loaded, cannot perform relative import ；
+
+python3.6及以上的报错提示是ImportError: attempted relative import with no known parent package。
+
+
+解决方案是：
+
+去除主模块（脚本）中的相对导入，改为绝对导入。
+
+这个问题的复现花我了好大一番功夫，找了好多博客，都说是主模块中用到了相对导入，但是我这么做就是不报这个错，而是报第一个错ImportError: attempted relative import with no known parent package，最后还是在一些博客中找到了蛛丝马迹，并且用docker快速拉取对应区间python版本镜像验证，得出结论，平时多学点东西还是很有用处的，比如docker，看似平时用不上，关键时刻还是真帮了大忙，否则重新在电脑上安装一个python版本，估计又得费老大功夫了。
+
+
+相对导入对于包的优势
+
+既然会引发这么多问题，那是不是我们以后就完全不用相对导入了呢。当然不！
+
+相对导入相较于绝对导入还是有一些优势的
+
+书写相较于绝对导入简单
+
+相对导入可以避免硬编码带来的包维护问题，例如我们改了某一层包的名称，那么其它模块对于其子包的所有绝对导入就不能用了，但是采用相对导入语句的模块，就会避免这个问题。
+
+参考： Python 包内的导入问题（绝对导入和相对导入）
+
+
+顺便一提
+
+包查找路径是sys.path变量中。sys.path初始状态一般由三部分组成：python正在执行的脚本的目录，PYTHONPATH路径，包的默认安装路径。
+
+自从python2.6，模块的名称不在决定使用__name__属性，而是使用__packege__属性。这就是为什么我避免使用__name__这么明确的名称来代表一个模块的名称。自从python2.6，一个模块的名称是由__package__+'.'+__name__来确定的，如果__packege__是None的话，那么这个名称就是__name__了
+
+
+参考：
+
+6.模块
+
+Python包的相对导入时出现错误的解决方法、
+
+python相对包导入报“Attempted relative import in non-package”错误
+
+Python 包内的导入问题（绝对导入和相对导入）
+
+源文：python相对导入常见问题和解决方案
+
+欢迎关注公众号 TestDevelop , 我在这里分享各种测试开发技术知识、沟通技巧、职场感言。欢迎后续与我共同成长。
+

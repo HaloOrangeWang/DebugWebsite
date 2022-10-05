@@ -1,0 +1,44 @@
+百度了一下，都是直接删除一个临时文件夹，重新运行后便正常了。
+
+https://blog.csdn.net/wangzhiqin365/article/details/84643452
+
+1. 我在用python处理一个excdl文件时，遇到报错如下：
+
+Traceback (most recent call last):
+  File "C:/pythonProject/流量短信详单时间格式_正式脚本.py", line 320, in <module>
+    main()
+  File "C:/pythonProject/流量短信详单时间格式_正式脚本.py", line 308, in main
+    cuc_data_process()
+  File "C:/pythonProject/流量短信详单时间格式_正式脚本.py", line 170, in cuc_data_process
+    fileName = xls2xlsx(fileName)
+  File "C:/pythonProject/流量短信详单时间格式_正式脚本.py", line 16, in xls2xlsx
+    excel = win32.gencache.EnsureDispatch('Excel.Application')
+  File "C:\Python_3.6.8\lib\site-packages\win32com\client\gencache.py", line 531, in EnsureDispatch
+    mod = EnsureModule(tla[0], tla[1], tla[3], tla[4], bForDemand=bForDemand)
+  File "C:\Python_3.6.8\lib\site-packages\win32com\client\gencache.py", line 388, in EnsureModule
+    module = GetModuleForTypelib(typelibCLSID, lcid, major, minor)
+  File "C:\Python_3.6.8\lib\site-packages\win32com\client\gencache.py", line 263, in GetModuleForTypelib
+    AddModuleToCache(typelibCLSID, lcid, major, minor)
+  File "C:\Python_3.6.8\lib\site-packages\win32com\client\gencache.py", line 549, in AddModuleToCache
+    dict = mod.CLSIDToClassMap
+AttributeError: module 'win32com.gen_py.00020813-0000-0000-C000-000000000046x0x1x9' has no attribute 'CLSIDToClassMap'
+
+Process finished with exit code 1
+
+2.解决方法：
+
+运行下面 4行代码，找到报错的临时文件夹所在路径，将其删除
+
+$ python
+Python 3.6.8 (tags/v3.6.8:3c6b436a57, Dec 24 2018, 00:16:47) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from win32com.client.gencache import EnsureDispatch
+>>> import sys
+>>> xl = EnsureDispatch("Word.Application")
+>>> print(sys.modules[xl.__module__].__file__)
+C:\Users\hp\AppData\Local\Temp\gen_py\3.6\00020905-0000-0000-C000-000000000046x0x1x9\_Application.p
+
+>>>
+
+3. 再次运行python脚本处理excel，可以执行完毕，会发现刚才删除的临时文件夹又出现了，不用管它。
+

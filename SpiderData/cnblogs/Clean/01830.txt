@@ -1,0 +1,53 @@
+今天在使用RF远程连接数据库时出现报错的问题，因为我发现只安装databaselibrary跟PyMsql的话，连接本地的数据库是OK的，但是如果我们的测试机性能有限，那么既要编写代码、运行测试、还有打开各种浏览器，再加上一个数据库的话就会卡的不成型，所以最好能把数据库部署到其他服务器上，这里我新部署的数据库主要用于存在测试数据，因为很多地方都需要录入数据，做成列表或者是字典每次都要修改，而且我们公司的表单很多，一个页面有50个要录入的数据，这种情况下我想到用数据库的方式，提前在数据库生成上万条不重复的数据，每次去读取一条，用完后直接在RF命令删除，这样保证测试永远不会因为数据重复报错，回到问题本质：
+
+我遇到第一次报错如下：
+
+No module named  cryptography.hazmat，怎么办？看名字应该是说少了cryptography这个库，于是我去pipy下载这个资源包去python setup.py install的方式安装（因为我的测试机不能联网）
+
+结果发现网上的包都不完整，还是要联网下载，这个方案PASS；
+
+怎么办？我想到另外一种方式，我找到一个能pip上网的电脑也有python环境的，然后我用pip install  cryptography ，安装完成后，我去Lib\site-packages下把刚安装的包全部选择复制（PS：怎么确定要复制哪些？最简单的办法根据修改时间，必须全部复制），估计有十多个文件，有很多库是自动安装的
+
+把复制的文件全部考到测试机的Lib\site-packages下，然后运行cmd   pip  list就会发现增加了很多库，这时候我再去把做好的数据库链接脚本运行，发现还是报错，这次报错如下：
+
+No module named six      ；这次去网上看了下有人说要安装matplotlib ；有人说要去复制文件，最后我还是在能上网的环境安装了matplotlib；pip install matplotlib ；然后拷贝到测试环境Lib\site-packages下 ，我在测试环境cmd下  python   import matplotlib   还是报错no module named six
+
+我去能上网环境cmd下；  python   import matplotlib  却没有报错，这时候我仔细检查了下上网环境的Lib\site-packages文件夹下，发现了这三个six.pyc，six.py，six-1.11.0.dist-info 我把这三个复制到测试环境下，在运行脚本，就发现成功了，并且从服务器数据库读出了我想要的数据。
+
+但是这里的汉字都是显示的如下：
+
+'\xe7\xbd\x91\xe4\xb8\x8a\xe5\xbc\x80\xe6\xa0\x87\xe7\xae\xa1\xe7\x90\x86'
+
+这些并不是我们想要的结果，如何把这类的看似是Unicode的编码转化为我们想要的中文utf8呢
+
+我看到的三种做法：
+
+第一种：做法是在在pymysql 连接尾部加上charset="UTF8"即可解决：
+
+Connect to Database     pymysql     basedb_dy    root    密码    IP  3306 charset="UTF-8"
+
+经过测试显示的还是u+unicode的编码，所以不推荐这个方式
+
+第二种：直接把取出来的结果进行转化，用RF提供的Evaluate调用decode()来实现，代码如下：
+
+${etrole}	query	select fname from etrole	
+${etroledecode2}	Evaluate	'${etrole[0][0]}'.decode('UTF-8')	
+log	${etroledecode2}
+
+这样我们就能把这个字段转化为中文
+
+第三种：直接二次开发写一个自己的转化关键字，或者直接在DatebaseLibrary中添加一个decode，这里推荐后者，去Python27\Lib\site-packages\DatabaseLibrary找到query.py文件，在末尾加入：
+
+def decode(self, customstr, mode):
+        return customstr.decode(mode)
+
+　　保存后,重启ride，调用这个decode关键字即可：
+
+代码如下：
+
+${etrole}	query	select fname from etrole		
+${etroledecode}	decode	${etrole[0][0]}	UTF-8
+log	${etroledecode}
+
+　　
+

@@ -1,0 +1,55 @@
+return self.render(context)
+  File "C:\Python36\lib\site-packages\django\template\defaulttags.py", line 322, in render
+    return nodelist.render(context)
+  File "C:\Python36\lib\site-packages\django\template\base.py", line 990, in render
+    bit = node.render_annotated(context)
+  File "C:\Python36\lib\site-packages\django\template\base.py", line 957, in render_annotated
+    return self.render(context)
+  File "C:\Python36\lib\site-packages\django\template\defaulttags.py", line 322, in render
+    return nodelist.render(context)
+  File "C:\Python36\lib\site-packages\django\template\base.py", line 993, in render
+    bits.append(force_text(bit))
+  File "C:\Python36\lib\site-packages\django\utils\encoding.py", line 76, in force_text
+    s = six.text_type(s)
+  File "C:\Python36\lib\site-packages\django\utils\html.py", line 394, in <lambda>
+    klass.__str__ = lambda self: mark_safe(klass_str(self))
+  File "C:\Python36\lib\site-packages\django\forms\boundfield.py", line 40, in __str__
+    return self.as_widget() + self.as_hidden(only_initial=True)
+  File "C:\Python36\lib\site-packages\django\forms\boundfield.py", line 127, in as_widget
+    **kwargs
+  File "D:\web\xxxx\extra_apps\xadmin\widgets.py", line 86, in render
+    '</i></span>%s<span class="input-group-btn"><button class="btn btn-default" type="button">%s</button></span></div></div>' % (input_html[0], _(u'Today'), input_html[1], _(u'Now')))
+IndexError: list index out of range
+[07/Jul/2018 18:05:25] "GET /xadmin/xxx/hotsearchwords/add/ HTTP/1.1" 500 674359
+[07/Jul/2018 18:05:27] "GET /xadmin/xxxx/hotsearchwords/ HTTP/1.1" 200 25503
+
+按照错误提示信息，找到以下代码
+
+def render(self, name, value, attrs=None):
+        if DJANGO_11:
+            input_html = [ht for ht in super(AdminSplitDateTime, self).render(name, value, attrs).split('\n') if ht != '']
+            # return input_html
+            
+            return mark_safe('<div class="datetime clearfix"><div class="input-group date bootstrap-datepicker"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>%s'
+                             '<span class="input-group-btn"><button class="btn btn-default" type="button">%s</button></span></div>'
+                             '<div class="input-group time bootstrap-clockpicker"><span class="input-group-addon"><i class="fa fa-clock-o">'
+                             '</i></span>%s<span class="input-group-btn"><button class="btn btn-default" type="button">%s</button></span></div></div>' % (input_html[0], _(u'Today'), input_html[1], _(u'Now')))
+        else:
+            return super(AdminSplitDateTime, self).render(name, value, attrs)
+
+def format_output(self, rendered_widgets):
+        return mark_safe(u'<div class="datetime clearfix">%s%s</div>' %
+                         (rendered_widgets[0], rendered_widgets[1]))
+
+input_html就是报错的代码，因为input_html里只有一个元素，从报错信息里也能找到input_html的值如下：
+
+input_html = [ht for ht in super(AdminSplitDateTime, self).render(name, value, attrs).split('\n') if ht != '']
+
+修改后代码：
+
+input_html = [ht for ht in super(AdminSplitDateTime, self).render(name, value, attrs).split('/><') if ht != '']
+input_html[0] = input_html[0] + "/>"
+input_html[1] = "<" + input_html[1]
+
+即可。
+

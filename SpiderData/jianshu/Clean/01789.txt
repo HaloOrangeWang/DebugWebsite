@@ -1,0 +1,72 @@
+报错一：self._sock.sendall(b) ConnectionAbortedError: [WinError 10053] 您的主机中的软件中止了一个已建立的连接。
+
+报错二：return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9 TypeError: 'NoneType' object is not subscriptable
+
+报错三：self.status.split(' ',1)[0], self.bytes_sent AttributeError: 'NoneType' object has no attribute 'split
+
+报错四："GET /favicon.ico HTTP/1.1" 404 3163
+
+报错五："GET /c_hello?asker=backuper HTTP/1.1" 404 3166 Not Found: /c_hello
+
+用Django也有一段时间了，但是一直有个问题很烦人，就是Django正常运行却一直报各种错误，虽然不影响程序可是经常让打印内容不直观且对于强迫症患者，好想砸电脑！！！百度了各种无用，然后实在受不了，就开始瞎改了，结果发现全都被我解决了，虽然。。。我写的可能不是那么python，但是看得就是好爽！具体原因有很多，比如wsgiref适用于2.7、未正确处理connectAbortedError等等。
+
+
+报错一：self._sock.sendall(b) ConnectionAbortedError: [WinError 10053] 您的主机中的软件中止了一个已建立的连接。
+
+解决方法：找到python/Lib/socketserver.py文件，修改SocketWriter类的write方法，具体如下：
+
+def write(self, b):
+        try:
+            self._sock.sendall(b)
+        except Exception as e:
+          self._sock.close()
+        with memoryview(b) as view:
+            return view.nbytes
+
+
+报错二：return self.environ[‘SERVER_PROTOCOL’].upper() != 'HTTP/0.9 TypeError: ‘NoneType’ object is not subscriptable
+
+解决方法：打开python\lib\wsgiref\handlers.py文件，修改client_is_modern函数，具体如下：
+
+def client_is_modern(self):
+        """True if client can accept status and headers"""
+        try:
+            cmp = self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
+        except Exception as e:
+            cmp = False
+        return cmp
+
+
+报错三：self.status.split(’ ',1)[0], self.bytes_sent AttributeError: ‘NoneType’ object has no attribute 'split
+
+解决方法：打开python\lib\wsgiref\simple_server.py文件，修改ServerHandler类，具体如下：
+
+class ServerHandler(SimpleHandler):
+
+server_software = software_version
+
+def close(self):
+        try:
+            self.request_handler.log_request(
+                self.status.split(' ',1)[0], self.bytes_sent
+            )
+            SimpleHandler.close(self)
+        except Exception as e:
+            SimpleHandler.close(self)
+
+
+报错四：“GET /favicon.ico HTTP/1.1” 404 3163
+
+解决方法：在static文件下的image文件添加一个favicon.ico图片，然后在页面头部加入
+
+<link rel="icon" href="/static/images/favicon.ico" type="image/x-icon"/>
+
+注：具体路径看自己定义的内容，或有差异.
+
+
+报错五：GET /c_hello?asker=backuper HTTP/1.1" 404 3166 Not Found: /c_hello
+
+系统端口冲突，不要使用默认的端口，可以调整一下端口：
+
+Python manage.py runserver 9999
+

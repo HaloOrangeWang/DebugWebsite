@@ -1,0 +1,32 @@
+问题描述：
+
+项目在本地运行不报错，上传到 GitHub 之后，再 clone 到本地，执行：
+
+npm install
+
+安装完成之后再执行：
+
+npm run dev
+
+这时报错 Error: No PostCSS Config found in...  本以为是 GitHub 上传的问题，后开又试了两回，发现问题依然存在，于是就开始网上寻找办法。
+
+解决方案：
+
+在项目根目录新建postcss.config.js文件，并对postcss进行配置：
+
+module.exports = {  
+  plugins: {  
+    'autoprefixer': {browsers: 'last 5 version'}  
+  }  
+}
+
+好了，大功告成，试一试：
+
+npm run dev
+
+完美运行。
+
+依然存在疑问：
+
+项目在本地运行时本来不报错的，但是为什么上传到 GitHub 之后，再 clone 下来，再运行就得单独写一个 postcss.config.js 的文件并配置一下呢？
+

@@ -1,0 +1,41 @@
+
+python3中使用mysql报错ModuleNotFoundError: No module named 'MySQLdb'
+
+原因是：
+在python2.x中用mysqldb，但是在python3.x中已经不支持那个组件了。
+取而代之的是：
+
+import pymysql
+
+　　
+
+1、在项目文件夹下的_init_.py中导入pymysq包
+
+import pymysql 
+pymysql.install_as_MySQLdb()
+
+　　
+
+2、在settings.py设置数据库
+
+DATABASES = {
+'default': {
+'ENGINE': 'django.db.backends.mysql',
+'NAME': 'dbname',
+'USER':'dbUser',
+'PASSWORD':'dbPwd',
+'HOST':'',#默认本地
+'PORT':'' 
+}
+}
+
+　　
+
+3、必须先在mysql创建你的数据库
+
+4、使用命令建立数据库数据
+
+manage.py migrate
+
+　　
+

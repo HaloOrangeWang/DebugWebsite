@@ -1,0 +1,25 @@
+在使用supervisor进行进程管理时，启动supervisorctl，启动时候报错
+ unix:///tmp/supervisor.sock no such file
+
+然后网上搜了一堆也没解决问题，后来去看supervisor.log，发现supervisord一启动，过了几秒就自动to die了。
+
+后来在stackOverFlow看到了这个问题
+ 尝试去修改了下/etc/supervisord.conf中的
+
+[unix_http_server]
+file=/tmp/supervisor.sock   ; (the path to the socket file)
+chmod=0700                 ; socket file mode (default 0700)
+chown=nobody:nogroup       ; socket file uid:gid owner
+username=root              ; (default is no username (open server))
+password=root               ; (default is no password (open server))
+
+之后再启动就成功了，不会报错，也不会自动die了
+
+supervisord -c /etc/supervisord.conf
+
+注意：用supervisorctl查看进程状态时会提示输入账号密码
+
+supervisorctl
+
+sock和pid统一放到/var/run下面，并且把run设个777
+

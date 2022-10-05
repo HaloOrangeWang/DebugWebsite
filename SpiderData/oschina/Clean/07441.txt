@@ -1,0 +1,112 @@
+刚开始接触RN,总是会遇到各种红屏黄屏报错，红屏是fatal error(程序无法正常运行)，黄屏是Warming(非致命错误，程序可以运行但是存在潜在问题可能在某些情况下将导致fatal error)。
+
+红屏或黄屏提示都只会在开发版本中显示，正式的离线包中是不会显示的。应用内的报错会以全屏红色显示在应用中（调试模式下），我们称为红屏（red box）报错。你可以使用console.error()来手动触发红屏错误。
+
+应用内的警告会以全屏黄色显示在应用中（调试模式下），我们称为黄屏（yellow box）报错。点击警告可以查看详情或是忽略掉。和红屏报警类似，你可以使用console.warn()来手动触发黄屏警告。在默认情况下，开发模式中启用了黄屏警告。可以通过以下代码关闭：
+
+console.disableYellowBox = true;
+console.warn('YellowBox is disabled.');
+
+你也可以通过代码屏蔽指定的警告，像下面这样调用ignoreWarnings方法，参数为一个数组：
+
+YellowBox.ignoreWarnings(['Warning: ']);
+
+数组中的字符串就是要屏蔽的警告的开头的内容。（例如上面的代码会屏蔽掉所有以Warning开头的警告内容）。
+
+我会在这里记录下我遇到的比较典型的问题，不定时更新，一方面方便别人参考学习，一方面也给自己做个记录归纳。
+
+
+红屏报错
+
+
+The development server returned response error code 500
+
+这通常是因为NPM包出现异常产生的问题，可以尝试把node_modules文件夹删除后重新下载一次，可以通过在项目根目录里运行以下命令行代码：
+
+rmdir -rf ./node_modules && npm install && npm link
+
+
+黄屏报错
+
+
+终端报错
+
+
+Could not get unknown property 'MYAPP_RELEASE_STORE_FILE' for SigningConfig
+
+
+
+原因:
+
+打包过release包之后Gradle里面没有密码
+
+
+解决方法:
+
+编辑~/.gradle/gradle.properties（没有这个文件你就创建一个空文件），添加如下的代码（注意把其中的替换为相应密码）。
+
+gradle.properties文件应该使用RNProject/android/下面的gradle.properties 
+也就是说在gradle.properties里面添加
+
+MYAPP_RELEASE_STORE_FILE=my-release-key.keystore
+MYAPP_RELEASE_KEY_ALIAS=my-key-alias
+MYAPP_RELEASE_STORE_PASSWORD=*
+MYAPP_RELEASE_KEY_PASSWORD=*
+
+
+You have not accepted the license agreements of the following SDK components
+
+
+原因：
+
+缺少相应的包（我这里就是Android SDK Platform 23相关的工具）
+
+
+解决方法:
+
+使用AS的SDK Manager下载相应的包
+
+这个时候再运行一次，依然报错。
+
+打开sdk目录进入tools\bin\
+
+在此目录下使用命令行执行
+
+./sdkmanager --licenses
+
+然后在出现的协议里一直按Y即可。
+
+
+Could not expand ZIP
+
+原因：暂时不明
+
+解决方案：
+
+进入工程文件夹下android目录内
+
+在此文件夹内运行命令行提示符
+
+./gradlew clean
+
+完成之后重新Build即可。
+
+
+
+
+unable to find utility "instruments", not a developer tool or in PATH
+
+
+报错原因：
+
+升级过xcode或者xcode多版本共存下没有设置默认版本
+
+
+解决方案：
+
+打开xcode，选择
+
+切换到Locations,在command line tools 中选择你需要用的版本
+
+此时完全退出xcode，再次尝试run-ios，一切正常！
+

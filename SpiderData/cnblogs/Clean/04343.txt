@@ -1,0 +1,24 @@
+写了个基于opencv的python程序，pyinstaller 32位机打包后在win7/win10 32/64正常运行，在Windows Server 2012 R2 Datacenter云服务器报cv2 ImportError: Dll load failed。只好自己装个虚拟机测试。
+
+1、微软官网下载Windows Server 2012 R2的iso镜像文件
+
+2、安装VMware，创建虚拟机，暂时不安装操作系统，选择Windows Server 2012系统，完成新建
+
+3、VMware选中刚才新建的虚拟机，编辑虚拟机设置，点CD/DVD，使用ISO镜像文件，选择1中下载的镜像文件，完成安装
+
+4、VMware菜单点编辑，虚拟网络编辑器，点VMnet8。点NAT设置，查看网关IP、子网掩码；点DHCP设置，查看起始、结束IP地址，选一个IP地址作为虚拟机网络IP，同时不勾选“使用本地DHCPxxx”
+
+5、启动虚拟机，配置IPV4属性，固定IP为4里选的IP，子网掩码、默认网关按4中查到的填，首选DNS服务地址填默认网关IP
+
+6、按https://pypi.org/project/opencv-python/安装VC++和C运行环境补丁。运行打包的opencv python程序报错，stdin或者cv2库ImportError
+
+7、https://github.com/lucasg/Dependencies下载Dependencies，运行DependenciesGui.exe
+8、从其他电脑拷一个cv2.cp36-win32.pyd类似的pyd文件，拖入Dependencies里，查看是否有缺失的库文件，如果缺少mf.dll等三个dll库，需要安装桌面体验
+9、打开服务器管理器，右上角点“管理”-->添加角色和功能。点“服务器选择”-->“功能”，拖动条拖到最下面，点开“用户界面xxxx”，勾选“桌面体验”，点“安装”按钮
+
+7、https://github.com/lucasg/Dependencies下载Dependencies，运行DependenciesGui.exe
+
+8、从其他电脑拷一个cv2.cp36-win32.pyd类似的pyd文件，拖入Dependencies里，查看是否有缺失的库文件，如果缺少mf.dll等三个dll库，需要安装桌面体验
+
+9、打开服务器管理器，右上角点“管理”-->添加角色和功能。点“服务器选择”-->“功能”，拖动条拖到最下面，点开“用户界面xxxx”，勾选“桌面体验”，点“安装”按钮
+

@@ -1,0 +1,40 @@
+Tail var/log/zabbix/zabbix_server
+
+mysql_connect(): Can'tconnect to local MySQL server through socket '/var/lib/mysql/mysql.sock' (2)[include/db.inc.php:77]Error connecting to database [Can't connect to localMySQL server through socket '/var/lib/mysql/mysql.sock' (2)]
+
+出现sock问题 sock [2002]
+
+更改配置文件/etc/my.cnf
+
+[mysqld]
+
+port            = 3306
+
+socket          = /var/lib/mysql/mysql.sock
+
+skip-locking
+
+key_buffer_size = 256M
+
+datadir         = /data/mysql
+
+max_allowed_packet = 1M
+
+table_open_cache = 256
+
+sort_buffer_size = 1M
+
+read_buffer_size = 1M
+
+read_rnd_buffer_size = 4M
+
+myisam_sort_buffer_size =64M
+
+thread_cache_size = 8
+
+query_cache_size= 16M
+
+以/etc/zabbix/zabbix_server.conf下的sock路径为正确路径
+
+DBsock =/var/lib/mysql/mysql.sock
+

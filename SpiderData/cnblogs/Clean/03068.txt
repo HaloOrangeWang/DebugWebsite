@@ -1,0 +1,22 @@
+定义测试报告两种写法：
+
+1）测试报告直接在本地绝对路径下生成
+
+2）运行的脚本的上一级目录有_reports，测试报告页会在运行时自动在该目录下生成
+
+目录结构如图：
+
+⭐脚本可执行，但无HTML测试报告文件生成，其造成的原因是在PyCharm的执行模式错误
+
+pycharm执行脚本时，调用的是pycharm自带的unittest框架，不会执行HTMLTestRunner库的方法。所以应以非unittest模式运行，也就是用python文件直接运行。
+
+错误执行模式：即使选择py.tests模式运行脚本，但最后还是在Python tests下运行也是生成测试报告失败
+
+解决方法：取消默认运行unittest模式
+
+①Pycharm工具栏File-> Settings -> Tools -> Python Integrated Tools -> Default test runner ,将Unittests改为py.test即可（如果报错则需要安装pytest库，安装了pytest库仍报错，则再打开取消默认运行unittest方法的步骤页，刚刚选择的修改为python模式运行下方会提示出错，可fix，点击fix按钮即可）
+
+②Pycharm右上角，点开Edit Configurations，展开Python和Python tests这两个选项，Python tests选项下运行则以unittest模式运行，只需将运行的脚本从Python tests选项下移除，点击Python选项，选择好Script path和Python interpreter和Working directory保存，以python文件模式运行即可
+
+⭐正确运行模式
+

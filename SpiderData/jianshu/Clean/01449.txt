@@ -1,0 +1,26 @@
+python request 请求https 挂代理报错
+
+问题1：requests.exceptions.SSLError: HTTPSConnectionPool(host='XXX', port=443):Max retries exceeded with url: /login/ (Caused by SSLError(SSLError("bad handshake:Error([('SSL routines', 'tls_process_server_certificate', 'certificate verify failed
+
+pip install cryptography
+
+pip install pyOpenSSL
+
+pip install certifi
+
+请求方法里加入 verify=False
+
+问题2：requests.exceptions.ProxyError: HTTPSConnectionPool(host='xxx', port=443): Max retries exceeded with url: xxx (Caused by ProxyError('Cannot connect to proxy.', error('Invalid response from tunnel request',)))
+
+pip install PySocks
+
+pip install pysocks5
+
+proxy = {
+
+'http': 'socks5://xxx.xxx.xxx.xxx:xxxx'
+
+}
+
+具体设置可能跟使用的代理服务有关
+

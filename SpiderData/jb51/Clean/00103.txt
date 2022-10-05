@@ -1,0 +1,37 @@
+exam = { 'math': '95', 'eng': '96', 'chn': '90', 'phy': '', 'chem': '' }
+
+使用下列遍历的方法删除：
+
+1. for e in exam:
+
+2. if exam[e] == '':
+
+3. del exam[e]
+
+结果出现下列错误，怎么解决：
+
+Traceback (most recent call last):
+ File "Untitled.py", line 3, in <module>
+  for e in exam:
+RuntimeError: dictionary changed size during iteration
+
+正确做法：
+
+1. s = {"1":a,"2":b,"3":c,"4":d,"5":e}
+
+2. s_key = list(s.keys())
+
+3. for k_s in s_key:
+
+4.#比如我要删除第四个元素
+
+5.del s["4"]
+
+只是在for循环中，相当于对链表的操作，它会自动调用next方法！
+
+字典的迭代器会遍历它的键，在这个过程中，不能改变这个字典！不能删除、添加数据
+
+要先记录要删除的元素的索引，遍历完后再删除，exam.keys()返回的是一个独立的列表
+
+以上这篇完美解决python遍历删除字典里值为空的元素报错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

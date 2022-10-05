@@ -1,0 +1,15 @@
+解决pyhton aiohttp ssl:证书报错问题,
+
+错误信息>
+
+Cannot connect to host oapi.dingtalk.com:443 ssl:None [[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:777)]
+
+解决方案就是取消ssl验证;
+
+aiohttp.Connector使用自定义创建ssl_context（有关如何创建ssl上下文对象，请参阅https://docs.python.org/3/library/ssl.html）。
+也许您必须使用您的证书链正确配置上下文。
+
+PS aiohttp.Connector(verify_ssl)禁用SSL证书验证。
+
+在 ClientSession()传入ssl 配置
+

@@ -1,0 +1,51 @@
+安装过程：
+
+1:安装Homebrew
+
+2:在终端中输入指令：brew install mysql
+
+3:输入指令：brew unlink mysql
+
+4:输入指令：brew install mysql-connector-c
+
+5:输入指令：sed -i -e 's/libs="$libs -l "/libs="$libs -lmysqlclient -lssl -lcrypto"/g'/usr/local/bin/mysql_config 这个是自己安装的mysql的路径
+
+6:输入指令：pip install MYSQL-python
+
+此时报错：
+
+经排错发现是mysql版本过高造成的,于是将mysql的版本将为5.7版本
+
+7:输入指令：brew install mysql@5.7
+
+8:输入指令：pip install mysql-python
+
+此时可能报错：
+
+如果出现这个错误，是因为gcc找不到这个库，在终端输入：
+
+export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
+
+brew install openssl
+
+问题解决。
+
+如果报错如下：
+
+说明是xcode有问题，重新安装（在终端输入：xcode-select --install） 解决
+
+9:输入命令：brew unlink mysql-connector-c
+
+10:输入命令：brew link --overwrite mysql
+
+11:完成
+
+===================================
+
+如果是centos报如下错误，需要安装yum install Percona-Server-shared-51
+
+import MySQLdb
+  File "/xxxxxx/python26/lib/python2.6/site-packages/MySQLdb/__init__.py", line 19, in <module>
+    import _mysql
+ImportError: libmysqlclient_r.so.16: cannot open shared object file: No such file or directory
+

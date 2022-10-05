@@ -1,0 +1,52 @@
+这篇文章部分来源：http://m.blog.csdn.net/hao930826/article/details/52232324
+
+这个错误是引用不规范造成的 
+ 就是from A import B和import A的问题 
+ from A import B的话，用到B时可以直接用 
+ 而import A的话，需要A.B
+
+看一下今天我遇到的问题： 
+ 我把装饰器ftimer放到另一个文件ftimer中（我不该把这两个起相同的名字的） 
+ 然后我引用的时候
+
+import ftimer
+
+@ftimer
+def linear_search(A,n,x):
+    ans='NOT_FOUND'
+    for i in range(n):
+        if A[i]==x:
+            ans=i+1
+    return ans
+
+由于同名，所以@ftimer没有出现红色下划线 
+ 同时一直报错：’module’ object is not callable
+
+后来发现错误后，改为
+
+import ftimer
+
+@ftimer.ftimer
+def linear_search(A,n,x):
+    ans='NOT_FOUND'
+    for i in range(n):
+        if A[i]==x:
+            ans=i+1
+    return ans
+
+或
+
+from ftimer import ftimer
+
+@ftimer
+def linear_search(A,n,x):
+    ans='NOT_FOUND'
+    for i in range(n):
+        if A[i]==x:
+            ans=i+1
+    return ans
+
+就可以了
+
+当然，最后我把那个文件名改为了decorators
+

@@ -1,0 +1,20 @@
+在编译安装python2.7后，在bin目录下执行./python2.7出现如下错误：
+
+./python2.7: error while loading shared libraries: libpython2.7.so.1.0: cannot open shared object file: No such file or directory。这是因为缺少了libpython2.7.so.1.0。
+
+解决办法如下：
+
+1.使用root账户编辑文件/etc/ld.so.conf。
+
+vi /etc/ld.so.conf
+
+在其后添加一行，内容为安装的python2.7的lib目录，保存退出，如：
+
+/home/xxx/python2.7/lib
+
+2. 执行命令，使配置生效。
+
+/sbin/ldconfig -v
+
+3.再次执行./python2.7就不会再出现此错误了。
+

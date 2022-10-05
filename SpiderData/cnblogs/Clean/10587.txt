@@ -1,0 +1,44 @@
+学过一些时间的Pythoner都知道。Python的错误是一个类，一般的错误都继承与Exception。
+
+一般在项目中，可能会定义一些自定义的类，在一些函数中，通过raise的方式，将该错误进行激活，调用该函数者可以通过try与except指定错误类型的方式来捕获该错误。
+
+今天在写一个函数中需要用到try来抵挡一下异常，对于Python的报错，看来也可以一起好好的学习下。
+
+在常规的认知中，错误只能通过except来处理错误，其实finally同样也可以
+
+还有就是在报错中，一般会存在存在多个报错，就是下面这两条语句
+
+During handling of the above exception, another exception occurred:
+
+简单翻译:正在处理上面的错误时，另外一个整个发生
+
+The above exception was the direct cause of the following exception:
+
+上面的错误是导致以下异常的原因
+
+当看到第一条的时候，我测试发现，一般发生在处理语句，except或finally中，本来except或者finally就是处理异常的，但在处理中自己发生了错误
+
+上面的代码就将演示出During handling of the above exception, another exception occurred:的情况
+
+　　
+
+本来except是处理try中的错误，但自身错误的。
+
+　　
+
+当改成这种形式之后，报错的中间语句会变成The above exception was the direct cause of the following exception:
+
+因为我用了raise from的形式。
+
+其实可以通过观察是否出现这两个语句来判断，错误是直接发生上浮，还是在处理的过程中发生，对与报错的分析还是有很大的帮助的。
+
+对于错误的理解，我个人认为他就是阻止某线程运行的杀手。当一个错误发生时，它不需要任何的return，就可以通过函数或者模块调用的栈区返回，层层上浮，直到停止该线程的运行，并将其通过stderr的通道输出。
+
+有了这个理解，就可以尝试通过finally去处理error
+
+　　函数默认的如果没有返回，就因为返回None，这个很多人都知道，上面，我写了finally，但却写了 return None,这样就可以将try中的error处理掉，一般的情况下，当一个函数或者模块中，发生了error，会立即截断后续的执行，按照我前面的理解，将自身上浮。但加了finally就不一样了，error必须等待finally的执行完毕以后，才能将自己上浮。在finally中，手工写了return ，这就好比关门打狗了。error还没上浮，finally直接关闭了函数的栈。但加入finally中没有做return，finally中的相关命令执行完毕以后，error还是会通过该函数进行上浮。
+
+对于Python的报错一直没有好好的研究过，是能力的问题也可能是自己平时大意了。
+
+学习汇编确实让我对计算机的运行有了更多自己的思考。
+

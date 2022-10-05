@@ -1,0 +1,32 @@
+环境：win7 + Python3.6
+
+程序代码使用了pyHook处理键盘快捷键事件，普通的键盘输入程序正常工作。一旦使用切换窗口快捷键：ALT + Tab,程序关闭，控制台提示错误：
+
+TypeError: KeyboardSwitch() missing 8 required positional arguments: 'msg', 'vk_code', 'scan_code', 'ascii', 'flags', 'time', 'hwnd', and 'win_name'
+
+有两篇文章比较有帮助：
+
+Python的KeyboardSwitch() missing 8解决方法： https://blog.csdn.net/u014563989/article/details/77247659
+
+pyHook在Python3上面的问题?  https://www.zhihu.com/question/58201895
+
+解决方案：pyHook本身的bug，需要升级到PyHook3。
+
+执行命令：pip install PyHook3
+
+报错：error: command 'swig.exe' failed: No such file or directory
+
+这是在提示swig.exe没有被安装。
+
+SWIG(http://www.swig.org/)指的是简单包安装器和接口生成器（ simple  wrapper  and  interface  generator ），是一个适用于多种语言的工具。
+
+一方面，它让你能够使用C或C++编写扩展代码；另一方面，它自动包装这些代码，让你能够在Tcl、Python、Perl、Ruby和Java等高级语言中使用它们。
+
+可以在这里下载：https://sourceforge.net/projects/swig/ ，下载有点慢，多试几次。 解压缩swigwin-3.0.12.zip，将其路径设置到path环境变量中，重新执行，安装成功。
+
+继续执行，没有报swig的错误，但还继续报错：
+
+这里说的是需要安装： Microsoft Visual C++ Build Tools 2015 ，下载这个链接：http://go.microsoft.com/fwlink/?LinkId=691126 一路默认安装，程序不再报错，安装成功。
+
+修改python代码：import PyHook3 as pyHook ，重新执行，程序不再报错。Great！
+

@@ -1,0 +1,52 @@
+在练习ex14中，
+
+运行提示错误need more than 1 value to unpack
+
+百度搜索的来自知乎的解答https://www.zhihu.com/question/19932406/answer/13391058
+
+才发现再一次，又忘了同时Python ex14.py 的时候应该加上另外一个参数。
+
+代码：
+
+————————————————————————————
+
+from sys import argv
+
+script, user_name = argv
+
+prompt = '> '
+
+print "Hi %s, I'm the %s script." % (user_name, script)
+
+print "I'd like to ask you a few questions."
+
+print "Do you like me %s?" % user_name
+
+likes = raw_input(prompt)
+
+print "Where do you live %s?" % user_name
+
+lives = raw_input(prompt)
+
+print "What kind of computer do you have?"
+
+computer = raw_input(prompt)
+
+print """
+
+Alright, so you said %r about liking me.
+
+You live in %r.Not sure where that is.
+
+And you have a %r computer. Nice.
+
+""" % (likes, lives, computer)
+
+————————————————————————————————
+
+在一开始定义了两个参数，一个script也就是运行时候的ex14.py也就是文件名本身。另一个参数是user_name，因此在Windows Powershell运行的时候Python ex14.py Zad
+
+即可。
+
+同样的，在前面ex13.py的习题中也会习惯性地遗漏另外一个参数。
+

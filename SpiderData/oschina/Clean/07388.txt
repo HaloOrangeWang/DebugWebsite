@@ -1,0 +1,23 @@
+写hql 多表关联的时候报错 hql 语句如下
+
+String hql = "select t.* from CashModel t ,TransportManage o,OrderNoDetails d where t.id = o.wayBillId AND o.orderNo = d.orderNo AND (t.approvalStatus IS NOT NULL) AND t.approvalStatus <> '' AND d.node = '成功' ORDER BY t.applyTimeForApprove DESC "; 报错信息如下：
+
+9:52:03 [http-nio-8080-exec-4] ERROR org.hibernate.hql.internal.ast.ErrorCounter - line 1:10: expecting IDENT, found '*'
+2017-06-29 19:52:03 [http-nio-8080-exec-4] ERROR org.hibernate.hql.internal.ast.ErrorCounter - line 1:10: expecting IDENT, found '*'
+line 1:10: expecting IDENT, found '*'
+	at antlr.Parser.match(Parser.java:211)
+	at org.hibernate.hql.internal.antlr.HqlBaseParser.identifier(HqlBaseParser.java:1505)
+	at org.hibernate.hql.internal.antlr.HqlBaseParser.atom(HqlBaseParser.java:3621)
+	at org.hibernate.hql.internal.antlr.HqlBaseParser.unaryExpression(HqlBaseParser.java:3387)
+	at org.hibernate.hql.internal.antlr.HqlBaseParser.multiplyExpression(HqlBaseParser.java:3259)
+	at org.hibernate.hql.internal.antlr.HqlBaseParser.additiveExpression(HqlBaseParser.java:2964)
+	at org.hibernate.hql.internal.antlr.HqlBaseParser.concatenation(HqlBaseParser.java:597)
+	at org.hibernate.hql.internal.antlr.HqlBaseParser.relationalExpression(HqlBaseParser.java:2730)
+	at org.hibernate.hql.internal.antlr.HqlBaseParser.equalityExpression(HqlBaseParser.java:2591)
+
+hql需更改为：
+
+String hql = "select t  from CashModel t ,TransportManage o,OrderNoDetails d  where  t.id = o.wayBillId  AND o.orderNo = d.orderNo  AND (t.approvalStatus IS NOT NULL) AND t.approvalStatus <> '' AND d.node = '成功' ORDER BY  t.applyTimeForApprove DESC
+
+将t.*更改为t 则编译通过
+

@@ -1,0 +1,136 @@
+截止到目前我已经安装了两次tensorflow了，第一次在2020年4月份，第二次在2020年8月份，两次安装方法不太相同，第一次安装踩了好多雷，第二次明显比第一次顺利很多，为了防止自己以后再安装时遇到问题，我把两次安装的过程全都记录下来，以供参考。
+
+首先是2020年4月第一次安装，好像安装的是python3.7版本，anaconda1.15版本，有点记不清了
+
+一、到官网https://www.anaconda.com/distribution/，下载适合自己版本的Anacoada，在这里我下载的是windows python3.7 version，按照安装向导一步一步安装就可以。
+
+二、配置Tensorflow环境
+
+在开始菜单输入navigator
+
+在左侧Enviroments里，此时只有一个base（root），
+
+点击下方creat，在框中输入tensorflow以及python版本（我的是3.7），点击creat，创建tensorflow环境
+
+创建完成如下图
+
+（我在创建过程中出现了以下的报错，如果你没有遇到，可以跳过这段直接进行第三步
+
+UnavailableInvalidChannel: The channel is not accessible or is invalid.
+
+channel name: anaconda/pkgs/free
+
+channel url: https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
+
+error code: 404
+
+网上求解发现是因为我之前安装过的中国Anaconda镜像被禁了，不要慌张，打开Anaconda Prompt，输入conda config --remove-key channels即可
+
+）
+
+三、Anacoda navigator----------->Environments---------->base(root)------------>右侧的channels----------->add，粘贴在网上找的清华镜像网址，回车，并删除原来的网址default------------->点击update channels
+
+打开Anaconda Prompt，按下图输入
+
+activate tensorflow
+
+pip install tensorflow
+
+在这步之后，我总是报大致如下图的错误
+
+这时我重新输入pip install tensorflow -ihttp://pypi.douban.com/simple不再报错，开始安装
+
+四、验证测试
+
+在Anaconda Prompt依次输入以下语句验证是否安装成功
+
+>>> python
+
+>>> import tensorflow as tf
+
+>>> hello = tf.constant('Hello, TensorFlow!')
+
+>>> sess = tf.Session()
+
+>>>print(sess.run(hello))
+
+>>> sess.close()
+
+如果能输出’Hello，Tensorflow‘，具体显示如下图，那么恭喜你了！
+
+在这里如果刚输入第一句import tensorflow as tf就提示一大串英文错误，其中有一句中文说什么找不到指定的模块，那就需要降低tensorflow的版本，我是这样操作的：
+
+（1）先在 Anaconda Prompt输入卸载命令
+
+pip uninstall tensorflow
+
+（2）继续输入
+
+python -m pip install tensorflow==1.15.0 -ihttp://pypi.douban.com/simple --trusted-host pypi.douban.com
+就可以了，然后可以再用上述的测试方法测试一下，反正我是用这个方法弄好的，当时超级开心。
+
+python -m pip install tensorflow==1.15.0 -ihttp://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+五、在Anoconda Navigator-->Environments-->tensorflow下，选择Not installed，找到Jupyter、spyder并勾选安装。
+
+附上我安装时参考的网址供大家参考https://blog.csdn.net/devcloud/article/details/95945189
+
+接下来是2020年8月第二次安装，安装的是python3.8版本，anaconda3和tensorflow2.3版本
+
+一、进入anaconda官网安装anaconda，网址https://www.anaconda.com/products/individual，下载适合自己的版本，红框是我下载的版本
+
+按照提示一步一步安装就可以
+二、选择一个版本的python安装
+1.打开Anaconda Prompt，检查Anaconda是否成功安装：conda --version
+
+2.检测目前安装了哪些环境：conda info --envs
+
+3.检查目前有哪些版本的python可以安装：conda search --full-name python
+
+按照提示一步一步安装就可以
+
+二、选择一个版本的python安装
+
+1.打开Anaconda Prompt，检查Anaconda是否成功安装：conda --version
+
+2.检测目前安装了哪些环境：conda info --envs
+
+3.检查目前有哪些版本的python可以安装：conda search --full-name python
+
+4.安装不同版本的python：conda create -n tensorflow python=3.8
+
+提示输入y/n时输入y
+
+5.激活：activate tensorflow
+
+6.检查新环境中的python版本：python --version
+
+
+三、TensorFlow安装
+
+在Anaconda Prompt激活tensorflow然后输入pip install tensorflow
+
+就开始下载了，默认下载的是tensorflow最新版本。正常来说到这就可以了，但是我的还有点问题，我打开Anaconda，将下图中home------->tensorflow下的前六个图标都下载了下来，点击install就开始下载了，下载完成就变成launch
+
+我又进入Environment------->tensorfolw------>not installed找到jupyter下载
+
+这个时候我的电脑左下角显示是这样的
+
+四、验证
+
+打开上图红框的jupyter notebook，依次输入以下语句
+
+import tensorflow as tf
+
+print(tf.__version__)
+
+如果显示版本信息，安装成功，如下图。
+
+附上我第二次安装时参考的教程网址
+
+https://blog.csdn.net/weixin_42555080/article/details/100704078
+
+https://baijiahao.baidu.com/s?id=1673167963409922165&wfr=spider&for=pc
+
+最后，祝大家安装顺利，学业有成。
+

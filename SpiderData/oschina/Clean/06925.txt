@@ -1,0 +1,35 @@
+set hive.exec.dynamic.partition=true;(可通过这个语句查看：set hive.exec.dynamic.partition;) 
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+注：这个属性默认是strict，即限制模式，strict是避免全分区字段是动态的，必须至少一个分区字段是指定有值即静态的，且必须放在最前面。
+   设置为nonstrict之后所有的分区都可以是动态的了。
+
+SET hive.exec.max.dynamic.partitions=500000;(如果自动分区数大于这个参数，将会报错)
+注：这个属性表示一个DML操作可以创建的最大动态分区数，默认是1000
+
+SET hive.exec.max.dynamic.partitions.pernode=500000;
+
+注：这个属性表示每个节点生成动态分区的最大个数，默认是100
+
+SET hive.exec.max.created.files=150000
+
+注：这个属性表示一个DML操作可以创建的最大文件数，默认是100000
+
+在sparksql中设置了这些参数，并将{HIVE_HOME}/conf/hive-site.xml移动至{SPARK_HOME}/conf下。
+但是报错如下：
+
+Caused by: org.apache.hadoop.hive.ql.metadata.HiveFatalException: [Error 20004]: Fatal error occurred when node tried to create too many dynamic partitions. The maximum number of dynamic partitions is controlled by hive.exec.max.dynamic.partitions and hive.exec.max.dynamic.partitions.pernode. Maximum was set to: 10080
+at org.apache.hadoop.hive.ql.exec.FileSinkOperator.getDynOutPaths(FileSinkOperator.java:877)
+at org.apache.hadoop.hive.ql.exec.FileSinkOperator.processOp(FileSinkOperator.java:657)
+at org.apache.hadoop.hive.ql.exec.Operator.forward(Operator.java:815)
+at org.apache.hadoop.hive.ql.exec.SelectOperator.processOp(SelectOperator.java:84)
+at org.apache.hadoop.hive.ql.exec.mr.ExecReducer.reduce(ExecReducer.java:244)
+... 7 more
+
+超过了最大的分区数设置。在spark中查询"hive.exec.max.dynamic.partitions"的值，显示为500000，好像参数设置是成功的，为什么还是报错超过了最大分区数呢？
+
+原因是，我的hive-site.xml文件中的hive的引擎是tez引擎，在sparksql中，不应该设置为该值，应该将该文件中hive的引擎设置为：mr。即：
+
+hive.execution.engine=mr;  或者将该属性去掉。在sparksql中，引擎不在是tez，它有自己的一套运行机制。
+这样问题就解决了。（hive的配置文件hive-site.xml不需要和{SPARK_HOME}/conf下的hive-site.xml一致。）
+

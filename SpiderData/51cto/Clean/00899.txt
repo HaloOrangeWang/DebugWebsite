@@ -1,0 +1,57 @@
+​
+
+最近，在做Python套接字编程时，在Python2.7上的功能，迁移到Python3.6上，尼玛，各种发送、接收数据问题，查了相关的文档后，发现，Python3.6和Python2.7在套接字编程方便是有区别的，尼玛，好坑啊！特此记录，以查备忘。
+
+发现这里python3.6和Python2.7在套接字返回值解码上有区别。
+
+先介绍一下 python bytes和str两种类型转换的函数​​encode(),decode()​​
+
+str通过encode()方法可以编码为指定的bytes
+
+反过来，如果我们从网络或磁盘上读取了字节流，那么读到的数据就是bytes。要把bytes变为str，就需要用decode()方法：
+
+
+python核心编程书中的2-1例子
+
+TCP服务器:
+
+TCP客户端
+
+返回的错误提示：
+
+​TypeError: a bytes-like object is required, not ‘str’​
+
+指的是18行​​tcpCliSock.send(data)​​传入的参数是应该是bytes类型，而不是str类型。
+
+于是我去百度，发现在StackOverflow上发现有人也出现同样的问题，并一个叫Scharron的人提出了解答：
+
+In python 3, bytes strings and unicodestrings are now two different types. Since sockets are not aware of string encodings, they are using raw bytes strings, that have a slightly differentinterface from unicode strings.
+
+So, now, whenever you have a unicode stringthat you need to use as a byte string, you need toencode() it. And whenyou have a byte string, you need to decode it to use it as a regular(python 2.x) string.
+
+Unicode strings are quotes enclosedstrings. Bytes strings are b”” enclosed strings
+
+When you use client_socket.send(data),replace it by client_socket.send(data.encode()). When you get datausing data = client_socket.recv(512), replace it by data =client_socket.recv(512).decode()
+
+于是我去查python3.6的帮助手册。
+
+socket.send(bytes[, flags])
+
+socket.recv(bufsize[, flags])
+
+
+修正后：
+
+tcp服务器
+
+tcp客户端：
+
+socket.sendto(bytes, address)
+
+socket.sendto(bytes, flags, address)
+
+socket.recvfrom(bufsize[, flags])
+
+
+同理修正udp服务器：
+

@@ -1,0 +1,52 @@
+报错信息如下：
+
+File "D:\Project\megatech.ai\venv\lib\site-packages\django\contrib\auth\models.py", line 4, in <module>
+
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+
+File "D:\Project\megatech.ai\venv\lib\site-packages\django\contrib\auth\base_user.py", line 52, in <module>
+
+class AbstractBaseUser(models.Model):
+
+File "D:\Project\megatech.ai\venv\lib\site-packages\django\db\models\base.py", line 124, in __new__
+
+new_class.add_to_class('_meta', Options(meta, app_label))
+
+File "D:\Project\megatech.ai\venv\lib\site-packages\django\db\models\base.py", line 325, in add_to_class
+
+value.contribute_to_class(cls, name)
+
+File "D:\Project\megatech.ai\venv\lib\site-packages\django\db\models\options.py", line 214, in contribute_to_class
+
+self.db_table = truncate_name(self.db_table, connection.ops.max_name_length())
+
+File "D:\Project\megatech.ai\venv\lib\site-packages\django\db\__init__.py", line 33, in __getattr__
+
+return getattr(connections[DEFAULT_DB_ALIAS], item)
+
+File "D:\Project\megatech.ai\venv\lib\site-packages\django\db\utils.py", line 211, in __getitem__
+
+backend = load_backend(db['ENGINE'])
+
+File "D:\Project\megatech.ai\venv\lib\site-packages\django\db\utils.py", line 115, in load_backend
+
+return import_module('%s.base' % backend_name)
+
+File "C:\Python\Python27\Lib\importlib\__init__.py", line 37, in import_module
+
+__import__(name)
+
+File "D:\Project\megatech.ai\venv\lib\site-packages\django\db\backends\mysql\base.py", line 30, in <module>
+
+'Did you install mysqlclient or MySQL-python?' % e
+
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: No module named MySQLdb.
+
+Did you install mysqlclient or MySQL-python?
+
+解决方案：
+
+1.安装pymysql的包
+
+2.在项目的init文件中添加如下代码
+

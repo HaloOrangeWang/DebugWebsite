@@ -1,0 +1,28 @@
+最近多个小伙伴儿问“ImportError: No module named xxx“，应该怎么样解决。
+
+其实，问这个问题，还是因为你对python的基本方法没有掌握好，我也把这类问题的通用解决方法整理一下，希望对小伙伴儿们能够有帮助。
+
+报错现象：ImportError: No module named xxx（例如：ImportError: No module named pexpect）
+
+问题原因： 1.该模块没有安装
+
+2.该模块已经安装，但是没有安装到python的搜索路径下
+
+解决方案：
+
+（1）如果是上面的原因1导致的，这个没什么说的，具体安装就行了，最常用安装方法一遍是两种：①使用pip install 安装；②下载tar包，然后sudo python setup.py install；
+
+（2）如果是上面的原因2导致的，这个就是python的基础知识的问题了。解决方法，就是 将你的刚刚安装完的包，或者你自己开发的包，添加到Python添加默认模块搜索路径就行了。
+
+方法①:函数添加
+1 import sys
+2 查看sys.path
+3 添加sys.path.append("/usr/lib/python2.6/site-packages")
+  这里假设：你需要的包默认安装到 /usr/lib/python2.6/site-packages/下面了。
+方法②:增加.pth文件【推荐】
+在site-packages添加一个路径文件（假设你现在的python默认是：/usr/local/lib/python2.7/），
+在 /usr/local/lib/python2.7/site-packages 路径下 新建一个文件 “mypkpath.pth”，文件里面的内容是 你想要加入的模块文件所在的目录名称。
+例如：
+新建文件：/usr/local/lib/python2.7/site-packages/mypkpath.pth
+该文件内容：/usr/lib/python2.6/site-packages/
+

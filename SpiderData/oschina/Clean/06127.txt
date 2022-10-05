@@ -1,0 +1,86 @@
+问题：在执行python manage.py makemigrations learning_logs时，系统会报错，提示：TypeError: __init__() missing 1 required positional argument: 'on_delete'
+
+(ll_env) c:\WorkSpace\SimpleTest\learning_log>python manage.py makemigrations learning_logs
+Traceback (most recent call last):
+  File "manage.py", line 15, in <module>
+    execute_from_command_line(sys.argv)
+  File "c:\WorkSpace\SimpleTest\learning_log\ll_env\lib\site-packages\django\core\management\__init__.py", line 371, in execute_from_command_line
+    utility.execute()
+  File "c:\WorkSpace\SimpleTest\learning_log\ll_env\lib\site-packages\django\core\management\__init__.py", line 347, in execute
+    django.setup()
+  File "c:\WorkSpace\SimpleTest\learning_log\ll_env\lib\site-packages\django\__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "c:\WorkSpace\SimpleTest\learning_log\ll_env\lib\site-packages\django\apps\registry.py", line 112, in populate
+    app_config.import_models()
+  File "c:\WorkSpace\SimpleTest\learning_log\ll_env\lib\site-packages\django\apps\config.py", line 198, in import_models
+    self.models_module = import_module(models_module_name)
+  File "C:\python36\lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "c:\WorkSpace\SimpleTest\learning_log\learning_logs\models.py", line 13, in <module>
+    class Entry(models.Model):
+  File "c:\WorkSpace\SimpleTest\learning_log\learning_logs\models.py", line 15, in Entry
+    topic = models.ForeignKey(Topic)
+TypeError: __init__() missing 1 required positional argument: 'on_delete'
+
+代码如下：
+
+from django.db import models
+
+# Create your models here.
+class Topic(models.Model):
+    """用户学习的主题"""
+    text = models.CharField(max_length=200)
+    date_added = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        """返回模型的字符串表示"""
+        return self.text
+
+class Entry(models.Model):
+    """学到的有关某个主题的具体知识"""
+    topic = models.ForeignKey(Topic)
+    text = models.TextField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name_plural = 'entries'
+    
+    def __str__(self):
+        """返回模型的字符串表示"""
+        
+        return self.text[:50] + "..."
+
+解决办法：修改指定外键的方式
+
+from django.db import models
+
+# Create your models here.
+class Topic(models.Model):
+    """用户学习的主题"""
+    text = models.CharField(max_length=200)
+    date_added = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        """返回模型的字符串表示"""
+        return self.text
+
+class Entry(models.Model):
+    """学到的有关某个主题的具体知识"""
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    text = models.TextField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name_plural = 'entries'
+    
+    def __str__(self):
+        """返回模型的字符串表示"""
+        
+        return self.text[:50] + "..."
+

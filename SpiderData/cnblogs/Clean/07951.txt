@@ -1,0 +1,50 @@
+
+---------------------------异常值处理-------------------------
+
+异常值处理：防止程序奔溃
+
+#常见的用法
+try:   
+    val = input('请输入数字：')
+    num = int(val)
+except Exception as e: #Exception固定格式：捕获所有类型的异常
+    print('操作异常') #如果程序报错，执行如下内容
+        
+# 也可用于函数        
+def func(a):
+    try:
+        a.strip()
+    except Exception as e:
+        print('处理失败')
+    return 123
+v  = func([11,22,33])
+print(v)
+
+
+异常练习题
+
+
+爬虫的应用
+
+import requests
+
+def func1(url_list):
+
+result = []
+
+for url in url_list:
+
+try:
+
+response = requests.get(url)
+
+result.append(response.text)
+
+except Exception as e:
+
+pass
+
+return result
+
+func1(['http://www.baidu.com','http://www.google.com'])
+

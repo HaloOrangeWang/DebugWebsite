@@ -1,0 +1,36 @@
+
+问题
+
+错误：ImportError: No module named XXX
+
+在Python的工程中，偶尔会遇到文件无法引用的情况，即PyCharm IDE支持文件跳转，但是当文件执行时，找不到模块。
+
+例如，错误如下：
+
+Traceback (most recent call last):
+  File "utils/average_clinic.py", line 17, in <module>
+    from utils.file_utils import listdir_files, show_string
+ImportError: No module named file_utils
+
+
+解决
+
+首先，在py文件的顶部，引入根目录，如
+
+import os
+import sys
+
+p = os.path.dirname(os.path.dirname((os.path.abspath(__file__))))
+if p not in sys.path:
+    sys.path.append(p)
+
+# print p  # 显示路径
+
+其次，检查文件的Working directory，位置：
+
+第一步是导入工程路径，第二步是检查文件的工作目录。优先检查工作目录，其次检查工程路径。同时，要注意PyCharm自动生成文件引用不一定正确，如：
+
+from file_utils import listdir_files, show_string
+# 错误的引用，文件位于同一目录下，不使用包名
+# from utils.file_utils import listdir_files, show_string
+

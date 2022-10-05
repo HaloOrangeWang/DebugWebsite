@@ -1,0 +1,37 @@
+1.安装tldr报错
+
+（1）报错详情：
+
+[root@linuxnode1 ~]# pip install tldr
+Collecting tldr
+  Downloading https://files.pythonhosted.org/packages/ff/bb/0870bf90ad1137172b3cc0758d18e99fd2325243139e0bb7652556c77e0e/tldr-0.5.tar.gz
+    Complete output from command python setup.py egg_info:
+    /usr/lib64/python2.7/distutils/dist.py:267: UserWarning: Unknown distribution option: 'long_description_markdown_filename'
+      warnings.warn(msg)
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-build-ZBdOo2/tldr/setup.py", line 39, in <module>
+        "Topic :: System"
+      File "/usr/lib64/python2.7/distutils/core.py", line 112, in setup
+        _setup_distribution = dist = klass(attrs)
+      File "/usr/lib/python2.7/site-packages/setuptools/dist.py", line 269, in __init__
+        _Distribution.__init__(self,attrs)
+      File "/usr/lib64/python2.7/distutils/dist.py", line 287, in __init__
+        self.finalize_options()
+      File "/usr/lib/python2.7/site-packages/setuptools/dist.py", line 302, in finalize_options
+        ep.load()(self, ep.name, value)
+      File "/tmp/pip-build-ZBdOo2/tldr/setuptools_scm-3.3.3-py2.7.egg/setuptools_scm/integration.py", line 9, in version_keyword
+      File "/tmp/pip-build-ZBdOo2/tldr/setuptools_scm-3.3.3-py2.7.egg/setuptools_scm/version.py", line 66, in _warn_if_setuptools_outdated
+    setuptools_scm.version.SetuptoolsOutdatedWarning: your setuptools is too old (<12)
+ 
+    ----------------------------------------
+Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-build-ZBdOo2/tldr/
+You are using pip version 8.1.2, however version 19.2.3 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+（2）解决办法：
+
+pip install --upgrade setuptools
+
+（3）重新安装 pip install tldr
+

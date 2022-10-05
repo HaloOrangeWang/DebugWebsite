@@ -1,0 +1,34 @@
+
+项目场景：
+
+提示：这里简述项目相关背景：
+ 【问题解决】cannot import name ‘get_config’ from ‘tensorflow.python.eager.context’
+
+
+问题描述
+
+提示：这里描述项目中遇到的问题：
+
+
+原因分析：
+
+：
+
+大概率可能是tensorflow和keras版本不匹配，我换了一个版本就解决了，建议去网站查询对应版本进行安装
+
+这个问题其实是新的keras集成到了tf库里，直接引用是会报错的，也可以认为是版本问题，2.4是这样，
+
+
+解决方案：
+
+：
+
+把引用keras的前面加上tf就行了
+ 主要原因是tf在2.0之后完全集成了kersa，所以说一些旧版本的项目，kersa作为独立的一个包与新版本的TF不兼容。
+ 应该要以TF版本为主，将kersa的API调用转到TF中
+ 官方Tensorflow文档
+ 官方Kersa文档
+
+from keras import models
+from tensorflow.keras import models##变成这样
+

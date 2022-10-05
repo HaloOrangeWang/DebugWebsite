@@ -1,0 +1,27 @@
+背景
+
+给一台 ubuntu18.04 安装 python3.7，完成后想试试pip list命令，结果出现一长串报错，我贴一下最后几行：
+
+File "/usr/local/lib/python3.7/subprocess.py", line 512, in run
+    output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '('lsb_release', '-a')' returned non-zero exit status 1.
+
+大概意思就是执行pip list命令时候，找不到lsb_release -a这个命令。
+解决方案
+
+1、找到lsb_release.py这个文件
+
+sudo find / -name 'lsb_release.py'
+
+我这边显示结果如下，不同系统版本可能存在差异：
+
+/usr/share/pyshared/lsb_release.py
+/usr/lib/python2.7/dist-packages/lsb_release.py
+/usr/lib/python3/dist-packages/lsb_release.py
+
+2、选择包含python3的这个路径，拷贝文件到报错的路径/usr/local/lib/python3.7/ 下：
+
+sudo cp /usr/lib/python3/dist-packages/lsb_release.py /usr/local/lib/python3.7/
+
+尝试重新执行pip list，恢复正常。
+

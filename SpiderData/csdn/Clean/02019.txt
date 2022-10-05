@@ -1,0 +1,29 @@
+
+问题描述
+
+python requests库报错，只要发起请求就报错。
+ 我问题已经解决了，没截图，懒得弄，在此记录一下问题。
+
+
+原因分析：
+
+我之前想用Wireshark抓取https的包，参考链接在下面，
+
+https://blog.csdn.net/nimasike/article/details/80887436
+
+我就用的这种方法，在记忆中好像确实可以抓取https的包，不过，这种方法与python urllib3有冲突，会导致请求报错，关键是SSLKEYLOGFILE的环境变量，说不清，上图
+
+urllib3部分代码： https://github.com/urllib3/urllib3/blob/f070ec2e6f6c545f40d9196e5246df10c72e48e1/src/urllib3/util/ssl_.py
+
+代码不难，各位应该没问题。
+
+
+解决方案：
+
+此电脑 --> 高级系统设置 -->环境变量是没用的，
+
+del os.environ[‘test’]
+
+完事，我写的确实不全，也不清晰，但提供一个解决思路还是绰绰有余。
+ 告辞！
+

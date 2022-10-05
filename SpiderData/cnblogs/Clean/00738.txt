@@ -1,0 +1,15 @@
+由于python3内部以Unicode实现，在默认非utf-8的Linux上print中文会报错UnicodeEncodeError。
+
+由于系统默认非unicode，python3又以unicode实现，问题在于python3的以utf-8编码，与系统对接时，出现unicode码值映射错误，导致报错。
+
+解决措施：
+
+1.修改系统编码格式  export LC_ALL="UTF-8"
+
+2.修改python的标准输出的编码格式，如下语句：
+
+import io
+
+import sys
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8')
+

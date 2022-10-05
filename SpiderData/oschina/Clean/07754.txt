@@ -1,0 +1,25 @@
+
+npm run dev 报错：missing script:dev
+
+今天在运行Vue项目时，在运行npm  run dev时报错如下图：
+
+打开package.js文件夹，发现文件夹里的scripts有dev如下图：
+
+，
+
+可就是找不到，什么原因呢？最后一看路径不对，vue init webpack my-project时，自己又建立一个文件夹,取不到对应的package.js中的dev.
+
+cd 到对应文件夹，重新运行npm run dev 就OK了。
+
+还有package.js里的scripts确实没有dev，这种情况
+
+输入vue init webpack  将package.json中丢失的，重新下载：
+
+"dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "start": "npm run dev",
+    "build": "node build/build.js"
+
+然后在npm intall 安装依赖，最后 npm run dev即可
+
+也适用于解决start, build丢失
+

@@ -1,0 +1,40 @@
+
+1.问题所在
+
+我在centos7中安装了python3.8，在使用pip3安装一个第三方库的时候出现无法使用ssl的报错。
+
+ssl模块确实在lib/python3.8这个目录下，为什么会报错呢？
+
+百度了一下才知道python中要使用ssl需要有openssl作为前置。
+
+一般centos7中都是有openssl模块的，打开centos7自带的python2.7导入ssl发现正常，用python3.8导入却报错。
+
+进入python3.8解压后的目录Python-3.8.0/Modules/Setup，编辑Setup文件，去掉下面几行的注释#
+
+然后百度了解到，在编译安装完之后，执行的make命令虽然成功了，但是也会报出很多模块缺失的提醒。
+
+编译安装目录下的setup.py文件保存着众多模块名，打开此文件搜索_ssl，可以看到是怎么调用ssl的，以下为其文件中ssl部分的代码。
+
+可以看到，setup.py会在'/usr/local/ssl/include', '/usr/contrib/ssl/include/' 这两个目录里面搜索'openssl/ssl.h' 这个头文件，然后会在 '/usr/local/ssl/lib' 和 '/usr/contrib/ssl/lib/' 之中搜索 ssl 的 lib文件，搜索不到，会将_ssl加入missing这个数组里面，然后寻找missing调用的地方。
+
+下面是setup.py中报错时候的输出，很明显，是由于搜索不到ssl.h头文件或者搜索不到lib文件而导致的报错。
+
+很奇怪，明明有openssl模块却找不到ssl.h头文件，然后百度得知，openssl只包含了可执行部分，openssl-devel才包含了头文件、头文件参考、某些库文件等跟开发相关的东西。所以只安装openssl是找不到相应的头文件的。
+
+
+2.解决方法
+
+执行以下命令，同时安装上述make命令提示缺少的模块以及openssl-devel
+
+执行此命令时又出现了一个问题，yum命令报错了
+
+然后又报错了，还是修改，#! /usr/bin/python改成#! /usr/bin/python2.7
+
+以上模块全部安装完之后，我删掉了python3.8重新安装编译，然后安装第三方库又报错。
+
+报错信息：ModuleNotFoundError: No module named '_ctypes'
+
+解决方法：yum install libffi-devel
+
+然后在执行一遍make && make install就可以安装第三方库了。
+

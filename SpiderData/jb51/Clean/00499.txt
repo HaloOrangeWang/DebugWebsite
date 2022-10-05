@@ -1,0 +1,63 @@
+除了使用 sys.exc_info() 方法获取更多的异常信息之外，还可以使用 traceback 模块，该模块可以用来查看异常的传播轨迹，追踪异常触发的源头。
+
+try:  
+    1/0  
+except Exception,e:  
+    print e
+
+输出结果是integer division or modulo by zero，只知道是报了这个错，但是却不知道在哪个文件哪个函数哪一行报的错。
+
+下面使用traceback模块
+
+traceback是python中用来跟踪异常信息的模块，方便把程序中的运行异常打印或者保存下来做异常分析。
+
+官方参考文档如下
+
+https://docs.python.org/2/library/traceback.html
+
+常见用法
+
+try：
+
+doSomething()
+
+except:
+
+traceback.print_exc()
+
+# logging.error(str(traceback.format_exc()))
+
+import traceback  
+try:  
+    1/0  
+except Exception,e:  
+    traceback.print_exc()
+
+输出结果是
+
+Traceback (most recent call last):
+
+File "test_traceback.py", line 3, in <module>
+
+1/0
+
+ZeroDivisionError: integer division or modulo by zero
+
+这样非常直观有利于调试。
+
+traceback.print_exc()跟traceback.format_exc()有什么区别呢？
+
+format_exc()返回字符串，print_exc()则直接给打印出来。
+
+即traceback.print_exc()与print traceback.format_exc()效果是一样的。
+
+print_exc()还可以接受file参数直接写入到一个文件。比如
+
+traceback.print_exc(file=open('tb.txt','w+'))
+
+写入到tb.txt文件去。
+
+总结
+
+到此这篇关于python如何利用traceback获取详细异常信息的文章就介绍到这了,更多相关python traceback获取异常内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

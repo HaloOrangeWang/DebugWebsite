@@ -1,0 +1,25 @@
+Xcode build git clone .h
+
+刚接触新项目，clone到本地，pod install之后，build发现报错：找不到Aspects.h头文件
+
+build settings 里面的header search path也检查了，没发现问题
+
+反复操作没有结果。
+
+解决办法：
+
+Xcode 顶部的scheme选项，选择Aspects，build，通过。
+
+Products目录里面Aspects.framework从红色边黑色，说明生成了对应的framework，对其他scheme也逐一build。
+
+注意：可能需要关注iOS simulator的版本，有的framework不支持太高的版本，所以build会失败，也就不会从红变黑。
+
+注意：可能需要关注iOS simulator的版本，有的framework不支持太高的版本，所以build会失败，也就不会从红变黑。
+
+原理：仔细看报错信息，它是从哪个路径查找，结果找不到的，show in finder，然后发现这里是build之后才会生成的目录。所以逐一build，解决此问题。
+
+原理：仔细看报错信息，它是从哪个路径查找，结果找不到的，show in finder，然后发现这里是build之后才会生成的目录。所以逐一build，解决此问题。
+
+最后补充一下特殊情况
+项目用到直播功能，framework只能在真机环境运行。连真机build，通过。
+

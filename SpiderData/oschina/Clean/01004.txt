@@ -1,0 +1,50 @@
+问题处理 yum install -y libvirt-devel python-devel
+
+pip install libvirt-python
+ ..........
+   to the PKG_CONFIG_PATH environment variable
+   No package 'libvirt' found
+   running bdist_wheel
+   running build
+   /usr/bin/pkg-config --print-errors --atleast-version=0.9.11 libvirt
+   Package libvirt was not found in the pkg-config search path.
+   Perhaps you should add the directory containing `libvirt.pc'
+   to the PKG_CONFIG_PATH environment variable
+   No package 'libvirt' found
+   error: command '/usr/bin/pkg-config' failed with exit status 1
+  
+   ----------------------------------------
+   Failed building wheel for libvirt-python
+   Running setup.py clean for libvirt-python
+ Failed to build libvirt-python
+ 报错解决
+ yum install -y libvirt-devel
+
+pip install libvirt-python
+ 。。。
+   gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -fPIC -I. -I/usr/include/python2.7 -c libvirt-override.c -o build/temp.linux-x86_64-2.7/libvirt-override.o
+   libvirt-override.c:20:20: fatal error: Python.h: No such file or directory
+    #include <Python.h>
+                       ^
+   compilation terminated.
+   error: command 'gcc' failed with exit status 1
+  
+   ----------------------------------------
+   Failed building wheel for libvirt-python
+   Running setup.py clean for libvirt-python
+ Failed to build libvirt-python
+ Installing collected packages: libvirt-python
+   Running setup.py install for libvirt-python ... error
+ 需要依赖python-devel
+ [root@localhost test]# yum install python-devel
+
+[root@localhost test]# pip install libvirt-python
+ Collecting libvirt-python
+   Using cached libvirt-python-3.8.0.tar.gz
+ Building wheels for collected packages: libvirt-python
+   Running setup.py bdist_wheel for libvirt-python ... done
+   Stored in directory: /root/.cache/pip/wheels/74/8f/54/d69e82da25b58697c8e6bfc4df82790383f7de05ff31ae0aae
+ Successfully built libvirt-python
+ Installing collected packages: libvirt-python
+ Successfully installed libvirt-python-3.8.0
+

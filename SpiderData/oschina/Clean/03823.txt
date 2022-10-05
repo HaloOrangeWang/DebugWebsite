@@ -1,0 +1,135 @@
+
+uwsgi
+
+uWSGI是一个Web服务器，它实现了WSGI协议、uwsgi、http等协议。Nginx中HttpUwsgiModule的作用是与uWSGI服务器进行交换。
+
+WSGI是一种Web服务器网关接口。它是一个Web服务器（如nginx，uWSGI等服务器）与web应用（如用Flask框架写的程序）通信的一种规范。
+
+uwsgi是一种线路协议而不是通信协议，在此常用于在uWSGI服务器与其他网络服务器的数据通信。
+
+而uWSGI是实现了uwsgi和WSGI两种协议的Web服务器。
+
+uwsgi协议是一个uWSGI服务器自有的协议，它用于定义传输信息的类型（type of information），每一个uwsgi packet前4byte为传输信息类型描述，它与WSGI相比是两样东西。
+
+uWSGI的主要特点如下
+
+超快的性能
+
+低内存占用
+
+多app管理
+
+详尽的日志功能
+
+高度可定制（内存大小限制，服务一定次数后重启等）
+
+# 安装使用
+pip install uwsgi
+
+# test.py
+def application(env, start_response):
+    start_response('200 OK', [('Content-Type','text/html')])
+    return [b"asdf"]
+
+#运行
+
+uwsgi --http :8000 --wsgi-file test.py
+
+#用uwsgi 启动django
+
+uwsgi --http :8000 --module mysite.wsgi
+
+#可以把参数写到配置文件里
+
+xxx-uwsgi.ini
+ 
+ 
+[uwsgi]
+http = :9000
+#the local unix socket file than commnuincate to Nginx
+socket = 127.0.0.1:8001
+# abs path
+chdir = project path
+# Django's wsgi file
+wsgi-file = xxx/wsgi.py
+# maximum number of worker processes
+processes = 4
+#thread numbers startched in each worker process
+threads = 2
+ 
+#monitor uwsgi status
+stats = 127.0.0.1:9191
+# clear environment on exit
+vacuum          = true
+
+#启动
+which uwsgi # check installed path
+
+path crazye-uwsgi.ini
+
+
+Nginx
+
+sudo apt install nginx
+
+path start   同uwsgi
+
+如图配置  ，粗心在这卡了许久，千万不要写错了！！！
+
+1 upstream django   # the upstream component nginx needs to connect to
+ 2 
+ 3 server 127.0.0.1:xxxx; # for a web port socket (we'll use this first)
+ 4 
+ 5 server # configuration of the server
+ 6 
+ 7 listen # the domain name it will serve for
+ 8 
+ 9  server_name # substitute your machine's IP address or FQDN
+10 
+11 client_max_body_size # adjust to taste
+12 
+13 location /media  {
+14         alias /path/to/your/mysite/media;  # your Django project's media files - amend as required
+15     }
+16 
+17 location /static {
+18         alias /path/to/your/mysite/static; # your Django project's static files - amend as required
+19     }
+20 
+21  # Finally, send all non-media requests to the Django server.
+22     location / {
+23         uwsgi_pass  django;
+24         include     /path/to/your/mysite/uwsgi_params; # the uwsgi_params file you installed
+25     }
+26 }
+
+图中的params如图
+
+在nginx 的ennabled文件中创建配置的软连接
+
+sudo ln -s ~/path/to/your/mysite/mysite_nginx.conf /etc/nginx/sites-enabled/
+
+python manage.py collectstatic
+
+集中静态文件
+
+在项目的settings.py 中添加
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+启动nginx和uwsgi 即可实现高并发
+
+报错其实只要根据他给的提示进行操作即可
+
+Job for nginx.service failed because the control process exited with error code. Job for nginx.service failed because the control process exited with error code. See "syste.......
+
+输入命令查看报错信息
+
+nginx -t 也可查看配置是否成功
+
+会很明显的列出错误  格式错误改格式   （会列出第几行错误）
+
+　　　　　　　　　　端口占用改端口......
+
+反正就是哪里错都会清楚的列出来，看着改就好了
+

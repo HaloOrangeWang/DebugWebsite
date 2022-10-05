@@ -1,0 +1,114 @@
+Traceback (most recent call last):
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/_vendor/requests/packages/urllib3/response.py", line 228, in _error_catcher
+
+yield
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/_vendor/requests/packages/urllib3/response.py", line 310, in read
+
+data = self._fp.read(amt)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/_vendor/cachecontrol/filewrapper.py", line 49, in read
+
+data = self.__fp.read(amt)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/http/client.py", line 433, in read
+
+n = self.readinto(b)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/http/client.py", line 473, in readinto
+
+n = self.fp.readinto(b)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/socket.py", line 571, in readinto
+
+return self._sock.recv_into(b)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/ssl.py", line 924, in recv_into
+
+return self.read(nbytes, buffer)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/ssl.py", line 786, in read
+
+return self._sslobj.read(len, buffer)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/ssl.py", line 570, in read
+
+v = self._sslobj.read(len, buffer)
+
+socket.timeout: The read operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/basecommand.py", line 215, in main
+
+status = self.run(options, args)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/commands/install.py", line 299, in run
+
+requirement_set.prepare_files(finder)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/req/req_set.py", line 370, in prepare_files
+
+ignore_dependencies=self.ignore_dependencies))
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/req/req_set.py", line 587, in _prepare_file
+
+session=self.session, hashes=hashes)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/download.py", line 810, in unpack_url
+
+hashes=hashes
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/download.py", line 649, in unpack_http_url
+
+hashes)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/download.py", line 871, in _download_http_url
+
+_download_url(resp, link, content_file, hashes)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/download.py", line 595, in _download_url
+
+hashes.check_against_chunks(downloaded_chunks)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/utils/hashes.py", line 46, in check_against_chunks
+
+for chunk in chunks:
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/download.py", line 563, in written_chunks
+
+for chunk in chunks:
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/utils/ui.py", line 139, in iter
+
+for x in it:
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/download.py", line 552, in resp_read
+
+decode_content=False):
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/_vendor/requests/packages/urllib3/response.py", line 353, in stream
+
+data = self.read(amt=amt, decode_content=decode_content)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/_vendor/requests/packages/urllib3/response.py", line 320, in read
+
+flush_decoder = True
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/contextlib.py", line 77, in exit
+
+self.gen.throw(type, value, traceback)
+
+File "/home/xiaoduc/.pyenv/versions/3.5.0/lib/python3.5/site-packages/pip/_vendor/requests/packages/urllib3/response.py", line 233, in _error_catcher
+
+raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+
+pip._vendor.requests.packages.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='pypi.python.org', port=443): Read timed out.
+
+解决方法，设置超时时间
+
+pip --default-timeout=100 install -U Pillow
+

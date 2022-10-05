@@ -1,0 +1,18 @@
+ImportError while importing test module 'D:\Python\PycharmProjects\PYDEMO\TestCase\main.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+TestCase\test_suite.py:6: in <module>
+    from TestCase import test_http_request
+E   ModuleNotFoundError: No module named 'TestCase'
+————————————————
+版权声明：本文为CSDN博主「海染蓝」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/nember_1/java/article/details/105913250
+
+方法 1 在要执行pytest 的根目录新建   conftest.py文件；文件内容
+
+import os
+
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+

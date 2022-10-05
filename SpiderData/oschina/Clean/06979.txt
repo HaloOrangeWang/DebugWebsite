@@ -1,0 +1,38 @@
+C:/w/1/s/windows/pytorch/aten/src/THCUNN/BCECriterion.cu:42: block: [0,0,0], thread: [209,0,0] Assertion `input >= 0. && input <= 1.` failed.
+
+Assertion `x >= 0. && x <= 1.' failed. input value should be between 0~1, but got -1.000000 at C:\w\1\s\windows\pytorch\aten\src\THNN/generic/BCECriterion.c:62
+
+是说input就是x,必须是sigmoid之后，0-1之间。
+
+标签y可以随便标。
+
+input必须是0到1之间的：
+
+import torch
+
+v = 0.5  # 1-0.0001
+v1 = v - 0.01
+a = torch.FloatTensor([-1, v1, v])
+b = torch.FloatTensor([-1, 2, 0])
+
+loss_fn = torch.nn.BCELoss()  # reduce=False, size_average=False)
+
+x = loss_fn(a, b).item()
+print(x)
+
+import torch
+
+from utils.select_gpu import usegpu
+
+usegpu(1)
+torch.cuda.set_device(0)
+v = 0.5  # 1-0.0001
+v1 = v - 0.01
+a = torch.FloatTensor()
+b = torch.FloatTensor()
+
+loss_fn = torch.nn.BCELoss().cuda()  # reduce=False, size_average=False)
+
+x = loss_fn(a.cuda(), b.cuda()).item()
+print(x)
+

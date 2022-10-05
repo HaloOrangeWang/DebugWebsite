@@ -1,0 +1,16 @@
+今天想在一个新创建的VC中展示一个由 xib 搭建的 view，不料运行时报了下面的错误，看了一下是 VC 的报错。 UIViewController _loadViewFromNibNamed:bundle ....but the view outlet was not set.'
+
+问题是我的这个 VC 本身并没有 xib 啊，于是我把 VC 中引用 xib view 的地方都注释掉了，重新运行，只要一显示 这个 VC 还是同样的报错。这就奇怪了。
+
+查了一下其它帖子的解决方案，似乎并不能解决这个问题。
+
+删除手机的测试App，在Xcode 上 Clean，重新运行，还是一样的报错，然后我发现如果在项目中去掉 xib view 相关的代码，再重新运行，就不会报错了。
+
+最终找到问题所在，是 VC 和 xib view 的命名问题，假设这个 VC 我命令为 SampleViewController ，xib view 命名为 SampleView ，这样的命名好像会让 Xcode 误以为是 SampleView 是 SampleViewController 的 view , 但两者又没有用 outlet 关联起来。
+
+解决办法就是把 SampleView 换一个名字，你说奇葩不？
+
+xib问题之"..nib but the view outlet was not set." - 简书
+
+loaded the "XXX" nib but the view outlet was not set. - 简书
+

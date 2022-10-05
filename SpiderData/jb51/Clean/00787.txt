@@ -1,0 +1,63 @@
+在使用Django做前端后端项目时，登陆认证方法往往使用的是jwt_token，但是想自定义登陆成功和失败的返回体。
+
+1.当用户名和密码正确就会生成token，返回response是调用的是JWT_RESPONSE_PAYLOAD_HANDLER,如果想自定义返回体就需要重写jwt_response_payload_handler函数。
+
+在项目目录下settings.py中，添加JWT_RESPONSE_PAYLOAD_HANDLER。
+
+JWT_AUTH = {
+  'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=6000),
+  'JWT_RESPONSE_PAYLOAD_HANDLER': 'Users.views.jwt_response_payload_handler',  # 后面跟着你视图里定义函数
+}
+
+自定义一个视图编辑jwt_response_payload_handler。
+
+def jwt_response_payload_handler(token, user=None, request=None):
+  """
+  设置jwt登陆返回的格式
+  :param token:
+  :param user:
+  :param request:
+  :return:
+  """
+  return {
+    "msg": "success",
+    "status": 200,
+    "data": [{
+    	# data自定义你接口想返回的信息
+      'token': token,
+      'username': user.username
+    }]
+  }
+
+现在的效果如下：
+
+2. Django中jwt错误返回的是{"non_field_errors":["无法使用提供的认证信息登录。"]},当用户名或密码错误时，是不会去调用jwt_response_payload_handler，那么失败时调用的是什么函数了，JWT_RESPONSE_PAYLOAD_ERROR_HANDLER,但是发现这个方法并没有合到master分支，那么我们就需要手动给他合并进去。
+
+我们打开/usr/local/lib/python3.6/site-packages/rest_framework_jwt/settings.py在IMPORT_STRINGS中添加JWT_RESPONSE_PAYLOAD_ERROR_HANDLER:
+
+/usr/local/lib/python3.6/site-packages/rest_framework_jwt/views.py中修改：
+
+我们在自己的视图里编写一个jwt_response_payload_error_handler函数
+
+def jwt_response_payload_error_handler(serializer, request = None):
+  return {
+    "msg": "用户名或者密码错误",
+    "status": 400,
+    "detail": serializer.errors
+  }
+
+最后我们在我们项目的settings.py的JWT中添加错误返回的函数：
+
+# jwt_token配置
+JWT_AUTH = {
+  'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=6000),
+  # 登陆成功自定义 的返回结构
+  'JWT_RESPONSE_PAYLOAD_HANDLER': 'Users.views.jwt_response_payload_handler',
+  # 登陆失败时自定义的返回结构
+  'JWT_RESPONSE_PAYLOAD_ERROR_HANDLER': 'Users.views.jwt_response_payload_error_handler',
+}
+
+最后的样子就成为这样：
+
+到此这篇关于自定义Django_rest_framework_jwt登陆错误返回的解决的文章就介绍到这了,更多相关Django_rest_framework_jwt登陆错误内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

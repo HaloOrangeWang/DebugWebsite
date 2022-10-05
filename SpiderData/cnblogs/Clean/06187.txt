@@ -1,0 +1,50 @@
+一、安装Python2.7
+
+参考链接：https://www.npmjs.com/package/node-gyp
+
+下载链接：https://www.python.org/downloads/windows/
+
+按照 手动安装工具和配置 方法进行安装，在Python官网安装了Python3.8，以及Python2.7（需配置环境变量，如下图：）
+
+如果未配置环境变量，会提示找不到，配好环境变量后，需要设置一下Python配置。
+
+npm config set python "D:\Programs\Python27\python.exe"
+
+二、安装VS生成工具。
+
+注意需要安装2017版本，我安装了最新版本2019的，会报错如下图，貌似是因为版本太高，使得gyp与vs不匹配。
+
+三、直接安装所有的配置
+
+以上安装仍然无法yarn成功，我选用了选项一的方法，直接安装所有的环境配置，该命令会直接下载安装vs2017生成工具以及Python2。
+
+npm install --global --production windows-build-tools
+
+四、还是报错啊报错
+
+以上安装，Python2和VS 安装成功了。
+
+但仍然报错，还是node-sass无法安装成功，如下图：
+
+五、 安装cnpm,tyarn，尝试使用国内镜像进行安装。
+
+1、安装cnpm。
+
+cmd下输入命令：
+
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+
+安装成功后，cnpm是安装在node的安装路径下的，输入cnpm -v 这里会报错，需要配置好环境变量。
+
+此时，cmd下输入 cnpm -v 运行成功。
+
+2、安装tyarn，无需配置环境变量。
+
+tyarn 是走的国内淘宝的npm.taobao.org镜像。
+
+cnpm i yarn tyarn -g
+
+六、运行成功！
+
+项目下，打开cmd，输入命令 tyarn，成功了！
+

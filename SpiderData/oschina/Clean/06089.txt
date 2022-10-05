@@ -1,0 +1,13 @@
+贴出报错信息：
+
+[2020-01-20 15:14:34,042] ERROR Error while renaming dir for test-0 in log dir D:\hecg\kafka_2.12-2.4.0\data\kafka-logs (kafka.server.LogDirFailureChannel)
+java.nio.file.AccessDeniedException: D:\hecg\kafka_2.12-2.4.0\data\kafka-logs\test-0 -> D:\hecg\kafka_2.12-2.4.0\data\kafka-logs\test-0.19a32e99d23e4dd484a27c1f94b8fc8e-delete
+        at sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:83)
+        at sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:97)
+        at sun.nio.fs.WindowsFileCopy.move(WindowsFileCopy.java:387)
+        at sun.nio.fs.WindowsFileSystemProvider.move(WindowsFileSystemProvider.java:287)
+
+出现的原因是，刚才不小心手动删掉了logs目录，导致实际logs和zookeeper中的状态不一致。
+
+解决办法：删掉zookeeper的data文件，重启就好了
+

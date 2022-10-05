@@ -1,0 +1,55 @@
+1 Proxy Error
+
+按Win+R快捷键，输入regedit，打开注册表编辑器找到HKEY_CURRENT_USER/Software/Microsoft/Windows/CurrentVersion/Internet Settings分支，把它下面以 Proxy 打头的键值对（如ProxyEnable，ProxyOverride，ProxyServer等）全部删除。
+
+我发现操作一会儿自动会出现，如果要创建新环境或下载每三方库就先删除，再操作就可以。
+
+如果出现这三个则安装失败
+
+删除后安装成功
+
+没有找到更好的解决方案，但这个也可以解决问题。
+
+如果通过pip安装则完成下面2设置后再进行。
+
+2 配置tensorflow环境
+
+Win+R启动cmd，在命令提示符内输入以下命令：
+
+conda create –n tensorflowLearn python=3.7
+
+这是创建环境
+
+activate tensorflowLearn
+
+激活环境
+
+conda info --envs
+
+激活环境
+
+用activate ------自己创建的环境
+
+这会出现配置的所有环境
+
+需要注意的是，如果在pip中下载安装比较慢可以换个源，可以到用户文件夹下，创建一个pip文件夹，然后在pip文件夹里创建一个txt文件。
+
+修改txt文件的内容，并且把后缀改成ini
+
+[global]
+index-url = http://pypi.mirrors.ustc.edu.cn/simple
+[install]
+use-mirrors =true
+mirrors =http://pypi.mirrors.ustc.edu.cn/simple/
+trusted-host =pypi.mirrors.ustc.edu.cn
+
+3 第步完成后会在anacoda的envs文件夹中出现一个新建的文件夹
+
+4 在pycharm中可以通过添加已有的环境，把这个加里面，不是上面的新建环境
+
+4 典型案例
+
+没有通过注册表删除上面三个proxy****安装失败
+
+删除上面的三个相关proxy***后
+

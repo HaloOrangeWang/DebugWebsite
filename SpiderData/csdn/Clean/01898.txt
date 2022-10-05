@@ -1,0 +1,83 @@
+没有pip时通过以下安装：
+
+pip：apt install python-pip
+ pip3：apt install python3-pip
+ 引言：
+ 一般情况sudo install python-pip会出现版本低（pip -V查看）的问题，如果版本低的话这时我们需要运行以下命令：
+
+pip install --upgrade pip
+
+如果提示错误出现Could not find ×××。
+ 则换一种安装方法，先卸载原先安装的pip：
+
+sudo apt-get remove python-pip
+
+采用以下安装方法：
+
+wget https://bootstrap.pypa.io/get-pip.py --no-check-certificate
+
+这时会下载一个.py文件。运行：
+
+sudo python get-pip.py
+
+查看：
+
+pip -V
+
+如果出现:
+
+bash:/usr/bin/pip:No such file or directory
+
+这时可能是链接的原因，在/usr/bin目录下创建一个软链接，指向你所安装的pip目录，先查看安装的pip目录：
+
+which pip
+
+然后创建软链接：
+
+sudo ln -s /usr/local/bin/pip  /usr/bin/pip
+
+/usr/local/bin/pip是电脑下的pip目录，/usr/bin/pip是系统默认pip目录！这时pip应是19.0.3版本。
+ （完）
+
+1、当使用
+
+sudo pip install  ****
+
+报错时如下：
+
+Traceback (most recent call last):
+  File "/usr/bin/pip", line 9, in <module>
+    from pip import main
+ImportError: cannot import name main
+
+这时去掉sudo，再次运行，报以下错误时：
+
+ERROR: Could not install packages due to an EnvironmentError: [Errno 13] Permission denied: '/usr/local/lib/python2.7/dist-packages/scipy-1.2.2.dist-info'
+Consider using the `--user` option or check the permissions.
+
+解决办法：采用以下形式：
+
+pip install --user ****
+
+2、有时也会遇到以下情况：
+
+ERROR: markdown 3.1.1 has requirement setuptools>=36, but you'll have setuptools 20.7.0 which is incompatible.
+ERROR: tensorboard 1.14.0 has requirement setuptools>=41.0.0, but you'll have setuptools 20.7.0 which is incompatible.
+
+这是我们可以根据提示的信息解决该问题，如下：
+
+pip install setuptools==41.0.0
+
+来安装满足需要的最新版本。
+
+当遇到下载pip超时时，可以指定源进行下载，python安装成功后，安装pip时，会有网络链接超时问题，主要是get-pip.py使用默认国外源
+
+国外源速度比较慢，可以指定使用国内源命令如下：
+
+python get-pip.py -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+pip添加环境变量：
+
+echo 'export PATH=/usr/local/python2/bin/:$PATH' >>~/.bashrc
+source ~/.bashrc
+

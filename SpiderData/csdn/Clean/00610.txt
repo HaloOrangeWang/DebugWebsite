@@ -1,0 +1,26 @@
+Python报错：AttributeError
+ 这个错误就是说python找不到对应的对象的属性，后来我发现竟然是初始化类的时候函数名写错了：
+
+class Settings():
+    def _init_(self):
+        self.scren_width=1200
+        self.screen_height=800
+        self.bg_color=(230,230,230)
+
+不知道你看出哪错了没，百度了一下才发现__init__是两个下划线，两个下划线，两个下划线：
+ 更改之后的代码：
+
+class Settings():
+    def __init__(self):
+        self.scren_width=1200
+        self.screen_height=800
+        self.bg_color=(230,230,230)
+
+更改之后错误就没有了
+ 其实后来我也发现，当你把init函数写错的时候，它的颜色会提示你的，先来看错误的提示颜色：
+ 
+ 再来看更改之后的提示颜色：
+ 
+ 所以说，我们在写代码的时候也可以留意一下代码的提示颜色，有时候它会帮助你实时检查代码有没有错误，虽然这么多颜色，我也记不住。。。
+ 在附带上python中常见的几种错误：
+

@@ -1,0 +1,70 @@
+
+引言
+
+今天遇到了一个奇怪的现象，简单举个栗子：
+
+文件结构如下：
+
+其中tt.py文件中定义了一个方法：
+
+def tt():
+    print('tt')
+
+我现在要在test.py中使用tt(), 代码如下：
+
+说没有找到这个模块，然后我将导入换成相对路径
+
+可以看到编译器是有报错提示的，但是运行完全没有问题。
+
+将路径换成相对路径试试呢？
+
+很好，编译器是认识的，但是不好意思运行报错
+
+那么问题来了，问什么编译器的自动导包会出现问题呢？这编译器也太不智能了。
+
+
+探究
+
+众所周知，Python模块导入的查找路径可以通过sys.path查看，我看了一下：
+
+['/home/hujing/workspace/python/python_demo/test', '/home/hujing/workspace/python/python_demo', '/usr/share/pycharm/helpers/pycharm_display', '/usr/lib/python35.zip', '/usr/lib/python3.5', '/usr/lib/python3.5/plat-x86_64-linux-gnu', '/usr/lib/python3.5/lib-dynload', '/home/hujing/.local/lib/python3.5/site-packages', '/usr/local/lib/python3.5/dist-packages', '/usr/lib/python3/dist-packages', '/usr/share/pycharm/helpers/pycharm_matplotlib_backend']
+
+在第一个路径下找tt可以找到，这也是上面正确运行的，没有问题
+
+在第二个路径下找test.tt，应该也可以找到啊，为什么会提示找不到呢？
+
+相对路径查找为什么也找不到呢？在网上找了找，没有找到能够解决我问题的答案，那我就只好自己探究了。
+
+
+尝试
+
+首先，无法导入本包下的其他模块，尝试在其他模块中导入：
+
+新建模块并导入刚才的test模块, 文件结构如下：
+
+其中fun_test.py文件只有一句：import test.test
+
+先尝试一下刚才运行的模式：
+
+不出意外会报错，因为运行路径已经换到fun目录下了，果不其然
+
+再尝试一下刚才编译器的做法：
+
+正常：
+
+相对路径经过尝试也是正常的。
+
+
+思考
+
+那我就奇怪了，为什么换个模块运行就可以。就不能正常导入自己包的模块吗？还是说python没有把运行路径当做包？
+
+我觉得应该是后者，Python不会将执行的文件路径作为一个包来处理，在我经过一些其他的尝试之后，暂时看到的确实是这样。故而也就无法通过导入包的形式来导入了。
+
+这只是我经过尝试，暂时得出的粗浅结论，目前还没有找到相关内容的说明，若哪位了解，还望不吝赐教。
+
+
+项目路径
+
+再有一个问题，Pycharm中运行正常，但是使用cmd直接运行就会报错，很简单，输出sys.path，可以看到两者的不同，Pycharm非常贴心的讲我们项目的运行根路径添加进去了，在命令行运行就需要手动添加了。当然，你也可以选择讲各种自己的包都放到系统路径下，或者直接在系统路径下添加项目路径。
+

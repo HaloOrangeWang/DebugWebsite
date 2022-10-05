@@ -1,0 +1,175 @@
+"ModuleNotFoundError: No module named 'xxx'"这个报错是个非常常见的报错，几乎每个python程序员都遇到过，导致这个报错的原因也非常多，下面是我曾经遇到过的原因和解决方案
+
+module包没安装
+
+忘了import
+
+没有__init__.py文件
+
+package包的版本不对
+
+自定义的包名与安装的包名相同，导致import包的时候导错了包
+
+没设置PYTHONPATH或者
+
+自建的module包所在路径不在PYTHONPATH下
+
+不恰当的使用了相对导入
+
+下面是每种情况分别的解决方案：
+
+1、module包没安装
+
+
+1、module包没安装
+
+使用场景：pip安装的第三方的包找不到
+
+这个原因比较常见，解决办法就是pip install相应的包即可。如果不确定是否安装了这个包，使用下面的命令查找报警的那个包名，如果有输出结果，说明存在这个包，否则说明不存在这个包。
+
+pip list | grep xxx #把xxx替换成你的包名即可
+
+pip list | grep xxx #把xxx替换成你的包名即可
+
+如果在pip install的过程中提示包找不到，没有这个版本的包，可能是需要加上内置源，比如想要下载公司内部的包，那肯定需要加上公司的内置源才能找到相应的包。内置源的的使用方式加上-i参数即可。
+
+pip install xxx -i https://xxx.xx.org/simple
+# 比如下面是清华的源
+# https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/
+
+# 比如下面是清华的源
+
+# https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/
+
+2、忘了import
+
+
+2、忘了import
+
+使用场景：pip安装的第三方的包找不到、自建的module包找不到
+
+module安装了但是没有import，这个原因也经常碰到，比如使用了datetime对象， 但是没有导入datetime包。解决方案同样非常简单，import 相应的包即可。比如下面的案例：
+
+这种情况最容易出现在从别处copy了一段了代码，但是没有把所有用到的module导入进来。
+
+3、没有__init__.py文件
+
+
+3、没有__init__.py文件
+
+使用场景：自建的module包找不到
+
+因为python在解释包的时候会给本文件夹也就是本module下的所有文件建立一个索引放在当前路径下的__init__.py文件中，如果没有module的文件索引，我们即使import了指定的包，解释器还是找不到这个module下的文件的，因而我们一般会在每个文件夹下建一个空的__init__.py文件。如果一个文件夹下没有__init__.py文件，不会被当做一个module。
+
+解决方案：如果这个包是你自己写的，不妨检查一下待导入的包的根目录是否存在一个__init__.py文件，没有的话建一个空的__init__.py文件即可（注意：不光要检查待导入的包根目录是否存在__init__.py文件，还需要检查当前程序所在文件夹是否存在这个文件）。如果这个包是pip install来的，那基本上可以忽略这种可能了，继续尝试下面的原因吧。
+
+对于缺少__init__.py文件这种情况，还有一种报错形式是：ImportError: attempted relative import with no known parent package
+
+4、安装的第三方module包的版本不对
+
+
+4、安装的第三方module包的版本不对
+
+使用场景：pip安装的第三方的包找不到
+
+当看到这里，说明你已经检查并确定了module已经被安装了，import语句也有，__init__.py文件同样满足。这个时候或许可以怀疑一下是否是第三方包的版本与当前所用python版本不兼容。
+
+解决方案是需要先卸载原来pip 安装的包，然后安装一个指定版本的包。比如python3不兼容 2.0版本及以上的DBUitls包，需要安装1.x的版本才行。
+
+pip uninstall DBUtils
+pip install DBUtils==1.3
+
+可能有同学会问怎么确定这个module是否跟当前的python版本兼容呢？这个很遗憾的告诉你，我也不知道，但是可以尝试把’找不到xxx包' 的报警提示直接复制到搜索引擎中搜索结果，如果是因为不兼容的原因很容易就能找到对应的说明博客，博客中一定会说明需要安装哪个版本的包比较合适，按照博客说明来操做即可。如果找了一圈都没发现关于不兼容的说法，放弃吧，说明你的问题应该不是这个情况。打起精神，继续尝试下一种解决方案吧。
+
+5、自建的包名与第三方安装的包名相同，导致import包的时候导错了包
+
+
+5、自建的包名与第三方安装的包名相同，导致import包的时候导错了包
+
+使用场景：pip安装的第三方的包找不到、自建的module包找不到
+
+这种情况不经常发生，但是一旦发生，非常难找到原因。我曾经就自己在当前项目下创建了名为kafka的module文件夹（包含__init__.py文件的文件夹被称为module文件夹），而我又使用pip命令安装了一个kafka包，我在程序中使用import kafka命令导包的时候其实我是想导入pip下来的第三方包的，但是因为python包管理机制和包查找优先级，会优先从当前路径下找指定的包，如果当前文件夹下存在指定的包，则不会去PYATHONPATH或者其他路径下找包。
+
+解决方式是给自己的文件夹换个名字，使得与第三方包名不冲突。
+
+6、没设置PYTHONPATH环境变量
+
+
+6、没设置PYTHONPATH环境变量
+
+使用场景：pip安装的第三方的包找不到
+
+有同学可能会说为什么有同学也没设置这个环境变量，为啥他就能顺利执行，我就不行，这里我只能说每个人的电脑的开发环境不一样，开发环境这种东西永远带有点玄学的意味。
+
+解决方案：
+
+再次执行安装intall这个包的命令，这时它不会再次安装，而是会提示xxx包在xx路径已经满足，而之所以找不到，是因为没有把这个路径添加到PYTHONPATH这一环境变量中。这里以DBUtils包为例：
+
+% pip install DBUtils==1.3
+Requirement already satisfied: DBUtils==1.3 in ./venv/lib/python3.9/site-packages (1.3)
+
+复制上面的路径,然后在terminal终端执行下面这条命令，把加粗标记的路径改成你刚才复制的路径就好。这条命令即可将刚才的包路径添加到环境变量中。
+
+export PYTHONPATH=./venv/lib/python3.9/site-packages:$PYTHONPATH
+
+无论是否在虚拟环境中，这样的解决方式都可以生效。
+
+再次执行程序，应该不会报包找不到的问题了。
+
+如果仍然不行，那么指定pip -V命令，查看输出结果中的"/pip"之前路径是否和刚才加入环境变量的路径一样，如果不一样，把这个路径也加入到环境变量中。
+
+% pip -V
+pip 21.1.3 from /Users/lch/python_project/learn_python/venv/lib/python3.9/site-packages/pip (python 3.9)
+
+其实我的pip -V输出的路径和刚才的路径是一样的，但是为了演示不一样的情况，这里假设这个路径和刚才添加的路径不一样，这里再添加一遍到环境变量。
+
+export PYTHONPATH= /Users/lch/python_project/learn_python/venv/lib/python3.9/site-packages:$PYTHONPATH
+
+提示：直接在终端运行export关键字来添加环境变量的方式可以让变量立即生效，不需要source某个文件，但是这个方式只适用于当前终端，一旦当前终端关闭或在另一个终端中，则失效。如果想要长久生效，参考“Linux和Mac环境变量设置”将路径添加到环境变量文件中。
+
+参考：pip安装包后Import的时候提示找不到的解决方案、python的第三方包默认安装位置在哪？
+
+7、自建的module包所在路径不在PYTHONPATH下
+
+
+7、自建的module包所在路径不在PYTHONPATH下
+
+适用场景：自建的包找不到
+
+在IDE中执行python程序，编译器会自动把当前项目的根目录加入到包查找路径中，可以理解为加到PYTHONPATH下，所以直接执行是没有问题的。但是在cmd或者terminal控制台中直接使用python相关命令来执行程序，不会自动将当前项目加入到PYTHONPATH环境变量下，如果涉及到import其他文件夹下的变量就会报类似ImportError: No module named xxx这样的错误。
+
+解决方法是使用sys.append()命令把报警包的所在文件夹路径加入到PYTHONPATH。下面是一个🌰：
+
+比如你的项目下叫做learn_python, 下面是你的项目根目录下的文件结构。
+
+你在运行launch.py时报警conf这个module找不到，这个时候就应该通过sys.append()命令把conf所在文件夹的路径（注意是conf所在文件夹的路径，不是conf的路径），也就是 learn_python的根路径添加到PYTHONPATH中，下面是实现方案的代码。
+
+os.path.abspath(__file__)获取到的是launch.py的绝对路径；os.path.dirname(os.path.abspath(__file__))获取到的是launch.py所在文件夹的也就是server的根路径
+
+os.path.dirname(os.path.dirname(os.path.abspath(__file__)))获取到的是server所在文件夹也就是learn_python的根路径。
+
+至此就获取到了learn_pyhton的根路径，使用sys.append()命令把路径添加到环境变量中即可。
+
+参考：python程序在命令行执行提示ModuleNotFoundError: No module named 'XXX' 解决方法
+
+8、不恰当的使用了相对导入
+python相对导入常见问题和解决方案
+
+
+8、不恰当的使用了相对导入
+
+python相对导入常见问题和解决方案
+
+忠告
+
+
+忠告
+
+当你排查完了以上所有情况，发现自己都不符合，而且在网上找了很多文章也没找到解决方案，这个时候别独自挣扎了，因为你很可能是犯了一个很低级小众的错误，继续独自排查很难找到问题所在。最好让身边的同学帮你看一下，所谓当局者迷，旁观者清，可能你看了很长时间却没关注到一些比较基础且常见的设置，这时同事或者同学往往能很快看出你的问题所在。比如你可能一直以为你用的python3, 而实际上用的是python2等等。
+
+源文：ModuleNotFoundError: No module named 'xxx'解决方案大全
+
+欢迎关注公众号 TestDevelop , 我在这里分享各种测试开发技术知识、沟通技巧、职场感言。欢迎后续与我共同成长。
+
+欢迎关注公众号 TestDevelop , 我在这里分享各种测试开发技术知识、沟通技巧、职场感言。欢迎后续与我共同成长。
+

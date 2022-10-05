@@ -1,0 +1,40 @@
+环境描述：
+
+Python 2.7.5
+
+CentOS-7.2
+
+(1).在虚拟环境下运行 pip install 命令安装 PyPI 第三方库，出现类似如下告警。
+
+Running setup.py egg_info for package Werkzeug
+
+no previously-included directories found matching 'docs/_build'
+
+no previously-included directories found matching 'docs/_themes'
+
+warning: no previously-included files matching '*.py[cdo]' found anywhere in distribution
+
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+
+warning: no previously-included files matching '*.so' found anywhere in distribution
+
+(2).偶发无法关联安装 PyPI 库的故障。
+
+例如：安装 python-daemon (2.1.2) 需要先安装 docutils (0.14) 及 lockfile (0.12.2)。而故障发生时，无法自动安装关联 PyPI 库。
+
+(3).检查虚拟环境 pip 版本，发现版本较低。
+
+例如：虚拟环境下 pip 版本为 1.4.1，非虚拟环境下 pip 版本为 9.0.1。
+
+报错原因：
+
+pip 版本过低，导致安装报错。
+
+报错处理方法：
+
+升级 pip 工具，语句类似如下。
+
+#> pip install pip==9.0.1
+
+随后，可通过 pip list 命令进行检查。
+

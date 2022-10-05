@@ -1,0 +1,80 @@
+
+Do I need to install pip?
+
+pip is already installed if you are using Python 2 >=2.7.9 or Python 3 >=3.4 downloaded from ​​python.org​​​ or if you are working in a ​​Virtual Environment​​​ created by ​​virtualenv​​​ or ​​pyvenv​​​. Just make sure to ​​upgrade pip​​.
+
+
+Installing with get-pip.py
+
+To install pip, securely download ​​get-pip.py​​​. ​​[1]​​:
+
+Inspect ​​get-pip.py​​ for any malevolence. Then run the following:
+
+到这一步的时候，如果python2的pip坏了，就运行：python2 get-pip.py
+
+如果是python3的pip坏了，升级就运行：python3 get-pip.py
+
+Warning
+
+Be cautious if you are using a Python install that is managed by your operating system or another package manager. ​​get-pip.py​​ does not coordinate with those tools, and may leave your system in an inconsistent state.  ​​get-pip.py​​ also installs ​​​setuptools​​​ ​​[2]​​​ and ​​wheel​​​ if they are not already. ​​setuptools​​​ is required to install ​​source distributions​​​. Both are required in order to build a ​​Wheel Cache​​​ (which improves installation speed), although neither are required to install pre-built ​​wheels​​.
+
+Note
+
+The get-pip.py script is supported on the same python version as pip. For the now unsupported Python 2.6, alternate script is available ​​here​​.
+
+
+get-pip.py options
+
+​​--no-setuptools​​
+
+If set, do not attempt to install ​​setuptools​​
+
+​​--no-wheel​​
+
+If set, do not attempt to install ​​wheel​​
+
+​​get-pip.py​​ allows ​​​pip install options​​​ and the ​​general options​​. Below are some examples:
+
+Install from local copies of pip and setuptools:
+
+Install to the user site ​​[3]​​:
+
+Install behind a proxy:
+
+
+Using Linux Package Managers
+
+See ​​Installing pip/setuptools/wheel with Linux Package Managers​​​ in the ​​Python Packaging User Guide​​.
+
+
+Upgrading pip
+
+On Linux or macOS:
+
+On Windows ​​[4]​​:
+
+
+Python and OS Compatibility
+
+pip works with CPython versions 2.7, 3.3, 3.4, 3.5, 3.6 and also pypy.
+
+This means pip works on the latest patch version of each of these minor versions. Previous patch versions are supported on a best effort approach.
+
+pip works on Unix/Linux, macOS, and Windows.
+
+​​[1]​​
+
+"Secure" in this context means using a modern browser or a tool like curl that verifies SSL certificates when downloading from https URLs.
+
+​​[2]​​
+
+Beginning with pip v1.5.1, ​​get-pip.py​​ stopped requiring setuptools to be installed first.
+
+​​[3]​​
+
+The pip developers are considering making ​​--user​​ the default for all installs, including ​​get-pip.py​​ installs of pip, but at this time, ​​--user​​ installs for pip itself, should not be considered to be fully tested or endorsed. For discussion, see ​​​Issue 1668​​.
+
+​​[4]​​
+
+​​https://github.com/pypa/pip/issues/1299​​
+

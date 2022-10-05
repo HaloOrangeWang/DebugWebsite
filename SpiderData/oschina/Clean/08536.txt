@@ -1,0 +1,37 @@
+开启内置服务器，由于项目中local_settings.py文件中的DEBUG=True，进行开发和调试一直没什么问题。
+
+但是现在需要编写404,500等出错页面，在debug模式下出了错都会出现报错页面，无法转向到404或500页面，这时我将local_settings.py中的DEBUG设为false，这时候应该可以转向到404页面。实验证明确实如此，404和500页面都可以得到，但是出现了新的问题：css和js文件无法加载。
+
+在网上找了找，很快就找到了问题的原因：Django框架仅在开发模式下提供静态文件服务。当我开启DEBUG模式时，Django内置的服务器是提供静态文件的服务的，所以css等文件访问都没有问题，但是关闭DEBUG模式后，Django便不提供静态文件服务了。想一想这是符合Django的哲学的：这部分事情标准服务器都很擅长，就让服务器去做吧！
+
+OK，解决问题的办法也就出现了，我最开始想到的就是，使用项目正式部署是所使用的配置，由apache提供静态文件服务。不过解决问题的方法远不止一种，在stackoverflow上我发现了更有趣的方法。现在把自己总结的四种方法列在下面，共大家参考：
+
+1.将静态文件由apache提供文件服务(类似正式部署)：
+
+编辑/etc/apache2/sites-available/horizon文件：
+
+#Alias /media /opt/stack/horizon/openstack_dashboard/static
+Alias /static /opt/stack/horizon/openstack_dashboard/static
+
+建立静态文件链接：
+
+ln -sv /opt/stack/horizon/openstack_dashboard/static /opt/stack/horizon
+
+重启apache:
+
+sudo service apache2 restart
+
+2.使用django.views.static.serve()方法。在URLconf中添加：
+
+(r'^site_media/(?P<path>.*)$', 'django.views.static.serve',{'document_root': '/path/to/media'}),
+
+官方文档中评价这种办法：“The big, fat disclaimer”。
+
+3.伪造404页面：使用正确的URL链接404页面模板；
+
+4.改变项目运行方式：
+
+python manage.py runserver --insecure
+
+最后这种是stackoverflow上最受欢迎的方法，确实简单快捷！
+

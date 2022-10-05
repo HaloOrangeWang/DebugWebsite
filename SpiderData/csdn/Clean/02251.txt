@@ -1,0 +1,36 @@
+对于刚刚开始接触python这门语言的人来说，可能会对于如何使用这门语言来进行编程会存在有一定的疑惑。如何使用中文来进行程序的编写，会不会与英文的编写有不一样的地方？今天我们就来看一下在python中如何使用中文来表达自己的所思所想。
+
+对于大多数程序语言来说，第一个入门编程代码便是"Hello World！"，以下代码是使用Python输出"Hello World！"：#!/usr/bin/python
+
+print "Hello, World!";
+
+输入以上的代码之后就会出现如下的结果：Hello, World!
+
+而如果输入的不是英文而是中文的“你好，世界！”，而且按照上面的方式进行输入的话就会变成下面这样：#!/usr/bin/python
+
+print "你好，世界!";
+
+所输出的结果是：File "test.py", line 2
+
+SyntaxError: Non-ASCII character '\xe4' in file test.py on line 2, but no encoding
+
+declared; see http://www.python.org/peps/pep-0263.html for details
+
+提醒报错，无法输出中文。
+
+产生这样结果的原因是因为Python中默认的编码格式是 ASCII 格式，在没修改编码格式时无法正确打印汉字，所以在读取中文时会报错。
+
+解决的方法很简单只需要在文件的开头加入# -*- coding: UTF-8 -*-或者#coding=utf-8就可以解决这个问题了。
+
+(注意：#coding=utf-8 的 = 号两边不要空格。)
+
+在文件的开头加入上述的代码之后再次尝试输出“你好，世界！”#!/usr/bin/python
+
+# -*- coding: UTF-8 -*-
+
+print "你好，世界";
+
+这样的话输出的结果就会变成如下所示的样子：你好，世界!
+
+这就是python的中文编码的方式，今天的内容就是这样，希望能对你们的学习有所帮助。
+

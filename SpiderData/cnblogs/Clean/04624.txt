@@ -1,0 +1,301 @@
+
+Python For Mac 开发环境安装记录
+
+
+把自己安装的过程记录一下，亲测可用
+
+
+1.Python3环境安装（转载http://www.cnblogs.com/meng1314-shuai/p/9031686.html）
+
+前言：mac系统自带python，不过以当前mac系统的最新版本为例，自带的python版本都是2.版本，虽然不影响老版本项目的运行，但是python最新的3.版本的一些语法与2.*版本并不相同，网上的教程大神们也肯定都更新出了最新版的教程，我们不论是学习还是使用，当然用最新版会更好一点。
+
+转载请注明出处http://www.cnblogs.com/meng1314-shuai/p/9031686.html
+
+1、在安装最新版Python3.*之前，我们先熟悉一下系统自带的python。
+
+　 Mac系统自带python路径为／System／Library／Frameworks／Python.framework/Version,我们先来打开目录看一下：
+
+我们看到这里有多个python版本，而在Current目录下存放的是系统当前的python版本。
+
+mac既然自带了python，当然肯定配置好了python的全局命令，我们直接在终端运行：
+
+运行正常。到这里也差不多对mac系统自带的python有所了解，接下来我们开始安装最新版本的python。
+
+2、开始安装(这里我们使用神器homebrew，还不熟悉此神器的小伙伴请自行百度，也可点击链接直接前往下载)
+
+安装前先搜索一下是否已经存在python3的包：
+
+已经存在，我们可以直接安装了：
+
+==> Auto-updated Homebrew!
+
+Updated 1 tap (homebrew/core).
+
+==> Updated Formulae
+
+angular-cli     fluent-bit      links           postgresql@9.6  texmath
+
+byacc           fn              mlt             qcachegrind     tile38
+
+caddy           ipython         osrm-backend    rhino           wtf
+
+cfitsio         ipython@5       postgresql      siril
+
+cfssl           libpq           postgresql@9.4  sundials
+
+dnscrypt-proxy  libpqxx         postgresql@9.5  synfig
+
+==> **Installing dependencies for python: sphinx-doc, gdbm, openssl, sqlite, **xz
+
+==> **Installing python dependency: **sphinx-doc
+
+==> Downloading https://homebrew.bintray.com/bottles/sphinx-doc-1.7.4.high_sierr
+
+######################################################################## 100.0%
+
+==> Pouring sphinx-doc-1.7.4.high_sierra.bottle.tar.gz
+
+==> Caveats
+
+This formula is keg-only, which means it was not symlinked into /usr/local,
+
+because this formula is mainly used internally by other formulae.
+
+Users are advised to use pip to install sphinx-doc.
+
+If you need to have this software first in your PATH run:
+
+echo 'export PATH="/usr/local/opt/sphinx-doc/bin:$PATH"' >> ~/.bash_profile
+
+==> Summary
+
+🍺  /usr/local/Cellar/sphinx-doc/1.7.4: 2,642 files, 36.8MB
+
+==> **Installing python dependency: **gdbm
+
+==> Downloading https://homebrew.bintray.com/bottles/gdbm-1.14.1_1.high_sierra.b
+
+######################################################################## 100.0%
+
+==> Pouring gdbm-1.14.1_1.high_sierra.bottle.tar.gz
+
+🍺  /usr/local/Cellar/gdbm/1.14.1_1: 20 files, 555.7KB
+
+==> **Installing python dependency: **openssl
+
+==> Downloading https://homebrew.bintray.com/bottles/openssl-1.0.2o_1.high_sierr
+
+######################################################################## 100.0%
+
+==> Pouring openssl-1.0.2o_1.high_sierra.bottle.tar.gz
+
+==> Caveats
+
+A CA file has been bootstrapped using certificates from the SystemRoots
+
+keychain. To add additional certificates (e.g. the certificates added in
+
+the System keychain), place .pem files in
+
+/usr/local/etc/openssl/certs
+
+and run
+
+/usr/local/opt/openssl/bin/c_rehash
+
+This formula is keg-only, which means it was not symlinked into /usr/local,
+
+because Apple has deprecated use of OpenSSL in favor of its own TLS and crypto libraries.
+
+If you need to have this software first in your PATH run:
+
+echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.bash_profile
+
+For compilers to find this software you may need to set:
+
+​    LDFLAGS:  -L/usr/local/opt/openssl/lib
+
+​    CPPFLAGS: -I/usr/local/opt/openssl/include
+
+For pkg-config to find this software you may need to set:
+
+​    PKG_CONFIG_PATH: /usr/local/opt/openssl/lib/pkgconfig
+
+==> Summary
+
+🍺  /usr/local/Cellar/openssl/1.0.2o_1: 1,791 files, 12.3MB
+
+==> **Installing python dependency: **sqlite
+
+==> Downloading https://homebrew.bintray.com/bottles/sqlite-3.23.1.high_sierra.b
+
+######################################################################## 100.0%
+
+==> Pouring sqlite-3.23.1.high_sierra.bottle.tar.gz
+
+==> Caveats
+
+This formula is keg-only, which means it was not symlinked into /usr/local,
+
+because macOS provides an older sqlite3.
+
+If you need to have this software first in your PATH run:
+
+echo 'export PATH="/usr/local/opt/sqlite/bin:$PATH"' >> ~/.bash_profile
+
+For compilers to find this software you may need to set:
+
+​    LDFLAGS:  -L/usr/local/opt/sqlite/lib
+
+​    CPPFLAGS: -I/usr/local/opt/sqlite/include
+
+For pkg-config to find this software you may need to set:
+
+​    PKG_CONFIG_PATH: /usr/local/opt/sqlite/lib/pkgconfig
+
+==> Summary
+
+🍺  /usr/local/Cellar/sqlite/3.23.1: 11 files, 3MB
+
+==> **Installing python dependency: **xz
+
+==> Downloading https://homebrew.bintray.com/bottles/xz-5.2.4.high_sierra.bottle
+
+######################################################################## 100.0%
+
+==> Pouring xz-5.2.4.high_sierra.bottle.tar.gz
+
+🍺  /usr/local/Cellar/xz/5.2.4: 92 files, 1MB
+
+==> **Installing **python
+
+Warning: Building python from source:
+
+The bottle needs the Apple Command Line Tools to be installed.
+
+You can install them, if desired, with:
+
+​    xcode-select --install
+
+==> Downloading https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tar.xz
+
+######################################################################## 100.0%
+
+==> ./configure --prefix=/usr/local/Cellar/python/3.6.5 --enable-ipv6 --dataroot
+
+==> make
+
+==> make install PYTHONAPPSDIR=/usr/local/Cellar/python/3.6.5
+
+==> make frameworkinstallextras PYTHONAPPSDIR=/usr/local/Cellar/python/3.6.5/sha
+
+==> Downloading https://files.pythonhosted.org/packages/72/c2/c09362ab29338413ab
+
+######################################################################## 100.0%
+
+==> Downloading https://files.pythonhosted.org/packages/ae/e8/2340d46ecadb1692a1
+
+######################################################################## 100.0%
+
+==> Downloading https://files.pythonhosted.org/packages/5d/c1/45947333669b31bc6b
+
+######################################################################## 100.0%
+
+==> make html
+
+Error: An unexpected error occurred during the brew link step
+
+The formula built, but is not symlinked into /usr/local
+
+Permission denied @ dir_s_mkdir - /usr/local/Frameworks
+
+Error: Permission denied @ dir_s_mkdir - /usr/local/Frameworks
+
+所有的包都下载完毕，但是我们却发现最后报了两条错误，大概意思是公式已经建立，但是在创建连接的时候因为没有权限而发生意外错误。在报错信息里我们看到一个目录/usr/local/Frameworks，我们先去找一下这个目录：
+
+发现这个目录竟然不存在，那我们就来手动创建一个：
+
+创建好目录之后，再来解决权限问题：
+
+不报错即为修改成功，修改好权限之后，还需要手动执行一下安装时未完成的创建连接：
+
+连接成功。咱们来查看一下当前系统下的python3的信息：
+
+发现python3被安装到了/usr/local/bin/python3目录下，有兴趣的小伙伴自行前往查看想过配置文件。
+
+到这里python3的安装就算完成了，不过可能有小伙伴已经发现，不管是在终端运行python -V查看版本号还是直接运行python启动python命令行模式，默认的python版本还是系统自带的2.版本。其实这时候只运行命令时需要把python改为python3就行了，当然，有兴趣的小伙伴也可以尝试配置一下默认版本，把当前系统的默认版本修改为3.版本。知乎上已经贴出了各种各样的方法，我这里就不多做赘述了。
+
+
+2.让Mac 默认使用Python3（转载https://www.cnblogs.com/wangjiale1024/p/10705868.html）
+
+mac一般自带python2.7
+
+可以修改 ~/.bash_profile （具体的path取决于你的python3安装路径）：
+
+
+3.IDE安装 python IDE for Mac  PyCharm（转载 ）
+
+
+https://blog.csdn.net/u014044812/article/details/86679150
+
+
+这个内容不好贴成markdown就不贴了。亲测有效，可破解永久激活
+
+
+问题纪要
+
+
+发现安装的python3 竟然没有pip3。
+
+
+于是卸载了 brew remove python3
+
+
+重装 brew install python3
+
+
+问题一
+
+Error: Xcode alone is not sufficient on Sierra.
+
+Install the Command Line Tools:
+
+xcode-select —install
+
+执行  xcode-select —install 命令 安装最新的CLT解决
+
+问题二
+
+Running Homebrew as root is extremely dangerous and no longer supported.
+
+MAC /usr/local 文件夹权限问题
+
+修改文件夹权限
+
+sudo chown -R $(whoami) /usr/local/
+
+如果失败提示Operation not permitted 或其他权限不足，则需要关闭Rootless
+
+Rootless 苹果从 OS X El Capitan 10.11 系统开始使用了 Rootless 机制，系统默认将会锁定 /system、/sbin、/usr 这三个目录。用户要获取这三个目录的写权限，需要关闭Rootless
+
+关闭Rootless
+
+重启 Mac
+
+开机时后按下 Command+R，进入恢复模式。
+
+在上面的菜单实用工具中找到并打开 Terminal
+
+输入如下命令：
+
+csrutil disable
+
+重启MAC，正常进入系统，此时已经可以给/system、/sbin、/usr 者几个目录进行权限更改
+
+打开 Terminal
+
+输入如下命令：
+
+sudo chown -R $(whoami) /usr/local
+
+

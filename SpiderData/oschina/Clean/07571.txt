@@ -1,0 +1,142 @@
+当导出2007格式的时候，打开文件总是报错“发现 xxx中的部分内容有问题。是否让我们尽量尝试恢复？”。
+
+导出的程序：
+
+protected void btnValidateInternalData_Click(object sender, EventArgs e)
+        {
+            if (!FileUploadEmployee.HasFile)
+            {
+                ShowMessage("请先选择文件。");
+                return;
+            }
+
+var employeeData = GetDataTable();
+            if (employeeData.Rows.Count == 0)
+            {
+                ShowMessage("文件数据为空。");
+                return;
+            }
+
+ValidateEmployeeField(employeeData);
+
+var fileName = FileUploadEmployee.FileName;
+            DataSet dataSet = new DataSet();
+            dataSet.Tables.Add(employeeData);
+            byte[] fileBinary = null;
+            fileBinary = ExcelHelper.ExportToExcel(dataSet, DataFormat.Excel2007);
+            var reportFileName = Path.GetFileNameWithoutExtension(fileName) + "Validated" + DateTime.Now.ToString("yyyyMMddHHmmss") + Path.GetExtension(fileName);
+            Response.Buffer = true;
+            Response.Clear();
+            Response.ClearHeaders();
+            Response.ClearContent();
+            Response.AddHeader("Content-Disposition", @"attachment;filename=""" + reportFileName + @"""");
+            Response.AddHeader("Content-Length", fileBinary.Length.ToString());
+            Response.ContentType = "application/vnd.ms-excel"; //"application/octet-stream"; 
+            Response.BinaryWrite(fileBinary);
+            //说明：当仅使用Response.End()发送缓冲输出时，打开导出的excel会出现 部分内容有问题 的错误。
+            Response.Flush();//向客户端发送当前所有缓冲的输出。
+            Response.End();//将当前所有缓冲的输出发送到客户端，停止该页的执行，并引发 EndRequest 事件。
+        }
+
+从dataset创建excel表格的方法：
+
+public static byte[] ExportToExcel(DataSet origDataSet, DataFormat dataFormat, string culture = "", bool shouldCheckHideColumnsForReport = false)
+        {
+            IWorkbook workbook = null;
+            switch (dataFormat)
+            {
+                case DataFormat.Excel97_2003:
+                    workbook = new HSSFWorkbook();
+                    break;
+                case DataFormat.Excel2007:
+                    workbook = new XSSFWorkbook();
+                    break;
+            }
+
+ICellStyle cellstyleDate = workbook.CreateCellStyle();
+            short df = workbook.CreateDataFormat().GetFormat(DateUtils.FORMAT_DATETIME);
+            if (culture == new Language(LanguageEnum.zhcn).Code)
+                df = workbook.CreateDataFormat().GetFormat(DateUtils.FORMAT_DATETIME);
+            cellstyleDate.DataFormat = df;
+
+foreach (DataTable dt in origDataSet.Tables)
+            {
+                ISheet sheet = workbook.CreateSheet(dt.TableName);
+                
+                int columnIndex = 0;
+                IRow row = sheet.CreateRow(0);
+                ICell cell;
+                foreach (DataColumn dc in dt.Columns)
+                {
+                    string columnName = dc.ColumnName;
+                    if (shouldCheckHideColumnsForReport && ShouldSkipColumnForReport(columnName))
+                    {
+                        //dont add this column in this external report
+                        continue;
+                    }
+                    cell = row.CreateCell(columnIndex);
+                    cell.SetCellValue(dc.ColumnName);
+
+columnIndex++;
+                }
+
+List<int> lockedColumnList = new List<int>();
+                int rowIndex = 1;
+                foreach (DataRow dr in dt.Rows)
+                {
+                    row = sheet.CreateRow(rowIndex);
+                    columnIndex = 0;
+                    foreach (DataColumn dc in dt.Columns)
+                    {
+                        string columnName = dc.ColumnName;
+                        if (shouldCheckHideColumnsForReport && ShouldSkipColumnForReport(columnName))
+                        {
+                            //dont add this column in this external report
+                            continue;
+                        }
+                        cell = row.CreateCell(columnIndex);
+                        
+                        if (dc.DataType == Type.GetType("System.DateTime"))
+                        {
+                            DateTime dateTime = DateTime.MinValue;
+                            if (DateTime.TryParse(dr[columnName].ToString(), out dateTime))
+                            {
+                                cell.CellStyle = cellstyleDate;
+                                cell.SetCellValue(dateTime);
+                            }
+                            else
+                                cell.SetCellValue(dr[columnName].ToString());
+                        }
+                        else if (dc.DataType == Type.GetType("System.Decimal"))
+                        {
+                            double decimalValue = 0;
+                            if (double.TryParse(dr[columnName].ToString(), out decimalValue))
+                            {
+                                cell.SetCellValue(decimalValue);
+                            }
+                            else
+                                cell.SetCellValue(dr[columnName].ToString());
+                        }
+                        else
+                        {
+                            string columnValue = dr[columnName].ToString();
+                            cell.SetCellValue(columnValue);
+                        }
+                        columnIndex++;
+                    }
+                    rowIndex++;
+                }
+            }
+
+
+Response.Flush() Response.End()的区别
+
+//Response.Flush() 将缓存中的内容立即显示出来
+//Response.End()  缓冲的输出发送到客户端  停止页面执行
+//例:
+//Response.Write("520");
+//Response.End(); \\执行到这里结束页面显示"520" 下面的语句不再执行 (和没写一样)
+//Response.Write("025");
+
+//如果是Response.Flush() 将缓存中的内容立即显示出来,然后再执行后面的语句
+

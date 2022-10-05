@@ -1,0 +1,24 @@
+1.Excel file format cannot be determined, you must specify an engine manually
+
+2.pandas.errors.EmptyDataError: No columns to parse from file
+
+可能的原因：
+
+1.初次合并失败，但当前目录下仍然生成了一个合并后的xlsx空文件，再次运行前先将其删除。
+
+2.要合并的文件被打开了，先将其关闭再运行脚本。
+
+3.目录问题。注意python脚本文件存放的目录位置，比如我们将py文件和多个待合并的xlsx文件置于同一目录下，合并时就会报错。解决方法：要么在脚本里设置好py文件和结果xlsx文件各自的目录，要么添加条件判断。
+
+import pandas as pd
+newdir=r'E:\\test \\xlsx'
+files=os.listdir(newdir)
+#print(files)
+writer=pd.ExcelWriter('result.xlsx')
+for i in range(0,len(files)):
+    if '.py' not in files[i]:
+        data = pd.read_csv(files[i], encoding='gbk', index_col=0)
+        data.to_excel(writer, sheet_name=files[i])
+
+writer.save()
+

@@ -1,0 +1,26 @@
+今天在win下搭建python环境时，发现了一个特别奇怪的问题：在httpd.conf配置：PythonHandler mod_python.publisher项时，apache无法访问。如果将 mod_python.publisher 换成 test。就没事；
+
+test.py:
+
+from mod_python import apache
+
+def handler(req):
+
+req.content_type = 'text/plain'
+
+req.write("Hello World!\n")
+
+return apache.OK
+
+在error.log有三处错误：
+
+[Mon Sep 19 12:35:33 2011] [error] python_init: Python version mismatch, expected '2.5', found '2.5.2'.
+
+[Mon Sep 19 12:35:33 2011] [error] python_init: Python executable found 'D:\\Program Files\\xampp\\xampp\\apache\\bin\\httpd.exe'.
+
+[Mon Sep 19 12:35:33 2011] [error] python_init: Python path being used 'C:\\WINDOWS\\system32\\python25.zip;D:\\Python25\\Lib;D:\\Python25\\DLLs;D:\\Python25\\Lib\\lib-tk;;D:\\Program Files\\xampp\\xampp\\apache\\bin'.
+
+后来在网上搜了一下，原因：mod_python和apache的版本不一致造成的吧。说把test.py里的handler 换成 index 就ok
+
+试了一下，真的OK了。
+

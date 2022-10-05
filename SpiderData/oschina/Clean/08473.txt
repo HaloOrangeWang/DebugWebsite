@@ -1,0 +1,21 @@
+
+JAVA_HOME is not set and could not be found
+
+‍‍显然这是没有设置JAVA_HOME环境变量引起的。但是在设置了JAVA_HOME环境变量后仍报这个错误。 启动脚本无法读到这个环境变量，查资料后，通过在$HADOOP_HOME/libexec/hadoop-config.sh中加入export JAVA_HOME=/PATH/TO/JDK后解决。‍
+
+为何脚本不能读取系统设置的JAVA_HOME环境变量，还需要研读启动脚本来找到原因。‍
+
+
+WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+
+执行./start-all.sh启动hadoop集群时报WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+
+本地库不存在，或者本地库与当前操作系统的版本不一致的时候会报这个错误。hadoop官网下载的hadoop版本带的native库文件是32位的。 如果部署在64bit系统上，需要重新编译来解决。另外遇到过重新编译64位native库文件后仍然报这个错误，执行bash -x start-all.sh，跟踪报错原因，有发现启动时在$HADOOP_HOME/lib目录中寻找native库文件，而native库文件默认存放在$HADOOP_HOME/lib/native目录中。暂时把库文件拷贝到lib目录下解决了该问题。不过正确的应该是通过定义native库文件路径的方式来解决，具体定义的位置没有找到。等找到后补上。
+
+
+org.apache.hadoop.yarn.exceptions.YarnException: Unauthorized request to start container.
+
+原因：namenode、datanode节点主机系统时间不一致引起
+
+解决：配置ntp服务，定时同步时钟，使集群各节点服务器时间保持一致。
+

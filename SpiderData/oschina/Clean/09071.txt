@@ -1,0 +1,43 @@
+
+报错现象
+
+git  add . 的时候发现此报错
+
+
+报错分析
+
+看情况应该是不同系统对换行的识别不到位导致的
+
+就常识来说文件是在windows下生成的所以换行和 linux 确实不同可能是因为这个导致的
+
+
+报错解决
+
+git config --global core.autocrlf false
+
+
+同理在 pycharm 中也要做相关操作
+
+在pycharm 中进行操作的时候也会提示这个问题. 如果选择 fix and commit 就会设置为 True 会被转换
+
+所以我们要选择 commit as ls 不做处理
+
+
+额外补充
+
+Git下处理“换行”（line ending）
+
+　　core.autocrlf是git中负责处理line ending的变量，可以设置3个值：true，false，inout。
+
+（1）设置为true【config --global core.autocrlf true】
+
+当设置成true时，这意味着你在任何时候添加(add)文件到git仓库时，git都会视为它是一个文本文件(text file)。
+
+　　　它将把crlf变成LF。
+
+（2）设置为false【config --global core.autocrlf false】
+
+　　当设置成false时，line endings将不做转换操作。文本文件保持原来的样子。
+
+（3）设置为input时，添加文件git仓库时，git把crlf编程lf。当有人Check代码时还是lf方式。因此在window操作系统下，不要使用这个设置。
+

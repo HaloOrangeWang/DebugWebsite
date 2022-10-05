@@ -1,0 +1,37 @@
+
+报错
+
+R version  4.0.3
+
+$R
+
+BiocManager::install("clusterProfiler")
+
+Error in get(name, envir = asNamespace(pkg), inherits = FALSE) :
+  object 'get_fun_from_pkg' not found
+Error: unable to load R code in package ‘clusterProfiler’
+Execution halted
+ERROR: lazy loading failed for package ‘clusterProfiler’
+
+
+解决
+
+原因是rvcheck版本太旧。
+
+
+1.重新安装rvcheck
+
+packageurl <- "https://cran.r-project.org/src/contrib/Archive/rvcheck/rvcheck_0.1.8.tar.gz"
+install.packages(packageurl, repos=NULL, type="source")
+remove.packages("clusterProfiler")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("clusterProfiler")
+
+
+2.用conda
+
+conda install -c bioconda bioconductor-clusterprofiler
+
+Ref: https://support.bioconductor.org/p/9139765/
+

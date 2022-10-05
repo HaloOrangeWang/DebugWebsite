@@ -1,0 +1,34 @@
+在用python的bottle框架开发时，前端使用ajax跨域访问时，js代码老是进入不了success，而是进入了error，而返回的状态却是200。url直接在浏览器访问也是正常的，浏览器按F12后会发现下面这个错误提示
+
+XMLHttpRequest cannot load http://192.168.0.118:8081/get_mobile_number/?id=1. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'null' is therefore not allowed access.
+
+　　通过搜索引擎查询错误，会发现几乎查找出来的答案都说是跨域问题，只需要在主文件的代码中添加下面就可以了，国外的网站好多解决方案都是这样说明
+
+@hook('after_request')
+def enable_cors():
+ response.headers['Access-Control-Allow-Origin'] = '*'
+
+　　而事实上是按找出来的解决方法添加后还是出现错误，查看浏览器输出的http头并没有看到我们刚刚增加的Access-Control-Allow-Origin:*，如下图：
+
+　　通过DEBUG，进入bottle的源码中查看
+
+　　这个问题我测试过在python2与python3对应的bottle框架中都存在这种问题，我们将它改为：
+
+class HTTPResponse(Response, BottleException):
+  def __init__(self, body='', status=None, headers=None, **more_headers):
+    super(HTTPResponse, self).__init__(body, status, headers, **more_headers)
+  def apply(self, response):
+    response._status_code = self._status_code
+    response._status_line = self._status_line
+    if self._headers:
+      if response._headers:
+        response._headers.update(self._headers)
+      else:
+        response._headers = self._headers
+    response._cookies = self._cookies
+    response.body = self.body
+
+　　　再运行代码就可以看见ajax代码正常了
+
+以上所述是小编给大家介绍的关于python的bottle框架跨域请求报错问题的处理方法，希望对大家有所帮助，如果大家有任何疑问欢迎给我留言，小编会及时回复大家的！
+

@@ -1,0 +1,43 @@
+这次升级了Python版本到了3.6.
+
+但是django2.2的长期支持版本还没稳，所以使用的是1.11的版本，于是写项目就报错了。
+
+然后使用django的时候，makemigrations的时候报错conn.encoders[SafeBytes] = conn.encoders[bytes] KeyError: <class 'bytes'>。
+
+
+追踪源码：
+
+问题文件：Python36\lib\site-packages\django\db\backends\mysql\base.py
+
+def get_new_connection(self, conn_params):
+        conn = Database.connect(**conn_params)
+        conn.encoders[SafeText] = conn.encoders[six.text_type]
+        conn.encoders[SafeBytes] = conn.encoders[bytes]
+        return conn
+
+
+问题分析
+
+经过百度，发现没有相似的问题。随机谷歌，找到了相关的两个页面：
+
+Django KeyError <class 'bytes'> in version 1.4.0rc1 · Issue #306 · PyMySQL/mysqlclient-python
+
+new charset definition added by peakkk · Pull Request #591 · PyMySQL/PyMySQL
+
+所以出问题是因为mysqlclient的版本太新了，用pip3 list命令查看，果然我的mysqlclient 的版本是1.4.1 。
+
+
+解决方案
+
+给MySQLclient降级。先卸载，再安装指定版本。pip3 uninstall mysqlclient，pip3 install mysqlclient==1.3。
+
+我最开始的解决方案，改django的代码(Python36\lib\site-packages\django \db\backends\mysql\base.py)，加一个if：
+
+def get_new_connection(self, conn_params):
+        conn = Database.connect(**conn_params)
+        conn.encoders[SafeText] = conn.encoders[six.text_type]
+        # 先判断bytes是否存在于编码器中，如果在才执行操作
+        if bytes in conn.encoders:
+            conn.encoders[SafeBytes] = conn.encoders[bytes]
+        return conn
+

@@ -1,0 +1,30 @@
+报错：ImportError: cannot import name ‘gcd’ from ‘fractions’
+ 解决方法：python3.9 gdc 函数在math中，修改dag.py。
+
+来自StackOverFlow上的回答：
+
+I'm trying to import a function called gcd from a module called fractions with from fractions import gcd. For some reason, PyCharm throws an ImportError:
+
+from fractions import gcd
+ImportError: cannot import name 'gcd' from 'fractions'
+
+I had this working before, what am I doing wrong?
+
+Your traceback says Python 3.9 and the documentation says gcd is a function in math
+
+Changed in version 3.9: The math.gcd() function is now used to normalize the numerator and denominator. math.gcd() always return a int type. Previously, the GCD type depended on numerator and denominator.
+
+It's an issue with old networkx versions. Solve this updating networkx:
+
+conda install -c conda-forge networkx=2.5
+
+fractions.gcd(a, b) has been deprecated in favor of math.gcd(a, b) since Python 3.5 and has been removed in Python 3.9:
+
+Note that math.gcd can take more than 2 arguments starting from 3.9, and even 0 or 1 argument work.
+
+if you want always at least the networkx version that works do:
+
+conda install -y networkx">=2.5"
+
+sometimes adding the -c conda-forge is useful...
+

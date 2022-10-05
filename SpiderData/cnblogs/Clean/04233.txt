@@ -1,0 +1,22 @@
+一个问题引发的血案:
+
+用python向redis写入数据报错：
+
+redis.exceptions.DataError: Invalid input of type: 'dict'. Convert to a byte, string or number first.
+
+查看redis的版本：
+
+pip3 freeze
+
+显示现在的redis版本是：
+
+redis==3.2.1
+
+对redis降版：
+
+pip3 install -U redis==2.10.6 #将当前版本降级到2.10.6
+
+成功写入数据。
+
+而上面我之所以说是"血案",是因为我看了网上的教程说是Redis版本太高导致的之后,我就试图将Redis服务端的版本重新安装成低版本的2.10.6,但是发现并不能,最后才顿悟,应该将Python使用的Redis模块的版本降级为2.10.6(这里使用Redis模块,就类似于要在Python中操作MySQL而使用pymysql模块是一样的),而不是去动服务端的版本,无知啊,做个笔记,记录一下.
+

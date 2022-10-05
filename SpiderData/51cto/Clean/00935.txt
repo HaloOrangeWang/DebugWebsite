@@ -1,0 +1,14 @@
+直接进入正题
+ 比如有一个excel文件中，一列表示错误id
+
+我要对这些id的记录进行删除，使用python读取excel,生成删除sql.
+
+# encoding: utf-8
+import xlrd
+book = xlrd.open_workbook('d:/自助.xlsx')
+sheet = book.sheets()[0]
+sheet = book.sheets()[2]
+for i  in range(sheet.nrows):
+    sql = 'delete from T_NF_DT_FWMX where phmxxh = \''+str(sheet.row_values(i)[1]).split('.')[0]+'\';'
+    print(sql)
+

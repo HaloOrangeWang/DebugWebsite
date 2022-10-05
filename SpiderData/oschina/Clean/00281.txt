@@ -1,0 +1,37 @@
+　　楼主今天第一次用python基于greenlet实现的第三方协程库gevent，由于gevent在切换IO操作（文件IO、网络IO）时是自动完成的，所以gevent需要通过修改Python自带的一些阻塞式系统调用的标准库，包括socket、ssl、threading和 select等模块，而变为协程，这一过程需要在启动时通过monkey patch完成。
+
+import gevent
+from gevent import monkey
+monkey.patch_all()
+
+　　楼主遇到的报错如下(简略版，只保留了前半部分报错内容)：
+
+Traceback (most recent call last):
+File "/usr/local/python3.6/lib/python3.6/site-packages/gevent/greenlet.py", line 536, in run
+result = self._run(*self.args, **self.kwargs)
+File "test.py", line 14, in req
+res = requests.get(url)
+File "/usr/local/python3.6/lib/python3.6/site-packages/requests/api.py", line 72, in get
+return request('get', url, params=params, **kwargs)
+File "/usr/local/python3.6/lib/python3.6/ssl.py", line 459, in options
+super(SSLContext, SSLContext).options.set(self, value)
+[Previous line repeated 316 more times]
+
+解决方案：
+
+　　仔细阅读官方文档发现有这样一段Tip：
+
+Tip: 
+When monkey patching, it is recommended to do so as early as possible in the lifetime of the process. 
+If possible, monkey patching should be the first lines executed. 
+Monkey patching later, especially if native threads have been created, atexit or signal handlers have been installed, or sockets have been created, 
+may lead to unpredictable results including unexpected LoopExit errors.
+
+即，monkey patching需要放到第一行导入，否则会报错，所以，把 from gevent import monkey；monkey.patch_all() 放到文件最前面就好啦
+
+注：
+
+　　1、monkey patching 官方文档地址
+
+　　2、如果你用的python3.6，推荐使用asyncio
+

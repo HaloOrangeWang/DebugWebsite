@@ -1,0 +1,46 @@
+报错信息：
+
+java：无效的源发行版：11
+java:  程序包lombok不存在
+等奇怪问题
+
+1、第一
+
+检查idea项目的jdk版本
+清空项目的JavaCompiler，Build ->  Compiler -> Java Compiler
+
+2、idea安装lombok插件
+
+add lombk.jar to classpath
+手动导入lombok包
+
+3、maven编译版本
+
+<profile>
+      <id>jdk-1.8</id>
+
+<activation>
+        <activeByDefault>true</activeByDefault>
+        <jdk>1.8</jdk>
+      </activation>
+
+<properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+      </properties>
+    </profile>
+    <!--profile>
+      <id>jdk11</id>
+
+<activation>
+        <jdk>11</jdk>
+      </activation>
+
+<properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.compilerVersion>11</maven.compiler.compilerVersion>
+      </properties>
+    </profile-->
+

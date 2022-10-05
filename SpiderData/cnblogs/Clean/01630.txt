@@ -1,0 +1,10 @@
+　　对于hook家族中frida详细使用方法，见尼古拉斯.赵四的博客，https://mp.weixin.qq.com/s/mvTxwQdX9n9e_m-Kar7OyQ，在安装frida时用到命令pip install frida，pip是一个程序，一般会配套Python一起安装好，但从https://www.python.org/downloads/windows/上下载的Python 2.7.4以下安装后是不自带pip的，Python 2.7.14安装后会自带pip，Python 2.7.4 ~ Python 2.7.14我没试过，像我这种初级学者，肯定是想安装个自带pip的，不然再另外安装pip就很麻烦了。
+
+　　通过命令pip install frida下载frida的版本随不同Python版本可能不一样，我试过的几次中，就有下载了frida-11.0.13的，也有下载了frida-12.0.5的，下好之后根据四哥博客里面的指引到一个网址上去下载相应版本的frida-server。
+
+　　（1）到安卓真机上使用时得在root权限（su）下打开才行，不然会报错——“Unable to save SELinux policy to the kernel: Permission denied”，所以只能 “7[r[999;999H[6nroot@hm2014811:/ # /data/local/tmp/frida-server-12.0.5-android-arm“ 打开。
+
+　　（2）frida-11.0.13支持在安卓虚拟机上运行，frida-12.0.5不支持在安卓虚拟机上运行，会报一个断言宏的错误，后来查了下，根本原因 是frida-12.0.5不支持在安卓虚拟机上运行。
+
+　　附加：在看四哥的那边博客时，里面有提到在使用Xposed hook类的构造函数时使用方法findConstructor，这是个缩略版，其实用时要写方法findAndHookConstructor。
+

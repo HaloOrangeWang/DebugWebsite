@@ -1,0 +1,24 @@
+python版本是3.5.2      opencv版本是3.1.0   （可在命令行窗口用   cv2.__version__  查看）
+
+此报错是指cv::imshow函数显示的照片尺寸必须是size.width和size.height必须大于0，也就是说你输入的图片为空，最可能的原因是图片的路径错误
+
+在用 cv2.imread(path) 读取一张图片时，要注意路径的写法
+
+比如我们从Windows资源管理器里面复制的路径是    ''D:\123\iiok1.png''
+
+如果我们令  path = ''D:\123\iiok1.png''
+
+path = ''D:\\123\\iiok1''
+
+path = ''D:/123/iiok1''
+
+路径中有中文名
+
+都会产生  error: (-215) size.width>0 && size.height>0 in function cv::imshow   报错，根本原因是没有读取到有效的图片
+
+正确的路径书写方式是
+
+path = ''D:\\123\\iiok1.png''
+
+path = ''D:/123/iiok1.png''
+

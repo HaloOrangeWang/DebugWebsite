@@ -1,0 +1,106 @@
+1、错误1：
+安装virtualenvwrapper报错：
+报错内容：
+
+1、错误1：
+
+安装virtualenvwrapper报错：
+
+报错内容：
+
+Couldn't find index page for 'pbr' (maybe misspelled?)
+
+Download error on https://pypi.python.org/simple/: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:645) -- Some packages may not be found!
+
+No local packages or download links found for pbr
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+File "/tmp/pip-build-6hblrn57/virtualenvwrapper/setup.py", line 7, in
+
+pbr=True,
+
+File "/usr/lib/python3.5/distutils/core.py", line 108, in setup
+
+_setup_distribution = dist = klass(attrs)
+
+File "/usr/lib/python3/dist-packages/setuptools/dist.py", line 269, in __init__
+
+self.fetch_build_eggs(attrs['setup_requires'])
+
+File "/usr/lib/python3/dist-packages/setuptools/dist.py", line 313, in fetch_build_eggs
+
+replace_conflicting=True,
+
+File "/usr/lib/python3/dist-packages/pkg_resources/__init__.py", line 826, in resolve
+
+dist = best[req.key] = env.best_match(req, ws, installer)
+
+File "/usr/lib/python3/dist-packages/pkg_resources/__init__.py", line 1092, in best_match
+
+return self.obtain(req, installer)
+
+File "/usr/lib/python3/dist-packages/pkg_resources/__init__.py", line 1104, in obtain
+
+return installer(requirement)
+
+File "/usr/lib/python3/dist-packages/setuptools/dist.py", line 380, in fetch_build_egg
+
+return cmd.easy_install(req)
+
+File "/usr/lib/python3/dist-packages/setuptools/command/easy_install.py", line 657, in easy_install
+
+raise DistutilsError(msg)
+
+distutils.errors.DistutilsError: Could not find suitable distribution for Requirement.parse('pbr')
+
+----------------------------------------
+
+Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-build-6hblrn57/virtualenvwrapper/
+
+解决办法：
+
+sudo pip install-i https://pypi.tuna.tsinghua.edu.cn/simple pbr
+
+sudo pip install-i https://pypi.tuna.tsinghua.edu.cn/simple--no-deps stevedore
+
+sudo pip install-i https://pypi.tuna.tsinghua.edu.cn/simple--no-deps virtualenvwrapper
+
+2、错误2
+
+执行命令 source ~/.bashrc出错：
+
+shuhaishiyi@shuhaishiyi:~$ source~/.bashrc
+
+/usr/bin/python:Nomodule named virtualenvwrapper
+
+virtualenvwrapper.sh:Therewas a problem running the initialization hooks.
+
+IfPythoncouldnotimportthe module virtualenvwrapper.hook_loader,
+
+check that virtualenvwrapper has been installedfor
+
+VIRTUALENVWRAPPER_PYTHON=/usr/bin/pythonandthat PATHis
+
+set properly.
+
+解决办法：“加粗斜体”的部分将ubuntu中路径设置为python3（当py2和py3共存的时候）
+
+在~/.bashrc文件的最下方加入下面语句：
+
+if [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
+
+export WORKON_HOME=$HOME/.virtualenvs
+
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+
+source /usr/local/bin/virtualenvwrapper.sh
+
+fi
+
+如果还不能解决就结合错误信息与提示找到的语句，猜测应该是VIRTUALENVWRAPPER_PYTHON这里有问题，然后在virtualenvwrapper.sh文件中查找VIRTUALENVWRAPPER_PYTHON，发现了关键点：（我这里直接用pip3从新安装virtualenv和virtualenvwrapper）
+
+链接：https://www.jianshu.com/p/842eced0df69
+

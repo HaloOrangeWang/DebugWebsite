@@ -1,0 +1,967 @@
+
+About Python 关于Python
+
+Python is an interpreted, object-oriented, high-level programming language with dynamic semantics. Its high-level built in data structures, combined with dynamic typing and dynamic binding, make it very attractive forRapid Application Development, as well as for use as a scripting or glue language to connect existing components or services. Python supports modules and packages, thereby encouraging program modularity and code reuse.
+
+Python是一门解释型、面向对象、具有动态语义的高级编程语言。其高级的内置数据结构，结合动态类型与动态绑定，使得Python非常适于快速应用开发，也可作为一门脚本语言或者胶水语言来联结现有的组件或者服务。Python支持模块和包，因而鼓励程序模块化和代码重用。
+
+www.pc100.net
+
+
+About this article 关于本文
+
+Python’s simple, easy-to-learn syntax can mislead Python developers – especially those who are newer to the language – into missing some of its subtleties and underestimating the power of the language.
+ Python简单易学的语法可能会误导Python开发者—尤其是那些语言的初学者—忽略其精妙之处并且低估这门语言的能力。
+
+With that in mind, this article presents a “top 10” list of somewhat subtle, harder-to-catch mistakes that can bite even the most advanced Python developer in the rear.
+ 考虑到这一点，本文列举了有些微妙，难以捕捉，甚至可能会咬到高级Python程序员屁股的10大错误清单。
+
+
+Common Mistake #1: Misusing expressions as defaults for function arguments 函数参数默认值表达式的误用
+
+Python allows you to specify that a function argument is optional by providing a default value for it. While this is a great feature of the language, it can lead to some confusion when the default value is mutable. For example, consider this Python function definition:
+ Python允许你通过为函数参数设置缺省值的方式将其设为可选。这是该语言一个很棒的特性，但当缺省值可变时它可能导致一些混淆。例如，考虑下面这个函数定义：
+
+>>> def foo(bar=[]):        # bar is optional and defaults to [] if not specified
+...    bar.append("baz")    # but this line could be problematic, as we'll see...
+...    return bar
+
+1
+
+2
+
+3
+
+4
+
+A common mistake is to think that the optional argument will be set to the specified default expression each time the function is called without supplying a value for the optional argument. In the above code, for example, one might expect that calling foo() repeatedly (i.e., without specifying a bar argument) would always return 'baz', since the assumption would be that each time foo() is called (without a bar argument specified) baris set to [] (i.e., a new empty list).
+ 一个常见的错误是认为每当可选参数没有赋值调用函数的时候，可选参数都会被设为指定的缺省表达式。比如在上面的代码中，人们可能期望重复调用函数foo的时候（亦即，不指定bar参数的值）函数总是返回'baz'，由于假设是每次foo被调用时（没有指定bar参数的值），都被设为[]（亦即，一个新的空列表）
+
+But let’s look at what actually happens when you do this:
+ 让我们看看你这么做的时候实际上会产生什么结果：
+
+>>> foo()
+["baz"]
+>>> foo()
+["baz", "baz"]
+>>> foo()
+["baz", "baz", "baz"]
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+Huh? Why did it keep appending the default value of "baz" to an existing list each time foo() was called, rather than creating a new list each time?
+ 嗯？为什么每次foo被调用的时候都会在现有列表中追加缺省值"bz"，而不是每次创建一个新列表呢？
+
+The answer is that the default value for a function argument is only evaluated once, at the time that the function is defined. Thus, the bar argument is initialized to its default (i.e., an empty list) only when foo() is first defined, but then calls to foo() (i.e., without a bar argument specified) will continue to use the same list to which bar was originally initialized.
+ 答案是函数的缺省值只在函数定义时进行一次初始化。因此，bar参数只在foo()函数第一次定义时初始化为其缺省值（亦即，一个空列表），但是当接下来foo()函数被调用时（亦即，bar参数不赋值）会继续沿用bar最开始初始化得到的那个列表。
+
+FYI, a common workaround for this is as follows:
+ 仅供参考，一个常见的解决方案如下所示：
+
+>>> def foo(bar=None):
+...    if bar is None:		# or if not bar:
+...        bar = []
+...    bar.append("baz")
+...    return bar
+...
+>>> foo()
+["baz"]
+>>> foo()
+["baz"]
+>>> foo()
+["baz"]
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+
+Common Mistake #2: Using class variables incorrectly 类变量的误用
+
+Consider the following example:
+ 考虑下面的例子：
+
+>>> class A(object):
+...     x = 1
+...
+>>> class B(A):
+...     pass
+...
+>>> class C(A):
+...     pass
+...
+>>> print A.x, B.x, C.x
+1 1 1
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+这还说得通。
+
+>>> B.x = 2
+>>> print A.x, B.x, C.x
+1 2 1
+
+1
+
+2
+
+3
+
+4
+
+Yup, again as expected.
+ 没错，仍然符合预期。
+
+>>> A.x = 3
+>>> print A.x, B.x, C.x
+3 2 3
+
+1
+
+2
+
+3
+
+4
+
+What the $%#!&?? We only changed A.x. Why did C.x change too?
+ 这是闹哪样啊？我们只更改了A.x，为什么C.x的值也变了？
+
+In Python, class variables are internally handled as dictionaries and follow what is often referred to as Method Resolution Order (MRO). So in the above code, since the attribute x is not found in class C, it will be looked up in its base classes (only A in the above example, although Python supports multiple inheritance). In other words, C doesn’t have its own x property, independent of A. Thus, references to C.x are in fact references to A.x.
+ 在Python里，类变量内部以字典形式进行处理，并且遵从方法解析顺序（MRO）。所以在上面的代码中，由于x属性在C类中没有找到，它会继续在基类中查找（虽然Python支持多重继承，但是上例中只有A类）。换言之，C没有独立于A的、它自己的x属性。因此，对C.x的引用实际上是对A.x的引用。
+
+
+Common Mistake #3: Specifying parameters incorrectly for an exception block 异常块参数指定错误
+
+Suppose you have the following code:
+ 假如你有一段这样的代码：
+
+>>> try:
+...     l = ["a", "b"]
+...     int(l[2])
+... except ValueError, IndexError:  # To catch both exceptions, right?
+...     pass
+...
+Traceback (most recent call last):
+  File "", line 3, in 
+IndexError: list index out of range
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+The problem here is that the except statement does not take a list of exceptions specified in this manner. Rather, In Python 2.x, the syntax except Exception, e is used to bind the exception to the optional second parameter specified (in this case e), in order to make it available for further inspection. As a result, in the above code, the IndexError exception is not being caught by the except statement; rather, the exception instead ends up being bound to a parameter named IndexError.
+ 这里的问题是异常声明没有通过这种方式获取一组异常。相反，在Python 2.x中，语法except Exception, e用来将异常绑定到指定的第二个可选参数上（此例中是e），以使其在将来的检查中可用。其结果是，在上面的代码中，IndexException异常没有通过异常声明被捕捉到，相反，这个异常以绑定至命名为IndexError的参数结束。
+
+The proper way to catch multiple exceptions in an except statement is to specify the first parameter as a tuple containing all exceptions to be caught. Also, for maximum portability, use the as keyword, since that syntax is supported by both Python 2 and Python 3:
+ 在异常声明里捕捉多重异常的正确方式是以包含所有待捕捉异常元组的形式指定第一个参数。并且，为保证最大限度的可移植性，使用as关键词，因为该语法在Python2和Python3中都支持：
+
+>>> try:
+...     l = ["a", "b"]
+...     int(l[2])
+... except (ValueError, IndexError) as e:  
+...     pass
+...
+>>>
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+
+Common Mistake #4: Misunderstanding Python scope rules Python作用域规则的误解
+
+Python scope resolution is based on what is known as the LEGB rule, which is shorthand for Local, Enclosing,Global, Built-in. Seems straightforward enough, right? Well, actually, there are some subtleties to the way this works in Python. Consider the following:
+ Python作用域规则基于所谓的LEGB规则，它是Local（局部），Enclosing（封闭），Global（全局），Build-in（内置）的缩写。似乎很直观，是么？实际上，Python的这一规则中有一些玄机。考虑下面这个例子：
+
+>>> x = 10
+>>> def foo():
+...     x += 1
+...     print x
+...
+>>> foo()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 2, in foo
+UnboundLocalError: local variable 'x' referenced before assignment
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+What’s the problem?
+ 这是什么问题？
+
+The above error occurs because, when you make an assignment to a variable in a scope, that variable is automatically considered by Python to be local to that scope and shadows any similarly named variable in any outer scope.
+ 上面报错是因为，当你在一个作用域内为变量赋值的时候，变量会自动被Python当做局部作用域并屏蔽所有外层作用域的同名参数。
+
+Many are thereby surprised to get an UnboundLocalError in previously working code when it is modified by adding an assignment statement somewhere in the body of a function. (You can read more about this here.)
+ 因此许多人在前面的代码例子，函数体外添加了赋值语句，抛出UnboundLocalError异常时感到很惊讶。
+
+It is particularly common for this to trip up developers when using lists. Consider the following example:
+ 开发人员使用list被坑的情况尤其常见。考虑下面的例子：
+
+>>> lst = [1, 2, 3]
+>>> def foo1():
+...     lst.append(5)   # This works ok...
+...
+>>> foo1()
+>>> lst
+[1, 2, 3, 5]
+
+>>> lst = [1, 2, 3]
+>>> def foo2():
+...     lst += [5]      # ... but this bombs!
+...
+>>> foo2()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 2, in foo
+UnboundLocalError: local variable 'lst' referenced before assignment
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+Huh? Why did foo2 bomb while foo1 ran fine?
+ 昂？为什么foo2挂了而foo1可以呢？
+
+The answer is the same as in the prior example, but is admittedly more subtle. foo1 is not making an assignment to lst, whereas foo2 is. Remembering that lst += [5] is really just shorthand for lst = lst + [5], we see that we are attempting to assign a value to lst (therefore presumed by Python to be in the local scope). However, the value we are looking to assign to lst is based on lst itself (again, now presumed to be in the local scope), which has not yet been defined. Boom.
+ 答案与前例类似，但无可否认这个例子更加微妙。foo1没有给lst赋值，而foo2却赋值了。记住lst += [5]实际上是lst = lst + [5]的简写，我们看到我们试图给lst变量赋值（因此Python假设此变量位于局部作用域中）。然而，我们打算赋值的lst变量的值基于它本身（再次被假定在局部作用域之中），而它还没被定义过。Boom
+
+
+Common Mistake #5: Modifying a list while iterating over it 遍历列表时修改列表的值
+
+The problem with the following code should be fairly obvious:
+ 下面这段代码的问题应该十分明显：
+
+>>> odd = lambda x : bool(x % 2)
+>>> numbers = [n for n in range(10)]
+>>> for i in range(len(numbers)):
+...     if odd(numbers[i]):
+...         del numbers[i]  # BAD: Deleting item from a list while iterating over it
+...
+Traceback (most recent call last):
+  	  File "<stdin>", line 2, in <module>
+IndexError: list index out of range
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+Deleting an item from a list or array while iterating over it is a faux pas well known to any experienced software developer. But while the example above may be fairly obvious, even advanced developers can be unintentionally bitten by this in code that is much more complex.
+ 在遍历时从列表或者数组中删除项目是任何有经验软件开发人员都知道的反例(faux pas，失礼)。虽然可能上面这个例子是显而易见的，但是即使高级开发者也可能会在复杂得多的代码中无意识地被这个错误咬一口。
+
+Fortunately, Python incorporates a number of elegant programming paradigms which, when used properly, can result in significantly simplified and streamlined code. A side benefit of this is that simpler code is less likely to be bitten by the accidental-deletion-of-a-list-item-while-iterating-over-it bug. One such paradigm is that of list comprehensions. Moreover, list comprehensions are particularly useful for avoiding this specific problem, as shown by this alternate implementation of the above code which works perfectly:
+ 幸运的是，Python集成了许多优雅的编程范式，当正确使用时，可以使代码显著地简化和精简。一个附带的好处是比较简单的代码不太可能会出现"遍历列表元素意外删除项目"的bug。列表解析就是这样的一个范例。此外，列表解析在避免这个特定问题的时候尤其有用，上面代码的功能可以用下面的代码完美地实现：
+
+>>> odd = lambda x : bool(x % 2)
+>>> numbers = [n for n in range(10)]
+>>> numbers[:] = [n for n in numbers if not odd(n)]  # ahh, the beauty of it all
+>>> numbers
+[0, 2, 4, 6, 8]
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+
+Common Mistake #6: Confusing how Python binds variables in closures Python闭包绑定变量的误解
+
+Considering the following example:
+ 考虑下面的例子：
+
+>>> def create_multipliers():
+...     return [lambda x : i * x for i in range(5)]
+>>> for multiplier in create_multipliers():
+...     print multiplier(2)
+...
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+You might expect the following output:
+ 你可能会期望得到下面的输出：
+
+But you actually get:
+ 但实际结果是：
+
+Surprise!
+ 好惊讶！
+
+This happens due to Python’s late binding behavior which says that the values of variables used in closures are looked up at the time the inner function is called. So in the above code, whenever any of the returned functions are called, the value of i is looked up in the surrounding scope at the time it is called (and by then, the loop has completed, so i has already been assigned its final value of 4).
+ 这是由于Python的延迟绑定行为导致的，意思是说闭包中使用变量的值在内部函数调用时才被查找。所以在上面的代码中，无论何时任何一个返回的函数被调用的时候，i的值在其被调用时在周围作用域中查找（到那时，循环已经完成，所以i已经被赋为最终值4）
+
+The solution to this is a bit of a hack:
+ 解决方案有一点hack：
+
+>>> def create_multipliers():
+...     return [lambda x, i=i : i * x for i in range(5)]
+...
+>>> for multiplier in create_multipliers():
+...     print multiplier(2)
+...
+0
+2
+4
+6
+8
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+Voilà! We are taking advantage of default arguments here to generate anonymous functions in order to achieve the desired behavior. Some would call this elegant. Some would call it subtle. Some hate it. But if you’re a Python developer, it’s important to understand in any case.
+ 在这里！我们在这里利用了缺省参数生成匿名函数来获得期望的行为。有人可能会称之为优雅。有人会称之为微妙。有人非常憎恨它。但如果你是Python开发者，无论如何理解是很重要的。
+
+
+Common Mistake #7: Creating circular module dependencies 创建循环模块依赖
+
+Let’s say you have two files, a.py and b.py, each of which imports the other, as follows:
+ 比如说你有两个文件，a.py和b.py，每一个都引入了对方，如下所示：
+
+In a.py:
+
+import b
+
+def f():
+    return b.x
+
+print f()
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+And in b.py:
+
+import a
+
+x = 1
+
+def g():
+    print a.f()
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+First, let’s try importing a.py:
+
+>>> import a
+1
+
+1
+
+2
+
+Worked just fine. Perhaps that surprises you. After all, we do have a circular import here which presumably should be a problem, shouldn’t it?
+ 工作的很好。也许你会惊讶。毕竟，我们的确在这里做了循环导入，这应该是一个问题，不是吗？
+
+The answer is that the mere presence of a circular import is not in and of itself a problem in Python. If a module has already been imported, Python is smart enough not to try to re-import it. However, depending on the point at which each module is attempting to access functions or variables defined in the other, you may indeed run into problems.
+ 答案是引用仅仅循环导入本身在Python中不是一个问题。如果一个模块已经被导入过了，Python非常聪明，就不再重复导入了。然而，每个模块彼此试图访问对方的函数或者变量时，你就真的会遇到麻烦了。
+
+So returning to our example, when we imported a.py, it had no problem importing b.py, since b.py does not require anything from a.py to be defined at the time it is imported. The only reference in b.py to a is the call to a.f(). But that call is in g() and nothing in a.py or b.py invokes g(). So life is good.
+ 回到我们的例子，我们导入a.py时，导入b.py也没问题，因为b.py在导入a.py时不需要a.py中的任何东西。b.py中对a的唯一引用是a.f()。但是那个调用是在g()中并且a.py或者b.py都没有调用g()。所以生活是如此的美好。
+
+But what happens if we attempt to import b.py (without having previously imported a.py, that is):
+ 但当我们试图导入b.py（预先没有导入a.py）会发生什么呢：
+
+>>> import b
+Traceback (most recent call last):
+  	  File "<stdin>", line 1, in <module>
+  	  File "b.py", line 1, in <module>
+    import a
+  	  File "a.py", line 6, in <module>
+	print f()
+  	  File "a.py", line 4, in f
+	return b.x
+AttributeError: 'module' object has no attribute 'x'
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+Uh-oh. That’s not good! The problem here is that, in the process of importing b.py, it attempts to import a.py, which in turn calls f(), which attempts to access b.x. But b.x has not yet been defined. Hence the AttributeError exception.
+ 哦哦。这不太好！这里的问题是，在导入b.py的过程中，试图导入a.py，随之会调用f()，试图访问b.x。但是b.x还没有被定义过。因此会导致AttributeError异常。
+
+At least one solution to this is quite trivial. Simply modify b.py to import a.py within g():
+ 此问题的一个解决方案十分的平凡。只需修改b.py，在g()中导入a.py：
+
+x = 1
+
+def g():
+    import a	# This will be evaluated only when g() is called
+    print a.f()
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+Now when we import it, everything is fine:
+ 现在我们引入时，一切正常：
+
+>>> import b
+>>> b.g()
+1	# Printed a first time since module 'a' calls 'print f()' at the end
+1	# Printed a second time, this one is our call to 'g'
+
+1
+
+2
+
+3
+
+4
+
+5
+
+
+Common Mistake #8: Name clashing with Python Standard Library modules 与Python标准库模块的命名冲突
+
+One of the beauties of Python is the wealth of library modules that it comes with “out of the box”. But as a result, if you’re not consciously avoiding it, it’s not that difficult to run into a name clash between the name of one of your modules and a module with the same name in the standard library that ships with Python (for example, you might have a module named email.py in your code, which would be in conflict with the standard library module of the same name).
+ Python美丽的地方之一是丰富且现成的库模块。但相应的，如果你不去有意识的规避，不难遇到你的模块与Python标准库模块冲突的情况（比如，你可能有一个命名为email.py的模块），这会与同名的标准库模块发生冲突。
+
+This can lead to gnarly problems, such as importing another library which in turns tries to import the Python Standard Library version of a module but, since you have a module with the same name, the other package mistakenly imports your version instead of the one within the Python Standard Library. This is where bad stuff happens.
+ 这可能会带来一些麻烦的问题，例如导入其他库时，这个库尝试导入Python标准库版本的一个模块，由于你有一个同名的模块，这个库可能会错误滴导入你的版本而不是Python标准库的版本。这就是问题所在。
+
+Care should therefore be exercised to avoid using the same names as those in the Python Standard Library modules. It’s way easier for you to change the name of a module within your package than it is to file a Python Enhancement Proposal (PEP) to request a name change upstream and to try and get that approved.
+ 因此需要引起注意来避免使用与Python标准库模块相同的模块名称。修改你自己模块的名称比修改Python增强提案(PEP)中的名称要容易，你需要向上流提交申请并且还需要获得批准。
+
+
+Common Mistake #9: Failing to address differences between Python 2 and Python 3 忽略了Python2与Python3的区别
+
+Consider the following file foo.py:
+
+import sys
+
+def bar(i):
+    if i == 1:
+        raise KeyError(1)
+    if i == 2:
+        raise ValueError(2)
+
+def bad():
+    e = None
+    try:
+        bar(int(sys.argv[1]))
+    except KeyError as e:
+        print('key error')
+    except ValueError as e:
+        print('value error')
+    print(e)
+
+bad()
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+
+20
+
+On Python 2, this runs fine:
+
+$ python foo.py 1
+key error
+1
+$ python foo.py 2
+value error
+2
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+But now let’s give it a whirl （漩涡）on Python 3:
+
+$ python3 foo.py 1
+key error
+Traceback (most recent call last):
+  File "foo.py", line 19, in <module>
+    bad()
+  File "foo.py", line 17, in bad
+    print(e)
+UnboundLocalError: local variable 'e' referenced before assignment
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+What has just happened here? The “problem” is that, in Python 3, the exception object is not accessible beyond the scope of the except block. (The reason for this is that, otherwise, it would keep a reference cycle with the stack frame in memory until the garbage collector runs and purges the references from memory. More technical detail about this is available here).
+ 这儿发生了什么？“问题”是，在Python3中，异常对象无法在异常块作用域外访问。（原因是在垃圾收集器运行且从内存中清理引用之前会在内存栈帧中保存一个引用周期）
+
+One way to avoid this issue is to maintain a reference to the exception object outside the scope of the except block so that it remains accessible. Here’s a version of the previous example that uses this technique, thereby yielding code that is both Python 2 and Python 3 friendly:
+ 解决此问题的方法之一是在异常块作用域外围护一个异常对象的引用，以使其可访问。这里是前例使用这一技术的一个版本，使得代码对Python2和Python3都友好：
+
+import sys
+
+def bar(i):
+    if i == 1:
+        raise KeyError(1)
+    if i == 2:
+        raise ValueError(2)
+
+def good():
+    exception = None
+    try:
+        bar(int(sys.argv[1]))
+    except KeyError as e:
+        exception = e
+        print('key error')
+    except ValueError as e:
+        exception = e
+        print('value error')
+    print(exception)
+
+good()
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+
+20
+
+21
+
+22
+
+Running this on Py3k:
+
+$ python3 foo.py 1
+key error
+1
+$ python3 foo.py 2
+value error
+2
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+Yippee! 好开心！
+
+(Incidentally, our Python Hiring Guide discusses a number of other important differences to be aware of when migrating code from Python 2 to Python 3.)
+
+
+Common Mistake #10: Misusing the __del__ method __del__方法的误用
+
+Let’s say you had this in a file called mod.py:
+ 假设你有一个叫做mod.py的文件：
+
+import foo
+
+class Bar(object):
+   	    ...
+    def __del__(self):
+        foo.cleanup(self.myhandle)
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+And you then tried to do this from another_mod.py:
+
+import mod
+mybar = mod.Bar()
+
+1
+
+2
+
+3
+
+You’d get an ugly AttributeError exception.
+ 你会得到一个丑陋的AttributeError异常。
+
+Why? Because, as reported here, when the interpreter shuts down, the module’s global variables are all set to None. As a result, in the above example, at the point that __del__ is invoked, the name foo has already been set to None.
+ 为什么？因为，这里有写，当解释器关闭时，模块的全局变量全部会被设为None。结果是，在上例中，当__del__被调用时，foo这个名字已经被设为None了。
+
+A solution would be to use atexit.register() instead. That way, when your program is finished executing (when exiting normally, that is), your registered handlers are kicked off before the interpreter is shut down.
+ 此问题的解决方法是使用atexit.register()作为替代。用这种方式，当你的程序完成执行（正常退出），你的注册处理函数会在解释器关闭之前被调用
+
+With that understanding, a fix for the above mod.py code might then look something like this:
+ 理解了这个，上面mod.py代码的修正可能会是这样：
+
+import foo
+import atexit
+
+def cleanup(handle):
+    foo.cleanup(handle)
+
+class Bar(object):
+    def __init__(self):
+        ...
+        atexit.register(cleanup, self.myhandle)
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+This implementation provides a clean and reliable way of calling any needed cleanup functionality upon normal program termination. Obviously, it’s up to foo.cleanup to decide what to do with the object bound to the name self.myhandle, but you get the idea.
+ 这个实现提供了一个简洁而可依赖的方式在程序正常终止时调用任何所需的清理函数。显然，由foo.cleanup来决定应该对绑定到名字self.myhandle的对象做些什么，但你已经明白了。
+

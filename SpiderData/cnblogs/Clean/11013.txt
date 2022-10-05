@@ -1,0 +1,89 @@
+
+OutLine
+
+Pycharm 中完成编码，且在 Pycharm 中可正常运行，以为就万事大吉了，但在Linux命令行中执行时，报错：找不到所导入的包；
+
+先看下目录结构：
+
+from scripts import *   我在 scripts/__init__.py 中写了一个基类，供后续继承使用
+
+dump_factor.py 执行的py文件
+
+在 dump_factor.py 中也 sys.path.append 添加了环境变量（把项目根目录添加到环境变量）
+
+网上各种类似问题，也都可以通过 sys.path.append 添加环境变量解决，理论上我这个也可以这么解决；
+
+但添加环境变量后，依然报错，提示找不到包；
+
+因此进行debug定位下问题，并且记录下；
+
+报错示例：
+
+
+Python导入模块的搜索顺序（原理）
+
+python 解释器查找包（模块）的顺序：
+
+内存（模块缓存）
+
+内置模块 built-in module（例如：sys、os， 可通过sys.builtin_module_names查看）
+
+sys.path （环境变量中）
+sys.path 列表中 index:0 (第一个元素)，为被执行python文件所在目录，优先级最高
+
+标准库 （可通过sys.modules查看）
+
+.pth 文件（python会寻找.pth文件，然后将文件里路径加入 sys.path）
+
+第三方库（你pip install的库）
+
+内置模块：
+
+sys.path：
+
+标准库：
+
+
+问题分析
+
+
+查看当前 sys.path 环境变量中是否有所需路径
+
+上图是我 sys.path.append() 后的环境变量列表；
+
+可以看到：
+
+/home/mdlib/git_pro/mj-data-sdk/scripts/dump_factor （被执行py文件所在目录）
+
+/home/mdlib/git_pro/mj-data-sdk （项目根目录）
+
+<项目根目录、被执行py文件所在目录> 都有了，按理说python会去遍历 sys.path 列表，肯定能找到对应环境变量（因为我已经append进去了）；
+
+但实际执行时，依然提示找不到模块。
+
+
+问题解决
+
+因为 sys.path 列表中 index:0 位置，是被执行python文件所在目录，优先级最高，会第一个找这个目录；
+
+而我append进去的项目根目录 </home/mdlib/git_pro/mj-data-sdk>，在最后面
+
+没等找到它，就先遇到了 /home/mdlib/git_pro/mj-data-sdk/scripts/dump_factor （被执行py文件所在目录），就直接用了
+
+从目录结构来看，/home/mdlib/git_pro/mj-data-sdk/scripts/dump_factor  下面是没有 scripts 的，自然没法导入scripts，就会找不到报错；
+
+但在项目根目录视角下，就有scripts了，就可以导入了；
+
+所以，就当前情况而言，sys.path 中 index:0 位置的路径，应该是项目根目录：
+
+这么操作即可
+
+把项目根目录 insert 到 sys.path 列表第一个元素，python找的时候就会先找到 项目根目录。
+
+
+总结
+
+当你在pycharm中完成编码，执行代码时，pycharm会动态帮你把一切都做好，基本不会出现类似导包出错问题；
+
+但在命令行情况下，就需要注意是否存在该问题了；
+

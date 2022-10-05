@@ -1,0 +1,82 @@
+解决python中import文件夹下面py文件报错问题
+
+如下所示：
+
+在需要导入的那个文件夹里面新建一个 __init__.py文件,哪怕这个文件是空的文件也可以.
+
+补充知识：python中import其他目录下的文件出现问题的解决方法
+
+在使用python进行编程的时候，import其他文件路径下的.py文件时报错
+
+Traceback (most recent call last):
+
+File "download_and_convert_data.py", line 44, in
+
+from .datasets import download_and_convert_cifar10
+
+ModuleNotFoundError: No module named '__main__.datasets'; '__main__' is not a package
+
+文件的路径如下：
+
+D:\Pyproject\models-master\research\slim\datasets\download_and_convert_cifar10.py
+
+将from后面的相对路径
+
+from .datasets import download_and_convert_cifar10
+
+改为绝对路径
+
+from research.slim.datasets import download_and_convert_cifar10
+
+后仍然报错
+
+Traceback (most recent call last):
+
+File "download_and_convert_data.py", line 44, in
+
+from research.slim.datasets import download_and_convert_cifar10
+
+ModuleNotFoundError: No module named 'research'
+
+意思是找不到research包，查阅解决方法后发现加一句
+
+import os
+
+import sys
+
+ROOT_DIR = os.path.abspath('D:\Pyproject\models-master')
+
+sys.path.append(ROOT_DIR)
+
+即可解决该问题
+
+以上这篇解决python中import文件夹下面py文件报错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持我们。
+
+时间： 2020-05-30
+
+本文实例讲述了Python实现调用另一个路径下py文件中的函数方法.分享给大家供大家参考,具体如下: 针对这个问题,网上有很多的解决方式.其实最主要的原因是因为Python无法正确找到你其他文件夹下文件的路径.针对不同的环境和问题有不同的方法,大家可自行测试. 1. 方法一 首先,我先把解决我本人问题的方法记录如下.环境,Python为3.5,pycharm工作区间.主文件(main_preprocess.py)需要运用split_by_date.py中的函数,main_preprocess与s
+
+Python的import包含文件功能就跟PHP的include类似,但更确切的说应该更像是PHP中的require,因为Python里的import只要目标不存在就报错程序无法往下执行.要包含目录里的文件,PHP中只需要给对路径就OK.Python中则不同,下面来看看这个例子. 目录结构: a.py 要 import dir目录下的 b.py 文件.a.py代码如下: 复制代码 代码如下: # coding=utf-8 "import dir 目录下的 b.py 文件"   impo
+
+如图:会出现带有红色波浪线,但是确实有random_walk文件 解决方法: 在当前文件下,右键找到mark Directory as 然后选择source root,完工ok 再如图: 以上这篇解决pycharm同一目录下无法import其他文件就是小编分享给大家的全部内容了,希望能给大家一个参考,也希望大家多多支持我们.
+
+例如我们有如下结构的文件: pkg/ __init__.py libs/ some_lib.py __init__.py components/ code.py __init__.py 如果我们想要在code.py中调用libs/some_lib.py这个module,比如使用相对调用:from ..libs.some_lib import something,仅仅在package中加上__init__.py是不够的.python会返回ValueError: Attempted relative
+
+想查找mac下python的site-packages目录,如果用网上搜的安装目录之类的去找,进去每一层很多都是软链接形式存在,比较浪费时间: 比较快捷的方法如下: MacBook-Pro-6:Scrapy-1.5.0 haizhi$ python Python 2.7.10 (default, Jul 30 2016, 18:31:42) [GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.34)] on darwin Type "help&
+
+似乎有一段时间没有更新博客了,这里就写点小功能,轻松获得电脑任意路径下的文件及文件夹,并将其写入word,以下是主要代码: **import os** **from os import walk** # 获取文件夹的中的文件夹和文件夹里文件 def do_file(save_filepath,o_filepath): #定义函数 传入写入文档保存的位置和要操作的任意电脑路劲 file=open(save_filepath,"w+") # 遍历文件路径 for parent,dirnam
+
+这篇文章主要介绍了python各层级目录下import方法代码实例,文中通过示例代码介绍的非常详细,对大家的学习或者工作具有一定的参考学习价值,需要的朋友可以参考下 以前经常使用python2.现在很多东西都切换到了python3,发现很多东西还是存在一些差异化的.跨目录import是常用的一种方法,并且有不同的表现形式,新手很容易搞混.有必要这里做个总结,给大家科普一下: 1 同级目录下的调用: 同级目录下的调用比较简单,一般使用场景是不同类的相互调用.不用考虑路径问题,常用的格式是:from
+
+本文实例讲述了python获取指定路径下所有指定后缀文件的方法.分享给大家供大家参考.具体实现方法如下: # 获取指定路径下所有指定后缀的文件 # dir 指定路径 # ext 指定后缀,链表&不需要带点 或者不指定.例子:['xml', 'java'] def GetFileFromThisRootDir(dir,ext = None): allfiles = [] needExtFilter = (ext != None) for root,dirs,files in os.walk(dir
+
+之前对mac os系统自带的python进行了升级,结果发现新安装的python的site-packages目录并没有加到python的系统路径中,所以在使用其他库时发现出现了缺少模块的错误. 查看python的模块路径方法是 import sys print sys.path 这个就会打印出所有的模块路径. 下边是在这个python系统路径中加入新的模块路径的三种方法: 1.添加环境变量PYTHONPATH,python会添加此路径下的模块,在.bash_profile文件中添加如下类似行:
+
+1 .据说python3就没有这个问题了 2 .u'字符串' 代表是unicode格式的数据,路径最好写成这个格式,别直接跟字符串'字符串'这类数据相加,相加之后type就是str,这样就会存在解码失误的问题. 别直接跟字符串'字符串'这类数据相加 别直接跟字符串'字符串'这类数据相加 别直接跟字符串'字符串'这类数据相加 unicode类型别直接跟字符串'字符串'这类数据相加 说四遍 3 .有些读取的方式偏偏是要读取str类型的路径,不是unicode类型的路径,那么我们把这个str.enco
+
+PIL(Python Imaging Library)是Python中一个强大的图像处理库,但目前其只支持到Python2.7 pillow是PIL的一个分支,虽是分支但是其与PIL同样也具有很强的图像处理库. Python3.7.0 如何安装pillow 此安装方法在windows7环境下完成: >>>win+r调出运行窗口,键入cmd弹出命令窗口 >>>此处需要键入命令调到python所在的文件夹中,如图,我是将python安装在d盘中 >>>在D
+
+本文介绍了几种常用的python下载文件的方法,具体使用到了htttplib2,urllib等包,希望对大家有帮忙. 1.简单文件下载 使用htttplib2,具体代码如下: h = httplib2.Http() url = 'http://www.jb51.net/ip.zip' resp, content = h.request(url) if resp['status'] == '200': with open(filename, 'wb') as f: f.write(content)
+
+需求 要求 查找文件夹里某个日期区间内的word文档,全部word的名称和路径列出来,比如 7月5号到7月31号 D盘下的所有word文档. 修改文件类型 修改文件路径 检索文件修改时间区间 #conding=utf8 import os import time g = os.walk(r"F:\学习资料\week_home") def judge_time_file(path, file, update_time): if not file.endswith(('.doc','.do
+

@@ -1,0 +1,60 @@
+建议下载pyecharts(0.5.xx)版本，如果使用 pip install pyecharts 默认安装V1版本(如1.7.1)会出现如下报错：
+
+1、Bar模块导入问题
+
+from pyecharts import Bar
+
+报错：
+
+cannot import name ‘Bar'
+
+解决办法：
+
+from pyecharts.charts import Bar
+
+2、Bar 使用报错
+
+from pyecharts import Bar
+bar =Bar("我的第一个图表", "这里是副标题") #标题
+bar.add("服装", #标签
+  ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],#x坐标
+  [5, 20, 36, 10, 75, 90]) #y坐标
+# is_more_utils = True #显示右侧的工具栏
+# bar.show_config() # 打印所有参数
+bar.render('my_first_chart.html')#保存图列
+bar
+
+报错：
+
+TypeError: init() takes from 1 to 2 positional arguments but 3 were given
+
+尝试注释掉报错行：
+
+#bar =Bar("我的第一个图表", "这里是副标题")
+
+还会有新的报错：‘Bar' object has no attribute ‘add'
+
+解决办法：卸载、安装旧版本
+
+pip install pyecharts==0.5.10 -i https://pypi.tuna.tsinghua.edu.cn/simple/ --trusted-host pypi.tuna.tsinghua.edu.cn
+
+如果安装时报错（mac系统）：
+
+Failed building wheel for dukpy
+
+xcrun: error: invalid active developer path (/Library/Developer/CommandLineTools), missing xcrun at: /Library/Developer/CommandLineTools/usr/bin/xcrun
+
+error: command 'gcc' failed with exit status 1
+
+解决办法：
+
+1、安装xcode
+
+xcode-select --install
+
+2、然后再安装pyecharts-0.5.10
+
+3、安装成果后重启jupyter notebook即可
+
+以上这篇解决pyecharts在jupyter notebook中使用报错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

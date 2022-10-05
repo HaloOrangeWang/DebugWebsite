@@ -1,0 +1,36 @@
+背景
+
+最近在工作中发现了一个错误，在执行多线程扫描脚本的时候频繁出现下面这个错误
+
+HTTPConnectionPool(host=‘t.tips', port=80): Max retries exceeded with url: /index.php (Caused by NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x7f29d4081150>: Failed to establish a new connection: [Errno 24] Too many open files',))
+
+比较诡异...
+
+分析
+
+博主自己手上的一些小项目经常需要进行多线程的批量扫描来采集数据，像采集数据这种功能当然是线程越多越好了，所以通常情况下我都是使用 3000 个线程进行扫描，在确定带宽充足，系统硬件配置够高的情况下依然会出现上述问题，这就让我想到是不是因为系统的限制问题。
+
+通过搜索引擎我找到了关于系统限制的介绍，执行
+
+$ ulimit -n
+1024
+
+得到的结果是1024，系统限制为同时打开1024个文件，这显然是太少了。
+
+解决
+
+这个问题的解决方法很简单，直接修改下面的文件
+
+sudo vim /etc/security/limits.conf
+
+最这个文件的最后添加两行代码
+
+* soft nofile 10240
+* hard nofile 10240
+
+当然这个数字根据自己的需要进行修改即可，保存后注销重新登录就好了。
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作能带来一定的帮助，如果有疑问大家可以留言交流。
+

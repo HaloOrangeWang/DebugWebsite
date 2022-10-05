@@ -1,0 +1,50 @@
+
+背景
+
+使用 poetry 管理 Python 包的时候
+
+使用 poetry build 来打包工程，报错了
+
+Building filesystemfastapi (0.1.0)
+
+ModuleOrPackageNotFound
+
+No file/folder found for package filesystemfastapi
+
+
+工程目录
+
+
+pyproject.toml 文件
+
+
+排查思路
+
+从报错信息来看，是 pyproject.toml 的 name 有问题
+
+进到报错提示的源码文件，发现报错信息是最后的 else 抛出的
+
+从上面的 if...elif... 可以知道，都是通过是否为文件夹/文件来判断的
+
+所以最终可以猜测是我的路径有问题，而且跟 name 有关系
+
+
+第二步
+
+所以我改了源码，打印一下涉及的路径和变量
+
+再执行一次 poetry build
+
+可以看到问题出在哪了，出现了两层 filesystemfastapi，而我的 fastapi 应用代码是放在 filesystemfastapi/app 下的
+
+
+解决方案
+
+将 pyproject.toml 的 name 改成 app 就可以了
+
+所以，name 应该写放应用程序代码的目录，不可以乱设置哦
+
+从打印结果能看到已经成功了，而且路径也没有问题
+
+从源码看的话，走的是红框的业务流程
+

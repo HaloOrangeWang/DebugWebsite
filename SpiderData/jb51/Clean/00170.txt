@@ -1,0 +1,49 @@
+这篇文章主要介绍了基于Django实现日志记录报错信息,文中通过示例代码介绍的非常详细，对大家的学习或者工作具有一定的参考学习价值,需要的朋友可以参考下
+
+当服务器500错误的时候，普通日志只会记录一行500的request信息，并不会记录详细的报错定位
+
+[ERROR] 2019-06-12 15:07:03,597 "GET /api/v1/test/ HTTP/1.1" 500 74196
+
+需要添加一个在日志中记录详细错误信息的middleware
+
+# -*- coding: UTF-8 -*-
+import logging
+
+logger = logging.getLogger('default')
+
+class ExceptionLoggingMiddleware(object):
+  def process_exception(self, request, exception):
+    import traceback
+    logger.error(traceback.format_exc())
+
+将此中间件添加到settings的MIDDLEWARE_CLASSES中
+
+MIDDLEWARE_CLASSES = (
+'utils.my_middleware.ExceptionLoggingMiddleware',
+)
+
+使用Django logger
+
+'loggers': {
+    'django': {
+      'handlers': ['file', 'console'],
+      'level': 'INFO'
+    },
+
+效果
+
+[ERROR] 2019-06-12 15:07:02,265 Internal Server Error: /api/v1/test/
+Traceback (most recent call last):
+ File "E:\tcp_check\venv\lib\site-packages\django\core\handlers\exception.py", line 35, in inner
+  response = get_response(request)
+ File "E:\tcp_check\venv\lib\site-packages\django\core\handlers\base.py", line 128, in _get_response
+  response = self.process_exception_by_middleware(e, request)
+ File "E:\tcp_check\venv\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+  response = wrapped_callback(request, *callback_args, **callback_kwargs)
+ File "E:\tcp_check\tcp_test_app\views.py", line 23, in test
+  a=1/0
+ZeroDivisionError: division by zero
+[ERROR] 2019-06-12 15:07:03,597 "GET /api/v1/test/ HTTP/1.1" 500 74196
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

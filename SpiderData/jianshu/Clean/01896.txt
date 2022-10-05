@@ -1,0 +1,100 @@
+最近在学习Django，跟着做一个Django论坛从搭建到部署，教程链接也贴上：【第一部分-django论坛从搭建到部署】一个完整Django入门指南-苍云横渡，做到第三部分时候遇到一个问题，困扰了我很久。经查阅后仍是无果，官方文档也看了依然没有解决问题，后来突然发现了问题，再看看报错的情况，确实就是自己写的时候写错了。先把错误情况贴上：
+
+Internal Server Error: /boards/1/
+Traceback (most recent call last):
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\core\handlers\ex
+ception.py", line 34, in inner
+    response = get_response(request)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\core\handlers\ba
+se.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\core\handlers\ba
+se.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwar
+gs)
+  File "D:\IDE\pycharm\PyCharm Community Edition 2018.1.2\DjangoProjects
+\myproject\boards\views.py", line 33, in board_topics
+    return render(request, 'topics.html', {'board': board})
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\shortcuts.py", l
+ine 36, in render
+    content = loader.render_to_string(template_name, context, request, u
+sing=using)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\loader.
+py", line 62, in render_to_string
+    return template.render(context, request)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\backend
+s\django.py", line 61, in render
+    return self.template.render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 171, in render
+    return self._render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 163, in _render
+    return self.nodelist.render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 937, in render
+    bit = node.render_annotated(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 904, in render_annotated
+    return self.render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\loader_
+tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 163, in _render
+    return self.nodelist.render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 937, in render
+    bit = node.render_annotated(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 904, in render_annotated
+    return self.render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\loader_
+tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 937, in render
+    bit = node.render_annotated(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 904, in render_annotated
+    return self.render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\loader_
+tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 937, in render
+    bit = node.render_annotated(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\base.py
+", line 904, in render_annotated
+    return self.render(context)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\template\default
+tags.py", line 442, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=curre
+nt_app)
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\urls\base.py", l
+ine 90, in reverse
+    return iri_to_uri(resolver._reverse_with_prefix(view, prefix, *args,
+ **kwargs))
+  File "D:\IDE\Python\Anaconda\lib\site-packages\django\urls\resolvers.p
+y", line 622, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'new_topic' not found
+. 'new_topic' is not a valid view function or pattern name.
+[24/Nov/2018 22:54:00] "GET /boards/1/ HTTP/1.1" 500 169427
+
+看起来有点乱，其实关键信息就是最后一句话：
+
+意思就是new_topic在反析的时候没有被找到，'new_topic' 不是一个有效的视图方法或者模式名。
+
+浏览器报的错也贴上:
+
+
+urls.py:
+
+
+view.py:
+
+我注意到其实是urls.py文件中命名空间写错了：
+
+实际上我在view.py文件中定义的方法是new_topic，HTML模板命名也是new_topic.html，所以多加了一个s导致了错误。以后还是需要更加细心。
+

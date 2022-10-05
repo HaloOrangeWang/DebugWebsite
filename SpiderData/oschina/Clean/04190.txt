@@ -1,0 +1,108 @@
+题图：Nora Görlitz on Instagram
+
+平时工作中，会遇到很多问题，百度上一搜都是垃圾广告，很难搜到解决问题的重点，尤其是最近搭建k8s集群，很多错误(大佬可能要笑了)需要谷哥，然后在github、stackoverflow上就搜到了答案，不过，很多都是英文的，看不懂但找重点还是可以找到的。下面分享几个我看过就解决了问题的文章，当然不限k8s
+
+1、
+
+大家应该都知道之前我给大家推荐过一款百度网盘下载不限速神器，没看到的可以点击下面传送门：
+
+不限速 | 百度网盘命令行工具
+
+就在前段时间，该工具出现了个问题：
+
+获取目录下的文件列表: 遇到错误, 远端服务器返回错误, 代码: 4, 消息: No permission to do this operation
+
+获取目录下的文件列表: 遇到错误, 远端服务器返回错误, 代码: 4, 消息: No permission to do this operation
+
+因为这两天要在网盘下载些视频，无奈百度网盘客户端下载速度太慢，然后就在github上搜到了解决方案：
+
+BaiduPCS-Go config set -appid 266719
+
+BaiduPCS-Go config set -appid 266719
+
+并记录在了下面文章里：
+
+https://www.jianshu.com/p/941e7466adb5
+
+2、
+
+回顾了基础知识原，反，补码，这篇文章讲的已经很明白了，大佬略过，像我一样的小白菜可以看看加强下。
+
+https://blog.csdn.net/u011488256/article/details/52204074
+
+3、
+
+docker启动失败，systemctl status docker看到的日志报错如下：
+
+Error starting daemon: error while opening volume store metadata database: timeout
+
+Error starting daemon: error while opening volume store metadata database: timeout
+
+解决办法：
+
+ps axf | grep docker | grep -v grep | awk '{print "kill -9 " $1}' | sudo sh 
+sudo systemctl start docker
+
+ps axf | grep docker | grep -v grep | awk '{print "kill -9 " $1}' | sudo sh 
+sudo systemctl start docker
+
+来源于：
+
+https://stackoverflow.com/questions/43537790/docker-fails-to-start-due-to-volume-store-metadata-database-timeout
+
+4、
+
+etcd认证：etcd在k8s集群中地位是相当重要了，etcd就是它的数据中心，它存储着网络插件flannel、Calico的网络配置信息、kubernetes本身，包括各种对象的状态和元信息配置。部署多台etcd时的认证，应该在一台上生成证书、拷贝到其他节点去。具体操作看下面这篇文章也够了。
+
+https://www.jianshu.com/p/33b5f47ababc
+
+5、
+
+systemctl start kubelet启动kubelet时，报错：
+
+failed to run Kubelet: failed to create kubelet: misconfiguration: kubelet cgroup driver: "cgroupfs" is different from docker cgroup driver: "systemd"
+
+failed to run Kubelet: failed to create kubelet: misconfiguration: kubelet cgroup driver: "cgroupfs" is different from docker cgroup driver: "systemd"
+
+由于docker在centos上用yum安装，默认的cgroupdriver为systemd，可以修改docker.service启动参数，保证和kubelet一致：
+
+#ExecStart=/usr/bin/dockerd
+ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=cgroupfs
+
+#ExecStart=/usr/bin/dockerd
+ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=cgroupfs
+
+来源于：
+
+https://www.cnblogs.com/happy-king/p/9267032.html
+
+6、
+
+为了方便管理集群，操作集群资源，k8s集群搭建好可以安装k8s web UI接口~k8s-dashboard，这篇文章就够了
+
+https://segmentfault.com/a/1190000013681047
+
+7、
+
+根据上一篇文章安装好dashboard之后，用安装dashboard节点IP和nodePort访问UI，需要认证登录才可以查看和操作集群资源，点击skip是没权限操作的。两种认证方式看下面这篇文章就够了。可能遇到的问题：谷歌浏览器对不安全的https链接有限制(解决方法可以自行谷歌)，用火狐浏览器可以避免限制。
+
+https://andrewpqc.github.io/2018/04/25/k8s-dashboard-auth
+
+用了两天的时间终于把k8s集群搭建好了，过程中遇到挺多的问题，一步一个脚印踩了下来，在公司没外网权限的限制下搭建成功。不得不佩服高哥两天玩转20个服务器搭建集群，我只在四个节点上搭建。坑并不可怕，可怕的是坑填不满，最后锅甩不出去砸到自己。再此记录下，也希望能帮到你。
+
+利用好谷歌，学会科学上网，应该是我们码农的基本了，不会也没事，慢慢都能会的，一件也拉不下。
+
+最后给大家推荐一位python大佬的公号，痴海的好朋友，定期组织【大航海计划】，可以说是python方向同学的大福利了，以下是简介：
+
+「Python专栏」专注Python领域的各种技术：爬虫、DevOps、人工智能、Web开发等。定期推出送书活动，还有「大航海计划」帮助零基础小伙伴快速掌握Python。同时作者还和众多互联网企业定向合作，输送企业人才，想进大厂的小伙伴可以私聊作者。
+
+二维码奉上，扫码关注，学python的赶紧去抱大腿
+
+本公众号免费提供csdn下载服务，海量IT学习资源，包括但不限于java、go、python、springcloud、elk、嵌入式 、大数据、面试资料、前端 等资源，可以在公众号后台回复【2】加小编索取，朋友圈会不定期分享编程IT相关资源、福利。
+
+不要停，干就是了，学习充实每一天！
+
+本文分享自微信公众号 - 我的小碗汤（mysmallsoup）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

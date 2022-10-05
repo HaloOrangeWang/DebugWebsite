@@ -1,0 +1,31 @@
+python开发中经常遇到报错的情况，但是warning通常并不影响程序的运行，而且有时特别讨厌，下面我们来说下如何忽略warning错误。
+
+在说忽略warning之前，我们先来说下如何主动产生warning错误，这里用到warnings模块，看如下代码：
+
+import warnings
+
+def fxn():
+
+warnings.warn("deprecated", DeprecationWarning)
+
+with warnings.catch_warnings():
+
+warnings.simplefilter("ignore")
+
+fxn()
+
+这样就产生了warning错误
+ 那么如何来控制警告错误的输出呢？很简单
+
+import warnings
+
+warnings.filterwarnings("ignore")
+
+这样就忽略了警告错误的输出。很简单吧~~
+
+又有人要问如何忽略命令行下警告错误的输出呢？也非常简单：
+
+python -W ignore yourscript.py
+
+这样就OK了
+

@@ -1,0 +1,26 @@
+python对于类的成员没有严格的访问控制限制，这与其他面向对象的语言有区别。关于私有属性和私有方法，有如下要点：
+1）通常我们约定，两个下划线开头的属性是私有的，其他是公共的；
+2）类内部可以访问私有属性（方法）
+3）类外部不能直接访问私有属性（方法）
+4）类外部可以通过“_雷鸣__私有属性（方法）”访问私有属性（方法）
+ 
+class Employee:
+ 
+    def __init__(self,name,age):
+        self.name = name
+        self.__age = age
+ 
+e = Employee("gaoqi",18)
+print(e.name)
+print(e.__Employee__age)
+
+报错：AttributeError: 'Employee' object has no attribute '__Employee__age'
+
+正确写法是“_Employee__age”，类名前面是一个下划线；
+
+————————————————
+
+版权声明：本文为CSDN博主「yimaoyingbi」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+
+原文链接：https://blog.csdn.net/yimaoyingbi/article/details/104135843
+

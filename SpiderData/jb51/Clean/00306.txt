@@ -1,0 +1,136 @@
+1. 从键盘输入一个整数,求 100 除以它的商,并显示输出。要求对从键盘输入的数值进行异常处理。
+
+try:
+    n=int(input("请输入一个整数:"))
+    x=100/n
+    print(x)
+except ValueError:
+    print("异常,请重新输入：")
+else:         #可选项，必须try-except语句为前提
+    print("程序正常运行，没有捕捉到异常")
+
+2.编程实现索引超出范围异常 Index Error 类型。例如:chars=["a","b",100,-37,2]
+
+try:
+    chars=["a","b",100,-37,2]
+    chars[5]="k"             #产生该类型异常
+except IndexError:
+    print("异常,索引超出范围")
+else:         #可选项，必须try-except语句为前提
+    print("程序正常运行，没有捕捉到异常")
+
+3.录入一个学生的成绩，把该学生的成绩转换为 A 优秀、B 良好、C 合格、D 不及格的形式，最后将该学生的成绩打印出来。要求使用 assert 断言处理分数不合理的情况。
+
+try:
+    score=int(input('请输入学生的成绩:'))
+    assert 0<=score<=100  #断言 成绩必须在0-100范围内
+    if score >= 90:
+        print("A优秀")
+    if score >= 80 and score < 90:
+        print("B良好")
+    if score >=60 and score <80:
+        print("C合格")
+    if score <60:
+        print("D不及格")
+except ValueError:
+    print("异常,输入必须为整数")
+except AssertionError:  #断言异常信息
+    print("异常,输入的成绩{}不在0-100范围内".format(score))
+else:         #可选项，必须try-except语句为前提
+    print("程序正常运行，没有捕捉到异常")
+
+4. 定义一个 Circle 类，其中有求面积的方法，当半径小于 0 时， 抛出一个用户自定义异常
+
+import math
+class RangeErrorException(Exception):#自定义异常类,判断半径范围是否异常
+    def __init__(self, error_reason='异常，圆的半径不能为负数！'):
+        Exception.__init__(self, error_reason)#定义的继承自Exception的类RangeErrorException
+class Circle():
+    def __init__(self,r):
+        self.r=r
+        if self.r < 0:#当遇到自己设定的错误时，使用raise语句抛出自定义的异常
+            raise RangeErrorException
+    def getS(self):   #计算获取圆的面积
+        area = math.pi *self.r *self.r
+        return area
+try:
+    r=eval(input("请输入半径r:"))
+    c=Circle(r)
+    print("面积为:{:.2f}".format(c.getS()))
+except RangeErrorException as reason:
+    print(reason)
+else:         #可选项，必须try-except语句为前提
+    print("程序正常运行，没有捕捉到异常")
+
+5. 假设成年人的体重和身高存在此种关系:  身高(厘米)-100=标准体重(千克)   如果一个人的体重与其标准体重的差值在 其体重的正负 5%之间，显示“体重正常”，其他则显示“体重超标”或者“体重不达标”。编写程序，能处理用户输入的异常并且使用自定义异常类来处理身高小于 30cm、大于 250cm 的异常情况。
+
+class HighErrorException(Exception):
+    def __init__(self,error_reason='异常，身高不能小于30cm或者大于250cm'):#自定义异常类,判断身高是否异常
+        Exception.__init__(self,error_reason)#定义的继承自Exception的类HighErrorException
+class relation:
+    def __init__(self,high,weight):
+        self.high=high
+        self.weight=weight
+        if self.high<30 or self.high>250:
+            raise HighErrorException#当遇到自己设定的错误时，使用raise语句抛出自定义的异常
+    def rel(self):
+        y=self.weight-(self.high-100)
+        if abs(y) <= self.weight*0.05 :
+            print("体重正常")
+        elif y > self.weight*0.05 :
+            print("体重超标")
+        elif y < -self.weight*0.05:
+            print("体重不达标")
+ 
+try:
+    h=eval(input("请输入身高(cm):"))
+    w=eval(input("请输入体重(kg):"))
+    f=relation(h,w)
+    f.rel()
+except HighErrorException as reason:
+    print(reason)
+else:            #可选项，必须try-except语句为前提
+    print("程序正常运行，没有捕捉到异常")
+
+6.设计一个一元二次方程类,并为这个类添加异常处理。
+
+import math
+class FunctionErrorException(Exception):
+    def __init__(self,error_reason='判别式<0,函数不存在实根'):
+        Exception.__init__(self,error_reason)
+class Equation:
+    def __init__(self,a,b,c):
+        self.a = a
+        self.b = b
+        self.c = c
+    def getDiscriminant1(self):  #判别式
+        d=(self.b)**2 -(4*self.a*self.c)
+        return d
+    def getRoot1(self):
+        if self.getDiscriminant1()>=0:
+            x1=(-self.b+math.sqrt(self.getDiscriminant1()))/2*self.a
+            return x1
+        else:
+            raise FunctionErrorException
+    def getRoot2(self):
+        if self.getDiscriminant1()>=0:
+            x2=(-self.b+math.sqrt(self.getDiscriminant1()))/2*self.a
+            return x2
+        else:
+            raise FunctionErrorException
+    
+try:
+    a=eval(input("请输入系数a："))
+    b=eval(input("请输入系数b："))
+    c=eval(input("请输入系数c："))
+    f=Equation(a,b,c)
+    print("判别式：",f.getDiscriminant1())
+    print("   x1：",f.getRoot1())
+    print("   x2：",f.getRoot2())
+except FunctionErrorException as reason:
+    print(reason)
+else:         #可选项，必须try-except语句为前提
+    print("程序正常运行，没有捕捉到异常")
+
+到此这篇关于 Python错误与异常处理的文章就介绍到这了,更多相关 Python错误与异常处理内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

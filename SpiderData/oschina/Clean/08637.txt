@@ -1,0 +1,68 @@
+对于经常折腾 WordPress 的博主而言，开启 WordPress 调试模式(报错提示)是非常有必要的，而且这个也是 WordPress 开发者必备的技能之一，但是对于刚接触 WordPress 的童鞋这是个充满未知的问题，所以今天就跟大家简单说明以供参考。
+
+如何开启 WordPress 调试模式(报错提示)？
+
+
+配置文件说明
+
+需要修改的配置文件是 WordPress 根目录下的 wp-config.php 文件，记得以 UTF-8 无 BOM 格式编码。
+
+
+开启调试模式
+
+设置调试模式要修改的是 WP_DEBUG 这个常量，默认是：
+
+define('WP_DEBUG', false);
+
+需要开启时找到这行并修改为：
+
+define('WP_DEBUG', true);
+
+即可，false 代表关闭，true 代表开启。
+
+
+输出调试信息
+
+如果需要输出调试信息到日志文件（前提是开启了调试模式），在下面加一句
+
+define('WP_DEBUG_LOG', true);
+
+即可，调试信息会被保存到 wp-content 目录下 debug.log 文件。
+
+
+不在页面显示
+
+如果并不需要在页面显示调试信息，那么你可以加上这一句
+
+define('WP_DEBUG_DISPLAY', false);
+
+来实现。这个一般配合 WP_DEBUG_LOG 使用，即只输出日志不在页面显示。
+
+
+修改静态脚本
+
+如果你需要调试 WordPress 的 CSS 和 Javascript 代码，那么你可以加这一句
+
+define('SCRIPT_DEBUG', true);
+
+来调用完整版代码（默认调用的都是压缩版，压缩版根本没法看，通常都是修改完整版代码）。
+
+
+记录数据查询
+
+如果你需要记录页面都进行了哪些数据库查询，那么你可以加这一句
+
+define('SAVEQUERIES', true);
+
+来实现，然后读取全局变量 $wpdb->queries 就可以知道有哪些查询了。
+
+
+官方参考资料
+
+http://codex.wordpress.org/Debugging_in_WordPress
+
+
+作者简洁
+
+作者：小碗汤，一位热爱、认真写作的小伙，目前维护原创公众号：『我的小碗汤』，专注于写go语言、docker、kubernetes、java等开发、运维知识等提升硬实力的文章，期待你的关注。转载说明：务必注明来源（注明：来源于公众号：我的小碗汤，作者：小碗汤）
+

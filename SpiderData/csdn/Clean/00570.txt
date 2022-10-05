@@ -1,0 +1,29 @@
+Python读取txt文件并进行文本交叉分词：
+
+words = open('words.txt','r')
+ # 文本交叉分词
+textlist = []   ## 空列表
+def cuttingText(text,num):
+    while(text!=''):
+        textlist.append(text[0:num])
+        text=text[num-1:]
+    return textlist
+cuttingText(words,2)
+print(textlist)
+
+运行错误：
+
+Traceback (most recent call last):
+  File "E:/PYTHON/PYCHARM/Demo5/MI.py", line 55, in <module>
+    cuttingText(words,2)
+  File "E:/PYTHON/PYCHARM/Demo5/MI.py", line 52, in cuttingText
+    textlist.append(text[0:num])
+TypeError: '_io.TextIOWrapper' object is not subscriptable
+
+原因：个人感觉出错的原因是因为words = open(‘words.txt’,‘r’)读取出来的文件不能用下标进行索引；
+ 解决方案：换一种读取文件的方式如下
+
+words = open('words.txt',encoding = 'utf-8').read()
+
+以上错误解决，可以正常运行了
+

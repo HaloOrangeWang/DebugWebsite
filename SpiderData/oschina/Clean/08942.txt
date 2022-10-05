@@ -1,0 +1,22 @@
+最初学习并且搭建springboot的时候 有些人的pom.xml第一行报错  但是项目没有影响。
+
+解决方案：
+
+把自己maven仓库下的所有文件删除，在更新项目，报错自动消失。
+
+如果是升级Springboot版本2.0+时，出现的POM文件第一行报错则在pom.xml 文件中的 properties 加入maven jar 插件的版本号
+
+之后 update project 即可
+
+项目示例:
+
+在项目的pom.xml中加入:
+
+<properties>
+     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     <encoding>UTF-8</encoding>
+     <java.version>8</java.version>
+     <!-- 加入版本号即可解决 -->
+     <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+</properties>
+

@@ -1,0 +1,120 @@
+报错内容如下
+
+org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+
+at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:156)
+
+at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:544)
+
+at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+
+at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:744)
+
+at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:391)
+
+at org.springframework.boot.SpringApplication.run(SpringApplication.java:312)
+
+at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+
+at org.springframework.boot.SpringApplication.run(SpringApplication.java:1204)
+
+at com.alibaba.nacos.Nacos.main(Nacos.java:35)
+
+at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+
+at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+
+at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+
+at java.lang.reflect.Method.invoke(Method.java:483)
+
+at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:49)
+
+at org.springframework.boot.loader.Launcher.launch(Launcher.java:108)
+
+at org.springframework.boot.loader.Launcher.launch(Launcher.java:58)
+
+at org.springframework.boot.loader.PropertiesLauncher.main(PropertiesLauncher.java:467)
+
+Caused by: org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+
+at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:124)
+
+at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:86)
+
+at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:416)
+
+at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:180)
+
+at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:180)
+
+at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:153)
+
+... 16 common frames omitted
+
+（spring cloud alibaba项目 from fhadmin.cn）
+
+因为如果直接在bin目录下用鼠标双击startup.cmd启动的话，默认的是以cluster(集群)的方式启动，直接启动第一个会报Unable to start embedded Tomcat错误，改成单机启动（fromfhadmin.cn）：
+
+用记事本打开bin目录下查看startup.cmd
+
+@echo off
+
+rem Copyright 1999-2018 Alibaba Group Holding Ltd.
+
+rem Licensed under the Apache License, Version 2.0 (the "License");
+
+rem you may not use this file except in compliance with the License.
+
+rem You may obtain a copy of the License at
+
+rem
+
+rem      http://www.apache.org/licenses/LICENSE-2.0
+
+rem
+
+rem Unless required by applicable law or agreed to in writing, software
+
+rem distributed under the License is distributed on an "AS IS" BASIS,
+
+rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+rem See the License for the specific language governing permissions and
+
+rem limitations under the License.
+
+if not exist "%JAVA_HOME%\bin\java.exe" echo Please set the JAVA_HOME variable in your environment, We need java(x64)! jdk8 or later is better! & EXIT /B 1
+
+set "JAVA=%JAVA_HOME%\bin\java.exe"
+
+setlocal enabledelayedexpansion
+
+set BASE_DIR=%~dp0
+
+rem added double quotation marks to avoid the issue caused by the folder names containing spaces.
+
+rem removed the last 5 chars(which means \bin\) to get the base DIR.
+
+set BASE_DIR="%BASE_DIR:~0,-5%"
+
+set CUSTOM_SEARCH_LOCATIONS=file:%BASE_DIR%/conf/
+
+set MODE="standalone"
+
+set FUNCTION_MODE="all"
+
+set SERVER=nacos-server
+
+set MODE_INDEX=-1
+
+set FUNCTION_MODE_INDEX=-1
+
+set SERVER_INDEX=-1
+
+set EMBEDDED_STORAGE_INDEX=-1
+
+set EMBEDDED_STORAGE=""
+
+把 set MODE="cluster" 改为 set MODE="standalone" 即可
+

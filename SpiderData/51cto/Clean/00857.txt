@@ -1,0 +1,31 @@
+
+Python3安装turtle提示错误：Command "python setup.py egg_info" failed with error code 1
+
+Python3.5安装turtle：
+
+提示错误：
+
+网络上的方法，升级setuptools也没有用：
+
+也会提示错误
+
+最后通过网友按如下方法解决了，现在记录如下：
+
+仔细查看安装​​turtle​​出错的错误信息，可以看到是个语法错误。​​pip​​在下载​​turtle 0.0.2​​包后，会解压到本地再安装，提示的错误在解压的​​setup.py​​文件里面，
+
+解决的办法就是：按照给定的链接（我的是​​这个），把turtle包下载到本地，手动解压，修改setup.py文件再安装。
+
+打开setup.py
+文件，第40
+行修改为
+​​ except (ValueError, ve):​​原来的是Python2的写法，没有括号，加了括号之后Python3就能用了。
+
+用pip3
+安装修：
+​​ pip install -e turtle-0.0.2​​​​-e​​后面接上我们修改过​​setup.py​​文件的目录。
+
+这样就搞定了。
+
+另外，​​如果提示 python-tk 未安装​​，用​​apt​​命令安装就可以了：
+
+

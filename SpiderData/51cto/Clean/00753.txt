@@ -1,0 +1,102 @@
+
+文章目录
+
+一、报错信息
+
+二、解决方案
+
+使用场景 : 需要 Hook 住 View 的 OnClickListener 点击方法 , 该监听器在 View 的内部类 ListenerInfo 中 , 需要先通过反射 , 得到 ListenerInfo 字节码对象 ;
+
+// 反射获取 OnClickListener 成员
+// ① 先根据全类名获取 ListenerInfo 字节码
+Class<?> clazz = null;
+try {
+    clazz = Class.forName("android.view.View.ListenerInfo");
+} catch (ClassNotFoundException e) {
+    e.printStackTrace();
+}
+
+报错信息 :
+
+2021-06-17 10:28:27.453 31301-31301/com.example.plugin_hook W/System.err: java.lang.ClassNotFoundException: android.view.View.ListenerInfo
+2021-06-17 10:28:27.453 31301-31301/com.example.plugin_hook W/System.err:     at java.lang.Class.classForName(Native Method)
+2021-06-17 10:28:27.453 31301-31301/com.example.plugin_hook W/System.err:     at java.lang.Class.forName(Class.java:453)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at java.lang.Class.forName(Class.java:378)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at com.example.plugin_hook.MainActivity.hook(MainActivity.java:67)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at com.example.plugin_hook.MainActivity.onCreate(MainActivity.java:32)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.Activity.performCreate(Activity.java:7144)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.Activity.performCreate(Activity.java:7135)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1271)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2931)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3086)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:78)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:108)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:68)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1816)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.os.Handler.dispatchMessage(Handler.java:106)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.os.Looper.loop(Looper.java:193)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at android.app.ActivityThread.main(ActivityThread.java:6718)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at java.lang.reflect.Method.invoke(Native Method)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:493)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:858)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err: Caused by: java.lang.ClassNotFoundException: Didn't find class "android.view.View.ListenerInfo" on path: DexPathList[[zip file "/data/app/com.example.plugin_hook-IURzN0enGDqjeLown9_p1w==/base.apk"],nativeLibraryDirectories=[/data/app/com.example.plugin_hook-IURzN0enGDqjeLown9_p1w==/lib/arm64, /system/lib64]]
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:134)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at java.lang.ClassLoader.loadClass(ClassLoader.java:379)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err:     at java.lang.ClassLoader.loadClass(ClassLoader.java:312)
+2021-06-17 10:28:27.454 31301-31301/com.example.plugin_hook W/System.err: 	... 20 more
+2021-06-17 10:28:27.456 31301-31301/com.example.plugin_hook E/AndroidRuntime: FATAL EXCEPTION: main
+    Process: com.example.plugin_hook, PID: 31301
+    java.lang.RuntimeException: Unable to start activity ComponentInfo{com.example.plugin_hook/com.example.plugin_hook.MainActivity}: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.reflect.Field java.lang.Class.getField(java.lang.String)' on a null object reference
+        at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2951)
+        at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3086)
+        at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:78)
+        at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:108)
+        at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:68)
+        at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1816)
+        at android.os.Handler.dispatchMessage(Handler.java:106)
+        at android.os.Looper.loop(Looper.java:193)
+        at android.app.ActivityThread.main(ActivityThread.java:6718)
+        at java.lang.reflect.Method.invoke(Native Method)
+        at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:493)
+        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:858)
+     Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.reflect.Field java.lang.Class.getField(java.lang.String)' on a null object reference
+        at com.example.plugin_hook.MainActivity.hook(MainActivity.java:75)
+        at com.example.plugin_hook.MainActivity.onCreate(MainActivity.java:32)
+        at android.app.Activity.performCreate(Activity.java:7144)
+        at android.app.Activity.performCreate(Activity.java:7135)
+        at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1271)
+        at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2931)
+        at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3086) 
+        at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:78) 
+        at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:108) 
+        at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:68) 
+        at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1816) 
+        at android.os.Handler.dispatchMessage(Handler.java:106) 
+        at android.os.Looper.loop(Looper.java:193) 
+        at android.app.ActivityThread.main(ActivityThread.java:6718) 
+        at java.lang.reflect.Method.invoke(Native Method) 
+        at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:493) 
+        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:858) 
+2021-06-17 10:28:27.463 31301-31301/com.example.plugin_hook I/Process: Sending signal. PID: 31301 SIG: 9
+
+在此记录下 , 这种低级错误以后少犯 , 内部类要使用
+
+包名.外部类$内部类
+
+的形式 , 进行表示 ;
+
+android.view.View$ListenerInfo
+
+是 ListenerInfo 的正确表示方式 , 外部类与内部类之间使用 $ 符号 ;
+
+修改后 :
+
+// 反射获取 OnClickListener 成员
+// ① 先根据全类名获取 ListenerInfo 字节码
+Class<?> clazz = null;
+try {
+    clazz = Class.forName("android.view.View$ListenerInfo");
+} catch (ClassNotFoundException e) {
+    e.printStackTrace();
+}
+

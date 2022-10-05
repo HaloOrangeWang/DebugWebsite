@@ -1,0 +1,21 @@
+执行一个脚本报错  This COM object can not automate the makepy process - please run makepy manually for this object，在网上查了一些资料，是pywin32com造成的，
+ 报错语句：
+
+excel = win32com.client.gencache.EnsureDispatch('Excel.Application')
+
+改成：
+
+excel = win32com.client.EnsureDispatch('Excel.Application')
+
+报错显示：win32com.client 没有 EnsureDispatch属性，继续改：
+
+改成：
+
+excel = win32com.client.gencache.DispatchEx('Excel.Application')
+
+还是报错，继续改：
+ 改成：
+
+excel = win32com.client.DispatchEx('Excel.Application')
+ 终于不报错了，修复成功。
+

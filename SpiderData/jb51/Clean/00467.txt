@@ -1,0 +1,53 @@
+
+发现问题
+
+在使用pip install下载其他包时，报了错，如图：
+
+提示：“You are using pip version 8.1.1, however version 22.1 is available.
+You should consider upgrading via the ‘pip install --upgrade pip’ command.”
+
+根据提示，执行"pip install --upgrade pip"依旧无效。如图：
+
+然后，去网上查找广大网友的解决方案，并找到了解决办法：
+
+# 升级pip:
+1.sudo wget https://bootstrap.pypa.io/pip/2.7/get-pip.py
+2.sudo python get-pip.py
+3.pip -V
+
+# 升级pip3:
+1.sudo wget https://bootstrap.pypa.io/pip/3.5/get-pip.py
+2.sudo python3 get-pip.py
+3.pip -V
+
+期间，也遇到了2个问题：
+
+
+问题一
+
+如果在执行完第1、2步后，使用"pip -V"查看版本时，报了错：
+“bash: /usr/bin/pip: No such file or directory”
+
+解决方案，执行以下命令：
+
+# 清除缓存
+hash -r
+
+# 如果清除缓存不行，再执行
+sudo apt-get update
+sudo apt-get upgrade
+
+
+问题二
+
+我按顺序依次将pip和pip3升级后，执行"pip -V"和"pip3 -V", 发现pip也指向了python3.5包下，如下图：
+
+于是重新执行"sudo python get-pip.py"就正常了，如图：
+
+升级完pip, 就可以继续下载其他包了。
+
+
+总结
+
+到此这篇关于使用pip下载时提示“You are using pip version 8.1.1, however version 22.1 is available.“错误的解决的文章就介绍到这了,更多相关使用pip下载报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

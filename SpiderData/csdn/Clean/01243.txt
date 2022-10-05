@@ -1,0 +1,28 @@
+
+python报错：Traceback (most recent call last): …
+
+python报错：
+
+Traceback (most recent call last):
+  File "C:/Users/86177/PycharmProjects/untitled/csdn浏览量.py", line 1, in <module>
+    import requests
+  File "G:\PyCharm 2019.3\1\lib\site-packages\requests\__init__.py", line 43, in <module>
+    import urllib3
+  File "G:\PyCharm 2019.3\1\lib\site-packages\urllib3\__init__.py", line 7, in <module>
+    import logging
+  File "C:\Users\86177\AppData\Local\Programs\Python\Python37\lib\logging\__init__.py", line 26, in <module>
+    import sys, os, time, io, traceback, warnings, weakref, collections.abc
+  File "C:\Users\86177\AppData\Local\Programs\Python\Python37\lib\traceback.py", line 5, in <module>
+    import linecache
+  File "C:\Users\86177\AppData\Local\Programs\Python\Python37\lib\linecache.py", line 11, in <module>
+    import tokenize
+  File "C:\Users\86177\AppData\Local\Programs\Python\Python37\lib\tokenize.py", line 41, in <module>
+    __all__ = token.__all__ + ["tokenize", "detect_encoding",
+AttributeError: module 'token' has no attribute '__all__'
+
+运行某个python程序后突然报错
+
+后续排查原因，发现报错的时候输出了两个1 ，如上图，找到这个输出1的程序，命名为token.py
+
+这里用了一个文件名跟python库一样的，导致了报错，程序运行的时候，就调用了这个库，但是因为错误命名了这个文件，导致它本身输出一个1，调用又输出了一个1 ，两个1的由来应该如此，将这个程序删除，运行正常了
+

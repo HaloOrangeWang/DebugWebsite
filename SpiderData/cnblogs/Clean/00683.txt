@@ -1,0 +1,45 @@
+报错代码：
+
+sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
+
+解决办法：
+
+Python3中不再支持iteritems()，将iteritems()改成items()
+
+一、 operator.iteritems()函数介绍
+
+1. 作用：iteritems()函数用于获取对象某一个域的值。
+
+2. 例一：
+
+1 a = [1,2,3] 
+2 b=operator.itemgetter(1)      //定义函数b，获取对象的第1个域的值
+3 print(b(a))
+
+输出：2
+
+例二：
+
+1 b=operator.itemgetter(1,0)   //定义函数b，获取对象的第1个域和第0个域的值
+2 print(b(a))
+
+输出：（2，1）
+
+二、字典items()操作方法
+
+1. 作用：items()方法是将字典中的每个项分别做为元组，添加到一个列表中，形成了一个新的列表容器
+
+2. 例一：
+
+1 x = {'title':'python web site','url':'www.iplaypy.com'}
+2 print(x.items())
+
+输出：[(‘url’, ‘www.iplaypy.com’), (‘title’, ‘python web site’)]
+
+如果有需要也可以将返回的结果赋值给新变量，这个新的变量就会是一个列表数据类型。
+
+1 a=x.items()
+2 print(a)
+
+输出：[(‘url’, ‘www.iplaypy.com’), (‘title’, ‘python web site’)]
+

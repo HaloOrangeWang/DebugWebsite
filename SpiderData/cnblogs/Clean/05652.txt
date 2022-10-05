@@ -1,0 +1,43 @@
+终于解决了python 3.x import cv2 “ImportError: DLL load failed: 找不到指定的模块” 及“pycharm关于cv2没有代码提示”的问题
+
+
+终于解决了python 3.x import cv2 “ImportError: DLL load failed: 找不到指定的模块” 及“pycharm关于cv2没有代码提示”的问题
+
+参考 ：https://blog.csdn.net/Fang_good/article/details/78139601
+           https://www.cnblogs.com/only-zero-0/p/10024079.html
+
+参考 ：https://blog.csdn.net/Fang_good/article/details/78139601
+
+https://www.cnblogs.com/only-zero-0/p/10024079.html
+
+在网上找了很多资源，基本前篇一律。下载对应版本opencv python 。然后出问题，给的解决方法就是要安装下面：
+
+这个东西我重装了好几篇。而且也确定该装的也是装了的。
+
+但是还是报错。然后作为python新人的我，就又一次发挥了愚公精神。凭着以往的经验，终于“凑”到了一种解决方法。
+
+安装完opencv_python，之后在python 3.x.x—Lib—site-packages里应该有很多opencv开头，然后dll结尾的文件。这个时候我们只需要一步操作就行了。
+
+那就是将这些文档全部放在一个cv2的文件夹下面。 最后将这个cv2文件夹放在Lib目录下面。一定要注意是lib目录。如果放在site-packages还是会报错的。
+
+总之概况为一句话，把安装到site-packages目录下cv2目录移动到Lib目录下就行！
+
+　这样Tracker的代码跑起来了，很开心，但是发现pycharm关于cv2没有代码提示，这不能忍啊！，最后在Lib\cv2这个目录，找到__init__.py，修改如下：
+
+　　之后，测试代码自动提示，成功
+
+以下为通过opencv+python3.x捕捉usb摄像头演示例子
+
+#导入opencv模块
+import cv2
+
+if __name__ == '__main__':
+    # 捕捉帧，笔记本摄像头设置为0即可
+    capture = cv2.VideoCapture(0)
+
+
+Python OpenCV利用笔记本摄像头实现人脸检测
+
+
+用Python识别人脸，人种等各种信息
+

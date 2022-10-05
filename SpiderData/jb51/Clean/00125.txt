@@ -1,0 +1,18 @@
+在服务器上训练的网络放到本地台式机进行infer，结果出现报错：
+
+AssertionError: Invalid device id
+
+仔细检查后发现原来服务器有多个GPU，当时开启了两个进行加速运算。
+
+net1 = nn.DataParallel(net1, device_ids=[0, 1])
+
+而本地台式机只有一个GPU，调用数量超出所以报错。
+
+改为
+
+net1 = nn.DataParallel(net1, device_ids=[0])
+
+问题解决。
+
+以上这篇解决pytorch报错:AssertionError: Invalid device id的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

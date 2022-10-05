@@ -1,0 +1,14 @@
+遇到了celery无法启动的问题，报错：SyntaxError: invalid syntax ，这是因为我使用的python版本为最新3.7.3 ，而async已经作为关键字而存在了
+
+在 celery 官方的提议下，建议将 async.py 文件的文件名改成 asynchronous。所以我们只需要将 celery\backends\async.py 改成 celery\backends\asynchronous.py，并且把 celery\backends\redis.py 中的所有 async 改成 asynchronous
+
+另外虽然服务起来了，但是服务会不定期的假死
+
+报错：Celery Process 'Worker' exited with 'exitcode 1' [duplicate]
+
+经过搜索可以定位到问题所在，是因为celery依赖库billiard版本过低，导致任务发生了阻塞，所以最好的解决方案就是升级billiard
+
+执行 pip install --upgrade billiard
+
+官方的解释是，billiard最好>=3.5，所以如果不放心的话，还是指定版本号安装比较好
+

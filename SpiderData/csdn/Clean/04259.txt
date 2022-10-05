@@ -1,0 +1,25 @@
+
+Error in sitecustomize; set PYTHONVERBOSE for traceback: KeyError: ‘PYTHONPATH’
+
+
+1.问题背景
+
+Mac下自带python2.7，自己Anaconda安装的python3.6 。opencv安装之后，提示如下 
+  
+ 在提示在下安装步骤操作后，再次打开Spyder运行程序或者在终端下使用python3就会提示如题错误
+
+
+2.原因
+
+sys.path 中多了python27的site-package。冲突
+
+
+3.解决
+
+到“…／local/lib/python3.6/site-packages/“目录下（目录因人而已） 
+ 执行$ vim homebrew.pth 
+ 删除里面的路径
+
+
+4.退出终端／重启Spyder 运行无错
+

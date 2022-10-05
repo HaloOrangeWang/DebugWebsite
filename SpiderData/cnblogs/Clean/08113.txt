@@ -1,0 +1,34 @@
+　　UserAgent 就是用户代理，又叫报头，是一串字符串，相当于浏览器的身份证号，在利用爬虫爬取网站数据时，频繁更换它可以避免触发相应的反爬机制。
+
+　　fake-useragent对频繁更换UserAgent提供了很好的支持，可谓防反扒利器。下面将介绍fake-useragent的安装到使用。
+
+　　
+
+安装
+
+pip install fake_useragent
+
+from fake_useragent import UserAgent
+
+headers = {
+    "User-Agent":UserAgent().chrome
+}
+
+r = requests.get(url, proxies=proxies, headers=headers, timeout=10)
+
+　如果报错 :
+
+fake_useragent.errors.FakeUserAgentError: Maximum amount of retries reached
+
+　fake_useragent中存储的UserAgent列表发生了变动，而本地UserAgent的列表未更新所导致的，在更新fake_useragent后报错就消失了。
+
+　　按下Win +R 输入cmd 然后输入的下方代码即可
+
+　　Pycharm 中选中下方Terminal然后输入如下代码即可　　
+
+pip install -U fake-useragent
+
+　　
+
+Python的其他包也可以用这种方法完成更新pip install -U 包名。
+

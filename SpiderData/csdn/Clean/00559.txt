@@ -1,0 +1,124 @@
+使用pip安装Cartopy库时，出现报错：Getting requirements to build wheel did not run successfully.
+ Getting requirements to build wheel did not run successfully.
+ │ exit code: 1
+ ╰─> [3 lines of output]
+ setup.py:117: UserWarning: Unable to determine GEOS version. Ensure you have 3.7.2 or later installed, or installation may fail.
+ warnings.warn(
+ Proj 8.0.0 must be installed.
+
+输入：
+
+pip install Cartopy
+
+报错：
+
+D:\app\python\python310\Scripts>pip install Cartopy
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+Collecting Cartopy
+  Using cached Cartopy-0.20.2.tar.gz (10.8 MB)
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... error
+  error: subprocess-exited-with-error
+
+× Getting requirements to build wheel did not run successfully.
+  │ exit code: 1
+  ╰─> [3 lines of output]
+      setup.py:117: UserWarning: Unable to determine GEOS version. Ensure you have 3.7.2 or later installed, or installation may fail.
+        warnings.warn(
+      Proj 8.0.0 must be installed.
+      [end of output]
+
+note: This error originates from a subprocess, and is likely not a problem with pip.
+error: subprocess-exited-with-error
+
+× Getting requirements to build wheel did not run successfully.
+│ exit code: 1
+╰─> See above for output.
+
+note: This error originates from a subprocess, and is likely not a problem with pip.
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+
+于是，尝试在https://www.lfd.uci.edu/~gohlke/pythonlibs/#numba下载并安装whl文件：
+ 输入：
+
+pip install Cartopy-0.20.2-pp38-pypy38_pp73-win_amd64.whl
+
+出现成功安装提示：
+
+D:\app\python\python310\Scripts>pip install Cartopy-0.20.2-cp310-cp310-win_amd64.whl
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+Processing d:\app\python\python310\scripts\cartopy-0.20.2-cp310-cp310-win_amd64.whl
+Collecting shapely>=1.6.4
+  Downloading Shapely-1.8.1.post1-cp310-cp310-win_amd64.whl (1.3 MB)
+     ---------------------------------------- 1.3/1.3 MB 2.2 MB/s eta 0:00:00
+Requirement already satisfied: pyshp>=2.1 in d:\app\python\python310\lib\site-packages (from Cartopy==0.20.2) (2.2.0)
+Requirement already satisfied: numpy>=1.18 in d:\app\python\python310\lib\site-packages (from Cartopy==0.20.2) (1.22.0)
+Requirement already satisfied: matplotlib>=3.1 in d:\app\python\python310\lib\site-packages (from Cartopy==0.20.2) (3.5.1)
+Requirement already satisfied: pyproj>=3.0.0 in d:\app\python\python310\lib\site-packages (from Cartopy==0.20.2) (3.3.0)
+Requirement already satisfied: kiwisolver>=1.0.1 in d:\app\python\python310\lib\site-packages (from matplotlib>=3.1->Cartopy==0.20.2) (1.3.2)
+Requirement already satisfied: cycler>=0.10 in d:\app\python\python310\lib\site-packages (from matplotlib>=3.1->Cartopy==0.20.2) (0.11.0)
+Requirement already satisfied: packaging>=20.0 in d:\app\python\python310\lib\site-packages (from matplotlib>=3.1->Cartopy==0.20.2) (21.3)
+Requirement already satisfied: pillow>=6.2.0 in d:\app\python\python310\lib\site-packages (from matplotlib>=3.1->Cartopy==0.20.2) (9.0.0)
+Requirement already satisfied: python-dateutil>=2.7 in d:\app\python\python310\lib\site-packages (from matplotlib>=3.1->Cartopy==0.20.2) (2.8.2)
+Requirement already satisfied: fonttools>=4.22.0 in d:\app\python\python310\lib\site-packages (from matplotlib>=3.1->Cartopy==0.20.2) (4.28.5)
+Requirement already satisfied: pyparsing>=2.2.1 in d:\app\python\python310\lib\site-packages (from matplotlib>=3.1->Cartopy==0.20.2) (3.0.6)
+Requirement already satisfied: certifi in d:\app\python\python310\lib\site-packages (from pyproj>=3.0.0->Cartopy==0.20.2) (2021.10.8)
+Requirement already satisfied: six>=1.5 in d:\app\python\python310\lib\site-packages (from python-dateutil>=2.7->matplotlib>=3.1->Cartopy==0.20.2) (1.16.0)
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+Installing collected packages: shapely, Cartopy
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+Successfully installed Cartopy-0.20.2 shapely-1.8.1.post1
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+WARNING: Ignoring invalid distribution -ip (d:\app\python\python310\lib\site-packages)
+
+但是，在pycharm中导入cartopy模块时，出错：
+
+ImportError: DLL load failed: 找不到指定的模块。
+
+网上查找资料后，原因应该是cartopy模块的依赖库版本不对。
+
+
+解决方案
+
+cartopy包的依赖库有：pyproj，Pillow，pyshp，Shapely
+ 需要将这几个库卸载后，使用whl重新安装。
+
+卸载原有依赖库
+
+pip uninstall Pillow
+
+pip uninstall pyshp
+
+pip uninstall Shapely
+
+pip uninstall pyproj
+
+在https://www.lfd.uci.edu/~gohlke/pythonlibs/#numba中查找并下载这几个库和你电脑的对应版本
+
+此处下载的是：
+
+Pillow-9.0.1-cp310-cp310-win_amd64.whl
+ pyproj-3.3.0-cp310-cp310-win_amd64.whl
+ pyshp-2.2.0-py3-none-any.whl
+ Shapely-1.8.1.post1-cp310-cp310-win_amd64.whl
+
+3.安装库
+
+pip install --user Shapely-1.8.1.post1-cp310-cp310-win_amd64.whl
+
+pip install --user pyproj-3.3.0-cp310-cp310-win_amd64.whl
+
+pip install --user pyshp-2.2.0-py3-none-any.whl
+
+pip install --user  Pillow-9.0.1-cp310-cp310-win_amd64.whl
+
+pip install --user Cartopy-0.20.2-pp38-pypy38_pp73-win_amd64.whl
+
+安装完成后，在pycharm中导入cartopy模块时不再报错，成功。
+
+问题解决。
+

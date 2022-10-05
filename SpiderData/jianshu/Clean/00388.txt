@@ -1,0 +1,41 @@
+
+1、报错详情
+
+17:11   Clone failed: unable to access 'https://github.com/dahaixingchen/interview.git/': Failed to connect to github.com port 443: Timed out
+
+
+2、解决方案一
+
+前提要，你的idea或是git上你的GitHub账号已经登录成功的情况
+
+这个方法如果不起作用，你可以过段时间或是多试几次在去用https的方式clone数据，如果还是下载不下来，可能是你的网络真的是有问题（这中间比较复杂就不展开说了），就用下面的clone方法
+
+取消全局代理：
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+
+
+3、解决方案二
+
+用ssh的方式进行clone
+
+
+3.1、在本地创建ssh公钥和私钥
+
+在你的命令窗口输入如下的命令
+
+-C后面填写你自己的邮箱地址
+
+$ ssh-keygen -t rsa -C "xingchendahai_fei@163.com"
+
+然后一路回车就可以了，知道出现如下的页面，说明私钥公钥生成成功
+
+
+3.2、在GitHub上创建ssh key
+
+点"Add SSH Key",填上任意Title,在Key文本框里粘贴上文中id_rsa.pub文件的内容：
+
+成功之后,你就能看到添加的Key
+
+最后直接再去idea中进行push操作就可以推送了
+

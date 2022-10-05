@@ -1,0 +1,35 @@
+python 连接 elasticsearch 的时候报错：
+
+File "/usr/lib/python2.7/site-packages/elasticsearch/client/utils.py", line 69, in _wrapped
+    return func(*args, params=params, **kwargs)
+  File "/usr/lib/python2.7/site-packages/elasticsearch/client/__init__.py", line 539, in search
+    doc_type, '_search'), params=params, body=body)
+  File "/usr/lib/python2.7/site-packages/elasticsearch/transport.py", line 327, in perform_request
+    status, headers, data = connection.perform_request(method, url, params, body, ignore=ignore, timeout=timeout)
+  File "/usr/lib/python2.7/site-packages/elasticsearch/connection/http_urllib3.py", line 109, in perform_request
+    self._raise_error(response.status, raw_data)
+  File "/usr/lib/python2.7/site-packages/elasticsearch/connection/base.py", line 113, in _raise_error
+    raise HTTP_EXCEPTIONS.get(status_code, TransportError)(status_code, error_message, additional_info)
+TransportError: <unprintable TransportError object>
+
+原因：Python Elasticsearch Client的版本与Elasticsearch 的版本不一致，版本的对应关系如下
+
+# Elasticsearch 6.x
+elasticsearch>=6.0.0,<7.0.0
+# Elasticsearch 5.x
+elasticsearch>=5.0.0,<6.0.0
+# Elasticsearch 2.x
+elasticsearch>=2.0.0,<3.0.0
+
+如何查询版本？
+
+Elasticsearch
+
+curl 'http://localhost:9200/?pretty'
+
+Python Elasticsearch Client
+
+pip show elasticsearch
+
+如果两者的版本不在上面的对应关系中 则相应的做升级或者降级
+

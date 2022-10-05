@@ -1,0 +1,113 @@
+
+1、django2.0把from django.core.urlresolvers修改成了django.urls
+
+报错如下：
+
+解决方法：
+
+修改D:\Envs\django-xadmin\lib\site-packages\xadmin-0.6.1-py3.6.egg\xadmin\models.py 文件
+
+把from django.core.urlresolvers import NoReverseMatch, reverse 修改为：
+
+
+2、django2.0中需要给外键ForeignKey指定on_delete参数
+
+报错如下：
+
+解决方法：
+
+把content_type = models.ForeignKey(ContentType)修改为：
+
+
+3、 django2.0 forms表单初始化只需要一个参数
+
+报错如下：
+
+解决方法：
+
+把forms.Field.__init__(self, required, widget, label, initial, help_text, *args, **kwargs) 修改成：
+
+
+4、 导入QUERY_TERMS报错
+
+报错如下：
+
+解决方法：
+
+把
+
+from django.db.models.sql.query import LOOKUP_SEP, QUERY_TERMS
+
+修改为：
+
+
+5、Settings缺少MIDDLEWARE_CLASSES属性，django2.0把MIDDLEWARE_ClASSES改成MIDDLEWARE
+
+报错如下：
+
+把
+
+if settings.LANGUAGES and ‘django.middleware.locale.LocaleMiddleware’ in settings.MIDDLEWARE_ClASSES:
+
+修改为：
+
+
+6、 django-formtools导入失败，需要更新django-formtools
+
+报错如下
+
+卸载django-formtools
+
+pip uninstall django-formtools
+
+重新安装新版本的django-formtools
+
+
+TypeError at /xadmin/
+
+login() got an unexpected keyword argument 'current_app'错误
+Exception Location: /home/wuchao/PycharmProjects/mxonline3/extra_apps/xadmin/views/website.py in get, line 66
+结果方案：屏蔽61
+          #'current_app': self.admin_site.name,
+
+
+AttributeError at /xadmin/
+
+
+'Media' object has no attribute 'add_css'
+
+'Media' object has no attribute 'add_css'
+
+'Media' object has no attribute 'add_css'
+
+解决方案：
+将util.py 中的86行 def vendor(*tags):方法体改为：
+
+css = {'screen': []}
+
+js = []
+for tag in tags:
+    file_type = tag.split('.')[-1]
+    files = xstatic(tag)
+    if file_type == 'js':
+        js.extend(files)
+    elif file_type == 'css':
+        css['screen'] += files
+return Media(css=css, js=js)
+
+
+AttributeError at /xadmin/xadmin/log/
+
+'DateTimeField' object has no attribute 'rel'
+
+'DateTimeField' object has no attribute 'rel'
+
+修改 views/list.py 中228H行
+
+if isinstance(field.rel, models.ManyToOneRel):
+    related_fields.append(field_name)
+修改为
+
+if isinstance(field.remote_field, models.ManyToOneRel):
+    related_fields.append(field_name)
+

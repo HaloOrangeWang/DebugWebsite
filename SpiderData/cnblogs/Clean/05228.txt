@@ -1,0 +1,44 @@
+原文链接：https://www.cnblogs.com/dreamyu/p/7889959.html
+
+在ide中执行python程序，都已经在默认的项目路径中，所以直接执行是没有问题的。但是在cmd中执行程序，所在路径是python的搜索路径，如果涉及到import引用就会报类似ImportError: No module named xxx这样的错误，解决方法：
+
+在报错的模块中添加：
+
+import sys
+
+import os
+
+curPath = os.path.abspath(os.path.dirname(file))
+
+rootPath = os.path.split(curPath)[0]
+
+sys.path.append(rootPath)
+
+这样就可以解决了
+
+另外在cmd中执行python程序时注意python版本，如果装了两个版本的话，切换版本：
+
+在环境变量中path中修改python版本
+
+-----------------再次补充
+
+先看报错是哪个模块，然后将换个模块的路径添加到sys，注意例如我有这样一个路径报错
+
+/usr/local/bin/python3.6 /Users/louchengwang/PycharmProjects/Sanjieke/src/utils/config.py
+
+报错是
+
+No module named 'src'
+
+那么首先确定去执行的文件中config.py添加src模块的路径
+
+然后rootpath要确定最终应该append的应该是/Users/louchengwang/PycharmProjects/Sanjieke，而不是到src,这里要注意应该是
+
+curPath = os.path.abspath(os.path.dirname(file))
+
+rootPath = os.path.split(curPath)[0]
+
+sys.path.append(os.path.split(rootPath)[0])
+
+一定要注意自己的目录结构，如果不成功就打印append的path，确定好
+

@@ -1,0 +1,38 @@
+今天搭了下selenium环境，遇到了不少坑，幸好爬出来了（火狐63.03-32位   selenium 3.141.0    python 3.7.1）
+
+首先介绍下selenium的安装（忘记截图，就文字描述了）
+
+1、命令行输入：pip install selenium
+
+在python3.X之后，可以使用这个命令，使用pip 安装selenium
+
+2、检查是否安装成功：pip show selenium
+
+3、安装driver，我是使用的firefox，所以下载geckdriver--下载地址：https://github.com/mozilla/geckodriver/releases，需注意的是浏览器的版本和driver驱动的版本要匹配
+
+（Chrome对应Chromedriver，ie对应IEdriver）
+
+下载对应版本的geckdriver压缩包，然后解压，解压后的名称都是一样的，driver的路径可以放在python 的script的路径下
+
+到这里基本是装好了，然后进入pycharm，新建一个测试文件：
+
+但是运行的时候提示“No module named 'selenium'”。。。。。。。
+
+然后继续百度，这种初级问题，前面的大神肯定遇到过，然后查到原因是因为我本地有两个python路径（这个算是当初安装python埋下的雷）
+
+解决办法：
+
+1、在命令行输入python，然后输入from selenium import webdriver，回车后是否报错，没报错则说明成功安装selenium包
+
+2、然后检查pycharm输出控制台，第一行就写了你所使用的python.exe的路径，改为你需要的python.exe路径
+
+2-1、打开pycharm，点击Settings，找到Project Interpreter，点击右边的下拉菜单下的show All...选项
+
+2-2、点击show All...选项后，点击框框中的+号，在点击System Interpeter选项，从右边的Interpreter把你安装的python路径加进去即可
+
+2-3、在I步骤的project Interpeter那里选择你加入的python路径，如出现pip、selenium、setuptools模块则代表成功了，可以使用selenium了
+
+如果你的System Interpeter存在多个路径，你依次检查下有一个路径应该有pip、selenium、setuptools模块，选择即可
+
+再次运行测试脚本，正常执行，问题解决
+

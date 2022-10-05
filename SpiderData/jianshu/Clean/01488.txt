@@ -1,0 +1,22 @@
+报错信息为：
+
+page = yaml.load(f)
+
+TypeError: load() missing 1 required positional argument: ‘Loader‘
+
+记录原因：
+
+YAML 5.1版本后弃用了yaml.load(file)这个用法，因为觉得很不安全，5.1版本之后就修改了需要指定Loader，通过默认加载器（FullLoader）禁止执行任意函数，该load函数也变得更加安全
+
+用以下三种方式都可以
+
+d1=yaml.load(file,Loader=yaml.FullLoader)(亲测有效)
+
+d1=yaml.safe_load(file)
+
+d1 = yaml.load(file, Loader=yaml.CLoader)
+
+————————————————
+
+参考链接：https://blog.csdn.net/qq_34495095/article/details/120905179
+

@@ -1,0 +1,39 @@
+记一次工作中使用nginx配置https时，reload配置文件时报错
+
+nginx: [emerg] https protocol requires SSL support in /usr/local/nginx/conf/nginx.conf
+
+nginx: [emerg] https protocol requires SSL support in /usr/local/nginx/conf/nginx.conf
+
+经查，同事编译nginx时，没有安装 ssl模块
+
+切换到源码包 查看nginx原有的模块
+
+/usr/local/nginx/sbin/nginx -V
+
+重新配置和编译nginx
+
+[root@120 nginx-1.16.1]# ./configure --prefix=/usr/local/nginx --with-http_ssl_module
+[root@120 nginx-1.16.1]# make
+
+备份原有已经安装好的nginx配置
+
+cp /usr/local/nginx/sbin/nginx /usr/local/nginx/sbin/nginx.bak
+
+覆盖原有的 配置文件
+
+cp ./objs/nginx /usr/local/nginx/sbin/
+
+如果提示
+
+cp: 无法创建普通文件"/usr/local/nginx/sbin/nginx": 文本文件忙
+
+先把nginx停掉stop或者quit
+
+如果还是不行，查看nginx的进程，全部kill
+
+再次执行覆盖命令，应该是可以了，执行成功后，查看是否安装SSL模块
+
+/usr/local/nginx/sbin/nginx -V
+
+再次配置https代理地址是好用的了，如果配置证书，请参考请他文档
+

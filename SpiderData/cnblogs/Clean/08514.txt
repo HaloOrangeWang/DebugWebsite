@@ -1,0 +1,47 @@
+原文：https://blog.51cto.com/13544424/2149473
+pip3报错
+安装python3.7.0后发现使用pip会出现如下报错：
+
+原文：https://blog.51cto.com/13544424/2149473
+
+
+pip3报错
+
+安装python3.7.0后发现使用pip会出现如下报错：
+
+由于我的系统是CentOS release 6.7，所有openssl的版本为OpenSSL 1.0.1e-fips 11 Feb 2013,而python3.7需要的openssl的版本为1.0.2或者1.1.x,需要对openssl进行升级，并重新编译python3.7.0
+
+
+升级openssl
+
+1.下载最新版openssl
+
+2.编译安装
+
+3.备份原配置
+
+[root@s2-hadoop-test ~]# mv /usr/bin/openssl /usr/bin/openssl.bak
+ 
+[root@s2-hadoop-test ~]# mv /usr/include/openssl/ /usr/include/openssl.bak
+
+4.新版配置
+
+5.修改系统配置
+
+6.查看openssl版本
+
+openssl version
+ 
+OpenSSL 1.1.1-pre8 (beta) 20 Jun 2018
+
+
+重新安装python
+
+注意：需要指定openssl的安装路径，--with-openssl
+
+
+Python 3 No module named '_ssl'
+
+# new openssl install
+curl https://www.openssl.org/source/openssl-1.0.2g.tar.gz | tar xz && cd openssl-1.0.2g && ./config shared --prefix=/usr/local/ && make && make install
+

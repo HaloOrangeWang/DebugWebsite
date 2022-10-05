@@ -1,0 +1,40 @@
+参考：
+
+https://techglimpse.com/install-python-openssl-support-tutorial/
+
+https://xu3352.github.io/python/2018/05/15/python-3-install
+
+
+ssl 解决
+
+直到看到了这篇文章:How to Compile and Install Python with OpenSSL Support?, 然后我尝试着手动源码重新安装了 openssl-1.0.2e 版本, 最终解决该问题
+
+也就是说: yum -y install openssl openssl-devel 安装的 0.9.8e 版本不行!!!
+
+手动安装 openssl-1.0.2e:
+
+注意:不适用参数编译时, 默认安装目录为: /usr/local/ssl, 这里我们安装到了 /usr/local/openssl, 后面也需要对应的修改
+
+删除老的源码目录, 重新解压一遍!
+
+/usr/local/python3 这个目录我也一起删除掉了
+
+修改 ./setup.py: (默认的openssl路径不改也可以) #### 3.8.1版本的python不需要修改这里，因为没有search_for_ssl_incs_in这个列表
+
+修改 ./Modules/Setup.dist: ###python3.8.1的文件名是Setup，不是Setup.dist
+
+# Socket module helper for socket(2)
+_socket socketmodule.c
+
+　　
+
+然后重新编译, 安装 (过程参考最上面的安装步骤)
+
+$ ./configure --prefix=/usr/local/python3
+$ make
+$ make install
+
+检查 ssl 是否安支持, 没报错就是好使了
+
+　　
+

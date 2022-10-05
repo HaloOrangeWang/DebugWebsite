@@ -1,0 +1,31 @@
+
+引言
+
+先吐槽两句，真的是Matlab才不会报这种错，今天计算逆矩阵报了个这么个错，一个简单的2*2的可逆矩阵居然死活求不出来，好气啊。
+
+TypeError: No loop matching the specified signature and casting was found for ufunc inv
+
+
+astype数据类型转换
+
+在网上查阅了一下资料，觉得可能是类型错误，但是很奇怪明明一开始都指明了是float怎么还是没有。debug的时候关顾看数值了，没有注意到类型变化，后来输出这个计算后的矩阵发现是Object类型，怪不得不能求逆。真实太气人了！
+ 
+ 这里用dtype修改是不会真实改变数据的类型，需要通过astype方法来修改，如下。这样你就能看到它的真实类型改过来了，我也顺利求得了A的逆矩阵。
+
+A = A.astype(np.float)
+print(A.dtype)
+
+如果有大佬知道为什么中途数据类型会变为Object，麻烦告知一下，实属感激。
+
+【参考资料】：
+ [1] 罗兵の水库.numpy数据类型dtype转换.
+ [2] numpy中数据类型统一转换成float，object
+
+点赞
+
+收藏
+
+分享
+
+文章举报
+

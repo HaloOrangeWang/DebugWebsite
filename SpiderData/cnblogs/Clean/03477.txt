@@ -1,0 +1,46 @@
+Pytorch运行官方maskrcnn-benchmark，
+
+
+问题
+
+和官网上的位置不同，我的报错在这个位置，SigmoidFocalLoss_cuda.cu，报错内容如下，
+
+....
+
+e:/AMaskRCNN/maskrcnn-benchmark/maskrcnn_benchmark/csrc/cuda/SigmoidFocalLoss_cuda.cu(120): error: no instance of function template "THCCeilDiv" matches the argument list
+             argument types are: (long long, long)
+
+e:/AMaskRCNN/maskrcnn-benchmark/maskrcnn_benchmark/csrc/cuda/SigmoidFocalLoss_cuda.cu(120): error: no instance of overloaded function "std::min" matches the argument list
+             argument types are: (<error-type>, long)
+
+e:/AMaskRCNN/maskrcnn-benchmark/maskrcnn_benchmark/csrc/cuda/SigmoidFocalLoss_cuda.cu(164): error: no instance of function template "THCCeilDiv" matches the argument list
+             argument types are: (long long, long)
+
+e:/AMaskRCNN/maskrcnn-benchmark/maskrcnn_benchmark/csrc/cuda/SigmoidFocalLoss_cuda.cu(164): error: no instance of overloaded function "std::min" matches the argument list
+             argument types are: (<error-type>, long)
+
+4 errors detected in the compilation of "C:/Users/ADMINI~1/AppData/Local/Temp/tmpxft_00000788_00000000-10_SigmoidFocalLoss_cuda.cpp1.ii".
+
+....
+
+首先说一下官网的解决方案
+
+https://github.com/facebookresearch/maskrcnn-benchmark/issues/254
+
+https://github.com/danpe1327/remember_doc/blob/master/build%20maskrcnn-benchmark%20for%20win10%2Bvs2017.md
+
+该解决方案主要是针对ROIAlign_cuda.cu和ROIPool_cuda.cu，目前我刚编译的版本这两个文件没有出现问题。
+
+
+解决方案
+
+修改了SigmoidFocalLoss_cuda.cu的3个地方：
+
+然后把maskrcnn-benchmark下面那个build里面的东西删除干净（前面生成没能成功的文件在这里会造成干扰，删除掉！！！）
+
+就可以正常安装了，
+
+如果想对其中的python源码进行调试，则需要用指令，
+
+当然，在已经install的前提下，你不需要重新编译，因为文件其实都是已经准备好了的，你只需要build develop一下，完成拷贝链接即可。
+

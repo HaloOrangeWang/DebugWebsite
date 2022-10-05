@@ -1,0 +1,20 @@
+问题描述：
+
+当查看Docker容器的映射卷时出现报错信息，如下：
+
+[root@kazihuo ~]# docker inspect -f {{.Volumes}} volume   #volume指容器名称
+
+Template parsing error: template: :1:2: executing "" at <.Volumes>: map has no entry for key "Volumes"
+
+解决方案：
+
+方式一：查看所有容器的信息，从中筛选
+
+[root@kazihuo ~]# docker inspect volume
+
+方式二：有些容器内，卷映射的map标签为mounts，故以下命令查看
+
+[root@kazihuo ~]# docker inspect -f {{.Mounts}} volume
+
+[{volume 4f43fd03313db51f9f8b158be93f255637c706dad814ec7fc4862add9f0de656 /var/lib/docker/volumes/4f43fd03313db51f9f8b158be93f255637c706dad814ec7fc4862add9f0de656/_data /data local  true }]
+

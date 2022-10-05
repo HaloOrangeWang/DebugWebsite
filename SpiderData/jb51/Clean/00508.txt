@@ -1,0 +1,36 @@
+问题描述：训练结束后，保存model为hdf5和yaml格式的文件
+
+yamlFilename = os.path.join(dir,filename)
+yamlModel = model.toyaml()
+with open(yamlFilename, "w") as yamlFile:
+ yamlFile.write(yamlModel)
+
+随后load model
+
+with open(chkptFilename,'r') as f:
+ model_yaml = f.read()
+model = KM.model_from_yaml(model_yaml,customs_objects={"dict":dict})
+model.load_weights(weightFilename)
+
+但是报错
+
+问题分析：
+
+经过debug分析，原因出在model建立过程中前面lambda层的inbound_node列表中含有后面层，因此从上到下load时，会找不到后面层。重新建立一次model，然后用model.summary() 可以看出其中的原因。
+
+出现这种情况，可能的原因在于，该lambda层在其他py文件中定义，然后import进来，前后多次用到这个lambda层的话，在模型编译过程中，该lambda层可能只编译了一次，前后层共用之，导致后面层结点出现在前面层的inbound_node列表中。
+
+解决办法：
+
+不要在其他py文件中自定义lambda层，直接将其定义在model建立的文件中。或者直接继承Layer层，在其他py文件中重新自定义该层。
+
+补充知识：加载keras模型'tf' is not defined on load_model() - using lambda NameError: name 'tf' is not defined报错
+
+解决方法如下：
+
+import tensorflow as tf
+import keras
+model = keras.models.load_model('my_model.h5', custom_objects={'tf': tf})
+
+以上这篇keras load model时出现Missing Layer错误的解决方式就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

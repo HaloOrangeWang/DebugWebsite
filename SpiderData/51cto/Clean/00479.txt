@@ -1,0 +1,115 @@
+1.执行一个python的multiprocessing.Pool进程池程序，实现多进程程序，代码如下，结果在windows下执行报错，但是在linux和unix里面执行没有报错？
+
+from multiprocessing import  Pool
+import  time ,os ,random
+
+def worker(msg):
+    t_start = time.time() #获取当前系统时间，长整型，常用来测试程序执行时间
+    print("%s开始执行,进程号为%d" % (msg,os.getpid()))
+    # random.random()随机生成0~1之间的浮点数
+    time.sleep(random.random()*2)
+    t_stop = time.time()
+    print(msg,"执行完毕，耗时%0.2f" % (t_stop-t_start))
+
+po  = Pool(3)# 定义一个进程池，最大进程数3，大小可以自己设置，也可写成processes=3
+for i in range(0,10):
+    # Pool().apply_async(要调用的目标,(传递给目标的参数元祖,))
+    # 每次循环将会用空闲出来的子进程去调用目标
+    po.apply_async(worker,(i,))
+
+print("----start----")
+po.close()  # 关闭进程池，关闭后po不再接收新的请求
+po.join()  # 等待po中所有子进程执行完成，必须放在close语句之后
+print("-----end-----")
+'''
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+if __name__ == '__main__':
+                freeze_support()
+                ...
+
+The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+
+'''
+
+
+2.先解决问题
+
+解决这个问题的方法很简单，就是永远把实际执行功能的代码封装成函数（不封装直接放到main中执行也可以），然后加入到主函数：if __name__ == '__main__':中执行。
+
+from multiprocessing import  Pool
+import  time ,os ,random
+
+def worker(msg):
+    t_start = time.time() #获取当前系统时间，长整型，常用来测试程序执行时间
+    print("%s开始执行,进程号为%d" % (msg,os.getpid()))
+    # random.random()随机生成0~1之间的浮点数
+    time.sleep(random.random()*2)
+    t_stop = time.time()
+    print(msg,"执行完毕，耗时%0.2f" % (t_stop-t_start))
+
+def main():
+    po  = Pool(3)# 定义一个进程池，最大进程数3，大小可以自己设置，也可写成processes=3
+    for i in range(0,10):
+        # Pool().apply_async(要调用的目标,(传递给目标的参数元祖,))
+        # 每次循环将会用空闲出来的子进程去调用目标
+        po.apply_async(worker,(i,))
+
+print("----start----")
+    po.close()  # 关闭进程池，关闭后po不再接收新的请求
+    po.join()  # 等待po中所有子进程执行完成，必须放在close语句之后
+    print("-----end-----")
+if __name__ == '__main__':
+    main()
+'''
+----start----
+0开始执行,进程号为5056
+1开始执行,进程号为968
+2开始执行,进程号为5448
+2 执行完毕，耗时0.38
+3开始执行,进程号为5448
+1 执行完毕，耗时0.47
+4开始执行,进程号为968
+4 执行完毕，耗时0.02
+5开始执行,进程号为968
+3 执行完毕，耗时0.13
+6开始执行,进程号为5448
+5 执行完毕，耗时1.44
+7开始执行,进程号为968
+6 执行完毕，耗时1.45
+8开始执行,进程号为5448
+0 执行完毕，耗时1.99
+9开始执行,进程号为5056
+8 执行完毕，耗时0.18
+7 执行完毕，耗时0.58
+9 执行完毕，耗时1.75
+-----end-----'''
+
+
+3.核心原因剖析
+
+前面案例我们发现使用多进程执行程序都没有报错，但是为什么使用 进程池就会报错呢？那是因为前面我们使用多线程执行时，把执行代码封装成了函数，放到了if __name__ == '__main__':中了哈哈哈。下面彻底具体分析一下原因，让你彻底搞定原因。
+
+1.弄明白这个问题，首先就先要明白python的执行过程与if __name__ == "__main__":
+
+一般的语言都是从main函数开始的。python有点不同，Python使用缩进对齐组织代码的执行，所以所有没有缩进的代码（非函数定义和类定义），都会在载入时自动执行，这些代码，可以认为是Python的main函数。
+
+python的主函数一般都写成if __name__ == "__main__":当这个模块是主调用的和被调用的时候，__name__的值是不一样的，当这个模块是主调用模块的时候，__name__的值是"__main__"，当这个模块被调用的时候，__name__的值是这个模块的名字。因此if __name__ == "__main__":这句话就可以起到主函数的作用。只有它是主调模块的时候才执行，被别的模块import的时候，就不会执行了。
+
+举个简单例子，abc.py里面有if __name__ == "__main__":，当我们执行abc.py那么这个mian就是主函数，但是如果我们在def.py中import abc时候，这个时候如果我们执行def.py，那么abc.py中if __name__ == "__main__":就不会是程序入口main了，如果我们不调用abc.py执行的话，abc.py中的代码是不会执行的。这个时候abc.py中的__name__的值就是模块aaa的名字了。
+
+2.什么是multiprocessing?
+
+Unix/Linux操作系统提供了一个fork()系统调用，可以用来创建进程。它非常特殊。普通的函数调用，调用一次，返回一次，但是fork()调用一次，返回两次，因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后，分别在父进程和子进程内返回。
+
+但是由于Windows没有fork调用，所以为了支持跨平台，pytho搞了个跨平台multiprocessing实现多进程,但是尽管如此在windows上和linux上，用multiprocessing实现方式还是不太一样。在windows上会有一个import创建进程的模块的操作，而linux上就没有，基于fork。在windows上，子进程会自动import启动它的这个文件，而在import的时候是会自动执行这些语句的(意思说子进程会复制并以import的形式导入执行主进程中代码，如果你把要执行的代码放到了if__name__ == "__main__"中，那么这个时候因为是import,所以这个时候就不会执行该代码了)。所以创建进程的操作要用if __name__ == "__main__":保护起来，否则就会递归创建进程，或者出其它什么错误。
+
+统一声明：关于原创博客内容，可能会有部分内容参考自互联网，如有原创链接会声明引用；如找不到原创链接，在此声明如有侵权请联系删除哈。关于转载博客，如有原创链接会声明；如找不到原创链接，在此声明如有侵权请联系删除哈。
+

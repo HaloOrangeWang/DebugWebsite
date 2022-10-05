@@ -1,0 +1,14 @@
+比如我的报错是
+
+
+error: Failed to start an Appium session, err was: Error: Requested a new session but one was in progress
+
+原因：之前的会话没有关闭，然后你又运行了测试实例，也没有设置覆盖. 
+解决: 
+1. 重新停止appium服务，开启Appium服务 
+2. 在Genarel Setting那里设置覆盖Session，重启Appium
+
+我在tearDown末尾加上
+
+driver.quit()
+

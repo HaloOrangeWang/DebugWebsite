@@ -1,0 +1,201 @@
+
+安装Anaconda和Jupyter的过程和遇到的问题
+
+
+1.安装Anaconda
+
+官网下载（Anaconda | Individual Edition）
+
+官网下载（Anaconda | Individual Edition）
+
+开始安装
+
+开始安装
+
+这里面选择第一个（just Me）就可以了，因为我们一般都只会使用一个账户（当然有需要的也可以选择第二个，这里是无妨碍的），点击“Next”：
+
+这里面选择第一个（just Me）就可以了，因为我们一般都只会使用一个账户（当然有需要的也可以选择第二个，这里是无妨碍的），点击“Next”：
+
+单击图中的“Browse”，选择文件的安装位置（一般不提倡安装在c盘）
+
+单击图中的“Browse”，选择文件的安装位置（一般不提倡安装在c盘）
+
+这里建议第二个选项不要打钩（因为我们有可能平时使用的是默认的python.exe，这样会产生冲突），在需要的时候我们可以在pycharm中找到文件的安装位置进行添加即可，单击“Install”，之后便可进行安装，然后等待安装完成。
+
+这里建议第二个选项不要打钩（因为我们有可能平时使用的是默认的python.exe，这样会产生冲突），在需要的时候我们可以在pycharm中找到文件的安装位置进行添加即可，单击“Install”，之后便可进行安装，然后等待安装完成。
+
+
+2.VScode安装失败
+
+解决办法：在anaconda目录下，找到vscode_inst.py文档，第110行原为：
+VSCODE_ENDPOINT = 'https://vscode-update.azurewebsites.net/api/update/{}/stable/version'.format(VSCODE_SUBDIR) # NOQA
+修改为：
+VSCODE_ENDPOINT = 'https://update.code.visualstudio.com/api/update/{}/stable/version'.format(VSCODE_SUBDIR) # NOQA
+
+解决办法：在anaconda目录下，找到vscode_inst.py文档，第110行原为：
+
+VSCODE_ENDPOINT = 'https://vscode-update.azurewebsites.net/api/update/{}/stable/version'.format(VSCODE_SUBDIR) # NOQA
+
+修改为：
+
+VSCODE_ENDPOINT = 'https://update.code.visualstudio.com/api/update/{}/stable/version'.format(VSCODE_SUBDIR) # NOQA
+
+
+3.测试
+
+
+1.打开电脑的CMD命令行（使用WIN+R，输入cmd，点击ok），在其中输入Python，如果返回的信息如下图，则顺利完成了。
+
+交互模式和编辑器是可以实时展现输入代码的运行结果，但是无法保存我们编写的代码。
+
+交互模式和编辑器是可以实时展现输入代码的运行结果，但是无法保存我们编写的代码。
+
+Python交互式的符号 >>>
+输入exit()+enter就可以退出python
+
+Python交互式的符号 >>>
+
+输入exit()+enter就可以退出python
+
+
+4.建立Tensorflow的Anaconda虚拟环境
+
+1.打开anaconda prompt 。
+
+1.打开anaconda prompt 。
+
+使用conda info -e 或conda envs list
+
+使用conda info -e 或conda envs list
+
+创建虚拟环境
+
+创建虚拟环境
+
+在使用 conda info -e 或 conda env list查看相关虚拟环境
+ conda info -e
+ conda env list
+
+在使用 conda info -e 或 conda env list查看相关虚拟环境
+
+激活虚拟环境并安装相关tensorflow版本
+激活虚拟环境：conda activate tensorflow2.0
+
+激活虚拟环境并安装相关tensorflow版本
+
+激活虚拟环境：conda activate tensorflow2.0
+
+安装tensorflow版本：
+
+安装tensorflow版本：
+
+退出tensorflow2.0的虚拟环境
+conda deactivate tensorflow2.0
+
+退出tensorflow2.0的虚拟环境
+
+
+5.Anaconda总结（错误演示）
+
+
+1.
+
+一开始我需要的版本是tensorflowpython是1.0，python=3.5(成功)
+
+下面创建虚拟环境
+
+激活环境（
+
+出现需要更新 pip
+
+更新成功
+
+查看已经安装的包
+
+发现python3.5已经停止了 就想换python3.7版本
+
+因为在pycharm 出现问题 报错
+
+之后卸载 先卸载tensorflow 再卸载keras
+
+再重新安装tensorflow,keras
+
+总结：下载tensorflow的版本和python的版本很重要。
+
+
+2.在pycharm里出现的问题
+
+
+（1）解决ModuleNotFoundError: No module named 'numpy.core._multiarray_umath' 错误
+
+
+解决方式
+
+把之前的模型删除即可（如果有之前备份的模型放进去也可以）。
+
+把之前的模型删除即可（如果有之前备份的模型放进去也可以）。
+
+有可能是numpy版本太低了，更新numpy版本
+查看numpy的当前版本
+
+有可能是numpy版本太低了，更新numpy版本
+
+查看numpy的当前版本
+
+更新numpy版本
+
+更新numpy版本
+
+
+6.pycharm中使用Anaconda 部署python环境
+
+打开pycharm的setting
+
+这里是添加我们的Anaconda里面我们所需的项目的python.exe。
+
+PS：我们新建的虚拟环境的，根据不同的项目选择不同的文件夹里面的python.exe。
+
+
+7.jupyter 使用虚拟环境
+
+1.打开Anaconda Prompt，输入如下命令激活自己的虚拟环境；
+
+安装ipykernel，并执行如下命令。
+
+2.修改工作区
+
+打开window+R,打开CMD
+
+打开window+R,打开CMD
+
+输入jupyter notebook -generate-config 回车
+
+输入jupyter notebook -generate-config 回车
+
+查看此文件地址
+
+查看此文件地址
+
+打开地址找到jupyter_notebook.py文件
+
+打开地址找到jupyter_notebook.py文件
+
+找到“ c.NotebookApp.notebook_dir = '' ”这一行
+
+修改后面引号的地址，添加自己的路径也就是例如’D:\test‘,保存此文件。
+
+打开jupyter Notebook快捷方式的属性，删除默认路径（%USERPROFILE%。
+再加入自己的修改后的路径。（借用人家图！）
+
+打开jupyter Notebook快捷方式的属性，删除默认路径（%USERPROFILE%。
+
+再加入自己的修改后的路径。（借用人家图！）
+
+点击应用并确定。
+
+点击应用并确定。
+
+运行Anaconda Prompt,输入juypter notebook
+
+运行Anaconda Prompt,输入juypter notebook
+

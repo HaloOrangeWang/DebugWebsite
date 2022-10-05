@@ -1,0 +1,256 @@
+
+说明
+
+异常是指程序在运行过程中出现了意外，导致程序不能正常执行。
+ 异常处理机制是指当程序出现错误后程序的处理方法，如果程序出错后进行异常处理，程序会继续执行下面的代码。
+
+
+异常的定义
+
+一般异常处理的结构如下：
+
+try:
+	<语句>#可能发生异常的代码
+except<名字>：
+	<语句>#如果在try部份引发了'name'异常
+except<名字> as <异常参数>:
+	<语句>#如果引发了‘name’异常，获得附加的异常对象
+except (Exception1[,Exception2[,...ExceptionN]]]):#一个except语句处理多个异常类型
+	<语句>
+except:#捕获所有的异常
+	<语句>
+else:#没有出现异常执行
+	<语句>
+finally:#不管异常有没有发生都会执行
+	<语句>
+
+注意：
+ 1.try的子块不能单独存在，必须有个except或者finally，否则会报错，比如：
+ 
+ 2.没有异常发生时才会执行else子句
+
+try:
+      1/0
+except ZeroDivisionError:
+      print('error')
+else:
+      print('no error')
+
+3.finally必须在else/except后面，否则提示语法不正确
+
+
+异常处理的工作原理
+
+try的工作原理是，当开始一个try语句后，python就在当前程序的上下文中作标记，当异常出现并捕获后继续执行后续的代码，try子句先执行，接下来会发生什么依赖于执行时是否出现异常。
+
+1.如果在try包围的语句执行时发生异常，python就跳出try并执行第一个匹配该异常的except子句，异常处理完毕，控制流就跳过整个try语句（除非在处理异常时又引发新的异常）。
+ 2.如果在try后的语句里发生了异常，却没有匹配的except子句，异常将被递交到上层的try，或者到程序的最上层（这样将结束程序，并打印缺省的出错信息）。
+ 3.如果在try子句执行时没有发生异常，python将执行else语句后的语句（如果有else的话），然后控制流通过整个try语句。
+ 4.不管执行try语句是否发生异常，都将会执行finally语句块的语句（如果有的话）。
+
+
+try…excpet
+
+1.except可以不带参数，表示可以捕获所有的异常；通常不建议直接这么写，因为不能很好的识别出程序的具体异常信息。
+ 2.也可以带参数，表示捕获特定的异常，如果except同时写多个异常类时，之间用逗号隔开，而且要加括号
+ 代码示例1：except带一个参数
+
+>>> try:
+...     int("1.1")
+... except ValueError:#except带参数
+...     print('not base 10 number')
+... except:#except不带参数
+...     print("someting error")
+...
+
+代码示例2：try…except中同时写两个异常
+
+try:
+      with open("cccccccccccc.txt") as fp:
+            pass
+except (IOError,ZeroDivisionError) as e:#必须加括号，否则语法就不对
+      print(e)
+except :
+  print ("未知异常出现了！")
+
+
+嵌套的try
+
+异常也是可以嵌套的：
+
+try:    
+      try:
+            int("1.1")
+      except:
+            print("第二层try的异常出现了")
+      1/0
+except:
+      print ("第一层try的异常出现了")
+
+说明：程序是向下执行的，当int(“1.1”)执行时有异常会执行print(“第二层try的异常出现了”)，紧接着执行1/0，还有异常，就会打印print (“第一层try的异常出现了”)
+
+
+try-finally
+
+代码示例1：
+
+try:    
+    try:
+        int("1.1")
+    except:
+        print("第二层try的异常出现了")
+    1/0
+finally:
+print ("finally!")
+
+说明：内层的try中int(“1.1”)将字符型浮点数转换成整数时会抛出异常，except捕获所以打印了"第二层try的异常出现了"，程序时从上向下执行，紧接着执行1/0，抛出ZeroDivisionError，交给上层的try，有finally子句，所以打印"finally!"，由于没有except捕获所以最后将其抛出
+
+代码示例2：文件关闭之坑
+
+try:
+    fh = open("c:\testfile", "r")
+finally:
+    print ("关闭文件")
+    fh.close()
+
+说明：由于open没有成功执行，所以fh并没有分配值，那么在finally执行fh关闭文件时就会出现变量没有定义的问题。
+
+代码示例3：’’‘正确的关闭文件方式’’'
+
+try:
+  fh = open(r"f:\a.py", "r",encoding='utf-8')
+  try:#先保证文件句柄是存在的
+    content = fh.read()
+    print (content)
+  finally:
+    print ("关闭文件")
+    fh.close()
+except IOError:
+  print ("Error: 没有找到文件或读取文件失败")
+
+
+try…finally…else
+
+不管有没有异常抛出，finnaly子句中的内容都会执行；else和finally可以同时存在，如果有else的话，先后执行else子句，最后执行finally语句。注意：finally要放到else的后
+ 面，否则报语法错误
+
+代码示例1：没有异常，执行else和finally
+
+try:
+      1
+except ZeroDivisionError:
+      print('ZeroDivisionError')
+else:
+      print('no error')
+finally:
+      print('finally is executed!')
+
+代码示例2：有异常，执行except和finally
+
+try:
+      1/0
+except ZeroDivisionError:
+      print('ZeroDivisionError')
+else:
+      print('no error')
+finally:
+      print('finally is executed!')
+
+
+异常参数
+
+异常也可以带上参数，作为输出的异常信息参数。通except语句来捕获异常的参数
+ 语法格式：
+ try:
+ #可能发生异常的代码
+ except ExceptionType as Argument:
+ #打印异常Argument的值
+
+代码示例1：打印异常参数
+
+try:
+      with open("cccccccccccc.txt") as fp:
+            pass
+except IOError as e:#将异常对象赋给e,python2的话把as换成逗号,
+      print(e)
+
+
+触发异常
+
+python中使用raise关键字来自己触发异常，语法如下：
+ raise[SomeExcpetion[, args [, traceback]]]
+ 参数说明：
+ SomeExcpetion是一个异常的类型，如NameError，可选；
+ args是一个异常参数值，通常为元组，可选，如果不提供为“None”；
+ 最后一个参数也是可选的，实际很少用，如果存在，是跟踪异常对象。
+
+如果有参数(arg 或traceback),就必须有SomeExcpetion
+
+代码示例：
+
+try:
+  raise IOError("2.txt不存在")
+except (IOError,ZeroDivisionError) as e:
+  print (e)
+except :
+  print ("1/0 异常出现了！")
+
+
+自定义异常
+
+我们也可以通过继承异常基类（Exception类），或者具体的异常类（比如RuntimeError）类定义自己的异常类
+
+代码示例1:自定义异常继承自RuntimeError
+
+class KSHError(RuntimeError):
+    # 重写默认的__init__()方法，
+    # 抛出特定的异常信息
+    def __init__(self, value,value1):
+        self.value = value
+        self.value1=value1
+# 触发自定义的异常
+try:
+    raise KSHError("Bad hostname","hello Error!")
+except KSHError as e:
+print ("KSHError occurred, value:", e.value1)
+
+代码示例2：自定义异常继承Exception
+
+class ShortInputException(Exception):
+  '''A user-defined exception class.'''
+  def __init__(self, length, atleast):
+    Exception.__init__(self)
+    self.length = length
+    self.atleast = atleast
+try:
+  s = input('Enter something --> ')
+  if len(s) < 3:
+    #如果输入的内容长度小于3，触发异常
+    raise ShortInputException(len(s), 3)
+except EOFError:
+  print ('\nWhy did you do an EOF on me?')
+except ShortInputException as x:
+  print ('ShortInputException: The input was of length %d,\
+  was expecting at least %d' % (x.length, x.atleast))
+else:
+  print ('No exception was raised.')
+
+
+异常抛出机制
+
+异常抛出机制：
+
+如果在运行时发生异常，解释器会查找相应的处理语句（称为handler）；
+
+要是在当前函数里没有找到，它会将异常传递给上层的调用函数，看那里能不能处理；
+
+如果在最外层（全局“main”）还是没有找到的话，解释器就会退出，同时打印出traceback以便让用户找到错误产生的原因。
+
+注意：
+ 虽然大多数错误会导致异常，但一个异常不一定代表错误，有时候它们只是一个警告，有时候它们可能是一个终止信号，比如退出循环等。
+
+
+标准异常
+
+所有的标准异常类都是内建的，在脚本启动前或者交互命令提示前就可以使用了，查看方法：
+

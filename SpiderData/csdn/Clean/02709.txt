@@ -1,0 +1,60 @@
+1、升级openssl版本-编译安装
+
+从官网下载OpenSSL文件
+
+https://www.openssl.org/source/openssl-1.1.1n.tar.gz
+
+2、下载后解压并编译
+
+#cd software
+#tar -zxvf openssl-1.1.1n.tar.gz
+#cd openssl-1.1.1n
+
+#./config --prefix=/usr/local/openssl   
+#make 
+#make install
+
+3、修改链接文件
+
+#备份原有链接
+#mv /usr/bin/openssl /usr/bin/openssl.bak
+
+#创建软链接
+#ln -sf /usr/local/openssl/bin/openssl /usr/bin/openssl
+
+4、添加路径至ld.so.conf
+
+注意：路径最后不带“/”，否则报错
+
+#echo "/usr/local/openssl/lib" >> /etc/ld.so.conf
+
+5、设置生效
+
+#ldconfig -v
+
+6、查看OpenSSL版本
+
+# openssl version
+OpenSSL 1.1.1n  15 Mar 2022
+
+7、修改Python编译源文件的Module/Setup链接，修改如下：
+
+第211行路径修改为OpenSSL编译的路径，
+
+第212-214解除注释。
+
+如下图：
+
+210 # socket line above, and edit the OPENSSL variable:
+211  OPENSSL=/usr/local/openssl
+212  _ssl _ssl.c \
+213      -I$(OPENSSL)/include -L$(OPENSSL)/lib \
+214      -lssl -lcrypto
+
+注：每个人的文件可能不一样，以自己的为准。
+
+8、修改后重新对Python源文件进行编译。
+
+#./configure --prefix=/usr/local/python310
+#make && make install
+

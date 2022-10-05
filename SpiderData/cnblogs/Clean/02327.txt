@@ -1,0 +1,150 @@
+####文件###
+
+r:
+
+-只能读 不能写
+
+-读取文件不存在，是会报错
+
+r+:
+
+- 可以执行读写操作;
+
+- 文件不存在， 报错；
+
+w:
+
+-只能写，不能读
+
+-会清空文件内容
+
+-文件不存在，会新建文件
+
+w+:
+
+- rw
+
+- 文件不存在， 不报错
+
+- 会清空文件内容
+
+a:
+
+-只能写 -不会清空问文件内容
+
+-文件不存在，会新建文件
+
+a+
+
+- 文件不存在， 不报错
+
+- 不会清空文件内容
+
+####文件指针####
+
+文件指针标记从哪个位置开始读取数据 第一次打开文件时，通常文件指针会指向文件的开始位置 当执行了read方法后，文件指针会移动到读取内容的末尾
+
+####文件的复制####
+
+源文件以只读的方式打开 file_read = open('passwd')
+
+目标文件以只写的方式打开 file_write = open('passwd_copy','w')
+
+从源文件中读取内容 text = file_read.read()
+
+将读取到的内容写到目标文件 file_write.write(text)
+
+###关闭文件####
+
+file_read.close()
+
+file_write.close()
+
+###文件练习####
+
+import os
+
+1.判断是否为绝对路径
+
+print os.path.isabs('/tmp/hello')
+
+print os.path.isabs('hello.txt')
+
+2.生成绝对路径
+
+print os.path.abspath('/tmp/hello')
+
+print os.path.abspath('hello.txt')
+
+3.返回一个我们希望的绝对路径
+
+print os.path.join('/home/kiosk','hello.png')
+
+返回一个绝对路径：
+
+当前目录的绝对路径 + 文件名 print os.path.join(os.path.abspath('.'),'hello.png')
+
+4.获取目录名或文件名
+
+filename = '/home/kiosk/PycharmProjects/python/20180826python/day08/filename.txt'
+
+print os.path.basename(filename) print os.path.dirname(filename)
+
+5.创建目录/删除目录
+
+os.makedirs('img/films')
+
+os.mkdir('img') #os.rmdir('img')
+
+6.创建文件/删除文件
+
+os.mknod('westos.txt')
+
+os.remove('westos.txt')
+
+7.文件重命名(mv)
+
+os.rename('westos.txt','linux.txt')
+
+8.判断文件或者目录是否存在
+
+print os.path.exists('img')
+
+print os.path.exists('linux.txt')
+
+9.分离后缀名和文件名
+
+print os.path.splitext('hello.png')
+
+print os.path.split('hello.png')
+
+10.将目录名和文件名分离
+
+print os.path.split('/tmp/hello/hello.png')
+
+#####异常#####
+
+异常：
+
+程序在运行的时候，如果python解释器遇到一个错误，会停止程序，并提示一些错误信息 这就是异常
+
+捕获异常
+
+简单的捕获异常语法一个 在程序开发中，如果对某些代码的执行不能确定 （程序的语法完全正确）是否正确 （例如：提示用户输入一个整数，程序的能否正确执行，完全取决于用户的输入） 可以增加try来捕获异常 错误类型的捕获 在程序执行时，可能会遇到不同类型的异常， 并且需要针对不同类型的异常， 做不同的响应，这个时候，就需要捕获错误类型了
+
+捕获未知错误:
+
+在开发时，要预判到所有可能出现的错误，还是有一定的难度的 如果希望程序无论出现任何错误，都不会因为python解释器抛出异常而终止，可以再增加一个except 语法如下：
+
+except Exception as result（一个变量名 可以随便写）:
+
+print ('未知错误 %s' % result)
+
+抛出异常
+
+python中提供了一个Exception异常类 在开发时，如果满足特定的业务需求时，希望抛出异常，可以：
+
+1.创建一个Exception的对象
+
+2.使用raise关键字抛出异常对象 断言：可以理解为提前预言，让人更好的知道错误的原因
+

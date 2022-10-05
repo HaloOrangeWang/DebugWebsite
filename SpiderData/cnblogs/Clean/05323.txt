@@ -1,0 +1,28 @@
+问题描述：
+
+在准备ARM交叉编译环境时，执行完命令：
+
+DISTRO=fsl-imx-x11 MACHINE=imx6qsabresd source fsl-setup-release.sh -b build-x11后，再执行命令：
+
+bitbake core-image-minimal报错：
+
+错误信息：from bb import data
+
+原因分析：
+
+查看当前python版本：which python:
+
+/home/jim/anaconda2/bin/python,修改为/usr/bin/python3.5,直接报错。提示需使用python2.7，所以python还是应该使用python2.7版本的。
+
+解决方法：
+
+修改python为标准2.7版本，而非anaconda下2.7版本：
+
+rm /usr/bin.python
+
+ln -s /usr/bin/pyton2.7 /usr/bin/python
+
+sudo ldconfig
+
+重启命令行窗口，使之生效。
+

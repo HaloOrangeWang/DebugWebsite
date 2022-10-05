@@ -1,0 +1,82 @@
+报错信息如下：
+
++ pytest --alluredir=./allure-results ./
+
+/tmp/jenkins6425559607063010311.sh: 3: /tmp/jenkins6425559607063010311.sh: pytest: Permission denied
+
+Build step 'Execute shell' marked build as failure
+
+ERROR: Step ‘Allure Report’ aborted due to exception:
+
+Also:   hudson.remoting.Channel$CallSiteStackTrace: Remote call to 192.168.160.33 - ZY本机
+
+at hudson.remoting.Channel.attachCallSiteStackTrace(Channel.java:1795)
+
+at hudson.remoting.UserRequest$ExceptionResponse.retrieve(UserRequest.java:356)
+
+at hudson.remoting.Channel.call(Channel.java:1001)
+
+at ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstallation.getMajorVersion(AllureCommandlineInstallation.java:63)
+
+at ru.yandex.qatools.allure.jenkins.ReportBuilder.build(ReportBuilder.java:52)
+
+at ru.yandex.qatools.allure.jenkins.AllureReportPublisher.generateReport(AllureReportPublisher.java:312)
+
+at ru.yandex.qatools.allure.jenkins.AllureReportPublisher.perform(AllureReportPublisher.java:231)
+
+at jenkins.tasks.SimpleBuildStep.perform(SimpleBuildStep.java:123)
+
+at hudson.tasks.BuildStepCompatibilityLayer.perform(BuildStepCompatibilityLayer.java:81)
+
+at hudson.tasks.BuildStepMonitor$1.perform(BuildStepMonitor.java:21)
+
+at hudson.model.AbstractBuild$AbstractBuildExecution.perform(AbstractBuild.java:808)
+
+at hudson.model.AbstractBuild$AbstractBuildExecution.performAllBuildSteps(AbstractBuild.java:757)
+
+at hudson.model.Build$BuildExecution.post2(Build.java:179)
+
+at hudson.model.AbstractBuild$AbstractBuildExecution.post(AbstractBuild.java:701)
+
+at hudson.model.Run.execute(Run.java:1914)
+
+at hudson.model.FreeStyleBuild.run(FreeStyleBuild.java:43)
+
+at hudson.model.ResourceController.execute(ResourceController.java:100)
+
+at hudson.model.Executor.run(Executor.java:433)
+
+java.io.IOException: Can't find allure commandline <null>
+
+at ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstallation$GetMajorVersion.call(AllureCommandlineInstallation.java:74)
+
+at ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstallation$GetMajorVersion.call(AllureCommandlineInstallation.java:65)
+
+at hudson.remoting.UserRequest.perform(UserRequest.java:211)
+
+at hudson.remoting.UserRequest.perform(UserRequest.java:54)
+
+at hudson.remoting.Request$2.run(Request.java:376)
+
+at hudson.remoting.InterceptingExecutorService.lambda$wrap$0(InterceptingExecutorService.java:78)
+
+at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+
+at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+
+at java.lang.Thread.run(Thread.java:748)
+
+Checking for post-build
+
+解决历程：
+
+后来发现，我在本机上安装python的依赖包的时候，是安装到了项目的虚拟环境（pycharm进来就自己帮忙搞了个虚拟环境）
+
+我将本机的python环境重新装了自动化依赖的所有python包，ok了咯
+
+『『需环境搭建实践资料、pipeline项目源码\交流学习添加v：ct-xiaozhou
+
+免费提供的。行业变迁，多个好友多点可能性。非机构』』
+

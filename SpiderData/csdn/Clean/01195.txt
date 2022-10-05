@@ -1,0 +1,32 @@
+
+ImportError: libGL.so.1: cannot open shared object file: No such file or directory
+
+
+报错信息
+
+ImportError: libGL.so.1: cannot open shared object file: No such file or directory
+
+
+报错分析
+
+在使用opencv-python的过程中，只是通过pip安装了cv相关的python包，但是没有关注cv对于底层系统中部分共享库的依赖。这个在docker中是一个常见的错误。
+
+
+解决方案
+
+
+方案1： 安装cv2的依赖
+
+这里只是举例部分环境，至于具体需要安装哪些库，对应的库名称，需要参考你本身的系统查询后，方可执行。
+
+apt-get install ffmpeg libsm6 libxext6 -y
+
+
+方案2： 安装python3-opencv或者opencv-python-headless
+
+可以通过安装python3-opencv或opencv-python-headless库来实现便捷的处理依赖。
+
+apt-get install python3-opencv -y
+
+apt-get install opencv-python-headless -y
+

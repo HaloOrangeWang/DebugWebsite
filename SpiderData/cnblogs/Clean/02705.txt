@@ -1,0 +1,10 @@
+python3.6下使用translate(None, string.punctuation)去除句子中的标点符号,报错：TypeError: translate() takes exactly one argument (2 given)
+
+原因是python版本的问题，python2下该语句正常执行，python3中translate的参数只有一个，正确做法：
+
+sentence='The girl is a painter, and her sisiter is a dancer.'
+
+trans=str.maketrans({key: None for key in string.punctuation})#建立转换关系
+
+result=sentence.translate(trans)
+

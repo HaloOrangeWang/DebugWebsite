@@ -1,0 +1,24 @@
+由于pip官方的不作为，现如今python2（以及某些低版本python3）配套的pip，已经没法正常的安装pypi包了。
+
+例如需要用到的一套PyCaffe的代码，是基于Python2的，于是用miniconda/anaconda创建了虚拟环境：
+
+conda create -n py27 python=2.7
+
+然后尝试安装numpy:
+
+pip install numpy
+
+结果提示：
+
+RuntimeError: Python version >= 3.5 required
+
+"老子用的是python2.7，谁特么叫你找python3的东西了？傻X！”
+
+骂归骂，解决方法还是要找。pip在github上的门面在这:   https://github.com/pypa/pip   ，看到已经有人在棒槌pip的人了，锤的好：RuntimeError: Python version >= 3.5 required. #6667
+
+好吧，我们还是用一种优雅的方式来结束这个问题：pip安装失败的包，统统用conda来安装！
+
+conda install numpy
+
+Conda大法好！
+

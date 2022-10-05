@@ -1,0 +1,122 @@
+程序出错的时候，我们往往需要根据异常信息来找到具体出错的代码。简单地用print打印异常信息并不能很好地追溯出错的代码：
+
+# -*- coding: utf-8 -*-
+ 
+ 
+def foo(a, b):
+  c = a + b
+  raise ValueError('test')
+  return c
+ 
+ 
+def bar(a):
+  print('a + 100:', foo(a, 100))
+ 
+ 
+def main():
+  try:
+    bar(100)
+  except Exception as e:
+    print(repr(e))
+ 
+if __name__ == '__main__':
+  main()
+
+输出：
+
+ValueError('test',)
+
+打印的异常信息不够详细，对错误追踪没有多大帮助。这时候异常堆栈信息就派上用场了。下面简单介绍几种打印异常堆栈信息的方法。
+
+1.最简单的方法之一就是使用logging.exception
+
+# -*- coding: utf-8 -*-
+import logging
+ 
+ 
+def foo(a, b):
+  c = a + b
+  raise ValueError('test')
+  return c
+ 
+ 
+def bar(a):
+  print('a + 100:', foo(a, 100))
+ 
+ 
+def main():
+  try:
+    bar(100)
+  except Exception as e:
+    logging.exception(e)
+ 
+if __name__ == '__main__':
+  main()
+
+输出：
+
+ERROR:root:test
+
+Traceback (most recent call last):
+
+File "E:/git_work/scrapy_ppt/test.py", line 16, in main
+
+bar(100)
+
+File "E:/git_work/scrapy_ppt/test.py", line 11, in bar
+
+print('a + 100:', foo(a, 100))
+
+File "E:/git_work/scrapy_ppt/test.py", line 6, in foo
+
+raise ValueError('test')
+
+ValueError: test
+
+从异常堆栈信息中我们可以不费力气就找出错误代码是哪一行。
+
+2.其它方法：
+
+# -*- coding: utf-8 -*-
+import traceback
+import sys
+ 
+ 
+def foo(a, b):
+  c = a + b
+  raise ValueError('test')
+  return c
+ 
+ 
+def bar(a):
+  print('a + 100:', foo(a, 100))
+ 
+ 
+def main():
+  try:
+    bar(100)
+  except Exception as e:
+    # 方法二
+    traceback.print_exc()
+ 
+    # 方法三
+    msg = traceback.format_exc()
+    print(msg)
+ 
+    et, ev, tb = sys.exc_info()
+    # 方法四
+    traceback.print_tb(tb)
+ 
+    # 方法五
+    traceback.print_exception(et, ev, tb)
+ 
+    # 方法六
+    msg = traceback.format_exception(et, ev, tb)
+    for m in msg:
+      print(m)
+ 
+if __name__ == '__main__':
+  main()
+
+到此这篇关于Python捕获异常堆栈信息的几种方法(小结)的文章就介绍到这了,更多相关Python捕获异常堆栈信息内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

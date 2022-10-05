@@ -1,0 +1,26 @@
+今天写代码犯了一个不应该犯的小错误，通过记录下来便于查看
+
+1、报错代码如下：
+
+1 platform win32 -- Python 3.7.3, pytest-4.0.2, py-1.8.0, pluggy-0.12.0
+2 rootdir: D:\work\project\freshAif2\testcase\testmodule, inifile:
+3 plugins: allure-adaptor-1.7.10, forked-1.0.2, html-1.20.0, metadata-1.8.0, xdist-1.29.0collected 0 items
+4 
+5 ======================== no tests ran in 0.18 seconds =========================
+6 
+7 Process finished with exit code 0
+8 
+9 Empty suite
+
+2、查看原因
+
+查看项目文件 发现以test_为命名
+
+运行代码如下
+
+3、解决
+
+由于pychar中以pytest运行，它会默认把test、test_开头的.py文件当做单元测试，而我的代码又不是单元测试格式，只是做一个平时的测试，所以需要修改文件名
+
+修改文件test_interview.py 为interview.py ，再次运行，成功了，结果如下：
+

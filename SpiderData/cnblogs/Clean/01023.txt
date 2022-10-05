@@ -1,0 +1,32 @@
+产生这个问题的原因呢和github一样,因为他们用的cdn被墙.经小伙伴反馈,解决办法如下.
+
+通过指定国内镜像源来安装: pip --trusted-host 镜像源 install 模块名 -i 镜像源路径
+
+例如:pip --trusted-host pypi.doubanio.com install paramiko -i http://pypi.doubanio.com/simple
+
+注意后面要有/simple目录！！！
+
+命令解释:
+
+--trusted-host 指定可信源(忽略https的安全要求)
+
+-i  指定镜像源路径
+
+pipy国内镜像目前有:
+
+http://pypi.douban.com/  豆瓣
+
+http://pypi.hustunique.com/  华中理工大学
+
+http://pypi.sdutlinux.org/  山东理工大学
+
+http://pypi.mirrors.ustc.edu.cn/  中国科学技术大学
+
+要配制成默认的话，需要创建或修改配置文件（linux的文件在~/.pip/pip.conf，windows在%HOMEPATH%\pip\pip.ini），修改内容为：
+
+这样在使用pip来安装时，会默认调用该镜像。
+
+更多配置参数见：http://www.pip-installer.org/en/latest/configuration.html
+
+本文参考:http://topmanopensource.iteye.com/blog/2004853
+

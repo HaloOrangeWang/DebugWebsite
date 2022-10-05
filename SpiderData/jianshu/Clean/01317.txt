@@ -1,0 +1,8 @@
+首先，还是按照惯例稍微写一下前面的过程，Mac上推荐使用brew来管理软件，首先是需要在终端上输入来安装brew，这个非常简单，网上一搜一大堆介绍这个的，就不赘述，接下来安装pyenv，利用命令：brew install pyenv ，然后就可以用pyenv来安装其他版本的python（Mac系统自带的python版本是2.7），可以用pyenv ins all --list来看看都可以安装哪些版本，然后选择一个，比如pyenv install 3.4.0，接下来有些时候会遇到个问题：BUILD FAILED(OS X 10.14.2 using python-build 20180424)
+
+Inspect or clean up the working tree at /var/folders/_h/fyrlcdp11vb33jrmnb9kkjl40000gn/T/python-build.20190106174632.14350
+
+遇到这个问题，使用如下语句安装就可以解决问题：CFLAGS="-I$(xcrun --show-sdk-path)/usr/include" pyenv install -v 3.4.1
+
+接下来就等着，直到提示：Installed Python-3.4.0 to /Users/w/.pyenv/versions/3.4.0 就是安装成功了，可以用pyenv versions来看是否安装成功，system代表自己系统的版本，加*代表目前使用的，接下来就可以用pyenv global 3.4.0就可以来切换到3.4.0版本了。
+

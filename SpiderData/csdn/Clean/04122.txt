@@ -1,0 +1,98 @@
+调试程序时，老是会遇到一些异常报错，然后这个报错会影响我程序继续运行。但我还是要运行下面的语句。看到这篇博文说的很详细，然后就知道怎么处理了。
+
+
+1.捕获所有异常
+
+try:
+
+int("hello world") #此处为运行报错语句
+    
+except Exception as e:
+
+print(e) #打印异常说明
+
+
+2.捕获指定异常
+
+try:
+    f = open("test.txt", "r") #test.txt是不存在的文件
+
+except IOError as e:
+
+print("open exception: %s: %s" % (e.errno, e.strerror))
+
+
+3.捕获多个异常
+
+第一种：同时处理多个异常，不分优先级
+
+try:
+     <语句>
+ 
+except (<异常名1>, <异常名2>, ...):
+ 
+      print('异常说明')
+
+第二种：区分优先级
+
+try:
+     <语句>
+ 
+except <异常名1>:
+ 
+      print('异常说明1')
+ 
+except <异常名2>:
+ 
+      print('异常说明2')
+ 
+except <异常名3>:
+ 
+      print('异常说明3')
+
+
+4.判断完没有某些异常之后还想做其他事，使用下面的语句。
+
+try:
+     <语句>
+ 
+except <异常名1>:
+ 
+      print('异常说明1')
+ 
+except <异常名2>:
+ 
+      print('异常说明2')
+ 
+else:
+ 
+      <语句>  # try语句中没有异常则执行此段代码
+
+
+5.无论是否发生异常都将会执行最后的代码，使用下面的语句：
+
+try:
+     <语句>
+ 
+finally:
+ 
+      <语句>
+
+示例：
+
+str1 = 'hello world'
+try:
+    int(str1)
+except IndexError as e:
+    print(e)
+except KeyError as e:
+    print(e)
+except ValueError as e:
+    print(e)
+else:
+    print('try内没有异常')
+finally:
+    print('无论异常与否,都会执行我')
+
+参考博文：Python异常及处理方法总结
+

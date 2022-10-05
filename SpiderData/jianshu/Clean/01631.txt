@@ -1,0 +1,29 @@
+
+一、问题
+
+使用 pymysql 连接 MySQL 8.0 时，报错如下：
+
+RuntimeError: 'cryptography' package is required for sha256_password or caching_sha2_password auth methods
+
+
+二、原因
+
+MySQL 8.0 改变了密码加密方式。
+
+在 MySQL 8.0 之前版本的密码加密方式为：
+
+mysql_native_password
+
+为了提供更安全的密码加密方式，从 MySQL 8.0 版本开始，默认使用密码加密方式为：
+
+caching_sha2_password
+
+
+三、解决
+
+pip install cryptography
+
+END.
+
+另外，使用低版本 Navicat Premium 连接 MySQL 8.0 也会存在相同问题。卸载低版本，安装 Navicat Premium 高版本即可。目前最新版本为 Navicat Premium 15，正版可免费试用 14 天。破解教程和工具可参考：Navicat Premium 15 永久破解安装教程
+

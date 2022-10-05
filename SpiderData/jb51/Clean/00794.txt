@@ -1,0 +1,68 @@
+在使用Keras load_model时，会出现以下报错：
+
+ImportError: Failed to import pydot. You must install pydot and graphviz for `pydotprint` to work.
+
+解决办法：
+
+$ pip install pydot
+
+$ sudo apt-get install graphviz
+
+补充知识：Keras 保存model到指定文件夹和加载load_model指定文件夹中的文件（踩坑）
+
+我们一般保存模型和加载模型都是通过下面这段代码：
+
+from keras.models import load_model
+model.save('model.h5')
+from keras.models import load_model
+model = load_model('model.h5')
+
+而此时保存的路径都是模型训练的路径，当我们在写项目的过程中，需要将代码和result分文件保存，也就是说模型需要保存在自己指定的路径。下面我在说明如何保存和加载时，先简单说一下我的项目文件目录分配：
+
+上面是我的项目的文件部署，其中FJmodel中有模型训练和模型加载的代码，reslut中save-model中保存着我一次训练的60个模型。
+
+指定路径模型保存：
+
+PATH = "../FengJiCode/result"
+ ....
+model.save(PATH+"/save-model/"+lags+"_LSTM3.h5")
+
+这里我是使用的是相对路径保存的，而且成功保存60个模型，但是在加载的过程中，我一次按照指定文件名加载，如下代码加载：
+
+#PATH = "../FengJiCode/result"
+PATH = 'C://Users/lenovo/Desktop/FengJiCode/FengJiCode/result/save-model/'
+ 
+for i in range(60):
+ predictstep = i+1
+ lag = "lag"+str(predictstep)
+ modelname = lag+"_LSTM3.h5"
+ print(modelname)
+ string = PATH +modelname
+ model = load_model(string)
+
+总会报如下的错误：
+
+OSError: Unable to open file (unable to open file: name = 'C:/Users/lenovo/Desktop/FengJiCode/FengJiCode/result/save-model/lag1_LSTM3.h5', errno = 2, error message = 'No such file or directory', flags = 0, o_flags = 0)
+
+常试了使用绝对路径、相对路径、文件此片读取等方法都是无法成功加载，最后在网上查了很多资料也没有什么相同的问题解决方法，在我的不断尝试中，通过如下方法成功解决；
+
+PATH = r'C:\Users\lenovo\Desktop\FengJiCode15\FengJiCode\result\save-model'
+ 
+for i in range(60):
+ predictstep = i+1
+ lag = "lag"+str(predictstep)
+ modelname = "\\"+lag+"_LSTM3.h5"
+ print(modelname)
+ string = PATH +modelname
+ if os.path.exists(string):
+  message = 'OK, the "%s" file exists.'
+ else:
+  message = 'Sorry, I cannot find the " %s" file.'
+ print( message % string)
+# print(string)
+ model = load_model(string)
+
+路径格式发生了变化，在每次加载前先判断改文件是否存在，成功加载结果：
+
+以上这篇Keras load_model 导入错误的解决方式就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

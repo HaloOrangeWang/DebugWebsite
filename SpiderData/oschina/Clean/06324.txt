@@ -1,0 +1,34 @@
+1.进入mysql命令行：#mysql -uroot -p123456,执行下面的命令开启慢查询报错：
+
+set global slow_query_log=on;
+
+set global long_query_time=1;#设置记录查询超过多长时间的sql
+
+set global slow_query_log_file='/opt/data/slow_query.log';#设置mysql慢查询日志路径
+
+[y1]报错：ERROR 29 (HY000): File '/opt/data/slow_query.log' not found (Errcode: 13 - Permission denied)
+
+错误内容：ERROR 29 (HY000): File '/opt/data/slow_query.log' not found (Errcode: 13 - Permission denied)
+
+2.原因分析：
+
+①File '/opt/data/slow_query.log' not found 没有找到这个文件，但是实际这个路径下是有这个文件的。
+
+②permission denied-------这个路径下的文件权限不够
+
+3,。解决办法：将原来的文件slow_query.log删除，再重新新建一个文件slow_query.log，然后再赋予权限：
+
+#cd /opt/data
+
+#rm -rf slow_query.log
+
+#touch slow_query.log
+
+#chown mysql slow_query.log
+
+重启mysql：#/opt/lampp/lampp restart
+
+4.进入mysql：开启慢查询：
+
+至此问题解决。
+

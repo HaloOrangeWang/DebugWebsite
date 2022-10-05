@@ -1,0 +1,17 @@
+python版本：3
+
+邮箱：QQ邮箱，端口465
+
+　　
+
+　　使用python的smtp模块进行邮件发送，自己测试能成功，但是生产环境会报错：smtplib.SMTPServerDisconnected: Connection unexpectedly closed
+
+脚本如下：
+
+import smtplib
+from email.mime.text import MIMEText
+
+报错：
+
+　　把通过smtp的server地址，端口连接换成通过smtp_ssl连接，即将smtp = smtplib.SMTP(mailserver,port=465)改成smtp = smtplib.SMTP_SSL(mailserver)连接（其中mailserver= ‘smtp.qq.com’），即可成功。
+

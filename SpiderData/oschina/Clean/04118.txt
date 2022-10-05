@@ -1,0 +1,17 @@
+最近在使用pip安装包的的时候出现下面错误
+
+UnicodeEncodeError: 'ascii' codec can't encode character u'\u258f'
+
+查询资料后发现原因是pip安装python包会加载用户目录，用户目录恰好是中文的，ascii不能编码
+
+打开对应的安装目录路径 D:\Python27\Lib\site-packages
+
+新建一个文件 sitecustomize.py 输入下面内容
+
+# encoding=utf8
+import sys
+reload(sys)
+sys.setdefaultencoding('gb2312')
+
+注意：里面是gb2312 如果写成utf-8的话安装的时候就会出现下面乱码的情况,但是也能安装成功,如果gbk2312 不行的话就试试换成utf-8,每个人的环境不一样
+

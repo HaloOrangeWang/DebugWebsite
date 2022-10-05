@@ -1,0 +1,80 @@
+今天计划安装walle2.0，按官方文档http://www.walle-web.io/docs/index.html一步步进行
+
+进行到这一步突然报错
+
+yum install -y mariadb-devel gcc gcc-c++ python-devel
+
+刚开始怀疑是不是yum源出问题了，把阿里云的源重新下载加载
+
+发现不行，还是报错
+
+检查下python版本
+
+# python
+Python 2.7.5 (default, Oct 30 2018, 23:45:53)
+
+发现python已经被升级到2.7.5，而yum需要的python版本是2.6，导致的报错
+
+修改yum启动文件前缀
+
+# cat /usr/bin/yum
+#!/usr/bin/python2.7
+
+发现没有用，没有备份，python直接被更新到2.7.5，yum用的库不能加载，不能加载模块
+
+There was a problem importing one of the Python modules
+required to run yum. The error leading to this problem was:
+
+No module named yum
+
+Please install a package which provides this module, or
+verify that the module is installed correctly.
+
+查找资料，尝试再安装个python2.6.6版本，修改yum启动文件，但是还是出现模块不能加载
+
+重装python和yum
+
+1、卸载现有的python，强制删除已安装程序及其关联
+
+rpm -qa|grep python|xargs rpm -ev --allmatches --nodeps
+
+强制删除所有残余文件
+
+whereis python |xargs rm -frv
+
+2、卸载现有的yum
+
+rpm -qa|grep yum|xargs rpm -ev --allmatches --nodeps
+
+强制删除所有残余文件
+
+whereis yum |xargs rm -frv
+
+3、下载版本对应的rpm包
+
+wget http://mirrors.ustc.edu.cn/centos/7/os/x86_64/Packages/libxml2-python-2.9.1-6.el7_2.3.x86_64.rpm
+
+下载完成后安装这些包(--force强制安装)
+
+rpm -Uvh --force --nodeps --replacepkgs *.rpm
+
+安装完这些rpm包后，yum就可以正常使用了，如果还是报下面这个，说明你rpm包没下载全
+
+There was a problem importing one of the Python modules
+required to run yum. The error leading to this problem was:
+
+/usr/lib64/python2.7/site-packages/rpm/_rpm.so: undefined symbol: rpmpkgVerifySi
+
+Please install a package which provides this module, or
+verify that the module is installed correctly.
+
+接着按walle官方文档一步步安装，就很顺利安装完了，大功告成~ ：）
+
+重要的事情说三遍
+
+python升级用下载的包升级，升级前先备份旧版本！！！
+
+python升级用下载的包升级，升级前先备份旧版本！！！
+
+python升级用下载的包升级，升级前先备份旧版本！！！
+

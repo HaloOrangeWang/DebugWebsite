@@ -1,0 +1,43 @@
+
+引言
+
+按照antd官网配置按需引入，还是出现一系列的报错：
+
+
+原因
+
+当我们使用react-app-rewired配置按需加载，是不能执行yarn eject，暴漏React脚手架webpack的配置文件，否则就会报以上的错误。如果需要暴漏配置文件，可以使用下面这种方式配置按需加载。
+
+
+使用 babel-plugin-import
+
+下载
+
+npm install babel-plugin-import --save-dev 或
+yarn add babel-plugin-import
+
+
+配置package.json文件
+
+在babel选项中配置plugins即可，其中style设置为true，就可以为antd定制主题。如果报错，一般都是less过高。需要安装小于3.0.0版本的。yarn add less@2.7.3，安装成功后，再次运行。
+
+"babel": {
+  "presets": [
+    "react-app"
+  ],
+  + "plugins": [
+  +  [
+  +    "import",
+  +   {
+  +      "libraryName": "antd",
+  +      "style": true
+  +    }
+  + ]
+  +]
+}
+
+
+antd定制主题
+
+当把style设置为true之后，运行项目都会重新打包antd的less文件，加载最新的样式文件。在webpack.config.js文件中找到getStyleLoaders()函数，加入以下代码，在modifyVars中定制我们的主题。
+

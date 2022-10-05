@@ -1,0 +1,125 @@
+
+首先说一下 ，我是用的anaconda3装的pytorch
+
+为了方便建议你也安装一个。
+
+其实这个挺简单的,你找找“c:/user/你的用户名/”目录下有没有一个叫 .condarc 的文件，如图：
+
+如果没有，创建一个就好，不过一般会自动创建一个
+
+
+然后复制下面的文件进入这个文件覆盖
+
+channels:
+  - https://mirrors.ustc.edu.cn/anaconda/cloud/pytorch/win-64
+  - https://mirrors.ustc.edu.cn/anaconda/cloud/menpo/
+  - https://mirrors.ustc.edu.cn/anaconda/cloud/bioconda/
+  - https://mirrors.ustc.edu.cn/anaconda/cloud/msys2/
+  - https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/free/
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/main/
+show_channel_urls: true
+ssl_verify: true
+report_errors: true
+
+带mirror的就是将下载的镜像源地址换成清华的，这玩意儿本身是国外的，你如果直接pytorch官网说的那样安装，下载速度会慢
+
+到的怀疑人生！看到那个ssl_verify: true 这句没有，之前就是没加这玩意儿，疯狂报错ssl error ，我当初第一次装的时候也搞了
+
+我很久才解决，当真扎心，不过吐槽归吐槽，这样粘贴进去覆盖原内容后保存，退出。
+
+
+进入Anaconda Prompt界面
+
+输入：
+
+conda install pytorch torchvision
+
+回车运行即可
+
+补充：pytorch安装踩坑记录
+
+
+1、直接anaconda 里直接安装
+
+一直装不上torchvision,版本冲突，由于anaconda自带python3.7，更换python3.6环境。
+
+
+2、由于之前安装过删除过虚拟环境，一直出现
+
+查阅相关资料表示，由于多次创建删除导致两个路径的libssl-1_1-x64.dll时间不一致，需替换统一。按此操作后仍不能解决。直接卸载重装。
+
+卸载anaconda使用自带的uninstall.exe
+
+
+3、重新安装后创建虚拟环境
+
+conda create -n py36 python=3.6
+
+出现错误(CondaHTTPError: HTTP 000 CONNECTION FAILED for url）
+
+百度说是把链接的https修改成http就可以了。
+
+按此操作后出现
+
+原因未知。再把http改回https，此问题解决了。重启后再次创建虚拟环境，成功。
+
+推测错误(CondaHTTPError: HTTP 000 CONNECTION FAILED for url）是网络问题，网络好了就成功了。
+
+
+4、使用conda env list 查看虚拟环境，确认虚拟环境创建成功了
+
+退出原始环境conda deactivate
+
+激活py36. 百度上都使用conda activate py36,执行始终报错，改用activate py36成功了。
+
+
+5、安装pytorch
+
+直接安装
+
+conda install pytorch-cpu torchvision-cpu -c pytorch
+
+太慢，报错
+
+An HTTP error occurred when trying to retrieve this URL.
+
+HTTP errors are often intermittent, and a simple retry will get you on your way.
+
+打开官网https://pytorch.org/
+
+选择相应的条件会出现安装语句，复制到prompt运行即可
+
+测试
+
+
+6、打开Jupyter还是默认环境，如何切换到虚拟环境
+
+conda install ipykernel
+
+切换到虚拟环境
+
+python -m ipykernel install --user --name py36 --display-name “Python (py36)”
+
+得到这样的界面
+
+使用不太习惯，换一种方法创建jupyter
+
+pip install jupyter
+
+在prompt里输入jupyter notebook
+
+new的时候选择py36
+
+运行一个cell发现始终跑不出结果，查看prompt报错
+
+cannot import name ‘create_prompt_application'
+
+应该是在安装其它python第三方库时更新了prompt-toolkit版本，降级到下面的版本即可：
+
+sudo pip install prompt-toolkit==1.0.15
+
+解决了！
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

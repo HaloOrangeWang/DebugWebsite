@@ -1,0 +1,122 @@
+【问题描述】
+
+在 jupyter notebook 中 import tensorflow 时报错：提示没有 tensorflow 模块。
+
+【原因】
+
+我用 virtualen 装了一个深度学习虚拟环境，名字就叫做 (tensorflow)。装 ipython 和 jupyter 时，没有装在 (tensorflow) 环境下，而是装在了系统全局环境下。而我的 tensorflow 是装在 (tensorflow) 虚拟环境下的。虽然我又在我的 (tensorflow) 虚拟环境中重新装了 ipython 和 jupyter 。但是 jupyter 貌似又到全局系统环境去找 tensorflow , 全局系统环境中是没有装 tensorflow 的，所以报错：找不到 tensorflow 模块。
+
+【解决方案】
+
+stackoverflow上关于这个问题有一个高票解答，感兴趣的读者请移步这里。
+
+第一步
+
+要在Ipython 或者 Jupyter(Ipython) Notebook 中使用 tensorflow, 你需要在激活了的(tensorflow) （这个环境中安装了tensorflow）环境中安装Ipython 和 Jupyter 。在安装Ipython和Jupyter 之前，如果在终端执行以下命令：
+
+username$ source activate tensorflow
+
+(tensorflow)username$ which ipython
+(tensorflow)username$ /Users/username/anaconda/bin/ipython
+
+(tensorflow)username$ which jupyter
+(tensorflow)username$ /Users/username/anaconda/bin/jupyter
+
+(tensorflow)username$ which python
+(tensorflow)username$ /User/username//anaconda/envs/tensorflow/bin/python
+
+以上代码只是示例，具体根据自己电脑配置灵活运用
+
+以上代码运行结果表示 当你在（tensorflow）虚拟环境中打开python 时，这个python是你安装在这个虚拟环境中的python  版本，而不是全局系统环境中的python版本。 图1是我解决了这个问题后运行的代码，可以看出jupyter 和 ipython 都在（tensorflow）中，这样的话在jupyter中import tensorflow 就不会报错了。如果 jupyter 和 ipython 不在这个虚拟环境中，就要重新安装这两个东西。
+
+你可以查看 ~/tensorflow/bin 路径下的文件，看看是否有 “ipython” 和 “jupyter” 相关文件。没有的话，就需要在（tensorflow）中安装这两个东西。
+
+【注意】 如果在系统全局环境中安装了 ipython 和 jupyter，必须卸载掉全局环境中的ipython和jupyther，才能在（tensorflow）虚拟环境中成功安装 ipthon 和jupyter 。如果不卸载全局环境中的ipython和jupyter ，而直接在（tensorflow）中安装，即使终端显示安装成功，在~/tensorflow/bin 路径下也找到不到 “ipython” 和 “jupyter” 相关文件。执行以下语句, 显示的结果还是全局路径，如图2.
+
+(tensorflow)username$ which ipython
+(tensorflow)username$ which jupyter
+
+所以，下一步很关键，卸载安装在全局环境中的 ipython 和 jupyter。
+
+第二步
+
+卸载 ipython 很简单 我是用pip安装的 ipython , 直接用 pip 来卸载(注意此时要退出（tensorflow）环境)：
+
+#卸载python2.7版本中的ipython
+username$ pip uninstall ipython # 如果有权限问题，前面加 sudo
+
+#卸载python3.5版本中的ipython
+username$ pip3 uninstall ipython # 如果有权限问题，前面加 sudo
+
+卸载 jupyter 已经花光了我所有的力气，这玩意儿真是太难卸载了。
+
+各种方法都卸载不了。先来感受一下下
+
+尝试用 pip 卸载
+
+听说 pip-autoremove 很厉害，试一下
+
+奈何我的 jupyter 装在 python3.5下，pip-autoremove 貌似只能用在python2.7中，还是卸不掉。
+
+又是在 stackoverflow 找到了答案，想看原文的读者请移步这里
+
+安装 jupyter 时，会安装很多依赖，具体如下面：
+
+notebook
+
+nbconvert
+
+nbformat
+
+ipykernel
+
+ipywidgets
+
+qtconsole
+
+traitlets
+
+tornado
+
+anything with jupyter in front of it (jupyter_core, jupyter_client etc.)
+
+ipython_genutils
+
+jinja2
+
+一个一个都卸载掉，其中，anything with jupyter in front of it (jupyter_core, jupyter_client etc.)　这一项可以用下面的命令找到
+
+field@field-ThinkCentre:~$  pip3 freeze | grep jupyter
+jupyter-client==5.2.1
+jupyter-console==5.2.0
+jupyter-core==4.4.0
+
+再输入以下指令
+
+field@field-ThinkCentre:~$ sudo pip3 uninstall notebook nbconvert nbformat ipykernel ipywidgets qtconsole traitlets tornado jupyter-client==5.2.1 jupyter-console==5.2.0 jupyter-core==4.4.0 ipython_genutils jinja2 -y
+
+结果如下图
+
+验证一下，终于卸载掉了。
+
+【第三步】
+
+进入（tensorflow） 环境中，安装 ipython 和 jupyter
+
+field@field-ThinkCentre:~$ source tensorflow/bin/activate
+(tensorflow) field@field-ThinkCentre:~$ pip3 install ipython
+(tensorflow) field@field-ThinkCentre:~$ pip3 install jupyter
+
+安装完成即可。应该没什么问题
+
+完成后，再检查 ipython 和 jupyter 的路径
+
+(tensorflow) field@field-ThinkCentre:~$ which jupyter
+/home/field/tensorflow/bin/jupyter
+(tensorflow) field@field-ThinkCentre:~$ which ipython
+/home/field/tensorflow/bin/ipython
+
+结果如下，ipython 和 jupyter 的路径都在(tensorflow)下。
+
+成功解决问题！
+

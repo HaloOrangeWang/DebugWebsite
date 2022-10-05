@@ -1,0 +1,27 @@
+最近做项目无意中发现一个有趣的现象，先看一小段代码：
+
+print(r'\xxx')
+print(r'xxx\\')
+print(r'xxx\')
+
+运行结果如下：
+
+File "E:/Dev/learn_python/raw_string.py", line 3    
+    print(r'xxx\')
+                 ^
+SyntaxError: EOL while scanning string literal
+
+早年学Python的时候依稀记得r'string'是raw_string用来防止\ 自动转义的，可是为什么这里第3行代码报错呢？
+
+Stack Overflow上找了下相关问题，看到有一条评论提到：
+
+试了下发现果然如这位兄弟所言，这里的单斜杠结尾是非法的，然后去查了下官网的定义；
+
+https://docs.python.org/2/reference/lexical_analysis.html#string-literals
+
+里面是这么描述的（2.7），注意我加粗的部分（吐槽下官网doc里面的note事项实在是太不显眼了）：
+
+When an 'r' or 'R' prefix is present, a character following a backslash is included in the string without change, and all backslashes are left in the string. For example, the string literal r"\n" consists of two characters: a backslash and a lowercase 'n'. String quotes can be escaped with a backslash, but the backslash remains in the string; for example, r"\"" is a valid string literal consisting of two characters: a backslash and a double quote; r"\" is not a valid string literal (even a raw string cannot end in an odd number of backslashes). Specifically, a raw string cannot end in a single backslash (since the backslash would escape the following quote character). Note also that a single backslash followed by a newline is interpreted as those two characters as part of the string, not as a line continuation.
+
+在os.path.join模块中，尤其容易犯这种错误。如果是Python3的话，更建议使用pathlib这个库代替os.path.
+

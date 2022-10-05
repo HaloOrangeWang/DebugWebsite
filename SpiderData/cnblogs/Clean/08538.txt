@@ -1,0 +1,16 @@
+最近做一个小程序项目，使用djangorestframework,安装restframework 出现错误，安装环境Python2.7；出现错误如下：  “UnicodeEncodeError: 'ascii' codec can't encode character u'\u258c' in position 8: ordinal not in range(128)”
+
+在网上查了很多资料：解决方法总结如下：
+
+1.找到Python安装包的路径Lib\site-packages(如：E:\python27\Lib\site-packages）
+
+2.在该路径下创建sitecustomize.py，文件中的内容如下：
+
+import sys
+
+reload(sys )
+
+sys.setdefaultencoding('gbk')
+
+3.再次进行pip进行安装更新即可
+

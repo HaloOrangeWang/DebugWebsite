@@ -1,0 +1,27 @@
+自己在用 PySpider 框架爬虫运行代码后时出现 HTTP 599: SSL certificate problem: unable to get local issuer certificate错误
+
+完整报错信息：
+
+HTTP 599: SSL certificate problem: unable to get local issuer certificate 
+[E 161018 21:56:36 base_handler:195] HTTP 599: SSL certificate problem: unable to get local issuer certificate 
+Traceback (most recent call last): 
+File “C:\Python27\lib\site-packages\pyspider\libs\base_handler.py”, line 188, in run_task 
+result = self._run_task(task, response) 
+File “C:\Python27\lib\site-packages\pyspider\libs\base_handler.py”, line 167, in _run_task 
+response.raise_for_status() 
+File “C:\Python27\lib\site-packages\pyspider\libs\response.py”, line 190, in raise_for_status 
+raise http_error 
+HTTPError: HTTP 599: SSL certificate problem: unable to get local issuer certificate
+
+报错截图：
+
+错误原因：
+
+这个错误会发生在请求 https 开头的网址，SSL 验证错误，证书有误。
+
+解决方法：
+
+使用 self.crawl(url, callback=self.index_page, validate_cert=False)
+
+这个方法基本可以解决问题了。
+

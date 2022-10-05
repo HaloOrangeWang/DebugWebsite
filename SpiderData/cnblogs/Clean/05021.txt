@@ -1,0 +1,20 @@
+在执行openssl version出现如下错误：
+
+openssl: error while loading shared libraries: libssl.so.1.1: cannot open shared object file: No such file or directory
+
+解决方法：
+在root用户下执行：
+
+ln -s /usr/local/lib64/libssl.so.1.1 /usr/lib64/libssl.so.1.1
+ln -s /usr/local/lib64/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1
+
+如果不知道位置，现查找下
+
+[root@rjzfwweb lib64]# find / -name libssl.so.1.1
+
+/usr/local/openssl/lib/libssl.so.1.1
+
+所以我的执行命令如下：
+
+ln -s /usr/local/openssl/lib/libssl.so.1.1 /usr/lib64/libssl.so.1.1ln -s /usr/local/openssl/lib/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1
+

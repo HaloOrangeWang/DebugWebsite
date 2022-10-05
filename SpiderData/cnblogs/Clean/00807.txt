@@ -1,0 +1,15 @@
+1.提示'break' outside loop：
+
+报错是break不在循环内 while+break
+
+2.提示“expected an indented block”：没有从属代码块！
+Python严格地要求代码缩进，缩进的代码块相对于上一级是从属关系。用if语句举个例子：
+if a==2: print 'hello world'if语句的条件为真时会执行print语句，print语句是if语句的从属代码块，代表从属关系，print语句之前有4个空格。如果if语句没有任何从属的代码块就会报错expected an indented block。与if语句类似的，必须包含从属代码块的还有while、for、try-except等。
+
+3.'type' object is not iterable   这个错误提示一般发生在将None赋给多个值时。
+在判断语句中，当if条件不满足，并且没有else语句时，函数默认返回None。
+在没有return语句时，python也默认会返回None
+调用时，将None赋给多个值时，会出现提示：TypeError: 'NoneType' object is not iterable
+本例中，flag和val都被赋予了None(因为if条件不满足，所以默认返回None)就出现了这样的错误提示。
+所以函数返回值一定要考虑到条件分支的覆盖
+

@@ -1,0 +1,45 @@
+1.报错一: SyntaxError: (unicode error) 'utf-8' codec can't decode byte 0xca in position 0: invalid continuation byte
+
+环境：        编写软件： notepad++
+
+python版本： python3.7
+
+代码：
+
+n=1
+while n<=100:
+    tmp=n%2
+    if tmp==0:
+        pass
+    else:
+        print(n)
+    n+=1
+print("输出100以内的奇数结束")
+
+1 C:\Users\Administrator>python D:\4.py
+2   File "D:\4.py", line 10
+3 SyntaxError: (unicode error) 'utf-8' codec can't decode byte 0xca in position 0: invalid continuation byte
+
+原因:    notepad++，该软件默认的格式ASCII。
+
+当配合notepad编程时，如果代码中出现中文，必须设置notepad的编码格式为utf-8，即使在代码首行只增加 了“# -*- coding:utf-8 -*-”，python3.7解释器也会报错
+
+解决办法：在notepad上部，设置“格式-->转为utf-8编码格式”
+
+　　　　   并 在代码首行增加 “# -*- coding:utf-8 -*-”
+
+修改后代码：
+
+# -*- coding:utf-8 -*-
+n=1
+while n<=100:
+    tmp=n%2
+    if tmp==0:
+        pass
+    else:
+        print(n)
+    n+=1
+print("输出100以内的奇数结束")
+
+结果：通过
+

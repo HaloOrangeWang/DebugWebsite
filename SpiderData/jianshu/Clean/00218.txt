@@ -1,0 +1,298 @@
+
+前言
+
+之前打包机升级 Xcode12 之后发现私有库发版时执行 pod lib lint 命令报错，一开始看报错信息提示以为是 Xcode12 或者 CocoaPods 的锅，想着蹲个新版本出来也许就好了，就暂时没管，打包机仍旧使用 Xcode11 发版。后来因为另外的需求需要我们升级 Xcode12，要优先解决组件发版报错问题，所以就仔细排查了下这个问题。
+
+
+复现
+
+随便找一个简单的开源库，以 HoloTableView 为例，在其 podsepc 里随便依赖一个静态库，以 AppsFlyerFramework 为例：
+
+s.dependency 'AppsFlyerFramework'
+s.static_framework = true
+
+执行 lint 命令：pod lib lint --allow-warnings --verbose 即可得到报错内容：
+
+ld: in /var/folders/z7/9hq4dfq97cn4xt4v56vqykph0000gn/T/CocoaPods-Lint-20210302-64250-1vekyyp-HoloTableView/Pods/AppsFlyerFramework/iOS/AppsFlyerLib.framework/AppsFlyerLib(AFSDKKeychainFactory.o), building for iOS Simulator, but linking in object file built for iOS, file '/var/folders/z7/9hq4dfq97cn4xt4v56vqykph0000gn/T/CocoaPods-Lint-20210302-64250-1vekyyp-HoloTableView/Pods/AppsFlyerFramework/iOS/AppsFlyerLib.framework/AppsFlyerLib' for architecture arm64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
+报错信息写的很清楚，在为 iOS 模拟器编译过程中，链接 AppsFlyerFramework 这个库时找不到 arm64 架构。我们知道以往模拟器仅支持 x86_64 架构即可，因为我们的 Mac 就是 x86_64 架构，而 Mac 上带的模拟器自然是同一架构。现在竟然在模拟器上需要 arm64 架构了，应该是为了支持 Apple silicon。M1 正是 arm 架构，那 M1 上的模拟器自然就是需要 arm64 架构的了。
+
+根据报错信息 Google 一下就会发现已经有很多网友遇到了该问题并给出了解释和解决方案，主要有以下参考链接：
+
+1、https://github.com/CocoaPods/CocoaPods/issues/10065#issuecomment-694266259
+
+(Braintree 他们首次在 4.36.1 版本里遇到了该问题，解决方案正是来自这个 issue：Braintree.podspec)
+
+2、https://github.com/CocoaPods/CocoaPods/issues/10104#issuecomment-700918704
+
+3、https://stackoverflow.com/questions/63607158/xcode-12-building-for-ios-simulator-but-linking-in-object-file-built-for-ios
+
+问题似乎得到了解决，但实际应用中我们发现了新的问题（见下一章节 疑问 6）。也有同事发现 pod lib lint 跟上 --skip-import-validation 参数即可通过 lint 验证（见下一章节 疑问5）。
+
+最终我们向这个问题妥协了，选择了使用 --skip-import-validation 参数，通过跳过“某些”验证来让 lint 暂时通过以完成组件发版工作。但截至目前我们还不知究竟 “skip” 了哪些内容。
+
+最终关于这个问题我们存在以下这些疑问需要搞清楚。
+
+
+疑问
+
+疑问 1、为什么有的库报错，有的库不报错？
+
+疑问 2、为什么 Xcode12 报错， Xcode11 不报错？
+
+疑问 3、为什么 Pod Example 工程编译没问题，lint 却报错？
+
+疑问 4、为什么在 podspec 加上以下命令即可通过 lint 验证？这两行具体更改了什么？
+
+s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+
+疑问 5、为什么 pod lib lint 跟上 --skip-import-validation 参数亦可通过 lint 验证？字面意思上的“跳过引用验证”究竟 “skip” 了什么？
+
+疑问 6、PodA 依赖 PodB、PodB 依赖 PodC。PodC 删除了模拟器 arm64 架构导致 PodA lint 失败，即使 PodA 也删除了模拟器 arm64 架构，这是为什么？
+
+
+从头开始
+
+带着上述这些问题我们来一一排查，相信解决完以上疑问后收获的绝不仅仅是 解决了一个“Xcode12 上发版失败”的问题。那么接下来就介绍下从头解决以上问题的经历。
+
+注：如果以上章节的内容你都熟悉了并搞清楚了这个问题的本质，那么以下章节刚开始的过程会让你觉得思路很愚蠢，但我只是想完整记录下“发现-排查-解决”这个问题的完整过程。
+
+
+关于疑问 1：为什么有的库报错，有的库不报错？
+
+最开始我们发布业务库时几乎全在报错，导致我以为单纯的是 Xcode12 的问题，所以在 Google 到解决方案后计划在组件发版的时候，在 podspec 里无脑加上以下命令：
+
+s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+
+但当我们发布一个基础组件的时候却出现了「疑问 6」问题（关于这个疑问稍后解析），所以将以上命令暂时移除，决定看看基础库能不能通过验证。果然发布成功了，那么接下来就是找到哪些库能成功哪些库会报错，再看问题出现的根源。
+
+果然不久我们就发现了问题的根源，只有组件依赖了二进制库的时候，lint 才会报这个错。这么一看就恍然大悟了，当然啦，只有那些已经编译好的二进制库，它们已经包含了固定支持的架构。以 HoloTableView 的 Example 工程为例，pod install 之后在 /Pods/AppsFlyerFramework/iOS/AppsFlyerLib.framework/Versions/A 目录下找到 AppsFlyerLib 文件并用 lipo -info AppsFlyerLib 命令查看得到的结果是：
+
+Architectures in the fat file: AppsFlyerLib are: i386 armv7 x86_64 arm64
+
+在胖二进制（也叫通用二进制）文件 AppsFlyerLib 里包含的架构有 i386、armv7、x86_64、arm64，其中 x86_64 用于模拟器，而这里的 arm64 是支持真机架构的。所以在这样一个已经编译好了的二进制库被依赖了，lint 过程中链接器打算链接模拟器 arm64 架构时发现 AppsFlyerLib 没有这样的架构而报错：
+
+Ld /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-aahatildizoismejitnvvpgympoq/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/Objects-normal/arm64/Binary/App normal arm64 (in target 'App' from project 'App')
+        cd /var/folders/z7/9hq4dfq97cn4xt4v56vqykph0000gn/T/CocoaPods-Lint-20210303-54294-ti9bsz-HoloTableView
+        /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -target arm64-apple-ios8.0-simulator -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator14.4.sdk -L/Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-aahatildizoismejitnvvpgympoq/Build/Products/Release-iphonesimulator -F/Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-aahatildizoismejitnvvpgympoq/Build/Products/Release-iphonesimulator -F/Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-aahatildizoismejitnvvpgympoq/Build/Products/Release-iphonesimulator/HoloTableView -F/var/folders/z7/9hq4dfq97cn4xt4v56vqykph0000gn/T/CocoaPods-Lint-20210303-54294-ti9bsz-HoloTableView/Pods/AppsFlyerFramework/iOS -filelist /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-aahatildizoismejitnvvpgympoq/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/Objects-normal/arm64/App.LinkFileList -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -rpath -Xlinker @loader_path/Frameworks -Xlinker -rpath -Xlinker @executable_path/Frameworks -dead_strip -Xlinker -object_path_lto -Xlinker /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-aahatildizoismejitnvvpgympoq/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/Objects-normal/arm64/App_lto.o -Xlinker -objc_abi_version -Xlinker 2 -fobjc-arc -fobjc-link-runtime -ObjC -framework AppsFlyerLib -framework CoreTelephony -framework HoloTableView -framework Security -framework SystemConfiguration -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __entitlements -Xlinker /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-aahatildizoismejitnvvpgympoq/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/App.app-Simulated.xcent -framework Foundation -framework Pods_App -Xlinker -no_adhoc_codesign -Xlinker -dependency_info -Xlinker /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-aahatildizoismejitnvvpgympoq/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/Objects-normal/arm64/App_dependency_info.dat -o /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-aahatildizoismejitnvvpgympoq/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/Objects-normal/arm64/Binary/App
+    ld: in /var/folders/z7/9hq4dfq97cn4xt4v56vqykph0000gn/T/CocoaPods-Lint-20210303-54294-ti9bsz-HoloTableView/Pods/AppsFlyerFramework/iOS/AppsFlyerLib.framework/AppsFlyerLib(AFSDKKeychainFactory.o), building for iOS Simulator, but linking in object file built for iOS, file '/var/folders/z7/9hq4dfq97cn4xt4v56vqykph0000gn/T/CocoaPods-Lint-20210303-54294-ti9bsz-HoloTableView/Pods/AppsFlyerFramework/iOS/AppsFlyerLib.framework/AppsFlyerLib' for architecture arm64
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
+以上关键命令：clang -target arm64-apple-ios8.0-simulator
+
+
+关于疑问 2：为什么 Xcode12 报错， Xcode11 不报错？
+
+从以上报错信息可以看到关键报错日志为：/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -target arm64-apple-ios8.0-simulator
+
+至于为什么 Xcode11 上不报错，我们保持相同内容的 podspec 在 Xcode11 执行下 pod lib lint --allow-warnings --verbose 看是什么结果。日志很多，我们用 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -target 全局搜索看看结果：
+
+在 Xcode 的 Build Settings 里查看 Architectures 模块可以看出差别：
+
+Xcode12 环境下，当我们在某一 podspec 里加上 s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' } 命令就能在这里看到移除了模拟器环境下的 arm64 架构。当然 CocoaPods 官方十分不建议使用 user_target_xcconfig 来更改宿主工程的环境，但这也正是令 pod lib lint通过的根本原因。
+
+
+关于疑问 3：为什么 Pod Example 工程编译没问题，lint 却报错？
+
+解决了以上问题这个问题就更简单了，我们在 Xcode 里看下 Example 工程的编译过程：
+
+为了更方便的查看编译过程，点击 “Export…” 按钮，能够导出一份 Build HoloTableView-Example_2021-03-03T22-50-02.txt 文本，在命令行通过 cat 命令查看下内容。由于内容很多，我们依旧用 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -target 全局搜索看看结果：
+
+可以发现，仅存在一处对 x86_64-apple-ios12.0-simulator 的链接。这是因为我们在编译的时候选择了模拟器 iPhone12 Pro 机型。如果我们选择了 Any iOS Device (arm64) ，那搜索结果就是对 arm64-apple-ios12.0 的链接，也不会出错。理论上如果我们在 Mac M1 上选择模拟器进行编译应该就会出现对 arm64-apple-ios12.0-simulator 链接的报错了。
+
+
+关于疑问 4：为什么在 podspec 加上以下命令即可通过 lint 验证？
+
+s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+
+为了解答这一疑问，我们将会上述 lint 报错的 HoloTableView.podspec 里加上这两行命令，再次执行 pod lib lint --allow-warnings --verbose 命令，然后同样用 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -target 全局搜索看看结果：
+
+可以发现，仅存在两处，x86_64-apple-ios8.0-simulator 和 i386-apple-ios8.0-simulator 链接操作。不再对 arm64-apple-ios8.0-simulator 进行链接也就不会再报错了。
+
+至于这两行具体更改了什么呢？
+
+先来根据 CocoaPods 的官方文档认识下 pod_target_xcconfig 和 user_target_xcconfig：
+
+Typically clang compiler flags or precompiler macro definitions go in here if they are required when importing the pod in the user target. Note that, this influences not only the compiler view of the public interface of your pod, but also all other integrated pods alongside to yours. You should always prefer pod_target_xcconfig, which can contain the same settings, but only influence the toolchain when compiling your pod target.
+
+
+可以理解为 pod_target_xcconfig 仅作用于当前 pod，而 user_target_xcconfig 作用于当前 pod 的宿主工程，包括引入的其他 pod。
+
+根据实际的应用来看下这两行命令的具体作用：
+
+1、添加 s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' } 这么一行之后执行 pod install 命令。在 HoloTableView.debug.xcconfig 和 HoloTableView.release.xcconfig 文件里就出现 EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64 这么一行，其会修改这一 pod target 的 Build Settings：
+
+正是因为在 Build Settings 里删除了模拟器环境下 arm64 架构才得以让 build 成功。
+
+
+关于疑问 5：为什么 pod lib lint 跟上 --skip-import-validation 参数亦可通过 lint 验证？字面意思上的“跳过引用验证”究竟 “skip” 了什么？
+
+要弄明白这个问题，无疑查看 CocoaPods 源码是最直接的方式。在 ~/.rvm/rubies/ruby-2.5.1/lib/ruby/gems/2.5.0/gems/cocoapods-1.9.3/lib/cocoapods/command/lib/lint.rb 目录打开 lint.rb 文件：
+
+def initialize(argv)
+  ......
+  @skip_import_validation = argv.flag?('skip-import-validation', false)
+  super
+end
+
+def run
+  UI.puts
+  podspecs_to_lint.each do |podspec|
+    validator                = Validator.new(podspec, @source_urls, @platforms)
+    validator.skip_import_validation = @skip_import_validation
+    ......
+    validator.validate
+end
+
+省略了一些无关代码，可以看到传入的 --skip-import-validation 参数赋值给了 @skip_import_validation 字段，这个值在 run（类似 main 函数）函数里赋值给了新创建的一个 Validator 对象，并调用了这个对象的 validate 方法进行验证，这就是 pod lib lint 的入口函数。
+
+为了查看 Validator 这个类的 validate 方法又做了哪些事情，在 ~/.rvm/rubies/ruby-2.5.1/lib/ruby/gems/2.5.0/gems/cocoapods-1.9.3/lib/cocoapods/validator.rb 目录打开 validator.rb 文件，感兴趣的话可以仔细看下这个类的代码，这里为了快速查找问题我们全局搜索 skip_import_validation 字段，能够定位到以下函数代码：
+
+def build_pod
+      scheme = if skip_import_validation?
+                 # pod 名称
+                 validation_pod_target.label if validation_pod_target.should_build?
+               else
+                 'App'
+               end
+          output = xcodebuild('build', scheme, 'Release')
+end
+
+def xcodebuild(action, scheme, configuration)
+  command = %W(clean #{action} -workspace #{File.join(validation_dir, 'App.xcworkspace')} -scheme #{scheme} -configuration #{configuration})
+  ......
+
+_xcodebuild(command, true)
+end
+
+def _xcodebuild(command, raise_on_failure = false)
+  Executable.execute_command('xcodebuild', command, raise_on_failure)
+end
+
+删除了一些无关代码逻辑就变的很简单了：声明了一个 scheme 变量，如果传入了 skip_import_validation 参数，scheme 变量赋值为当前 pod 名称，否则赋值 App 字符串，最终将这个变量值传给 xcodebuild 命令的 scheme 值。
+
+额外说明的是：关于 App 这个字符串，在执行 pod lib lint 命令时，CocoaPods 会根据当前的 podspec 文件创建一个叫 App 的工程，执行 pod install 命令生成 App.xcworkspace 文件，对这个工程文件执行 xcodebuild 命令进行校验。感兴趣详细过程的话可以仔细阅读下 lint.rb 这几个文件。
+
+到这里我们也就搞清楚了传入的 --skip-import-validation 参数究竟作用在了哪里，如果没传该参数的话 xcodebuild 命令的 scheme 值为 App，也就是将包含当前 pod 的所有相关 pod 链接进主工程进行编译；如果传递了该参数的话 xcodebuild 命令的 scheme 值为 “当前 pod 名称”，也就是仅编译当前 pod。通过查看这两种命令执行的 log 日志便一目了然：
+
+查看 log 日志结尾能够看到命令执行的结果最终的产物：
+
+- scheme App 的最终产物是App.app，而 - scheme HoloTableView 的最终产物仅是 HoloTableView.freamwork。至此，也就明白了 --skip-import-validation 参数的字面意思：“跳过引用验证”，就是仅仅编译当前 pod 这个 freamwoek，不会将这个 freamwork 引用进主工程进行链接验证。
+
+
+关于疑问 6：PodA 依赖 PodB、PodB 依赖 PodC。PodC 删除了模拟器 arm64 架构导致 PodA lint 失败，即使 PodA 也删除了模拟器 arm64 架构，这是为什么？
+
+这个疑问正是前文提到的，我们一开始在一个基础库 podspec 里移除了模拟器 arm64 架构，导致发布其他业务库失败的问题。关于这个问题的解答依然可以通过仔细观察 lint log 日志找到答案。现在我们模拟一个 lint 报错的环境：
+
+1、我们使用 HoloCollectionView（PodA），使其依赖 HoloTableViewMGPlugin（PodB），并移除模拟器环境下 arm64 架构，其 podspec 如下：
+
+s.dependency 'HoloTableViewMGPlugin'
+s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+
+2、使 HoloTableViewMGPlugin（PodB） 依赖 HoloTableView（PodC），其 podspec 如下：
+
+s.dependency 'HoloTableView', '~> 2.0'
+
+3、使 HoloTableView（PodC）移除模拟器环境下 arm64 架构，其 podspec 如下：
+
+s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+
+在这种环境下对 HoloCollectionView（PodA）执行 pod lib lint --allow-warnings --verbose 命令，应该就能出现期望的报错了。
+
+但因为 pod lib lint 命令是通过在一个临时目录下创建一个临时工程（App.xcodeproj）执行 pod install 生成 App.xcworkspace 进行 xcodebuild 验证的。那在 pod install 时要去拉取正式环境的开源组件，我不想发布这个一个测试版本到正式环境，所以手动修改下 repo 源里的 HoloTableView.podspec.json 的内容来模拟测试环境：
+
+使用 pod repo list 命令，获取 repo 地址，通过 find * -iname HoloTableView 命令找到 HoloTableView.podspec.json 进行修改。
+
+注 1：因为没有指定依赖版本，默认使用最新版本，我只修改了当前的最新版本（2.4.0）的 HoloTableView.podspec.json。
+
+注 2：因为存在 master 和 trunk 两个源，我这里 lint 默认用的是 trunk，所以我只修改了 trunk 源里的 HoloTableView.podspec.json。如果你那使用的 master 源进行 lint 就修改 master 源里的 HoloTableView.podspec.json。
+
+gonghonglou@yujiaqideMacBook-Pro ~ % pod repo
+
+master
+- Type: git (master)
+- URL:  https://github.com/CocoaPods/Specs.git
+- Path: /Users/gonghonglou/.cocoapods/repos/master
+
+trunk
+- Type: CDN
+- URL:  https://cdn.cocoapods.org/
+- Path: /Users/gonghonglou/.cocoapods/repos/trunk
+
+2 repos
+gonghonglou@yujiaqideMacBook-Pro ~ % find /Users/gonghonglou/.cocoapods/repos/trunk -iname HoloTableView 
+/Users/gonghonglou/.cocoapods/repos/trunk/Specs/4/3/b/HoloTableView
+gonghonglou@yujiaqideMacBook-Pro ~ % open /Users/gonghonglou/.cocoapods/repos/trunk/Specs/4/3/b/HoloTableView
+
+如下所示，在 HoloTableView.podspec.json 末尾加上相关命令
+
+{
+  "name": "HoloTableView",
+  "version": "2.4.0",
+  "summary": "Harness the power of UITableView with a simplified, chainable and expressive syntax.",
+  "description": "HoloTableView is a light-weight extension for UITableView. Harness the power of UITableView with a simplified, chainable and expressive syntax.",
+  "homepage": "https://github.com/HoloFoundation/HoloTableView",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "gonghonglou": "gonghonglou@icloud.com"
+  },
+  "source": {
+    "git": "https://github.com/HoloFoundation/HoloTableView.git",
+    "tag": "2.4.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "HoloTableView/Classes/**/*",
+  "pod_target_xcconfig": {
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
+  },
+  "user_target_xcconfig": {
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
+  }
+}
+
+另外还要避免之前 CocoaPods 缓存的影响，可以通过 pod cache clean --all 删除全部缓存。我这里为了避免清空其他不必要的缓存，做法是：pod cache list 获取缓存目录，打开相应目录找到 HoloTableView 相关的源码缓存和 HoloTableView.podspec.json 缓存直接删除掉。
+
+提醒：如果有读者要做实验的话，记得修改过后再改回来啊！
+
+完成以上步骤对 HoloCollectionView 执行 pod lib lint --allow-warnings --verbose 命令就能得到报错：
+
+Ld /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/HoloTableViewMGPlugin.build/Objects-normal/arm64/Binary/HoloTableViewMGPlugin normal arm64 (in target 'HoloTableViewMGPlugin' from project 'Pods')
+    cd /var/folders/z7/9hq4dfq97cn4xt4v56vqykph0000gn/T/CocoaPods-Lint-20210308-58021-1him894-HoloCollectionView/Pods
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -target arm64-apple-ios8.0-simulator -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator14.4.sdk -L/Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Products/Release-iphonesimulator/HoloTableViewMGPlugin -F/Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Products/Release-iphonesimulator/HoloTableViewMGPlugin -F/Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Products/Release-iphonesimulator/HoloTableView -F/Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Products/Release-iphonesimulator/MGSwipeTableCell -filelist /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/HoloTableViewMGPlugin.build/Objects-normal/arm64/HoloTableViewMGPlugin.LinkFileList -install_name @rpath/HoloTableViewMGPlugin.framework/HoloTableViewMGPlugin -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -rpath -Xlinker @loader_path/Frameworks -dead_strip -Xlinker -object_path_lto -Xlinker /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/HoloTableViewMGPlugin.build/Objects-normal/arm64/HoloTableViewMGPlugin_lto.o -Xlinker -objc_abi_version -Xlinker 2 -fobjc-arc -fobjc-link-runtime -framework Foundation -framework HoloTableView -framework MGSwipeTableCell -Xlinker -no_adhoc_codesign -compatibility_version 1 -current_version 1 -Xlinker -dependency_info -Xlinker /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/HoloTableViewMGPlugin.build/Objects-normal/arm64/HoloTableViewMGPlugin_dependency_info.dat -o /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/HoloTableViewMGPlugin.build/Objects-normal/arm64/Binary/HoloTableViewMGPlugin
+ld: warning: ignoring file /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Products/Release-iphonesimulator/HoloTableView/HoloTableView.framework/HoloTableView, missing required architecture arm64 in file /Users/gonghonglou/Library/Developer/Xcode/DerivedData/App-dzvtulystxmgqlauixgfblgkmaay/Build/Products/Release-iphonesimulator/HoloTableView/HoloTableView.framework/HoloTableView (2 slices)
+Undefined symbols for architecture arm64:
+  "_OBJC_CLASS_$_HoloTableRowMaker", referenced from:
+      __OBJC_$_CATEGORY_HoloTableRowMaker_$_MGPlugin in HoloTableRowMaker+MGPlugin.o
+ld: symbol(s) not found for architecture arm64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
+从报错信息清楚的查到报错原因： HoloTableViewMGPlugin（PodB）因为依赖 HoloTableView（PodC），在 arm64-apple-ios8.0-simulator 环境下链接 HoloTableView.framework 找不到 arm64 架构。这当然了，因为我们把 HoloTableView.framework 的模拟器 arm64 架构删掉了嘛。
+
+仔细查看全文 log （pod-lib-lint-HoloCollectionView-podspec.txt）可以看出，pod lib lint --allow-warnings --verbose 命令就是为了校验 App.xcworkspace 工程能够编译成功，而在编译 App.xcworkspace 这个主工程之前会先编译引入的各个 Pod，将各个 Pod 编译成功之后再引入到 App.xcworkspace 里进行打包。
+
+在整个编译过程中，先编译了 HoloTableView 得到了产物 HoloTableView.framework（不包含模拟器 arm64 架构），然后在编译 HoloTableViewMGPlugin（依赖 HoloTableView）时，对 arm64-apple-ios8.0-simulator 环境下链接 HoloTableView.framework 出错了。
+
+
+后记
+
+所以，如果你在使用 Xcode12 进行组件发版，对于这个问题的解决方案可以参考 Braintree 的方案（Braintree.podspec)，在 podsepc 里加上移除模拟器环境 arm64 架构支持的命令。但因为 “疑问 6” 场景的存在，这意味着你可能需要将所有的组件重新打个版本。
+
+或者也可以像我们一样暂时使用 pod lib lint --skip-import-validation 参数跳过引用验证，但这可能导致某些问题的隐藏，并非长久之计。
+
+看来也只有等待三方库们各自支持了模拟器环境下的 arm64 架构之后才能彻底忽略这一问题了。
+
+终于，我们通过查看大量的 log 日志和部分 CocoaPods 源码搞清楚了所有的疑问。也弄明白了 lint 过程，或者说 xcodebuild 过程的一些内容。过后才觉得对我们来说这本该是 App 编译产出的基础知识，却因为学了一点 iOS 技能就早早开始了业务开发，平时也不太用到所以就被忽略了，导致一开始看到问题的时候并未理解到本质。希望之后能多了解些基础知识，多遇到些这样的问题和这样的 Debug 过程吧。
+
+参考与佳期的个人博客：http://gonghonglou.com/2021/03/09/xcode12-lint-error/
+

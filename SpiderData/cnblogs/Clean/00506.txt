@@ -1,0 +1,221 @@
+1.unicode、gbk、gb2312、utf-8的关系
+
+http://www.pythonclub.org/python-basic/encode-detail 这篇文章写的比较好，utf-8是unicode的一种实现方式，unicode、gbk、gb2312是编码字符集；
+
+2.python中的中文编码问题
+
+2.1 .py文件中的编码
+
+　　Python 默认脚本文件都是 ANSCII 编码的，当文件 中有非 ANSCII 编码范围内的字符的时候就要使用"编码指示"来修正。 一个module的定义中，如果.py文件中包含中文字符（严格的说是含有非anscii字符），则需要在第一行或第二行指定编码声明：
+
+# -*- coding=utf-8 -*-或者 #coding=utf-8 其他的编码如：gbk、gb2312也可以； 否则会出现类似:SyntaxError: Non-ASCII character '/xe4' in file ChineseTest.py on line 1, but no encoding declared; see http://www.pytho for details这样的异常信息；n.org/peps/pep-0263.html
+
+2.2 python中的编码与解码
+
+　　先说一下python中的字符串类型，在python中有两种字符串类型，分别是str和unicode，他们都是basestring的派生类；str类型是一个包含Characters represent (at least) 8-bit bytes的序列；unicode的每个unit是一个unicode obj;所以：
+
+len(u'中国')的值是2；len('ab')的值也是2；
+
+　　在str的文档中有这样的一句话：The string data type is also used to represent arrays of bytes, e.g., to hold data read from a file. 也就是说在读取一个文件的内容，或者从网络上读取到内容时，保持的对象为str类型；如果想把一个str转换成特定编码类型，需要把str转为Unicode,然后从unicode转为特定的编码类型如：utf-8、gb2312等；
+
+python中提供的转换函数：
+
+unicode转为 gb2312,utf-8等
+
+# -*- coding=UTF-8 -*-
+
+if __name__ == '__main__':
+    s = u'中国'
+    s_gb = s.encode('gb2312')
+
+utf-8,GBK转换为unicode 使用函数unicode(s,encoding) 或者s.decode(encoding)
+
+# -*- coding=UTF-8 -*-
+
+if __name__ == '__main__':
+    s = u'中国'
+
+#s为unicode先转为utf-8
+
+s_utf8 =  s.encode('UTF-8')
+
+assert(s_utf8.decode('utf-8') == s)
+
+普通的str转为unicode
+
+# -*- coding=UTF-8 -*-
+
+if __name__ == '__main__':
+    s = '中国'
+
+su = u'中国''
+
+#s为unicode先转为utf-8
+
+#因为s为所在的.py(# -*- coding=UTF-8 -*-)编码为utf-8
+
+s_unicode =  s.decode('UTF-8')
+
+assert(s_unicode == su)
+
+#s转为gb2312,先转为unicode再转为gb2312
+
+s.decode('utf-8').encode('gb2312')
+
+#如果直接执行s.encode('gb2312')会发生什么？
+
+s.encode('gb2312')
+
+# -*- coding=UTF-8 -*-
+
+if __name__ == '__main__':
+    s = '中国'
+
+#如果直接执行s.encode('gb2312')会发生什么？
+
+s.encode('gb2312')
+
+这里会发生一个异常：
+
+Python 会自动的先将 s 解码为 unicode ，然后再编码成 gb2312。因为解码是python自动进行的，我们没有指明解码方式，python 就会使用 sys.defaultencoding 指明的方式来解码。很多情况下 sys.defaultencoding 是 ANSCII，如果 s 不是这个类型就会出错。 
+拿上面的情况来说，我的 sys.defaultencoding 是 anscii，而 s 的编码方式和文件的编码方式一致，是 utf8 的，所以出错了: UnicodeDecodeError: 'ascii' codec can't decode byte 0xe4 in position 0: ordinal not in range(128) 
+对于这种情况，我们有两种方法来改正错误： 
+一是明确的指示出 s 的编码方式 
+#! /usr/bin/env python 
+# -*- coding: utf-8 -*- 
+s = '中文' 
+s.decode('utf-8').encode('gb2312') 
+二是更改 sys.defaultencoding 为文件的编码方式
+
+#! /usr/bin/env python 
+# -*- coding: utf-8 -*-
+
+import sys 
+reload(sys) # Python2.5 初始化后会删除 sys.setdefaultencoding 这个方法，我们需要重新载入 
+sys.setdefaultencoding('utf-8')
+
+str = '中文' 
+str.encode('gb2312')
+
+文件编码与print函数
+建立一个文件test.txt，文件格式用ANSI，内容为:
+abc中文
+用python来读取
+# coding=gbk
+print open("Test.txt").read()
+结果：abc中文
+把文件格式改成UTF-8：
+结果：abc涓枃
+显然，这里需要解码：
+# coding=gbk
+import codecs
+print open("Test.txt").read().decode("utf-8")
+结果：abc中文
+上面的test.txt我是用Editplus来编辑的，但当我用Windows自带的记事本编辑并存成UTF-8格式时，
+运行时报错：
+Traceback (most recent call last):
+  File "ChineseTest.py", line 3, in <module>
+    print open("Test.txt").read().decode("utf-8")
+UnicodeEncodeError: 'gbk' codec can't encode character u'/ufeff' in position 0: illegal multibyte sequence
+
+原来，某些软件，如notepad，在保存一个以UTF-8编码的文件时，会在文件开始的地方插入三个不可见的字符（0xEF 0xBB 0xBF，即BOM）。
+因此我们在读取时需要自己去掉这些字符，python中的codecs module定义了这个常量：
+# coding=gbk
+import codecs
+data = open("Test.txt").read()
+if data[:3] == codecs.BOM_UTF8:
+ data = data[3:]
+print data.decode("utf-8")
+结果：abc中文
+
+（四）一点遗留问题
+在第二部分中，我们用unicode函数和decode方法把str转换成unicode。为什么这两个函数的参数用"gbk"呢？
+第一反应是我们的编码声明里用了gbk(# coding=gbk)，但真是这样？
+修改一下源文件：
+# coding=utf-8
+s = "中文"
+print unicode(s, "utf-8")
+运行，报错：
+Traceback (most recent call last):
+  File "ChineseTest.py", line 3, in <module>
+    s = unicode(s, "utf-8")
+UnicodeDecodeError: 'utf8' codec can't decode bytes in position 0-1: invalid data
+显然，如果前面正常是因为两边都使用了gbk，那么这里我保持了两边utf-8一致，也应该正常，不至于报错。
+更进一步的例子，如果我们这里转换仍然用gbk：
+# coding=utf-8
+s = "中文"
+print unicode(s, "gbk")
+结果：中文
+
+python中的print原理：
+　　When Python executes a print statement, it simply passes the output to the operating system (using fwrite() or something like it), and some other program is responsible for actually displaying that output on the screen. For example, on Windows, it might be the Windows console subsystem that displays the result. Or if you're using Windows and running Python on a Unix box somewhere else, your Windows SSH client is actually responsible for displaying the data. If you are running Python in an xterm on Unix, then xterm and your X server handle the display.
+
+　　To print data reliably, you must know the encoding that this display program expects.
+
+简单地说，python中的print直接把字符串传递给操作系统，所以你需要把str解码成与操作系统一致的格式。Windows使用CP936(几乎与gbk相同)，所以这里可以使用gbk。
+最后测试：
+
+这也可以解释为何如下输出不一致：
+
+编码问题测试
+
+使用 chardet 可以很方便的实现字符串/文件的编码检测
+例子如下:
+
+>>>
+ import
+ urllib
+
+使用 chardet 可以很方便的实现字符串/文件的编码检测
+
+例子如下:
+
+>>>
+ import
+ urllib
+
+chardet 下载地址 http://chardet.feedparser.org/
+
+特别提示：
+
+在工作中，经常遇到，读取一个文件，或者是从网页获取一个问题，明明看着是gb2312的编码，可是当使用decode转时，总是出错，这个时候，可以使用decode('gb18030')这个字符集来解决，如果还是有问题，这个时候，一定要注意，decode还有一个参数，比如，若要将某个String对象s从gbk内码转换为UTF-8，可以如下操作 
+s.decode('gbk').encode('utf-8′) 
+可是，在实际开发中，我发现，这种办法经常会出现异常： 
+UnicodeDecodeError: ‘gbk' codec can't decode bytes in position 30664-30665: illegal multibyte sequence 
+这 是因为遇到了非法字符——尤其是在某些用C/C++编写的程序中，全角空格往往有多种不同的实现方式，比如/xa3/xa0，或者/xa4/x57，这些 字符，看起来都是全角空格，但它们并不是“合法”的全角空格（真正的全角空格是/xa1/xa1），因此在转码的过程中出现了异常。 
+这样的问题很让人头疼，因为只要字符串中出现了一个非法字符，整个字符串——有时候，就是整篇文章——就都无法转码。 
+解决办法： 
+s.decode('gbk', ‘ignore').encode('utf-8′) 
+因为decode的函数原型是decode([encoding], [errors='strict'])，可以用第二个参数控制错误处理的策略，默认的参数就是strict，代表遇到非法字符时抛出异常； 
+如果设置为ignore，则会忽略非法字符； 
+如果设置为replace，则会用?取代非法字符； 
+如果设置为xmlcharrefreplace，则使用XML的字符引用。
+
+python文档
+
+decode( [encoding[, errors]]) 
+Decodes the string using the codec registered for encoding. encoding defaults to the default string encoding. errors may be given to set a different error handling scheme. The default is 'strict', meaning that encoding errors raise UnicodeError. Other possible values are 'ignore', 'replace' and any other name registered via codecs.register_error, see section 4.8.1. 
+详细出处参考：http://www.jb51.net/article/16104.htm
+
+参考文献
+
+【1】http://blog.chinaunix.net/u2/68206/showart.php?id=668359
+
+【2】http://www.pythonclub.org/python-basic/codec
+
+【3】http://www.pythonclub.org/python-scripts/quanjiao-banjiao
+
+【4】http://www.pythonclub.org/python-basic/chardet
+
+JS从URL上获取中文字符,默认获取到是二进制码：
+
+encodeURI 方法返回一个编码的 URI。
+
+decodeURI，返回初始的字符串即正常显示中文字符。
+
+encodeURI 方法不会对下列字符进行编码：":"、"/"、";" 和 "?"。请使用 encodeURIComponent 方法对这些字符进行编码。
+
+使用方法：decodeURI(url),encodeURI (url)
+
+原文地址：https://www.cnblogs.com/zhaoyl/p/3770340.html
+

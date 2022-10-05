@@ -1,0 +1,36 @@
+yum -y install salt-master 安装时，出现以下报错：
+
+file /usr/lib64/python2.6/zipfile.pyc from install of python-libs-2.6.6-66.el6_8.x86_64 conflicts with file from package python-2.6.6-36.el6.x86_64
+  file /usr/lib64/python2.6/zipfile.pyo from install of python-libs-2.6.6-66.el6_8.x86_64 conflicts with file from package python-2.6.6-36.el6.x86_64
+
+从报错信息中可以发现conflicts，这是冲突的意思，即python-libs-2.6.6-66.el6_8.x86_64与python-2.6.6-36.el6.x86_64发生冲突；
+
+查询发现系统已经安装了2.6.6-26版本
+
+[root@m01 ~]# rpm -q python-libs
+python-libs-2.6.6-36.el6.x86_64
+[root@m01 ~]# rpm -q python
+python-2.6.6-36.el6.x86_64
+
+而yum安装salt-master的版本是2015.5.10-2.el6 ，需要python-libs-2.6.6-66.el6.x86_64版本，因此导致发生冲突
+
+python-libs-2.6.6-66.el6_8.x86_6
+python-2.6.6-36.el6.x86_64
+
+尝试卸载发生冲突的包然后安装需要的版本，可以发现卸载不了，这个包被其它包依赖，受保护，不能卸载
+yum -y remove python-2.6.6-36.el6.x86_64
+
+Error: Trying to remove "yum", which is protected
+ You could try using --skip-broken to work around the problem
+ You could try running: rpm -Va --nofiles --nodigest
+
+换个思维，那我是否可以升级
+
+yum -y update  python-2.6.6-36.el6.x86_64
+[root@m01 ~]# rpm -qa python-libs  
+python-libs-2.6.6-66.el6_8.x86_64
+[root@m01 ~]# rpm -qa python
+python-2.6.6-66.el6_8.x86_64
+
+升级后果然可以安装salt-master了
+

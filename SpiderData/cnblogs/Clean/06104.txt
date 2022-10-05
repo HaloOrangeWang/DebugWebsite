@@ -1,0 +1,39 @@
+找了半天没找到原因，记录一下
+
+操作系统：windows 8.1
+
+python版本：python 3.8.1
+
+aiohttp版本：3.6.2
+
+源码：
+
+运行以上代码时，出现如下异常：
+
+但是在第8行处加上一句await asyncio.sleep(1)后，无异常（方案A）
+
+或者将
+
+asyncio.run(main())
+
+改为：
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+
+也无异常。（方案B）
+
+（实际使用的时候方案B也会出现上述异常，但这里未能复现，且也可用方案A解决）
+
+我就很奇怪为什么加上一句await asyncio.sleep(1)就不报错了
+
+还有，如果request抛出了一个异常并被捕获的话（将aiohttp_request_test改为如下）：
+
+则也不会报RuntimeError: Event loop is closed
+
+困了，找到原因了再回来补充。
+
+-----------------------------------------------------------分割线-----------------------------------------------------------
+
+在aiohttp官方文档找到一个疑似的原因：https://docs.aiohttp.org/en/latest/client_advanced.html#graceful-shutdown
+

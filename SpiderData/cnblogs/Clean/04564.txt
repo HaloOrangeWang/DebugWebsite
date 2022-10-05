@@ -1,0 +1,240 @@
+　　安装TensorFlow在Windows上，真是让我心力交瘁，想死的心都有了，在Windows上做开发真的让人发狂。
+
+　　首先说一下我的经历，本来也就是起初，网上说python3.7不支持TensorFlow环境，而且使用Anaconda最好，所以我将我之前Windows上所有的python环境卸载掉！！！，对没错，是所有，包括Anaconda环境，python环境，pycharm环境也卸载掉了。而且我丧心病狂的在电脑上找几乎所有关于python的字眼，全部删除掉，统统不留。只是为了铁了心在Windows上成功安装一个TensorFlow环境。
+
+　　之前在Linux上环境都有，但是总是切换Linux和Windows比较麻烦，但是这个原因解释起来也比较麻烦，就不多说了。总之，就是必须在Windows上安装TensorFlow！这次是铁了心的，因为去年在Windows上没有安装成功，我就避而远之，没弄，但是现在不得不再来，我决定遇到问题不再躲避，要直面挫折，即使浪费很长的时间，也必须完成（其实是正好这段时间不太忙）。
+
+　　然后听到同事说，很简单啊，就是安装一个Anaconda对应python3.6版本的就行，后面直接pip  install 就OK了。当然我们希望是这样，可是事与愿违，简直是气死我了，这一天安装anaconda就安装了三次，你说累不累，除了安装这个，还要安装对应的包，真的是卸了又安，安了又卸。
+
+　　而打算最后一次尝试，竟然是安装的python3.7成功了（各位盆友，记住，只是安装成功了！！），哈哈哈，真的我觉得我这笑是无奈的笑。
+
+　　下图是anaconda的版本和python的版本：
+
+　　下图是TensorFlow和keras安装成功的见证：
+
+　　但是，使用的时候还是报错！！！下图是在python3.7的情况下：
+
+　　唉，难受，那最最后一次尝试，就是在python3.6版本下安装，终于成功了！！包括测试成功，上图：
+
+　　所以，我的总结就是，安装python3.6 还是python3.7的什么都不重要，最重要的是遇到问题，解决问题。无论用哪个版本，只要TensorFlow支持这个版本，我们就可以按照成功！！！，但是前提是必须官方支持的版本
+
+　　好了，牢骚发完了，废话也说完了，下面说说安装注意的坑。
+
+
+1，anaconda安装要注意的问题
+
+　　话不多说，先上anaconda的下载地址。
+
+　　镜像下载地址：清华镜像源
+
+　　官方下载地址：https://repo.anaconda.com/archive/
+
+　　那anaconda按照要注意的问题是什么呢？
+
+
+1.1，安装到这一步，配置所有的User，选择第二个！！
+
+　　如果选择第一个，可能会出现，下面报错，也就是PermissionError，权限不足，所以就是安装不成功，即使我使用了管理员权限进入了cmd，但是还是没有任何用处。
+
+　　当然，有可能你们有用，那么如何进入管理员身份运行，如下：
+
+　　到C:\Windows\System32目录下，右键单击cmd.exe文件以管理员身份运行。如下
+
+　　运行结果如下：
+
+
+1.2，安装到这一步，最好√上第一个，让anaconda自己配置环境变量
+
+　　当然，不让anaconda自己配置环境变量也可以，那就是我们自己去我的电脑配置。
+
+　　如何确保已经配置好环境变量了呢？
+
+　　我们打开cmd，直接输入pip list 或者 conda list，如果出现anaconda安装的包，则说明没有问题，如果出现，无此命令，则环境变量没有配置好。
+
+　　我第一次没有打 √ ，选择自己配置的环境变量。
+
+　　配置环境变量就是根据安装时的路径找到以下几个路径用于环境配置，我放在E盘里，以下为我安装时的路径。
+
+E:\anaconda3
+
+E:\anaconda3\Scripts
+
+E:\anaconda3\Library\bin
+
+　　配置环境：回到桌面，右击‘我的电脑’，然后点击属性-高级系统设置-右下角点击环境变量，点击系统变量下方新建，如下图所示，依次将上面的三个路径输入，路径间用英文状态下的分号隔开，点击确定并应用。
+
+　　然后设置环境变量：
+
+　　检测是否安装成功
+　　打开命令提示符（按住田字键和R键）输入cmd,输入conda和python，检测是否安装成功。
+
+　　好啦~安装完成啦！
+
+
+2，安装TensorFlow中报错cannot uninstall wrapt
+
+　　报错如下：
+
+Cannot uninstall 'wrapt'. It is a distutils installed project and thus we cannot 
+accurately determine which files belong to it which would lead to only a partial
+ uninstall.
+
+　　导致错误的原因：Wrapt issue when installing package
+
+　　解决方法：
+
+pip install wrapt --upgrade  --ignore-installed wrapt
+
+　　强行升级，然后安装TensorFlow和Keras，成功了！！
+
+# GPU 版本
+>>> pip install --upgrade tensorflow-gpu
+
+# CPU 版本
+>>> pip install --upgrade tensorflow
+
+# Keras 安装
+>>> pip install keras
+
+　　安装成功，是成功了，但是无法使用，依旧会报错。
+
+
+3，使用Keras中报错TensorFlow错误
+
+　　导入Keras，发现报错了，报错信息如下：
+
+　　本以为是版本的问题，然后卸载了keras和TensorFlow：
+
+　　最好将其依赖一同卸载掉：
+
+　　然后尝试安装了TensorFlow更低的版本（版本如下面所示）：
+
+　　结果无济于事，没用！！！
+
+　　迫不得已，我决定降低python版本，尝试python3.6，大家都说3.6好，那就用呗。
+
+
+4，在anaconda中降低python版本，尝试python3.6
+
+　　使用以下命令创建新环境：
+
+conda create -n env_name list of packages
+
+　　其中 -n 代表 name，env_name 是需要创建的环境名称，list of packages 则是列出在新环境中需要安装的工具包。
+
+　　我现在的python版本是3.7，但是我想安装一个python 3.6的环境，则在anaconda prompt输入：
+
+conda create -n python36 python=3.6
+
+　　控制台会输出：
+
+　　输入y：
+
+　　下面我们激活这个环境：
+
+conda activate python36
+
+　　然后安装keras和TensorFlow，最后在python环境中验证，发现新的错误：
+
+　　讲道理，现在的我已经麻木了，感觉自己把该犯的错全犯了，运气怎么这么差呢？
+
+　　百度，改错方法如下：
+
+
+5，使用TensorFlow，keras出现错误：modulenotfounderror: no module named tensorflow.python
+
+　　真的是遇到问题，解决问题，我已经麻木了。
+
+　　可能是因为tensorflow作为后端对keras的支持不够好，但是keras的backend 同时支持tensorflow和theano，并且默认是tensorflow,因此在win本上需要更改backend为theano才能运行。
+
+　　在keras安装目录里（在安装环境的目录里有Lib\site-packages\keras），找到Lib\site-packages\keras\backend__init__.py文件。
+
+将
+
+_BACKEND = 'tensorflow'
+
+改为
+
+_BACKEND = 'theano'
+
+　　然后在C:\Users\Administrator\下有个文件夹.keras，里面有keras.json文件，修改里面的内容，原来是：
+
+　　那这个只解决了Keras的问题，但是TensorFlow的问题仍然没有解决：
+
+　　从下面代码来看，我们的Keras确实可以运行。但是TensorFlow仍然报错。
+
+python使用TensorFlow报错 ModuleNotFoundError:No module named 'tensorflow.python
+
+　　python使用TensorFlow报错 ModuleNotFoundError:No module named 'tensorflow.python
+
+　　我去我同事能使用的TensorFlow的安装包site_packages下的tensorflow包里面查看，发现别人的环境都是这样的：
+
+　　而我的环境中没有python，example include这几个文件夹，终于知道问题出在哪里了，所以我打算将别人的这个文件夹复制下来，但是于此同时在网上看到一个安装方法，反正折腾一天了，这个复制还在进行当中，我就先尝试了一下：
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ https://mirrors.tuna.tsinghua.edu.cn/tensorflow/windows/cpu/tensorflow-1.3.0rc0-cp36-cp36m-win_amd64.whl
+
+　　然后等了好久，安装成功了：
+
+　　我也就不报希望，但是还是例行公事的在python环境中验证了一下：
+
+　　不知道大家看到了什么，对，安装成功了！！！！
+
+　　此时此刻，我的内心已经毫无波澜了，一丝喜悦感都没有了。
+
+　　为了测试到底能不能用，我又将keras的后端环境由theano换成了TensorFlow（如何改回去，上面有代码，大家可以自己改，这里不再重复了）。
+
+　　然后测试，成功！！！，上图：
+
+　　今天真的是，哈哈哈哈哈。既然这个舒服，那我就再在python3.7上测试安装keras和tensorflow，看看是否成功，但是去清华大学镜像仓库，发现没有python3.7版本的tensorflow。
+
+　　下面记录一下去清华大学镜像仓库下载并安装对应版本的tensorflow，一方面记录正确的安装过程，另一方面，证明确实没用python3.7对应的TensorFlow版本。
+
+
+6，一次安装成功TensorFlow过程
+
+　　直接去清华大学镜像仓库，查看对应版本的tensorflow：地址：https://mirrors.tuna.tsinghua.edu.cn/
+
+　　寻找找tensorflow，并点进去：
+
+　　那查找自己对应的电脑系统：
+
+　　我安装的是CPU版本的：
+
+　　　　点进去，发现，目前只有python3.5 和 python3.6的：
+
+　　然后，下载对应python版本的轮子，直接安装即可。
+
+
+7，不信邪，尝试python3.7版本安装TensorFlow，最终放弃
+
+　　为什么这样说呢？，因为我在常下载轮子的地方发现了python3.7版本对应的TensorFlow，真的。
+
+　　（下载轮子的地址：https://www.lfd.uci.edu/~gohlke/pythonlibs/）
+
+　　上图：
+
+　　反正都失败这么多次了，也不差这一回，我就继续安装了一下python3.7版本的：
+
+pip install  tensorflow-1.9.0-cp37-cp37m-win_amd64.whl
+
+　　显示，安装成功：
+
+　　此时，内心窃喜，测试一下：
+
+　　心里有很多脏话，不值当讲不当讲，还是没有用。
+
+　　所以目前决定放弃在python3.7版本安装tensorflow！！反正在python3.6版本上已经安装成功了，可以用就行了。
+
+
+8，彩蛋　
+
+　　哈哈哈，很高兴，看到我这篇文章的盆友，能看到这里，这里我分享一下我这次拨开乌云见彩虹的坎坷历程。
+
+　　讲道理，这两天的无数次尝试，最终成功，让我明白一个道理，就是遇到问题并不可怕，可怕的是自己脆弱的心，不断想放弃的想法。
+
+　　记得去年十月份的时候，我在Windows上尝试安装tensorflow失败了。我就对深度学习这块避而远之，即使训练模型也在Linux服务器上做， 麻烦是麻烦了点，但是就是不愿意面对这个麻烦。但是从上个月开始，当我看到同事完成了一件事后，我决定安装tensorflow（因为最近确实用的比较多，切换太频繁也比较麻烦），她的那锲而不舍精神打动了我，什么事情呢？ 先说一下背景，她是学习java的，虽然说编程语法大相径庭，但是不同点依旧很多，而需要她使用python一个web框架flask做一个东西。她虽然不会，但是不断尝试，不断尝试，可以说是遇到了很多很多麻烦，挫折，我也天天听到了她的抱怨（可惜我帮不上），但是终于听到了她说“yes”。我知道她成功了。所以，我决定不放弃，一定要安装成功，最后也确实安装成功了。
+
+　　那其实，很多人说，没这么麻烦，我在Windows上直接pip install 就成功了啊，也确实是，但是我确实遇到了很多麻烦。希望我这次经历能帮到需要帮助的盆友。
+
+　　
+

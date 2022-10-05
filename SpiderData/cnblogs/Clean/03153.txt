@@ -1,0 +1,104 @@
+最新新配置了一台服务器。安装 的时候直接使用了最新的Python 3.7最新版本。
+
+安装成功，编译成功。但是用pip 安装包的时候提示：pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available。
+
+已经习惯了用pip安装各种包，突然不能用，还是非常 不习惯 。果断寻找解决方案。
+
+搜索了一些资料，发现原因是python3.7为了安全性考虑，要求使用openssl 1.0.2之后的版本。但是服务器安装的时候，版本是1.0.1。
+
+openssl是什么东西可以百度一下，其实就是加密传输相关的一些基础库。但是在Linux里面广泛使用。几乎所有的服务器都需要它支持。
+
+可以通过openssl version查看SSL库版本号。
+
+于是想到升级OpenSSL。此处坑来了。yum安装这些基础库最简单快捷，但是包括阿里云最新的yum镜像里面，也是使用的1.0.1的openssl。所以用yum 是无法升级的，需要手动编译。
+
+于是安装最新的1.0.2希望能解决这个问题：
+
+wget http://www.openssl.org/source/openssl-1.0.2j.tar.gz
+tar -xzf openssl-1.0.2j.tar.gz
+cd openssl-1.0.2j
+./config
+./config -t
+make
+make install
+openssl version #查看版本
+
+编译成功也能正常使用，但是pip依然不能使用，需要重装Python。于是
+
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz
+tar -xvJf Python-3.7.0.tar.xz
+cd Python-3.7.0
+./configure --with-ssl --enable-optimizations --with-openssl=/usr/local/openssl
+make && make install
+
+还是失败。于是在Make的时候仔细看了一下，发现另有错误信息。
+
+Could not build the ssl module!
+Python requires an OpenSSL 1.0.2 or 1.1 compatible libssl with X509_VERIFY_PARAM_set1_host().
+LibreSSL 2.6.4 and earlier do not provide the necessary APIs, https://github.com/libressl-portable/portable/issues/381
+
+还是找不到openssl 1.0.2。不知道是不是编译的流程有问题。按理说最简单的包应该没有什么问题。估计问题出在openssl安装好了之后，相关的系统的lib库没有更新。
+
+于是继续搜索了一次。发现如果安装Open SSL 1.0.2。某些程序会报错。还有说安装openssl的时候，安装配置需要改
+
+./config
+
+改为
+
+./config shared zlib
+
+由于要赶时间使用。所以先用了简单方案。换回Python3.6.6使用。
+
+安装方法：
+
+wget https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tgz
+tar xzf Python-3.6.6.tgz
+cd Python-3.6.6
+./configure --enable-optimizations
+
+make
+make install
+
+然后使用
+
+curl https://bootstrap.pypa.io/get-pip.py | python3
+
+安装pip，之后可以正常使用。
+
+后续又搜索了一下安装和升级Openssl的方法。
+
+1、安装依赖
+
+yum install -y zlib
+
+2、编译和安装
+
+wget http://www.openssl.org/source/openssl-1.0.2j.tar.gz
+tar -xzf openssl-1.0.2j.tar.gz
+cd openssl-1.0.2j
+./config shared zlib
+
+./config -t
+make
+make install
+openssl version #查看版本
+
+mv /usr/bin/openssl /usr/bin/openssl.bak
+mv /usr/include/openssl /usr/include/openssl.bak
+ln -s /usr/local/ssl/bin/openssl /usr/bin/openssl
+ln -s /usr/local/ssl/include/openssl /usr/include/openssl
+
+#配置库文件搜索路径
+echo "/usr/local/ssl/lib" >> /etc/ld.so.conf
+ldconfig -v
+
+但是没有进行一波测试。因为线上已经使用python3.6在跑服务了。
+
+理论上应该可行。
+
+另外有意思的是python3.7官方推荐使用LibRessl进行SSL加密传输
+
+https://www.libressl.org/
+
+但是却没有相关的文档 ，怎么编译到python3.7里面。还是说直接安装了就会自动使用libressl，尚未可知。
+

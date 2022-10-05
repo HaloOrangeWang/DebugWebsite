@@ -1,0 +1,173 @@
+自己开发了一个股票智能分析软件，功能很强大，需要的点击下面的链接获取：
+
+https://www.cnblogs.com/bclshuai/p/11380657.html
+
+1.问题描述
+
+一开始用pycharm，tensorflow2.0，去编写卷积神经网络的代码，是可以正常运行的，过了几天去编译又报错了。
+
+1.1numpy版本报错
+
+D:\Anaconda3\envs\tensorflow\python.exe D:/Project/python/tensorflow/venv/src/CNN.py
+D:\Anaconda3\envs\tensorflow\lib\site-packages\numpy\__init__.py:143: UserWarning: mkl-service package failed to import, therefore Intel(R) MKL initialization ensuring its correct out-of-the box operation under condition when Gnu OpenMP had already been loaded by Python process is not assured. Please install mkl-service package, see http://github.com/IntelPython/mkl-service
+  from . import _distributor_init
+D:\Anaconda3\envs\tensorflow\lib\site-packages\numpy\__init__.py:143: UserWarning: mkl-service package failed to import, therefore Intel(R) MKL initialization ensuring its correct out-of-the box operation under condition when Gnu OpenMP had already been loaded by Python process is not assured. Please install mkl-service package, see http://github.com/IntelPython/mkl-service
+  from . import _distributor_init
+Traceback (most recent call last):
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\numpy\core\__init__.py", line 22, in <module>
+    from . import multiarray
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\numpy\core\multiarray.py", line 12, in <module>
+    from . import overrides
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\numpy\core\overrides.py", line 7, in <module>
+    from numpy.core._multiarray_umath import (
+ImportError: DLL load failed: 找不到指定的模块。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:/Project/python/tensorflow/venv/src/CNN.py", line 1, in <module>
+    import tensorflow as tf
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\__init__.py", line 41, in <module>
+    from tensorflow.python.tools import module_util as _module_util
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\python\__init__.py", line 40, in <module>
+    from tensorflow.python.eager import context
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\python\eager\context.py", line 29, in <module>
+    import numpy as np
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\numpy\__init__.py", line 145, in <module>
+    from . import core
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\numpy\core\__init__.py", line 48, in <module>
+    raise ImportError(msg)
+ImportError:
+
+IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+
+Importing the numpy C-extensions failed. This error can happen for
+many reasons, often due to issues with your setup or how NumPy was
+installed.
+
+We have compiled some common reasons and troubleshooting tips at:
+
+https://numpy.org/devdocs/user/troubleshooting-importerror.html
+
+Please note and check the following:
+
+* The Python version is: Python3.7 from "D:\Anaconda3\envs\tensorflow\python.exe"
+  * The NumPy version is: "1.20.2"
+
+and make sure that they are the versions you expect.
+Please carefully study the documentation linked above for further help.
+
+Original error was: DLL load failed: 找不到指定的模块。
+
+Process finished with exit code 1
+
+1.2h5py版本报错
+
+D:\Anaconda3\envs\tensorflow\python.exe D:/Project/python/tensorflow/venv/src/MoblieNetModel.py
+Traceback (most recent call last):
+  File "D:/Project/python/tensorflow/venv/src/MoblieNetModel.py", line 1, in <module>
+    import tensorflow as tf
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\__init__.py", line 41, in <module>
+    from tensorflow.python.tools import module_util as _module_util
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\python\__init__.py", line 47, in <module>
+    from tensorflow.python import keras
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\python\keras\__init__.py", line 27, in <module>
+    from tensorflow.python.keras import models
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\python\keras\models.py", line 26, in <module>
+    from tensorflow.python.keras.engine import functional
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\python\keras\engine\functional.py", line 38, in <module>
+    from tensorflow.python.keras.engine import training as training_lib
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\python\keras\engine\training.py", line 53, in <module>
+    from tensorflow.python.keras.saving import hdf5_format
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\tensorflow\python\keras\saving\hdf5_format.py", line 41, in <module>
+    import h5py
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\h5py\__init__.py", line 34, in <module>
+    from . import version
+  File "D:\Anaconda3\envs\tensorflow\lib\site-packages\h5py\version.py", line 17, in <module>
+    from . import h5 as _h5
+  File "h5py\h5.pyx", line 41, in init h5py.h5
+AttributeError: type object 'h5py.h5.H5PYConfig' has no attribute '__reduce_cython__'
+
+Process finished with exit code 1
+
+2.问题分析
+
+pycharm会对库 版本更新，升级新的版本，导致版本不匹配。
+
+3.解决方案
+
+还原到原来的版本
+
+（1）打开anconda prompt命令行
+
+（2）输入activate tensorflow激活tensorflow环境
+
+(base) C:\Users\baochunlei>activate tensorflow
+
+（3）先输入pip uninstall numpy卸载
+
+(tensorflow) C:\Users\baochunlei>pip uninstall numpy
+Found existing installation: numpy 1.20.2
+Uninstalling numpy-1.20.2:
+  Would remove:
+    d:\anaconda3\envs\tensorflow\lib\site-packages\numpy-1.20.2.dist-info\*
+    d:\anaconda3\envs\tensorflow\lib\site-packages\numpy\*
+    d:\anaconda3\envs\tensorflow\scripts\f2py-script.py
+    d:\anaconda3\envs\tensorflow\scripts\f2py.exe
+  Would not remove (might be manually added):
+    d:\anaconda3\envs\tensorflow\lib\site-packages\numpy\.libs\libopenblas.PYQHXLVVQ7VESDPUVUADXEVJOBGHJPAY.gfortran-win_amd64.dll
+    d:\anaconda3\envs\tensorflow\lib\site-packages\numpy\core\tests\test_issue14735.py
+    d:\anaconda3\envs\tensorflow\lib\site-packages\numpy\distutils\compat.py
+    d:\anaconda3\envs\tensorflow\lib\site-packages\numpy\random\_bit_generator.cp37-win_amd64.pyd
+    d:\anaconda3\envs\tensorflow\lib\site-packages\numpy\random\_bit_generator.pxd
+Proceed (y/n)? y
+  Successfully uninstalled numpy-1.20.2
+
+（4）再输入pip install numpy==1.18.5安装指定低版本的numpy
+
+(tensorflow) C:\Users\baochunlei>pip install numpy==1.18.5
+Looking in indexes: http://pypi.douban.com/simple
+Collecting numpy==1.18.5
+  Downloading http://pypi.doubanio.com/packages/e4/01/7a26148f7de9eb6c27f95b29eba16b7e820827cb9ebaae182d7483e44711/numpy-1.18.5-cp37-cp37m-win_amd64.whl (12.7 MB)
+     |████████████████████████████████| 12.7 MB 930 kB/s
+Installing collected packages: numpy
+  Attempting uninstall: numpy
+    Found existing installation: numpy 1.20.2
+    Uninstalling numpy-1.20.2:
+      Successfully uninstalled numpy-1.20.2
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+tensorflow 2.3.1 requires h5py<2.11.0,>=2.10.0, but you have h5py 3.3.0 which is incompatible.
+tensorflow 2.3.1 requires tensorflow-estimator<2.4.0,>=2.3.0, but you have tensorflow-estimator 2.5.0 which is incompatible.
+Successfully installed numpy-1.18.5
+
+（5）卸载pip uninstall h5py
+
+(tensorflow) C:\Users\baochunlei>pip uninstall h5py
+Found existing installation: h5py 3.3.0
+Uninstalling h5py-3.3.0:
+  Would remove:
+    d:\anaconda3\envs\tensorflow\lib\site-packages\h5py-3.3.0.dist-info\*
+    d:\anaconda3\envs\tensorflow\lib\site-packages\h5py\*
+  Would not remove (might be manually added):
+    d:\anaconda3\envs\tensorflow\lib\site-packages\h5py\highlevel.py
+    d:\anaconda3\envs\tensorflow\lib\site-packages\h5py\tests\test_deprecation.py
+    d:\anaconda3\envs\tensorflow\lib\site-packages\h5py\tests\test_threads.py
+Proceed (y/n)? y
+  Successfully uninstalled h5py-3.3.0
+
+（6）安装pip install h5py==2.10.0
+
+(tensorflow) C:\Users\baochunlei>pip install h5py==2.10.0
+Looking in indexes: http://pypi.douban.com/simple
+Requirement already satisfied: h5py==2.10.0 in d:\anaconda3\envs\tensorflow\lib\site-packages (2.10.0)
+Requirement already satisfied: six in d:\anaconda3\envs\tensorflow\lib\site-packages (from h5py==2.10.0) (1.16.0)
+Requirement already satisfied: numpy>=1.7 in d:\anaconda3\envs\tensorflow\lib\site-packages (from h5py==2.10.0) (1.18.5)
+
+(tensorflow) C:\Users\baochunlei>pip install h5py==2.10.0
+Looking in indexes: http://pypi.douban.com/simple
+Requirement already satisfied: h5py==2.10.0 in d:\anaconda3\envs\tensorflow\lib\site-packages (2.10.0)
+Requirement already satisfied: six in d:\anaconda3\envs\tensorflow\lib\site-packages (from h5py==2.10.0) (1.16.0)
+Requirement already satisfied: numpy>=1.7 in d:\anaconda3\envs\tensorflow\lib\site-packages (from h5py==2.10.0) (1.18.5)
+
+（7）问题解决
+

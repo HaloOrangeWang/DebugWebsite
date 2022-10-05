@@ -1,0 +1,49 @@
+报错信息：
+
+E:\Python\s6day103>python manage.py makemigrations
+Traceback (most recent call last):
+  File "manage.py", line 15, in <module>
+    execute_from_command_line(sys.argv)
+  File "F:\Program Files (x86)\Python3.6\lib\site-packages\django\core\management\__init__.py", line 371, in execute_from_command_line
+    utility.execute()
+  File "F:\Program Files (x86)\Python3.6\lib\site-packages\django\core\management\__init__.py", line 347, in execute
+    django.setup()
+  File "F:\Program Files (x86)\Python3.6\lib\site-packages\django\__init__.py", line 24, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "F:\Program Files (x86)\Python3.6\lib\site-packages\django\apps\registry.py", line 112, in populate
+    app_config.import_models()
+  File "F:\Program Files (x86)\Python3.6\lib\site-packages\django\apps\config.py", line 198, in import_models
+    self.models_module = import_module(models_module_name)
+  File "F:\Program Files (x86)\Python3.6\lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 978, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 961, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 950, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 655, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 678, in exec_module
+  File "<frozen importlib._bootstrap>", line 205, in _call_with_frames_removed
+  File "E:\Python\s6day103\app01\models.py", line 8, in <module>
+    class Role(models.Model):
+  File "E:\Python\s6day103\app01\models.py", line 10, in Role
+    users = models.ForeignKey(to='UserInfo',verbose_name='用户角色')
+TypeError: __init__() missing 1 required positional argument: 'on_delete'
+
+model代码
+
+from django.db import models
+
+# Create your models here.
+
+class UserInfo(models.Model):
+    name = models.CharField(max_length=32)
+
+class Role(models.Model):
+    title = models.CharField(max_length=32)
+    users = models.ForeignKey(to='UserInfo',verbose_name='用户角色')
+
+解决办法：
+
+少位置参数on_delete,查了一下是因为指定外键的方式不对，改一下。
+
+即在外键值的后面加上 on_delete=models.CASCADE
+

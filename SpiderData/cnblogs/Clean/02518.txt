@@ -1,0 +1,31 @@
+
+报错： SyntaxError: Non-ASCII character
+
+概意思是，默认文件是ASCII格式，需要更改文件编码，操作是在文件首行加上
+
+
+报错 ：TypeError: unicode argument expected, got 'str'
+
+if your environment is Python2.7, you can change code :
+import io
+and
+output_stream·=io.StringIO()
+
+to
+from io import BytesIO as StringIO
+output_stream·= StringIO()
+
+
+报错：RuntimeError: Invalid DISPLAY variable
+
+import matplotlib.pyplot as plt
+
+后面加一行：
+plt.switch_backend('agg')
+
+python 读取文件错误，很多时候都是编码导致的，
+
+建议统一将文件编码为utf-8，并且检查文件是否带有BOM等格式，最终得到合适的文件
+
+读取使用合适的编码。
+

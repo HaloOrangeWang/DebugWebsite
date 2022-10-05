@@ -1,0 +1,55 @@
+个人博客,欢迎来撩 fangzengye.com
+
+python用pyinstaller生成exe时报错：
+
+126 INFO: PyInstaller: 3.5
+ 126 INFO: Python: 3.8.0
+ 126 INFO: Platform: Windows-10-10.0.15063-SP0
+ 128 INFO: wrote C:\report\ToExe\pywin32-217\pywin32-217\TestHandler.spec
+ 130 INFO: UPX is not available.
+ 133 INFO: Extending PYTHONPATH with paths
+ [‘C:\report\ToExe\pywin32-217\pywin32-217’,
+ ‘C:\report\ToExe\pywin32-217\pywin32-217’]
+ 133 INFO: checking Analysis
+ 199 INFO: checking PYZ
+ 199 INFO: Building PYZ because PYZ-00.toc is non existent
+ 201 INFO: Building PYZ (ZlibArchive) C:\report\ToExe\pywin32-217\pywin32-217\build\TestHandler\PYZ-00.pyz
+ Traceback (most recent call last):
+ File “c:\python\python38-32\lib\runpy.py”, line 192, in run_module_as_main
+ return run_code(code, main_globals, None,
+ File “c:\python\python38-32\lib\runpy.py”, line 85, in run_code
+ exec(code, run_globals)
+ File “C:\Python\Python38-32\Scripts\pyinstaller.exe_main.py”, line 7, in
+ File “c:\python\python38-32\lib\site-packages\PyInstaller_main.py”, line 111, in run
+ run_build(pyi_config, spec_file, **vars(args))
+ File “c:\python\python38-32\lib\site-packages\PyInstaller_main.py”, line 63, in run_build
+ PyInstaller.building.build_main.main(pyi_config, spec_file, **kwargs)
+ File “c:\python\python38-32\lib\site-packages\PyInstaller\building\build_main.py”, line 844, in main
+ build(specfile, kw.get(‘distpath’), kw.get(‘workpath’), kw.get(‘clean_build’))
+ File “c:\python\python38-32\lib\site-packages\PyInstaller\building\build_main.py”, line 791, in build
+ exec(code, spec_namespace)
+ File “C:\report\ToExe\pywin32-217\pywin32-217\TestHandler.spec”, line 18, in
+ pyz = PYZ(a.pure, a.zipped_data,
+ File “c:\python\python38-32\lib\site-packages\PyInstaller\building\api.py”, line 98, in init
+ self.postinit()
+ File “c:\python\python38-32\lib\site-packages\PyInstaller\building\datastruct.py”, line 158, in postinit
+ self.assemble()
+ File “c:\python\python38-32\lib\site-packages\PyInstaller\building\api.py”, line 128, in assemble
+ self.code_dict = {
+ File “c:\python\python38-32\lib\site-packages\PyInstaller\building\api.py”, line 129, in
+ key: strip_paths_in_code(code)
+ File “c:\python\python38-32\lib\site-packages\PyInstaller\building\utils.py”, line 652, in strip_paths_in_code
+ consts = tuple(
+ File “c:\python\python38-32\lib\site-packages\PyInstaller\building\utils.py”, line 653, in
+ strip_paths_in_code(const_co, new_filename)
+ File “c:\python\python38-32\lib\site-packages\PyInstaller\building\utils.py”, line 660, in strip_paths_in_code
+ return code_func(co.co_argcount, co.co_kwonlyargcount, co.co_nlocals, co.co_stacksize,
+ TypeError: an integer is required (got type bytes)
+
+解决办法：报错前的pyinstaller是用 pip install pyinstaller 来安装的，改成用 pip install https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz 再安装一次
+
+其它说明：如果电脑中同时存在多个版本的python可能会导致各种问题（比如 “failed to execute script xxx” 、“failed to create process”），如果不是特别熟悉使用python只是为了偶尔使用的话最好把以前安装的多余的python版本删掉或全部删掉重新安装（到官网下载最新的安装程序，网上说32位的兼容性比较好），安装步骤可参考：https://blog.csdn.net/weixin_40844416/article/details/80889165
+
+后续补充（填坑）：
+ 用这种方法生成的exe在某些电脑上运行没问题，但到了某些电脑上就报failed to execute script pyi_rth_multiprocessing 等错误，最后解决方法是重新安装python3.5 + 用pip install pyinstaller来安装解决
+

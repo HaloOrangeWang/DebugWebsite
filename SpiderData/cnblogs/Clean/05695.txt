@@ -1,0 +1,19 @@
+
+问题：
+
+1、安装好Anconda3后，开始——>打开jupyter notebook时 默认浏览器无法启动
+
+2、开始打开——>anaconda prompt 输入jupyter notebook 提示如下错误：from _sqlite3 import * ，debug出错信息: ImportError: DLL load failed: 找不到指定的模块。
+
+
+分析：
+
+根据报错信息提示 DLL load failed 那肯定是dll出了问题。我按照对应的版本下了一个 Python 3.7.2 ，分别进入 Anaconda 和 Python 的DLLs目录，发现后者目录下有一个 sqlite3.dll 而前者没有，复制过去，搞定！
+
+
+总结：
+
+需要下载一个 sqlite3.dll 而已，没必要那么麻烦地把 python 再下载一遍，在Sqlite的官网就有dll的下载。找准那个 Precompiled Binaries for Windows 那一项就是的了。
+
+并解压得到的sqlite3.dll、sqlite3.def拷贝到annconda安装路径的 dlls目录下，即可找到sqlite3模块启动默认浏览器了。
+

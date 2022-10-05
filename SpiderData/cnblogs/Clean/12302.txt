@@ -1,0 +1,30 @@
+1.查看本地安装版本 pip list 记住自己的版本，方便第二步进行卸载
+
+2.卸载本地版本 pip uninstall tensorflow==2.1.0     #我的版本是2.1.0
+
+3.查看是否卸载 pip list
+
+4.安装1.12.0版本 pip install tensorflow==1.12.0  -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+5.再次   pip list   之后，会发现版本已经修改过来了，下面 尝试python引入 命令行输入  python
+
+import tensorflow as tf 可能会报错，如下：
+
+于是乎又有了解决办法： 根据上面的错误，进入目录：C:\Softwares\Anaconda3\envs\tensorflow\Lib\sitepackages\tensorflow\python\framework（自己安装目录下） 找到dtypes.py文件，最好用编译器打开，有行数显示，比如上面的错误
+
+红色框框是地址，黄色框框是行数，我这儿总共出了6条错误，于是修改了六个地 方： 修改前：
+
+总的来说就是将1换成（1，）
+
+第一个是修改前，第二个是修改后：将
+
+_np_qint8 = np.dtype([("qint8", np.int8, 1)]) _np_quint8 = np.dtype([("quint8", np.uint8, 1)]) _np_qint16 = np.dtype([("qint16", np.int16, 1)]) _np_quint16 = np.dtype([("quint16", np.uint16, 1)]) _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+
+# _np_bfloat16 is defined by a module import.
+
+# Custom struct dtype for directly-fed ResourceHandles of supported type(s). np_resource = np.dtype([("resource", np.ubyte, 1)]) 修改成： _np_qint8 = np.dtype([("qint8", np.int8, (1,))]) _np_quint8 = np.dtype([("quint8", np.uint8, (1,))]) _np_qint16 = np.dtype([("qint16", np.int16, (1,))]) _np_quint16 = np.dtype([("quint16", np.uint16, (1,))]) _np_qint32 = np.dtype([("qint32", np.int32, (1,))])
+
+# _np_bfloat16 is defined by a module import.
+
+# Custom struct dtype for directly-fed ResourceHandles of supported type(s). np_resource = np.dtype([("resource", np.ubyte, (1,))])
+

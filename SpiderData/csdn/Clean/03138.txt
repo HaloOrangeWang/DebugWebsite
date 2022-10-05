@@ -1,0 +1,21 @@
+看静觅的书《Python3 网络爬虫实在》
+
+其中关于urllib.request例子，
+
+如果你运行
+
+import urllib.request
+response = urllib.request.urlopen('https://www.python.org')
+print(response.read().decode('utf-8'))
+
+发现会报错，其实呢当使用urllib模块访问https网站时，由于需要提交表单，而python3默认是不提交表单的，所以这时只需在代码中加上以下代码即可。
+
+导入SSL， 然后增加一句
+
+import urllib.request
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
+response = urllib.request.urlopen('https://www.python.org')
+print(response.read().decode('utf-8'))
+

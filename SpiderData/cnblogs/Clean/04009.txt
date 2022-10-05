@@ -1,0 +1,20 @@
+
+问题及场景：
+
+最近需要使用 Python 将数据写到 SQL Server 数据库，但是在进行数据库连接操作时却报以下错误：(20009, b'DB-Lib error message 20009, severity 9:\nUnable to connect:……)
+
+由于我的机子上装了两个版本的 SQL Server，即存在多个实例，一开始以为是 server 参数写错了，结果浪费了很多时间，最后发现是其中一个实例的 TCP/IP 协议没有启用 (￣_￣|||)，在这里 mark 以下解决方案。
+
+Note：关于 Python 是如何连接和操作 SQL Server 数据库的，之后会重新写一篇博客，在此就不作阐述。
+
+参考博客：https://blog.csdn.net/qq_18884487/article/details/79816455
+
+
+解决方案：
+
+①打开 SQL Server 配置管理器 -> SQL Server 网络配置 -> 选择对应的数据库实例 -> 双击打开 TCP/IP 协议 -> 设置为启用 -> 应用 -> 确定
+
+②重启该 SQL Server 实例服务：计算机管理 -> 服务与应用 -> 服务 -> 选择对应的 SQL Server 实例 -> 右键重启服务
+
+③重新执行 Python 代码：结果如下，问题解决：
+

@@ -1,0 +1,99 @@
+关键字：预测，numpy
+
+关键字：预测，numpy
+
+问题描述：通过使用fluid.create_lod_tensor创建一个预测数据，然后使用预测器对数据进行预测，在执行预测的时候，报预测的张量数据中有一些包含LoD信息，它们不能完全转换为Python ndarray的错误。
+
+问题描述：通过使用fluid.create_lod_tensor创建一个预测数据，然后使用预测器对数据进行预测，在执行预测的时候，报预测的张量数据中有一些包含LoD信息，它们不能完全转换为Python ndarray的错误。
+
+报错信息：
+
+报错信息：
+
+<ipython-input-9-196da4d402b0> in infer(use_cuda, inference_program, params_dirname)
+     27             'secondw': second_word,
+     28             'thirdw': third_word,
+---> 29             'fourthw': fourth_word
+     30         })
+     31
+
+······
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/contrib/inferencer.py in infer(self, inputs, return_numpy)
+    102             results = self.exe.run(feed=inputs,
+    103                                    fetch_list=[self.predict_var.name],
+--> 104                                    return_numpy=return_numpy)
+    105 
+    106         return results
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in run(self, program, feed, fetch_list, feed_var_name, fetch_var_name, scope, return_numpy, use_program_cache)
+    471         outs = self._fetch_data(fetch_list, fetch_var_name, scope)
+    472         if return_numpy:
+--> 473             outs = as_numpy(outs)
+    474         return outs
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in as_numpy(tensor)
+     83         return [as_numpy(t) for t in tensor]
+     84     if isinstance(tensor, list):
+---> 85         return [as_numpy(t) for t in tensor]
+     86     assert isinstance(tensor, core.LoDTensor)
+     87     lod = tensor.lod()
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in <listcomp>(.0)
+     83         return [as_numpy(t) for t in tensor]
+     84     if isinstance(tensor, list):
+---> 85         return [as_numpy(t) for t in tensor]
+     86     assert isinstance(tensor, core.LoDTensor)
+     87     lod = tensor.lod()
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in as_numpy(tensor)
+     90             They can not be completely cast to Python ndarray. \
+     91             Please set the parameter 'return_numpy' as 'False' to \
+---> 92             return LoDTensor itself directly.")
+     93     return np.array(tensor)
+     94
+
+RuntimeError: Some of your fetched tensors hold LoD information.             They can not be completely cast to Python ndarray.             Please set the parameter 'return_numpy' as 'False' to             return LoDTensor itself directly.
+
+问题复现：使用定义的网络和训练过程中保存的模型参数创建一个预测器，然后再使用fluid.create_lod_tensor创建4个预测数据，最后使用预测器对4个预测数据进行预测，没有设置参数return_numpy，在执行的时候就报错。错误代码如下：
+
+first_word = fluid.create_lod_tensor(data1, lod, place)
+second_word = fluid.create_lod_tensor(data2, lod, place)
+third_word = fluid.create_lod_tensor(data3, lod, place)
+fourth_word = fluid.create_lod_tensor(data4, lod, place)
+
+result = inferencer.infer(
+    {
+   
+   
+   
+        'firstw': first_word,
+        'secondw': second_word,
+        'thirdw': third_word,
+        'fourthw': fourth_word
+    })
+
+解决问题：在对词向量进行预测时，返回的结果并不是一个numpy值，而接口paddle.fluid.contrib.inferencer.infer默认的返回值的是一个numpy类型的，所以就报错。需要设置参数return_numpy的值为False。正确代码如下：
+
+first_word = fluid.create_lod_tensor(data1, lod, place)
+second_word = fluid.create_lod_tensor(data2, lod, place)
+third_word = fluid.create_lod_tensor(data3, lod, place)
+fourth_word = fluid.create_lod_tensor(data4, lod, place)
+
+result = inferencer.infer(
+    {
+   
+   
+   
+        'firstw': first_word,
+        'secondw': second_word,
+        'thirdw': third_word,
+        'fourthw': fourth_word
+    },
+    return_numpy=False)
+
+问题拓展：接口paddle.fluid.contrib.inferencer.infer是属于高层接口，与低层接口不同的是，高层接口不需要用户操作执行器。高层接口使用更简单，虽然没有低层接口灵活，但是使用方便，适合初学者使用。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

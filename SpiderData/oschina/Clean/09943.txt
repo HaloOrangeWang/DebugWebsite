@@ -1,0 +1,31 @@
+
+npm 报错 Module build failed: Error: No PostCSS Config found in:
+
+
+情景
+
+我使用vue-cli 创建项目，然后想换个地方，就把除了node_modules 以外的文件全部拷贝到另一个文件，然后传到Git上，想的重新 npm run dev 一下就可以。但是在原来位置 就是可以正常展示的，但是在新文件里面就会报错 Module build failed: Error: No PostCSS Config found in: /Users/*** ，很是尴尬。
+
+
+解决
+
+查了网上的资料说：
+
+需要在根文件里面新建一个文件postcss.config.js ,在里面添加以下代码：
+
+module.exports = { 
+  plugins: { 
+    'autoprefixer': {browsers: 'last 5 version'} } }
+
+1
+
+2
+
+3
+
+4
+
+5
+
+然后npm run dev 就好了。。。
+

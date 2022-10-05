@@ -1,0 +1,34 @@
+适用于ubuntu  16.04.
+
+１．在命令行输入pip install  mysql-python后报错：
+
+from ConfigParser import SafeConfigParser
+
+ImportError: No module named 'ConfigParser'
+
+解决：cp /usr/lib/python3.5/configparser.py      /usr/lib/python3.5/ConfigParser.py
+
+原因：
+
+在 Python 3.x 版本后，ConfigParser.py 已经更名为 configparser.py 所以出错！
+
+２．结果敌军的第二波轰炸又来了!error2:
+
+_mysql.c:29:20: fatal error: Python.h: 没有那个文件或目录
+
+#include "Python.h"
+
+^
+
+compilation terminated.
+
+error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+
+搜索老半天，没有找到正确甚至靠谱答案都没看到哦。最终还是stackoverflow找到了，因为我在虚拟环境中使用python3.5！！！所以我安装的python-dev依赖包需要更改为python3.5-dev:
+
+重装：  sudo   apt-get  install   python3.5-dev
+
+pip  install  mysql-python
+
+跟我唱：stackoverflow老仙，法力无边！google老铁，一统码湖！
+

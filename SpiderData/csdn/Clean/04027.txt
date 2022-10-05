@@ -1,0 +1,33 @@
+转载请注明出处：遇到问题–python–pytest引用模块错误
+
+
+遇到问题
+
+python项目结构如图：
+
+main.py中引用了
+
+import pandas as pd
+
+运行main.py文件没问题，但是运行pytest报错如下：
+
+ImportError while importing test module '/Users/joe/workspace/platform/mgap-mendel/mgap-mendel/tests/test_mendel.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+test_mendel.py:1: in <module>
+    from mgap_mendel.main import *
+../mgap_mendel/__init__.py:2: in <module>
+    from .main import *
+../mgap_mendel/main.py:3: in <module>
+    import pandas as pd
+E   ModuleNotFoundError: No module named 'pandas'
+
+
+原因
+
+pytest使用的环境与python运行的环境不一致
+
+使用命令排查
+
+(venv) z
+

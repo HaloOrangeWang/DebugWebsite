@@ -1,0 +1,24 @@
+最近在django项目中使用celery时遇见的bug：
+
+在使用celery+redis进行异步任务的时候，有的任务能够执行成功，有的任务不能执行成功，错误的任务报错（notregistered）：
+
+重启redis服务无法解决。
+
+解决办法：重新开启一个redis服务，即可解决（我的解决办法)，猜测更换broker库即可，例：0 -> 2。
+
+原因猜测：
+
+出现这种问题，一般都是对celery任务代码或配置信息进行了相关修改（clery任务调用方式或传入参数的修改，celery的backend存放位置的修改等）
+
+有可能是redis中存在相关持久化文件，记住了前面的任务和配置信息，使得redis（broker）在进行任务分发给worker的时候出现混乱，造成错误（notregistered，got an unexpected argument等等）
+
+
+django-celery 报错：
+
+将djcelery>management>commands>celery.py>将以下代码注释掉即可
+
+
+celery beat报错
+
+解决方案：删除项目中存在的celerybeat.pid文件，重新启动即可
+

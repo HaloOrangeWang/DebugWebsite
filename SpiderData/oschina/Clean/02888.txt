@@ -1,0 +1,8 @@
+我的平台是win10(x64)、python3.7，打算通过psycopg2模块来操作Greenplum数据库，我通过pip install psycopg2 安装了psycopg2模块，也提示安装成功了，可是我在import psycopg2的时候提示我该模块未知、不存在，这让我很郁闷，于是我查找了一下原因，在stack overfloow上找到了原因。尽管我的windows系统是64位的，但是我安装的python3.7却是32位的(在dos窗口中输入python查看)
+
+实际上，所有安装的python模块都必须与python的位数相同，而不是与系统位数相同，由于通过pip install psycopg2 安装的是64位版本的psycopg2，因此就出现无法导入的情况。
+
+解决方式也比较简单，首先在官网上下载对应32位的、pyhton3.7的 psycopg2模块，cp37即表示3.7版本
+
+然后在下载文件所在目录下，执行 pip install psycopg2-2.8.2-cp37-cp37m-win32.whl，即完成安装，重新执行import  psycopg2，不再报错。
+

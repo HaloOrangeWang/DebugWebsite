@@ -1,0 +1,84 @@
+原文作者：aircraft
+
+原文地址：https://www.cnblogs.com/DOMLX/p/9530834.html
+
+首先是配置：
+
+　　
+
+使用VS2013创建工程。
+
+将libs中的python27.lib复制一份重命名为python27_d.lib（这个的原因是include目录下的pyconfig.h里面的代码再debug下调用的是python27_d.lib）。否则会出现以下错误：
+
+点击项目右键，在属性->c/c++->常规项->附加包含目录中添加..\include。在属性->链接器->常规->附加库依赖中添加..\libs。在属性->链接器->输入->附加依赖项中添加python27_d.lib。
+
+按照以上步骤就会将其已经配置好了。这时候就可以进行测试了。
+
+（若出错 >LINK : fatal error LNK1104: 无法打开文件“python27_d.lib”）就是上面的原因
+
+注意 你们复制粘贴可能会吧TAB 变成空格 导致报错 自己缩进全部删除调一调
+
+1>pythonIniti.obj : error LNK2019: 无法解析的外部符号 __imp___Py_NegativeRefcount，该符号在函数 "public: __thiscall boost::python::api::object_base::~object_base(void)" (??1object_base@api@python@boost@@QAE@XZ) 中被引用
+
+1>pythonIniti.obj : error LNK2001: 无法解析的外部符号 __imp___Py_RefTotal
+
+修改两个头文件
+
+1 注释掉object.h第56行
+
+//#define Py_TRACE_REFS
+
+2 pyconfig.h 375行
+
+//#    define Py_DEBUG
+
+以上两个宏定义注释掉以后重新编译 问题解决
+
+如果还不能解决那么可能是因为版本问题 python 是release版本的
+
+正式版本编译没有问题，问题在于我们安装的是release版本的python
+
+找到 python的安装目录 c:/python25/include/pyconfig.h，注释掉以下代码
+
+//#ifdef _DEBUG
+
+//#ifdef _DEBUG
+
+//# define Py_DEBUG
+
+//# define Py_DEBUG
+
+//#endif
+
+//#endif
+
+这样让它无论是debug版本还是release版，都按照release版本来做lib库的链接，这样问题解决，或者直接在VS下就用release跑试试
+
+error LNK2001: 无法解析的外部符号 __imp_PyString_FromString
+
+error LNK2001: 无法解析的外部符号 __imp_PyCallable_Check
+
+error LNK2001: 无法解析的外部符号 __imp_PyObject_CallObject
+
+error LNK2001: 无法解析的外部符号 __imp_Py_Initialize
+
+error LNK2001: 无法解析的外部符号 __imp_Py_IsInitialized
+
+error LNK2001: 无法解析的外部符号 __imp_PyImport_Import
+
+error LNK2001: 无法解析的外部符号 __imp_PyModule_GetDict
+
+error LNK2001: 无法解析的外部符号 __imp_PyDict_GetItemString
+
+error LNK2001: 无法解析的外部符号 __imp_PyRun_SimpleStringFlags
+
+error LNK2001: 无法解析的外部符号 __imp_Py_Finalize
+
+fatal error LNK1120: 10 个无法解析的外部命令
+
+解决办法：查看自己的python 版本与VS编译的版本是否一样，比如很多人是64位的电脑 就下载了 64的python
+
+而VS默认编译是WIN32的  这时候把项目属性的  运行平台改成 X64就行了  注意了改变之后可能你的属性表要重新配置一遍了，因为之前你可能是在WIN32下配置的
+
+若有兴趣交流分享技术，可关注本人公众号，里面会不定期的分享各种编程教程，和共享源码，诸如研究分享关于c/c++,python,前端，后端，opencv,halcon,opengl,机器学习深度学习之类有关于基础编程，图像处理和机器视觉开发的知识
+

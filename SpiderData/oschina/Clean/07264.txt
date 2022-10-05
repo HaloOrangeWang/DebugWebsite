@@ -1,0 +1,27 @@
+openfire 启动时报错 ConnectionManager.getConnection() failed to obtain a connection after 11 retries. The exception from the last attempt is as follows: java.sql.SQLException: Unable to load authentication plugin 'caching_sha2_password'.
+
+java.lang.IllegalArgumentException: java.sql.SQLException: ConnectionManager.getConnection() failed to obtain a connection after 11 retries. The exception from the last attempt is as follows: java.sql.SQLException: Unable to load authentication plugin 'caching_sha2_password'.
+    at org.jivesoftware.openfire.XMPPServer.verifyDataSource(XMPPServer.java:820)
+    at org.jivesoftware.openfire.XMPPServer.start(XMPPServer.java:543)
+    at org.jivesoftware.openfire.XMPPServer.<init>(XMPPServer.java:163)
+    at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+    at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+    at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+    at java.lang.reflect.Constructor.newInstance(Constructor.java:422)
+    at java.lang.Class.newInstance(Class.java:442)
+    at org.jivesoftware.openfire.starter.ServerStarter.start(ServerStarter.java:102)
+    at org.jivesoftware.openfire.starter.ServerStarter.main(ServerStarter.java:53)
+
+Caused by: java.sql.SQLException: ConnectionManager.getConnection() failed to obtain a connection after 11 retries. The exception from the last attempt is as follows: java.sql.SQLException: Unable to load authentication plugin 'caching_sha2_password'.
+        at org.jivesoftware.database.DbConnectionManager.getConnection(DbConnectionManager.java:152)
+        at org.jivesoftware.openfire.XMPPServer.verifyDataSource(XMPPServer.java:810)
+        ... 9 more
+    Error starting the server. Please check the log files for more information.
+    Server halted
+
+
+
+原因：
+
+之前本地使用mysql 5.7更新到mysql 8.0 ，我想连接内网做测试，又重新编译openfire，可是数据库的配置信息已经存在。 查看targer/openfire/conf/openfire.xml配置文件的配置信息，修改即可。
+

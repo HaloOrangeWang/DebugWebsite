@@ -1,0 +1,20 @@
+在使用socket做网络编程测试的时候，遇到 a bytes-like object is required,not str 错误
+
+发生错误的代码：
+
+这个错误在python2中不会发生。
+
+而python3在发送数据的时候，sendto函数需要传byte类型值。
+
+解决方法：
+
+1、在数据前面加b，强制转换
+
+client.send(b"helloworld")  # 双引号内为你要发送的内容字符串
+
+2、发送数据的时候进行编码
+
+udp_socket.sendto(sendData.encode('utf-8'), sendAddr)
+
+关注我的公众号免费获取海量python学习教程！！！！
+

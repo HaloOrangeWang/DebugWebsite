@@ -1,0 +1,225 @@
+【故事的开始…】
+
+小张是一名AI算法攻城狮，听闻飞桨乃国产开源深度学习框架之光，心想炎黄子孙当自强，用自己的深度学习框架，实现中国的AI梦……
+
+​
+
+他尝试在的笔记本上使用飞桨搭建线性回归示例模型。
+
+​
+
+噼里啪啦…噼里啪啦…键盘敲的热血澎湃。跑下试试……
+
+​
+
+然而，模型的打印结果让小张满怀期待的小心情顿时哇凉哇凉的。
+
+​
+
+丹还没炼成，炉咋就坏了呢？这铺天盖地的error，要怎么分析和处理？
+
+​
+
+【故事的转折…】
+
+同学且慢，经官方鉴定，小张大概率使用的是较早版本的飞桨，飞桨开源框架1.7及之后版本断然不会出现这么繁杂的报错信息了。
+
+​
+
+这是因为飞桨工程师们一直期望产品不但好用，而且易用，可以给开发者带来一点点工作上的愉悦。报错信息对调试分析至关重要，飞桨工程师也一直在持续地进行改进和优化。
+
+​
+
+解读最新的飞桨报错信息
+
+飞桨报错信息总体上分为两种：一种是直接在Python层拦截报出的错误，这种问题一般比较直观，根据Python原生的报错栈即可以定位程序中的问题，和大家使用Python写程序报错分析的流程一致；一种是飞桨的C++ core中的报错，这种报错包含的信息量较大。下面我们以此类报错信息的为例，解读分析过程。
+
+首先我们了解下目前飞桨最新版本报错信息的结构，如下图：
+
+报错信息为四段式结构，由上至下依次为Python默认错误信息栈、C++错误信息栈、飞桨Python错误信息栈（仅声明式编程模式）、核心错误概要。
+
+Python默认错误信息栈：执行Python程序默认记录的执行路径，对定位报错位置很有帮助。这是Python本身特性，此处不展开介绍。
+
+Python默认错误信息栈：执行Python程序默认记录的执行路径，对定位报错位置很有帮助。这是Python本身特性，此处不展开介绍。
+
+C++错误信息栈：程序在Paddle C++ core中的错误路径，即为模块paddle.fluid.core中的程序执行路径，这部分信息对开发者帮助有限。但当开发者通过Issue向飞桨开发人员提问时，提供C++报错栈的信息将有助于开发人员快速定位问题。（目前C++错误信息栈仅支持Unix平台，Windows平台暂不支持）
+
+C++错误信息栈：程序在Paddle C++ core中的错误路径，即为模块paddle.fluid.core中的程序执行路径，这部分信息对开发者帮助有限。但当开发者通过Issue向飞桨开发人员提问时，提供C++报错栈的信息将有助于开发人员快速定位问题。（目前C++错误信息栈仅支持Unix平台，Windows平台暂不支持）
+
+Paddle Python错误信息栈：为什么这里还有一个Paddle Python错误信息栈呢？因为在声明式编程模式（静态图）下，模型编译和执行是分离的。执行时报错的路径由Python默认程序栈记录，但这并不能告知用户具体出错的程序位置，因此对于算子类型的API，飞桨额外记录了编译时的执行路径，帮助开发者定位具体代码出错的位置，该部分信息对于调试具有较大意义。
+
+Paddle Python错误信息栈：为什么这里还有一个Paddle Python错误信息栈呢？因为在声明式编程模式（静态图）下，模型编译和执行是分离的。执行时报错的路径由Python默认程序栈记录，但这并不能告知用户具体出错的程序位置，因此对于算子类型的API，飞桨额外记录了编译时的执行路径，帮助开发者定位具体代码出错的位置，该部分信息对于调试具有较大意义。
+
+核心错误概要：信息包含错误类型、错误特征、概要提示、出错文件名与行号、出错算子名等，这些信息不仅有助于开发者理解错误，也有助于迅速定位错误。
+
+核心错误概要：信息包含错误类型、错误特征、概要提示、出错文件名与行号、出错算子名等，这些信息不仅有助于开发者理解错误，也有助于迅速定位错误。
+
+为什么如此重要的错误概要放在最后，而不是最前面呢？飞桨开发同学考虑到开发者在终端执行程序的场景较多，为了便于用户在程序执行完后能够马上看到最重要的提示信息，才将其置于最后。
+
+​
+
+硬核来了，3步快速定位问题
+
+当使用飞桨遇到报错提示时，定位流程是啥样子的呢？请对应上文提到的飞桨报错信息结构图，按如下流程逐步分析。
+
+报错信息分析流程
+
+下面结合示例，向大家讲解飞桨的报错信息的分析过程（示例使用飞桨2020年7月1日的develop版本）。飞桨支持两种编程模式，声明式编程模式（静态图）和命令式编程模式（动态图），我们将逐一介绍。
+
+飞桨声明式编程模式
+
+（静态图）报错解读
+
+执行如下静态图示例代码：
+
+import paddle.fluid as fluid
+import numpy
+
+# 1. 网络结构定义
+x = fluid.layers.data(name='X', shape=[-1, 13], dtype='float32')
+y = fluid.layers.data(name='Y', shape=[-1, 1], dtype='float32')
+predict = fluid.layers.fc(input=x, size=1, act=None)
+loss = fluid.layers.square_error_cost(input=predict, label=y)
+avg_loss = fluid.layers.mean(loss)
+
+# 2. 优化器配置
+fluid.optimizer.SGD(learning_rate=0.01).minimize(avg_loss)
+
+# 3. 执行环境准备
+place = fluid.CPUPlace()
+exe = fluid.Executor(place)
+exe.run(fluid.default_startup_program())
+
+# 4. 执行网络
+x = numpy.random.random(size=(8, 12)).astype('float32')
+y = numpy.random.random(size=(8, 1)).astype('float32')
+loss_data, = exe.run(fluid.default_main_program(), feed={'X': x, 'Y': y}, fetch_list=[avg_loss.name])
+
+代码执行后的报错信息如下：
+
+Traceback (most recent call last):
+  File "paddle_error_case1.py", line 24, in <module>
+    loss_data, = exe.run(fluid.default_main_program(), feed={'X': x, 'Y': y}, fetch_list=[avg_loss.name])
+  File "/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py", line 1079, in run
+    six.reraise(*sys.exc_info())
+  File "/usr/local/lib/python3.5/dist-packages/six.py", line 696, in reraise
+    raise value
+  File "/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py", line 1074, in run
+    return_merged=return_merged)
+  File "/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py", line 1162, in _run_impl
+    use_program_cache=use_program_cache)
+  File "/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py", line 1237, in _run_program
+    fetch_var_name)
+paddle.fluid.core_avx.EnforceNotMet:
+
+--------------------------------------------
+C++ Call Stacks (More useful to developers):
+--------------------------------------------
+0   std::string paddle::platform::GetTraceBackString<std::string const&>(std::string const&, char const*, int)
+1   paddle::platform::EnforceNotMet::EnforceNotMet(std::string const&, char const*, int)
+2   paddle::operators::MulOp::InferShape(paddle::framework::InferShapeContext*) const
+3   paddle::framework::OperatorWithKernel::RunImpl(paddle::framework::Scope const&, paddle::platform::Place const&, paddle::framework::RuntimeContext*) const
+4   paddle::framework::OperatorWithKernel::RunImpl(paddle::framework::Scope const&, paddle::platform::Place const&) const
+5   paddle::framework::OperatorBase::Run(paddle::framework::Scope const&, paddle::platform::Place const&)
+6   paddle::framework::Executor::RunPartialPreparedContext(paddle::framework::ExecutorPrepareContext*, paddle::framework::Scope*, long, long, bool, bool, bool)
+7   paddle::framework::Executor::RunPreparedContext(paddle::framework::ExecutorPrepareContext*, paddle::framework::Scope*, bool, bool, bool)
+8   paddle::framework::Executor::Run(paddle::framework::ProgramDesc const&, paddle::framework::Scope*, int, bool, bool, std::vector<std::string, std::allocator<std::string > > const&, bool, bool)
+
+------------------------------------------
+Python Call Stacks (More useful to users):
+------------------------------------------
+  File "/usr/local/lib/python3.5/dist-packages/paddle/fluid/framework.py", line 2799, in append_op
+    attrs=kwargs.get("attrs", None))
+  File "/usr/local/lib/python3.5/dist-packages/paddle/fluid/layer_helper.py", line 43, in append_op
+    return self.main_program.current_block().append_op(*args, **kwargs)
+  File "/usr/local/lib/python3.5/dist-packages/paddle/fluid/layers/nn.py", line 349, in fc
+    "y_num_col_dims": 1})
+  File "paddle_error_case1.py", line 9, in <module>
+    predict = fluid.layers.fc(input=x, size=1, act=None)
+
+----------------------
+Error Message Summary:
+----------------------
+InvalidArgumentError: After flatten the input tensor X and Y to 2-D dimensions matrix X1 and Y1, the matrix X1's width must be equal with matrix Y1's height. But received X's shape = [8, 12], X1's shape = [8, 12], X1's width = 12; Y's shape = [13, 1], Y1's shape = [13, 1], Y1's height = 13.
+  [Hint: Expected x_mat_dims[1] == y_mat_dims[0], but received x_mat_dims[1]:12 != y_mat_dims[0]:13.] at (/work/paddle/paddle/fluid/operators/mul_op.cc:83)
+  [operator < mul > error]
+
+参考飞桨报错信息分析流程对这个错误示例进行剖析。
+
+1. 首先分析代码核心错误概要。依据统一的报错结构，开发者可以快速的找到报错原因。
+
+从示例中可获得如下信息：
+
+这是一个参数错误；出错的Op是mul；mul Op输入的Tensor X矩阵的宽度，即第2维的大小需要和输入Tensor Y矩阵的高度，即第一维的大小相等，才可以进行正常的矩阵乘法；给出了具体的输入X与Y的维度信息即出错维度的值，有一处的维度写错了，可能是13误写成了12。
+
+目前飞桨有12种错误类型，更多介绍请查看《报错信息文案书写规范》，链接如下：https://github.com/PaddlePaddle/Paddle/wiki/Paddle-Error-Message-Writing-Specification
+
+2. 其次分析Paddle 编译时Python错误信息栈，发现出错的代码位置如下：
+
+Paddle插入的Python错误信息栈为了和C++栈的调用顺序保持一致，最下面的信息是用户代码的位置，这和原生python错误信息栈的顺序有所区别。这里我们可以得知，是调用fc的时候出错的，fc中包含一个乘法运算和一个加法运算，根据前面的信息可以得知是此处的乘法运算的输入数据存在问题。至此，通过检查代码，可以找到错误位置：
+
+将代码中的12改为13，即可解决该问题。
+
+3. （可选）通常出错场景较为简单时，C++错误信息栈可以不关心。但如果用户在解决时遇到困难，需要飞桨开发人员协助解决时，需要反馈此信息，帮助开发人员快速得知底层的出错执行逻辑。例如在这个例子中，我们能够得知程序的执行路径为Run -> RunPreParedContext -> Run -> RunImpl -> MulOp::InferShape，InferShape是检查算子输入输出及参数维度的方法，由此可以推断出，本错误是由于Mul算子的输入参数维度出错导致。
+
+飞桨命令式编程模式
+
+（动态图）报错解读
+
+动态图不区分网络模型的编译期和执行期，报错信息中不需要再插入编译时的python信息栈。执行如下动态图示例代码：
+
+import numpy
+import paddle.fluid as fluid
+
+place = fluid.CPUPlace()
+with fluid.dygraph.guard(place):
+    x = numpy.random.random(size=(10, 2)).astype('float32')
+    linear = fluid.dygraph.Linear(1, 10)
+    data = fluid.dygraph.to_variable(x)
+    res = linear(data)
+
+代码执行后的报错信息如下：
+
+/work/scripts {master} python paddle_error_case2.py 
+Traceback (most recent call last):
+  File "paddle_error_case2.py", line 9, in <module>
+    res = linear(data)
+  File "/usr/local/lib/python3.5/dist-packages/paddle/fluid/dygraph/layers.py", line 600, in __call__
+    outputs = self.forward(*inputs, **kwargs)
+  File "/usr/local/lib/python3.5/dist-packages/paddle/fluid/dygraph/nn.py", line 965, in forward
+    'transpose_Y', False, "alpha", 1)
+paddle.fluid.core_avx.EnforceNotMet:
+
+--------------------------------------------
+C++ Call Stacks (More useful to developers):
+--------------------------------------------
+0   std::string paddle::platform::GetTraceBackString<std::string const&>(std::string const&, char const*, int)
+1   paddle::platform::EnforceNotMet::EnforceNotMet(std::string const&, char const*, int)
+2   paddle::operators::MatMulOp::InferShape(paddle::framework::InferShapeContext*) const
+3   paddle::imperative::PreparedOp::Run(paddle::imperative::NameVarBaseMap const&, paddle::imperative::NameVarBaseMap const&, paddle::framework::AttributeMap const&)
+4   paddle::imperative::Tracer::TraceOp(std::string const&, paddle::imperative::NameVarBaseMap const&, paddle::imperative::NameVarBaseMap const&, paddle::framework::AttributeMap, paddle::platform::Place const&, bool)
+5   paddle::imperative::Tracer::TraceOp(std::string const&, paddle::imperative::NameVarBaseMap const&, paddle::imperative::NameVarBaseMap const&, paddle::framework::AttributeMap)
+
+----------------------
+Error Message Summary:
+----------------------
+InvalidArgumentError: Input X's width should be equal to the Y's height, but received X's shape: [10, 2],Y's shape: [1, 10].
+  [Hint: Expected mat_dim_x.width_ == mat_dim_y.height_, but received mat_dim_x.width_:2 != mat_dim_y.height_:1.] at (/work/paddle/paddle/fluid/operators/matmul_op.cc:411)
+  [operator < matmul > error]
+
+同样，我们可以依据前面讲述的步骤对报错进行分析。
+
+1. 先分析核心错误概要，该错误与前面的实例类似，也是输入数据的维度和预期不一致，出错的Op是matmul。
+
+2. 再分析Python报错信息栈，可以得知出错的代码位置为：
+
+通过检查代码，也可以比较容易地定位到错误位置在：
+
+将代码中的2改为1，即可解决该问题。
+
+【故事的尾声…】
+
+报错信息的有效性与框架的易用性息息相关，飞桨团队也仍然在持续地优化报错信息的质量和友好度，希望能给文中的小张同学及广大开发者带来更好的产品体验。如果大家发现报错信息不准确、不直接、不易读等问题，也欢迎通过Issue及时反馈给我们。让我们期待飞桨的易用性能够进一步提升，成为功能强大、令开发者工作愉悦的国产开源深度学习框架。
+
+>> 访问 PaddlePaddle 官网，了解更多相关内容。
+

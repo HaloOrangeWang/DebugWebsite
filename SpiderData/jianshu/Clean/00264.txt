@@ -1,0 +1,32 @@
+vue项目中，Index.js文件中引入外部的js文件，会在全局环境下生成一个对应的变量，如果想要在vue项目中使用会提示引用没有声明的变量的问题。
+
+public下
+
+<script   src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+
+解决：
+
+.eslintrc.js配置
+
+globals: {
+    $: true
+  },
+
+配置globals的含义：当前源文件内未定义变量，但是想要使用该变量。
+
+true和writeable等价于writeable，false等价于readable。
+
+配置之后，在vue代码中使用jquery就不会报错了。
+
+在ts环境使用该配置后还是会报错，这个目前还不知道要怎么改。
+
+参考1：eslintrc.js配置
+
+2022年4月1日更新
+
+在ts环境中由于引入的Js是window中的一个属性，因此定义变量
+
+const jquery = window.jquery;
+
+然后在使用jquery变量就不会报错了。
+

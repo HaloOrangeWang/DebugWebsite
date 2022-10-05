@@ -1,0 +1,33 @@
+
+使用brew安装mysql-connector-c
+
+brew install mysql-connector-c    # 也可以去mysql官网下载mysql-connector-c
+
+
+找到mysql_config配置文件的位置
+
+$ which mysql_config
+/usr/local/bin/mysql_config
+
+
+打开这个文件mysql_config找到第112行进行修改：
+
+# on macOS, on or about line 112:
+# Create options
+libs="-L$pkglibdir"
+libs="$libs -l "
+
+修改为：
+
+# Create options
+libs="-L$pkglibdir"
+libs="$libs -lmysqlclient -lssl -lcrypto"
+
+
+最后再安装：
+
+pip install mysqlclient==1.4.1
+
+
+然后就可以成功了
+

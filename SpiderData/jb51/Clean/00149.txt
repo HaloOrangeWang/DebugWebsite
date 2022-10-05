@@ -1,0 +1,22 @@
+Attempting to use uninitialized value mean_squared_error/total
+
+如图：
+
+原因一：使用了tf.metrics.mean_squared_error(labels, predictions)
+
+解决方法：
+
+1.将其换成tf.losses.mean_squared_error(labels, preditions)
+
+或者
+
+2.加一个tf.lacal_variables_initializer()
+
+原因二：将一些节点写在了tf.Session()里面如：
+
+解决方法：
+
+将节点定义在外面
+
+以上这篇tensorflow 报错unitialized value的解决方法就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

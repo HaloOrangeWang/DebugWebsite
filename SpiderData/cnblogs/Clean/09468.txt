@@ -1,0 +1,15 @@
+在训练模型时spark报错：too many open files
+
+解决一：修改linux系统的/etc/security/limits.conf配置文件提高用户可打开的文件句柄。（在服务器上没有权限）
+
+解决二：提高spark.sql.shuffle.partitions的数目。（默认200）
+
+知其所以然：
+
+spark.sql.shuffle.partitions shuffle时的分区数，默认200个，一个rdd分为多个partition,例如从hdfs上读取文件时一个hdfs的block对应一个spark的partition。
+paritions的数量n应使得 n*128M > 文件大小(128M是一个block的默认大小)
+
+spark.sql.shuffle.partitions shuffle时的分区数，默认200个，一个rdd分为多个partition,例如从hdfs上读取文件时一个hdfs的block对应一个spark的partition。
+
+paritions的数量n应使得 n*128M > 文件大小(128M是一个block的默认大小)
+

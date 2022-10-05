@@ -1,0 +1,58 @@
+python安装pycrypto真的是踩到很多坑，说起来一把辛酸泪，好在最后成功解决了，总结了一下遇到的问题，写出来与大家共享
+
+首先要明白的是crypto和pycrypto是两个不同的模块，小伙伴们不要去安装crypto
+
+
+问题一：unable to find vcvarsall.bat
+
+在网上下载pycrypto的包，进入包目录，使用python setup.py install命令安装，报错如图
+
+大家看到这肯定去百度啊，百度就告诉你安装vs吧，但vs这个东西安装时间长，卸载又麻烦，加上我们平时用不到的话，安装成本略高
+
+接下来介绍一种省心省力的安装方式，下载pycrypto.whl文件
+
+下载网址：http://www.voidspace.org.uk/python/pycrypto-2.6.1/
+
+里边有不同版本对应的whl
+
+这里我的python 3.6.5版本对应的pycrypto.whl为pycrypto-2.6.1-cp36-cp36m-win_amd64.whl
+
+python2.7版本对应下载的是pycrypto-2.6.1-cp36-win32_py27.exe
+
+分别介绍一下安装方式
+
+1)pycrypto.whl文件
+
+　　下载文件放置于D:\python\python3.6.2\Scripts下，前边为python安装目录
+
+　　cmd进入D:\python\python3.6.2\Scripts，执行pip install pycrypto-2.6.1-cp36-cp36m-win_amd64.whl
+
+　　等待Successfully installed …出现
+
+2）pycrypto.exe
+
+　　下载后直接双击打开，过程中会匹配你当前电脑已安装的python，注意版本和目录的选择，一直下一步指导安装完成
+
+至此我的问题解决了
+
+
+可能出现的问题二：No Module named Crypto
+
+小伙伴们在上述过程后，导入模块
+
+from Crypto.Cipher import AES
+
+运行时可能报错No Module named Crypto
+
+这里也有解决办法：修改D:\python\python3.6.2\site_packages下的crypto报名为大写Crypto
+
+可能遇到的问题三：ModuleNotFoundError: No module named 'winrandom
+
+这个问题其实我没遇到过......解决方法是从别人那里copy来的，解决不了问题还请小伙伴们不要打我....
+
+解决方法：在目录下：D:\python\python3.6.2\Lib\site-packages\Crypto\Random\OSRNG修改nt.py文件，
+
+将import winrandom 修改为：from . import winrandom即可
+
+附上一张运行成功的图，哈哈哈
+

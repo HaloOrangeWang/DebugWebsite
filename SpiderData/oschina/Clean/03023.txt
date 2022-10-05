@@ -1,0 +1,38 @@
+错误说明：
+
+Win10，ANACONDA3(64-bit)，Python3.6.2。ANACONDA Prompt中不能用pip命令安装包，并且是在安装了TensorFlow后才发生的。报错如下：
+
+Exception:
+Traceback (most recent call last):
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\basecommand.py", line 215, in main
+    status = self.run(options, args)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\commands\install.py", line 335, in run
+    wb.build(autobuilding=True)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\wheel.py", line 749, in build
+    self.requirement_set.prepare_files(self.finder)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\req\req_set.py", line 380, in prepare_files
+    ignore_dependencies=self.ignore_dependencies))
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\req\req_set.py", line 554, in _prepare_file
+    require_hashes
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\req\req_install.py", line 278, in populate_link
+    self.link = finder.find_requirement(self, upgrade)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\index.py", line 465, in find_requirement
+    all_candidates = self.find_all_candidates(req.name)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\index.py", line 423, in find_all_candidates
+    for page in self._get_pages(url_locations, project_name):
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\index.py", line 568, in _get_pages
+    page = self._get_page(location)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\index.py", line 683, in _get_page
+    return HTMLPage.get_page(link, session=self.session)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\index.py", line 811, in get_page
+    inst = cls(resp.content, resp.url, resp.headers)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\index.py", line 731, in __init__
+    namespaceHTMLElements=False,
+TypeError: parse() got an unexpected keyword argument 'transport_encoding'
+
+解决方法：
+
+conda install -c anaconda html5lib
+
+后续有更新 执行y操作
+

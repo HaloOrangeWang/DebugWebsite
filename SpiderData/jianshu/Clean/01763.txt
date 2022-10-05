@@ -1,0 +1,36 @@
+
+环境：Ubunt18.04+Python3.6
+
+
+错误描述：运行
+
+import cv2
+
+出现如下错误信息：
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+ImportError: /opt/ros/kinetic/lib/python2.7/dist-packages/cv2.so: undefined symbol: PyCObject_Type
+
+
+错误原因：
+
+由于在PYTHONPATH中存在"/opt/ros/kinetic/lib/python2.7/dist-packages"或者上述路径位于"your_env/lib/python3.6/site_packages"之前（路径越靠前，优先级越高），则在包导入时试图在优先级高的路径中寻找cv2.so文件，进而导致出错。
+
+
+解决方法
+
+删除 “/opt/ros/kinetic/lib/python2.7/dist-packages”路径，同事注释掉.bashrc中的“source /opt/ros/kinetic/setup.bash”，因为这条语句会自动在环境变量中添加“/opt/ros/kinetic/lib/python2.7/dist-packages”路径
+
+将"your_env/lib/python3.6/site_packages"路径添加在 “/opt/ros/kinetic/lib/python2.7/dist-packages”之前
+
+export PYTHONPATH=/home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/site-packages:$PYTHONPATH
+
+在import cv2之前通过python语句删除ros的路径
+
+import sys
+sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
+import cv2
+

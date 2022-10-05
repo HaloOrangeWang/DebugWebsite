@@ -1,0 +1,44 @@
+MySQL-python是Python访问MySQL数据库的第三方模块库；
+
+在安装过程中出现如下错误：
+
+[root@localhost MySQL-python-1.2.5]# python setup.py install
+
+Traceback (most recent call last):
+
+File "setup.py", line 7, in <module>
+
+import setuptools
+
+ImportError: No module named setuptools
+
+字面意思是：没有setuptools的模块，说明python缺少这个模块；
+
+解决方法如下：
+
+下载setuptools包
+
+#  wget http://pypi.python.org/packages/source/s/setuptools/setuptools-0.6c11.tar.gz
+
+解压setuptools包
+
+# tar -xvf setuptools-0.6c11.tar.gz
+
+# cd setuptools-0.6c11
+
+编译setuptools
+
+# python setup.py build
+
+开始执行setuptools安装
+
+# python setup.py install
+
+安装完成；
+
+# ls -l /usr/lib/python2.6/site-packages/setuptools-0.6c11-py2.6.egg
+
+-rw-r--r--. 1 root root 333591 Mar 29 14:21 /usr/lib/python2.6/site-packages/setuptools-0.6c11-py2.6.egg
+
+再次执行上面的操作不会报错；
+

@@ -1,0 +1,77 @@
+一、re模块的补充
+1、从一个字符串中获取要匹配的内容
+findall：返回一个列表
+
+2、search  *****  验证用户输入内容 '^正则规则$'：返回一个对象，用group()取值
+
+3、match：与search一样，但是只从字符串的开头匹配
+import re
+ret = re.match('\d+','123adas4567gi9sf7789')
+print(ret)            # <_sre.SRE_Match object; span=(0, 3), match='123'>
+print(ret.group())    # 123
+
+ret = re.match('\d+','adas4567gi9sf7789')
+print(ret.group())    # 报错，因为找不到以数字开始的字符串
+
+相当于search的正则表达式中加  ^  
+ret = re.search('^\d+','123adas4567gi9sf7789')
+print(ret)           # <_sre.SRE_Match object; span=(0, 3), match='123'>
+print(ret.group())   # 123
+
+ArithmeticError
+AssertionError
+AttributeError
+BaseException
+BufferError
+BytesWarning
+DeprecationWarning
+EnvironmentError
+EOFError
+Exception
+FloatingPointError
+FutureWarning
+GeneratorExit
+ImportError
+ImportWarning
+IndentationError
+IndexError
+IOError
+KeyboardInterrupt
+KeyError
+LookupError
+MemoryError
+NameError
+NotImplementedError
+OSError
+OverflowError
+PendingDeprecationWarning
+ReferenceError
+RuntimeError
+RuntimeWarning
+StandardError
+StopIteration
+SyntaxError
+SyntaxWarning
+SystemError
+SystemExit
+TabError
+TypeError
+UnboundLocalError
+UnicodeDecodeError
+UnicodeEncodeError
+UnicodeError
+UnicodeTranslateError
+UnicodeWarning
+UserWarning
+ValueError
+Warning
+ZeroDivisionError
+
+3、异常处理
+3-1、try except单分支
+try:
+    num = int(input('num : '))
+    print(num)
+except ValueError:
+    print('你输入的不是数字')
+

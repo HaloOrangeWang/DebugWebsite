@@ -1,0 +1,10 @@
+Ubuntu16.04默认安装的python3.5，升级为python3.6.5，并且将pip3升级到10.0.1。但是使用pip3安装软件时，出现了以下的报错
+
+这是因为lsb_release执行文件中第一行指定了脚本解释器的路径：#!/usr/bin/python3 -Es
+
+由于当前系统安装的python3是指向python3.6.5的软链接。
+
+然而python3.6.5不支持lsb_release -a命令。就导致出现了这个问题。
+
+而系统原来自带的python3.5是支持这个命令的，所以将lsb_release的脚本解释器改为#!/usr/bin/python3.5 -Es，即可正常运行了。
+

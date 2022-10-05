@@ -1,0 +1,38 @@
+
+问题描述
+
+假如有如下工作目录
+
+project 
+  文件夹1 
+    a.pydata.csv 文件夹2 
+    main.py
+
+文件夹1 
+    a.pydata.csv
+
+a.py
+
+data.csv
+
+文件夹2 
+    main.py
+
+main.py
+
+如果在main.py里面写了相对路径../文件夹1/data.csv读取“文件夹1中的数据或者函数”，在vscode点击执行会报错，就是这个相对路径的原因。
+ 因为如果os.getcwd()会显示工作目录是project之下的，因此会相对路径错误。
+
+
+解决方法
+
+在main.py的最开头加两行命令
+
+import os,sys
+os.chdir(sys.path[0])
+
+就可以把工作目录在运行当前代码的时候设置为当前python文件所在的目录了。
+ 应该是一个vscode插件的小bug
+
+参考
+

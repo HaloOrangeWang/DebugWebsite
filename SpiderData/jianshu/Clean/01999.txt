@@ -1,0 +1,34 @@
+
+解决ubantu里面报错findfont: Font family ['sans-serif'] not found. Falling back to Bitstream Vera Sans
+
+2019-04-24 08:56:41 木里先森 阅读数 1833更多
+
+分类专栏： python
+
+<article class="baidu_pl" style="box-sizing: inherit; outline: 0px; margin: 0px; padding: 16px 0px 0px; display: block; position: relative; color: rgba(0, 0, 0, 0.75); font-family: -apple-system, "SF UI Text", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: common-ligatures; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial;">
+
+版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。
+
+本文链接：https://blog.csdn.net/mr_muli/article/details/89485619
+
+在终端python 的环境下，查看字体路径
+
+import matplotlib    
+print(matplotlib.matplotlib_fname())
+
+下载simhei.ttf ，放到指定目录下，例如我的目录为： /home/muli/anaconda3/lib/python3.5/site-packages/matplotlib/mpl-data/fonts/ttf
+
+在home目录下，执行 ctrl + h ，打开隐藏目录， 删除 ~/.cache/matplotlib的缓冲目录
+
+修改/home/muli/anaconda3/lib/python3.5/site-packages/matplotlib/mpl-data 里面的matplotlibrc文件，修改如下：
+
+font.family         : sans-serif        
+    font.sans-serif     : SimHei, Bitstream Vera Sans, Lucida Grande, Verdana, Geneva, Lucid, Arial, Helvetica, Avant Garde, sans-serif 
+    axes.unicode_minus，将True改为False，作用就是解决负号'-'显示为方块的问题
+
+如果没有效果，可能需要开机重启
+
+参考博客：http://wenda.chinahadoop.cn/question/6828以及https://blog.csdn.net/dgatiger/article/details/50414549
+
+</article>
+

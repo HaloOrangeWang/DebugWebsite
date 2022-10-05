@@ -1,0 +1,35 @@
+这时在cmd命令行输入mysql -u root -p 回车输入密码，就可以成功连接数据库但用pymysql登陆报错，
+
+脚本如下：
+
+import pymysql
+
+conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='dong1990',db='fund_db')
+
+cur = conn.cursor()
+
+sql = "select * from vul"
+cur.execute(sql)
+
+for r in cur.fetchall():
+
+print(r)
+
+cur.close()
+
+conn.close()
+
+这时报错pymysql.err.OperationalError: (1045, u"Access denied for user 'root'@'localhost' (using password: No)")
+
+最简单的方法是更换了root密码的认证方式解决的，新版mysql使用的caching_sha2_password，换成mysql_native_password我就可以连上了。
+
+步骤是在cmd命令行连接mysql, 通过mysql -u root -p dong1990
+
+然后输入ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'dong1990';
+
+DONE!
+
+这时再跑下python脚本就可以连接了。
+
+转载自：https://blog.csdn.net/dongweionly/article/details/80273095
+

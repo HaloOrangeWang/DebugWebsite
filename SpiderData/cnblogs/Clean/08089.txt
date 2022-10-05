@@ -1,0 +1,30 @@
+
+报错信息
+
+最近闲来无事，用python的tkinter库开发了一款带日程提醒的万年历桌面程序。在程序开发结束开始打包时，却发现一直报错
+
+PyInstaller cannot check for assembly dependencies.
+Please install PyWin32 or pywin32-ctypes.
+pip install pypiwin32
+
+但是运行pip install pypiwin32时却提示两个库都已经安装过了
+
+可是当再运行打包脚本时就是死活无法打包，就是提示缺少上面两个依赖库。
+
+各种度娘发现都没有遇到类似奇葩情况的。
+
+于是决定自行解决，首先根据错误关键词到pyinstaller的源码中去检索报错位置。
+
+最终发现是因为导包问题引起的，两个依赖库确实已经安装只是导入方式不同导致报错。
+
+
+解决方案
+
+在python安装路径下找到Lib/site-packages/Pyinstaller目录下有个compat.py文件定位到212行
+
+源码如下：
+
+做如下修改：将两个from改为import
+
+然后再重新运行打包脚本，打包成功
+

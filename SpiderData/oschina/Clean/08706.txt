@@ -1,0 +1,109 @@
+在使用vue进行组件开发的时候，遇到一个问题，父组件传递到子组件里面的值，如果在子组件里面进行改变 传递过来的"值"，会报错：
+
+[Vue warn]: Avoid mutating a prop directly since the value will be overwritten whenever the parent component re-renders. Instead, use a data or computed property based on the prop's value. Prop being mutated: "result" (found in component )
+
+原因：props 传递数据流是单向的，父组件传递到子组件是单向的。
+
+例如：父组件传递值
+
+<tabs :tabs="tabs" :activeIndex="activeIndex" ></tabs>
+
+子组件接受值：
+
+<template>
+<el-tabs type="card" v-model="activeIndex">
+  <el-tab-pane v-for="(item,index) in tabs" :label="item"  :closable="index==0?false:true" :name="index.toString()">    
+  </el-tab-pane>
+</el-tabs>
+</template>
+
+<script>
+export default{
+  data(){
+    return {
+      tabs:[]
+    }
+  },
+  props:['activeIndex']
+}
+</script>
+
+我们在父组件改变 activeIndex 的值，子组件会发生变化，但是我们注意到在子组件同样也会改变值，就会产生：
+
+Avoid mutating a prop directly since the value will be overwritten ....的报错
+
+原因在于：父子组件的传递机制
+
+解决办法：在子组件使用该值的时候，可以通过定义变量（currentIndex）来进行传递，这个值发生改变的时候，不会造成activeIndex的改变：
+
+<script>
+export default{
+  data(){
+    return {
+      tabs:[],
+      currentIndex:this.activeIndex
+    }
+  },
+  props:['activeIndex']
+}
+</script>
+
+基本上这样处理，就能够解决报错问题了。
+
+但是我们想要子组件的 currentIndex 发生改变的时候，父组件的 activeIndex 也要发生改变，要怎么做呢？
+
+我们知道：activeIndex 是通过父组件传递过来的，用 props 进行接受，但是数据流动是单向，也就是在子组件的 currentIndex 发生改变，父组件的 activeIndex不会变。
+
+这要怎么解决？
+
+使用 $emit 的目的在于：实现子组件向父组件的通信；
+
+具体实现：定义 $emit的方法[ indexChange ] 并进行传递：
+
+<tabs :tabs="tabs" :activeIndex="activeIndex" @indexChange="indexChange"></tabs>
+<el-button @click="change">改变</el-button>
+<script>
+export default{
+  data(){
+    return {
+      tabs:[],
+      activeIndex:1;
+    }
+  },
+  methods:{
+    change(){
+      this.activeIndex = 2;
+    },
+    indexChange(index){
+      this.activeIndex = index;
+    },
+  }
+}
+</script>
+
+子组件监听：currentIndex 的变化并向父组件进行通信：
+
+<template>
+<el-tabs type="card" v-model="activeIndex">
+  <el-tab-pane v-for="(item,index) in tabs" :label="item"  :closable="index==0?false:true" :name="index.toString()">    
+  </el-tab-pane>
+</el-tabs>
+</template>
+
+<script>
+export default{
+  data(){
+    return {
+      tabs:[],
+      currentIndex:this.activeIndex
+    }
+  },
+  props:['activeIndex'],
+  watch:{
+    currentIndex:function(index){      
+      this.$emit('indexChange',index);
+    }
+  }
+}
+</script>
+

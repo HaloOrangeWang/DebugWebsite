@@ -1,0 +1,30 @@
+
+报错原因
+
+因开发机包含python的多个版本,3.7  3.8  3.9,同时使用了django-redis 包, 缓存公用的一个redis中间件,如果3.8或3.9 向redis写入key  3.7读取的时候就会报错 ValueError: unsupported pickle protocol: 5
+
+解决方案
+
+1. 建议通过docker 启动多个redis 作为区分
+
+2.统一使用python3.8以上的版本运行
+
+
+其它原因
+
+问题描述
+使用pickle.load(f)读取pkl文件的时候，报错ValueError: unsupported pickle protocol: 5
+
+解决方案
+原因是由于保存pkl文件的版本是python3.8，而读取的时候用了python3.7来读取，所以才会报错。
+
+解决办法就是：保存和读取pkl文件用同样的python版本
+
+参考地址
+
+https://blog.csdn.net/weixin_38705903/article/details/113686545
+
+https://blog.csdn.net/weixin_38705903/article/details/106463508
+
+https://blog.csdn.net/weixin_30578677/article/details/97587699
+

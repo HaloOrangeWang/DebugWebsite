@@ -1,0 +1,32 @@
+通过使用Python+selenium定位元素时报错“selenium.common.exceptions.NoSuchElementException: Message: Unable to find element with xpath == //*[@id="navmenu"]/li[2]/a”
+
+可能的原因如下：
+
+1、此xpath路径不正确。获取xpath路径可使用谷歌的复制xpath路径的方法。
+
+2、界面操作太快，可能xpath路径元素还未加载出来。可通过添加等待时间来解决。代码如下：
+
+#导入时间包
+import time
+time.sleep(5)
+
+3、当前判断的xpath所在的窗口可能是从其他窗口跳转过来的。
+
+这个是最常见的原因，首先要理解下frame的实质，frame中实际上是嵌入了另一个页面，而webdriver每次只能在一个页面识别，因此需要先定位到相应的frame，对那个页面里的元素进行定位。
+
+具体代码：
+
+#先通过谷歌调试找到当前frame，然后可通过webdriver.find_element_by_xpath()方法来定位当前的frame（也可通过其他方法定位）
+frame1 = webdriver.find_element_by_xpath ('//*[@id="centerPanel"]/iframe')    
+webdriver.switch_to.frame(frame1)  #切换到当前的frame下
+
+如果当前的frame已操作完成，需跳出当前frame，可通过：
+
+webdriver.switch_to.parent_frame()
+
+或webdriver.switch_to.default_content()
+
+这两种方法来跳出窗口。
+
+4、或许还有其他可能，碰到之后再进行补充。
+

@@ -1,0 +1,87 @@
+对python3下的requests使用并不是很熟练，今天稍微用了下，请求几次下来后发现出现连接超时的异常，上网查了下，找到了一个还算中肯的解决方法。
+
+retrying是python的一个自带的重试包
+
+导入方式：
+
+from retrying import retry
+
+
+简单使用
+
+retrying 这个包的用法原理就是在你不知道那段代码块是否会发生异常，若发生异常，可以再次执行该段的代码块，如果没有发生异常，那么就继续执行往下执行代码块
+
+以前你的代码可能是这样写的：
+
+def get_html(url):
+ pass
+
+def log_error(url):
+ pass
+
+url = ""
+try:
+ get_page(url)
+except:
+ log_error(url)
+
+也有可能是这样子写的：
+
+# 请求超过十次就放弃
+attempts = 0
+success = False
+while attempts < 10 and not success:
+ try:
+  get_html(url)
+  success = True
+ except:
+  attempts += 1
+  if attempts == 10:
+   break
+
+使用 retrying 的写法：
+
+import random
+from retrying import retry
+
+@retry()
+def do_something_unreliable():
+ if random.randint(0, 10) > 1:
+  raise IOError("Broken sauce, everything is hosed!!!111one")
+ else:
+  return "Awesome sauce!"
+
+result = do_something_unreliable()
+print（result）
+
+上面的是简单的用法，你可以试下，下面是一些可选参数的使用方式。
+
+stop_max_attempt_number 
+ 用来设定最大的尝试次数，超过该次数就停止重试
+
+stop_max_delay 
+ 超过时间段，函数就不会再执行了
+
+wait_random_min和wait_random_max 
+ 用随机的方式产生两次retrying之间的停留时间
+
+更多的API可以访问python官网 https://www.python.org/
+
+————————————— 下面是广告 ————————————————
+
+个人微信：hll643435675（备注：博客）
+
+更多资源请访问：
+
+https://blog.csdn.net/xudailong_blog/article/details/78762262
+
+小密圈精品源码根据地
+
+欢迎光临我的小网站：http://www.00reso.com
+
+欢迎光临这个妹子的SEO优化网站：http://www.ltc622.com/
+
+陆续优化中，后续会开发更多更好玩的有趣的小工具
+
+————————————— 上面是广告 ————————————————
+

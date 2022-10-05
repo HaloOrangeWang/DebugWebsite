@@ -1,0 +1,14 @@
+一、问题描述
+
+sorted set操作执行：print(connect.zadd('grade', 'bob', 98, 'mike' ,100))时报错redis.exceptions.DataError: ZADD allows either 'nx' or 'xx', not both
+
+二、出现该问题原因
+
+上面的connect.zadd('key','value1','score1','value2','score2')写法是redis-py 3.0之前的版本
+
+在redis-py 3.0版本之后，写法变为：connect.zadd('grade', {'bob':100, 'mike':99, 'lucy':87})这种写法了，所以会报错
+
+三、解决方案
+
+更改写法为：connect.zadd('key',{'value1':'score1','value2':'scote2',.....})
+

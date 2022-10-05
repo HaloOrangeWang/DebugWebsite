@@ -1,0 +1,30 @@
+rsync 可以使用 --password-file 选项指定密钥文件，密钥文件中简单存放 rsync 密码；在第一次使用密钥文件的时候经常遇到文件权限相关问题；这里总结一下，我遇到的问题。
+
+
+问题描述
+
+在开发环境下，手动执行 python ccmcx_tdw_data_sync.py，执行前还确保了 rsync.secret 具体读写权限，chmod u+rw rsync.secret，执行正常；后面将脚本加入 crontab，
+
+运行报错：password file must be owned by root when running as root
+
+简单的处理，让所有用户都有权限读写：chmod a+rw rsync.secret；运行报错：password file must not be other-accessible
+
+
+结论
+
+password file must be owned by root when running as root：后面检查发现，每个用户都有自己的 crontab，而我是以 root 用户设置 crontab 任务的，因此执行脚本的用户也是 root，看第一个报错是因为 file owner 不是 root，chown root rsync.secret 简单解决；
+
+password file must be owned by root when running as root：后面检查发现，每个用户都有自己的 crontab，而我是以 root 用户设置 crontab 任务的，因此执行脚本的用户也是 root，看第一个报错是因为 file owner 不是 root，chown root rsync.secret 简单解决；
+
+password file must not be other-accessible：可以看出 rsync 对密钥文件管理的严格，owner 不仅仅要求是 run user，而且读写权限需要做收敛，不能被其他用户读写，执行 chmod o-rw rsync.secret
+
+password file must not be other-accessible：可以看出 rsync 对密钥文件管理的严格，owner 不仅仅要求是 run user，而且读写权限需要做收敛，不能被其他用户读写，执行 chmod o-rw rsync.secret
+
+从这里可以看出 rsync 对密钥文件的管理原则：密钥文件的拥有者只能是运行命令的用户，且只能由拥有者读写，这样文件就为运行用户专属了，其他普通用户不能通过密钥文件传输文件或者读写密钥文件了
+
+从这里可以看出 rsync 对密钥文件的管理原则：密钥文件的拥有者只能是运行命令的用户，且只能由拥有者读写，这样文件就为运行用户专属了，其他普通用户不能通过密钥文件传输文件或者读写密钥文件了
+
+一个题外话：每个用户都有自己的 crontab，crontab 不在一个配置文件中，运维难以管理，大部分的 crontab 都会由运维统一放在 root 的 crontab 下，除此之外，还可以直接在/etc/crontab文件中添加，不过需要是 root 身份。这个文件的 crontab 与用户的不太一样，可以指定运行命令的用户，这样的一个好处是：运维方便管理，而且可以指定运行命令的用户，普通用户的环境变量等相关信息不需要对齐到 root。
+
+一个题外话：每个用户都有自己的 crontab，crontab 不在一个配置文件中，运维难以管理，大部分的 crontab 都会由运维统一放在 root 的 crontab 下，除此之外，还可以直接在/etc/crontab文件中添加，不过需要是 root 身份。这个文件的 crontab 与用户的不太一样，可以指定运行命令的用户，这样的一个好处是：运维方便管理，而且可以指定运行命令的用户，普通用户的环境变量等相关信息不需要对齐到 root。
+

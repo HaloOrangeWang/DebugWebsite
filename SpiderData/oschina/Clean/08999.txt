@@ -1,0 +1,10 @@
+我在本地用的是wamp server的一键包，只使用了mysql的功能，今天在使用   rake db:migrate 时候
+
+先报了个无法执行，查询了下，发现没装mysql的一个gem，执行gem install mysql  安装gem成功。接下来又报错，
+
+libmySQL.dll无法找到，无法进行数据库导入操作。想了下，我的mysql可以运行啊。于是在网上找了下，发现了解决方法。
+
+在Mysql安装目录的　bin 目录下，找到 ibmySQL.dll ，将该文件Copy到　Ruby安装目录的 bin目录中。这里也有一个版本的问题。我数据库用的是Mysql 5.0.41，每次操作数据库都会报"内存分配错误"，没办法，只好 使用Mysql 5.0.37的　ibmySQL.dll 文件，问题解决。
+
+在此MARK下，以备以后不时之需
+

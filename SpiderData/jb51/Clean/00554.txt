@@ -1,0 +1,36 @@
+pip简介
+
+pip 是一个现代的，通用的 Python 包管理工具。提供了对 Python 包的查找、下载、安装、卸载的功能
+
+pip是官方推荐的安装和管理Python包的工具，用其来下载和管理Python非常方便。pip最大的优势是它不仅能将我们需要的包下载下来，而且会把相关依赖的包也下载下来。下面简单介绍一下python用pip install时安装失败问题。
+
+昨天想下载python的pillow库，结果遇到各种问题
+
+一些注意事项和问题的解决方案如下：
+
+先检查python是否安装成功命令行直接输入python 安装成功会显示如下图
+
+如果发现不对，可查看控制面板–系统与安全–系统–高级系统设置–环境变量–PATH 添加你python应用程序所在的位置如，我添加的是F://python确保python安装成功后，输入pip install pillow提示pip指令不能用，解决方案为：转到pip所在的目录下使用pip pip一般在python下的scripts文件夹里，如我的在：F://python/scripts安装成功会有进度条100%和提示successful的信息出现若出现各种黄色红色的东西，反正就是安装失败，可尝试以下解决方案使用国内的镜像网站：
+
+* http://pypi.douban.com/
+
+豆瓣 * http://pypi.hustunique.com/
+
+华中理工大学 * http://pypi.tuna.tsinghua.edu.cn/simple/
+
+清华大学 * http://mirrors.aliyun.com.pypi/simple/ 阿里云
+
+* 指令为pip install pillow -i http://pypi.tuna.tsinghua.edu.cn/simple/ --trusted-host pypi.tuna.tsinghua.edu.cn（以清华为例，我用的是清华的镜像）
+
+* --trusted-host和之后的是为了防止出现不信任的报错更改超时时间 * pip --default-timeout=500 install -U pillow
+
+*超时时间默认为100，改大点就好（这里我改成了500）更新pip * python -m pip install --upgrade pip
+
+ps：下面看下pip install 没反应怎么办
+
+用 python -m pip install 便可
+
+总结
+
+到此这篇关于python用pip install时安装失败的一系列问题及解决方法的文章就介绍到这了,更多相关python用pip install时安装失败内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

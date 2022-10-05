@@ -1,0 +1,22 @@
+帮同事授权，报错Caused by: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: execute command denied to user 'zhangjun'@'%' for routine 'blacklist.black_record_search_forV3_v3'
+
+发现他是访问存储过程，给了他execute权限后还是不行，报错：
+
+ERROR 2018-03-20 12:57:46,092 [main] [] [] com.zzc.alchemy.util.SearchTools - CallableStatementCallback; SQL []; User does not have access to metadata required to determine stored procedure parameter types. If rights can not be granted, configure connection with "noAccessToProcedureBodies=true" to have driver generate parameters that represent INOUT strings irregardless of actual parameter types.; nested exception is java.sql.SQLException: User does not have access to metadata required to determine stored procedure parameter types. If rights can not be granted, configure connection with "noAccessToProcedureBodies=true" to have driver generate parameters that represent INOUT strings irregardless of actual parameter types.
+
+经过查阅资料得知，JDBC在调用存储过程时不光用户要有execute的权限，还需要对mysql.proc具有访问权限。否则它无法访问metadata。有两种解决方法：
+
+一.给数据库连接设置一个noAccessToProcedureBodies属性，属性值为true，示例如下：
+
+jdbc:mysql://ipaddress:3306/test?noAccessToProcedureBodies=true
+
+网上说设置noAccessToProcedureBodies=true会带来一些影响（未经考证）：
+
+1. 调用存储过程时，将没有类型检查，设为字符串类型，并且所有的参数设为int类型，但是在调用registerOutParameter时，不抛出异常。
+
+2. 存储过程的查询结果无法使用getXXX(String parameterName)的形式获取，只能通过getXXX(int parameterIndex)的方式获取。
+
+二.给数据库用户赋权，赋执行mysql.proc表的select权限，示例如下：
+
+GRANT SELECT ON mysql.proc TO 'user'@'localhost';
+

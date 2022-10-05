@@ -1,0 +1,15 @@
+python中执行pyspider all命令报错如下：ImportError: cannot import name 'DispatcherMiddleware' from 'werkzeug.wsgi' (f:\
+mypython\venv\lib\site-packages\werkzeug\wsgi.py)
+
+因为pyspider源码版本缘故，把版本降下来，将wsgidav替换为2.4.1
+
+安装成功后，重启启动pyspider依旧报错：
+
+发现还是版本的原因，werkzeug的版本为1.0.0，这个版本中没有DispatcherMiddleware方法，所以还是降低版本。
+
+注意降低版本不能低于0.15版本，因为我们的pyspider要求大于0.15版本以上
+
+再次启动终于成功！！！
+
+from：https://blog.csdn.net/lang_niu/article/details/104501473
+

@@ -1,0 +1,177 @@
+
+报错信息内容
+
+Traceback (most recent call last): File “python/init.py”, line 282, in getAndExecuteInput
+ File “”, line 1, in cx_Oracle.DatabaseError: DPI-1047: Cannot locate a 64-bit Oracle Client library: "libclntsh.so: cannot open shared object file: No such file or directory". See https://oracle.github.io/odpi/doc/installation.html#linux for help
+
+以上是报错信息内容，拆开报错，如上加黑内容所示，报错的原因是DPI-1047,也就是Oracle Client library出现了错误。
+
+
+原因
+
+为啥会出现这个错误呢？后面的答案是：libclntsh.so这个文件没有找到，不能打开共享的路径文件，因此出现了错误，简单说共享文件计算机没有找到，就是环境变量配置是不正确的。那下面就是解决这个问题。
+
+
+解决办法
+
+
+（1）检查环境变量是否存在
+
+为了确定你配置的环境变量是否正确，请直接使用以下命令查看环境变量中是否存在ORACLE_HOME的环境变量，有了环境变量在系统的任何位置运行命令才能启动数据库，打开数据库的数据。
+
+[root@tandelin ~]# env
+
+这里我的ORACLE_HOME=/usr/lib/oracle/11.2/client64这个路径是存在的，在这之前已经配置好了。如果后面配置成功，就应该出现这个路径。
+
+**如果该路径存在，就不需要配置环境变量**
+
+（2）配置环境变量
+
+将环境变量设置LD_LIBRARY_PATH为Instant Client版本的相应目录。例如：
+
+export LD_LIBRARY_PATH=/opt/oracle/instantclient_12_2:$LD_LIBRARY_PATH。
+
+具体配置如下，在vim /etc/profile编辑器下的fi后添加如下内容：
+
+[root@tandelin ~]# vim /etc/profile
+
+export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL
+ export ORACLE_HOME=/usr/lib/oracle/11.2/client64
+ export TNS_ADMIN=/usr/lib/oracle/11.2/client64
+ export LD_LIBRARY_PATH=/usr/lib/oracle/11.2/client64/lib
+ export ORABIN=/usr/lib/oracle/11.2/client64/bin
+ PATH=
+    
+     
+      
+       
+        P
+       
+       
+        A
+       
+       
+        T
+       
+       
+        H
+       
+       
+        :
+       
+      
+      
+       PATH:
+      
+     
+    PATH:ORABIN
+ export PATH
+
+export PATH=
+    
+     
+      
+       
+        O
+       
+       
+        R
+       
+       
+        A
+       
+       
+        C
+       
+       
+        L
+       
+       
+        
+         E
+        
+        
+         H
+        
+       
+       
+        O
+       
+       
+        M
+       
+       
+        E
+       
+       
+        :
+       
+      
+      
+       ORACLE_HOME:
+      
+     
+    ORACLEH​OME:PATH
+ export PATH=
+    
+     
+      
+       
+        P
+       
+       
+        A
+       
+       
+        T
+       
+       
+        H
+       
+       
+        :
+       
+      
+      
+       PATH:
+      
+     
+    PATH:HOME/bin:$ORACLE_HOME/bin
+
+最后，运行配置的环境变量，让配置好的环境变量生效。
+
+[root@test ~]# source  /etc/profile
+
+环境变量配置参考如下：https://blog.csdn.net/tandelin/article/details/98940498
+
+（3）环境变量配置好后，就再次尝试连接oracle数据库
+ 先用pip list 或者pip3 list查看数据包cx_Oracle是否存在，有时候cx_Oracle包是5.2.1的版本，有时候是7.2的版本，建议最新版本尝试下。
+
+
+测试Python和Oracle数据库连接
+
+import cx_Oracle
+import pandas as pd
+#获取数据库连接
+username="****"
+userpwd="****"
+host="****"
+port=1521
+dbname="****"
+dsn=cx_Oracle.makedsn(host, port, dbname)
+connection=cx_Oracle.connect(username, userpwd, dsn)
+sql="select * from ****  where rownum<5"
+data = pd.read_sql(sql,connection)  ##直接将读取的sql数据转换成数据框，有助于下一步的可视化和统计建模
+data.head(n=2)
+
+注意：如果你的数据库中的数据表的名称是中文的，可能会出现乱码，或者报错，建议修改linux系统的字符编码。
+
+
+其它错误libclntsh.so
+
+如果出现这个错误，请进行软连接挂载文件，让系统的路径能正确的获取到该文件，操作如下：
+
+[root@test ~]# sudo sh -c "/usr/lib/oracle/instantclient_11_1 > /etc/ld.so.conf.d/oracle-instantclient.conf"
+
+sudo ldconfig
+

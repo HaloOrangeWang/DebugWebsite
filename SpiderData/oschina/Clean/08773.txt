@@ -1,0 +1,25 @@
+dotnetcore ef 调用多个数据库时用户命令执行操作报错
+
+1、多个DbContext 时报错：
+
+报错：
+
+More than one DbContext was found. Specify which one to use. Use the '-Context' parameter for PowerShell commands and the '--context' parameter for dotnet commands.
+
+解决办法：
+
+dotnet ef migrations add initail -c PermissionDbContext
+
+成功之后
+
+dotnet ef database update -c PermissionDbContext
+
+2、如果 DbContext 在另一个 DLL 中时报错：
+
+解决办法：
+
+services.AddDbContext<PermissionDbContext>(options =>
+ options.UseSqlServer(configuration.GetConnectionString("PermissionConnection"), b => b.MigrationsAssembly(assemblyName)));
+
+其中 assemblyName 是主DLL 名称的字符串常量。（不知道为什么，它不能为变量 AppDomain.CurrentDomain.FriendlyName）。
+

@@ -1,0 +1,16 @@
+在跑python脚本的时候有如下报错，
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 22-23: ordinal not in range(128)
+
+排查的时候发现是因为有中文字符导致的，将中文去掉脚本无异常。其实从报错也可以看出来是字符编码的问题，Unicode编码与ASCII编码的不兼容，Python默认环境编码通过下面的方法可以获取：
+import sys
+print sys.getdefaultencoding()
+
+基本上默认都是ascii编码方式，因此Python自然调用ascii编码解码程序去处理字符，当字符不属于ascii范围内，就会抛出异常（ordinal not in range(128)）。
+
+解决方法：
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+亲测有效
+

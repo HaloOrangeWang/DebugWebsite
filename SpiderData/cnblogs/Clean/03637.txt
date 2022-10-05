@@ -1,0 +1,38 @@
+字符串在Python内部的表示是unicode编码，因此，在做编码转换时，通常需要以unicode作为中间编码，即先将其他编码的字符串解码（decode）成unicode，再从unicode编码（encode）成另一种编码。
+       
+       Decode的作用是将其他编码的字符串转换成unicode编码，如str1.decode('gb2312')，表示将gb2312编码的字符串str1转换成unicode编码。
+
+Encode的作用是将unicode编码转换成其他编码的字符串，如str2.encode('gb2312')，表示将unicode编码的字符串str2转换成gb2312编码。
+
+因此，转码的时候一定要先搞明白，字符串str是什么编码，然后decode成unicode，然后再encode成其他编码
+
+代码中字符串的默认编码与代码文件本身的编码一致。
+
+python在安装时，默认的编码是ascii，当程序中出现非ascii编码时，python的处理常常会报这样的错UnicodeDecodeError: 'ascii' codec can't decode byte 0x?? in position 1: ordinal not in range(128)，python没办法处理非ascii编码的，此时需要自己设置将python的默认编码，一般设置为utf8的编码格式。
+
+解决方法有三中：
+
+1.在命令行修改，仅本会话有效：
+         1)通过>>>sys.getdefaultencoding()查看当前编码(若报错，先执行>>>import sys >>>reload(sys));
+         2)通过>>>sys.setdefaultencoding('utf8')设置编码
+
+2.较繁琐，最有效
+         1)在程序文件中以下三句
+              import sys
+              reload(sys)
+              sys.setdefaultencoding('utf8')
+
+3.修改Python本环境（推荐）
+         在Python的Lib\site-packages文件夹下新建一个sitecustomize.py文件，内容为：
+             #coding=utf8
+             import sys
+             reload(sys)
+             sys.setdefaultencoding('utf8')
+
+重启Python解释器，发现编码已被设置为utf8，与方案二同效；这是因为系统在Python启动的时候，自行调用该文件，设置系统的默认编码，而不需要每次都手动加上解决代码，属于一劳永逸的解决方法。
+
+----以上内容均摘自网络，如有侵权，告知修改。
+引用地址：
+1.UnicodeEncodeError: ‘ascii’ codec can’t encode characters in position xxx ordinal - bjkandy http://www.tuicool.com/articles/qiqi2i
+2.UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128) http://www.cnblogs.com/bluescorpio/p/3594359.html
+

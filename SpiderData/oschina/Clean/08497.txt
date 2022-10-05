@@ -1,0 +1,27 @@
+环境：centos7
+
+问题：docker 启动没问题，但是下载 镜像时报错
+
+问题说明：这种错误，一般都是本地系统时间错误导致报错证书过期，所以先查看本地系统时间
+
+最终发现问题是系统时间不同步
+
+ps：当前时间是2019-12-18
+
+
+解决方式
+
+1.安装ntpdate（已安装可以直接跳过此）
+
+[root@localhost ~]# yum install -y ntpdate ntp
+
+2.同步时间
+
+[root@localhost ~]# ntpdate cn.pool.ntp.org
+
+3.查看时间
+
+[root@localhost ~]# date "+%Y-%m-%d"
+
+然后再次拉取镜像，无报错
+

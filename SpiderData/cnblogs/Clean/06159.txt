@@ -1,0 +1,53 @@
+
+Neovim 安装与配置
+
+
+安装
+
+pip3 install neovim
+
+之前安装过anaconda,默认安装python3和pip3
+
+
+检查状态
+
+:checkhealth
+
+终端输入'nvim' 进入nvim的normal状态,点击冒号':'进入命令行,输入checkhealth回车,检查neovim状态,状态为ERROR的看情况修复
+
+我在## Python 3 provider (optional)部分检查正常,但在## Python 2 provider (optional)部分检查失败
+
+报错信息为:ImportError: No module named neovim,建议信息为:pip2 install neovim
+
+原因是neovim不是python2和python3公用的,需要分别单独安装,于是我尝试 pip2 install neovim
+
+又发现报错,信息为: pip2:未找到命令
+
+原因是安装linux时默认安装python2(路径为:/usr/bin),但是对应的pip2并没有安装,于是去安装pip2
+
+安装好pip2后,继续执行 pip2 install neovim,安装未报错,继续执行:checkhealth,python2部分也是正常
+
+
+配置~/.config/nvim/init.vim
+
+具体配置文件可自行搜索参考
+
+
+Tmux 安装与配置
+
+
+安装
+
+sudo yum install tmux
+
+tmux的配置文件路径为:~/.tmux.conf,若安装后无改文件,则自行创建即可
+
+
+遇到问题
+
+1.在服务器本机的终端上没有问题,但通过xshell远程链接工具打开时,在tmux中打开nvim,发现nvim配色与原来不符
+
+先配置tmux:  set-option -g default-terminal "screen-256color"
+
+再配置bashrc:  alias tmux="TERM=screen-256color tmux -2"
+

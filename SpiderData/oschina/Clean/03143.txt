@@ -1,0 +1,13 @@
+odoo12启动过程中遇到的问题，及解决办法：
+1、ImportError: No module named ‘win32service’
+pipenv install pypiwin32
+
+2、ImportError: No module named ‘PIL’
+pipenv install Pillow
+
+3、  No module named 'ForkingMixIn'
+    将Werkzeug升级到0.11.15 pipenv install Werkzeug==0.11.15 4、 ModuleNotFoundError: No module named 'reportlab' pipenv install reportlab 5、 psycopg2.OperationalError: fe_sendauth: no password supplied 在setup目录下 新建odoo.conf 文件 6、 window 安装 odoo12 报错 ValueError: embedded null byte 在D:\Python 3.6.4\Python 3.6.4\Lib\_strptime.py下，添加代码： locale.setlocale(locale.LC_ALL, 'en') 7、更新试用ODOO12最新版本的，网页打开不正常寻求帮助。 Could not execute command 'sassc'This error occured while compiling the bundle 'web.assets_common' containing: 问题日志报错： Style error The style compilation failed, see the error below. Your recent actions may be the cause, please try reverting the changes you made. Could not execute command 'sassc'This error occured while compiling the bundle 'web.assets_common' containing: - /web/static/lib/bootstrap/scss/bootstrap/_mixins.scss - /web/static/src/scss/utils.scss - /web/static/src/scss/primary_variables.scss - /web_editor/static/src/scss/web_editor.variables.scss - /web/static/src/scss/secondary_variables.scss - /web/static/lib/bootstrap/scss/bootstrap/_variables.scss - /web/static/lib/bootstrap-datetimepicker/src/scss/_bootstrap-datetimepicker.scss - /web/static/src/scss/fonts.scss - /web/static/src/scss/ui.scss - /web/static/src/scss/ui_extra.scss - /web/static/src/scss/navbar.scss - /web/static/src/scss/mimetypes.scss - /web/static/src/scss/modal.scss - /web/static/src/scss/animation.scss - /web/static/src/scss/rainbow.scss - /web/static/src/scss/datepicker.scss - /web_tour/static/src/scss/tip.scss - /web_tour/static/src/scss/keyframes.scss
+
+解决方法：
+给odoo应用安装sassc的依赖库，命令:pip install libsass
+

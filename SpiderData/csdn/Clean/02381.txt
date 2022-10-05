@@ -1,0 +1,20 @@
+任务调度执行在python脚本时经常会报错，错误日志中报错信息是 tSocket read 0 Bytes
+
+之前在网上查了好多结果都不能解决，包括StackOverFlow上搜索也没有能解决的
+
+只好脚本中不断写打印语句，判断是在哪里出了问题，最后定位是在读文件的地方，如图
+
+files = open('/home/ooxx/script/b_cb_tableinfo.txt', 'r');
+    for i in files.readlines():
+        if dacp_name in i :
+            params = i.split(' ');
+            break;
+    #关闭文件，不再出现报错问题
+    files.close()
+
+其实只需在读文件后关闭就可以解决了，实属低级错误==！
+
+这个脚本每天在固定时间段内被多个调度程序执行，不可避免的会出现并发现象，很有必要在使用后及时关闭
+
+相关搜索，可以百度：Python File close()
+

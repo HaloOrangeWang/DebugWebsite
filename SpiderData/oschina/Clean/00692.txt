@@ -1,0 +1,115 @@
+本文主要分享一个和运行环境相关报错的解决方案，不知道大家有没有遇到过"ValueError: num_parallel_workers exceeds the boundary between 1 and XXX !"的报错。然而并不清楚变量"num_parallel_workers"的取值有何依据，为啥MindSpore/mindspore仓内model_zoo的网络脚本，别人能用，而自己却频繁报错。
+ 其实这一切都是因为每个人的运行环境存在差异，从硬件信息到驱动包，以及第三方依赖库，都可能导致报错的产生。所以，想要随心所欲的用好MindSpore框架，做到知彼知己是必需的。下面将从了解自己的运行环境开始，详细介绍dataset并行数报错的解决过程。
+
+
+一 环境信息获取
+
+
+1.1 操作系统
+
+首先，Linux系统可以使用"uname -a"和"cat /etc/os-release"来查看操作系统版本
+
+
+1.2 硬件信息
+
+1）使用"lscpu"查看cpu信息，包括处理器架构和线程数
+ 
+ 2）使用"free -h"或"cat /proc/cpuinfo |grep "processor" |wc -l"查看内存大小
+ 
+ 3）使用"npu-smi info"查看昇腾系列NPU型号及工作状态（需Atlas run包）
+ 
+ 4) 使用"nvidia-smi"查看英伟达系列GPU型号、驱动版本及状态
+
+
+1.3 mindspore版本
+
+在conda环境类或者原生python环境下，使用"pip show mindspore-ascend"或"pip show mindspore-gpu"查看MindSpore版本号
+
+
+1.4 run package版本
+
+通常情况下，使用root用户安装的Ascend芯片run包都会在/usr/local/Ascend目录下，而使用非root用户进行安装的话，会在/home/HwHiAiUser/目录下。
+ 以root用户的安装地址为例，使用"cat /usr/local/Ascend/version.info"可以查看Atlas版run包的版本号
+
+
+二 dataset报错
+
+前文提及的dataset报错如下：
+ 我们以使用FasterRCNN网络进行推理遇到的报错为例
+
+
+三 问题分析
+
+通过查看调用栈可知，报错位置在“src/dataset.py"文件line 497的”create_fasterrcnn_dataset“ 函数的内。
+ 下层的调用都在conda环境的python依赖库中，根据路径大致可分析出是MindSpore的接口抛出的错误。
+
+暂且认为MindSpore的接口功能正常，分析接口调用的逻辑，将create_fasterrcnn_dataset函数的代码部分拷贝，如下：
+
+import mindspore.dataset as de
+
+def create_fasterrcnn_dataset(mindrecord_file, batch_size=2, repeat_num=12, device_num=1, rank_id=0,
+                              is_training=True, num_parallel_workers=4):
+    ds = de.MindDataset(mindrecord_file, columns_list=["image", "annotation"], num_shards=device_num, shard_id=rank_id,
+                        num_parallel_workers=1, shuffle=is_training)
+    decode = C.Decode()
+    ds = ds.map(operations=decode, input_columns=["image"], num_parallel_workers=1)
+    compose_map_func = (lambda image, annotation: preprocess_fn(image, annotation, is_training))
+
+...
+
+if is_training:
+        ...
+
+else:
+        ds = ds.map(operations=compose_map_func,
+                    input_columns=["image", "annotation"],
+                    output_columns=["image", "image_shape", "box", "label", "valid_num"],
+                    column_order=["image", "image_shape", "box", "label", "valid_num"],
+                    num_parallel_workers=num_parallel_workers)
+
+ds = ds.map(operations=[normalize_op, hwc_to_chw, type_cast1], input_columns=["image"],
+                    num_parallel_workers=24)
+    ...
+
+return ds
+
+通过阅读代码可知，该方法是在调用MindSpore框架的MindDataset接口，同时对数据进行预处理。
+ 那么报错信息中“num_parallel_workers”的取值是与mindspore.dataset.MindDataset接口息息相关的，通过查看官网API文档可知：
+
+该参数是用来设置MindRecord格式文件的读取器并行数的，可以理解为多线程数，这里就和上文查询到的处理器线程数有直接关系了。
+
+
+五 解决办法
+
+通过Linux命令查看当前环境的CPU硬件信息，得知处理器为4核8线程设计，故应将多线程数量限制在0-7的范围内。
+
+# lscpu
+
+>>>
+    Architecture:          x86_64
+    CPU op-mode(s):        32-bit, 64-bit
+    Byte Order:            Little Endian
+    CPU(s):                8
+    On-line CPU(s) list:   0-7
+    Thread(s) per core:    2
+    Core(s) per socket:    4
+    Socket(s):             1
+    NUMA node(s):          1
+    Vendor ID:             GenuineIntel
+    CPU family:            6
+    Model:                 158
+    Model name:            Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz
+    Stepping:              9
+    CPU MHz:               4200.292
+    CPU max MHz:           4200.0000
+    CPU min MHz:           800.0000
+    BogoMIPS:              7200.00
+    Virtualization:        VT-x
+    L1d cache:             32K
+    L1i cache:             32K
+    L2 cache:              256K
+    L3 cache:              8192K
+    NUMA node0 CPU(s):     0-7
+
+将“num_parallel_workers”参数的硬编码部分修改为[0,8)的区间内，重新进行模型推理计算，报错不复现并得到该网络预期的推理精度：
+

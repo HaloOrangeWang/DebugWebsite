@@ -1,0 +1,80 @@
+[root@localhost ~]# python
+
+Python 2.7.5 (default, Apr 11 2018, 07:36:10)
+
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-28)] on linux2
+
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> import MySQLdb
+
+>>> db = MySQLdb.connect(host='127.0.0.1',user='root',passwd='xukeng',db='real_name',charset='utf8')
+
+>>> cursor = db.cursor()
+
+>>> cursor.execute('select * from test limit 2')
+
+2L
+
+>>> db = MySQLdb.connect(host='192.168.0.50',user='root',passwd='xukeng',db='real_name',charset='utf8')
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "/usr/lib64/python2.7/site-packages/MySQLdb/__init__.py", line 81, in Connect
+
+return Connection(*args, **kwargs)
+
+File "/usr/lib64/python2.7/site-packages/MySQLdb/connections.py", line 193, in __init__
+
+super(Connection, self).__init__(*args, **kwargs2)
+
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'192.168.0.50' (using password: YES)")
+
+------------
+
+看不明白为什么换了一个HOST地址就登入不了，都是在本机。接着忽然想到是不是数据库的用户权限限制了。
+
+接着登入数据库查看
+
+MariaDB [real_name]> use mysql
+
+Reading table information for completion of table and column names
+
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+
+MariaDB [mysql]> select user,host from user;
+
++-----------+-----------------------+
+
+| user      | host                  |
+
++-----------+-----------------------+
+
+| newdbuser | %                     |
+
+| root      | 127.0.0.1             |
+
+| root      | ::1                   |
+
+| root      | localhost             |
+
+| root      | localhost.localdomain |
+
++-----------+-----------------------+
+
+5 rows in set (0.00 sec)
+
+果然，ROOT用户没有外网登入的权限
+
+换了一个用户 NEWDBUSER
+
+>>> db = MySQLdb.connect(host='192.168.0.50',user='newdbuser',passwd='db123456',db='real_name',charset='utf8')
+
+>>>
+
+OK，没问题
+

@@ -1,0 +1,46 @@
+网上git clone 了一个项目 ，npm install 报错
+
+23715 verbose stack Error: EPERM: operation not permitted, unlink 'E:\workspace_new2\react-antd-admin\node_modules\.staging\antd-314cffc7\dist\antd-with-locales.js.map'
+23716 verbose cwd E:\workspace_new2\react-antd-admin
+23717 verbose Windows_NT 6.1.7601
+23718 verbose argv "E:\\nodejs\\node.exe" "E:\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install"
+23719 verbose node v10.16.3
+23720 verbose npm  v6.9.0
+23721 error path E:\workspace_new2\react-antd-admin\node_modules\.staging\antd-314cffc7\dist\antd-with-locales.js.map
+23722 error code EPERM
+23723 error errno -4048
+23724 error syscall unlink
+23725 error Error: EPERM: operation not permitted, unlink 'E:\workspace_new2\react-antd-admin\node_modules\.staging\antd-314cffc7\dist\antd-with-locales.js.map'
+23725 error  { [Error: EPERM: operation not permitted, unlink 'E:\workspace_new2\react-antd-admin\node_modules\.staging\antd-314cffc7\dist\antd-with-locales.js.map']
+23725 error   cause:
+23725 error    { Error: EPERM: operation not permitted, unlink 'E:\workspace_new2\react-antd-admin\node_modules\.staging\antd-314cffc7\dist\antd-with-locales.js.map'
+23725 error      errno: -4048,
+23725 error      code: 'EPERM',
+23725 error      syscall: 'unlink',
+23725 error      path:
+23725 error       'E:\\workspace_new2\\react-antd-admin\\node_modules\\.staging\\antd-314cffc7\\dist\\antd-with-locales.js.map' },
+23725 error   stack:
+23725 error    'Error: EPERM: operation not permitted, unlink \'E:\\workspace_new2\\react-antd-admin\\node_modules\\.staging\\antd-314cffc7\\dist\\antd-with-locales.js.map\'',
+23725 error   errno: -4048,
+23725 error   code: 'EPERM',
+23725 error   syscall: 'unlink',
+23725 error   path:
+23725 error    'E:\\workspace_new2\\react-antd-admin\\node_modules\\.staging\\antd-314cffc7\\dist\\antd-with-locales.js.map',
+23725 error   parent: 'react-antd-admin' }
+23726 error The operation was rejected by your operating system.
+23726 error It's possible that the file was already in use (by a text editor or antivirus),
+23726 error or that you lack permissions to access it.
+23726 error
+23726 error If you believe this might be a permissions issue, please double-check the
+23726 error permissions of the file and its containing directories, or try running
+23726 error the command again as root/Administrator (though this is not recommended).
+23727 verbose exit [ -4048, true ]
+
+查了很多网站博客的方法，最后总结到可行的方法是发现把原来代码里的 package-lock.json 删掉，
+
+管理员权限 执行
+
+npm cache clean --force
+
+npm install --unsafe-perm
+

@@ -1,0 +1,87 @@
+下面列出的问题都是自己在实践过程中遇到并解决的，但是只适合解决我当时的问题，放在有些情况下，可能就不适用啦！
+
+
+1、pickle.load()读取文件错误
+
+pickle文件比较不稳定，在读取的时候报错 ‘ascii’ codec can’t decode byte 0xb2 in position 2: ordinal not in range(128)。错误来源有很多种，其中一种可能是编码错误，比如下面这种，改变编码方式：
+
+import pickle
+with open("data\\squeeze_net\\model.pkl",'rb') as f:
+    content = pickle.load(f,encoding='iso-8859-1')
+print(content)
+
+参考来源：pickle.load()读取文件错误
+
+
+2、‘gbk’ codec can’t decode byte 0x93 in position 3136: illegal multibyte sequence
+
+这是一种常见的编码错误，一般都是在打开文件的时候指定encoding=’XXX’，比如"utf-8"，就可以解决。
+
+
+3、AttributeError: module ‘sys’ has no attribute ‘setdefaultencoding’
+
+这里有一段代码会报错，
+
+reload(sys)
+sys.setdefaultencoding("utf-8")
+f = open('filename','rb')
+str = f.read().decode('utf-8')
+f.close()
+
+Python3字符串默认编码unicode, 所以sys.setdefaultencoding也不存在了。直接删除sys.setdefaultencoding(“utf-8”)这一句就好了
+
+
+4、 SyntaxError: positional argument follows keyword argument解决方法
+
+出现这个bug的原因在于参数位置不正确（位置参数，有时也称必备参数，指的是必须按照正确的顺序将实际参数传到函数中，换句话说，调用函数时传入实际参数的数量和位置都必须和定义函数时保持一致），关键字参数必须跟随在位置参数后面! 因为python函数在解析参数时, 是按照顺序来的, 位置参数是必须先满足, 才能考虑其他可变参数。
+
+
+5、UnicodeDecodeError: ‘utf-8’ codec can’t decode byte 0xca in position 94: invalid continuation byte
+
+将line.strip().split(",") 改为 line.decode().strip().split(",")试一试
+
+
+6、SyntaxError: Non-UTF-8 code starting with ‘\xb6’ in file XX.py
+
+遇到编码问题的几种解决方案：
+
+程序首行指定合适编码方式，比如在.py文件最前端加上①# coding:utf-8 或者 ②# -*- coding: utf-8 -*-，表示此文件在运行过程中不会自动更改编码方式，此时发现在pycharm右下角发现编码方式不可手动更改了。
+
+打开文件比如open的时候指定编码方式
+
+程序内部使用decode()函数等
+
+
+7、jupyter notebook 换了kernel之后报错：DLL load failed.
+
+把当前python脚本用到的虚拟环境下的Library/bin和Scripts添加到当前所用机器环境变量中去
+
+
+8、为什么不推荐使用pickle
+
+pickle 仅被推荐作为短期的存储格式。问题在于 pickle 很难确保格式的长期有效性；一个今天被 pickle 化的对象可能明天会因为库的新版本而无法反序列化。所以我遇到.pkl文件老是出问题😂，不喜欢pickle哈哈
+
+
+9、运行python -m XXX.py，报错：NotImplementedError: Not sure how to parse XXX/test.csv. Please specify the file extension.
+
+用python -m XXX.YYY.py运行的时候，一定要注意开始运行命令的目录对不对，比如这个一定要早XXX的同级目录下运行，如果cd XXX，再次运行python -m ，可能就要报错咯
+
+
+10、cannot import name ‘XXX’
+
+出现这种cannot import name 'XXX’的常见原因有：
+
+导入包出现错误，尝试先卸载该包，再重新导入
+
+导入文件的文件顺序。尝试从最外层文件夹依次导入。用绝对路径代替相对路径。找不到模块的原因，python2和3对import的处理不同，这里只说python3，它是绝对导入，import时必须要写上路径才可以找到模块。
+ 如A—>B A—>C 在B中要引用C模块，必须要写成 from A import C，直接写import C则就会提示 No module named C.
+
+查看自己命名的文件名，与导入的库文件名是否重复。重复的话会产生冲突。Python在搜索路径的时候有个顺序，进入python环境，利用sys.path命令查看搜索环境的顺序。第一个空格代表当前目录，首先被搜索，然后是环境变量PYTHONPATH目录，python标准库目录，任何.pth包含的目录。
+ 所以，虽然代码没错，解释器也对，也能找到模块里的类，但就是用不了，因为它首先找到当前目录里面的文件，就不会再找到库里的模块了。
+ 不仅是文件名，变量名的取法也应该较讲究才对。
+ 比如我之前遇到一个问题，报错信息是：
+ File “/home/zhangxy/anaconda3/envs/pyserini2/lib/python3.6/site-packages/transformers/tokenization_utils_base.py”, line 69, in from tokenizers import AddedToken
+ ImportError: cannot import name ‘AddedToken’
+
+报错是因为我之前在调试其他文件的时候，在根目录下引入了一个文件叫做tokenizer.py，而Error出现在tokenizer中，所以肯定是我的tokenizer.py影响了正常的tokenizer的使用，所以自定义的文件名最好不要和库中相同。【查看自己命名的文件名，与导入的库文件名是否重复】
+

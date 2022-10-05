@@ -1,0 +1,43 @@
+报错内容主要是:
+
+EnvironmentError: mysql_config not found
+
+Command "python setup.py egg_info" failed with error code 1 in /private/var/folders/nh/j05szmpj19368dd9_y6whgy40000gq/T/pip-install-n9Jonx/mysql-python/
+
+网上查了执行一个什么环境变量的命令:
+
+export PATH=$PATH:/usr/local/mysql/bin
+
+然后报了另一个错:
+
+#include "my_config.h"
+           ^~~~~~~~~~~~~
+  1 error generated.
+  error: command 'cc' failed with exit status 1
+
+最后用了两个方法
+
+一是先执行:
+
+brew install mysql
+
+注意一定要是通过brew安装
+
+二是直接去下载:
+
+https://dev.mysql.com/downloads/connector/python/
+
+下载完以后,通过finder可以访问到:
+
+/usr/local/mysql/bin  这个文件夹,可以看到里面是有一个叫 mysql_config 的文件
+
+由于我是同时做了这两件事的,所以无法判断到底哪个是对哪个是错,或者都可以,然后再执行一遍:
+
+export PATH=$PATH:/usr/local/mysql/bin
+
+最后再执行  pip install MySQL-Python  就好了
+
+参考:
+
+https://stackoverflow.com/questions/25459386/mac-os-x-environmenterror-mysql-config-not-found
+

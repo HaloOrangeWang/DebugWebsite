@@ -1,0 +1,18 @@
+使用Druid连接池进行Oracle插入数据时，有时成功，有时失败，成功率基本维持为50%左右，这种非完全失败的情况令人挺郁闷的，报错内容如下：
+
+java.sql.SQLException: Closed Statement
+at oracle.jdbc.driver.OracleClosedStatement.exitImplicitCacheToActive(OracleClosedStatement.java:2955)
+at oracle.jdbc.driver.OraclePreparedStatementWrapper.exitImplicitCacheToActive(OraclePreparedStatementWrapper.java:1247)
+at com.alibaba.druid.util.OracleUtils.exitImplicitCacheToActive(OracleUtils.java:80)
+at com.alibaba.druid.pool.PreparedStatementPool.get(PreparedStatementPool.java:66)
+at com.alibaba.druid.pool.DruidPooledConnection.prepareStatement(DruidPooledConnection.java:344)
+at com.service.DataService.insertOracle(DataService.java:175)
+at com.service.DataService.getDataToOracle(DataService.java:38)
+at com.MainApp.main(MainApp.java:18)
+java.lang.NullPointerException
+at com.service.DataService.insertOracle(DataService.java:383)
+at com.service.DataService.getDataToOracle(DataService.java:38)
+at com.MainApp.main(MainApp.java:18)
+
+一直在查是否是Druid的问题，但后来发现Oracle的版本是11.2的，而使用的是odbc8.jar，后来更换为odbc6.jar就不报错了，插入数据都正常。
+

@@ -1,0 +1,19 @@
+一、es启动报错：
+elasticsearch启动时报错：
+Java HotSpot™ 64-Bit Server VM warning: INFO: os::commit_memory(0x00000000e5330000, 449642496, 0) failed; error=‘Cannot allocate memory’ (errno=12)
+报错信息：服务器运行内存不足
+查看jvm.options配置文件
+经查看原es运行内存给了16G，因服务器本身内存不足，导致服务无法运行，将es运行内存调小或者服务器增加内存，这里用到的办法就是降低es运行内存
+
+vim jvm.options （此值根据服务器实际性能调整）
+
+二、kiaban无法显示图
+查看kibana索引状态
+
+修改kaibana索引状态
+解决办法
+经过分析，发现是因为ES所在服务器磁盘空间太低引起，具体解决办法如下：
+在kibana开发控制台执行下面语句即可：
+PUT _settings { "index": { "blocks": { "read_only_allow_delete": "false" } } }
+三、最后解决
+

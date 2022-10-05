@@ -1,0 +1,35 @@
+
+一、背景说明
+
+上周测试的同事说pytest+allure环境在别人电脑上跑没问题，在她的环境跑却报错让帮看一下。其实pytest只是听说过allure直接没听过，但不能直接表示不会，祭出百度大法。
+
+看环境pytest直接以python库的形式安装就可以了：pip install pytest pytest-allure-adaptor pytest-rerunfailures pytest-html
+
+allure安装也简单下载解压然后将bin目录添加到环境变量即可。下载地址：https://github.com/allure-framework/allure2/releases/tag/2.10.0
+
+
+二、问题处理
+
+
+2.1 报错描述
+
+主要运行报错如下：
+
+pluggy.manager.PluginValidationError: unknown hook 'pytest_namespace' in plugin <module 'allure.pytest_plugin' from 'd:\\language\\miniconda3\\e
+nvs\\pytest\\lib\\site-packages\\allure\\pytest_plugin.py'>
+
+完整报错如下：
+
+
+2.2 报错处理
+
+反复重新创建配置了环境突然某次成功运行了，回头排除项目使用中文路径、python环境使用中文路径、使用conda发行版后，想起google到的某个页面说过是版本问题而且自己也按其建议装了旧版本：
+
+最后确定确实如其所说，pytest新版本（我当前是4.3.0）运行报错，换成4.0.2版本就不会报错：
+
+成功运行如下图：
+
+参考：
+
+https://github.com/nucypher/nucypher/issues/649
+

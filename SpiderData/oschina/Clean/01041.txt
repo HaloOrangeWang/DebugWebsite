@@ -1,0 +1,53 @@
+python后端写下载文件，　这个时候出现了这个错误
+
+latin-1 codec cant encode characters in position 42-48: ordinal not in range256
+
+怎么办：
+
+查起因：　发现文件名有中文名字，　所以导致错误，　编码是latin-1编码， 所以我们需要解码成unicode在编码成latin-1
+
+先看代码：
+
+　　这段代码涉及python转码问题， 一定要注意
+
+FilePathName = self.get_argument("FilePathName", None) #获取文件名
+                FileName = str(FilePathName.split("/")[-1]).strip()　＃　得到文件名
+                latinFileName = FileName.encode("utf-8").decode("latin1") # 这句很关键， 要解析成latin-1才OK，这样就不会报错
+
+class DownFileHandler(downBaseRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, *args, **kwargs):
+
+if self.verifyFlag == 1 and self.status == 0:
+            status = 2000
+
+try:
+                FilePathName = self.get_argument("FilePathName", None)
+                FilePathName = MyBase64.decryption(unquote(FilePathName)) # 这句是解密
+                FileName = str(FilePathName.split("/")[-1]).strip()
+                latinFileName = FileName.encode("utf-8").decode("latin1") # 这句很关键， 要解析成latin-1才OK，这样就不会报错
+                newFileName = str(int(time.time())) + "." + FileName.split(".")[1] # 第二种方式就是换一个文件名
+                self.set_header("Content-Type", "application/x-zip-compressed")
+                # -----<或者这么写> ----- #
+                # self.set_header("Content-Type", "application/octet-stream")
+                self.set_header("Content-Disposition", "attachment; filename=%s" % latinFileName)
+                f = open(FilePathName, 'rb')
+                while True:
+                    b = f.read(8096)
+                    if not b:
+                        break
+                    else:
+                        self.write(b)
+                self.flush()
+                f.close()
+
+except Exception as e:
+                e = FormatErrorCode(e)
+                my_log.error(e)
+                status = int(e[0])
+                self.write(json.dumps(result(status=status)))
+            self.finish()
+        else:
+            self.write(json.dumps(result(status=4005)))
+            self.finish()
+

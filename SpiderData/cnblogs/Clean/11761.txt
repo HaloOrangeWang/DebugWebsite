@@ -1,0 +1,43 @@
+参考：
+
+https://www.coder.work/article/378920 >>> uwsgi多进程托管日志错乱问题 多进程不安全导致
+
+https://stackoverflow.com/questions/9206802/some-djangos-logs-are-missing-when-host-in-uwsgi-with-multiple-process
+https://docs.python.org/3/library/logging.handlers.html
+
+https://stackoverflow.com/questions/9206802/some-djangos-logs-are-missing-when-host-in-uwsgi-with-multiple-process
+
+https://docs.python.org/3/library/logging.handlers.html
+
+https://search.みさか.tw/extdomains/groups.google.com/g/python-cn/c/9ViSyvIX1S4 >>> syslog
+
+python 多线程多进程logging系统写入同一日志文件处理方法
+
+解决方案有：
+
+-1. 用 SocketHandler，
+
+-2. 用 multiprocessing.Lock 保证只有一个进程访问文件，
+
+-3. 用 QueueHandler
+
+-4. 重写doRollover函数
+
+https://codeleading.com/article/42161553248/ >>> 并发日志管理
+
+https://codeleading.com/article/76801287669/ >>> 共享队列方式
+
+https://cloud.tencent.com/developer/article/1748202
+
+https://blog.csdn.net/feifeiyechuan/article/details/107245138
+
+版本：
+
+django：1.11.5
+
+uwsgi: 2.0.15
+
+python: 2.7/3.7.9
+
+问题是这样的，今天qa测试的时候，发送了几个请求，恰好后端的es集群也有问题，debug日志没有记录到请求信息，只有error日志记录到相关报错，通过整个服务的其他应用日志得知，确实收到相关请求，唯一的解释就是，django应用因为uwsgi的多进程导致了日志记录错乱。
+

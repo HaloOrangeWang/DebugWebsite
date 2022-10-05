@@ -1,0 +1,75 @@
+在安装第三方库的时候，Python报错pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+在安装第三方库的时候，Python报错pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+python开发中，我们经常用到pip工具：
+
+然而，有时候下载速度非常慢………………
+
+下面介绍两种方式，解决下载问题：
+
+一：每次下载手动更改镜像
+
+我们可以选用国内的镜像下载：
+
+国内源：
+清华：https://pypi.tuna.tsinghua.edu.cn/simple
+阿里云：http://mirrors.aliyun.com/pypi/simple/
+中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/
+华中理工大学：http://pypi.hustunique.com/
+山东理工大学：http://pypi.sdutlinux.org/ 
+豆瓣：http://pypi.douban.com/simple/
+
+国内源：
+
+清华：https://pypi.tuna.tsinghua.edu.cn/simple
+
+阿里云：http://mirrors.aliyun.com/pypi/simple/
+
+中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/
+
+华中理工大学：http://pypi.hustunique.com/
+
+山东理工大学：http://pypi.sdutlinux.org/
+
+豆瓣：http://pypi.douban.com/simple/
+
+pip 命令格式：
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple 工具包
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple 工具包
+
+二：更改电脑默认镜像，之后便可用 pip install 命令快速下载
+
+针对linux系统：
+
+进入家目录下
+
+ctrl + h 快捷键显示隐藏文件，看是否有无 .pip文件夹，无则创建；文件夹下，创建一个pip.conf 文件，文件内容下
+
+[global]  
+timeout = 6000  
+index-url = http://pypi.douban.com/simple/  
+[install]  
+use-mirrors = true  
+mirrors = http://pypi.douban.com/simple/  
+trusted-host = pypi.douban.com
+
+针对windows系统：
+
+可以在我的电脑，搜索 %APPDATA%（代表系统变量）
+
+回车之后，创建pip文件夹，在文件夹中创建pip.ini文件，文件内容如下
+
+[global]
+
+timeout = 6000
+
+index-url = http://mirrors.aliyun.com/pypi/simple/
+
+trusted-host = mirrors.aliyun.com
+
+即可成功修改pip镜像路径
+
+或者，找到python安装目录下的：\Lib\site-packages\pip\models\index.py文件，将PYPI的值改为你所需要的源即可
+

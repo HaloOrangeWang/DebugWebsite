@@ -1,0 +1,41 @@
+
+出现问题：
+
+运行命令python -m SimpleHTTPServer报错
+
+pcz@hadoop2 software]$ python -m SimpleHTTPServer
+Traceback (most recent call last):
+  File "/usr/lib64/python2.7/runpy.py", line 162, in _run_module_as_main
+    "__main__", fname, loader, pkg_name)
+  File "/usr/lib64/python2.7/runpy.py", line 72, in _run_code
+    exec code in run_globals
+  File "/usr/lib64/python2.7/SimpleHTTPServer.py", line 220, in <module>
+    test()
+  File "/usr/lib64/python2.7/SimpleHTTPServer.py", line 216, in test
+    BaseHTTPServer.test(HandlerClass, ServerClass)
+  File "/usr/lib64/python2.7/BaseHTTPServer.py", line 595, in test
+    httpd = ServerClass(server_address, HandlerClass)
+  File "/usr/lib64/python2.7/SocketServer.py", line 419, in __init__
+    self.server_bind()
+  File "/usr/lib64/python2.7/BaseHTTPServer.py", line 108, in server_bind
+    SocketServer.TCPServer.server_bind(self)
+  File "/usr/lib64/python2.7/SocketServer.py", line 430, in server_bind
+    self.socket.bind(self.server_address)
+  File "/usr/lib64/python2.7/socket.py", line 224, in meth
+    return getattr(self._sock,name)(*args)
+socket.error: [Errno 98] Address already in use
+
+
+解决方法：
+
+1.在终端使用命令 netstat -tlnp|grep 端口号
+ 或 lsof -i:端口号 查询占用端口的程序进程号：
+ 
+ 2.使用netstat -tunlp也可查询
+ 
+ 3.查询到端口号后使用kill -9 端口号命令杀死进程
+ [pcz@hadoop2 software]$ kill -9 3110
+
+
+完美解决！
+

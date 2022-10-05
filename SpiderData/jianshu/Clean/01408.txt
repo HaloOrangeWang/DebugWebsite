@@ -1,0 +1,27 @@
+本人家里的电脑跟工作电脑上使用VSCode来写Python会有所不同。工作电脑打印中文的文字一点问题都没有，而家里的电脑在print中文的时候会出现错误（才疏学浅，汗……）：
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in ordinal not in range(128)
+
+我使用的Python的环境是Anaconda中的Python3.6。出现这个问题的原因是因为我这个Anaconda环境下的Python系统的默认编码是：'US-ASCII':
+
+import sys
+print(sys.stdout.encoding) # 输出的结果是：US-ASCII
+
+我的解决方案是：
+
+1、新建一个文件，名字：sitecustomize.py
+
+2、文件中写入：
+
+import sys
+import codecs
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+
+3、把这个文件放进Anaconda/lib/python3.6/site-packages/
+
+放进这个文件夹后，实际上每次python运行的时候都会先运行这个脚本，也就是说通过这个脚本把系统的默认编码改写成了utf-8，这样就可以打印出来中文了
+
+print("你好，世界！") #结果打印成功！
+
+感觉这么做不是很好，所以，如果你有更好的方法，一定要给我留言，告诉我哈，抱拳了老铁！🙏
+

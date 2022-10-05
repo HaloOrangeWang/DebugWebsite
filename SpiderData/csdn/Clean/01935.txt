@@ -1,0 +1,25 @@
+原因是在定义函数时，使用了与全局变量同名的局部变量
+
+a = 10
+b = 10
+def A():
+	if b == 5:
+		a = 5
+	print(a)
+
+a = A()
+
+这时会报错 ‘UnboundLocalError: local variable ‘a’ referenced before assignment’
+ 因为函数内部定义了一个与外部变量同名的变量，此时函数会把这个变量定义为局部变量，如果没有赋值则不能调用它。
+
+给出不报错的情景
+
+a = 10
+b = 10
+def A():
+	if b == 5:
+		c = 5
+	print(a)
+
+a = A()
+

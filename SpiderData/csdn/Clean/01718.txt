@@ -1,0 +1,21 @@
+在跑目标检测任务时，python读取annotation里instance_train2014报如下错：
+
+ValueError: Unterminated string starting at: line 1 column 18194403 (char 18194402)
+
+ValueError: Expecting object: line 1 column 49012736 (char 49012735)
+
+ValueError: Expecting object: line 1 column 117391360 (char 117391359)
+
+百度了很久，也解析了json格式，查看是否格式有误，发现并没有。
+ 猜想是否因为pycharm内存存在问题，将内存修改，重新启动，然后将文件重新上传到服务器中，然后就解决了。
+ 这个问题很奇怪，由于试了很多种方法，也不知道问题时pycharm内存过小，还是刚开始上传文件出现问题。
+
+pycharm内存修改方法如下：找到安装位置，找到pycharm64.exe.vmoptions文件，将
+ xms，xmx的内容修改成了512m和1024m。
+
+总之遇上如上错误时，解决思路如下：，
+1. 如果json文件较大，则重新复制文件。
+2. 打开文件，复制到网页在线解析格式是否有误。
+3. 千万不能出现单引号和句末有逗号。
+4. 修改pycharm内存
+

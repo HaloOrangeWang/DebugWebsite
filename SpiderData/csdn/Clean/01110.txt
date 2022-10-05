@@ -1,0 +1,44 @@
+
+简介
+
+在Windows7 上运行YOLOv3算法，利用训练好的模型去测试图像的操作为: 'python yolo_video.py --image 。测试结果良好。
+
+但是在Windows10上运行时，报错如上：
+
+ImportError: No module named '_pywrap_tensorflow_internal’
+
+如下所示：
+
+
+1. 问题分析
+
+该问题与GPU配置有关。
+
+报错的原因可能有：
+
+1. 电脑里没有安装CUDA或者CUDNN。
+
+2. TensorFlow版本和CUDA或CUDNN不配套。
+
+不管是原因1还是原因2，都可以按照下面的解决办法来解决问题。
+
+
+2. 解决办法
+
+重新安装CUDA和CUDNN。
+
+要注意，安装前一定要选择合适的版本。
+
+最后的安装选择为：
+
+windows10 + TensorFlow-gpu 1.5.0 + CUDA 9.0 + cudnn v7.0.5
+
+Windows10 系统下，CUDA和CUDNN的安装过程和安装版本的选择，可以参考网址：https://blog.csdn.net/lovetaozibaby/article/details/88418979
+
+
+3. 小结
+
+从GitHub上下载别人的开源代码，并运行时，一定要看仔细阅读别人的解释文件readme.txt。 一定要看清楚别人运行时的工作环境，尽量保持一致性，不然就会报错报错，报错到怀疑人生。比如，python2 和python3的代码不同，python3.5和python3.6的程序也不能互用。
+
+切记切记！
+

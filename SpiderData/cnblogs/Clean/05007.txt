@@ -1,0 +1,29 @@
+python 读取csv文件报错问题
+
+import csv
+
+with open('E:/Selenium2script/DDT模块/test.csv','rb') as f:
+    readers = csv.reader(f)
+    next(readers,None)
+    for line in readers:
+        print(line)
+
+输出：
+_csv.Error: iterator should return strings, not bytes (did you open the file in text mode?)
+
+问题分析：因为此csv文件是一个文本文件，并非二进制文件。
+
+解决：
+
+import csv
+
+with open('E:/Selenium2script/DDT模块/test.csv','rt') as f:
+    readers = csv.reader(f)
+    next(readers,None)
+    for line in readers:
+        print(line)
+或者‘rt’换成‘r’
+————————————————
+版权声明：本文为CSDN博主「海-最强的男人」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/c910118/article/details/78629153
+

@@ -1,0 +1,10 @@
+先描述下初始状况：
+
+python版本为3.7.3，直接在cmd中运行pip安装pyinstaller失败，应该是最开始安装python时没有把目录添加到环境变量中（我很懒）。直接在python的安装目录中找到了Scripts\pip.exe文件，然后cmd中cd到该目录，pip安装好了pyinstaller。（pyinstaller只有3M左右，虽然速度有点慢，但也就喝口水的时间）
+
+安装好之后，发现pyinstaller.exe直接出现在了Scripts\pip.exe所在的文件夹。好吧，再次cd到该目录，直接pyinstaller。
+
+出现一堆依赖问题（应该是这么叫的吧）。
+
+一番寻找，结果出来了(这是个链接可以直接点)，在环境变量中添加“C:\Windows\System32\downlevel"，重新cd到Scripts目录，pyinstaller -F xxx，打包完成了。
+

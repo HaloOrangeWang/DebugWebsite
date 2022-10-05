@@ -1,0 +1,47 @@
+近日给7.0绿色版本IDA Pro安装Findcrypt插件出现各种问题总结如下：
+
+findcrypt这个插件需要依赖python的yara-python模块。因此先安装yara-python
+
+1.首先添加我的IDA 7.0连带安装的python27到环境变量到path下，如果电脑中有其它版本的python建议先记录在记事本上删除，之后成功后，可以删除IDA下的python环境变量，在换回来。
+
+2.有人的IDA版本中没有Scripts文件夹，这个需要安装其余的东西，因为我开始以为是这个原因也就重新弄了一下
+
+安装setuptools，因为要安装pip，必须先安装setuptools，一定要支持python2.7的版本，因为最新版几乎都是3.x的版本，所以选择历史版本。下载链接：
+
+https://pypi.org/project/setuptools/#description
+
+b.找到并下载36.5.0的版本
+
+C.解压下载下来的文件，并在解压后的文件中打开cmd，执行
+
+python setup.py install
+
+d.然后使用pip install yara-python安装时候报错（巴拉巴拉一大堆）：
+
+后来经查阅，最新的yara不再支持python2了，在windows下使用pip安装的时候实际上不是用wheel来安装。找啊找，发现只有3.11.0能行
+
+那么只需要指定版本就可以继续pip  ：
+
+pip install yara-python==3.11.0
+
+　　
+
+安装成功。
+
+c.从github载压缩文件解压后，把findcrypt3.py和findcrypt3.rules复制到IDA的plugins目录中，连接地址：
+
+https://github.com/polymorf/findcrypt-yara
+
+　
+
+d.打开IDA->Edit->Plugins->Findcrypt，即可使用啦
+
+下一个问题：安装.py后缀的，用python写的插件：
+
+shift+F2   ->   import -> 选择要导入的.py格式插件代码 ->  run
+
+附件：我用的ida以及各种插件，从52破解中提出的版本
+
+链接：https://pan.baidu.com/s/1SuyGeAooltlZq81wb3LlBA 
+提取码：n38k
+

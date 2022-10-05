@@ -1,0 +1,69 @@
+2.捕获异常
+
+Python完整的捕获异常的语句有点像：
+
+复制代码 代码如下:
+try:
+    try_suite
+except Exception1,Exception2,...,Argument:
+    exception_suite
+......   #other exception block
+else:
+    no_exceptions_detected_suite
+finally:
+    always_execute_suite
+
+额...是不是很复杂？当然，当我们要捕获异常的时候，并不是必须要按照上面那种格式完全写下来，我们可以丢掉else语句，或者finally语句；甚至不要exception语句，而保留finally语句。额，晕了？好吧，下面，我们就来一一说明啦。
+
+2.1.try...except...语句
+
+try_suite不消我说大家也知道，是我们需要进行捕获异常的代码。而except语句是关键，我们try捕获了代码段try_suite里的异常后，将交给except来处理。
+
+try...except语句最简单的形式如下：
+
+复制代码 代码如下:
+try:
+    try_suite
+except:
+    exception block
+
+上面except子句不跟任何异常和异常参数，所以无论try捕获了任何异常，都将交给except子句的exception block来处理。如果我们要处理特定的异常，比如说，我们只想处理除零异常，如果其他异常出现，就让其抛出不做处理，该怎么办呢？这个时候，我们就要给except子句传入异常参数啦！那个ExceptionN就是我们要给except子句的异常类（请参考异常类那个表格），表示如果捕获到这类异常，就交给这个except子句来处理。比如：
+
+复制代码 代码如下:
+try:
+    try_suite
+except Exception:
+    exception block
+
+举个例子：
+
+复制代码 代码如下:
+>>> try:
+...     res = 2/0
+... except ZeroDivisionError:
+...     print "Error:Divisor must not be zero!"
+... 
+Error:Divisor must not be zero!
+
+看，我们真的捕获到了ZeroDivisionError异常！那如果我想捕获并处理多个异常怎么办呢？有两种办法，一种是给一个except子句传入多个异常类参数，另外一种是写多个except子句，每个子句都传入你想要处理的异常类参数。甚至，这两种用法可以混搭呢！下面我就来举个例子。
+
+复制代码 代码如下:
+try:
+    floatnum = float(raw_input("Please input a float:"))
+    intnum = int(floatnum)
+    print 100/intnum
+except ZeroDivisionError:
+    print "Error:you must input a float num which is large or equal then 1!"
+except ValueError:
+    print "Error:you must input a float num!"
+
+[root@Cherish tmp]# python test.py 
+Please input a float:fjia
+Error:you must input a float num!
+[root@Cherish tmp]# python test.py 
+Please input a float:0.9999
+Error:you must input a float num which is large or equal then 1!
+[root@Cherish tmp]# python test.py 
+Please input a float:25.091
+4
+

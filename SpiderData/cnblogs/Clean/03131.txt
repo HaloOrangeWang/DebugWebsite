@@ -1,0 +1,39 @@
+代码内容：
+
+　　
+
+错误内容为：上述第二行代码报错UnicodeEncodeError: 'ascii' codec can't encode characters in position 28-29: ordinal not in range(128)
+
+1 认为是代码错误，或者是tab缩进错误
+
+2 百度搜索后得出如下分析：
+
+Python在安装时，默认的编码是ascii，当程序中出现非ascii编码时，python的处理常常会报这样的错UnicodeDecodeError: 'ascii' codec can't decode byte 0x?? in position 1: ordinal not in range(128)，python没办法处理非ascii编码的，此时需要自己设置将python的默认编码，一般设置为utf8的编码格式。
+
+但是在我使用的python3.6.5 默认就是utf8编码格式，所以也不存在这种问题。我使用print(type(str))后输出的也是str。
+
+3 发现python3 urlopen()链接地址中不能出现中文，而上述代码的tag是传入的中文字符，终于找到了问题的所在。
+
+解决办法：
+
+使用urllib.parse.quote进行转换。
+
+　　
+
+程序头部需要添加
+
+from urllib.parse import quote
+
+同时需要import string导入string模块
+
+方法quote的参数safe表示可以忽略的字符。
+
+string.printable表示ASCII码第33～126号可打印字符，其中第48～57号为0～9十个阿拉伯数字；65～90号为26个大写英文字母，97～122号为26个小写英文字母，其余的是一些标点符号、运算符号等。
+
+如果去掉safe参数的内容将会出错。
+--------------------- 
+作者：xjtu帽帽 
+来源：CSDN 
+原文：https://blog.csdn.net/qq_25406563/article/details/81253347 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

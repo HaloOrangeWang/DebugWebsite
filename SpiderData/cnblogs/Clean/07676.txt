@@ -1,0 +1,57 @@
+
+解决Django makemigrations 时的NodeNotFoundError  及 其它迁移问题
+
+migrate命令执行时Django会做4件事：
+
+1、迁移判定，将你的项目中所有未迁移的变动文件进行迁移（django会去查询django_migrations表判断你是否有新的迁移变动），在完成接下来的迁移后，便会在该表中生成一条迁移记录。
+
+2、迁移映射关系   django_contenttype表新增映射关系（app与模型关系）
+
+3、迁移权限 auth_permission表新增权限
+
+4、执行迁移，生成数据表，或变动
+
+migrate --fake 只执行第一步，并生成迁移记录。
+
+migrate --fake-initial 执行前三步，不实际变动数据库
+
+migrate 全部依次执行所有步骤。
+
+当django 环境变了时，原其他环境下的项目不能正常运行，需要进行修改。
+
+常见问题有：
+
+1、首先需要修改url 的方法
+
+2、当执行数据迁移命令时会发生报错，具体报错信息如下：
+
+此时新建项目时，执行数据库迁移命令时，可能也会出现该类似问题，这是django的migrations残留了历史对应的迁移数据，这个是 django自身的App造成的，如：admin和 auth应用。因此需要根据报错信息，手动去操作 migrations文件中清除对应的迁移数据文件。
+
+注意：如果提示数据库中有表已存在，可以首先将数据库的表迁移出来再进行删除，或者尝试使用命令：
+
+python3 manage.py migrate --fake
+
+可以尝试以下具体操作如下：
+
+1、通过本地的python3.8文件下查询路径进行删除：
+
+2、删除确定出错的迁移文件，在这里就是最后一个0012开头的文件。
+
+3、删除之后重新执行 python3 manage.py makemigrations
+
+4、执行 python3 manage.py migrate
+
+此时迁移操作应该可以正常了。
+
+注：也可以通过pycharm项目下的库进行查找进行删除，路径同上。很方便查找以及操作。
+
+如果出现其他关于数据迁移问题，也可以通过暴力删除方式解决(当然不要删数据库中的数据)。
+
+具体操作如下：
+
+1、首先删除项目中的 migrations.py 文件中的记录
+
+2、去Python库中，删除admin应用和 auth应用下的migrations历史数据
+
+3、重新执行数据库迁移命令，此方法应该可以解决大部分数据库迁移问题。
+

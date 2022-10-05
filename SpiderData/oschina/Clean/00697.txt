@@ -1,0 +1,53 @@
+本博客帮你解决两个问题：
+
+1. 当运行 'python -m pip install --upgrade pip' 时，出现 PermissionError: [WinError 5] 拒绝访问，该如何解决；
+
+2. 当运行 ‘pip install’ 时 ，出现 PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问，该如何解决；
+
+目录
+
+问题描述：
+
+问题解决 1：PermissionError: [WinError 5] 拒绝访问。
+
+解决问题 2：PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问
+
+
+问题描述：
+
+近期调一个 python 代码，需要 dv 包。因此，打开 anaconda，输入指令 pip install dv。
+
+但是出现如下报错：PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问
+
+这里明确出现的问题是 pip 需要升级。但输入  python -m pip install --upgrade pip 出现如下报错：PermissionError: [WinError 5] 拒绝访问。​​​​​​​
+
+这下，一个问题变成两个了。
+
+
+问题解决 1：PermissionError: [WinError 5] 拒绝访问。​​​​​​​
+
+这是因为 anaconda 文件权限设置的原因。解决步骤：
+
+1. 右键 anaconda 文件夹，选择 属性；
+
+2. 打开安全选项卡；
+
+3. 选择和 anaconda 相同的用户名；
+
+4. 勾选全部权限；
+
+5. 应用，确定（需要等3分钟左右）。
+
+这时，再输入  python -m pip install --upgrade pip 时，直接成功。
+
+下面解决第二个问题：
+
+
+解决问题 2：PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问
+
+网上有很多说是需要修改 c:\program files\python36\lib\site-packages\pip\compat__init__.py，在第75行，把return s.decode('utf_8')改为return s.decode('cp936') 即可。
+
+但是我并没有改这个设置。
+
+通过刚才对 pip 升级之后，在输入 pip install dv，直接就通过了。
+

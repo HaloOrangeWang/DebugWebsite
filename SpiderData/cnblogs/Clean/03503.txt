@@ -1,0 +1,109 @@
+一、安装Anaconda
+
+Anaconda是一个开源的包、环境管理器，可以用于在同一个机器上安装不同版本的软件包及其依赖，并能够在不同的环境之间切换。
+
+Anaconda包括Conda、Python以及一大堆安装好的工具包，比如：numpy等
+
+1、安装完成后启动
+
+2、修改Anaconda镜像地址
+
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --set show_channel_urls yes
+
+3、安装jpype1-手动方式
+
+自动方式安装(pip install jpype1)会报错，选择手动方式； Anaconda已自带wheel不须再安装
+
+下载.whl文件：JPype1-0.6.3-cp37-cp37m-win_amd64.whl
+
+下载路径：https://www.lfd.uci.edu/~gohlke/pythonlibs/#jpype
+
+安装：pip install C:\Users\gaogao\Downloads\JPype1-0.6.3-cp37-cp37m-win_amd64.whl
+
+二、安装PyCharm
+
+1、设置字体及大小
+
+File->Settings
+
+三、报错汇总
+
+1、ModuleNotFoundError: No module named 'jpype'
+
+解决：python 中调用java代码需要安装 jpype1 。
+
+2、ImportError: numpy.core.multiarray failed to import
+
+解决：python 安装numpy。
+
+3、报错：numpy-1.16.1+mkl-cp37-cp37m-win_amd64.whl is not a supported wheel on this platform.
+
+解决：python版本位数与whl文件位数要保持一致.(本地python32位换成64位)
+
+4、打包成exe后执行闪退
+
+解决：将.exe文件手动到DOS窗口可查看日志
+
+5、 error: Microsoft Visual C++ 14.0 is required.
+
+Get it with "Microsoft Visual C++ Build Tools": http://landinghub.visualstudio.com/visual-cpp-build-tools
+
+解决：安装jpype时报的错，由于c++依赖库不存在，所以在对包进行编译的时候出错，故我们可以去直接下载二进制安装包进行安装。（即自动方式安装）
+
+6、 Could not install packages due to an EnvironmentError: [WinError 5]
+
+权限不足，需要管理员身份运行
+
+拒绝访问。:
+
+'c:\\program files\\python37\\lib\\site-packages\\pip-18.1.dist-info\\entry_points.txt'
+
+Consider using the `--user` option or check the permissions.
+
+解决一：使用C:\Windows\System32 文件夹下面的cmd.exe
+
+解决二：python -m pip install --upgrade pip改成python -m pip install --user --upgrade pip
+
+7、 打包好的exe执行报错：
+
+ImportError: numpy.core.multiarray failed to import
+
+解决方法01，改变控制台的编码格式为utf-8，在控制台中输入 chcp 65001，然后再使用pyinstaller -D  xxx.py 打包成功。
+
+解决方法02：源代码中startJVM的顺序调整一下：
+
+app = App(root)
+
+解决方法03：将打包好的文件夹先拷贝到其他盘（不要在C盘），再以管理员身份运行
+
+8、No matching distribution found for pyinstaller
+
+Could not find a version that satisfies the requirement pyinstaller (from versions: )
+
+No matching distribution found for pyinstaller
+
+解决：网络慢，可通过镜像下载：
+
+pip install pyinstaller -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+
+9、Pip install jpype1 报错
+
+building '_jpype' extension
+
+error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools":
+
+解决：下载visualcppbuildtools_full.exe
+
+10 jpype._jexception.RuntimeExceptionPyRaisable: java.lang.RuntimeException: Class Test not found
+
+说明：python脚本中有调用java class文件Test.class
+
+打包好的python程序,执行exe后报错： jpype._jexception.RuntimeExceptionPyRaisable: java.lang.RuntimeException: Class Test not found
+
+解决：
+
+1.将打包后压缩包不要放到C盘，放到其他盘，然后解压
+
+2.使用管理员方式运行
+

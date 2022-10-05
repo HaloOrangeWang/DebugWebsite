@@ -1,0 +1,92 @@
+
+前言：
+
+在项目开发中，往往会遇到很多错误，有些是代码有误，而有些则是其他原因。接下来一起看看常见的报错及解决办法(小白整理，大牛勿喷)。
+
+
+一、找不到 Xxx.Xxx.entity.Xxx.java
+
+最近在跟着视频敲一个项目，从后到前，写好前端页面测试时，却报找不到Xxx.Xxx.entity.Xxx.java，意思是找不到Xxx实体类，最后发现原因是前端页面的错误。还有一次，还没有前端页面，只写了controller，也报这个错，折腾半天发现是缓存原因。把写的那个controller整个注释掉，保存，启动tomcat，访问其他的controller ，可以正常访问，再把注释放开，保存，重启tomcat ，再访问该controller ，不再报错。
+
+
+二、pom.xml文件头报错：
+
+首先update maven project，如果没用，可以删除maven本地仓所有的东西，然后重启eclipse会自动下载所有需要的jar，错误消失。
+
+
+三、maven项目创建失败：
+
+创建maven quick start 或者maven web project 时，如果报如下错误：
+
+Unable to create project from archetype
+
+Unable to create project from archetype
+
+[org.apache.maven.archetypes:maven-archetype-quickstart:RELEASE]
+
+[org.apache.maven.archetypes:maven-archetype-quickstart:RELEASE]
+
+The desired archetype does not exist
+
+The desired archetype does not exist
+
+(org.apache.maven.archetypes:maven-archetype-quickstart:1.1)
+
+(org.apache.maven.archetypes:maven-archetype-quickstart:1.1)
+
+解决办法：
+
+cmd命令行下直接执行（前提是maven已经配置环境变量）：mvn archetype:generate 指令，等待几分钟从网络中下载文件后，重新使用eclipse创建maven project，即可成功。
+
+
+四、获取不到sessionFactoryBean:
+
+ssm项目中，如果你确定你的sqlSessionFactory已注入而报找不到sqlSessionFactory这个bean，那么可能是mapper.xml中标签或者sql语句错误。sql语句应注意from、where等的前一行不能有逗号，比如：
+
+select u.name, u.age, u.password, a.province from tb_user u, tb_area a where u.id = a. userId
+
+select u.name, u.age, u.password, a.province from tb_user u, tb_area a where u.id = a. userId
+
+这里 a.province和 tb_area a后不能加逗号，这个地方手一抖就容易出错。
+
+
+五、新建springboot项目失败：
+
+注意新建springboot项目电脑一定要联网，否则访问不了http://start.spring.io，若是联网也不能新建，可以自己在浏览器上访问该网址新建项目，然后把项目下载下来，import进ide中即可。
+
+
+六、执行group by语句报错：
+
+如果执行含有 group by的sql语句报如下错误：
+
+SELECT list is not in GROUP BY clause and contains nonaggregated column...
+
+SELECT list is not in GROUP BY clause and contains nonaggregated column...
+
+解决办法：
+
+登录mysql(命令行或navicat等工具都可以),
+
+先执行： select @@global.sql_mode;
+
+看看是否有： only_full_group_by
+
+如果有，就是这个东西在搞鬼，
+
+再执行：
+
+set GLOBAL sql_mode ='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION ';
+
+set GLOBAL sql_mode ='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION ';
+
+这样就不会再报错了。
+
+
+总结：
+
+以上是本人在学习时常遇到的一些错误，好记性不如烂笔头，所以在此记录下来，也希望能帮到更多小伙伴！
+
+本文分享自微信公众号 - java开发那些事（javawebkf）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

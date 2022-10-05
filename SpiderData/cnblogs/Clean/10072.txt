@@ -1,0 +1,65 @@
+首先网上有很多关于Crypto的帖子全都是过时的、错误的方法，为了填坑花费几个钟头的时间终于成功。
+
+首先Crypto的官方docment地址如下：
+
+https://pycryptodome.readthedocs.io/en/latest/src/installation.html
+
+网上各种安装Crypto， pycrypto，pycrytodome 和 pycryptodomex的文章，其实他们统统都是一个东西，我来介绍一下他们的区别：
+
+pycrypto库就是Crypto的python版本，但该版本已经停止更新，可以弃用了。
+
+pycrytodome库才是真正的Crypto的最新版本，pycryptodom是包含了原来pycrypto库和后来的更新功能的。所以不要同时安装这个
+
+两个库，避免冲突。
+
+pycryptodomex库也是Crypto的最新版本，但pycryptodomex不包含原来的pycrypto库，所以要和原来的pycrypto同时安装，这个库
+
+是用作已经安装了pycrypto库，升级使用的。
+
+这个坑踩完了就结束了？no，no，no。。。。。。
+
+由于crypto是用c++开发的，需要使用c++ build工具和环境。在linux环境下安装就很容易
+
+
+Linux Ubuntu
+
+For Python 2.x:
+
+$ sudo apt-get install build-essential python-dev
+$ pip install pycryptodomex
+$ python -m Cryptodome.SelfTest
+
+For Python 3.x:
+
+$ sudo apt-get install build-essential python3-dev
+$ pip install pycryptodomex
+$ python3 -m Cryptodome.SelfTest
+
+For PyPy:
+
+$ sudo apt-get install build-essential pypy-dev
+$ pip install pycryptodomex
+$ pypy -m Cryptodome.SelfTest
+
+通过阅读官方文档，发现在windows环境下安装是相当复杂的，在不同的python版本下安装都是不一样的
+
+由于我是在windows上使用，使用的python3.7，而windows的c++编译环境只能用微软的virtual studio，由于vs完整版太大了我也不想安装，
+所以我选择安装Microsoft C++ Build Tools for visual studio
+下载地址：https://visualstudio.microsoft.com/zh-hant/visual-cpp-build-tools/
+
+安装好了installer后
+
+勾选使用c++的桌面开发，右边的MSBuild工具，Windos 10  SDK,  MSVC  v140 vs2015 C++ 生成工具（这个非常重要，如果不勾选编译安装就可能会报错）
+
+选择好了之后点击安装即可。
+
+编译安装命令：
+
+如果你是其他python版本，建议你直接看官方文档里面有如下版本的安装方法说明
+
+
+Windows (from sources, Python 2.x, Python <=3.2)
+
+
+Windows (from sources, Python 3.3 and 3.4)
+

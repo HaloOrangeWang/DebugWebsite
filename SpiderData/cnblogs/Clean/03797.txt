@@ -1,0 +1,16 @@
+1.logger日志
+
+使用django开发/调试时，如果log使用的RotatingFileHandler输出日志，当第一个日志文件写满（设置了每个日志文件5MB），产生第二个文件时，会出现如下错误：
+
+“PermissionError : [WinError 32] 另一个程序正在使用此文件，进程无法访问。”
+
+通过排查发现，通过 python manage.py runserver 127.0.0.1:8001 启动django时，启动了两个进程；（win  --- 命令：tasklist | findstr python）;这是导致无法生成后续日志的原因所在，《Django Documentation Release 2.1.5.dev20181224213614》；运行时  ：python manager.py runserver --noreload 127.0.0.1:8001 解决。
+
+2. Pycharm中SystemError报错
+
+报错内容：SystemError : error return without exception set
+
+出错原因：   1. 查了报错，一种可能是其他语言的代码（C语言）编译成Python字节码但没有设置错误，就会出现这种报错
+
+　　　　　　2. 另一种可能是调试器干扰了生成器的实际内部Python代码， 因为我们看到的报错代码块都是yield部分
+

@@ -1,0 +1,32 @@
+序
+
+笔者今天用PyCharm安装了一些数据分析的时候比较有用的模块，系统是ubuntu，说实话，ubuntu（linux）在这方面还真是很方便，几条语句就把这几个模块下载安装编译过了，比于windows里面还要去官网下载文件之后用pip的形式简单了很多，但是对于一般的安装，ubuntu会默认的安装在“/usr/lib/python2.7/”这个文件下面，但是对于某些模块，指名道姓的说matplotlib这个模块，它在安装的时候就不走寻常路，非要去“/usr/lib/pymodules/python2.7/”这个文件夹下面，所以如果不对PyCharm进行说明的话，PyCharm就找不到这个模块，下面主要说明一下如何解决PyCharm的这个问题。
+
+安装是否成功？
+
+当然，如果你的这个模块根本没有安装上，那么说再多也是扯，所以首先要在console模式下进行安装是否成功的测试，就是很简单的输入import matplotlib，如果没有报错，则说明安装成功了，一般如果用“sudo apt-get insatll ×××”没有出错的话，一般是不会有问题的。
+
+寻找模块的安装路径
+
+在linux系统下，虽然安装东西变得简单，但是很明显，如果你对文件系统不熟悉的话，是不知道它把你的文件安装在什么地方了，对于模块而言也是同样的“境遇”，因此第一步我们要先找到我们的模块在什么地方，具体代码如下：
+
+import matplotlib
+print matplotlib.__file__
+
+以上代码要在console模式下进行输入，这时候你就能轻松看到模块的安装路径了，例如我的路径是在“/usr/lib/pymodules/python2.7/matplotlib/init.pyc”
+
+把路径加载到系统的路径下
+
+知道了路径之后，把路径加载在路径下面就可以了，这时候就要使用sys这个模块了，具体代码如下：
+
+import sys
+sys.path.append("/usr/lib/pymodules/python2.7/")
+import matplotlib.pyplot as plt
+if __name__ == '__main__':
+  plt.bar(left=0, height=1)
+  plt.show()
+
+在实践中发现，这样的方式下，matplotlib下面还是有红色的波浪线，但是已经不影响程序的输出了。
+
+以上这篇快速解决PyCharm无法引用matplotlib的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

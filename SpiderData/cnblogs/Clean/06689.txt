@@ -1,0 +1,32 @@
+在做音频处理时，用到了librosa这个库，但是一直在报错，一开始以为代码错误，后来发现import的时候就已经出错了。
+
+我给他卸载了重新安装，结果是一样的，报错如下：
+
+Traceback (most recent call last):
+  File "C:\Users\zhuguili\ruanjian\anaconda\lib\site-packages\soundfile.py", line 142, in <module>
+    raise OSError('sndfile library not found')
+OSError: sndfile library not found
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:/ruanjian/python_workspace/example/speech_class.py", line 4, in <module>
+    import librosa
+  File "C:\ruanjian\anaconda\lib\site-packages\librosa\__init__.py", line 12, in <module>
+    from . import core
+  File "C:\ruanjian\anaconda\lib\site-packages\librosa\core\__init__.py", line 126, in <module>
+    from .audio import *  # pylint: disable=wildcard-import
+  File "C:\anaconda\lib\site-packages\librosa\core\audio.py", line 10, in <module>
+    import soundfile as sf
+  File "C:\ruanjian\anaconda\lib\site-packages\soundfile.py", line 163, in <module>
+    _path, '_soundfile_data', _libname))
+OSError: cannot load library 'C:\ruanjian\anaconda\lib\site-packages\_soundfile_data\libsndfile64bit.dll': error 0x7e
+
+一直搞了半天，去网上查了一下也没有用，最后发现换个版本就好了。
+
+解决方法：
+
+pip install librosa==0.6.0
+
+ok 成功解决！！！
+

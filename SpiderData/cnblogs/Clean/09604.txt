@@ -1,0 +1,115 @@
+
+linux与python环境配置问题
+
+目录linux与python环境配置问题python的安装与版本问题python版本问题第一步，特定版本python的安装第二步，pip3的卸载方法第三步，进行版本绑定第四步，pip3的更新方法环境的建立环境的激活环境的退出安装失败集锦安装pip Command '('lsb_release', '-a')' 出错无法链接remote
+
+目录
+
+linux与python环境配置问题python的安装与版本问题python版本问题第一步，特定版本python的安装第二步，pip3的卸载方法第三步，进行版本绑定第四步，pip3的更新方法环境的建立环境的激活环境的退出安装失败集锦安装pip Command '('lsb_release', '-a')' 出错
+
+python的安装与版本问题python版本问题第一步，特定版本python的安装第二步，pip3的卸载方法第三步，进行版本绑定第四步，pip3的更新方法
+
+python版本问题
+
+第一步，特定版本python的安装
+
+第二步，pip3的卸载方法
+
+第三步，进行版本绑定
+
+第四步，pip3的更新方法
+
+环境的建立
+
+环境的激活
+
+环境的退出
+
+安装失败集锦安装pip Command '('lsb_release', '-a')' 出错
+
+安装pip Command '('lsb_release', '-a')' 出错
+
+无法链接remote
+
+作为一个刚刚开始使用python的小白，很多流程与操作只能是照搬，无法理解其中的原因。在经历了最初的迷茫之后，慢慢的理解了一些逻辑，记在这里，一个是帮助自己记忆，一个是幻想着万一哪天能帮助到一些人
+
+注：本人使用的是ubuntu版本的linux环境
+
+
+python的安装与版本问题
+
+
+python版本问题
+
+一般在Linux中，python包的安装位置是/usr/bin，里面可能包含着好几个版本的python，比如一般系统默认的python 2.7（虽然很少用，但是不能卸载，是很多文件的必须语言），而在日常的工作中我们需要使用很多个不同版本的python，这就会引出一些问题，比如pip和dist-packages问题
+
+pip是python自带的安装程序，因此它是绑定在自己版本的python下的，进而在使用pip命令进行包的安装时，它会自动将pachages安装在自己版本的dist-packages里面，而这种package无法被别的版本的python调用。
+
+举个例子，如果原本默认版本是python3.6，而新安装了python 3.8。如果不卸载pip，重新安装的话，默认的pip是绑定着3.6的，使用pip3 install命令安装的包会被安装到python 3.6下面，因为无法调用，自然会报错如下
+
+可以使用下面的命令对目前的package目录进行检查
+
+得到的答案如下
+
+当然，更加离谱的错误方式是，错误的使用了pip而不是pip3进行安装（小白的痛）。所有一定要记得分清python3，python还有pip，pip3！！！
+
+前面讲到过，python一般link的是系统默认版本python2.7，而python3一般link的是用户自己安装的python3.x。如果希望更改相关的link，具体更改方式（以改绑python3为例）请见下面的详细教程
+
+
+第一步，特定版本python的安装
+
+下面列举了几种网上查到的方法
+
+简单版本
+
+应该可以，，，我也记不得了QAQ
+
+
+第二步，pip3的卸载方法
+
+不更新pip3的话，在更改link以后肯定是用不了！QAQ，在通过python --version python3 --version确认了你的python/python3已经绑定为想要的版本以后，请输入
+
+将pip进行卸载，一定要卸干净，否则pip还是link到原有版本的，你用新版本python去调用`pip1肯定不好使！
+
+
+第三步，进行版本绑定
+
+在更改完毕之后可以通过python --version或者python3 --version来查询是否成功更改
+
+类似的命令还有where python where python3来检查目前python地址
+
+
+第四步，pip3的更新方法
+
+卸载干净以后，再进行pip的安装
+
+
+环境的建立
+
+有时可能会无法创造，因为没有更新venv的包
+
+即可创建名为python38的虚拟空间，空间使用的python版本为python3link到的版本
+
+
+环境的激活
+
+当上面显示一个小括号的时候就说明你成功进入虚拟环境了！
+
+
+环境的退出
+
+
+安装失败集锦
+
+
+安装pip Command '('lsb_release', '-a')' 出错
+
+参考博文
+
+找不到lsb_release模块，执行如下命令（具体的路径需要根据系统进行调整！不能直接复制）
+
+
+无法链接remote
+
+也不知道发生了肾么事情，第二天来公司就连不上了emmm，试着重新配置了ssh，config，重启都失败了。最后重装了一下vscode，终于log中出现了有用的信息Error: Running the contributed command: '_workbench.downloadResource' failed，根据信息找到了参考博客，成功解决问题
+

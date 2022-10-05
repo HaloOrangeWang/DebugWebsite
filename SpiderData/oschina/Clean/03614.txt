@@ -1,0 +1,195 @@
+定义函数时，就确定了函数名，必选参数个数和必选参数位置。所以函数头其实就定义好了函数调用接口
+
+★★★★★★★★★★★★★★★★★★★★★★★★函数参数问题★★★★★★★★★★★★★★★★★★★★★★★★★★
+ 函数除了正常定义的必选参数外，还可以使用默认参数、可变参数和关键字参数，使得函数定义出来的接口，不但能处理复杂的参数，还可以简化调用者的代码。
+
+1、默认参数
+
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+import math
+
+# ★★★默认参数
+def power(x):# 计算一个数的平方
+    return x * x
+print power(3)
+def power3(x):# 计算一个数的三次方
+    return x * x * x
+print power3(3)
+# 计算四次方、五次方。。。每次都写一个函数，太麻烦了，所以可以将power(x),改写成power(x,n)计算x的n次方
+def power(x, n):
+    if n >0:
+        m = 1
+        while n > 0:
+            n = n - 1
+            m = m * x
+        return m
+    else:
+	    return 0
+print power(2,5)
+# 此时又出现了一个问题，就是旧的power(x)失效了，再次调用报错
+# print power(2)
+# 这时我们就可以使用默认参数了，将power(x,n)的第二个参数设置成默认参数2
+def power(x, n = 2):
+    if n >0:
+        m = 1
+        while n > 0:
+            n = n - 1
+            m = m * x
+        return m
+    else:
+	    return 0
+print power(2)		# 结果是4
+print power(2,5)    # 结果是32
+# 使用默认参数简化了函数调用，降低了函数的难度,函数只需要定义即可
+
+# ★使用默认参数时应注意：1、必选参数在前，默认参数在后，否则解释器会报错2、如何合理的设置默认参数
+def enroll(name, gender):# 两个必选参数
+    n = name
+    g = gender
+    return n,g
+print enroll('mike','M')
+def enroll(name, gender, age = 6, city = 'NanJing'):# 两个必选参数+两个默认参数
+    n = name
+    g = gender
+    a = age
+    c = city 
+    return n,g,a,c
+print enroll('mike','M')
+print enroll('mike','M',7)                    # 只有与默认参数不符时才需要提供想要的信息，
+print enroll('mike','M',city = 'SuZhou') 
+# ★也说明在有多个默认参数时，调用的时候，既可以按顺序提供默认参数（上上行），也可以不按顺序提供部分默认参数。当不按顺序提供部分默认参数时，需要把参数名写上（上行）
+
+# ★★隐晦的错误:默认参数必须指向不变对象★★
+def add_end1(L=[]):# L指向的是一个空的list
+    L.append('END')
+    return L
+def add_end2(L=None):# L指向的是不可变对象None
+    if L is None:
+        L = []
+    L.append('END')
+    return L
+
+运行效果：
+
+★总结
+ 为什么要设计str、None这样的不变对象呢？因为不变对象一旦创建，对象内部的数据就不能修改，这样就减少了由于修改数据导致的错误。
+  此外，由于对象不变，多任务环境下同时读取对象不需要加锁，同时读一点问题都没有。我们在编写程序时，如果可以设计一个不变对象，那就尽量设计成不变对象
+
+2、可变参数
+ 上面码过函数的必选参数，默认参数，这里贴一下可变参数的内容
+
+可变参数，就是说函数参数的个数是可变的，可以是0，1，2，，，任意多个
+ 先考虑一下，如果参数个数可变，应该怎么给它传参，怎样设计形参接收呢？[拓展：C#中函数对可变参数的处理]
+ 想法：可以是直接传入一串参数或数组，然后用类似数组类型的形参接收
+ 类似的，Python中，可以传入一个list或tuple,然后用list或tuple接收，也可以直接传入一串数字、list或list的元素、tuple或tuple的元素，然后用类似list和tuple的形参接收
+
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+import math
+
+# ★★★可变参数
+
+# 例：给定一组数字a，b，c……，请计算a^3 + b^3 + c^3 + ……
+# ★将参数组成一个list或tuple。此时只是形式意义上的参数可变，并不是可变参数
+def sum_triple(numbers):
+    sum = 0
+    for n in numbers:
+        sum += n * n * n
+    return sum
+print '1^3+2^3+...+6^3 = ', sum_triple([1,2,3,4,5,6])
+print '1^3+2^3+...+6^3 = ', sum_triple((1,2,3,4,5,6))
+
+# ★如果想要直接输入一串数字，那就需要利用可变参数了，可以简化成如下
+def sum_triple(*numbers):
+    sum = 0
+    for n in numbers:
+        sum += n * n * n
+    return sum
+print '1^3+2^3+...+6^3 = ', sum_triple(1,2,3,4,5,6)
+# 就是在参数前面加一个*，【本质上，numbers接收到的是一个tuple】
+
+# ★如果数据已经在list或tuple中了，可采用以下方式调用可变参数
+L = [1,2,3]
+T = (1,2,3)
+print '1^3+2^3+3^3 = ', sum_triple(L[0], L[1], L[2])
+print '1^3+2^3+3^3 = ', sum_triple(T[0], T[1], T[2])
+# ★由于上述方式太繁琐，所以也可以采用在list或tuple变量前加一个*，将list或tuple变量的元素变成可变参数传给函数
+print '1^3+2^3+3^3 = ', sum_triple(*L)
+print '1^3+2^3+3^3 = ', sum_triple(*T)
+
+运行效果：
+
+★总结：可变参数允许你传入0个或任意个参数，这些可变参数在函数调用时自动组装为一个tuple
+
+3、关键字参数
+
+上面码过函数的必选参数，默认参数，可变参数
+ 与可变参数类似：关键字参数允许传入0个或任意个含参数名的参数，这些关键字-参数在函数内部自动组装为一个dict
+
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+import math
+
+# ★示例,必选参数name,age+关键字参数keyword
+def student(name, age, **keyword):
+    print "name:",name,"age:",age,"keyword:",keyword
+
+# ★只传入必选参数
+student(u'河海',100)
+
+# ★传入任意个数的关键字参数
+student(u'河海', 100, city = 'NanJing', area = '500acre')
+
+# ★和可变参数类似，如果已经存在一个dict，可以把该dict转换为关键字参数传进去：
+kw = {'city': 'NanJing', 'area': '500acre'}
+student(u'河海', 100, city=kw['city'], area=kw['area'])
+# ★也可以用简化的写法，将dict变量的元素对变成关键字参数传给函数
+student(u'河海', 100, **kw)
+
+运行效果：
+ ★总结：很明显，它可以扩展函数的功能
+ ★应用：试想做一个用户注册的功能，除了用户名和年龄是必填项外，其他都是可选项，利用关键字参数来定义这个函数就能满足注册的需求。就是说如果调用者愿意提供更多的参数，我们也能收到。
+
+4、参数组合
+
+在Python中定义函数，可以用必选参数、默认参数、可变参数和关键字参数，这4种参数都可以一起使用，或者只用其中某些
+ 但是请注意，参数定义的顺序必须是：必选参数、默认参数、可变参数和关键字参数。
+
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+import math
+
+# ★参数组合
+# 定义一个包含这四种参数类型的函数
+def func(a, b, c=0, *args, **kw):
+    print 'a =', a, 'b =', b, 'c =', c, 'args =', args, 'kw =', kw
+# 仅必选参数
+func(1, 2)
+a = 1 b = 2 c = 0 args = () kw = {}
+# 必选参数+默认参数
+func(1, 2, c=3)
+a = 1 b = 2 c = 3 args = () kw = {}
+# 必选参数+默认参数+可变参数
+func(1, 2, 3, 'a', 'b')
+a = 1 b = 2 c = 3 args = ('a', 'b') kw = {}
+# 必选参数+默认参数+可变参数+关键字参数
+func(1, 2, 3, 'a', 'b', x=99)
+a = 1 b = 2 c = 3 args = ('a', 'b') kw = {'x': 99}
+# 最神奇的是通过一个tuple和dict，你也可以调用该函数：
+args = (1, 2, 3, 4)
+kw = {'x': 99}
+func(*args, **kw)
+a = 1 b = 2 c = 3 args = (4,) kw = {'x': 99}
+
+运行效果：
+
+★参数组合小结
+ 在函数调用的时候，Python解释器自动按照参数位置和参数名把对应的参数传进去。
+ 对于任意函数，都可以通过类似func(*args, **kw) 的形式调用它，无论它的参数是如何定义的
+
+★★参数小结
+ 默认参数一定要用不可变对象，如果是可变对象，运行会有逻辑错误！
+ *args 是可变参数，args接收的是一个tuple；可变参数既可以直接传入： func(1, 2, 3) ，又可以先组装list或tuple，再通过*args 传入： func(*(1, 2, 3)) 
+ **kw 是关键字参数，kw接收的是一个dict。关键字参数既可以直接传入： func(a=1, b=2) ，又可以先组装dict，再通过**kw 传入： func(**{'a': 1, 'b': 2}) 。
+

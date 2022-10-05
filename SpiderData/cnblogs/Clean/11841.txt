@@ -1,0 +1,215 @@
+目录一.[客户端]重启 libcurl.so.4: cannot open shared obje二.[客户端]日志出现（Not all processes could be identified）三.zabbix升级，再重启服务端后网页上出现Database error四.重启客户端或者服务端出现 [2332]: user zabbix does not exist五.将编译后的zabbix相关配置文件和东西放到新机器，启动失败六.zabbix无法启动，启动显示正确，但是没有端口号七.自定义的脚本服务端和客户端获得值不一致八.自定义监控项取不到数据，报错Received value [sudo:sorry,you must have a tty to run sudoi]九.自定义监控项，检测报错ZBX_NOTSUPPORTED: Unsupported item key.十.命令行可以取值，在图形显示不支持键值，看不到值十一.zabbix启动客户端报错libpcre.so.1找不到
+
+目录
+
+一.[客户端]重启 libcurl.so.4: cannot open shared obje
+
+二.[客户端]日志出现（Not all processes could be identified）
+
+三.zabbix升级，再重启服务端后网页上出现Database error
+
+四.重启客户端或者服务端出现 [2332]: user zabbix does not exist
+
+五.将编译后的zabbix相关配置文件和东西放到新机器，启动失败
+
+六.zabbix无法启动，启动显示正确，但是没有端口号
+
+七.自定义的脚本服务端和客户端获得值不一致
+
+八.自定义监控项取不到数据，报错Received value [sudo:sorry,you must have a tty to run sudoi]
+
+九.自定义监控项，检测报错ZBX_NOTSUPPORTED: Unsupported item key.
+
+十.命令行可以取值，在图形显示不支持键值，看不到值
+
+十一.zabbix启动客户端报错libpcre.so.1找不到
+
+
+一.[客户端]重启 libcurl.so.4: cannot open shared obje
+
+问题：
+
+yum安装客户端,重启zabbix-agent客户端
+
+/usr/sbin/zabbix_agentd: error while loading shared libraries: libcurl.so.4: cannot open shared obje
+
+解答：
+
+看 /etc/zabbix/zabbix_agentd.conf是否存在，因为zabbix服务识别不到配置文件才会报错。
+
+看看/etc/zabbix下面是不是有备份或者类似名字的配置文件，修改为zabbix_agentd.conf，这样服务就可以识别了。修改后重启客户端。
+
+
+二.[客户端]日志出现（Not all processes could be identified）
+
+场景：一般是自定义监控项时，脚本里使用了netstat这个命令。
+
+权限问题，zabbix_agentd是zabbix用户启动的，默认不能执行netstat -p等命令，导致从服务器取到的自动发现脚本为空
+
+(Not all processes could be identified, non-owned process info
+
+will not be shown, you would have to be root to see it all.)
+
+解决方法 ：
+
+chmod +s /bin/netstat
+
+chmod +s 是为了方便普通用户执行一些特权命令，SUID/SGID程序允许普通用户以root身份暂时执行该程序，并在执行结束后再恢复身份。
+
+
+三.zabbix升级，再重启服务端后网页上出现Database error
+
+报错：
+
+Database error
+
+–The frontend does not match Zabbix database. Current database version (mandatory/optional): 3040000/3040000. Required mandatory version: 3020000. Contact your system administrator.
+
+解答：
+
+未完成
+
+
+四.重启客户端或者服务端出现 [2332]: user zabbix does not exist
+
+重启zabbix客户端或服务端
+
+如下：
+
+zabbix_agentd [2332]: user zabbix does not exist
+
+zabbix_agentd [2332]: Cannot run as root!
+
+解答：
+
+创建一个zabbix用户，如果存在zabbix用户还是依然这个错误，则su - zabbix 再启动。
+
+用zabbix这个用户去重启，如果重启还不行，切换回root后再重启，一般就ok了
+
+
+五.将编译后的zabbix相关配置文件和东西放到新机器，启动失败
+
+将zabbix配置文件整体放到新机器的目录下，启动失败
+
+解答：
+
+还没知道，不过还原可以
+
+待定
+
+
+六.zabbix无法启动，启动显示正确，但是没有端口号
+
+解答：
+
+关闭selinux即可
+
+或者配置selinux策略（LAMP环境）：
+
+setsebool -P httpd_can_connect_zabbix on
+
+setsebool -P httpd_can_network_connect_db on
+
+导入module注：若没有audit2allow模板，请安装selinux-policy* setroubleshoot
+
+yum -y install selinux-policy* setroubleshoot
+
+cat /var/log/audit/audit.log | grep zabbix_server | grep denied | audit2allow -M zabbix-server_setrlimit
+
+生成modulesemodule -i zabbix-server_setrlimit.pp
+
+semodule -i zabbix-server_setrlimit.pp
+
+
+七.自定义的脚本服务端和客户端获得值不一致
+
+前情提要：
+
+自定义zabbix脚本监控mysql，出现在客户端用zabbix_agentd -t slave_status[Slave_IO_Running]获得值为0，是正确的
+
+但在服务端用/usr/local/zabbix/bin/zabbix_get -s 192.168.1.14 -k slave_status[Slave_IO_Running]获得却为1
+
+原因：
+
+这是因为在服务端执行时用的当前终端，和脚本执行的一样，而在服务端获取是独立的终端。
+
+例如上述脚本需要调用mysql这个命令，但mysql是源码安装的，做了环境变量。那在客户端执行时没问题的，因为加载了当前的环境变量
+
+如果是服务端执行，会报错mysql not found，没有mysql这个命令。因为脚本是对mysql -e "xxx"方式获得的值进行if判断，为真则echo 0，为假则echo 1。没有mysql命令自然返回1了。
+
+因为服务端不加载/etc/profile这种环境变量，他不登录服务器。
+
+解决办法：
+
+可以再脚本中写绝对路径来避免此类错误。也可以用ln -s对命令做一个软连接，连接到/usr/local/bin/下面。
+
+
+八.自定义监控项取不到数据，报错Received value [sudo:sorry,you must have a tty to run sudoi]
+
+报错信息：
+
+zabbix_agentd -t slave_status[Slave_IO_Running]
+
+Received value [sudo:sorry,you must have a tty to run sudoi]is not suitable for value type [Numeric(unsigend)]
+
+原因：
+
+导致这问题的原因是 sudo默认需要在 tty终端里才能正确被调用，而用的脚本，才会出现这个问题。
+
+解决：
+
+我们可以通过修改 /etc/sudoers配置文件来解决这个问题：
+
+vi /etc/sudoers
+
+
+九.自定义监控项，检测报错ZBX_NOTSUPPORTED: Unsupported item key.
+
+报错信息：
+
+原因：
+
+Zabbix Agent默认的超时时间是3秒。往往我们自定义的Item由于各种原因返回时间会比较长（比如监控mysql，可能4秒后脚本才运行完毕）。所以建议统一修改一个适合自己实际的值。
+
+解决：
+
+vim /etc/zabbix/zabbix_agent.conf
+
+
+十.命令行可以取值，在图形显示不支持键值，看不到值
+
+报错：
+
+自定义的脚本如下
+
+a是mysql从和主同步时，从慢同步多少秒。
+
+b是上一个a值
+
+只有当上一值大于600，最新值大于600，才会输出a，也就是该报警了
+
+这样做防止主执行一个大的事物，导致从瞬间sbm高涨，然后又降低了。
+
+只有上一个值和当前值都很高，才判定有问题。
+
+结果发现值是灰色的，但用 zabbix_agentd -t 键值 来测试没有问题
+
+原因：
+
+zabbix自定义的脚本不能有输出或者写入文件等操作。
+
+解决：
+
+将最后输出那行删除就行了
+
+
+十一.zabbix启动客户端报错libpcre.so.1找不到
+
+报错如下
+
+find / -name libpcre.so*
+
+在配置文件加上，再去启动服务
+
+/etc/init.d/zabbix_agentd start
+

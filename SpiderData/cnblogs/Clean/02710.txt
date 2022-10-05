@@ -1,0 +1,10 @@
+需要调用命令行来执行某些命令，主要是用 subprocess 实时获取结果和捕获错误，发现subprocess的很多坑。
+
+subprocess 普通获取结果方式，其需要命令完全执行才能返回结果：
+
+客subprocess 实时获取结果：
+
+想要获取报错机制，使用 check_output 捕捉报错和使用 check_call 捕捉报错，及时在 Popen 中捕获报错，都会使 实时输出失效 ！，所以自行查看 CalledProcessError 源码终于搞定。
+
+实时发送以及捕获报错：
+

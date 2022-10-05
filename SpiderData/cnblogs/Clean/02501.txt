@@ -1,0 +1,50 @@
+python应用通常需要一些库，比如numpy、pandas等，安装也很简单，直接通过pip
+
+# pip install numpy
+Requirement already satisfied: numpy in /export/App/anaconda2/lib/python2.7/site-packages
+
+# pip install pandasRequirement already satisfied: pandas in /export/App/anaconda2/lib/python2.7/site-packagesRequirement already satisfied: python-dateutil in /export/App/anaconda2/lib/python2.7/site-packages (from pandas)Requirement already satisfied: pytz>=2011k in /export/App/anaconda2/lib/python2.7/site-packages (from pandas)Requirement already satisfied: numpy>=1.7.0 in /export/App/anaconda2/lib/python2.7/site-packages (from pandas)Requirement already satisfied: six>=1.5 in /export/App/anaconda2/lib/python2.7/site-packages (from python-dateutil->pandas)
+
+上边是已经安装好的提示信息，但是此时在python引入还是会报错
+
+$ python
+Python 2.6.6 (r266:84292, Aug 18 2016, 15:13:37) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-17)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import pandas as pd
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: No module named pandas
+>>>
+
+这时通常的原因是因为你的机器上有两个版本的python（通常是系统自带一个，然后anaconda自带一个），一个版本下的python安装好了依赖，然后你在另一个版本下引入依赖
+
+$ python -c 'import sys; print(sys.version_info)'
+(2, 6, 6, 'final', 0)
+
+$ python --version
+Python 2.6.6
+
+$ which python
+
+以上可知当前python用的是2.6.6，但是依赖是安装在2.7（anaconda自带）下的，修改一下path即可
+
+export PATH=/export/App/anaconda2/bin:$PATH
+
+然后再引入即可
+
+$ python
+Python 2.7.13 |Anaconda 4.3.1 (64-bit)| (default, Dec 20 2016, 23:09:15) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+Anaconda is brought to you by Continuum Analytics.
+Please check out: http://continuum.io/thanks and https://anaconda.org
+>>> import pandas as pd
+>>>
+
+其实anaconda安装后会修改当前用户的~/.bashrc，修改path，指向自带python，其他用户可能会遇到上边的问题；
+
+另外可以通过命令查看当前path有哪些版本python路径
+
+$ whereis python
+

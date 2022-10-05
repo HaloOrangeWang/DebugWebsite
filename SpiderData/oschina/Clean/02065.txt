@@ -1,0 +1,51 @@
+注意：为兼容64位与32位系统，Python安装包、第三方库、操作系统，均需要安装32位，经测试Windows7专业版32位打包，对Widnows Xp、7、8、10，兼容性最好
+
+打包常见问题：
+
+　　1、打包后程序图片在部分操作系统上无法显示？
+
+　　2、打包后程序在Windows XP 系统上提示不是32位可执行程序？
+
+　　3、打包过程中使用SIP2报错？
+
+问题1、2解决方法：
+
+　　A、Python安装包下载官方原版（python.org）,不要使用anaconda
+
+　　B、操作系统使用Win7 专业版32位，并安装微软原版镜像
+
+　　C、SPAC文件中添加所有自定义Py文件，只添加启动Py，部分电脑会出现图片无法显示的情况（坏处就是会导致打包后的程序变大2倍）
+
+　　D、Pyinstaller不会自动将微软运行库打进包中，如果目标系统确实这些运行库，则图片无法显示，建议在目标系统中安装Redistributable 等常规库，Pyinstaller官方文档中有详细解释
+
+问题3解决办法：
+
+在文件pyi_rth_qt4plugins.py添加版本设置代码即可。
+
+PyQt4 supports two different APIs: version 1 (default on Python 2) and version 2 (default on Python 3). It is possible to change API at runtime through the sip.setapi call; a good example is that someone wants to write API v2 code on Python 2 to be future-proof and ready for the migration to Python 3.
+Alas, changing API versions does not currently work with PyInstaller, and leads to error messages such as:
+ValueError: API 'QString' has already been set to version 1
+
+Workaround for Development version
+In the development version of PyInstaller a good workaround is to create a runtime hook file that is executed before the runtime hook support/rthooks/pyi_rth_qt4plugins.py in PyInstaller, and add the API changing code at the top of your custom runtime hook. Let's name the file rthook_pyqt4.py.
+Then add there code:
+import sip
+
+sip.setapi(u'QDate', 2)
+sip.setapi(u'QDateTime', 2)
+sip.setapi(u'QString', 2)
+sip.setapi(u'QTextStream', 2)
+sip.setapi(u'QTime', 2)
+sip.setapi(u'QUrl', 2)
+sip.setapi(u'QVariant', 2)
+Then rebuild your application with the --runtime-hook option
+pyinstaller.py --runtime-hook rthook_pyqt4.py main_script.py
+
+or add runtime_hooks argument to the Analysis object in your .spec file
+a = Analysis(['main_script.py'],
+ pathex=[],
+ hiddenimports=[],
+ hookspath=None,
+ runtime_hooks=['rthook_pyqt4.py'])
+and it should work with PyInstaller.
+

@@ -1,0 +1,16 @@
+报错描述：
+
+nginx: [emerg] bind() to 0.0.0.0:8088 failed (13: Permission denied)
+
+通过ansible远程给主机更换端口并重新启动nginx服务，出现以上报错信息（权限被拒绝）。
+
+解决方式：经检查发现是selinux导致报错。
+
+[root@localhost nginx]# getenforce　　　　#查询selinux状态
+
+[root@localhost nginx]# setenforce 0        #临时将selinux关闭
+
+如果需要永久关闭selinux，请编辑/etc/selinux/config文件，将SELINUX=disabled。之后将系统重启一下即可。
+
+之后重启nginx服务，发现报错已经解除。
+

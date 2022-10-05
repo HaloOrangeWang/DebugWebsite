@@ -1,0 +1,15 @@
+ssh 远程登录 Linux 服务器使用 matplotlib.pyplot 绘图时报错
+
+原因：
+
+matplotlib 在 windows 下的默认 backend 是 TkAgg；在 Linux 下的默认 backend 是 Qt5Agg。但是这两个 backend 都要求有 GUI 图形界面，所以在 Linux 服务器上运行时会报错。
+
+另外 FltkAgg, GTK, GTKAgg, GTKCairo, TkAgg , Wx, WxAgg这几个backend都要求有GUI图形界面的
+
+解决办法：更换 backend
+
+将 backend 更换为不需要 GUI 的 backend，比如 Agg, Cairo, PS, PDF, SVG
+
+import matplotlib.pyplot as plt
+plt.switch_backend('agg')
+

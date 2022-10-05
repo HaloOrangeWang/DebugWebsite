@@ -1,0 +1,63 @@
+
+文章目录
+
+1 运行spring-social提供的sql报错问题
+
+2 [Err] 1055错误解决方式
+
+3 将grade字段再改回rank
+
+springsocial提供的sql如下
+
+create table UserConnection (userId varchar(255) not null,
+	providerId varchar(255) not null,
+	providerUserId varchar(255),
+	rank int not null,
+	displayName varchar(255),
+	profileUrl varchar(512),
+	imageUrl varchar(512),
+	accessToken varchar(512) not null,
+	secret varchar(512),
+	refreshToken varchar(512),
+	expireTime bigint,
+	primary key (userId, providerId, providerUserId));
+create unique index UserConnectionRank on UserConnection(userId, providerId, rank);
+
+执行后报错结果为：
+
+[Err] 1064 - You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ‘rank int not null,
+displayName varchar(255),
+profileUrl varchar(512),
+imag’ at line 4
+
+这个错误用MySQL Workbench可以很容易发现，其实就是rank是mysql保留关键字的原因，我后来把他改成了grade
+
+报错结果
+[Err] 1055 - Expression #1 of ORDER BY clause is not in GROUP BY clause and contains nonaggregated column ‘information_schema.PROFILING.SEQ’ which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+
+报错结果
+[Err] 1055 - Expression #1 of ORDER BY clause is not in GROUP BY clause and contains nonaggregated column ‘information_schema.PROFILING.SEQ’ which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+
+解决方式 — windows系统的情况下
+（1）在安装目录下的my.ini加上下面这句话，但要注意这句话一定要加载[client]之前。
+
+解决方式 — windows系统的情况下
+（1）在安装目录下的my.ini加上下面这句话，但要注意这句话一定要加载[client]之前。
+
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+
+（2）重启mysql —> 先关闭，在开启
+
+net stop mysql  #关闭mysql
+net start mysql #开启mysql
+
+这里贴一下重启mysql的过程及其他一些操作
+
+这样再运行建表语句就没问题了。
+
+因为不知道rank字段修改为grade后，会不会有其他问题，所以我决定还是将其改回为rank字段，修改方式如下：
+
+发现并没有报错，且索引也跟着修改了过来
+
+end
+

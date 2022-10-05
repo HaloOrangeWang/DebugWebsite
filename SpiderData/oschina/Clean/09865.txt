@@ -1,0 +1,14 @@
+启动json-rpc服务时，报了此错误，纠结了几天。一开始以为是json-rpc不能传ip了，百度了一下错误，给出的解决方案也没得到解决。
+
+今天使用google搜索，看到一个和我错误很接近的，就点进去看了下，https://github.com/tensorflow/tensorboard/issues/682
+
+看到开头以为是python3版本的问题（确实跟python3有关），那到底这个问题能不能解决呢？难道我要换python版本解决这个问题吗？
+
+继续往下看，看到一行：
+
+python -c "import socket; print(socket.getfqdn()); print(socket.gethostbyaddr(socket.gethostname()))"
+
+于是我把这段话拿到pycharm中运行，发现报同样的错误，然后我就搜索python socket.getfqdn() + 错误，说是主机名设为中文的原因。
+
+百度查找我的主机名，发现还真是中文，然后就对照着方法将主机名改成英文，问题得到解决。
+

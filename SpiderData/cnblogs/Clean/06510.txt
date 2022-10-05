@@ -1,0 +1,20 @@
+在写爬取页面a标签下href属性的时候，有这样一个问题，如果a标签下没有href这个属性则会报错，如下：
+
+百度了有师傅用正则匹配的，方法感觉都不怎么好，查了BeautifulSoup的官方文档，发现一个不错的方法，如下图：
+
+官方文档链接：https://beautifulsoup.readthedocs.io/zh_CN/v4.4.0/
+
+has_attr() 这个方法可以判断某标签是否存在某属性，如果存在则返回 True
+
+解决办法：
+
+为美观使用了匿名函数
+
+soup_a = soup.find_all(lambda tag:tag.has_attr('href'))
+
+最终实现爬取页面 url 脚本如下：
+
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+# Author:Riy
+

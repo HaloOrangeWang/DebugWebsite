@@ -1,0 +1,37 @@
+自己也查阅了自己出现了的问题，其中就有这么个按照书中来写的代码但是Django却是提示了  ‘learning_logs ’is not a registered namespace。
+
+然后错误提示可以是定位到了以下这个位置：
+
+base.html
+ 
+```
+ 
+<p>
+ 
+<a href="{% url 'learning_logs:index' %}">Learning Log</a>-
+ 
+<a href="{% url 'learning_logs:topics' %}">Topics</a>
+ 
+</p>
+ 
+{% block content %}{% endblock content %}
+按照这样的问题，我们最先也是去找度娘一下，只可惜，并没有人给出了这么个解决方法。
+
+不过，既然这样的话，我们就按照了语句的提示就去找问题。
+
+错误提示是这样的： ‘learning_logs ’is not a registered namespace。
+
+意思就是: learning_logs并为被注册的命名。
+
+那么这个刚开始学的Django的时候就知道，如果添加了一个新的app，那么我们必须是要在创建了Django这个框架当中的settings.py 的installded_app列表中添加。
+
+是已经添加了的，那问题又是出现在了哪里呢？
+
+继续找，如果是urls中的问题，那么我就找urls.py,而我在urls.py中发现了，使用最细的Django框架，要应用的是
+
+path（）方法。
+
+而这时候我发现了，之前我的注释过程当中，有这样的：
+
+就这样，成功修复了这个问题！
+

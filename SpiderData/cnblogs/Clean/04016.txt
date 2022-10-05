@@ -1,0 +1,48 @@
+在python脚本中，使用selenium启动浏览器报错，原因是未安装浏览器驱动，报错内容如下：
+
+# -*- coding:utf-8 -*-
+from selenium import webdriver
+
+driver = webdriver.Firefox()
+driver.get("http://www.baidu.com")
+
+报错提示如下所示：
+
+Traceback (most recent call last):
+  File "D:\Program Files\Python36\lib\site-packages\selenium\webdriver\common\service.py", line 76, in start
+    stdin=PIPE)
+  File "D:\Program Files\Python36\lib\subprocess.py", line 709, in __init__
+    restore_signals, start_new_session)
+  File "D:\Program Files\Python36\lib\subprocess.py", line 997, in _execute_child
+    startupinfo)
+FileNotFoundError: [WinError 2] 系统找不到指定的文件。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:/Program Files/Python36/baidu.py", line 4, in <module>
+    driver = webdriver.Firefox()
+  File "D:\Program Files\Python36\lib\site-packages\selenium\webdriver\firefox\webdriver.py", line 164, in __init__
+    self.service.start()
+  File "D:\Program Files\Python36\lib\site-packages\selenium\webdriver\common\service.py", line 83, in start
+    os.path.basename(self.path), self.start_error_message)
+selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable needs to be in PATH.
+
+解决方案：安装Chrome浏览器驱动
+1.下载 chromedriver_win32.zip，根据浏览器版本下载对应的压缩包；
+下载地址：https://sites.google.com/a/chromium.org/chromedriver/downloads
+
+2.解压后将chromedriver.exe文件放到系统环境变量Path路径下，例如：已将D:\Program Files\Python36\ 添加到系统环境变量Path路径下，将chromedriver.exe文件放到D:\Program Files\Python36\ 目录下即可；
+
+3.将Chrome替换掉原脚本中的Firefox，保存文件并运行。
+
+# -*- coding:utf-8 -*-
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+driver.get("http://www.baidu.com")
+
+driver.find_element_by_id("kw").send_keys("Selenium2")
+driver.find_element_by_id("su").click
+driver.quit()
+

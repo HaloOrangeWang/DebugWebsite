@@ -1,0 +1,35 @@
+python 里 try……except……是很常用的跳过未知错误的方法。
+
+经常会用到except Exception as e 然后输出e的方法显示错误，但是这样做并不能将错误完全显示，如何才能够将错误完全显示呢？
+
+这里要用到traceback包，详细代码如下：
+
+import traceback
+
+try:
+    print(1/0)
+
+except (Exception, BaseException) as e:
+    print('{:*^60}'.format('直接打印出e, 输出错误具体原因'))
+    print(e)
+    print('{:*^60}'.format('使用repr打印出e, 带有错误类型'))
+    print(repr(e))
+    print('{:*^60}'.format('使用traceback的format_exc可以输出错误具体位置'))
+    exstr = traceback.format_exc()
+    print(exstr)
+
+输出结果如下：
+
+**********************直接打印出e, 输出错误具体原因**********************
+division by zero
+*********************使用repr打印出e, 带有错误类型*********************
+ZeroDivisionError('division by zero',)
+**************使用traceback的format_exc可以输出错误具体位置**************
+Traceback (most recent call last):
+  File "E:/NovoPaper/tex2docx/test2.py", line 8, in <module>
+    print(1/0)
+ZeroDivisionError: division by zero
+
+
+附：常见错误类型
+

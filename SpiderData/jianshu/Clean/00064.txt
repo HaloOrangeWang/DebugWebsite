@@ -1,0 +1,199 @@
+Centos7下"mvn package"命令报错"-bash: mvn: command not found"，安装后报错"NB: JAVA_HOME should point to a JDK not a JRE"
+
+解决办法：
+
+1.linux 安装 maven
+
+2.下载maven安装包
+
+wget --no-check-certificate  https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+
+3.解压maven安装包
+
+tar -xf apache-maven-3.6.3-bin.tar.gz -C /usr/local/
+mv /usr/local/apache-maven-3.6.3/ /usr/local/maven3.6
+
+4.配置maven：
+
+vim /etc/profile
+
+在配置文件的尾部中加上：
+
+export MAVEN_HOME=/usr/local/maven3.6/
+export PATH=$MAVEN_HOME/bin:$PATH
+
+5.让文件生效，刷新配置文件 ：
+
+source /etc/profile
+
+测试：
+
+mvn -v
+
+报错：
+
+[root@k8s-master-201 maven3.6]# mvn -v
+The JAVA_HOME environment variable is not defined correctly
+This environment variable is needed to run this program
+NB: JAVA_HOME should point to a JDK not a JRE
+
+报错原因：
+
+"JAVA_HOME should point to a JDK not a JRE",
+JAVA_HOME没有指向"JDK"
+
+解决办法：
+
+在centos7中查找"JDK"位置
+
+查找步骤如下：
+
+# which java
+/usr/bin/java
+
+# ls -l /usr/bin/java
+lrwxrwxrwx. 1 root root 22 Feb 14 19:19 /usr/bin/java -> /etc/alternatives/java
+
+# ls -l /etc/alternatives/java
+lrwxrwxrwx. 1 root root 73 Feb 14 19:19 /etc/alternatives/java -> /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/jre/bin/java
+
+# ls -l /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/jre/bin/java
+-rwxr-xr-x. 1 root root 8984 Jan 28 02:05 /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/jre/bin/java
+#
+
+可以判断JDK的位置为
+
+"/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/jre"
+
+cat -n  /etc/profile | grep "export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL"
+
+然后在文件" /etc/profile"添加JAVA_HOME指向"JDK"
+
+在文件" /etc/profile"的"export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL"下方添加一行
+
+# cat -n  /etc/profile | grep "export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL"
+53  export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL
+# vim +53 /etc/profile
+
+第53行附近添加3行
+
+export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/jre
+export PATH=$PATH:$JAVA_HOME/bin
+export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar
+
+同时文件末尾添加了3行
+
+MAVEN_HOME=/var/lib/maven/apache-maven-3.6.3 
+PATH=$PATH:$MAVEN_HOME/bin
+export PATH MAVEN_HOME
+
+备注：
+
+export MAVEN_HOME=/opt/apache-maven-3.5.4  （这个目录换成你的 maven 解压后的文件所在目录）
+export PATH=$MAVEN_HOME/bin:$PATH
+
+让文件生效，刷新配置文件 ：
+source /etc/profile
+
+5.再次查看maven 版本：
+
+mvn -version
+# 或者
+mvn -v
+
+# mvn -v
+
+Apache Maven 3.6.3 (cecedd343002696d0abb50b32b541b8a6ba2883f)
+Maven home: /usr/local/maven3.6
+Java version: 1.8.0_322, vendor: Red Hat, Inc., runtime: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "3.10.0-1160.el7.x86_64", arch: "amd64", family: "unix"
+#
+
+完整的配置文件如下：
+
+# cat /etc/profile
+
+# /etc/profile
+
+# System wide environment and startup programs, for login setup
+# Functions and aliases go in /etc/bashrc
+
+# It's NOT a good idea to change this file unless you know what you
+# are doing. It's much better to create a custom.sh shell script in
+# /etc/profile.d/ to make custom changes to your environment, as this
+# will prevent the need for merging in future updates.
+
+pathmunge () {
+   case ":${PATH}:" in
+       *:"$1":*)
+           ;;
+       *)
+           if [ "$2" = "after" ] ; then
+               PATH=$PATH:$1
+           else
+               PATH=$1:$PATH
+           fi
+   esac
+}
+
+if [ -x /usr/bin/id ]; then
+   if [ -z "$EUID" ]; then
+       # ksh workaround
+       EUID=`/usr/bin/id -u`
+       UID=`/usr/bin/id -ru`
+   fi
+   USER="`/usr/bin/id -un`"
+   LOGNAME=$USER
+   MAIL="/var/spool/mail/$USER"
+fi
+
+# Path manipulation
+if [ "$EUID" = "0" ]; then
+   pathmunge /usr/sbin
+   pathmunge /usr/local/sbin
+else
+   pathmunge /usr/local/sbin after
+   pathmunge /usr/sbin after
+fi
+
+HOSTNAME=`/usr/bin/hostname 2>/dev/null`
+HISTSIZE=1000
+if [ "$HISTCONTROL" = "ignorespace" ] ; then
+   export HISTCONTROL=ignoreboth
+else
+   export HISTCONTROL=ignoredups
+fi
+
+export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/jre
+export PATH=$PATH:$JAVA_HOME/bin
+export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar
+
+# By default, we want umask to get set. This sets it for login shell
+# Current threshold for system reserved uid/gids is 200
+# You could check uidgid reservation validity in
+# /usr/share/doc/setup-*/uidgid file
+if [ $UID -gt 199 ] && [ "`/usr/bin/id -gn`" = "`/usr/bin/id -un`" ]; then
+   umask 002
+else
+   umask 022
+fi
+
+for i in /etc/profile.d/*.sh /etc/profile.d/sh.local ; do
+   if [ -r "$i" ]; then
+       if [ "${-#*i}" != "$-" ]; then 
+           . "$i"
+       else
+           . "$i" >/dev/null
+       fi
+   fi
+done
+
+unset i
+unset -f pathmunge
+
+export MAVEN_HOME=/usr/local/maven3.6/
+export PATH=$MAVEN_HOME/bin:$PATH
+

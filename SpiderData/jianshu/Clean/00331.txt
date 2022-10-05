@@ -1,0 +1,33 @@
+
+问题
+
+环境：
+
+"vue": "^3.2.31",
+"codemirror": "^5.65.2",
+
+Vue3中使用CodeMirror出现setValue后点击报错、按键报错、光标显示错乱。
+
+onSetValue() {
+    this.cm.setValue("There are cats");
+}
+
+
+原因
+
+vue对绑定到vue组件的对象有代理，以便监控修改而刷新界面等。
+
+codeMirror调用成员函数必须是从原始对象调用。
+
+
+解决
+
+新建CodeMirror时使用markRaw标记后绑定要Vue组件。cm对象不需要被vue追踪。
+
+this.cm = markRaw(new CodeMirror(this.container, this.cmOpt));
+
+
+参考
+
+[1] https://www.jianshu.com/p/c0b103082889
+

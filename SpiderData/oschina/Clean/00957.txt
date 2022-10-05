@@ -1,0 +1,19 @@
+
+报错：invalid index of a 0-dim tensor. Use tensor.item() to convert a 0-dim tensor to a Python number
+
+解决方法：
+
+That's because in PyTorch>=0.5, the index of 0-dim tensor is invalid. The master branch is designed for PyTorch 0.4.1, loss_val.data[0] works well.
+
+Try to change
+
+total_loss += loss_val.data[0]
+loss_values = [v.data[0] for v in losses]
+
+to
+
+total_loss += loss_val.data
+loss_values = [v.data for v in losses]
+
+might fix the problem.
+

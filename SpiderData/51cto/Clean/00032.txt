@@ -1,0 +1,38 @@
+部署过程中，使用虚环境，但是启动程序的时候报错，如下：
+
+Traceback (most recent call last):
+  File "/home/himalayas/fdsearch/fdsearch/bin/fdsearch", line 34, in <module>
+    from fdsearch import wsgi
+  File "/home/himalayas/fdsearch/fdsearch/wsgi.py", line 32, in <module>
+    import fdsearch.domain
+  File "/home/himalayas/fdsearch/fdsearch/domain/__init__.py", line 20, in <module>
+    from notify_handler import NotifyHandler
+  File "/home/himalayas/fdsearch/fdsearch/domain/notify_handler.py", line 23, in <module>
+    from cjson import encode as json_encode
+  File "build/bdist.linux-x86_64/egg/cjson.py", line 7, in <module>
+  File "build/bdist.linux-x86_64/egg/cjson.py", line 4, in __bootstrap__
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 945, in resource_filename
+    self, resource_name
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 1633, in get_resource_filename
+    self._extract_resource(manager, self._eager_to_zip(name))
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 1661, in _extract_resource
+    self.egg_name, self._parts(zip_path)
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 1025, in get_cache_path
+    self.extraction_error()
+  File "/home/himalayas/virtualenv/python2.7-fd/lib/python2.7/site-packages/pkg_resources.py", line 991, in extraction_error
+    raise err
+pkg_resources.ExtractionError: Can't extract file(s) to egg cache
+
+The following error occurred while trying to extract file(s) to the Python egg
+cache:
+
+[Errno 13] Permission denied: '/root/.python-eggs'
+
+The Python egg cache directory is currently set to:
+
+/root/.python-eggs
+
+解决办法：让开发在代码中声明一下环境变量。
+
+注意：在系统的/etc/profile中声明是没有办法的，因为程序是在虚环境中运行。
+

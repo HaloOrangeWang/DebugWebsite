@@ -1,0 +1,36 @@
+巨大的建筑，总是由一木一石叠起来的，我们何妨做做这一木一石呢？我时常做些零碎事，就是为此。
+
+这是对的，但是我没有说过这句话！            —— 鲁迅
+
+在spacemacs中用 M-x run-python 之后，报错：
+
+Warning (python): Your ‘python-shell-interpreter’ doesn’t seem to support readline, yet ‘python-shell-completion-native-enable’ was t and "python" is not part of the ‘python-shell-completion-native-disabled-interpreters’ list.  Native completions have been disabled locally.
+
+如图：
+
+查看一下 python-shell-completion-native-disabled-interpreters 的帮助
+
+C-h v python-shell-completion-native-disabled-interpreters
+
+如下：
+
+python-shell-completion-native-disabled-interpreters is a variable defined in ‘python.el’.
+Its value is ("pypy" "ipython")
+
+Documentation:
+List of disabled interpreters.
+When a match is found, native completion is disabled.
+
+You can customize this variable.
+
+This variable was introduced, or its default value was changed, in
+version 25.1 of Emacs.
+
+[back]
+
+写的比较清楚，或者将 python 加入到list里面，或者安装一个ipython,我选择了后者：
+
+pip3 install ipython
+
+再重新运行，一切正常了！，直接 C-c C-c 运行.如图：
+

@@ -1,0 +1,120 @@
+下列错误，可能是因为在64位上跑32位程序：
+
+Value too large for defined data type
+
+此错误对应的出错代码为EOVERFLOW，原因可能是目标文件超过2GB大小。
+
+下列代码可能会导致这个错误出错（为何说是可能，本节最后部分解释）：
+
+// g++ -g -o x x.cpp -m32
+
+#include <errno.h>
+
+#include <stdio.h>
+
+#include <string.h>
+
+#include <sys/stat.h>
+
+#include <sys/types.h>
+
+#include <unistd.h>
+
+#include <string>
+
+int main(int argc, char* argv[])
+
+{
+
+struct stat st;
+
+if (stat(argv[1], &st) != 0)
+
+{
+
+printf("stat failed: %s.\n", strerror(errno));
+
+return 1;
+
+}
+
+else {
+
+printf("%zd\n", st.st_size);
+
+return 0;
+
+}
+
+}
+
+改成下列后，运行正常：
+
+// g++ -g -o x x.cpp -m32
+
+#include <errno.h>
+
+#include <stdio.h>
+
+#include <string.h>
+
+#include <sys/stat.h>
+
+#include <sys/types.h>
+
+#include <unistd.h>
+
+#include <string>
+
+int main(int argc, char* argv[])
+
+{
+
+struct stat64 st;
+
+if (stat64(argv[1], &st) != 0)
+
+{
+
+printf("stat failed: %s.\n", strerror(errno));
+
+return 1;
+
+}
+
+else {
+
+printf("%zd\n", st.st_size);
+
+return 0;
+
+}
+
+}
+
+前面说的“可能”，是因为不同机器的编译环境（可理解为默认编译参数）可能并不相同，因此导致结果是可能，原因是宏“-D_FILE_OFFSET_BITS=64”会影响结果，如果定义了，则效果如同最后一段代码，否则报错“Value too large for defined data type”。相关宏：_LARGEFILE64_SOURCE和__USE_FILE_OFFSET64，相关LIBC头文件：features.h。
+
+一些引用到的第三方库，可能定义了FILE_OFFSET_BITS，使用时需注意，比如：
+
+# grep "FILE_OFFSET_BITS" /usr/include/*/*.h
+
+/usr/include/bits/environments.h:#define __ILP32_OFFBIG_CFLAGS  "-m32 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+
+/usr/include/mysql/my_config_x86_64.h:#define _FILE_OFFSET_BITS 64
+
+/usr/include/python2.7/pyconfig-64.h:#define _FILE_OFFSET_BITS 64
+
+/usr/include/python3.4m/pyconfig-64.h:#define _FILE_OFFSET_BITS 64
+
+附1：查看GCC默认机器相关编译参数
+
+gcc -march=native -c -Q --help=target
+
+附2：查看GCC默认定义的宏
+
+gcc -posix -E -dM - </dev/null
+
+或：
+
+cpp -dM /dev/null
+

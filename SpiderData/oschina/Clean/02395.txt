@@ -1,0 +1,53 @@
+一且都起源于下图：
+
+由于不知道__init__.py 文件的魔力，我每次都将其删除，殊不知引起下面的错误
+
+Traceback (most recent call last):
+  File "D:/coding/project/shuzilm/shuzilm-dev/src/main/python/shuzilm/pro/download/android/download_android_server.py", line 9, in <module>
+    import detail
+ImportError: No module named detail
+
+找了很多文章不得其解，尝试过下面的代码依旧无效：
+
+# coding=utf-8
+import os
+import sys
+
+# 返回脚本的绝对路径
+path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+print(path)
+
+# 临时添加搜索路径，这种方法导入的路径会在python程序退出后失效。
+sys.path.append(path)
+
+# print(path1)#当前文件的绝对路径
+# path1=os.path.abspath(__file__)
+
+# 当前文件的上一层目录的绝对路径
+path2 = os.path.dirname(os.path.abspath(__file__))
+print(path2)
+
+# 当前文件的上上层目录的绝对路径
+path3 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print(path3)
+
+# os.path.join()函数用于路径拼接文件路径
+
+最后下面这篇文章成功解救我于水火之中：
+ Python引用（import）文件夹下的py文件的方法
+ Python的import包含文件功能就跟PHP的include类似，但更确切的说应该更像是PHP中的require，因为Python里的import只要目标不存在就报错程序无法往下执行。要包含目录里的文件，PHP中只需要给对路径就OK。Python中则不同，下面来看看这个例子。
+ 目录结构：
+
+a.py 要 import dir目录下的 b.py 文件。a.py代码如下： 代码如下:
+
+# coding=utf-8
+"import dir 目录下的 b.py 文件"
+ 
+import dir.b
+ 
+print dir.b.name
+
+执行 a.py 报错
+
+提示找不到这个模块的名字 dir.b 。通过查找官方文档，发现要包含目录下的文件时需要在目录下声明一个__init__.py文件，即使这个文件是空的也可以。当然这个文件也可以初始一些数据。 于是在 dir 下新建 init.py文件，目录结构如下：  重新执行a.py，一切OK！
+

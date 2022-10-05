@@ -1,0 +1,62 @@
+
+原文链接
+
+IT思维
+
+
+前提
+
+调试业务服务期间，服务日志需要写入es集群，发现数据写入报错。
+
+
+报错内容如下
+
+ElasticsearchDeprecationWarning: In a future major version, this request will fail because this action would add [10] total shards, but this cluster currently has [20242]/[20000] maximum shards open. Before upgrading, reduce the number of shards in your cluster or adjust the cluster setting [cluster.max_shards_per_node].
+
+
+报错内容分析
+
+根据报错内容描述可以看出，是es集群分片数量达到上限导致报错。
+
+
+解决办法有以下几种：
+
+1:删除集群无用index，减少集群分片数量；
+2:修改集群index 默认数量，或者修改现有index分片数量；
+3:修改集群分片数量上限；
+
+
+调整集群最大分片数
+
+本次采用临时快速解决方案，解决办法如下：
+
+
+查看现在集群分片数
+
+
+以下操作在kibana devtool 空间操作
+
+GET _cluster/stats?filter_path=*indices*
+
+{
+  "indices" : {
+    "count" : 1740,
+    "shards" : {
+      "total" : 20242,     <<<<<<=====现使用分片数量
+
+
+修改集群最大分片数
+
+PUT _cluster/settings
+{
+    "transient" : 
+        {
+      "cluster.max_shards_per_node": "2000"
+        }
+}
+
+
+结论：
+
+以上操作完成，可以快速应对集群创建index 报分片数量过多问题。另外es集群分片数量设置是否合理，需要参考集群节点数量，数据量、节点内存大小等信息，不在本文阐述。
+

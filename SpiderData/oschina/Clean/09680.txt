@@ -1,0 +1,30 @@
+前不久，伴随着iOS 12版本的发布，苹果升级了Xcode 版本，最新的版本是Xcode 10.1。不过升级后经常会遇到各种编译问题，下面就给大家总结一些常见的错误（我项目遇到的）。
+
+
+library not found for -libstdc++
+
+报错的详细信息如： library not found for -lstdc++.6.0.9 。
+
+报错的原因是因为xocde 10后这个libstd++.6.0.9库已经废弃了，解决方法也简单，要么删除之前的依赖脚本，要么下载libstd++.6.0.9添加到项目中。然后，依次选择TARGETS—>Build Phases—>Link Binary With Libraries添加libstd++.6.0.9。
+ 
+ 说明：如果大家找不到libstdc++，可以到下面的地址下载点击下载
+
+
+directory not found for option
+
+问题描述：iOS "directory not found for option '-L/Users/…/Pods/build/Debug-iphoneos/…“
+
+解决方法： 在Target－Build Settings中找到Search Paths－Library Search Paths，删除掉在警告中所示的该路径，然后clean 、编译 即可。
+
+
+script phase "[CP]Copy Pods Resources
+
+报错信息如下：
+ 
+ 解决方法是删除对应的路径文件：
+ 在Target－Build Phases — [CP]Copy Pods Resources — Output Files 下的  T A R G E T B U I L D D I R / {TARGET_BUILD_DIR}/ TARGETB​UILDD​IR/{UNLOCALIZED_RESOURCES_FOLDER_PATH} 删除
+
+本文同步分享在 博客“xiangzhihong8”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

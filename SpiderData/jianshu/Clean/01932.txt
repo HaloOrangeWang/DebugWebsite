@@ -1,0 +1,64 @@
+将pytorch模型.pth导出为onnx格式时报错，源代码如下：
+
+错误信息如下
+
+Traceback (most recent call last):
+
+File "111.py", line 17, in <module>
+
+torch.onnx.export(model,dummy_input,"yolov3.onnx",input_names=['images'],output_names=['outTensors'],export_params=True,training=False)
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/__init__.py", line 25, in export
+
+return utils.export(*args, **kwargs)
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/utils.py", line 131, in export
+
+strip_doc_string=strip_doc_string)
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/utils.py", line 363, in _export
+
+_retain_param_name, do_constant_folding)
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/utils.py", line 278, in _model_to_graph
+
+_disable_torch_constant_prop=_disable_torch_constant_prop)
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/utils.py", line 188, in _optimize_graph
+
+graph = torch._C._jit_pass_onnx(graph, operator_export_type)
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/__init__.py", line 50, in _run_symbolic_function
+
+return utils._run_symbolic_function(*args, **kwargs)
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/utils.py", line 589, in _run_symbolic_function
+
+return fn(g, *inputs, **attrs)
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/symbolic.py", line 130, in wrapper
+
+args = [_parse_arg(arg, arg_desc) for arg, arg_desc in zip(args, arg_descriptors)]
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/symbolic.py", line 130, in <listcomp>
+
+args = [_parse_arg(arg, arg_desc) for arg, arg_desc in zip(args, arg_descriptors)]
+
+File "/home/xyj/.local/lib/python3.6/site-packages/torch/onnx/symbolic.py", line 90, in _parse_arg
+
+raise RuntimeError("Failed to export an ONNX attribute, "
+
+RuntimeError: Failed to export an ONNX attribute, since it's not constant, please try to make things (e.g., kernel size) static if possible
+
+解决方案：将pytorch版本从1.1.0降为1.0.1
+
+先查看此时的pytorch版本
+
+然后安装1.0.1版本
+
+sudo pip3 install torch==1.0.1-fhttps://download.pytorch.org/whl/cu90/stable
+
+并查看版本信息
+
+然后再次运行就不会出现上述错误
+

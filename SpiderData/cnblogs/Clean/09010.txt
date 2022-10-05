@@ -1,0 +1,37 @@
+在编译安装软件的时候，如果出现参数错误的情况，建议使用./configure --help | less 命令查看可以正确编译的参数。搜索到ssl选项相关，就如一下意思一样。
+
+可见 --with-ssl 参数错了，应该使用 --with-ssl-default-suites 参数，或者使用 --with-openssl= 指定openssl的安装目录 ，这样可以先解决编译报错的问题。
+
+下面再看看是不是openss 和python的版本不兼容的问题。
+
+
+方法一：
+
+https://www.cnblogs.com/mlgjb/p/7976561.html
+
+按照这种方法尝试：
+
+在修改完Setup文件后，重新在python解压后目录下使用 make 报错：
+
+　　./Modules/_ssl.c:74:6: 错误：#error "libssl is too old and does not support X509_VERIFY_PARAM_set1_host()"
+
+由此可见，还是升级openssl 最好。使用以下方法二较为稳妥。
+
+
+方法二（稳妥）：
+
+https://www.cnblogs.com/lemon-le/articles/13419429.html#
+
+在安装完openssl后，软链接也创建后，也可以按如下设置，使新版生效：（原理就是直接将openssl的动态链接库文件加入到linux的库文件目录里）
+
+[root@tao-ffy-v5-dns openssl-1.1.1g]# openssl version
+openssl: error while loading shared libraries: libssl.so.1.1: cannot open shared object file: No such file or directory
+
+[root@tao-ffy-v5-dns openssl-1.1.1g]# cp /usr/local/openssl/lib/libssl.so.1.1 /usr/lib
+lib/     lib64/   libexec/ 
+[root@tao-ffy-v5-dns openssl-1.1.1g]# cp /usr/local/openssl/lib/libssl.so.1.1 /usr/lib64/
+[root@tao-ffy-v5-dns openssl-1.1.1g]# openssl version
+openssl: error while loading shared libraries: libcrypto.so.1.1: cannot open shared object file: No such file or directory
+[root@tao-ffy-v5-dns openssl-1.1.1g]# cp /usr/local/openssl/lib/libcrypto.so.1.1 /usr/lib64/
+[root@tao-ffy-v5-dns openssl-1.1.1g]#
+

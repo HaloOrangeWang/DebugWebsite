@@ -1,0 +1,27 @@
+springboot项目中添加了字体等文件后，页面图标无法识别，模板使用的element ui 的图标库 。需要使用到woff 浏览器调试窗口报错如下：
+
+Failed to decode downloaded font:
+ http://localhost:8082/fonts/fontawesome-webfont.woff?v=4.4.0 OTS
+ parsing error: incorrect file size in WOFF header Failed to decode
+ downloaded font:
+ http://localhost:8082/fonts/fontawesome-webfont.ttf?v=4.4.0 OTS
+ parsing error: incorrect entrySelector for table directory
+
+解决方式添加maven插件，进行过滤
+
+<build>
+  <plugins> 
+    <plugin>
+     <groupId>org.apache.maven.plugins</groupId>
+     <artifactId>maven-resources-plugin</artifactId>
+     <configuration>
+          <nonFilteredFileExtensions>
+               <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+               <nonFilteredFileExtension>woff</nonFilteredFileExtension>
+               <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
+          </nonFilteredFileExtensions>
+     </configuration>
+    </plugin>
+  </plugins>
+</build>
+

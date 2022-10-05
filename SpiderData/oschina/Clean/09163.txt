@@ -1,0 +1,30 @@
+创建容器设置密码 安装 openssh-server 启动出错
+
+在容器内 使用 /usr/sbin/sshd -d 启动报错？
+
+[root@9d41c7f36c5e tmp]# /usr/sbin/sshd -d
+debug1: sshd version OpenSSH_7.4, OpenSSL 1.0.2k-fips  26 Jan 2017
+debug1: key_load_private: No such file or directory
+debug1: key_load_public: No such file or directory
+Could not load host key: /etc/ssh/ssh_host_rsa_key
+debug1: key_load_private: No such file or directory
+debug1: key_load_public: No such file or directory
+Could not load host key: /etc/ssh/ssh_host_ecdsa_key
+debug1: key_load_private: No such file or directory
+debug1: key_load_public: No such file or directory
+Could not load host key: /etc/ssh/ssh_host_ed25519_key
+sshd: no hostkeys available -- exiting.
+
+解决办法：
+
+# /usr/sbin/sshd-keygen -A
+# ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key
+# ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+
+再重新执行启动
+# /usr/sbin/sshd
+
+远程链接
+
+ssh root@ip -p 22
+

@@ -1,0 +1,51 @@
+本文讲述了Python使用pip安装报错：is not a supported wheel on this platform的解决方法。分享给大家供大家参考，具体如下：
+
+可能的原因1：安装的不是对应python版本的库，下载的库名中cp27代表python2.7,其它同理。
+
+可能的原因2：这个是我遇到的情况（下载的是对应版本的库，然后仍然提示不支持当前平台）
+
+在https://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy中，我下载到的numpy库文件名：
+
+numpy-1.10.4+mkl-cp27-cp27m-win32.whl
+
+使用pip安装(在命令行中):
+
+pip install numpy-1.10.4+mkl-cp27-cp27m-win32.whl
+
+报错：***  is not a supported wheel on this platform，通过在stackoverflow上的一个帖子成功解决问题。
+
+方法：在shell中输入
+
+import pip; print(pip.pep425tags.get_supported())
+
+可以获取到pip支持的文件名还有版本，我这里如下：
+
+>>import pip; print(pip.pep425tags.get_supported())
+[('cp27', 'none', 'win32'), ('py2', 'none', 'win32'), ('cp27', 'none', 'any'), ('cp2', 'none', 'any'), ('cp26', 'none', 'any'), ('cp25', 'none', 'any'), ('cp24', 'none', 'any'), ('cp23', 'none', 'any'), ('cp22', 'none', 'any'), ('cp21', 'none', 'any'), ('cp20', 'none', 'any'), ('py27', 'none', 'any'), ('py2', 'none', 'any'), ('py26', 'none', 'any'), ('py25', 'none', 'any'), ('py24', 'none', 'any'), ('py23', 'none', 'any'), ('py22', 'none', 'any'), ('py21', 'none', 'any'), ('py20', 'none', 'any')]
+
+通过这里可以发现上面下载的文件名格式是不支持的，修改为：numpy-1.10.4+mkl-cp27-none-win32.whl即可成功安装。
+
+其它的库也同理可以成功安装，不过也请注意库的依赖。
+
+（参考帖子网址：http://stackoverflow.com/questions/28107123/cannot-install-numpy-from-wheel-format?rq=1）
+
+补充：skimage库安装报错的情况
+
+同上述安装报错一样，笔者在本机win7+Python2.7.9环境下安装skimage库：scikit_image‑0.13.1‑cp27‑cp27m‑win32.whl
+
+报错如下图：
+
+使用import pip; print(pip.pep425tags.get_supported())命令，结果如下：
+
+此时将scikit_image‑0.13.1‑cp27‑cp27m‑win32.whl改为scikit_image-0.13.1-cp27-none-win32.whl
+
+再使用
+
+pip install scikit_image-0.13.1-cp27-none-win32.whl
+
+安装即可。
+
+更多关于Python相关内容感兴趣的读者可查看本站专题：《Python进程与线程操作技巧总结》、《Python数据结构与算法教程》、《Python函数使用技巧总结》、《Python字符串操作技巧汇总》、《Python入门与进阶经典教程》及《Python文件与目录操作技巧汇总》
+
+希望本文所述对大家Python程序设计有所帮助。
+

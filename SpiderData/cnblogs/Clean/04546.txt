@@ -1,0 +1,28 @@
+1、MySQL连接驱动问题
+
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: libmysqlclient.so.18: cannot open shared object file: No such file or directory
+
+处理：
+
+(venv) [root@promethus s14day22]# pip install pymysql
+
+(venv) [root@promethus s14day22]# cat s14day22/__init__.py 
+import pymysql
+pymysql.install_as_MySQLdb()
+(venv) [root@promethus s14day22]#
+
+2、数据连接地址
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 's14d22',
+        'USER': 'Adminddd123',
+        'PASSWORD': 'Sunny@123',
+        'HOST': 'www.sunny.com',
+        'PORT': '3306',
+    }
+}
+
+完成。
+

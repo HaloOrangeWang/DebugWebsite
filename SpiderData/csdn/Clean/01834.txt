@@ -1,0 +1,39 @@
+碰到这个问题很蹊跷，大家如遇到肯定像我一样认为是scapy安装的问题。
+
+问题：在执行python脚本（import scapy）的目录下创建了一个scapy.py名字的脚本，然后python ipscapy就报错（脚本无问题）。 
+ 更正问题：修改mv scapy.py abc.py问题解决。 
+ 报错信息： 
+ [root @localhost home]#python ipscan.py 
+ Traceback (most recent call last): 
+ File “ipscan.py”, line 5, in 
+ from scapy.all import traceroute 
+ File “/home/scapy.py”, line 5, in 
+ from scapy.all import traceroute 
+ ImportError: No module named all 
+ 问题原因： 
+ import scapy后执行脚本调用scapy模块中（默认自动加了.py后缀）优先找了当前目录的scap.py，因为两文件不一样（一个是我们引入别人写好的库文件，一个是我们自己创建的文件），所以就报错了。 
+  
+ 附：ipscan.py
+
+# -*- coding: utf-8 -*-
+import os,sys,time,subprocess
+import warnings,logging
+
+from scapy.all import traceroute
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
+
+domains = raw_input('Please input one or more IP/domain: ')
+print domains
+target = domains.split(' ')
+
+dport = [80]
+
+if len(target) >= 1 and target[0]!='':
+    res,unans = traceroute(target,dport=dport,retry=-2)
+    res.graph(target="> test.svg")
+    time.sleep(1)
+    subprocess.Popen("/usr/bin/convert test.svg test.png", shell=True)
+else:
+    print "IP/domain number of errors,exit"
+

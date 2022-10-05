@@ -1,0 +1,30 @@
+【代码】
+
+【报错】
+
+==================== RESTART: C:/Users/admin/Desktop/1.py ====================
+Traceback (most recent call last):
+  File "C:/Users/admin/Desktop/1.py", line 31, in <module>
+    fp = open("./"+ time.strftime("%Y-%m-%d %H:%M:%S") + " result.html",'wb')
+OSError: [Errno 22] Invalid argument: './2018-09-05 10:29:32 result.html'
+
+【解决思路】
+
+1.python IDLE中：open("./result.html",'wb')，成功
+
+2.去掉“%Y-%m-%d %H:%M:%S”中空格，仍报错
+
+3.修改“%Y-%m-%d %H:%M:%S”中‘:’ 为 ‘-’，成功—>冒号 ‘:’ 引起
+
+4.在python IDLE中，执行 time.strftime("%Y-%m-%d %H:%M:%S") 可成功，但open方法执行却不行？
+
+5.在Windows下，创建文件名带冒号的文件，再用open方法打开，结果：
+
+6.结论：Windows环境，不能创建文件名带英文冒号:的文件，所以open方法创建/打开文件失败
+
+【代码-修改后】
+
+【Ending】
+
+微信公众号“粒粒的测试笔记”
+

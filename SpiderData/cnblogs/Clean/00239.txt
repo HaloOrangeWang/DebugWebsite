@@ -1,0 +1,67 @@
+
+0x01 应用场景：
+
+使用rabbitmq的exchange模式，type为direct，消费端不需要向生产端返回结果no_ack=True
+
+其中某个consumer任务耗时较长（5min以上），结果consumer端出现如下报错：
+
+Exception in thread test:
+Traceback (most recent call last):
+  File "D:\Program Files (x86)\python\lib\threading.py", line 530, in __bootstrap_inner
+    self.run()
+  File "E:/A_WORK/eclipse/ccin/src/main.py", line 282, in run
+ channel.start_consuming()
+  File "D:\Program Files (x86)\python\lib\site-packages\pika-0.10.0-py2.7.egg\pika\adapters\blocking_connection.py", line 1681, in start_consuming
+ self.connection.process_data_events(time_limit=None)
+  File "D:\Program Files (x86)\python\lib\site-packages\pika-0.10.0-py2.7.egg\pika\adapters\blocking_connection.py", line 647, in process_data_events
+ self._flush_output(common_terminator)
+  File "D:\Program Files (x86)\python\lib\site-packages\pika-0.10.0-py2.7.egg\pika\adapters\blocking_connection.py", line 426, in _flush_output
+ raise exceptions.ConnectionClosed()
+ConnectionClosed
+
+网上查了半天，发现有人说是因为consumer耗时太长，导致product和consumer之间的heartbeat断链了，考虑修改配置文件中的heartbeat时间来规避这个问题。
+
+
+0x02 解决方法一：
+
+修改rabbitmq.config
+
+1  文件路径：
+
+file is %APPDATA%\RabbitMQ\rabbitmq.config.
+
+%APPDATA% usually expands to C:\Users\%USERNAME%\AppData\Roaming or similar.
+
+见rabbit安装文件夹下的readme.txt   ~~\rabbitmq_server-3.7.2\etc\README.txt
+
+2 修改 C:\Users\%USERNAME%\AppData\Roaming\RabbitMQ\rabbitmq.config文件（将rabbitmq.config.example重命名为rabbitmq.config）
+
+将 %% {heartbeat, 60}, 修改为 {heartbeat, 600}
+
+去掉%% 和末尾的逗号','  60秒修改为600秒，或自己定义的更长时间。
+
+3  使配置生效：
+
+cmd进入安装目录的sbin文件夹下
+
+******\rabbitmq_server-3.7.2\sbin>
+
+执行：rabbitmq-service.bat stop  停止服务
+
+rabbitmq-service.bat  install  重新安装服务，这时才会重新加载config文件
+
+rabbitmq-service.bat start  开启服务
+
+提示成功以后，再运行程序，发现就不会出现之前的异常了。
+
+
+0x03 解决方法二：
+
+在建立连接的时候就禁止心跳检测
+
+producer端和consumer端连接初始化的时候：
+
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', heartbeat_interval=0))
+
+　
+

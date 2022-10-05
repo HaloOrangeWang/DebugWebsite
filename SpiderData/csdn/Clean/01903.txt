@@ -1,0 +1,126 @@
+为了避免各种问题，请使用最新的2.7.13安装文件
+
+1、先设置好环境变量
+
+在path变量中设置好以下路径：
+
+C:\Python27\Scripts
+
+C:\Python27
+
+2、大部分报错问题都是因为库与库之间存在依赖关系
+
+matplotlib依赖dateutil和pyparsing，如果Python里面没有安装dateutil和pyparsing，那么后续使用matplotlib的时候很可能会遇到依赖问题。所以需要安装dateutil。
+
+进入下面网址，找到matplotlib，可以看到所需要的各种包的描述。
+
+Matplotlib, a 2D plotting library.
+
+Requires numpy, dateutil, pytz, pyparsing, cycler, setuptools, and optionally pillow, pycairo, tornado, wxpython, pyside, pyqt4, ghostscript, miktex, ffmpeg, mencoder, avconv, or imagemagick.
+
+所以上面这些包肯定是都需要有的，如果没有遇到问题，可能是因为代码中没有引用这些包而已；或者已经安装了。
+
+2.1、使用easy_install.exe来安装所需要依赖的包
+
+现在dateutil使用easy_install命令来安装，（easy_install会自己从网络上需要最新的合适的包来安装，所以不需要你自己去寻找和下载）
+
+只需要输入 easy_install python-dateutil 命令就可以。
+
+如果找不到easy_install 命令，要么是你的环境变量没有设置好，请参考1。要么是你的python包太老，没有预装easy_install，那就参考3，先安装easy_install
+
+3、安装easy_install.exe, 手动下载安装包到本地安装
+
+找到ez_setup.py文件，下载到本地E:\iso\VisualStudio2010\ （我是下载到这里，你自己就随意吧）
+
+在cmd窗口下面，输入：
+
+Python E:\iso\VisualStudio2010\ez_setup.py
+
+成功后，C:\Python27\Scripts\目录下会多了easy_install.exe
+
+4、使用easy_install.exe安装dateutil和pyparsing。。
+
+反正根据提示，缺啥就用easy_install安装啥，这个easy_install是按照关键字来搜索安装包的。
+
+easy_install python-dateutil
+
+easy_install pyparsing
+
+easy_install pip
+
+4.1、如果不用easy_install.exe安装，也可以使用pip通过本地安装或者网络安装
+
+使用pip安装 的命令是： pip install numpy
+
+如果要手动把包下载到本地再安装，请参考6
+
+5、把路径如：C:\Python27\Lib\site-packages\scipy\lib中的six.py six.pyc six.pyo三个文件拷贝到C:\Python27\Lib\site-packages目录下。
+
+6、使用下载到本地的whl来安装各种包
+
+在下面页面下载所对应的32bit或者64bit，区分python2.7还是python3的
+
+numpy-1.11.1+mkl-cp27-cp27m-win_amd64.whl
+
+pandas-0.18.1-cp27-cp27m-win_amd64.whl
+
+scipy-0.17.1-cp27-cp27m-win_amd64.whl
+
+matplotlib-1.5.2-cp27-cp27m-win_amd64.whl
+
+把上面这些需要的whl放到python的scripts目录下，然后用下面的命令来安装即可
+
+c:\Python27-x64\Scripts>
+
+pip install pandas-0.18.1-cp27-cp27m-win_amd64.whl
+
+importError&colon; DLL load failed when import matplotlib&period;pyplot as plt
+
+importError: DLL load failed when import matplotlib.pyplot as plt 出现这种情况的原因, 大多是matplotlib的版本与python ...
+
+import matplotlib&period;pyplot as plt出错
+
+>>>import matplotlib.pyplot as plt /usr/lib/python2.7/dist-packages/matplotlib/font_manager ...
+
+python库之matplotlib学习---关于坐标轴
+
+首先定·定义x, y创建一个figure import numpy as np import matplotlib.pyplot as plt x = np.linspace(-1, 1, 10) y ...
+
+python 3&period;5&period;2安装mysql驱动报错
+
+python 3.5.2安装mysql驱动报错 python 3.5.2安装mysql驱动时出现如下异常: [root@localhost www]# pip install mysql-connec ...
+
+Python selenium PO By&period;XPATH定位元素报错
+
+Python selenium PO  By.XPATH定位元素报错 如下代码经常报错: # 首页的“新建投放计划”按钮 new_ads_plan = (By.XPATH, "//*[tex ...
+
+Python基础中所出现的异常报错总结
+
+今天我们来探索python中大部分的异常报错 首先异常是什么,异常白话解释就是不正常,程序里面一般是指程序员输入的格式不规范,或者需求的参数类型不对应,不全等等. 打个比方很多公司年终送苹果笔记本,你 ...
+
+随机推荐
+
+0028 Java学习笔记-面向对象-Lambda表达式
+
+匿名内部类与Lambda表达式示例 下面代码来源于:0027 Java学习笔记-面向对象-(非静态.静态.局部.匿名)内部类 package testpack; public class Test1{ ...
+
+jquery和css自定义video播放控件
+
+下面介绍一下通过jquery和css自定义video播放控件. Html5 Video是现在html5最流行的功能之一,得到了大多数最新版本的浏览器支持.包括IE9,也是如此.不同的浏览器提供了不同的 ...
+
+Apache 编译安装
+
+# wget http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz  (此处我是直接用的下载好的包) # tar -zxvf httpd-2.2.9. ...
+
+MSSQL存储过程（好久的笔记，翻出来怀念下）
+
+语法结构: create proc 名称 参数列表 as 代码段 调用: exec 存储过程名称 参数列表 要点: .可以使用output修饰参数 .可以使用默认值,注意需要将最后的参数设置成默认值 ...
+
+Visual Studio如何删除多余的空行
+
+原文:Visual Studio如何删除多余的空行 如何在Visual  Studio中删除多余的空格: 适用于:Visual Studio2008 &2010 1.       Ctrl + ...
+
+WPF命令參数CommandParameter
+
+XAML代码例如以下:
+

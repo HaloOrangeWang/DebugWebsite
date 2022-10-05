@@ -1,0 +1,14 @@
+[root@localhost usr]# sh test.sh
+
+command not found
+
+-bash: cd: usr: No such file or directory
+
+这里碰到了一个问题，我用Xshell远程登录到服务器，直接可以执行我的一个脚本，这个脚本里有一些命令是在PATH路径下的。
+
+但是在Jenkins里面直接执行脚本却报错了，说是找不到这些命令，最后我在执行脚本前先export PATH = /home/....
+
+把PATH设置了一下，结果就执行成功了，不知道为什么 jenkins远程登录默认读不到PATH.
+
+还是出现找不到文件，修改如下：
+

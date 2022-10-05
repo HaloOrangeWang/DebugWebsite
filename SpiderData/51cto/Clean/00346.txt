@@ -1,0 +1,52 @@
+2021-03-26-19:54:13
+
+今天下午对世界疫情详情数据库进行模糊查询。
+
+首先要明确一点：使用模糊查询就会用到WHERE语句中的LIKE语句，主要说一下在使用 % 的时候要注意的点：
+
+在Python中%是一个格式化字符，所以如果需要使用%则需要写成%%。
+将在Python中执行的sql语句改为：
+sql = "SELECT * FROM table_test WHERE value LIKE '%%%%%s%%%%'" % test_value
+
+执行成功，print出SQL语句之后为：
+SELECT * FROM table_test WHERE value LIKE '%%public%%'
+
+Python在执行sql语句的时候，同样也会有%格式化的问题，
+
+仍然需要使用%%来代替%。因此要保证在执行sql语句的时候格式化正确。
+
+而不只是在sql语句（字符串）的时候正确。
+
+1 sql = " SELECT * FROM world WHERE continent LIKE '%%%%%s%%%%'"
+
+在Python解析第一次之后sql语句会变成这样：
+
+SELECT * FROM world WHERE continent LIKE '%%美洲%%'
+
+这时候字符串两边的百分号是两个，原来是四个，但是在执行sql语句的时候，Python还会再解析一次%，所以原始字符串需要四个百分号
+
+来表示一个百分号。
+
+
+在sql语句里是支持对变量的插入的，比如：
+
+1 sql_temp = "'"+c_name+"'"1 ql = "%s%%%%'" %continent
+
+
+总结几个sql常用语句：
+
+我们查询的时候经常需要用到排序以及数据包含和不包含的筛选条件：
+
+1  sql = 'SELECT province,city,confirm,heal,dead FROM details ' \
+2          'where update_time=(select update_time from details order by update_time desc limit 1) '\
+3           ' and city not in'
+
+按日期降序：
+
+1 sql = " SELECT * FROM world WHERE c_name LIKE '%%%%%s%%%%' order by dt desc "%c_name
+
+作者：​​靠谱杨​​​，
+    ​
+
+更多日常分享尽在我的VX公众号：小杨的挨踢IT生活
+

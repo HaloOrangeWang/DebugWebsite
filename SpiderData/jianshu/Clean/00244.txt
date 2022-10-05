@@ -1,0 +1,37 @@
+
+问题
+
+在使用mapsforge加载地图时报错：
+
+java.lang.IllegalArgumentException: Parse error for XML rendertheme
+
+解析文件报错。
+
+
+分析原因
+
+在debug环境下，测试没有问题。
+
+release打包混淆后出现报错。肯定是混淆的原因了
+
+本以为没加混淆忽略，赶紧加上
+
+-keep class org.mapsforge.** {*;}
+
+运行过后还是报错。
+
+去github官方文档找了半天没找到。最终在issues中找到
+
+
+解决办法
+
+增加如下配置
+
+-keep class org.mapsforge.** {*;}
+-dontwarn org.xmlpull.v1.**
+-keep class org.xmlpull.v1.** { *; }
+
+参考
+
+github-issues- "Parse error for XML rendertheme" after building with Proguard #1031
+

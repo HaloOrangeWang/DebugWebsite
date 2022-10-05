@@ -1,0 +1,98 @@
+1、删除虚拟环境时
+
+报错
+
+RemoveError: 'requests' is a dependency of conda and cannot be removed from conda's operating environment.
+
+解决办法
+
+conda update conda
+
+2、调用某些包时
+
+报错
+
+TypeError: __init__() got an unexpected keyword argument 'encoding'
+
+解决办法
+
+调用的包，版本有问题，一般是版本太高了，需要降低版本
+
+3、安装包时
+
+报错
+
+error: command 'gcc' failed with exit status 1
+
+解决办法
+
+CFLAGS=-stdlib=libc++ pip install package_name
+
+安装包PyYAML时
+
+报错
+
+Cannot uninstall 'PyYAML'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.
+
+解决办法
+
+pip install docker-py --ignore-installed PyYAML
+
+安装jupyter-plotly-dash后Jupyter报404错误
+
+解决办法
+
+conda install -c conda-forge jupyter-server-proxy
+jupyter serverextension enable jupyter_server_proxy  # jupyter-server-proxy服务器扩展在安装时没有自动启用，这是一个依赖项jupyterlab-dash
+
+在使用pandas_datareader时报错
+
+错误
+
+from pandas.compat import StringIO, bytes_to_str
+ImportError: cannot import name 'StringIO' from 'pandas.compat'
+
+原因及解决办法
+
+问题是pandas 0.25.0已经删除了pandas.compat。 需要将pandas的版本降为0.24.2
+
+使用plotly在不同的轴上绘制多个不同的Plotly饼图
+
+错误：
+
+ValueError: Invalid property specified for object of type plotly.graph_objs.Pie: 'xaxis'
+
+原因及解决办法
+
+在plotly中，subplots.make_subplots()方法不支持绘制做个子饼图，解决办法：使用普通绘制饼图的方法，在figure.data中通过参数domain，为不同的饼图指定相应的位置。具体实现方法，参见demo。
+
+8.使用Django过程中
+
+错误：
+
+TypeError: 'module' object is not iterable
+
+解决办法
+
+首先检查应用(app)下urls中的urlpatterns的拼写是否正确，然后其类型必须是数组--[]，不能是{}。
+
+flask的服务起不来
+
+错误：
+
+usage: manage.py [-?] {db,create_back_user,shell,runserver} ...
+
+解决办法：在pycharm运行flask程序时，会出现如上的错误，是因为pycharm没有给脚本添加runserver。在【Edit Configuration】中的【Parameters】一栏添加：runserver即可。
+
+flask做数据迁移
+
+错误：
+
+ERROR [root] Error: Target database is not up to date.
+
+解决办法
+
+python manage.py db stamp head  必须要先执行这一步
+python manage.py db migrate
+python manage.py db upgrade
+

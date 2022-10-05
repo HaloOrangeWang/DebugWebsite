@@ -1,0 +1,23 @@
+出错：局部变量XXX在定义前被引用
+
+如上在多次调用函数时使用返回的值bestThreshVal 时，提示local variable bestThreshVal referenced before assignment。 
+ 原因是，在这个被调用函数中，bestThreshVal 是在if 条件语句中得到的一个局部值，并返回。应该在for 循环外定义bestThreshVal 一个初值。
+
+如下简单例子： 
+ t = 2 
+ def printResult(name): 
+ if t== 3: 
+ print name 
+ t= 24 
+ printResult(“xiaoQiang”) 
+ 那么就会报如上的错误local variable ‘t’ referenced before assignment。
+
+原因：在python的函数中和全局同名的变量，如果你有修改变量的值就会变成局部变量，在修改之前对该变量的引用自然就会出现没定义这样的错误了，如果确定要引用全局变量，并且要对它修改，必须加上global关键字。 
+ t = 2 
+ def printResult(name): 
+ global t 
+ if t== 3: 
+ print name 
+ t= 24 
+ printResult(“xiaoQiang”)
+

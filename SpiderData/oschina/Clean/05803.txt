@@ -1,0 +1,66 @@
+写了一个往sqllite的某张表插入数据的程序，大致代码如下:
+
+class GameIdiom(object):
+	def __init__(self, id, idiom_id=None, all_word=None, play_time=None, game_id=None):
+		self.id = id
+		self.idiom_id = idiom_id
+		self.all_word = all_word
+		self.play_time = play_time
+		self.game_id = game_id
+	def isNext(self, first_word):
+		return self.all_word[len(self.all_word)-1] == first_word
+	def copyFromIdiom(self, idiom):
+		self.idiom_id = idiom.id
+		self.all_word = idiom.all_word
+....
+class IdiomDao(object):
+	def insertGameIdiom(self, gameIdiom):
+		self.con.execute("insert into game_idiom(id, idiom_id, all_word, play_time, game_id) values(?,?,?,?,?)",(gameIdiom.id,gameIdiom.idiom_id,gameIdiom.all_word,gameIdiom.play_time,gameIdiom.game_id,))
+...
+class Game(object):
+    gameIdiom = GameIdiom(id=uuid4(),play_time=time(),game_id=self.id)
+    self.idiomDao.insertGame(self)
+
+执行时报错：
+
+sqlite3.InterfaceError: Error binding parameter 0 - probably unsupported type
+
+因为是第一次使用python往sqllite插入数据，起初怀疑是不是使用这种占位符的方式来插入有问题，上网上找了半天无解，后面想是不是值有什么问题导致的，于是把要插入的对象中的所有值打印了来，如下：
+
+def insertGameIdiom(self, gameIdiom):
+		print('\n'.join(['%s:%s' % item for item in gameIdiom.__dict__.items()]))
+		self.con.execute("insert into game_idiom(id, idiom_id, all_word, play_time, game_id) values(?,?,?,?,?)",(gameIdiom.id,gameIdiom.idiom_id,gameIdiom.all_word,gameIdiom.play_time,gameIdiom.game_id,))
+
+打印出的信息如下：
+
+id:50415712-8e3a-49bc-bb51-97fc58ead818
+idiom_id:fc947044-4258-4f1f-86c1-03d1f7a08c43
+all_word:一望无际
+play_time:1517109225.0413642
+game_id:0c4ea9dc-470d-4ac4-af08-492d51bd68dc
+
+然后把这些值手工设置到GameIdiom类中，在命令行调用insertGameIdiom方法来测试看是不是值有问题，如下：
+
+gameIdiom = GameIdiom('50415712-8e3a-49bc-bb51-97fc58ead818','fc947044-4258-4f1f-86c1-03d1f7a08c43','一望无际',1517109225.0413642,'0c4ea9dc-470d-4ac4-af08-492d51bd68dc')
+idiomDao.insertGameIdiom(gameIdiom)
+
+结果发现没有问题，这说明不是对象中的值的问题，这是再仔细看异常信息发现关键字为" probably unsupported type",于是想到会不会是参数类型的问题，于是在代码中加入打印类型的代码，如下：
+
+def insertGameIdiom(self, gameIdiom):
+		print('\n'.join(['%s:%s' % item for item in gameIdiom.__dict__.items()]))
+		print(type(gameIdiom.id))
+		self.con.execute("insert into game_idiom(id, idiom_id, all_word, play_time, game_id) values(?,?,?,?,?)",(gameIdiom.id,gameIdiom.idiom_id,gameIdiom.all_word,gameIdiom.play_time,gameIdiom.game_id,))
+
+再执行，打印如下信息：
+
+id:5e5326dd-6d46-4526-9d30-ec97177d748d
+idiom_id:fc947044-4258-4f1f-86c1-03d1f7a08c43
+all_word:一望无际
+play_time:1517133390.0591135
+game_id:4daa77d1-fd70-4bcb-865e-8b4adcab7957
+<class 'uuid.UUID'>
+
+发现原来id这个字段的类型为uuid.UUID类型，而数据库中对应的类型为varchar型，所以就报错了，解决方式很简单了，就是在传入参数时把uuid转为str就好了，如下：
+
+gameIdiom = GameIdiom(id=str(uuid4()),play_time=time(),game_id=self.id)
+

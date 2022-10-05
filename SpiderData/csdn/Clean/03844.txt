@@ -1,0 +1,33 @@
+
+基于Ubuntu的zsh: command not found: python错误简单解决方案
+
+
+一、在Ubuntu输入下面的命令查看python版本时出现“zsh: command not found: python”错误
+
+python --version
+
+
+二、博主就开始排查是否之前已经成功安装python，复制下面的命令运行在Ubuntu运行，然后发现之前系统确实已经安装了python。
+
+ls -l /usr/bin | grep python
+
+
+三、那么就说明python并不是命令字符，查找许多资料发现应该使用下面的命令进行查看Ubuntu的python版本。
+
+python3 --version
+
+
+四、但是博主已经习惯使用python命令字符，因此必须重命名此字符，因此回到根目录使用下面的命令重命名python3命令字符。注意：完成下面操作之后，使用python和python3命令字符效果相同，不存在python3失效。
+
+先回到根目录（必要，否则会报错“zsh: bad assignment”）
+
+cd ~
+
+重命名python3命令字符成python
+
+alias python='python3'
+
+使用python命令字符就成功实现
+
+python --version
+

@@ -1,0 +1,61 @@
+
+背景
+
+下载Skywalking源码，导入idea进行编译打包，
+
+执行命令
+
+mvn clean compile '-Dmaven.test.skip=true'
+
+编译时报错
+
+[ERROR] Failed to execute goal net.alchim31.maven:scala-maven-plugin:4.3.1:compile (default-cli) on project apm-finagle-6.25.x-plugin: Execution default-cli of goal net.alchim31.maven:s
+
+cala-maven-plugin:4.3.1:compile failed: An API incompatibility was encountered while executing net.alchim31.maven:scala-maven-plugin:4.3.1:compile: java.lang.NoSuchMethodError: org.fusesource.jansi.AnsiConsole.wrapOutputStream(Ljava/io/OutputStream;)Ljava/io/OutputStream;
+
+[ERROR] -----------------------------------------------------
+
+[ERROR] realm =    plugin>net.alchim31.maven:scala-maven-plugin:4.3.1
+
+[ERROR] strategy = org.codehaus.plexus.classworlds.strategy.SelfFirstStrategy
+
+[ERROR] urls[0] = file:/D:/soft/apache-maven-3.8.4/repository/net/alchim31/maven/scala-maven-plugin/4.3.1/scala-maven-plugin-4.3.1.jar
+
+[ERROR] urls[1] = file:/D:/soft/apache-maven-3.8.4/repository/org/apache/maven/maven-builder-support/3.3.9/maven-builder-support-3.3.9.jar
+
+[ERROR] urls[2] = file:/D:/soft/apache-maven-3.8.4/repository/com/google/guava/guava/18.0/guava-18.0.jar
+
+
+解决方法
+
+问题原因：可能是maven的版本与scala-maven-plugin版本不一致导致
+
+解决方法：使用mvnw命令进行编译打包
+
+在Skywalking项目的根目录下执行
+
+./mvnw clean package-DskipTests
+
+项目的根目录下有mvnw命令
+
+mvnw是Maven Wrapper的缩写。因为我们安装Maven时，默认情况下，系统所有项目都会使用全局安装的这个Maven版本。但是，对于某些项目来说，它可能必须使用某个特定的Maven版本，这个时候，就可以使用Maven Wrapper，它可以负责给这个特定的项目安装指定版本的Maven，而其他项目不受影响。
+
+
+其他编译问题
+
+之后再编译遇到gateway-1.x-plugin，gateway-2.x-plugin报找不到类，由于用不到这两个插件，删除之后重新编译。
+
+gateway-3.x-plugin  test目录下找不到类，删除test，重新编译打包。
+
+Skywalking 本地编译打包挺不顺利的折腾了两天，希望帮助到其他人。
+
+还有一个需要注意的地方，编译打包的时候需要执行以下两个命令，加载子模块进来，否则会编译不通过报找不到类，具体参考最下面的教程。
+
+git submoduleinit
+
+git submodule update
+
+参考资料
+
+Skywalking的编译打包  https://blog.csdn.net/smooth00/article/details/106921934
+

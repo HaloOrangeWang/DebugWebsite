@@ -1,0 +1,28 @@
+错误一：error: (-215) !empty() in function cv::CascadeClassifier::detectMultiScale
+
+一般为xml（比如分类器）文件路径出错，建议参考网上路径
+
+错误二：Python openCV：error:(-215)scn == 3 || scn ==4 in function cv::cvtColor
+
+两种情况:
+
+1、读取图片冲突，比如读取图片image = cv2.imread("1.png",0)，读取的是灰度图，如果再转换灰度图ycrcb = cv2.cvtColor(img, cv2.COLOR_BGR2YCR_CB)则会出现报错
+
+2、读入的图像没有分配空间，比如以opencv打开摄像头时，如果检测到某帧图像为空，或者opencv读取图片的路径有误（不能读取图片），也会出现该报错。
+
+错误三：ValueError: not enough values to unpack (expected 3, got 2)
+
+多为输入或者输出参数数量不一致导致，比如我的错误是突然出现的，以前不报错
+
+把_,contours, hierarchy = cv2.findContours(skin, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)改为contours, h = cv2.findContours(skin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)就不报错了，
+
+报错的原因是因为.findContours函数，opencv3是三个返回值，opencv2是两个返回值，
+
+但是自己为什么突然报错，猜测可能跟我重装了anaconda有关系。
+
+错误四：想以摄像头拍摄，但是只显示一张图片，不显示视频，有可能是cv2.waitkey(0)出错，改为其他如cv2.waitkey(0)即可．
+
+错误五：cv2.error: OpenCV(4.1.0) /io/opencv/modules/imgproc/src/color.cpp:182: error: (-215:Assertion failed) !_src.empty() in function 'cvtColor'
+
+表示读入图片出错，检查下摄像头能否正常驱动、打开，读入图片等等，自己报错是因为，把摄像头插在usb分线上会报错，直接插在usb口上不会报错。
+

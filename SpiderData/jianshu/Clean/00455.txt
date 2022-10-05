@@ -1,0 +1,39 @@
+FBRetainCycleDetector编译报错：Cannot initialize a parameter of type 'id<NSCopying> _Nonnull' with an rvalue of type 'Class'
+
+解决方法：
+
+在Podfile的末尾添加这个：
+
+post_install do|installer|  find_and_replace("Pods/FBRetainCycleDetector/FBRetainCycleDetector/Layout/Classes/FBClassStrongLayout.mm", "layoutCache[currentClass] = ivars;", "layoutCache[(id)currentClass] = ivars;")
+
+end
+
+deffind_and_replace(dir, findstr, replacestr)
+
+Dir[dir].eachdo|name|
+
+FileUtils.chmod("+w",name)#add
+
+text = File.read(name)
+
+replace = text.gsub(findstr,replacestr)
+
+iftext != replace
+
+puts"Fix: "+ name
+
+File.open(name,"w") { |file| file.puts replace }
+
+STDOUT.flush
+
+end
+
+end
+
+Dir[dir +'*/'].each(&method(:find_and_replace))
+
+end
+
+
+再重新pod
+

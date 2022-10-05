@@ -1,0 +1,346 @@
+
+异常处理
+
+
+1. AssertionError:断言语句(asseert)失败
+
+断言语句，当assert这个关键字后面的条件为假的时候，程序将停止并抛出AssertionError异常。assert语句一般是在测试程序的时候用于在代码中置入检查点：
+
+>>>my_list = ['abc']
+>>>assert len(my_list) > 0
+>>>my_list.pop()
+>>>assert len(my_list) < 0
+---------------------------------------------------------------------------
+AssertionError                            Traceback (most recent call last)
+<ipython-input-1-4eb1eb3caecf> in <module>
+      2 assert len(my_list)>0
+      3 my_list.pop()
+----> 4 assert len(my_list)<0
+
+AssertionError:
+
+
+2.AttributeError：尝试访问未知的对象属性
+
+当试图访问的对象属性不存在时抛出的异常：
+
+>>>my_list = []
+>>>my_list.gong
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-2-52d76234244a> in <module>
+      1 my_list = []
+----> 2 my_list.gong
+
+AttributeError: 'list' object has no attribute 'gong'
+
+
+3.indexError：索引超出序列的范围
+
+在使用序列的时候就常常会遇到indexError异常，原因是检索超出序列范围的内容
+
+>>>my_list = [1,2,3]
+>>>my_list[3]
+---------------------------------------------------------------------------
+IndexError                                Traceback (most recent call last)
+<ipython-input-3-92a701105bdc> in <module>
+      1 my_list = [1,2,3]
+----> 2 my_list[3]
+
+IndexError: list index out of range
+
+
+4.KeyError:字典中查找一个不存在的关键字
+
+当试图在字典中查找一个不存在的关键字时就会引发KeyError异常，因此建议使用dict.get()方法：
+
+>>>my_dict = {"one":1,"two":2,"three":3}
+>>>my_dict["one"]
+1
+>>>my_dict["four"]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+<ipython-input-5-43293595ce4e> in <module>
+----> 1 my_dict["four"]
+
+KeyError: 'four'
+
+
+5.NameError:尝试访问一个不存在的变量
+
+当尝试访问一个不存在的变量时，Python会抛出一个NameError异常
+
+>>>gong
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-6-bd8a354c4776> in <module>
+----> 1 gong
+
+NameError: name 'gong' is not defined
+
+
+6.OSError:操作系统产生的异常
+
+OSError顾名思义就是操作系统产生的异常，像打开一个不存在的文件会引发FileNotFoundError,而这个FileNotFoundError就是OSError的子类。
+
+
+7.SyntaxError：Python的语法错误
+
+如果遇到SyntaxError是Python的语法错误，这时Python的代码并不能继续执行。
+
+>>>print'gong'
+---------------------------------------------------------------------------
+SyntaxError: invalid syntax
+
+
+8.TypeError:不同类型间的无效操作
+
+有些类型不同是不能相互进行计算的，否则会抛出TypeError异常:
+
+>>>1 + "1"
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-8-b780703cc5f9> in <module>
+----> 1 1 + "1"
+
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+
+
+9.ZeroDivisionError:除数为零
+
+地球人都知道除数不能为0，所以除以零就会引发ZeroDivisionError异常:
+
+>>>5/0
+---------------------------------------------------------------------------
+ZeroDivisionError                         Traceback (most recent call last)
+<ipython-input-9-0106664d39e8> in <module>
+----> 1 5/0
+
+ZeroDivisionError: division by zero
+
+
+异常处理
+
+
+try/except
+
+异常捕捉可以用try/except语句。
+ 
+ 举个栗子：
+
+while True:
+    try:
+        x = int(input("please input a number:"))
+        break
+    except ValueError:
+        print("your input is not a number ,please input again!")
+
+>>> please input a number:a
+>>> your input is not a number ,please input again!
+>>> please input a number:1
+
+一个 try 语句可能包含多个except子句，分别来处理不同的特定的异常。最多只有一个分支会被执行。
+
+>> import sys
+
+>> try:
+>>    f = open("myfile.txt")
+>>    s = f.readline()
+>>    i = int(s.strip())
+>> except OSError as err:
+>>    print("OS error: {0}".format(err))
+>> except ValueError:
+>>    print("Could not conver data to an integer.")
+>> except:
+>>    print("Unexpect error:",sys.exc_info()[0])
+
+另外，当需要使用这种可以忽略异常名称的用法时，必须将其放置在最后一位，否则程序会报错：
+
+import sys
+
+try:
+    f = open("myfile.txt")
+    s = f.readline()
+    i = int(s.strip())
+except:
+    print("Unexpect error:",sys.exc_info()[0])
+except OSError as err:
+    print("OS error: {0}".format(err))
+except ValueError:
+    print("Could not conver data to an integer.")
+
+>>> SyntaxError: default 'except:' must be last
+
+一个except子句可以同时处理多个异常，这些异常常被放在一个括号里称为一个元组，例如：
+
+except (RuntimeError, TypeError, NameError):
+    pass
+
+
+try/except…else
+
+try/except语句还有一个可选的else子句，如果使用这个子句，那么必须放在所有的except子句之后。else子句将在try子句没有发生任何异常的时候执行。
+ 以下实例在 try 语句中判断文件是否可以打开，如果打开文件时正常的没有发生异常则执行 else 部分的语句，读取文件内容：
+
+try:
+    a = 'test.txt'
+    f = open(a,'r')
+except IOError:
+    print("cannot open",a)
+else:
+    print(a,'has',len(f.readlines()),'lines')
+    f.close()
+
+使用 else 子句比把所有的语句都放在 try 子句里面要好，这样可以避免一些意想不到，而 except 又无法捕获的异常。
+
+异常处理并不仅仅处理那些直接发生在 try 子句中的异常，而且还能处理子句中调用的函数（甚至间接调用的函数）里抛出的异常。例如:
+
+>>>def this_fails():
+        x = 1/0
+   
+>>> try:
+        this_fails()
+    except ZeroDivisionError as err:
+        print('Handling run-time error:', err)
+   
+Handling run-time error: int division or modulo by zero
+
+
+try-finally语句
+
+try-finally语句无论是否发生异常都将执行最后的代码。
+ 
+ 无论发生什么错误，finally内的程序一定会被执行。
+ 举个栗子：
+
+try:
+    runoob()
+except AssertionError as err:
+    print(err)
+else:
+    try:
+        with open('file.log') as file:
+            read_data = file.read()
+    except FileNotFoundError as fnf_error:
+            print(fnf_err)
+finally:
+    print('我永远都会执行')
+    
+>>> 我永远都会执行
+>>> name 'runoob' is not defined
+
+#当定义了runoob函数后，再次执行该函数：
+def runoob():
+    print("go go go")
+ 
+>>> go go go
+>>> 我永远都会执行
+>>> NameError: name 'fnf_err' is not defined
+
+
+抛出异常
+
+Python使用raise语句抛出一个指定的异常，即可以自定义异常出发的情况。
+ raise语法如下：
+
+raise[Exception [,args,[,traceback]]]
+
+举个栗子：
+ 当x>5时，就抛出异常
+
+x = 10
+if x>5:
+    raise Exception('x 不能大于5.x的值为：{}'.format(x))
+
+>>> Exception: x 不能大于5.x的值为：10
+
+raise 唯一的一个参数指定了要被抛出的异常。它必须是一个异常的实例或者是异常的类（也就是 Exception 的子类）。
+
+如果你只想知道这是否抛出了一个异常，并不想去处理它，那么一个简单的 raise 语句就可以再次把它抛出.
+
+try:
+    a  = 'file.txt'
+    if a == 'file.txt':
+        raise NameError("filename is error")
+except NameError:
+    print('an except flew by!')
+    raise
+
+>>> an except flew by!
+>>> NameError: filename is error
+
+这里，因为a等于‘file.txt’条件触发，所以执行了raise函数，而raise函数触发了NameError报错，所以，函数except会执行，从而打印“an except flew by！”，并且，riase的触发的打印也会同时执行。NameError: filename is error。
+ 以上例子不管 try 子句里面有没有发生异常，finally 子句都会执行。
+
+如果一个异常在 try 子句里（或者在 except 和 else 子句里）被抛出，而又没有任何的 except 把它截住，那么这个异常会在 finally 子句执行后被抛出。
+
+下面是一个更加复杂的例子（在同一个 try 语句里包含 except 和 finally 子句）:
+
+def divide(x,y):
+    try:
+        result = x/y
+    except ZeroDivisionError:
+        print("division by zero!")
+    else:
+        print("result is",result)
+    finally:
+        print("excuting finally clause")
+
+>>> divide(1,2)
+>>> result is 0.5
+>>> excuting finally clause
+
+>>> divide(2,0)
+>>> division by zero!
+>>> excuting finally clause
+
+>>> divide("2,","0")
+>>> TypeError: unsupported operand type(s) for /: 'str' and 'str'
+
+
+用户自定义异常
+
+用户也可以通过创建一个新的异常类来拥有自己的异常。异常类继承来自Exception类，可以直接继承，或者间接继承。
+ 举个栗子：
+
+class MyError(Exception):
+    def __init__(self,value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+try:
+    raise MyError(2*2)
+except MyError as e:
+    print('My exception occurred, value:',e.value)
+
+>>> My exception occurred, value: 4
+
+在这个例子中，类Exception默认的__init__()被覆盖。。
+ 当创建一个模块有可能抛出多种不同的异常时，一种通常的方法时为这个包建立一个基础异常类，然后基于这个基础类为不同的错误情况创建不同的子类。
+
+class Error(Exception):
+    pass
+
+class InputError(Error):
+    def __init__(self,expression,message):
+        self.expression = expression
+        self.message = message
+    def __str__(self):
+        return repr(self.message)
+
+class TransitionError(Error):
+    def __init__(self,previous,next,message):
+        self.previous = previous
+        self.next = next
+        self.message = message
+    def __str__(self):
+        return repr(self.message)
+
+>>> raise InputError(2,2)
+>>> InputError: 2
+>>> raise TransitionError(2,2,3)
+>>> TransitionError: 3
+
+大多数的异常的名字都以"Error"结尾，就跟标准的异常命名一样。
+

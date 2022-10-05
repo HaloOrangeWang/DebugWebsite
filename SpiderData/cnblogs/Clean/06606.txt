@@ -1,0 +1,32 @@
+最近在解决TensorFlow模型重新导入时遇到下面这个问题，发现网上很多解决办法都在误导，其实报错已经很明显说明问题的根源，只是我们不一定找到问题的根源。报错显示 不能在快照中找到 对应的键值。
+
+报错信息：
+
+tensorflow\tensorflow\core\framework\op_kernel.cc:1318] OP_REQUIRES failed at save_restore_v2_ops.cc:184 : Not found: Key Variable not found in checkpoint
+Traceback (most recent call last):
+
+saver.restore(sess, kpt.model_checkpoint_path)
+  File "D:\Program Files\Develop\Python\Anaconda3\envs\python2\lib\site-packages\tensorflow\python\training\saver.py", line 1802, in restore
+    {self.saver_def.filename_tensor_name: save_path})
+  File "D:\Program Files\Develop\Python\Anaconda3\envs\python2\lib\site-packages\tensorflow\python\client\session.py", line 900, in run
+    run_metadata_ptr)
+  File "D:\Program Files\Develop\Python\Anaconda3\envs\python2\lib\site-packages\tensorflow\python\client\session.py", line 1135, in _run
+    feed_dict_tensor, options, run_metadata)
+  File "D:\Program Files\Develop\Python\Anaconda3\envs\python2\lib\site-packages\tensorflow\python\client\session.py", line 1316, in _do_run
+    run_metadata)
+  File "D:\Program Files\Develop\Python\Anaconda3\envs\python2\lib\site-packages\tensorflow\python\client\session.py", line 1335, in _do_call
+    raise type(e)(node_def, op, message)
+tensorflow.python.framework.errors_impl.NotFoundError: <exception str() failed>
+
+问题分析：报错显示 不能在快照中找到 对应的键值，说明有地方定义变量出现了问题，可能是路径出错了，不能找到文件，也可能是变量问题，在模型中出现未定义变量名，具体问题需要具体分析。
+
+解决办法：
+
+1.文件路径错误，找不到对应的文件，在使用前添加检查
+
+2.查看模型里面的具体信息，详细查看变量和数据是否一致。
+
+print_tensors_in_checkpoint_file(save_dir + "linermodel.cpkt", None, True, True)
+
+本次是因为我在存入模型时设置了两个变量参数，在重新导入时，这个两个变量没有对应变量接收导致。在重新导入前设置好两个变量参数，成功导入模型。
+

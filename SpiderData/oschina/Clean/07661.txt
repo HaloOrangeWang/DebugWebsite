@@ -1,0 +1,27 @@
+
+说明：
+
+因为很多测试环境在这个Ubuntu系统上装着，却由于虚拟服务器的重启、断电，每次Ip发生变化，就得更新环境，所以需要把该环境的ip配置成静态的，一劳永逸。
+
+根据以往配置Ubuntu静态ip的经验，直接 vi /etc/network/interfaces 在该文件下配置了静态ip，重置网络后发现并没有生效
+
+所以查了ubuntu版本，是18.04，然后百度，发现“ubuntu从17.10开始，已放弃在/etc/network/interfaces里固定IP的配置，即使配置也不会生效，而是改成netplan方式 ，配置写在/etc/netplan/01-netcfg.yaml或者类似名称的yaml文件里”，所以根据查到的方法进行配置，结果遇到好多报错，差点吐血，这里记下自己遇到的报错
+
+1、刚开始的配置如下：在执行netplan apply发生报错信息Invalid YAML at //etc/netplan/01-netcfg.yaml line 11 column 11: mapping values are not allowed in this context
+
+解决办法：yaml是层次结构，需要缩进，冒号(:)表示字典，连字符(-)表示列表，冒号出现的后面一定要空一格
+
+2、冒号后添加空格后（如下图）再执行netplan apply又报错：Invalid YAML at //etc/netplan/01-netcfg.yaml line 11 column 6: did not find expected key
+
+解决办法：nameservers应该和gateway4一样是第四层，nameservers后的addresses应该是第五层
+
+正确的层数如下：
+
+3、按照上面的办法解决后如下图执行netplan apply又报错：Error in network definition //etc/netplan/01-netcfg.yaml line 8 column 16: expected scalar
+
+解决办法：gateway4的地址没有中括号，修改后重启网络服务就正常了（netplan apply）
+
+所以正确的配置格式应该如下：这样就成功配置了静态ip
+
+我没遇到的报错：
+

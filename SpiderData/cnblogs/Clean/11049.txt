@@ -1,0 +1,22 @@
+原文链接：https://www.cnblogs.com/harrymore/p/15465053.html
+
+
+1. 报错
+
+使用python3本地安装pymmseg-cpp或者直接使用pip安装，一直报以下错误：
+
+error in pymmseg setup command: use_2to3 is invalid.
+
+
+2. 原因及解决
+
+后面看这个项目的描述，原来是一个中文分词的库，一开始是用C++写的并提供给Ruby用的，后面作者又写了python的接口，不过支持的版本一直在python 2.5+，于是在python3的版本进行安装的时候，会在setuptools里的setup函数里增加一个use_2to3=True的参数进行转换。
+
+但是setuptools>=58的版本是不支持这个参数了（黑人问号），于是需要把版本降低，小于58的最后一个版本是57.5.0，pip降一下就可以了：
+
+pip install setuptools==57.5.0
+
+然后就可以重新安装库了。
+
+（完）
+

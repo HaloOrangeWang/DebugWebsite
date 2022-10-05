@@ -1,0 +1,38 @@
+最近折腾了下centos7，发现按正常方法安装python3.7后面会出现各种操蛋的问题。
+
+主要的问题有三个,openssl版本过低，'_ctypes'缺失，以及安装后sqlite3缺失。下面我会贴出我的安装流程，解决的方法都在里面。
+
+首先安装openssl，我这里选择yum，方法不限，要注意的地方是版本要1.02以上。
+
+yum install openssl
+
+yum install openssl-devel
+
+然后装一个新包libffi-devel，这是python3.7需要的，不然会报错ModuleNotFoundError: No module named '_ctypes'。
+
+yum install libffi-devel -y
+
+这两步结束就可以正常安装python3.7了，流程大同小异，主要的区别在末尾配置的时候需要加上--with-ssl，流程我就贴我自己的。
+
+建立空文件夹
+
+mkdir /usr/local/python3
+
+解压，进入目录，安装python3 （要注意如果你的ssl也是指定目录安装的 --with要跟上路径）
+
+tar -xvJf  Python-3.6.2.tar.xz
+
+cd Python-3.6.2
+
+./configure --prefix=/usr/local/python3 --with-ssl
+
+make && make install
+
+最后创建软连接
+
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+
+ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+
+安装sqlite-devel
+

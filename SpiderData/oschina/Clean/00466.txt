@@ -1,0 +1,28 @@
+安装hue时，make apps 编译报错 ："Error: must have python development packages for 2.6 or 2.7. Could not find Python.h. Please install python2.6-devel or python2.7-devel"。 Stop。
+
+原因：排查最终原因是，python等某些依赖未安装/未安装好。
+
+　　  依赖未安装的原因，是配置了本地yum源。
+
+解决方法：
+
+可能是本地yum源配置的原因，
+
+进入该目录： /etc/yum.repos.d/
+
+将原来配置的本地文件localimp.repo重命名，然后备份：
+
+mv localimp.repo localimp22222.repo.bak
+
+然后重新安装hue需要的依赖（这个安装的命令可以多执行几遍，确保所有依赖都安装完毕）：
+
+yum -y install ant asciidoc cyrus-sasl-devel cyrus-sasl-gssapi cyrus-sasl-plain gcc gcc-c++ krb5-devel libffi-devel libxml2-devel libxslt-devel make  mysql mysql-devel openldap-devel python-devel sqlite-devel gmp-devel
+
+发现其又安装了好多依赖程序。
+
+然后删除hue的程序目录：  /export/servers/hue-3.9.0-cdh5.14.0/
+
+重新减压hue，配置hue.ini（或直接拷贝原来配置好的文件过来）
+
+然后进入目录  /export/servers/hue-3.9.0-cdh5.14.0/ ， 重新编译：make apps       成功！
+

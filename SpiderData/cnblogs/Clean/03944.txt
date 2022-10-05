@@ -1,0 +1,30 @@
+有小伙伴在群里边反映说在使用Scrapy的时候，发现创建项目一切顺利，但是在执行Scrapy爬虫程序的时候却出现下列报错：“No module named win32api”，如下图所示，但是不知道怎么破，今天就这个问题讲解一下解决方案。
+
+出现这个报错是因为在Windows下我们缺少一个包，叫pypiwin32，这个报错一般只是在Windows下出现。很多小伙伴看到“No module named win32api”，于是乎便想着直接输入安装命令“pip install win32api”，结果系统给出下图提示：
+
+“Could not find aversion that satisfies the requirement win32api (from versions: ) No matchingdistribution found for win32api”。
+
+原来是没有找对安装包，正确的姿势是安装pypiwin32才是，输入安装命令“pip install pypiwin32”，结果如下图所示：
+
+小伙伴们又傻眼了，What???
+
+再尝试从豆瓣源上进行下载该库，结果如下图所示：
+
+还是报错，确实是好尴尬。
+
+接下来就该求助Python包网站https://www.lfd.uci.edu/~gohlke/pythonlibs/，里边的Python包专门用于Windows下的安装的。在网页中找到pypiwin32安装包，然后选择本机Python对应版本和电脑系统位数的安装包，小编的电脑是64位的，而且Python版本是Python3.4，所以下载的包如下图红色框框所示。
+
+下载之后，将安装包放到site-packages文件夹下，如下图所示。
+
+之后执行安装命令“pip install pywin32-223.1-cp34-cp34m-win_amd64.whl”，如下图所示，显示“pywin32-223.1-cp34-cp34m-win_amd64.whlis not a supported wheel on this platform.”，无支持的平台。
+
+此时仍需要get一个小技巧，之前在Scrapy安装的问题总结一文中也有提及，这里再次借助这个方法进行实现，直接将.whl改为.zip，尔后进行解压即可，输入“pip list”进行查看。
+
+可以看到pywin32已经在里边了，并不是pypiwin32，怀着试一试的心态，再次执行爬虫命令，可以看到不再报这个错误了，竟然解决了这个问题。PS：因为爬虫程序的主题文件还没有任何的逻辑实现，所以返回的pipelines数据为空。
+
+最后安利一个小技巧。最近有的小伙伴在群里问，如果不小心没有记住Scrapy爬虫项目的名字，又不想去Pycharm中进行查看爬虫主体文件，该肿么办？这里介绍一个小技巧，可以帮助你找到爬虫的名字。直接在命令行中输入“scrapy list”即可看到爬虫的名字，如下图所示。
+
+到这里，关于“No module namedwin32api”的报错问题已经得到了解决，下次小伙伴们可以直接输入安装命令“pip install pywin32”即可，如果有报错的话，可以再尝试文中的解决问题的思路和方法。
+
+不过全文中的解决问题的思路和方法，小伙伴们日后都可以借鉴一下，希望对的大家的学习有帮助。
+

@@ -1,0 +1,28 @@
+
+问题描述
+
+在mac上使用过 brew upgrade 升级过软件，导致过一个问题：brew 安装的 python 为 python3，而python2 默认是在 python@2 目录里的。同时在目录 /usr/local/opt/ 里的 python 链接也是指向了 python3，导致很多不通过 brew 安装的 默认依赖 python2 运行的软件报错，如 YouCompleteMe 就会表示找不到。
+
+$ cd /usr/local/opt
+$ ls -al python*
+lrwxr-xr-x  1 long  admin   7  4 13 10:30 python -> python3
+lrwxr-xr-x  1 long  admin  27  4  3 18:52 python2 -> ../Cellar/python@2/2.7.14_3
+lrwxr-xr-x  1 long  admin  22  4  3 18:49 python3 -> ../Cellar/python/3.6.5
+lrwxr-xr-x  1 long  admin  27  4  3 18:52 python@2 -> ../Cellar/python@2/2.7.14_3
+lrwxr-xr-x  1 long  admin  22  4  3 18:49 python@3 -> ../Cellar/python/3.6.5
+
+
+解决办法
+
+只要手动设置一下 python 指向 python@2 即可。
+
+$ cd /usr/local/opt
+$ ls -al python*
+lrwxr-xr-x  1 long  admin   7  4 13 10:30 python -> python2
+lrwxr-xr-x  1 long  admin  27  4  3 18:52 python2 -> ../Cellar/python@2/2.7.14_3
+lrwxr-xr-x  1 long  admin  22  4  3 18:49 python3 -> ../Cellar/python/3.6.5
+lrwxr-xr-x  1 long  admin  27  4  3 18:52 python@2 -> ../Cellar/python@2/2.7.14_3
+lrwxr-xr-x  1 long  admin  22  4  3 18:49 python@3 -> ../Cellar/python/3.6.5
+
+重新链接后，恢复正常。
+

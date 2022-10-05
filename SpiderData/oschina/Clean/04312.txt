@@ -1,0 +1,67 @@
+关键字：ImportError module
+
+关键字：ImportError module
+
+问题描述：在使用PaddlePaddle进行手写字母识别时，出现ImportError: No module named XXX，缺失某些文件
+
+问题描述：在使用PaddlePaddle进行手写字母识别时，出现ImportError: No module named XXX，缺失某些文件
+
+报错输出：
+
+报错输出：
+
+ImportError: No module named XXX(具体缺失的模块名称)
+
+复现方式：
+ PaddlePaddle运行训练某些代码时，缺少必要的模块
+
+复现方式：
+ PaddlePaddle运行训练某些代码时，缺少必要的模块
+
+解决方案：
+ 凡事出现ImportError: No module named XXX，就说明缺少了某个库，该库在代码中被使用或者是其他库的依赖，如ImportError: No module named PIL 或 ImportError: No module named ‘urllib3’ ，通常只需通过pip将缺失的库安装上则可，命令为：pip install XXX(缺失模块名)
+
+解决方案：
+ 凡事出现ImportError: No module named XXX，就说明缺少了某个库，该库在代码中被使用或者是其他库的依赖，如ImportError: No module named PIL 或 ImportError: No module named ‘urllib3’ ，通常只需通过pip将缺失的库安装上则可，命令为：pip install XXX(缺失模块名)
+
+问题分析：
+ ImportError: No module named XXX在前面已经详细的讨论过了，即缺少了某个库，缺少什么就安装什么则可，值得一提的是，如果你使用了PaddlePaddle的Docker镜像进行训练，那么进入Docker镜像的命令行环境后，使用pip安装了缺失的库后，不可以直接退出，如果直接退出，那么安装的数据就会丧失，下次进入该docker镜像依旧缺失相应的库，如果你多docker进行做了改动，就需要提交这个改动，使用commit命令则可。
+
+问题分析：
+ ImportError: No module named XXX在前面已经详细的讨论过了，即缺少了某个库，缺少什么就安装什么则可，值得一提的是，如果你使用了PaddlePaddle的Docker镜像进行训练，那么进入Docker镜像的命令行环境后，使用pip安装了缺失的库后，不可以直接退出，如果直接退出，那么安装的数据就会丧失，下次进入该docker镜像依旧缺失相应的库，如果你多docker进行做了改动，就需要提交这个改动，使用commit命令则可。
+
+问题拓展：
+ PaddlePaddle的docker镜像的python环境只提供了基本的依赖包，一些你可能需要使用的包在这里并不会提供，比如在处理图像数据时，你可能需要使用opencv包，但docker镜像中并没有提供该包，此时就需要你自己手动安装了，对于这样的需求有两种方式，第一种，使用Dockerfile，即自己编写Dockerfile文件来构建一个新的Docker镜像，该Dockerfile文件最好基于PaddlePaddle提供的Dockerfile来编写，这样Docker镜像中就安装PaddlePaddle需要的基本库，同时也安装了你需要的库，具体命令如下： FROM paddlepaddle/paddle:latest
+MAINTAINER ayuliao <ayuliao@163.com>
+
+RUN apt-get update && apt-get install -y xxx #你需要的库
+RUN pip install xxx #你需要的库
+ 第二种方式就是进入Docker镜像中，直接通过相关的命令来安装，如下： docker run -t -i 你的镜像 /bin/bash
+pip install xxx #安装命令
+docker commit -m="提交信息" -a="作者" 记录的ID 镜像名称 #保存变动
+
+问题拓展：
+ PaddlePaddle的docker镜像的python环境只提供了基本的依赖包，一些你可能需要使用的包在这里并不会提供，比如在处理图像数据时，你可能需要使用opencv包，但docker镜像中并没有提供该包，此时就需要你自己手动安装了，对于这样的需求有两种方式，第一种，使用Dockerfile，即自己编写Dockerfile文件来构建一个新的Docker镜像，该Dockerfile文件最好基于PaddlePaddle提供的Dockerfile来编写，这样Docker镜像中就安装PaddlePaddle需要的基本库，同时也安装了你需要的库，具体命令如下：
+
+FROM paddlepaddle/paddle:latest
+MAINTAINER ayuliao <ayuliao@163.com>
+
+RUN apt-get update && apt-get install -y xxx #你需要的库
+RUN pip install xxx #你需要的库
+
+第二种方式就是进入Docker镜像中，直接通过相关的命令来安装，如下：
+
+docker run -t -i 你的镜像 /bin/bash
+pip install xxx #安装命令
+docker commit -m="提交信息" -a="作者" 记录的ID 镜像名称 #保存变动
+
+问题研究：
+ 因为python提供丰富的第三方库，这可以使开发效率变得极高，比如使用numpy、pandas库来分析数据，引入它俩就可以快速对数据进行分析了，但这样就了一些麻烦，就是他人在编写代码时使用了很多第三方库加快开发速度，而你获得他的代码后，却无法运行，一大原因就是缺少某些库，其报错表现就是ImportError: No module named XXX，解决方法，就是安装上相应的库，主要库与库直接的版本冲突则可。
+
+问题研究：
+ 因为python提供丰富的第三方库，这可以使开发效率变得极高，比如使用numpy、pandas库来分析数据，引入它俩就可以快速对数据进行分析了，但这样就了一些麻烦，就是他人在编写代码时使用了很多第三方库加快开发速度，而你获得他的代码后，却无法运行，一大原因就是缺少某些库，其报错表现就是ImportError: No module named XXX，解决方法，就是安装上相应的库，主要库与库直接的版本冲突则可。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

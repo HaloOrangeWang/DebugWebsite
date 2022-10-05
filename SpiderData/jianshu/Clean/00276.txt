@@ -1,0 +1,60 @@
+将gradle.build仓库更换为阿里云仓库后报错
+
+Could not resolve all dependencies for configuration ':detachedConfiguration7'.
+
+Using insecure protocols with repositories, without explicit opt-in, is unsupported. Switch Maven repository 'maven(http://maven.aliyun.com/nexus/content/groups/public/)' to redirect to a secure protocol (like HTTPS) or allow insecure protocols. See https://docs.gradle.org/7.0.2/dsl/org.gradle.api.artifacts.repositories.UrlArtifactRepository.html#org.gradle.api.artifacts.repositories.UrlArtifactRepository:allowInsecureProtocol for more details.
+
+由于maven jcenter和google，国内无法访问，导致很多版本和插件无法正常下载、更新，今天下午索性就将gradle的默认配置maven地址统一改成了阿里云的地址，没想到一运行，报错了，看了一下报错信息，和https有关，是不是阿里云的地址应该换成https，果然换成之后，工程完美编译通过。
+
+这里把方法也告知各位同仁，在C:\Users\Windows User.gradle目录下，新建init.gradle文件，内容为：
+
+allprojects{
+    repositories {
+        def ALIYUN_REPOSITORY_URL = 'https://maven.aliyun.com/nexus/content/groups/public'
+        def ALIYUN_JCENTER_URL = 'https://maven.aliyun.com/nexus/content/repositories/jcenter'
+        all { ArtifactRepository repo ->
+            if(repo instanceof MavenArtifactRepository){
+                def url = repo.url.toString()
+                if (url.startsWith('https://repo1.maven.org/maven2') || url.startsWith('https://repo1.maven.org/maven2')) {
+                    project.logger.lifecycle "Repository ${repo.url} replaced by $ALIYUN_REPOSITORY_URL."
+                    remove repo
+                }
+                if (url.startsWith('https://jcenter.bintray.com/') || url.startsWith('https://jcenter.bintray.com/')) {
+                    project.logger.lifecycle "Repository ${repo.url} replaced by $ALIYUN_JCENTER_URL."
+                    remove repo
+                }
+            }
+        }
+        maven {
+            url ALIYUN_REPOSITORY_URL
+            url ALIYUN_JCENTER_URL
+        }
+    }
+
+buildscript{
+        repositories {
+            def ALIYUN_REPOSITORY_URL = 'https://maven.aliyun.com/nexus/content/groups/public'
+            def ALIYUN_JCENTER_URL = 'https://maven.aliyun.com/nexus/content/repositories/jcenter'
+            all { ArtifactRepository repo ->
+                if(repo instanceof MavenArtifactRepository){
+                    def url = repo.url.toString()
+                    if (url.startsWith('https://repo1.maven.org/maven2') || url.startsWith('https://repo1.maven.org/maven2')) {
+                        project.logger.lifecycle "Repository ${repo.url} replaced by $ALIYUN_REPOSITORY_URL."
+                        remove repo
+                    }
+                    if (url.startsWith('https://jcenter.bintray.com/') || url.startsWith('https://jcenter.bintray.com/')) {
+                        project.logger.lifecycle "Repository ${repo.url} replaced by $ALIYUN_JCENTER_URL."
+                        remove repo
+                    }
+                }
+            }
+            maven {
+                url ALIYUN_REPOSITORY_URL
+                url ALIYUN_JCENTER_URL
+            }
+        }
+    }
+}
+
+关闭AS，重新打开，正常。
+

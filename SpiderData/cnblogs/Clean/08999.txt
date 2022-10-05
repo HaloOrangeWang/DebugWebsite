@@ -1,0 +1,61 @@
+一、RobotFramework简介
+
+robotframework（RF）是一个基于python开发的，可扩展的，以关键字驱动的自动化测试框架。
+
+2019年7月份之前的RF版本只支持python2.7，2019年7月发布的robotframework版本支持当时最新的python3.7版本，所以对python3.8，3.9等的支持是否友好笔者暂时还不确定。
+
+关键字驱动和数据驱动的区别？
+
+关键字驱动：表示把项目中的一些逻辑封装成关键字（一个函数名），调用不同的关键字组合实现不同的业务逻辑，从而驱动测试用例执行。
+
+数据驱动：把测试用例里面的数据提取到excel或者yaml文件里面，通过改变excel或者yaml中的数据驱动测试用例执行。
+
+二、RF的安装：
+
+1、安装python3.7.3并设置python的环境变量
+
+2、安装robotframework：pip install -i http://pypi.douban.com/simple/ robotframework==3.1(版本最好装3.1的，使用国内镜像源下载，速度会比较快）
+
+robotframework卸载：pip uninstall robotframework（如果不小心装错了robotframework的版本，卸载重新安装）。
+
+3、安装RIDE工具
+
+pip install -i http://pypi.douban.com/simple/ robotframework-ride（使用国内镜像源下载）
+
+pip uninstall robotframework-ride（卸载ride）
+
+4、启动ride
+
+双击桌面图标或者在dos窗口运行ride.py
+
+以下是笔者在运行ride时遇到的报错及解决办法，报错信息如下
+
+Traceback (most recent call last):
+  File "d:\programfile\python3\lib\site-packages\robotide\application\application.py", line 58, in OnInit
+    self.frame = RideFrame(self, self._controller)
+  File "d:\programfile\python3\lib\site-packages\robotide\ui\mainframe.py", line 175, in __init__
+    self._init_ui()
+  File "d:\programfile\python3\lib\site-packages\robotide\ui\mainframe.py", line 279, in _init_ui
+    self.tree = Tree(self, self.actions,
+  File "d:\programfile\python3\lib\site-packages\robotide\ui\tree.py", line 86, in __init__
+    self._images = TreeImageList()
+  File "d:\programfile\python3\lib\site-packages\robotide\ui\images.py", line 42, in __init__
+    TestCaseController: _TreeImage(self, 'robot.png'),
+  File "d:\programfile\python3\lib\site-packages\robotide\ui\images.py", line 80, in __init__
+    self.normal = self._get_image(image_list, normal)
+  File "d:\programfile\python3\lib\site-packages\robotide\ui\images.py", line 91, in _get_image
+    img = wx.Image(path, wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+wx._core.wxAssertionError: C++ assertion "strcmp(setlocale(LC_ALL, NULL), "C") == 0" failed at ..\..\src\common\intl.cpp(1579) in wxLocale::GetInfo(): You probably called setlocale() directly instead of using wxLocale and now there is a mismatch between C/C++ and Windows locale.
+Things are going to break, please only change locale by creating wxLocale objects to avoid this!
+OnInit returned false, exiting...
+Error in atexit._run_exitfuncs:
+wx._core.wxAssertionError: C++ assertion "GetEventHandler() == this" failed at ..\..\src\common\wincmn.cpp(478) in wxWindowBase::~wxWindowBase(): any pushed event handlers must have been removed
+
+解决方法：
+
+进入Python目录下\lib\site-packages\robotide\application\目录，打开application.py文件
+
+在第50行，将self._initial_locale = wx.Locale(wx.LANGUAGE_ENGLISH) 替换为：self.locale = wx.Locale(wx.LANGUAGE_CHINESE_SIMPLIFIED) ，如下图（注意不要使用windows系统自带文本文档编辑，以免编码错误）
+
+保存修改后，重新启动ride.py即可（注意不要使用中文路径）
+

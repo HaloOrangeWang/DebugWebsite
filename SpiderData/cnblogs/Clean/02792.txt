@@ -1,0 +1,68 @@
+安装了python 在命令行界面无法进行删除、退格
+
+1 安装readline模块
+
+两种方式：yum install -y readline-devel  readline 或者
+
+下载文件https://pypi.python.org/pypi/readline
+
+tar -xvf readline-6.2.4.1.tar.gz
+
+cd readline-6.2.4.1
+
+python setup.py install
+
+第二种方法安装时候报错：
+
+/usr/bin/ld: cannot find -lncurses
+
+有三种可能性
+
+1 系统没有安装相对应的lib
+2 相对应的lib版本不对
+3 lib(.so档)的symbolic link 不正确，没有连结到正确的函式库文件(.so)
+
+locate发现本地有libncurses的库包
+
+修改为
+
+重新安装后成功。
+
+如果先安装了python需要重新编译一次 才生效
+
+进入python安装目录 依次执行
+
+./configure
+
+make && make install
+
+============================================================================
+
+附：链接库相关
+
+Linux 系统上有两类根本不同的 Linux 可执行程序。
+
+第一类是静态链接的可执行程序。静态可执行程序包含执行所需的所有函数 — 换句话说，它们是“完整的”。因为这一原因，静态可执行程序不依赖任何外部库就可以运行。
+
+第二类是动态链接的可执行程序
+
+可以用 ldd 命令来确定某一特定可执行程序是否为静态链接的
+
+如果动态可执行程序不包含运行所需的所有函数，动态装入器（dynamic loader）负责装入动态链接的可执行程序运行所需的共享库
+
+动态装入器找到共享库要依靠两个文件 — /etc/ld.so.conf 和 /etc/ld.so.cache
+
+①配置/etc/ld.so.conf
+
+②ldconfig 将/etc/ld.so.conf更新到/etc/ld.so.cache
+
+③动态装入器通过/etc/ld.so.cache加载库目录
+
+共享库查看
+
+# ldconfig -p | less
+
+某些情况下，如果要指示动态装入器首先检查某个目录，请将 LD_LIBRARY_PATH 变量设置成您希望搜索的目录。多个路径之间用冒号分隔；例如：
+# export LD_LIBRARY_PATH="/usr/lib/old:/opt/lib"
+导出 LD_LIBRARY_PATH 后，如有可能，所有从当前 shell 启动的可执行程序都将使用 /usr/lib/old 或 /opt/lib 中的库，如果仍不能满足一些共享库相关性要求，则转回到 /etc/ld.so.conf 中指定的库。
+

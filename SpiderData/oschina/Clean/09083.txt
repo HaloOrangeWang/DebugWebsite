@@ -1,0 +1,34 @@
+
+docker 容器使用 systemctl 命令是报错
+
+看了许多解决方案，但是对于新手来说并不友好，不是特别清楚
+
+报错内容：
+
+System has not been booted with systemd as init system (PID 1). Can't operate.
+       Failed to connect to bus: Host is down
+
+解决方法：
+
+docker run -itd   --privileged --name myCentos centos /usr/sbin/init
+
+创建完成后: 请使用以下命令进入容器
+
+docker exec -it myCentos /bin/bash
+
+加粗的内容要特别注意，不能遗忘
+
+原因就是： 默认情况下，在第一步执行的是 /bin/bash，而因为docker中的bug，无法使用systemctl
+
+所以我们使用了 /usr/sbin/init 同时 --privileged 这样就能够使用systemctl了，但覆盖了默认的 /bin/bash
+
+因此我们如果想进入容器 就不能再使用 docker attach myCentos
+
+而只能使用  docker exec -it myCentos /bin/bash  因为 exec 可以让我们执行被覆盖掉的默认命令 /bin/bash
+
+同时 -it 也是必须的。
+
+对于ubuntu 也类似，可能init 目录不太相同
+
+当然具体什么bug 我是不知道的，期望以后会会修复
+

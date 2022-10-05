@@ -1,0 +1,36 @@
+{
+    "err_msg": {
+        "text": "IOError: wkhtmltopdf exited with non-zero code -6. error: QXcbConnection: Could not connect to display",
+        "lines": [5],
+        "weight": [1]
+    },
+    "scene": [
+        {
+            "text": "python pdfkit 使用",
+            "lines": ["title"],
+            "weight": [1]
+        },
+        {
+            "text": "linux",
+            "lines": ["title"],
+            "weight": [1]
+        },
+        {
+            "text": "debian",
+            "lines": [3],
+            "weight": [1]
+        }
+    ],
+    "solve": [
+        {
+            "text": "运行xvfb服务, 为了避免显示设备冲突，指定一个编号，这里是 10\n\nsudo Xvfb :10 -ac   （不是后台启动，一直挂起，如果需要自己搜索）\n\n指定显示设备，和上面的编号一致\n\nexport DISPLAY=:10   （环境变量）\n执行 pdfkit 代码",
+            "lines": [11, 13, 15, 17, 18],
+            "weight": [1, 0.5, 1, 0.5, 1]
+        },
+        {
+            "text": "安装pip install pyvirtualdisplay，\n\nfrom pyvirtualdisplay import Display\n\ndisplay = Display()\n\ndisplay.start() 启动\n\n执行pdfkit代码\n\ndisplay.stop() 停止\n\ndisplay.is_alive() 判断是否存活\n\n当然需要也可以这样\n\nwith Display() as display:\n\n　　pdfkit 代码",
+            "lines": [22, 24, 26, 28, 30, 32, 34, 36, 38, 40],
+            "weight": [1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+用pandas的pd.read_excel()打开中文名的xlsx，报错，本来以为是xlrd的问题后来发现，是open()函数就报错：
+
+“UnicodeEncodeError: 'ascii' codec can't encode characters in position 26-30: ordinal not in range(128)”
+
+但是同样的xlsx在win7下用pd.read_excel()打开正常
+
+用print(locale.getdefaultlocale()) 检查一下编码：
+
+编码居然是(None, None) 而win7下是('zh_CN', 'cp936')
+
+用的docker镜像是python:latest  是基于debian的。
+
+在dockerfile里增加中文语言支持：
+
+# 设置中文支持
+RUN apt-get install -y locales locales-all
+
+RUN locale-gen zh_CN.UTF-8 zh_cn && dpkg-reconfigure locales && dpkg-reconfigure locales && locale-gen zh_CN.UTF-8 && /usr/sbin/update-locale LANG=zh_CN.UTF-8
+
+ENV LANG zh_CN.UTF-8  
+ENV LANGUAGE zh_CN:zh  
+ENV LC_ALL zh_CN.UTF-8
+
+build之后，
+
+再看，显示('zh_CN', 'UTF-8') 打开xlsx就正常了。
+

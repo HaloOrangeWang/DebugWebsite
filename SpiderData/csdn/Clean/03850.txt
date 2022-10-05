@@ -1,0 +1,34 @@
+转自：http://www.phperz.com/article/14/1208/39955.html
+
+本文为大家讲解的是python错误：TypeError: 'module' object is not callable 解决方法，感兴趣的同学参考下。
+
+错误描述：
+
+程序代码 
+ class Person:
+      #constructor
+      def __init__(self,name,sex):
+           self.Name = name
+           self.Sex = sex
+      def ToString(self):
+           return 'Name:'+self.Name+',Sex:'+self.Sex
+
+在IDLE中报错：
+ >>> import Person
+ >>> per = Person('dnawo','man')
+ Traceback (most recent call last):
+   File "<pyshell#2>", line 1, in <module>
+     per = Person('dnawo','man')
+ TypeError: 'module' object is not callable
+原因分析：
+ Python导入模块的方法有两种：import module 和 from module import，区别是前者所有导入的东西使用时需加上模块名的限定，而后者不要。
+
+正确的代码：
+ >>> import Person
+ >>> person = Person.Person('dnawo','man')
+ >>> print person.Name
+ 或
+ >>> from Person import *
+ >>> person = Person('dnawo','man')
+ >>> print person.Name
+

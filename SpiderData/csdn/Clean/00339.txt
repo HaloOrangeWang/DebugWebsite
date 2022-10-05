@@ -1,0 +1,24 @@
+python在导入同一目录下的文件夹或者同一目录下的py文件时报错，pycharm中标红
+ 例如：
+
+
+方法一
+
+在test_mrc.py文件中像调用同一目录下的pytorch_modeling.py的内容，调用同一目录下tools文件夹里的内容都报错，这里有一个渐变的方法：
+ 直接在要调用文件的前面加上(当前所在目录名.)即可
+ 例如：
+
+from mrc_pytorch.pytorch_modeling import BertConfig, BertForQuestionAnswering, ALBertConfig, ALBertForQA
+from mrc_pytorch.google_albert_pytorch_modeling import AlbertConfig, AlbertForMRC
+from mrc_pytorch.tools import official_tokenization as tokenization
+from mrc_pytorch.tools import utils
+
+都加上当前所在目录名 mrc_pytorch即可直接调用。
+
+
+方法二
+
+按步骤点击py文件所在目录：
+ 
+ 即可解决。
+

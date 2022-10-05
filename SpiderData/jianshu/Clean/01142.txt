@@ -1,0 +1,64 @@
+
+1. 报错
+
+相信很多人在使用python manage.py makemigrations代码进行数据库迁移的时候，往往会遇到以下错误："No module named 'MySQLdb"。
+
+
+2. 问题分析
+
+MySQLdb只支持Python2.，还不支持3.*版本
+
+因此Python3中通过pip install mysqlclient去安装会一直报错
+
+
+3. 解决办法
+
+
+Python3.* 中使用 PyMySQL 替代
+
+
+3.1 安装PyMySQL
+
+pip install PyMySQL
+
+
+3.2 数据库配置无需改动
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', # 数据库引擎
+        'NAME': 'djangoDB', # 数据库名称
+        'USER': 'root', # 用户名
+        'PASSWORD': '123456', # 密码
+        'HOST': '127.0.0.1', # 主机IP地址
+        'PORT': '3306' # 默认端口
+    }
+}
+
+
+3.3 在项目根目录下中的__init__.py文件中添加以下代码，保存：
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+就可以用import MySQLdb了，其他的方法与MySQLdb一样。
+
+
+4. 但继续运行后可能还会报以下错误：
+
+django pymysql django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.None
+
+这是由于使用PyMySQL替代mysqlclient后，版本认证导致。
+
+
+解决办法：
+
+找到python安装目录下的base.py文件，目录参考：/home/用户名/.virtualenvs/项目名/lib/python3.5/site-packages/django/db/backends/mysql/base.py
+
+修改以下两行即可：
+
+if version < (1, 3, 3):
+        # 注释掉这一行，并加一句pass即可
+        # raise ImproperlyConfigured("mysqlclient 1.3.3 or newer is required; you have %s" % Database.__version__) 
+        pass
+

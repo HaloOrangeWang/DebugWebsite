@@ -1,0 +1,27 @@
+
+发现问题
+
+在个人电脑上安装PyTorch过程中，测试PyTorch是否安装成功，导入’torchvision’时报错，错误提示如下：
+ D:\Application\Anaconda\data\lib\site-packages\torchvision\io\image.py:11: UserWarning: Failed to load image Python extension: Could not find module ‘D:\Application\Anaconda\data\Lib\site-packages\torchvision\image.pyd’ (or one of its dependencies). Try using the full path with constructor syntax.
+ warn(f"Failed to load image Python extension: {e}")
+
+
+解决问题
+
+根据提示路径一探究竟
+
+D:\Application\Anaconda\data\Lib\site-packages\torchvision
+
+查找显示文件结构如下：只能找到image.pyd文件，无法找到image.py文件
+
+调用原理还没搞清楚，为了避免以后使用时不必要的麻烦，打算不删除【image.pyd】文件，利用该文件再创建一个副本，把副本后缀改成.py形成【image.py】文件，更改之后再测试torchvision就可以成功导入了。
+
+
+知识点
+
+pyd文件
+
+.pyd 文件是由非 Python，其它编程语言编写 (或直接把 .py 文件转换成 .c 中间文件) 编译生成的 Python 扩展模块，是类似 .so .dll 动态链接库的一种 Python 文件。
+
+每个 .pyd 文件实际上都封装了一个 Python module 模块。使用时，采用 import 路径名.modulename 或 from 路径名.modulename import ** 语言，路径名为 .pyd 文件所在的路径。
+

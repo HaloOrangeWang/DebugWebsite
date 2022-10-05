@@ -1,0 +1,30 @@
+今天在Ubuntu下试用Python脚本。如图所示，明明在/home/hadoop路径下有mapper.py, 但是运行时却说：: 没有那个文件或目录。
+
+其实是编码问题。
+
+Windows下，文本的换行是\r\n一同实现的，而Lnix/UNIX下则只用\n。对于：
+
+#!/usr/bin/env python\r\n
+
+这样一行文本，windows下的程序会认为#!/usr/bin/env python就是一行。而linux会认为#! /usr/bin/env python\r是一行。于是就报错了，因为根本没有python\r这个文件。
+
+但是还是有点说不通，env如果出错的话应该是报这样的错误信息的：
+
+/usr/bin/env: python : 没有那个文件或目录   #(python后面有一个回车符)
+
+那为什么现在是：
+
+: 没有那个文件或目录
+
+这主要是因为\r这个字符的缘故。在linux终端下，输出\r会什么都不显示，只是把光标移到行首。于是终端虽然输出了/usr/bin/env: python，但是碰到\r后，光标会被移到行首，接着输出了:No such file or directory把前面的覆盖掉了。于是出现了那个莫名其妙的出错信息了。
+
+解决办法： 
+ 用vim打开该sh文件，输入： 
+ :set ff 
+ 回车，显示fileformat=dos，重新设置下文件格式： 
+ :set ff=unix 
+ 保存退出
+
+参考： 
+ http://blog.csdn.net/improve100/article/details/51005368
+

@@ -1,0 +1,26 @@
+
+在使用python requests发送请求时突然提示：requests.exceptions.SSLError: HTTPSConnectionPool
+
+经过查证之后发现是因为证书问题导致的，然后经过验证有3种解决方案
+
+方案1：
+
+关闭证书验证（verify=False）
+
+这种方法只需要在发送请求时添加verify=False就可以了，如下
+
+response = requests.get('https://www.baidu.com/s?wd=cat', headers = header, verify=False)
+
+但是这种方式后续还可能报其他错误，所以才有了后续的解决方案
+
+方案2：
+
+安装requests的3个依赖包就可以了：
+
+cryptography、pyOpenSSL、certifi
+
+方案3：
+
+获取到证书然后加上证书： 
+respone=requests.get('https://www.12306.cn', cert=('/path/server.crt', '/path/key'))
+

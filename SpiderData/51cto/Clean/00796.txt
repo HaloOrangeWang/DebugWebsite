@@ -1,0 +1,55 @@
+使用中文常常有因为编码引起的程序错误，或者中文乱码的问题,这里一次解决.
+
+像下边这样的错误:
+
+1366 Incorrect string value: '\xE8\x82\x96\xE5\xB1\xB1...' for column 'sub_station_name'
+  
+首先，对于远程调用mysql命令的方式，有两个地方的编码要注意，
+
+1. 一个是数据库中的数据项要设置成utf8,
+
+2.另一个是在创建mysql连接时，要设置charset="utf8"的这个参数.
+
+只要这两个地方都设置对了，那么mysql数据库环境就没有问题了，有问题就是我们发送给mysql的命令中的中文的编码有可能不是utf8,
+
+发送给mysql的命令中有中文，而且这个中文不是utf8编码.
+
+知道了原因，那接下来就是要先看文本是什么编码，然后再把这个中文转成utf8.真对python的中文转码有下边方法:
+
+首先，使用chardet的python库判断中文是什么编码.
+
+import chardet
+
+f = open('cntext.txt','r')
+
+tmpstr = f.read()
+
+f.close()
+
+cnstrtype = chardet.detect(tmpstr)
+
+print cnstrtype
+
+这个时候，我们可以看到输出是:
+
+{'confidence': 0.99, 'encoding': 'GB2312'}
+
+这是一个dict数据.第一个参数是测出的编码可能性,后一个是测出的编码名
+
+知道了中文编码后，接下来就是要把这个中文转成utf8编码的.可以使用下边的方法
+
+utf8str = tmpstr.decode(cntype).encode('utf-8')
+
+newtype = chardet.detect(utf8str)
+print newtype
+
+这里先使用了decode()对原来的"GB2312"解码成unicode编码，然后再使用encode()对unicode编码为'utf-8'.这里可以看到打印的输出为:
+
+{'confidence': 0.99, 'encoding': 'utf-8'}
+
+然后在mysql的命令中使用这个utf8编码后的字符串就可以了.
+
+python上安装mysql的访问库，请看之前的文章:
+
+​​http://fengmm521.blog.163.com/blog/static/2509135820171239316521/​​
+

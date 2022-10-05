@@ -1,0 +1,36 @@
+1.    ModuleNotFoundError: No module named 'cookielib'
+
+Python3中，import  cookielib改成 import  http.cookiejar,然后方法里cookielib也改成 http.cookiejar。
+
+2.    ModuleNotFoundError: No module named 'urllib2'
+
+Python 3中urllib2用urllib.request替代。
+
+在Python官方文档里面已有说明：
+
+Note:
+
+The urllib2 module has been split across several modules in Python 3.0 named urllib.request and urllib.error. The 2to3 tool will automatically adapt imports when converting your sources to 3.0.
+
+from urllib.request import urlopen
+
+response = urlopen("http://www.google.com")
+
+html = response.read()
+
+print(html)
+
+3.    NameError: name 'raw_input' is not defined
+
+Python 3中用input()替换raw_input()
+
+4.    UserWarning: You provided Unicode markup but also provided a value for from_encoding. Your from_encoding will be ignored.
+
+注意这句：warnings.warn("You provided Unicode markup but also provided a value for from_encoding. Your from_encoding will be ignored.") 原因：python3 缺省的编码是unicode, 再在from_encoding设置为utf8, 会被忽视。
+
+Python 3中soup = BeautifulSoup(html_doc, "html.parser", from_encoding="utf-8")这一句中删除from_encoding="utf-8"
+
+------------------------------------------------------Tanwheey-------------------------------------------------------------------------
+
+爱生活，爱工作。
+

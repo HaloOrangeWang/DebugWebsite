@@ -1,0 +1,113 @@
+问题1：TypeError: Expected int32, got list containing Tensors of type ‘_Message’ instead.
+
+tensorflow 函数tf.cocat([fw,bw],2)出错:
+
+Expected int32, got list containing Tensors of type ‘_Message’ inst
+ 查看原因是11版本的函数形式为:tf.concat(2,[fw,bw]),即应把串联的维度与串联值位置调换即可.
+
+问题2：Input ‘split_dim’ of ‘Split’ Op has type float32 that does not match expected type of int32
+
+This is because in Tensorflow versions < 0.12.0 the split function takes the arguments as:
+
+x = tf.split(0, n_steps, x) # tf.split(axis, num_or_size_splits, value)
+ The tutorial you are working from was written for versions > 0.12.0, which has been changed to be consistent with Numpy’s split syntax:
+
+x = tf.split(x, n_steps, 0) # tf.split(value, num_or_size_splits, axis)
+
+问题3：TypeError: concat() got an unexpected keyword argument ‘axis’
+
+tf.concat(concat_dim=axis, values=inputs, name=name)
+ 修改为： tf.concat(inputs,1,name=name)
+
+问题4：ValueError: ‘size’ must be a 1-D Tensor of 2 elements
+
+img = tf.image.resize_images(img, new_shape[0], new_shape[1])
+ 改为
+ img = tf.image.resize_images(img, new_shape)
+
+问题5： ‘module’ object has no attribute ‘pack’
+
+因为TF后面的版本修改了这个函数的名称，把 tf.pack 改为 tf.stack。
+
+问题6：The value of a feed cannot be a tf.Tensor object. Acceptable feed values include Python scalars, strings, lists, or numpy ndarrays
+
+数据集是feed输入的，feed的数据格式是有要求的
+ 解决：img,label = sess.run[img,label],用返回值
+
+问题7：AttributeError: ‘module’ object has no attribute ‘per_image_whitening’
+
+For anyone else who has this problem, per_image_whitening was replaced by per_image_standardization in v0.12.
+
+问题8：AttributeError: ‘module’ object has no attribute ‘image_summary’
+
+tf.image_summary should be renamed to tf.summary.image;
+
+问题9：AttributeError: ‘module’ object has no attribute ‘mul’
+
+tf.mul(a,b) 这里的矩阵a和矩阵b的shape必须相等 tf.mul()是矩阵的element-wise相乘（即Hadamard乘积）
+ tf.matmul(a,b) 这里的矩阵a和矩阵b的shape应是a的行数对等与b的列数，tf.matmul()是矩阵的一般相乘。
+ 解决：[tf.mul，tf.sub ] 和 [tf.neg] 不再使用，改为 [tf.multiply]，[tf.subtract] 和 [tf.negative]。
+
+问题10：AttributeError: ‘module’ object has no attribute ‘scalar_summary’
+
+修改为:tf.summary.scalar(‘batch_loss’, loss)原因:新版本做了调整 …
+
+问题11：AttributeError: ‘module’ object has no attribute ‘rnn_cell’
+
+将tf.nn.rnn_cell替换为tf.contrib.rnn
+
+#原因是1.0版本改了不少地方啊...
+#原来是这样的：
+from tensorflow.python.ops import rnn, rnn_cell 
+lstm_cell = rnn_cell.BasicLSTMCell(rnn_size,state_is_tuple=True) 
+outputs, states = rnn.rnn(lstm_cell, x, dtype=tf.float32)
+
+#修改成这样的：
+from tensorflow.contrib import rnn 
+lstm_cell = rnn.BasicLSTMCell(rnn_size) 
+outputs, states = rnn.static_rnn(lstm_cell, x, dtype=tf.float32)
+
+问题12：ValueError: Only call softmax_cross_entropy_with_logits with named arguments (labels=…, logits=…, …)
+
+按照提示，需要将括号内的形参写出，即(logits=pre, lables=tru)而非(pre,tru)
+
+调用tf.softmax_cross_entropy_with_logits函数出错。
+
+#原因是这个函数，不能按以前的方式进行调用了，只能使用命名参数的方式来调用。
+#原来是这样的：
+tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y, y_))
+#修改成这样的：
+tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(logits=y, labels=y_))
+
+问题13：ValueError: Variable Wemb/Adam/ does not exist, or was not created with tf.get_variable(). Did you mean to set reuse=None in VarScope?
+
+需要定义scope，虽然报错可能是在optimizer处提示，但需要在定义模型时增加scope，即
+ with tf.variable_scope(tf.get_variable_scope()) as scope:
+
+with tf.variable_scope(scope_name, reuse=None) as scope:
+    scope.reuse_variables()
+    w = tf.get_variable("weight", shape, initializer = random_normal_initializer(0., 0.01)))
+    b = tf.get_variable("biase", shape[-1], initializer = tf.constant_initializer(0.0))
+#或：
+with tf.variable_scope(scope_name, reuse=True):
+    w = tf.get_variable("weight")
+    b = tf.get_variable("biase")
+
+问题14： tf.select
+
+原来：tf.select X
+ 改后：tf.where X
+
+问题15： AttributeError: module ‘tensorflow.nn’ has no attribute ‘rnn’
+
+将tf.nn.rnn改为tf.contrib.rnn.static_rnn
+
+参考：https://blog.csdn.net/wang2008start/article/details/71516198
+ https://blog.csdn.net/yutingzhaomeng/article/details/78926071
+ https://www.cnblogs.com/hunttown/p/6866586.html
+ https://www.jianshu.com/p/254781d3effc
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

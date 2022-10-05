@@ -1,0 +1,56 @@
+
+前言
+
+从github上下载的项目，vscode中使用npm i安装依赖的时候报错Can't find Python executable "python2.7", you can set the PYTHON env variable。
+
+在网上找了很多解决方法，包括但不限于这些，但都不好使
+
+第一种：
+
+管理员权限运行cmd：
+npm install --global --production windows-build-tools
+
+第二种：
+
+npm install --python=python2.7
+npm config set python python2.7
+
+第三种：
+
+安装Python及环境变量配置：http://blog.csdn.net/lyj_viviani/article/details/51763101
+
+最终通过多方查找资料，各种拼凑理解以上几个，终于解决了报错
+
+
+解决
+
+
+第一步，安装python2.7环境
+
+下载python2.7，下一步下一步，选择要安装的位置完成安装
+
+进入高级变量-环境配置
+
+系统变量中找到Path变量，在值中增加一项内容为python的安装路径，如下
+
+新建完后，点击确定，打开cmd，运行python看到版本信息，就说明python环境配置成功
+
+
+第二步，vscode安装python插件
+
+接下来是vscode上的操作了，vscode安装python插件
+
+
+第三步，项目和python2.7环境连接
+
+在vscode的cmd中配置上python安装的位置，输入如下，这一步是将项目和我们的python环境关联起来（我的在f盘，所以地址是）
+
+npm config set python F:\Python27\python.exe
+
+以上就解决了我们的报错问题，这时在执行npm install就能够顺利执行了
+
+
+总结
+
+基本思路就是在本地安装python2.7，然后通过npm config set python F:\Python27\python.exe让项目找到本地python地址，解决！
+

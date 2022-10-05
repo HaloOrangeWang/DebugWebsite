@@ -1,0 +1,19 @@
+
+当你使用 requests 发送HTTPS请求时
+
+requests.get(url, parmas=parmas, headers=header, cookies=cookie)
+
+出现了以下错误
+
+
+出现原因
+
+当你发送HTTPS请求时，需要SSL验证，而requests请求方法的 verify 参数默认是 True ，表示要进行验证
+
+
+如何解决？
+
+关掉验证即可，如下
+
+requests.get(url, parmas=parmas, headers=header, cookies=cookie, verify=False)
+

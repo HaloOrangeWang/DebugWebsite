@@ -1,0 +1,14 @@
+很想一行指令pip install pycocotools 搞定，虽然失败，但实用方法如下：
+
+1、问题描述和定位：在Windows环境下遇到：ModuleNotFoundError: No module named 'pycocotools'错误提示，说明需要安装工具包pycocotools，以下介绍具体安装方法。
+
+2、具体解决方法
+
+1）从 https://github.com/pdollar/coco.git这个网址下载源码，并将此解压到完全英文的路径下。
+
+2）在cocoapi-master/PythonAPI文件夹下，打开Powershell窗口（快捷方式：shift+鼠标右键），运行命令：python setup.py build_ext --inplace进行编译。
+
+若编译出现错误： cl: 命令行 error D8021 :无效的数值参数“/Wno-cpp”    error: command 'D:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX86\\x64\\cl.exe' failed with exit status 2。需要当前文件夹下的setup.py文件，直接将其中的语句extra_compile_args=['-Wno-cpp', '-Wno-unused-function', '-std=c99']修改为extra_compile_args=[ '-std=c99']。并重新运行命令：python setup.py build_ext --inplace
+
+3）上一步没有问题则继续在Powershell窗口运行命令：python setup.py build_ext install完成安装即可。
+

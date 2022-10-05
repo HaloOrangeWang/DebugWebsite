@@ -1,0 +1,37 @@
+
+问题1
+
+执行 migrate命令时报错：
+
+上面报错的意思是：缺少依赖的应用 customer
+
+解决的方法是：执行migrations命令的时候加上customer这个应用就好了：
+
+python3 manage.py makemigrations customer
+
+接下来再执行 migrate 命令就没问题了：
+
+
+问题2
+
+然后再一次执行migrate的时候又上报了错误：
+
+解决的方法是先执行一次下面这段命令（在migrate后面加上 --fake 参数）：
+
+python manage.py migrate --fake
+
+然后再执行 migrate 就没问题了~
+
+
+数据库迁移的执行过程说明
+
+1、在执行 python manage.py makemigrations  的时候django会在相应的app的makemigrations 目录下生成一个py脚本文件
+
+2、在执行 python manage.py migrate 的时候django才会在数据库中生成对应的表，那django是如何知道应该执行哪个文件呢？
+
+首先，每个migrations目录可能有多个脚本，django是通过一张django-migrations表来进行判断的，这章django-migrations表记录了已经执行过的脚本——也就是说，没有执行的脚本就没有在这张表中记录，于是在执行migrate的时候只会执行表中没有记录的脚本。
+
+3、如果有的时候执行 migrate 的时候发现没有生成对应的表，可以看看在django-session表中有没有脚本的记录——也就是这个脚本有没有执行。
+
+4、有时我们可以删除django-session表中的记录和数据库相应的表，重新执行命令生成对应的表。
+

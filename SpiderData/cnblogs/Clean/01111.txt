@@ -1,0 +1,142 @@
+
+一、pip安装出错类型
+
+
+1.1 pip版本过旧导致不能安装
+
+报错提示：
+
+You are using pip version 9.0.3, however version 10.0.1 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' comm
+and.
+
+可通过以下命令升级pip
+
+python -m pip install --upgrade pip
+
+
+1.2 官方的PyPi连接超时
+
+如果是timeout类形错误，那重点怀疑网络问题，可能是官方的PyPi太慢导致。
+
+这类错误可通过在pip.ini中index-url指定为使用本地源进行处理。我这里以清华源为例，具体操作步骤看下边第三大点。
+
+
+1.3 HTTPS证书问题
+
+现在很多网站都换成了HTTPS，python验证证书没通过时就会拒绝使用PyPi源，通常报错如下：
+
+这类错误可通过在pip.ini中添加trusted-host进行处理。我这里以信任清华源为例，具体操作步骤看下边第三大点。
+
+
+1.4 缺少VC环境依赖
+
+这类错误处理，一是安装vc环境不过到现在我还不是很明白要装哪个文件，更推荐的做法是使用conda安装第三方库，具体操作参见“PyCharm+Miniconda3安装配置教程” 第二大点查看如何安装conda及参看3.2.2节看如何用conda安装第三方库
+
+通常报错如下：
+
+“distutils.errors.DistutilsPlatformError: Microsoft Visual C++ 14.0 is required”
+
+“Command "python setup.py egg_info" failed with error code 1 in C:\Users\ADMINI~1\AppData\Local\Temp\pip-install-6fjrrgj5\cffi\”
+
+20191212更新：
+
+既然说缺少Microsoft Visual C++ 14.0 Build Tools那我们直接给他装上。（需要生成工具的原因，猜测是有些python库并不是单纯的python文件，还有c语言写的需要编译成exe等可执行文件）
+
+visual studio installer下载地址：https://visualstudio.microsoft.com/zh-hans/thank-you-downloading-visual-studio/?sku=Community&rel=16#
+
+build tool下载地址：https://visualstudio.microsoft.com/zh-hans/thank-you-downloading-visual-studio/?sku=BuildTools&rel=16&rr=https%3A%2F%2Fwww.scivision.dev%2Fpython-windows-visual-c-14-required%2F
+
+两个本质上是一样的，而我们要装的都是一个，即”Microsoft Visual C++ 14.0 Build Tools“（VS中文名翻译成生成工具）。
+
+不管是vs 2015还是vs 2017还vs 2019，用的都是14.x版本只是小版本不一样，我们装最新的即可，比如我这里直接装VS2019的。
+
+由于VS无敌的大，为了避免C盘耗费过多建议修改安装地址。可以只勾选安装生成工具，但我这为了方便装了VS能用于编写C++就不取消色选其他组件了。但不管怎么样VS核心编缉器都是必须安装的，大概是微软为了避免有些小白想装VS最终装了一堆组件编缉器却没见到。
+
+
+二、查看当前软件源等配置
+
+
+2.1 查看当前使用的软件源
+
+可以使用以下命令查看当前使用的是哪个软件源。（注意install和search使用的软件源是不一样的，后边第三大节我们修改index-url也只对install起作用。）
+
+pip install --help
+pip search --help
+
+
+2.2 查看所有自定义配置
+
+可以使用以下命令查看当前的配置，加上-v参数可以查看当前加载了哪些配置文件。
+
+pip config list
+pip config list -v
+
+
+三、将PyPi切换为本地源
+
+注意，这个创建的pip.ini文件配置对conda等发行版中的pip也生效，因为conda等中的pip本质也是pip。
+
+
+3.1 临时切换软件源
+
+临时使用软件源，不管是install还是search都可以通过-i参数进行指定，如：
+
+pip install pymysql -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+3.2 永久切换软件源（并处理证书错误）
+
+
+3.2.1 查看%APPDATA%路径【可选】
+
+echo %APPDATA%
+
+
+3.2.2 创建 %APPDATA%\pip\目录
+
+我这里直接在cmd使用命令创建。图形界面创的话，上一步我们已查到%APPDATA%的指向了一层层根着创即可
+
+mkdir %APPDATA%\pip
+
+
+3.2.3 创建pip.ini文件
+
+使用文件编辑器创建一个文本，然后输入以下内容，并将其保存到上边的%APPDATA%\pip\目录下，命名为pip.ini即可（注意不要保存成了pip.ini.txt）。
+
+Linux等是$HOME/.config/pip/pip.conf。
+
+[global]
+trusted-host = pypi.tuna.tsinghua.edu.cn
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+
+另外要注意，index-url只对pip install生效，对pip search并不生效。你可以通过index参数配置pip search使用的源，但是该源并不能直接使用index-url的链接，因为index-url是一个包的列表但是pip search需要的是一个搜索功能的页面。
+
+事实上，除了官方的https://pypi.org/pypi，好像其他源都没有实现搜索页面，这也是我们上边配置没演示pip search也使用其他源的原因。
+
+
+3.2.4 验证源成功切换且无报错
+
+我这里以pip安装faker库进行验证，自己随便装什么都行
+
+pip install faker
+
+
+四、配置代理【可选】
+
+应该来讲在把源设置成国内源后应该来讲，网络网速什么的就应该都没问题了，也就没有配置代理的需求。
+
+但在一些公司访问中不允许pip直接访问外部网站，一定要通过公司代理才能访问，这时就只能配置代理。
+
+配置代理也简单，一样在%APPDATA%\pip\pip.ini的[global]节区中设置proxy值即可。假设代理为“http://proxy.company.com:8080”：
+
+参考：
+
+https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
+
+http://mirrors.ustc.edu.cn/help/pypi.html
+
+https://superuser.com/questions/727924/pip-and-ssl-certificate-errors
+
+https://stackoverflow.com/questions/9698557/how-to-use-pip-on-windows-behind-an-authenticating-proxy
+

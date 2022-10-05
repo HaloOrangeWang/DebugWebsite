@@ -1,0 +1,53 @@
+Erro
+
+C:\Software\Python\Scripts>pip install imutils
+
+Traceback (most recent call last):
+  File "c:\software\python\lib\runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+  File "c:\software\python\lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "C:\Software\Python\Scripts\pip.exe\__main__.py", line 5, in <module>
+
+ImportError: cannot import name 'main'
+
+解决1
+
+需要打开C:\Software\Python\Scripts\pip.exe\__main__.py（line 193， line 85，依次需要修改，这里是可以打开的）
+
+将line 5行main 改为_main (据网上查阅是pip更新产生的问题，win10暂时没有找到__main__.py文件，Linux可以尝试下，未亲测，那网友尝试可以解决请留言)
+
+解决2
+
+easy_install命令安装（结果表明imutils 成功安装）
+
+easy_install imutils
+
+C:\Software\Python\Scripts>easy_install imutils
+Searching for imutils
+Reading https://pypi.python.org/simple/imutils/
+Downloading https://files.pythonhosted.org/packages/15/ba/24272ac57159cf255959f9298b8e42f00528be90ce4ccd274b604ae5e32d/imutils-0.4.6.tar.gz#sha256=9172d4531368498e6b80c6ead5a08a78d5cdb0a159333f0170c6e8e799a7f056
+Best match: imutils 0.4.6
+Processing imutils-0.4.6.tar.gz
+Writing C:\Users\ADMINI~1\AppData\Local\Temp\easy_install-tswyscq0\imutils-0.4.6\setup.cfg
+Running imutils-0.4.6\setup.py -q bdist_egg --dist-dir C:\Users\ADMINI~1\AppData\Local\Temp\easy_install-tswyscq0\imutils-0.4.6\egg-dist-tmp-h2j522sq
+zip_safe flag not set; analyzing archive contents...
+Copying imutils-0.4.6-py3.6.egg to c:\software\python\lib\site-packages
+Adding imutils 0.4.6 to easy-install.pth file
+Installing range-detector script to c:\software\python\Scripts
+
+Installed c:\software\python\lib\site-packages\imutils-0.4.6-py3.6.egg
+Processing dependencies for imutils
+Finished processing dependencies for imutils
+
+测试结果
+
+C:\Software\Python\Scripts>python
+Python 3.6.2 (v3.6.2:5fd33b5, Jul  8 2017, 04:57:36) [MSC v.1900 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import imutils
+
+>>>
+
+到此表明安装成功
+

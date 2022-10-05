@@ -1,0 +1,17 @@
+
+pyinstaller打包报错： RecursionError: maximum recursion depth exceeded
+
+近日在用python写一些脚本工具,打算打包成exe文件时,出现报错:
+
+百度查出的结果都是通过修改*.spec 调整递归深度后重新打包来解决:
+
+但在实际使用时会出现*.spec文件重新生成,配置无效的情况。
+
+于是根据报错信息,发现
+
+报错信息主要出现在${PYTHON_HOME}\Lib\site-packages\PyInstaller\lib\modulegraph\modulegraph.py这个文件中,于是便尝试在这个文件中调整递归深度配置:
+
+增加此段落后  sys.setrecursionlimit(5000)
+
+重新打包可以正常生成.exe文件
+

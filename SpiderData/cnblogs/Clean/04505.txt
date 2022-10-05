@@ -1,0 +1,125 @@
+错误码：
+
+$ python manage.py runserver 127.0.0.1:8000
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+
+You have 13 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.
+
+Run 'python manage.py migrate' to apply them.
+
+August 11, 2019 - 08:53:18
+
+Django version 1.11.23, using settings 'Imocc.settings'
+
+Starting development server at http://127.0.0.1:8000/
+
+Quit the server with CONTROL-C.
+
+Error: That port is already in use.
+
+解释：
+
+基础知识
+
+
+一 新建工程
+
+命令：django-admin startproject mysite
+# 有的需要输入：django-admin.py startproject mysite
+
+这是你会发现在当前目录下，生成了一个文件夹mysite，其结构为：
+mysite/
+manage.py
+mysite/
+__init.py
+settings.py
+urls.py
+wsgi.py
+
+其中：
+manage.py：一个命令行工具，通过它可以调用Django shell和数据库等。键入python manage.py -h，查看它的相关功能。
+__init__.py：让 Python 把该目录当成一个开发包 (即一组模块)所需的文件。这是一个空文件，一般你不需要修改它。
+settings.py：项目的默认设置，包括数据库信息，调试标志以及其他一些工作的变量。
+urls.py：django项目的URL设置。 可视其为你的django网站的目录, 负责把URL模式映射到应用程序。
+wsgi.py: 服务器网关接口(Python Web Server Gateway Interface)，web服务器和web服务程序或者框架之间的一种简单而通用的接口。
+
+
+二 运行服务器
+
+错误1：
+
+mysite(上一层)目录下执行命令：python manager.py runserver
+如果出现报错：
+XXX
+You have unapplied migrations; your app may not work properly until they are applied. Run 'python manage.py migrate' to apply them.
+XXX
+很明显，已经告诉我们怎么做了，那就执行一下：python manage.py migrate
+话说这个migrate是干什么的呢，它可以让我们在修改Model后可以在不影响现有数据的前提下重建表结构。
+
+可以看到如下输出：
+
+Operations to perform:
+
+Apply all migrations: admin, auth, contenttypes, sessions
+
+Running migrations:
+
+Applying contenttypes.0001_initial... OK
+
+Applying auth.0001_initial... OK
+
+Applying admin.0001_initial... OK
+
+Applying admin.0002_logentry_remove_auto_add... OK
+
+Applying contenttypes.0002_remove_content_type_name... OK
+
+Applying auth.0002_alter_permission_name_max_length... OK
+
+Applying auth.0003_alter_user_email_max_length... OK
+
+Applying auth.0004_alter_user_username_opts... OK
+
+Applying auth.0005_alter_user_last_login_null... OK
+
+Applying auth.0006_require_contenttypes_0002... OK
+
+Applying auth.0007_alter_validators_add_error_messages... OK
+
+Applying auth.0008_alter_user_username_max_length... OK
+
+Applying sessions.0001_initial... OK
+
+chongchendembp:Imocc chongchen$ python manage.py runserver 127.0.0.1:8000
+
+Performing system checks...
+
+错误2：Django 运行 端口被占用 Error: That port is already in use
+
+（1）首先查看已存在端口号列表:
+
+$ ps aux | grep -i manage
+
+（2）然后只需运行
+$ kill -9 <pid>
+
+图上显示的第二列就是进程的pid
+
+然后重新运行服务器就可以了，有如下输出：
+
+System check identified no issues (0 silenced).
+October 23, 2014 - 01:20:03
+Django version 1.7.1, using settings 'mysite.settings'
+Starting development server at https://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+则说明运行服务器成功。
+
+
+三 测试
+
+在浏览器中输入：127.0.0.1:8000
+可以看到如下图所示的画面：
+

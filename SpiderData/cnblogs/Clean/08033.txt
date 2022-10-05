@@ -1,0 +1,35 @@
+在学习注册用户的过程中，视图中下面的代码
+
+from django.contrib.auth.views import login
+
+启动django服务时，报错：
+
+ImportError: cannot import name 'login' from 'django.contrib.auth.views'
+
+第一次：修改代码为
+
+from django.contrib.auth import login
+
+django服务启动正常，但在点击login链接时又出现如下错误
+
+TypeError at /users/login/login() got an unexpected keyword argument 'template_name'
+
+第二次：修改代码为
+
+from django.contrib.auth.views import LoginView
+
+原因分析：
+
+1.从 django-1.11开始,基于函数的登录,注销等视图已被重写为基于类的视图： LoginView 和 LogoutView类,如 release notes中所指定的那样.仍然可以使用“旧的”基于函数的视图,但是被标记为已弃用.
+
+2.在django-2.1中,已删除旧的基于功能的视图,如release notes中所述.
+
+修改后代码：
+
+参考url：
+https://www.cnblogs.com/wenshuifan/p/12335227.html
+
+参考url：
+
+https://www.cnblogs.com/wenshuifan/p/12335227.html
+

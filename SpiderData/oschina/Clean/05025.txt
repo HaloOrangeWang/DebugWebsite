@@ -1,0 +1,14 @@
+开发的微信小程序项目中使用了wepy框架，今天因为旧文件缓存清除不掉而选择了清除全部缓存，依然没有解决后来是删了项目重新加载项目，然而却有这样的报错：
+
+thirdScriptError sdk uncaught third Error regeneratorRuntime is not defined ReferenceError: regeneratorRuntime is not defined
+
+原因是什么呢？新建项目没有按照wepy文档的提示重置几个开发者工具项目设置：
+
+微信开发者工具-->项目-->关闭ES6转ES5。 重要：漏掉此项会运行报错。
+
+微信开发者工具-->项目-->关闭上传代码时样式自动补全。 重要：某些情况下漏掉此项也会运行报错。
+
+微信开发者工具-->项目-->关闭代码压缩上传。 重要：开启后，会导致真机computed, props.sync 等等属性失效。（注：压缩功能可使用WePY提供的build指令代替，详见后文相关介绍以及Demo项目根目录中的wepy.config.js和package.json文件。）
+
+wepyjs - 小程序组件化开发框架
+

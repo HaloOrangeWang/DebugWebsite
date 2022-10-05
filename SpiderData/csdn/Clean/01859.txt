@@ -1,0 +1,35 @@
+一开始我安装了nmap和python-nmap两个模块
+
+一开始我安装了nmap和python-nmap两个模块
+
+import nmap 报错
+
+import nmap 报错
+
+打开Console(交互模式)，查看nmap的path
+
+打开Console(交互模式)，查看nmap的path
+
+>>>import nmap
+>>>nmap.__path__
+['/usr/local/lib/python3.6/site-packages/nmap']
+##添加路径
+>>>nmap.__path__.append("F:\\python")
+>>>nmap.__path__
+['/usr/local/lib/python3.6/site-packages/nmap', 'F:\\python']
+
+此时import nmap成功，项目中需要PortSanner()时，发现并不存在
+ ，且运行时会报错
+
+object has no attribute ‘PortScanner’解决办法
+
+卸载nmap模块和python-nmap重新安装python-nmap（只保留python-nmap）
+
+##卸载
+- pip uninstall nmap
+- pip uninstall python-nmap
+##安装
+- pip install python-nmap
+
+为了保险，建议通过settings->Project->Interpreter进行卸载和安装，这样可以保证此模块的卸载和安装是进行在此解释器上的。（因为大多数人不止一个解释器）
+

@@ -1,0 +1,19 @@
+
+前言:作为一名程序员遇到Bug总是在所难免的,但是记住"不二过",今天在Vue开发中遇到了一个报错让我纠结了许久,找了许久,
+
+报错的原因是使用了mui导入其js文件导致的.
+
+报错信息如下:
+
+Uncaught TypeError: 'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them:
+
+根据报错大概判断是由于webpack下的严格模式导致的,因为在webpack中都是严格模式的因此我们要借助软件来解决这个错误
+
+解决方法:
+
+　　1.在npm官网下载:npm install babel-plugin-transform-remove-strict-mode
+
+　　2.在.bablerc文件中加入"plugins": ["transform-remove-strict-mode"]
+
+到此你就会发现不会出现这个错误了.
+

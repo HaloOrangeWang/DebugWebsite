@@ -1,0 +1,81 @@
+This application failed to start because it could not find or load the Qt platform plugin “windows” in ” “.
+
+百度谷歌了好久都没能解决这个问题都没能解决
+
+开始我以为是缺少windows这个包，但是代码里并没有用到，所以我打断点去看代码到底问题出在哪里
+
+发现问题出在matplotlib上面，我猜想是Qt和matplotlib版本不兼容导致的，于是我卸载了这两个插件并重新安装
+
+conda uninstall qt
+conda uninstall matplotlib
+conda install qt 
+conda install matplotlib
+
+于是问题解决了
+
+附：我发现有时候pip或者conda安装了工具包，但是pycharm还是识别不到，按照如下操作
+
+会有奇效！
+
+补充知识：Python PyCharm中matplotlib.pyplot.imshow()无法绘图
+
+问题描述
+
+在利用Anaconda3 + PyCharm 2018 实现神经网络的实践中，涉及到一个根据像素数组绘制图像的实践，如下所示（这里只需要关心image_array即可，对源数据的预处理可忽略）：
+
+# coding=utf-8
+# author: BebDong
+# 10/23/18
+
+import numpy
+import matplotlib.pyplot as plt
+
+# 打开并读取文件
+data_file = open("mnist_dataset/mnist_train_100.csv")
+data_list = data_file.readlines()
+data_file.close()
+
+# image_array是一个28*28的像素数组
+all_pixels = data_list[0].split(',')
+image_array = numpy.asfarray(all_pixels[1:]).reshape((28, 28))
+plt.imshow(image_array, cmap='gray', interpolation='None')
+
+当运行时，控制台无报错信息，正常执行结束退出（exit code 0），在SciView出处无绘制出的指定图像。
+
+解决
+
+在网上找了一些资料，大部分解决方案是“调用show()”，也没有给出原因，但其实也不行。
+
+经过一番查找，发现需要引入另外一个叫做pylab的包即可。（我想原因得靠自己查阅官方文档了）
+
+# coding=utf-8
+# author: BebDong
+# 10/23/18
+
+import numpy
+import matplotlib.pyplot as plt
+
+# 直接使用plt.imshow无法显示图片，需要导入pylab包
+import pylab
+
+# 打开并读取文件
+data_file = open("mnist_dataset/mnist_train_100.csv")
+data_list = data_file.readlines()
+data_file.close()
+
+# 拆分绘制28*28图形
+all_pixels = data_list[0].split(',')
+image_array = numpy.asfarray(all_pixels[1:]).reshape((28, 28))
+plt.imshow(image_array, cmap='gray', interpolation='None')
+pylab.show()
+
+吐槽和思考
+
+其实程序猿经常会遇到一些技术问题，最直接的方法就是上网查阅资料，看看有没有其他人遇到过相同问题，如何解决，这比翻阅官方文档显然效率高得多。
+
+就个人感觉来说，目前国内的环境不容乐观，有时能看到好几篇一字不差的博文，竟然标注都是原创文章。这还算好，毕竟是原封不动的抄袭原文。更悲观的是，有些博文为了让其**“看起来”**不那么像抄袭，改得牛头马面，毫无逻辑可言。试问，您真的懂了原文的意思了吗？既然你都不懂，为何要加以“原创”的标签来展示和分享给他人呢？
+
+个人认为，原创不一定非要100%是自己的东西。你看了某个文章，学习了某个技术，有一些自己的感悟和想法，用自己的语言将它描述出来也可以称之为原创。
+
+以上这篇在pycharm中使用matplotlib.pyplot 绘图时报错的解决就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

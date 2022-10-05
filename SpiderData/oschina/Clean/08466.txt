@@ -1,0 +1,11 @@
+报错：rpm build with "fg: no job control"
+
+解决：
+# emacs rpm/test.spec
+%build
+%make_build
+替换为：
+%build
++make %{?_smp_mflags}
+%make_build
+

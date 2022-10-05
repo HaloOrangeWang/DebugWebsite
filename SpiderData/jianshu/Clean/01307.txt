@@ -1,0 +1,74 @@
+Traceback (most recentcalllast):
+
+File"C:\Users\billl\AppData\Local\Continuum\anaconda3\lib\site-packages\IPython\core\interactiveshell.py", line2963,inrun_code
+
+exec(code_obj, self.user_global_ns, self.user_ns)
+
+File"<ipython-input-3-dee130e5b113>", line1,in
+
+AES.new("asssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssdfasasasasa", AES.MODE_ECB)
+
+File"C:\Users\billl\AppData\Local\Continuum\anaconda3\lib\site-packages\Crypto\Cipher\AES.py", line232,innew
+
+return_create_cipher(sys.modules[__name__],key,mode, *args, **kwargs)
+
+File"C:\Users\billl\AppData\Local\Continuum\anaconda3\lib\site-packages\Crypto\Cipher\__init__.py", line79,in_create_cipher
+
+returnmodes[mode](factory, **kwargs)
+
+File"C:\Users\billl\AppData\Local\Continuum\anaconda3\lib\site-packages\Crypto\Cipher\_mode_ecb.py", line215,in_create_ecb_cipher
+
+cipher_state = factory._create_base_cipher(kwargs)
+
+File"C:\Users\billl\AppData\Local\Continuum\anaconda3\lib\site-packages\Crypto\Cipher\AES.py", line93,in_create_base_cipher
+
+raiseValueError("Incorrect AES key length (%d bytes)"%len(key))
+
+ValueError: Incorrect AESkeylength(95bytes)
+
+​
+
+这个报错是说AES的KEY长度超过了限制
+
+除了MODE_SIV模式key长度为：32, 48, or 64,
+
+其余key长度为16, 24 or 32
+
+内部函数说明：
+
+"""CreateanewAES cipher.
+
+:paramkey:
+
+The secretkeytouseinthe symmetric cipher.
+
+It must be16,24or32byteslong(respectivelyfor*AES-128*,
+
+*AES-192*or*AES-256*).
+
+For``MODE_SIV``only, it doublesto32,48,or64bytes.
+
+:typekey:bytes/bytearray/memoryview
+
+:parammode:
+
+The chainingmodetouseforencryptionordecryption.
+
+Ifindoubt,use``MODE_EAX``.
+
+:typemode: Oneofthe supported``MODE_*``constants
+
+------------------------------
+
+ID：Python之战
+
+|作|者|公(zhong)号:python之战
+
+专注Python，专注于网络爬虫、RPA的学习-践行-总结
+
+喜欢研究和分享技术瓶颈，欢迎关注
+
+独学而无友,则孤陋而寡闻！
+
+--------------------------
+

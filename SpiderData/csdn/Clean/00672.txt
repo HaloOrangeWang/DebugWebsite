@@ -1,0 +1,378 @@
+目录
+
+一、Python2升级Python3发生的错误
+
+1、print 变成了 print()
+
+2、raw_Input 变成了 input
+
+3、整数及除法的问题
+
+4、异常处理大升级
+
+5、解决 “NameError: name 'xrange' is not definedw” 错误提示
+
+6、解决“name 'reload' is not defined 和 AttributeError: module 'sys' has no att” 错误提示
+
+7、解决”python unicode is not defined” 错误提示
+
+8、解决 “AttributeError: 'diet' object has no attribute 'has_key' ”错误提示
+
+9、解决“lmportError: No module named urllib2”错误提示
+
+二、程序常见错误
+
+1、解决 “IndentationError:excepted an indented bloc” 错误提示
+
+2、解决“no module named XX"错误提示
+
+3、解决“TypeError: 'tuple' object cannot be interpreted as an integer"错误提示
+
+4、解决“lOError: File not open for writing” 错误提示
+
+5、解决“SyntaxError:invalid syntax” 错误提示
+
+6、解决“TypeError: 'str' object does not support item assignment”错误提示
+
+7、解决 “TypeError: Can't convert 'int' object to str implicitly”错误提示
+
+8、错误的使用类变量
+
+9、错误地理解Python的作用域
+
+Hello！你好呀，我是灰小猿，一个超会写bug的程序猿！
+
+前两天总结了一篇关于Python基础入门的文章“【全网力荐】堪称最易学的Python基础入门教程”，受到了很多小伙伴的点赞和支持，感兴趣的小伙伴可以去看一下，但是同时也是有很多人留言或者私信我说，刚开始接触基础知识并不牢固，在编程的时候还是会遇到很多的问题，所以今天在这里和大家总结记录一下Python开发中常见的错误排查及其解决方案，希望能对大家学习Python编程有所帮助，大家可以先收藏关注！之后遇到了慢慢解决！
+
+在编写并调试Python程序的过程中，总会遇到这样或那样的错误，其中绝大多数错误都是由于大家粗心或语法错误引起的。所以接下来我总结了常见的错误类型及其详细讲解和解决排查方案。
+
+
+一、Python2升级Python3发生的错误
+
+在当前Python开发中，Python有2.7和Python3.x两个大的版本分支。2.7的版本是比较老一点的，可能在网络教程、教学文档和出版图书中有的是用Python2.7实现的，
+
+但是现在的大部分Python开发已经使用了3.x的版本，所以当我们直接将Python 2.7代码运行在Python 3.x环境中时， 可能会发生一些语法错误。接下来就总结一下。
+
+
+1、print 变成了 print()
+
+在Python2版本中，print是作为一个语句使用的，在 Python3版本中print。作为一个函数出现。下面通过两段代码来展示两个版本的区别。
+
+Python 2.x版本代码如下：
+
+>>>i = 1
+>>>print ' Python * * is', 'number', i
+
+Pythonis number 1
+
+Python 3.x版本代码如下：
+
+>>>i = 1
+>>>print (' Python * * is ', * number', i)
+
+Pythonis number 1
+
+也就是说，在Python 3版本中，所有的print内容必须用小括号括起来。
+
+
+2、raw_Input 变成了 input
+
+在Python 2版本中，输入功能是通过raw_input实现的。而在Python 3版本中，是通过input实现的。下面来看 两行代码的区别：
+
+name = input('What is your name?\n') #python3版本 的代码
+
+name = raw_input ("What is your name?\n") # python2 版本的代码
+
+
+3、整数及除法的问题
+
+刚开始学习在编写Python程序时，特别是将Python2的程序在Python 3环境下运行时，很可能会遇到 “TypeError: 'float* object cannot be interpreted as an integer”错误。例如下面的代码是在 Python 2 运行成功的:
+
+batch = 200
+for x in range(len(order_nos) / batch + 1):
+
+# do something
+
+其中，order_nos是订单列表，而在Python 3环境下运行时会提“TypeError:'float' object cannot be interpreted as an integer”错误，意思是float类型不能解释为int类型。 这是因为在Python 3中，int和long统一为int类型，int 表示任何精度的整数。在以前的Python 2版本中，如果参数是int或者是long的话，就会返回相除后结果的向下取整(floor),而如果参数是float或者是complex的话，那么就会返回相除后结果的一个恰当的近似。当使用int超过本地整数大小时，不会再导致OverflowError 异常。long类型在Python 3中已经消失，并且后缀L也已经弃用。
+
+下面是两个版本的除法对比：
+
+1/2 #Python 2版本中的结果是0
+
+1/2 #Python 2版本中的结果是0
+
+1/2 #Python 3版本中结果是0.5,这样比较合理
+
+1/2 #Python 3版本中结果是0.5,这样比较合理
+
+与之相对应的是，除法也发生了变化，Python 3中的“/”总是返回一个浮点数，永远表示向下除法。所以当涉及除法“/” 操作遇到 “TypeError: 'float' object cannot be interpreted as an integer"错误时，只需将“/”修改为 “//” 即可。
+
+
+4、异常处理大升级
+
+在Python 2程序中，捕获异常的格式如下：
+
+except Exception, identifier
+
+在Python 3程序中，捕获异常的格式如下：
+
+except Exception as identifier
+
+例如，下面是Python 2捕获异常的演示代码：
+
+except ValueError, e: # Python 2处理单个异常
+except (ValueError, TypeError), e: # Python 2处理 多个异常
+
+而下面是Python 3捕获异常的演示代码：
+
+except ValueError as e: # Python3处理单个异常
+except (ValueError, TypeError) as e: # Python3处理多个异常
+
+在Python 2程序中，抛出异常的格式如下：
+
+raise Exception, args
+
+在Python 3程序中，抛出异常的格式如下：
+
+raise Exception(args)
+
+例如，下面两行代码演示了两种版本抛出异常的方法：
+
+raise ValueError, e # Python 2 .x 的方法
+
+raise ValueError(e) # Python 3.x 的方法
+
+
+5、解决 “NameError: name 'xrange' is not definedw” 错误提示
+
+这个错误也是版本问题，Python2使用的是xrange()函 数，在Python3版本被range()函数代替。所以在Python 3 程序中，只需将xrange修改为range即可解决这个问题。
+
+
+6、解决“name 'reload' is not defined 和 AttributeError: module 'sys' has no att” 错误提示
+
+在Python 3.6程序中不能直接使用reload,要想兼容 Python 2中的reload功能，需要加入如下所示的代码:
+
+import importlib
+importlib.reload(sys)
+
+
+7、解决”python unicode is not defined” 错误提示
+
+在Python 3程序中经常会遇到"python unicode is not defined”错误提示，这是因为在Python 3中已经没有了 Unicode类型,被全新的str类型所代替。而Python 2中原有的str类型，在Python 3中被bytes所代替。
+
+
+8、解决 “AttributeError: 'diet' object has no attribute 'has_key' ”错误提示
+
+例如，下面的报错过程：
+
+>>> d={}
+>>> d.has_key('name')
+
+Traceback (most recent call last):
+
+File "<pyshell#l>", line 1, in <module>
+
+d.has_key(1name')
+
+AttributeError: * diet * obj ect has no attribute ' has_key *
+
+这是因为在Python 3中已经舍弃了 has_key,修改方法 是用in来代替has_key,修改为：
+
+>>> d={}
+>>> 'name' in d
+
+True
+
+
+9、解决“lmportError: No module named urllib2”错误提示
+
+在 Python 3 中 urllib2 已经被 urllib.request 替代，所以 解决方法是将urllib2修改为urllib.request。
+
+
+二、程序常见错误
+
+
+1、解决 “IndentationError:excepted an indented bloc” 错误提示
+
+这是一个很多初学者经常会犯的错误，这个错误会让人欲哭无泪！这个错误并不是语法错误的问题，而是用户代码书写规范的问题。因为Python是一个对代码缩进非常敏感的语言，个人认为这也是Python语言的一个缺陷哈，整个循环结构可能是依靠缩进的形式来表示的。
+
+刚开始学习最常见的错误就是混用Tab和Space键实现代码缩进，这是很容易报错的，而且肉眼很难分辨出来。虽然很多IDE编辑器可以选择显示空格，但是即便是这样，也很难找到到底哪里有问题。所以建议小伙伴在程序中只使用Tab键实现代码缩进，或者只使用Space键实现代码缩进。
+
+另外，上面的报错还有一个原因经常遇到，就是无首行缩进，例如在编写if语句时在后面加冒号，如果直接换行， 好多代码编辑器会自动首行缩进。但是有些代码编辑器可能没有这个功能，这时需要大家手动缩进，这最好养成习惯。 请大家不要连续敲几次空格键，建议直接按一下Tab键就行了。
+
+
+2、解决“no module named XX"错误提示
+
+毫无疑问，这个错误可能是大家在学习和开发过程中遇到的最多的错误，没有之一。随着大家开发水平的提高和程序复杂性的提升，将会在程序中用到越来越多的模块和第三方库。那时候将会经常遇到“no module named XX” 错误，这个错误的原因是没有安装库“XX”。当遇到这个错误的时候，需要使用如下命令安装库XX：
+
+pip install ww
+
+
+3、解决“TypeError: 'tuple' object cannot be interpreted as an integer"错误提示
+
+请看下面的代码：
+
+t=('a','b','c')
+for i in range(t):
+print (t [i])
+
+上述代码会报错：TypeError: 'tuple* object cannot be interpreted as an integer
+
+这是一个典型的类型错误问题，在上述代码中，rangeO 函数期望的传入参数是整型(integer),其但是却传入的参为元组(tuple) ，解决方法是将入参元组t改为元组个数 整型len(t)类型即可，例如将上述代码中的range(t)改为 range(len(t))。
+
+
+4、解决“lOError: File not open for writing” 错误提示
+
+这是一个典型的文件操作权限问题，例如下面的演示代码会爆出这个错误：
+
+>>> f=open ("hello. py")
+>>> f.write ("test")
+
+Traceback (most recent call last):
+File "<stdin>n" line 1, in <module> 
+lOError:File not open for writing
+
+出错原因是在没有在open("hello.py")的传入参数中添加读写模式参数mode,这说明默认打开文件的方式为只读方式，而在上述代码中需要写入字符操作功能，所以出现 权限受限问题，才会报错。解决方法是更改模式mode,修改为写入模式权限w+：
+
+f = open("hello. py", "w+")
+f. write("test")
+
+
+5、解决“SyntaxError:invalid syntax” 错误提示
+
+这个错误通常是由于忘记在if、elif、else、for、while、 class和def等语句末尾添加冒号引起的，例如：
+
+if spam == 42 print("Hello!")
+
+解决方法是在最后添加冒号“:”.
+
+还有一种情况也会引发上述错误，错误的使用了“=”而不是“==”。在Python程序中，“=”是赋值操作符，而“==”是等于比较操作。
+
+
+6、解决“TypeError: 'str' object does not support item assignment”错误提示
+
+这个错误通常是由于尝试修改string的值引起的，string 是一种不可变的数据类型。例如在如下代码中会发生该 错误：
+
+spam = 'I have a pet cat'
+spam[13] = 'r'
+print(spam)
+
+修改方法是:
+
+spam =  'I have a pet cat.'
+spam = spam[:13] + 'r' + spam[14:] 
+print(spam)
+
+
+7、解决 “TypeError: Can't convert 'int' object to str implicitly”错误提示
+
+这个错误通常是由于尝试连接非字符串值与字符串引 起的，例如在如下代码中会发生该错误：
+
+numEggs = 12
+print('I have ' + numEggs + "eggs.")
+
+解决方法是修改为：
+
+numEggs = 12
+print("i have "+ str(numEggs) + " eggs.")
+
+也可以修改为：
+
+numEggs = 12
+print('I have %s eggs.' % (numEggs))
+
+
+8、错误的使用类变量
+
+考虑下面的演示过程：
+
+class A (object):
+    x = 1
+
+class B (A):
+    pass
+
+class C (A):
+    pass
+
+print (A.x, B.x, C.x)
+# 1 1 1
+
+B.x = 2
+print (A.x, B.x, C.x)
+# 1 2 1
+
+A.x = 3
+print (A.x, B.x, C.x)
+# 3 2 3
+
+我们只修改了 A.x,为什么C.x也被改了？在Python 程序中，类变量在内部当做字典来处理，其遵循常被引用的方法解析顺序(MRO)。所以在上面的代码中，由于class C中的x属性没有找到，它会向上找它的基类(尽管Python 支持多重继承，但上面的例子中只有A)。换句话说，class C中没有它自己的x属性，其独立于A。因此，C.x事实上 是A.x的引用。
+
+
+9、错误地理解Python的作用域
+
+Python是基于LEGB来进行作用于解析的，因此在开发中还有一些需要注意的地方，先看下面一段代码：
+
+x = 10
+def foo ():
+    x += 1
+    print(x)
+foo ()
+
+Traceback (most recent call last):
+  File "D:/程序代码/Python/QRcode_Make/test.py", line 5, in <module>
+    foo ()
+  File "D:/程序代码/Python/QRcode_Make/test.py", line 3, in foo
+    x += 1
+UnboundLocalError: local variable 'x' referenced before assignment
+
+上述代码出错的原因是：局部变量x没有初始值，外部变量X不能引入到内部。
+
+再看下面列表操作的情况:
+
+lst = [1,2,3]   #给列表lst赋值
+lst. append (4)     #丄t后边append—*个元素4
+print(lst)
+# [1, 2, 3, 4]
+
+lst += [5]  #两个列表合并
+print(lst)
+# [1, 2, 3, 4, 5]
+
+def fool():
+    lst.append(6)   #函数会査找外部的：1st列表
+
+fool ()
+print(lst)
+# [1, 2, 3, 4, 5, 6]
+
+def foo2():
+    lst += [6] #合并列表时，不会査找外部列表，让人有 些不可思议吧
+
+foo2 ()
+
+Traceback (most recent call last):
+  File "D:/程序代码/Python/QRcode_Make/test.py", line 26, in <module>
+    foo2 ()
+  File "D:/程序代码/Python/QRcode_Make/test.py", line 24, in foo2
+    lst += [6] #合并列表时，不会査找外部列表，让人有 些不可思议吧
+UnboundLocalError: local variable 'lst' referenced before assignment
+
+上述代码的出错原因和前面的例子相同，小伙伴们看了可能就会有疑问了，为什么fool可以合并，而fool2就不能合并呢？
+
+原因是因为：fool没有对lst进行赋值操作，而fool2做了。 要知道，lst += [5]是lst = lst + [5]的缩写，我们试图对lst 进行赋值操作(Python把他当成了局部变量)。此外，我们对lst进行的赋值操作是基于lst自身(这再一次被Python 当成了局部变量)，但此时还未定义，因此出错！所以在这里就需要格外区分局部变量和外部变量的使用过程了。
+
+
+在学习中有疑问或者不懂的地方欢迎小伙伴评论留言！
+
+
+之后持续为大家更新更多关于Python的技术分享！
+
+
+觉得有用的小伙伴记得点赞关注哟！
+
+
+灰小猿陪你一起进步！
+
+同时给大家推荐一个CSDN官方的Python全栈知识图谱学习路线，涵盖Python六大模块，100+知识点，内容梳理全面，难点，痛点罗列齐全，可以说这本知识图谱上的每一句话，都价值千金，这是CSDN联合6位一线Python工程师，花费3个月反复打磨，旨在帮助大家Python知识体系，具备实战经验，破解开发和面试难题！非常适合学习Python的小伙伴们！
+

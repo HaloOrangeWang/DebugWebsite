@@ -1,0 +1,211 @@
+报错1:
+
+Event loop is closed  !
+
+或者打断点调试查看loop的值为:
+
+<_WindowsSelectorEventLoop running=False closed=True debug=False>
+
+解决参考:https://xbuba.com/questions/51894809
+
+解决:
+
+代码:
+
+# Windows平台loop = asyncio.get_event_loop（）将创建一个_WindowsSelectorEventLoop对象。
+# 运行默认值为True。所以你应该删除“loop.run_until_complete（some_task（））”
+# 如果你在linux平台上运行，你将得到一个_UnixSelectorEventLoop对象。
+# < _UnixSelectorEventLoop running=False closed=False debug=False > 那没关系。
+
+self.loop = asyncio.get_event_loop()
+
+if platform.system() == 'Linux' or platform.system() == 'Darwin':
+    self.loop.run_until_complete(self.handle_main(data))
+else:
+    self.handle_main(data)
+# self.redis_close()
+
+MR.zhou 解决方案:
+
+def 为同步函数,async 为异步函数,同步函数里面调用异步函数应该注意:
+
+··· 在kafka_to_redis模块中:函数handle_single_tx() 发现以下问题:
+
+这里函数处理的是eth的address库的redis持久化!
+
+处理模块:
+
+这个模块是做 eth 的 address库的方法:
+
+做eth 地址库的两个思路,一个是根据已经做好的transactions库 来做mongo的语法操作,第二个是按照如下格式存入Redis中,存入redis中就不存mongo了.
+
+问题3:报错:
+
+ERR max number of clients reached',)
+(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None)
+
+报错:
+
+解决5:
+
+报错4:
+
+由于网络上有重名，没有连接。如果加入域，请转到“控制面板”中的“系统”更改计算机名，然后重试。如果加入工作组，请选择其他工作组名
+
+解决:
+
+https://blog.csdn.net/caz28/article/details/49274435?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
+
+5/25
+
+1.报错:Future exception was never retrieved!
+
+解决:
+
+2.异步睡眠
+
+await asyncio.sleep(1)
+
+同步睡眠:
+
+import time
+time.sleep(2)
+
+3.redis 命令参考:http://doc.redisfans.com/index.html
+
+multi=self.redis.pipeline()
+multi.hincrbyfloat(f"{addr_from}_info", "send_value", value)
+
+# sismember判断成员元素是否是集合的成员。返回值为真返回1
+# hincrby为哈希表 key 中的域 field 的值加上增量 increment
+# hmset同时将多个 field-value (域-值)对设置到哈希表 key 中。
+# hincrbyfloat 为哈希表 key 中的域 field 加上浮点数增量 increment
+
+报错: localhost:9092/bootstrap: Timed out 1 in-flight, 0 retry-queued, 0 out-queue, 0 partially-sent requests
+
+localhost:9092/bootstrap: Timed out ApiVersionRequest in flight (after 10003ms, timeout #0)
+
+解决:
+
+在windows 下的kafka 生产者窗口  crtl+c 停止 ,再重启kafka
+
+1.zkServer    打开zookeeper
+2. 开启kafka:      .\bin\windows\kafka-server-start.bat .\config\server.properties
+3.消费者:     .\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test2020 --from-beginning
+4.生产者:  .\bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic test
+5. 关闭zookeeper: 进入文件夹bin,   .\zkServer.sh stop
+6. 关闭 kafka: 进去kafka文件  bin\kafka-server-stop.sh
+注意:先要打开zk和kafka才能创建topic
+7.创建topic:    .\bin\windows\kafka-topics.bat --create -zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic "test2020"
+8.查看topic:    .\bin\windows\kafka-topics.bat --zookeeper localhost:2181 --list
+
+
+怎么把代码在服务器上跑:(怎么在服务器上使用tx_file_to_address.py)
+
+直接把项目的代码复制一份到服务器(注意配置好数据的路径),
+
+怎么把代码在服务器上跑:(怎么在服务器上使用tx_file_to_address.py)
+
+直接把项目的代码复制一份到服务器(注意配置好数据的路径),
+
+然后用python3 执行tx_file_to_address.py,(就可以去处理备份在服务器上的数据)
+
+检查服务器的python环境版本: python --version
+
+切换:     cd  /backup/etc/chain-monitor/src/tools
+运行:     python3  tx_address_to_redis.py
+
+
+6.kafka_to_mongodb.py模块报错:
+
+__main__:handler:50 - MongoDB can only handle up to 8-byte ints
+
+解决:
+
+在kafka_to_mongodb.py 中打开注释
+
+7.本地daocker部署时报错:
+
+MISCONF Redis is configured to save RDB snapshots, but it is currently not able to persist on disk.。。。。
+
+解决
+
+启动reids服务后，打开新的终端，输入redis-cli进入redis客户端,然后输入代码：config set stop-writes-on-bgsave-error no
+
+8.在服务器上运行tx_file_to_redis.py的时候报错:
+
+redis出现OOM command not allowed when used memory > 'maxmemory'
+
+分析:
+
+1.在托管服务器中不能修改配置,那么就是可能峰值redis的内存超过了最大内存,
+
+解决:
+
+将进程数调小,在进行运行
+
+2.redis在命令行添加key时出现OOM command not allowed when used memory > 'maxmemory'这个错误，显然是redis分配的不足
+
+在Redis desktop manger 中输入
+
+使用info memroy命令查看redis的内存使用情况：
+
+INFO
+info memory
+
+经过代码对比,之所以之前address_to_redis模块
+
+没有数据,因为没有调用到,这里需要用await 去调用!
+
+10.部署阿里云上时,模块redis报错:
+
+WARNING you have Transparent Huge Pages (THP) support enabled in your 
+kernel. This will create latency and memory usage issues with Redis. To fix this 
+issue run the command 'echo never > 
+/sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your 
+/etc/rc.local in order to retain the setting after a reboot. Redis must be restarted 
+after THP is disabled.
+
+解决:
+
+redis-cli
+
+flushall
+
+11.报错;
+
+RDB: 0 MB of memory used by copy-on-write
+
+12.报错:
+
+Ready to accept connections
+
+参考https://blog.csdn.net/yzf279533105/article/details/105293829/?utm_medium=distribute.pc_relevant.none-task-blog-baidujs-2
+
+办法：将net.core.somaxconn = 1024添加到/etc/sysctl.conf中，然后执行sysctl -p 生效配置，如下图
+
+办法：将vm.overcommit_memory = 1添加到/etc/sysctl.conf中，然后执行sysctl -p生效配置，如下图（由于刚执行了第一个警告的修复，所以两条命令都有）
+
+13.运行kafka_to_redis模块报错:
+
+KafkaError{code=_TRANSPORT,val=-195,str="FindCoordinator response error: Local: Broker transport failure"}
+
+kafka consumer error: (KafkaError{code=_TRANSPORT,val=-195,str="FindCoordinator response error: Local: Broker transport failure"},)
+
+原因:本地kafka服务异常中断
+
+解决:重启本地kafka
+
+14.本地kafka启动不了报错:
+
+參考：https://blog.csdn.net/szxiaohe/article/details/103639127
+
+ERROR Shutdown broker because all log dirs in E:\kafka\kafka_2.11-2.4.0\log have failed (kafka.log.LogManager)
+
+解决:
+
+去报错提示的目录下删除log里topic日志，重启kafka还是报错。原来删除kafka的log目录还不能解决此问题，还得删除zookeeper里zoo.cfg里配置的dataDir目录。
+
+
+注意：如果是重要数据，一定要备份！！！
+

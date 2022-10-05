@@ -1,0 +1,33 @@
+执行mvn clean package spring-boot:repackage，报错如下：
+
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:1.5.3.RELEASE:repackage (default)
+ on project webapps-api-bid: Execution default of goal org.springframework.boot:spring-boot-maven-plugin:1.5.3.RELEASE:
+ repackage failed: Unable to find main class
+
+错误提示：
+
+repackage failed: Unable to find main class
+
+原因：
+
+多模块打包时，如果项目模块包含common，core等模块，这些模块不需要启动，应把其打成不可执行包来使用那当我们在maven中有多重依赖时，应注意一点，Common打包出来的应该是不可执行的jar包，所以不要在Common的pom中定义spring-boot-maven-plugin插件。
+
+项目    
+yixue（父类工程，定义各模块，指定模块依赖jar版本）
+|------------------------------
+|--yixue-admin    后台用户注册
+|
+|--yixue-course  后台视频管理
+|
+|--yixue-commom     common工具包，维护工具类，公共类
+|
+|--yixue-ui    web界面，请求跳转，拦截等
+|
+|--yixue-eureka   SpringCloud注册
+
+解决方法：
+
+common项目中除了必要的依赖包以外，maven打包的插件不要再添加一遍了，因为这个SpringBoot插件会在Maven的package后进行二次打包，目的为了生成可执行jar包，如果C中定义了这个插件，会报错提示没有找到main函数
+
+简单来说，如果你的root：`<parent></parent>`项目已经添加了`spring-boot-maven-plugin`插件，那么common就别依赖root了，自己包含一些必要的依赖包，之后别手动添加打包插件即可，如果打包还是失败的话，对root项目clean再install一下，之后应该没有什么问题了
+

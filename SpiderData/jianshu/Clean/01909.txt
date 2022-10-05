@@ -1,0 +1,46 @@
+最近在打算用python连接sql server，查阅资料后发现可以用pyodbc连接，于是pip3 install pyodbc 先安装一下此package
+
+安装成功后，运行一下连接demo，python demo.py
+
+报错 image not found
+
+Traceback (most recent call last): File "", line 1, in File "access.py", line 10, in       init self.connection = connect(driver='{Microsoft Access Driver (.mdb)}', dbq=path, pwd=password) pyodbc.Error: ('00000', '[00000] [iODBC][Driver Manager]dlopen({Microsoft Access Driver (.mdb)}, 6): image not found (0) (SQLDriverConnect)')
+
+于是打开pycharm，配置下Configuration后直接运行，同样报错
+
+怀疑是pyodbc是不是与jdbc一样需要安装驱动程序呢，去微软官网查了下果真如此，如果是windows平台的话，pip安装完后就可以直接import了，但mac不行，必须安装odbc的驱动程序
+
+若要在 macOS 上安装 Microsoft ODBC Driver 17 for SQL Server，请运行以下命令：
+
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
+brew update
+HOMEBREW_NO_ENV_FILTERING=1 ACCEPT_EULA=Y brew install msodbcsql17 mssql-tools
+
+一条一条命令复制到terminal运行即可，注意第一条命令可能会失效，替换成如下命令即可：
+
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+全部安装完毕后，再来测试一下连接demo
+
+server = '数据库地址'
+database = '数据库名'
+username = '用户名'
+password = '密码'
+cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+cursor = cnxn.cursor()
+cursor.execute("SELECT @@version")
+row = cursor.fetchone()
+while row:
+  print(row[0])
+  row = cursor.fetchone()
+
+返回如下数据库版本信息说明连接成功了
+
+Microsoft SQL Server 2016 (SP1) (KB3182545) - 13.0.4001.0 (X64) 
+    Oct 28 2016 18:17:30 
+    Copyright (c) Microsoft Corporation
+    Enterprise Edition (64-bit) on Windows Server 2012 R2 Datacenter 6.3 <X64> (Build 9600: ) (Hypervisor)
+
+以上
+

@@ -1,0 +1,17 @@
+python 报错 AttributeError: module ‘string’ has no attribute ‘letters’ 的解决方法。
+
+遇到上述报错，是因为你用的python3，在这里我写的是一个生成验证码的代码如下
+
+import string,random
+field = string.letters + string.digits 
+def getRandom():
+    return "".join(random.sample(field,4))
+def concatenate(group):
+    return "-".join([getRandom() for i in range(group)])
+def generate(n):
+    return [concatenate(4) for i in range(n)]
+if __name__ == '__main__':
+    print (generate(200))
+
+在这里把field = string.letters + string.digits 改为 field = string.ascii_letters + string.digits 就好啦~
+

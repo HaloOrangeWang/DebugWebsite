@@ -1,0 +1,26 @@
+进行数据迁移时：
+
+第一步：
+
+命令：python manage.py makemigrations
+
+在对应的应用里面的migrations文件夹中产生了一个0001_initial.py文件
+
+第二步：执行sqlmigrate命令查看生成的文件本质
+
+命令：python manage.py sqlmigrate 应用名 文件名前缀
+
+例如：python manage.py sqlmigrate myblog 0001
+
+第三步：执行migrate命令真正生成数据库表文件
+
+命令:python manage.py migrate
+
+现在出现一个问题：当执行第三步，同步数据库的时候，报错：
+
+经过网上搜索，原因是：
+
+django2.1 版本不再支持mysql5.5
+
+没办法，我的解决办法是：更换了Django版本号，或者mysql版本号。
+

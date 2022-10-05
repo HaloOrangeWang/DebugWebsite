@@ -1,0 +1,31 @@
+描述：
+
+　　将centos7升的python版本由2.7升级到3.6之后，发现yum命令报错，错误如下：
+
+　　
+
+问题原因：
+
+　　yum是使用python2*等开发，在升级到python3之后语法报错
+
+解决方案：
+
+　　修改 /usr/bin/yum和/usr/libexec/urlgrabber-ext-down文件，指定使用python2.7作为yum的解释器。
+
+　　具体如下：
+
+　　
+
+vim /usr/bin/yum
+
+vim /usr/libexec/urlgrabber-ext-down
+
+#! /usr/bin/python2.7
+#  A very simple external downloader
+#  Copyright 2011-2012 Zdenek Pavlas
+
+#   This library is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU Lesser General Public
+
+　　
+

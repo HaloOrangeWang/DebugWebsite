@@ -1,0 +1,35 @@
+
+文章目录
+
+read报错
+
+Workbook的save报错
+
+解决方案总结
+
+with open('setting.txt', 'r') as f:
+	str = f.read()
+
+报错：UnicodeDecodeError: ‘gbk’ codec can’t decode byte 0xa5 in position 11: illegal multibyte sequence
+
+修改open函数，添加encoding参数。
+
+with open('setting.txt', 'r', encoding='utf-8') as f:
+	str = f.read()
+
+f = xlwt.Workbook()
+f.save('test.xls')
+
+报错：UnicodeDecodeError: ‘ascii’ codec can’t decode byte 0xe6 in position 0: ordinal not in range(128)
+
+修改xlwt.Workbook，指定编码，添加encoding参数。
+
+f = xlwt.Workbook(encoding='utf-8')
+f.save('test.xls')
+
+遇到相同报错，主要编码问题，.py文件和要处理文件保持编码同步。
+
+推荐都使用utf-8，要注意文件开头都加上
+
+# -*- coding:utf-8 -*-
+

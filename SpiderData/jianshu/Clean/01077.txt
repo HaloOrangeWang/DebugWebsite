@@ -1,0 +1,72 @@
+Mac平台重新设置MySQL的root密码
+
+您是否忘记了Mac OS 的MySQL的root密码? 通过以下4步就可重新设置新密码：
+
+停止
+mysql server. 通常是在 '系统偏好设置' > MySQL > 'Stop MySQL Server'
+
+停止
+
+mysql server. 通常是在 '系统偏好设置' > MySQL > 'Stop MySQL Server'
+
+打开终端，输入：
+
+打开终端，输入：
+
+sudo /usr/local/mysql/bin/mysqld_safe --skip-grant-tables
+
+打开另一个新终端，输入:
+
+sudo /usr/local/mysql/bin/mysql -u root       # 分四次输入
+
+UPDATE mysql.user SET authentication_string=PASSWORD('新密码') WHERE User='root';
+
+FLUSH PRIVILEGES;
+
+\q
+
+重启MySQL.
+
+*以上方法针对 MySQL V5.7.9, 旧版的mysql请使用：UPDATE mysql.user SET Password=PASSWORD('新密码') WHERE User='root';
+
+有时候上述操作还会报错：ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement.
+
+这就蛮奇怪的，因为刚刚我就是输入密码进去的，原因未知，好的，那我只好再设置：
+
+mysql> SET PASSWORD = PASSWORD('123456');      # 123456 是重置的新密码
+
+参考官方的文档
+
+
+在 MAC 下配置 MySQL5.7.20 数据库的编码问题
+
+上面的步骤，我们成功的更改了密码，其实在安装的时候，并没有出现提示需要输入密码，这点我也蛮奇怪的。
+
+mysql> show variables like '%char%';
+
+输入上述代码，发现我的mysql格式不对，所以必须调整。网上搜的各种教程其实和我的不一样，有些需要的找的文件夹我也没有，最后误打误撞，摸出规律。
+
+首先在终端输入
+
+/usr/local/
+
+并open .打开该文件夹；
+
+看到macos10.12-x86_64文件夹，进入；
+
+再看到里面的文件夹 support-files 拷贝到桌面；
+
+将如下图的 magic 文件更名，并用 Xcode 打开，将代码替换成：
+
+[client]
+default-character-set = utf8
+
+[mysqld]
+default-storage-engine = INNODB
+character-set-server = utf8
+collation-server = utf8_general_ci
+
+最后，我们再次在 系统偏好设置 里开启 mysql服务，进入终端，输入代码即可看到编码已经正确
+
+注：上图中的 magic 显示无后置名，直接按照 my.cnf 更改即可。magic 不是text，貌似是一种特殊的文件形式
+

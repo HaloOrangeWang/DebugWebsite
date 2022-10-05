@@ -1,0 +1,44 @@
+
+celery使用eventlet模式task中操作django的orm报错解决
+
+若celery使用eventlet模式task中操作django的orm会出现报错如下
+
+
+结论与解决方法
+
+
+结论
+
+原因是eventlet对thread的获取线程id的方法get_ident()进行了重写，导致celery创造的线程id 和 如果用原生的thread的get_ident()获取的id不一样。
+
+而django的db模块的代码，在数据库操作关闭时，会对创建这个连接进行验证是否是同 一个thread进行操作，如果不是一个操作，就会报错。验证是否为同一个id就是用原生的thread的get_ident()获取线程的id，导致报错
+
+那解决方法就从双方获得的线程id需一致入手。
+
+
+解决方法：
+
+一.直接对eventlet.green.thread 中的get_ident（）修改为return 0，其实就是改成了原生的get_ident()。但毕竟是改源码，并且eventlet作者这样修改肯定有他的理由，所以不知道会造成什么影响很不推荐。不过这样是能用的。代码如下
+
+二.在 https://blog.csdn.net/u014007037/article/details/86645862 中看到的将 eventlet 在调用monkey_patch() 时，不对thread进行打补丁，即monkey_patch(thread=False)。然而这方法对我来说用了还是报错。
+
+三.django在orm操作时任何时候，需要一个数据库连接的话，Django就会创建一条出来，或者用本线程已有的那条。那直接在操作orm前创建一个连接，并且对其创建线程id的属性改为celery所创建的线程id即可，但一定要手动关闭连接，因为在过了django中settings里的MAX_AGE之后会自动关闭，但由于改过了connection的线程id属性，是无法自动关闭而报错的的。或者在orm操作完成后把id属性改回0。示例如下
+
+
+解决方法的历程
+
+先是知道了该问题是eventlet的修改原生get_ident()方法，那就不用celery 的eventlet模式就好了。然而我的开发环境是windows，不用eventlet会报'not enough values to unpack (expected 3, got 0)'的错误。
+
+然后就只能改变想法，想到关键点在于让两个获取的id相等，那只能从eventlet或django入手。django源码过于宏大，那就先从eventlet开刀，直至用了方法一解决问题。
+
+然而这种解决方式实在太low，虽然可用，但改了源码，不知道会出现什么影响，实在无法安心使用。
+
+然后花了两个多小时看了django.db的源码，也参考了https://www.jianshu.com/p/ac87788b55f3的源码解析，最终改用方法三。在找解析的时候还知道了有人用django的orm做非web项目，但连接耗尽的情况，来自 https://blog.csdn.net/gzlaiyonghao/article/details/82959426 ，所以一看到自己项目无法自动关闭连接的时候马上就想到了手动关连接的解决方法。
+
+
+参考文献
+
+https://www.jianshu.com/p/ac87788b55f3
+
+https://blog.csdn.net/gzlaiyonghao/article/details/82959426
+

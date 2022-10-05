@@ -1,0 +1,73 @@
+最近学习python又遇到了一些问题，其中肯定有自己对开发环境和工具不熟悉的地方，今天这篇文章讨论以下问题的解决过程：
+
+（1）eclipse环境下编辑器使用汉字时的乱码问题
+
+（2）报错：Variable references non-existent resource :${workspace_loc:test1/src/code.py 的解决方式
+
+首先问题一，我是在打开别个写好的代码时遇到中文乱码的，自己曾经也想把注释写成汉字，但是会报语法错误，使得问题解决了一部分，如下：（java中能用汉字正常不一定说明pydev能用哦）
+
+
+Eclipse的设置
+
+window->preferences->general->editors->text editors->spelling->encoding->UTF-8，编辑器的编码格式
+
+window->preferences->workspace->text file encoding->UTF-8
+
+打开eclipse安装目录->eclipse.ini，末行加上”-Dfile.encoding=UTF-8”
+
+
+文件编码
+
+py文件记得保存成UTF-8，文件首行加上”#coding=utf-8”   ，这一句话可控制代码中可输入中文字符
+
+
+run时设置
+
+run-->run configurations->python run->Common-> Encoding ->UTF-8   ，这个应该是运行时的可解决中文乱码问题。
+
+更改空白模块默认显示#coding=utf-8
+
+如果想每次新建一个空模块时自动添加”#coding=utf-8”   这样的一句话，可以通过window--Preferences--Pydev--Editor--Template--Empty，然后点击“Edit”按钮，把我们要添加的语句加进去就可以了，将事先默认的语句去掉，改写为：#coding=utf-8这样的一句话,也可以加文件名等哦，然后你再新建一个空白模块试试，就可以了。
+
+通过以上设置的确可以建立含中文的的代码或注释了，运行也正常，但是打开别个的文件仍有可能发生乱码的情况，这我比较赞同对方编码格式保存是其它类型的原因。这个目前无解，用自带的shell看吧。
+
+问题二：
+
+这个问题源于把部分源码删除了（可能其它情况也有可能导致相同的报错，我在网上搜了下，有些人回答的和我认为的原因不同，居然还有说重装eclipse的，我当时就晕了，呵呵），我理解如下
+
+发生过程：运行文件时先弹出窗口大概是“Launch configuration“，让你选择以之前已经运行过的某个程序的配置方式运行当前程序的问题，但是你已经手动删除了对话框中的旧程序，此时仍然继续选择不存在的旧程序配置方式就会出现如下报错：
+
+Variable references non-existent resource :${workspace_loc:test1/src/code.py；
+
+图一
+
+图二
+
+可以通过到run下拉栏的run configuration 去删除你已经删除了的旧程序的文件记录，图片最左边的的旧文件选中-右键-delete；或者如图片2 在对应的project 上右键-选中properties-到Run/DebugSettings中进行删除旧文件配置，效果应该一样。
+
+我这样设置后就再也没有遇到运行文件弹出该对话框的情况了，呵呵，当然会有选择运行方式的对话框；
+
+其它论坛的回答附下：供参考
+
+Whenever I hit Debug or Run, I get a dialog asking me what configuration I want to use. How do I set a default configuration and bind a keyboard shortcut?
+
+How to run the last launched application The answer lies in a preference hidden on the Run/Debug page: Go to Window > Preferences > Run/Debug > Launching. Select the option Always launch the previously launched application. It’s located at the bottom of the dialog. The preference should look something like this:
+
+Now you’re free to press F11, Ctrl+F11 or click the Run/Debug icons on the toolbar with confidence, knowing it’s going to run what you expect it to run. One question arises: How do you quickly run a class as a specific application (eg. a JUnit test) if you can’t press F11 to run it? You have some options available: The fastest way is to use keyboard shortcuts. Eclipse allows you to launch classes using a keystroke, including JUnit tests, Java applications, etc using Alt+Shift+X. Alternatively, right-click on the class and select Run As. The submenu will show available options for launching the class. Lastly, you could click the pulldown arrow on the run/debug icons in the toolbar and select Run As. The submenu once again shows available options for launching the class.
+
+
+Variable references non-existent resource
+
+If you get the following (probably when refreshing the project after first setting it up):
+
+This probably means that the project name you chose in Eclipse doesn't match the top-level directory (must match exactly, including capitalisation). Go to
+Project->Properties->Builders, select 
+Cassandra-Ant-Builder, 
+Edit, and fix the 
+Build File and 
+Base Directory to match the name in Eclipse (the easiest way is just to browse to the right file/folder).
+
+http://wiki.apache.org/cassandra/RunningCassandraInEclipse  一些报错的内容都可以在上面找解决方式
+
+好了，有其它问题再写。
+

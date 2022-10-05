@@ -1,0 +1,20 @@
+
+问题描述
+
+在使用QT Creator构建C++项目时，因为要使用Python脚本，所以要调用Python.h文件
+
+在使用时发现会出现错误
+
+E:\Anconda\include\object.h:448: error: expected unqualified-id before ';' token
+     PyType_Slot *slots; /* terminated by slot==0. */
+                       ^
+
+因为错误的文件在Python的include\object.h，和项目无关
+
+所以应该时头文件使用的问题。
+
+
+解决
+
+后经过尝试发现#include <Python.h>要放在#include <QMainWindow>的前面，头文件的顺序不正确也会报错。
+

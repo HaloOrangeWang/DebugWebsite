@@ -1,0 +1,316 @@
+Oracle Client 安装
+
+
+1、环境
+
+日期：2019年8月1日
+
+公司已经安装好Oracle服务端
+
+Windows版本：Windows10专业版
+
+系统类型：64位操作系统，基于x64的处理器
+
+Python版本：Python 3.6.4 :: Anaconda, Inc.
+
+
+2、下载网址
+
+https://www.oracle.com/database/technologies/instant-client/downloads.html
+
+
+3、解压至目录
+
+解压后（这里放D盘）
+
+
+4、配置环境变量
+
+控制面板\系统和安全\系统 -> 高级系统设置 -> 环境变量
+
+新建ORACLE_HOME，值为包解压的路径
+
+编辑PATH，添加%ORACLE_HOME%
+
+Navicat连接测试
+
+
+cx_Oracle
+
+安装命令
+
+conda install cx_Oracle
+
+基础代码
+
+import cx_Oracle
+def execute(query):
+ db = cx_Oracle.connect('用户名/密码@IP/ServiceName')
+ cursor = db.cursor()
+ cursor.execute(query)
+ result = cursor.fetchall()
+ cursor.close()
+ db.close()
+ return result
+def commit(sql):
+ db = cx_Oracle.connect('用户名/密码@IP/ServiceName')
+ cursor = db.cursor()
+ cursor.execute(sql)
+ db.commit()
+ cursor.close()
+ db.close()
+
+封装成类
+
+from cx_Oracle import Connection # conda install cx_Oracle
+from conf import CONN, Color
+class Oracle(Color):
+ def __init__(self, conn=CONN):
+  self.db = Connection(*conn, encoding='utf8') # 用户名 密码 IP/ServiceName
+  self.cursor = self.db.cursor()
+ def __del__(self):
+  self.cursor.close()
+  self.db.close()
+ def commit(self, sql):
+  try:
+   self.cursor.execute(sql)
+   self.db.commit()
+  except Exception as e:
+   self.red(e)
+ def fetchall(self, query):
+  self.cursor.execute(query)
+  return self.cursor.fetchall()
+ def fetchone(self, query, n=9999999):
+  self.cursor.execute(query)
+  for _ in range(n):
+   one = self.cursor.fetchone()
+   if one:
+    yield one
+ def fetchone_dt(self, query, n=9999999):
+  self.cursor.execute(query)
+  columns = [i[0] for i in self.cursor.description]
+  length = len(columns)
+  for _ in range(n):
+   one = self.cursor.fetchone() # tuple
+   yield {columns[i]: one[i] for i in range(length)}
+ def read_clob(self, query):
+  self.cursor.execute(query)
+  one = self.cursor.fetchone()
+  while one:
+   try:
+    yield one[0].read()
+   except Exception as e:
+    self.red(e)
+   one = self.cursor.fetchone()
+ def db2sheet(self, query, prefix):
+  df = pd.read_sql_query(query, self.db)
+  if 'url' in df.columns:
+   df['url'] = "'" + df['url']
+  df.to_excel(prefix.replace('.xlsx', '')+'.xlsx', index=False)
+ def db2sheets(self, queries, prefix):
+  writer = pd.ExcelWriter(prefix.replace('.xlsx', '')+'.xlsx')
+  for sheet_name, query in queries.items():
+   df = pd.read_sql_query(query, self.db)
+   if 'url' in df.columns:
+    df['url'] = "'" + df['url']
+   df.to_excel(writer, sheet_name=sheet_name, index=False)
+  writer.save()
+ def tb2sheet(self, table):
+  sql = "SELECT * FROM " + table
+  self.db2sheet(sql, table)
+ def insert(self, dt, tb):
+  for k, v in dt.items():
+   if isinstance(v, str):
+    dt[k] = v.replace("'", '').strip()
+  ls = [(k, v) for k, v in dt.items() if v is not None]
+  sql = 'INSERT INTO %s (' % tb + ','.join(i[0] for i in ls) + \
+    ') VALUES (' + ','.join('%r' % i[1] for i in ls) + ')'
+  self.commit(sql)
+ def insert_clob(self, dt, tb, clob):
+  for k, v in dt.items():
+   if isinstance(v, str):
+    dt[k] = v.replace("'", '').strip()
+  # 把超长文本保存在一个变量中
+  # declare = "DECLARE variate CLOB := '%s';\n" % dt[clob]
+  join = lambda x: '||'.join("'%s'" % x[10922*i: 10922*(i+1)] for i in range(len(x)//10922+1)) # 32768//3
+  declare = "DECLARE variate CLOB := %s;\n" % join(dt[clob])
+  dt[clob] = 'variate'
+  ls = [(k, v) for k, v in dt.items() if v is not None]
+  sql = 'INSERT INTO %s (' % tb + ','.join(i[0] for i in ls) + ') VALUES (' +\
+    ','.join('%r' % i[1] for i in ls) + ');'
+  sql = declare + 'BEGIN\n%s\nEND;' % sql.replace("'variate'", 'variate')
+  self.commit(sql)
+ def update(self, dt_update, dt_condition, table):
+  sql = 'UPDATE %s SET ' % table + ','.join('%s=%r' % (k, v) for k, v in dt_update.items()) \
+    + ' WHERE ' + ' AND '.join('%s=%r' % (k, v) for k, v in dt_condition.items())
+  self.commit(sql)
+ def truncate(self, tb):
+  self.commit('truncate table ' + tb)
+db_read = Oracle()
+fetchall = db_read.fetchall
+fetchone = db_read.fetchone
+read_clob = db_read.read_clob
+if __name__ == '__main__':
+ query = '''
+ '''.strip()
+ for i in fetchone(query, 99):
+  print(i)
+
+conf
+
+CONN = ('用户名', '密码', 'IP/ServiceName')
+conn = '用户名/密码@IP/ServiceName'
+
+文本字符串查询
+
+class INSTR(Oracle):
+ """文本字符串查询"""
+ def highlight_instr(self, table, field, keyword, clob=True):
+  sql = "SELECT %s FROM %s WHERE INSTR(%s,'%s')>0" % (field, table, field, keyword)
+  if clob:
+   for i in self.read_clob(sql):
+    self.highlight(i, keyword)
+  else:
+   for i, in self.fetchone(sql):
+    self.highlight(i, keyword)
+ def regexp_instr(self, table, field, pattern, regexp=True, clob=True):
+  sql = "SELECT %s FROM %s WHERE INSTR(%s,'%s')>0" % (field, table, field, pattern)
+  sql = sql.replace('INSTR', 'REGEXP_INSTR') if regexp else sql
+  if clob:
+   for i in self.read_clob(sql):
+    yield i
+  else:
+   for i, in self.fetchone(sql):
+    yield i
+
+一个简单的建表示例
+
+-- 建表
+CREATE TABLE table_name
+(
+serial_number  NUMBER(10),
+collect_date  DATE,
+url    VARCHAR2(255),
+long_text   CLOB,
+price    NUMBER(10)-- 若需要精确到小数点2位，按分存储，/100还原到元
+);
+-- 给表添加备注
+COMMENT ON TABLE table_name IS '中文表名';
+-- 给表字段添加备注
+COMMENT ON COLUMN table_name.serial_number IS '编号';
+COMMENT ON COLUMN table_name.collect_date IS '日期';
+COMMENT ON COLUMN table_name.url IS 'URL';
+COMMENT ON COLUMN table_name.long_text IS '长文本';
+COMMENT ON COLUMN table_name.price IS '价钱';
+-- 插入
+INSERT INTO table_name(collect_date) VALUES (DATE'2019-08-23');
+INSERT INTO table_name(long_text) VALUES ('a');
+INSERT INTO table_name(long_text) VALUES ('b');
+-- 查询
+SELECT * FROM table_name WHERE TO_CHAR(long_text) in ('a','b');
+-- 查建表语句（表名大写）
+SELECT dbms_metadata.get_ddl('TABLE','TABLE_NAME') FROM dual;
+-- 删表
+DROP TABLE table_name;
+
+sqlalchemy
+
+import os # 解决【UnicodeEncodeError: 'ascii' codec can't encode character】问题
+os.environ['NLS_LANG'] = 'AMERICAN_AMERICA.AL32UTF8'
+# os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
+from cx_Oracle import makedsn
+from sqlalchemy import create_engine, Column, String, Integer
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+# 连接数据库（ORA-12505: TNS:listener does not currently know of SID given in connect descriptor）
+ip = ''
+port = ''
+tnsname = '' # 实例名
+uname = '' # 用户名
+pwd = '' # 密码
+dsnStr = makedsn(ip, port, service_name=tnsname)
+connect_str = "oracle://%s:%s@%s" % (uname, pwd, dsnStr)
+# 创建连接引擎，这个engine是lazy模式，直到第一次被使用才真实创建
+engine = create_engine(connect_str, encoding='utf-8')
+# 创建对象的基类
+Base = declarative_base()
+class Student(Base):
+ # 表名
+ __tablename__ = 'student'
+ # 表字段
+ sid = Column(String(20), primary_key=True)
+ age = Column(Integer)
+# 建表（继承Base的所有表）
+Base.metadata.create_all(bind=engine)
+# 使用ORM操作数据库
+Session = sessionmaker(bind=engine) # 创建ORM基类
+session = Session() # 创建ORM对象
+tb_obj = Student(sid='a6', age=18) # 创建表对象
+session.add(tb_obj) # 添加到ORM对象（插入数据）
+session.commit() # 提交
+session.close() # 关闭ORM对象
+# 删表（继承Base的所有表）
+Base.metadata.drop_all(engine)
+
+报错处理
+
+DPI-1047: 64-bit Oracle Client library cannot be loaded
+
+首先操作系统位数、python位数、cx_Oracle版本要对应上；另外可能缺【Visual C++】
+
+每次装完后，要重启pycharm和python
+
+ORA-12170: TNS:Connect timeout occurred
+
+打开终端ping一下
+
+检查【主机名或IP地址】、【服务名或SID】、【用户名】和【密码】是否填对
+
+中文乱码
+
+encoding=‘utf8'
+
+ORA-00972: identifier is too long
+
+insert语句中出现'之类的字符
+
+解决方法：将可能报错的字符替换掉
+
+ORA-64203: Destination buffer too small to hold CLOB data after character set conversion.
+
+select TO_CHAR(long_text) from table_name，目标缓冲区太小，无法储存CLOB转换字符后的数据
+
+解决方法：不在SQL用TO_CHAR，改在Python中用read（如上代码所示）
+
+ORA-01704: string literal too long
+
+虽然CLOB可以保存长文本，但是SQL语句有长度限制
+
+解决方法：把超长文本保存在一个变量中（如上代码所示）
+
+PLS-00172: string literal too long
+
+字符串长度>32767(215-1)
+
+解决方法：使用'||'来连接字符串（如上代码所示）
+
+ORA-00928: missing SELECT keyword
+
+INSERT操作时，表字段命名与数据库内置名称冲突，如：ID、LEVEL、DATE等
+
+解决方法：建立命名规范
+
+cx_Oracle.DatabaseError: ORA-12505: TNS:listener does not currently know of SID given in connect descriptor
+
+使用sqlalchemy时的报错
+
+原因可能是目标数据库是集群部署的，可以咨询一下DBA，或见上面代码from cx_Oracle import makedsn
+
+UnicodeEncodeError: 'ascii' codec can't encode character
+
+使用sqlalchemy时的报错，插入中文字符引起
+
+解决方法是设置os.environ['NLS_LANG']
+
+更多关于Python连接Oracle之环境配置、实例代码及报错解决方法请查看下面的相关链接
+

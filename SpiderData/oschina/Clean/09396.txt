@@ -1,0 +1,141 @@
+一、NetworkManager启动问题
+
+1、由于以后要支持e1000版虚拟化网卡，所有centos6镜像均按照NetworkManager服务，并设置开机自启动
+
+2、虚机启动时，默认是NetworkManager服务先启动，后续启动cloud-init，但是NetworkManager启动过程中还未设置好网关，cloud-init就从169.254.169.254获取meta-data，导致获取元数据失败，继而不再重新获取
+
+Mounting local filesystems:  [  OK  ]
+Enabling /etc/fstab swaps:  [  OK  ]
+Entering non-interactive startup
+Bringing up loopback interface:  [  OK  ]
+Bringing up interface eth0: 
+Determining IP information for eth0... done.
+[  OK  ]
+Starting auditd: [  OK  ]
+Starting system logger: [  OK  ]
+Starting system message bus: [  OK  ]
+Mounting filesystems:  [  OK  ]
+Starting acpi daemon: [  OK  ]
+Retrigger failed udev events[  OK  ]
+Starting cloud-init: Cloud-init v. 0.7.5 running 'init-local' at Thu, 19 Oct 2017 07:50:01 +0000. Up 25.44 seconds.
+Setting network parameters... [  OK  ]
+Starting NetworkManager daemon: [  OK  ]
+Starting cloud-init: Cloud-init v. 0.7.5 running 'init' at Thu, 19 Oct 2017 07:50:02 +0000. Up 26.01 seconds.
+ci-info: ++++++++++++++++++++++++++Net device info+++++++++++++++++++++++++++
+ci-info: +--------+------+--------------+---------------+-------------------+
+ci-info: | Device |  Up  |   Address    |      Mask     |     Hw-Address    |
+ci-info: +--------+------+--------------+---------------+-------------------+
+ci-info: |   lo   | True |  127.0.0.1   |   255.0.0.0   |         .         |
+ci-info: |  eth0  | True | 9.111.222.12 | 255.255.255.0 | fa:16:3e:f3:41:85 |
+ci-info: +--------+------+--------------+---------------+-------------------+
+ci-info: +++++++++++++++++++++++++++++Route info++++++++++++++++++++++++++++++
+ci-info: +-------+-------------+---------+---------------+-----------+-------+
+ci-info: | Route | Destination | Gateway |    Genmask    | Interface | Flags |
+ci-info: +-------+-------------+---------+---------------+-----------+-------+
+ci-info: |   0   | 9.111.222.0 | 0.0.0.0 | 255.255.255.0 |    eth0   |   U   |
+ci-info: +-------+-------------+---------+---------------+-----------+-------+
+2017-10-19 15:50:02,546 - util.py[WARNING]: No instance datasource found! Likely bad things to come!
+Starting cloud-init: Can not apply stage config, no datasource found! Likely bad things to come!
+------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/bin/cloud-init", line 318, in main_modules
+    init.fetch()
+  File "/usr/lib/python2.6/site-packages/cloudinit/stages.py", line 308, in fetch
+    return self._get_data_source()
+  File "/usr/lib/python2.6/site-packages/cloudinit/stages.py", line 236, in _get_data_source
+    pkg_list)
+  File "/usr/lib/python2.6/site-packages/cloudinit/sources/__init__.py", line 260, in find_source
+    raise DataSourceNotFoundException(msg)
+DataSourceNotFoundException: Did not find any data source, searched classes: ()
+------------------------------------------------------------
+Starting cloud-init: Can not apply stage final, no datasource found! Likely bad things to come!
+------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/bin/cloud-init", line 318, in main_modules
+    init.fetch()
+  File "/usr/lib/python2.6/site-packages/cloudinit/stages.py", line 308, in fetch
+    return self._get_data_source()
+  File "/usr/lib/python2.6/site-packages/cloudinit/stages.py", line 236, in _get_data_source
+    pkg_list)
+  File "/usr/lib/python2.6/site-packages/cloudinit/sources/__init__.py", line 260, in find_source
+    raise DataSourceNotFoundException(msg)
+DataSourceNotFoundException: Did not find any data source, searched classes: ()
+------------------------------------------------------------
+Starting sshd: [  OK  ]
+NTP server not specified in /etc/ntp/step-tickers or /etc/ntp.conf
+Starting crond: [  OK  ]
+Cloud-init v. 0.7.5 running 'init' at Thu, 19 Oct 2017 07:50:06 +0000. Up 30.44 seconds.
+
+3、临时解决办法：cloud-init只获取一次meta-data，如果拿到就执行cloud-init final阶段，如果获取失败则报错，不再重新获取。
+
+需要手动执行命令：cloud-init init 重新加载元数据。见官方释义:
+
+your 'cloud-init modules --mode init' is a bad command. it shouldnt fail like that, but its not normally called like that.
+I think what might be wrong is that you're not getting the systemd files, and your boot just isn't fully working.
+ 
+proper cloud-init boot consists of:
+ 1.) cloud-init init --local
+    when root filesystem is mounted (not network guaranteed or expected)
+  2.) cloud-init init
+    when root filesystem is mounted and expected networking is up
+  3.) cloud-init modules --mode=config
+  4.) cloud-init modules --mode=final
+   
+  if [ $(nm-tool|grep State|cut -f2 -d' ') == "connected" ]; then
+    #Whatever you want to do if the network is online
+else
+    #Whatever you want to do if the network is offline - note, this and the else above are optional
+fi
+
+以下是重新请求meta-data过程，此时的网关已配置好。
+
+ci-info: ++++++++++++++++++++++++++Net device info+++++++++++++++++++++++++++
+ci-info: +--------+------+--------------+---------------+-------------------+
+ci-info: | Device |  Up  |   Address    |      Mask     |     Hw-Address    |
+ci-info: +--------+------+--------------+---------------+-------------------+
+ci-info: |   lo   | True |  127.0.0.1   |   255.0.0.0   |         .         |
+ci-info: |  eth0  | True | 9.111.222.12 | 255.255.255.0 | fa:16:3e:f3:41:85 |
+ci-info: +--------+------+--------------+---------------+-------------------+
+ci-info: ++++++++++++++++++++++++++++++++++Route info+++++++++++++++++++++++++++++++++++
+ci-info: +-------+-----------------+-------------+-----------------+-----------+-------+
+ci-info: | Route |   Destination   |   Gateway   |     Genmask     | Interface | Flags |
+ci-info: +-------+-----------------+-------------+-----------------+-----------+-------+
+ci-info: |   0   | 169.254.169.254 | 9.111.222.1 | 255.255.255.255 |    eth0   |  UGH  |
+ci-info: |   1   |   9.111.222.0   |   0.0.0.0   |  255.255.255.0  |    eth0   |   U   |
+ci-info: |   2   |     0.0.0.0     | 9.111.222.1 |     0.0.0.0     |    eth0   |   UG  |
+ci-info: +-------+-----------------+-------------+-----------------+-----------+-------+
+Cloud-init v. 0.7.5 running 'modules:final' at Thu, 19 Oct 2017 07:50:09 +0000. Up 32.83 seconds.
+ci-info: no authorized ssh keys fingerprints found for user centos.
+ci-info: no authorized ssh keys fingerprints found for user centos.
+ec2:
+ec2: #############################################################
+ec2: -----BEGIN SSH HOST KEY FINGERPRINTS-----
+ec2: 1024 64:51:25:60:d0:dd:b8:4e:7d:44:48:26:10:f9:45:f9 /etc/ssh/ssh_host_dsa_key.pub (DSA)
+ec2: 2048 16:59:08:50:37:c3:00:ef:99:95:3f:a3:77:fa:93:a4 /etc/ssh/ssh_host_key.pub (RSA1)
+ec2: 2048 a5:6a:dd:74:ca:16:8e:31:bf:b3:4b:0a:c2:00:8a:42 /etc/ssh/ssh_host_rsa_key.pub (RSA)
+ec2: -----END SSH HOST KEY FINGERPRINTS-----
+ec2: #############################################################
+-----BEGIN SSH HOST KEY KEYS-----
+2048 35 27541365050360239591435118454881578709989698650445165117194575889698589475215223627758158702900045160955947733502097866541192556859221451348995793597455183479757238929837171679731292857649919286872697745243345043316525076401529065475241084237855394096516334565000392633100535646579890169878467508388499646801050965943901526178822341472627146211336179874861157576903803503129246774552668615235335787440894750828817448110386642500635061170389250028325735639078142790135990986654283910570646473566300407984700279749726680206710460528663881338239437387901739932914387009958132186216400741136674654292094798863513309928467
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAvE3cSVF2vqXcGe+1yuhKx2ZiAP2QKNgzgSRiCpm2MIzIirxnIPmGhgNRSo/GiJfNrw3Pk//i3rNYPAvvC9xs0MDeXGPqcxKemOUYzdmfX3BvdUMVi4nst+oAj3wBGeqEdFMXy5qTvh2zJbTvYDJ4CY8GpPO/WFjV/WqFeaquP6nIbn51rcJMbusj4dLITkXR+/YS+m5xfKI68y7E16HzqWZhDL72orYUZKlkC4BAsY1ySgd+mDslWVnQ6qZcK8cHiIqMHGBI0GlTRil1tg5DBfvXzxtOh0w91pJNvSO9u+XGnzvEy9tTR1Asw/8qecKloCFWnDh4ZFOAdnFVVy171w==
+-----END SSH HOST KEY KEYS-----
+Cloud-init v. 0.7.5 finished at Thu, 19 Oct 2017 07:50:09 +0000. Datasource DataSourceOpenStack [net,ver=2].  Up 33.31 seconds
+ 
+CentOS release 6.5 (Final)
+Kernel 2.6.32-431.el6.x86_64 on an x86_64
+ 
+boot6-5 login:
+
+4、根本解决办法：
+
+v1、rc.local运行命令重新加载
+
+v2、修改cloud.cfg，增加超时和重试参数
+
+datasource:
+  OpenStack:
+  metadata_urls: ["http://169.254.169.254"]
+  max_wait: 120
+  timeout: 10
+  retries: 5
+

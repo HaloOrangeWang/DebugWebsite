@@ -1,0 +1,58 @@
+
+多进程，获取结果 .get() 报错：
+
+
+AttributeError: Can't pickle local object 'EdgeSliceProcess.get_points..row_con_min'
+
+python闭包不支持pickle（序列化）。多进程需要函数能pickle。
+
+有几种方式解决：
+
+0.将函数体中的函数挪出。
+
+这是最简单的方法。但是有时因为函数接口已经给定，需要使用函数来定义函数。考虑以下两种方法。
+
+1.更换pickle，考虑以下代码：
+
+from pathos.multiprocessing import ProcessingPool as Pool
+
+网址
+
+https://github.com/uqfoundation/pathos
+
+2.避免使用闭包
+
+多进程函数不要有闭包结构，这个有用的！！！
+
+3.改用队列  multiprocessing  Queue 来通信
+
+
+注意：创建进程慢：12个进程，创建大概 5 秒
+
+
+创建多进程：报错：
+
+RuntimeError:
+
+An attempt has been made to start a new process before the
+
+current process has finished its bootstrapping phase.
+
+​        This probably means that you are not using fork to start your
+
+​        child processes and you have forgotten to use the proper idiom
+
+​        in the main module:
+
+​            if name == 'main':
+
+​                freeze_support()
+
+​                ...
+
+​        The "freeze_support()" line can be omitted if the program
+
+​        is not going to be frozen to produce an executable.
+
+解决：
+

@@ -1,0 +1,70 @@
+
+1、来源
+
+2、python报错：AttributeError: ‘module’ object has no attribute ‘xfeatures2d’
+
+2.1 cmd命令行2.2 卸载与安装2.3 复制粘贴cv2.pyd
+
+2.1 cmd命令行
+
+2.2 卸载与安装
+
+2.3 复制粘贴cv2.pyd
+
+
+1、来源
+
+转载自https://blog.csdn.net/weixin_44060222/article/details/105024509
+
+
+2、python报错：AttributeError: ‘module’ object has no attribute ‘xfeatures2d’
+
+首先，在网上搜索发现报错原因为opencv的版本不对。
+
+
+2.1 cmd命令行
+
+首先在cmd中，进入Anaconda2下的Scripts中：
+
+cd C:\Users\Anaconda2\Scripts（记得是你自己的目录）
+
+如下图：
+
+
+2.2 卸载与安装
+
+第一步、卸载opencv-python
+
+pip uninstall opencv-python
+
+第二步、卸载opencv-contrib-python
+
+pip uninstall opencv-contrib-python
+
+第三步、安装opencv-python
+
+pip install opencv-python==3.4.2.16 -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+指定了下载的版本号，且版本号后面那一串是使用了国内源下载，有利于加快下载速度。
+
+第四步、安装opencv-contrib-python
+
+pip install opencv-contrib-python==3.4.2.16 -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+
+2.3 复制粘贴cv2.pyd
+
+正常情况下，步骤1.2运行完报错就消失了（重新运行程序前记得重启Pycharm）。若Pycharm仍然报错，而且在报错信息中有个2.4.13，是之前安装的opencv-python的版本号。可能是没有更新完整或者卸载不干净，但是在cmd中利用pip查看已安装的库信息（仍在Scripts目录下运行）：
+
+pip list
+
+结果：
+ 
+ 证明卸载和安装步骤是正确的。
+ 在网上查找资料的时候，有篇文章no module named cv2中有下图所示步骤：
+ 
+ 因此，将目录Anaconda2->Lib->site-packages->cv2中的cv2.pyd文件复制粘贴到目录Anaconda2->Lib中：
+ 
+ 
+ 至此，报错消失，程序可正常运行。运行程序前一定记得重启Pycharm！
+

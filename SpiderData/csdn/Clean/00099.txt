@@ -1,0 +1,32 @@
+When running the following code:
+
+try:
+
+key=int(input())
+
+except ValueError as string:
+
+print("Error is within:",string)
+
+for example, if one puts 'rrr' this exception will rise, since 'rrr' does not support (int)
+
+However, instead ot putting the actual string, it puts: "invalid literal for int() with base 10: 'rrr' "
+
+How do I make it work so that the variable 'string' actually gets the wrong input that the user gave (in this example, I want it to print: 'Error is within: rrr')
+
+Thanks a lot
+
+解决方案
+
+Your issue comes from the fact that the variable string is the error message for a ValueError exception. If you wanted to print out the user's invalid input, you would need to create a variable that stores the user's input before your try/except. For example:
+
+userInput = input()
+
+try:
+
+key=int(userInput)
+
+except ValueError:
+
+print("Error is within:",userInput)
+

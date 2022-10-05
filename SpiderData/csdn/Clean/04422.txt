@@ -1,0 +1,47 @@
+参考： 
+ 解决python3缺少zlib的问题 
+ Python安装zlib模块
+
+Table of Contents 
+ 1 安装zlib 
+ 2 重新编译安装python 
+ 3 补充说明
+
+在安装setuptools-38.2.4时候，使用python setup.py install命令时。 
+ 错误：
+
+...
+RuntimeError: Compression requires the (missing) zlib module
+
+在使用python运行spark时，报缺少zlib的错误。
+
+解决方法如下:
+
+1 安装zlib
+
+wget http://zlib.net/zlib-1.2.8.tar.gz
+tar -xvf zlib-1.2.8.tar.gz
+cd zlib-1.2.8
+./configure
+make
+make install
+
+2 重新编译安装Python
+
+cd ../Python3
+./configure --prefix=/usr/local/python3/
+make
+make install
+
+如果是第一次安装python，可以建立一个软连接，让python2和python可以同时使用，而且python还是原来的2.x。
+
+ln -s /usr/local/python3//bin/python3 /usr/bin/python3
+
+3 补充说明 
+ 网上有些同学说的使用 –with-zlib进行配置的方法（如下）： 
+ 也有人说对于python3.4.5并不需要，也不识别该参数，直接运行上面的配置命令即可。 
+ 这就看情况了。
+
+./configure –prefix=/home/program/python3 –with-zlib=/usr/include
+./configure –prefix=/home/program/python3 –with-zlib-dir=/usr/local/lib
+

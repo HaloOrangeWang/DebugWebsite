@@ -1,0 +1,10 @@
+一、问题描述
+
+dubbo客户端应用程序日志报错：threadpool is exhausted ,detail msg:Thread pool is EXHAUSTED
+
+二、解决问题
+
+dubbo服务端处理请求超时，导致请求堆压，把线程池里的线程都占用了。此时应该定位服务端是否有问题，或者通过jstack命令查看线程使用情况。
+
+本次遇到的问题是zookeeper异常关闭了，导致服务端有异常，重启zookeeper之后，再重启dubbo服务端应用，问题就解决了。
+

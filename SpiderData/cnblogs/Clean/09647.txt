@@ -1,0 +1,36 @@
+首先声明，本人遇到的Pycharm无法用pip安装PIL的问题和安装Pillow模块之后依然报错“No module named 'Pillow'”问题最终都得到了解决，相信很多人也遇到过，但由于系统，软件版本，运行环境等一系列问题，可能本博客的解决办法并不完全普适，但文章的最后，我总结了两种纠错方法，希望能帮助大家解决问题。
+
+很多学习Python的同学们肯定都遇到过一个名叫PIL的模块，扩展开就是Python Image Library，字面翻译则是Python的图像库。
+
+这个模块可以算是Python平台的图像处理标准库，优点很多，总的来说功能强大，调用简单。
+
+于是，我就打算在Pycharm上来看看PIL的强大，从书上随便找了段代码敲进去试试。
+
+# coding: utf-8
+    import sys, os
+    sys.path.append(os.pardir)  # 为了导入父目录的文件而进行的设定
+    import numpy as np
+    from dataset.mnist import load_mnist
+    from PIL import Image
+     
+     
+    def img_show(img):
+        pil_img = Image.fromarray(np.uint8(img))
+        pil_img.show()
+     
+    (x_train, t_train), (x_test, t_test) = load_mnist(flatten=True, normalize=False)
+     
+    img = x_train[0]
+    label = t_train[0]
+    print(label)  # 5
+     
+    print(img.shape)  # (784,)
+    img = img.reshape(28, 28)  # 把图像的形状变为原来的尺寸
+    print(img.shape)  # (28, 28)
+     
+    img_show(img)
+
+该代码段是做什么的先不管，总之就是从MNIST数据集中去获取数据，然后显示图像。
+
+敲完之后自然是去Pycharm的settings里去下载PIL这个模块了。
+

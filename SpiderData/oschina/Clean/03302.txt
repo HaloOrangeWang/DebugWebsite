@@ -1,0 +1,110 @@
+今天在学习设计模式的时候突发奇想，可不可以实现JAVA中的一些内容呢？
+
+比如 final。
+
+final在Java中是一个保留的关键字，可以声明成员变量、方法、类以及本地变量。一旦你将引用声明作final，你将不能改变这个引用了，编译器会检查代码，如果你试图将变量再次初始化的话，编译器会报编译错误。
+
+
+修饰类
+
+当用final修饰一个类时，表明这个类不能被继承。
+
+class Father(object):
+    def __new__(cls, *args, **kwargs):
+        if cls != Father:
+            raise Exception('This class cannot be inherited.')
+        return super(Father, cls).__new__(cls, *args, **kwargs)
+
+def __init__(self):
+        print("Class Father")
+
+class Son(Father):
+    def __init__(self):
+        print('Class Son')
+
+if __name__ == '__main__':
+    f = Father()
+    s = Son()
+
+运行结果：
+
+E:\Anaconda\python.exe F:/PythonSpace/ClassMethod/test.py
+Class Father
+Traceback (most recent call last):
+  File "F:/PythonSpace/ClassMethod/test.py", line 16, in <module>
+    s = Son()
+  File "F:/PythonSpace/ClassMethod/test.py", line 4, in __new__
+    raise Exception('This class cannot be inherited.')
+Exception: This class cannot be inherited.
+
+
+修饰方法
+
+明确禁止该方法在子类中被覆盖。
+
+class Father(object):
+    def __new__(cls, *args, **kwargs):
+        if cls != Father and 'show' in cls.__dict__.keys():
+            raise Exception('This method cannot be rewritten.')
+        return super(Father, cls).__new__(cls, *args, **kwargs)
+
+def show(self):
+        print("Class Father")
+
+class Son(Father):
+    def show(self):  #删除后就不会报错
+        pass
+
+if __name__ == '__main__':
+    f = Father()
+    f.show()
+    s = Son()
+    s.show()
+
+运行结果：
+
+E:\Anaconda\python.exe F:/PythonSpace/ClassMethod/test.py
+Traceback (most recent call last):
+Class Father
+  File "F:/PythonSpace/ClassMethod/test.py", line 17, in <module>
+    s = Son()
+  File "F:/PythonSpace/ClassMethod/test.py", line 4, in __new__
+    raise Exception('This method cannot be rewritten.')
+Exception: This method cannot be rewritten.
+
+
+修饰变量
+
+对于一个final变量，其数值一旦在初始化之后便不能更改。
+
+class Father(object):
+    __final = 1
+    def __setattr__(self, key, value):
+        if key == '_Father__final':
+            raise Exception('Property cannot be changed after initialization.')
+        else:
+            self.__dict__[key] = value
+
+def __init__(self):
+        self.__final = 2
+
+if __name__ == '__main__':
+    f = Father()
+
+运行结果：
+
+E:\Anaconda\python.exe F:/PythonSpace/ClassMethod/test.py
+Traceback (most recent call last):
+  File "F:/PythonSpace/ClassMethod/test.py", line 14, in <module>
+    f = Father()
+  File "F:/PythonSpace/ClassMethod/test.py", line 10, in __init__
+    self.__final = 2
+  File "F:/PythonSpace/ClassMethod/test.py", line 5, in __setattr__
+    raise Exception('Property cannot be changed after initialization.')
+Exception: Property cannot be changed after initialization.
+
+
+结束语
+
+以上只是本人观点，难免有不足之处，只做参考，不做考究。
+

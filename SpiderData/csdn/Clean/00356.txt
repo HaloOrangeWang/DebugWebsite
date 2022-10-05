@@ -1,0 +1,43 @@
+
+起因：
+
+刚学习机器学习，需要用到matplotlib这个库，结果安装失败了
+
+
+问题描述
+
+一开始在pycharm里进行安装，失败了，查看日志，没有error提示，就去cmd尝试pip install matplotlib 结果依旧失败
+
+按照error提示大概可以知道pip库版本太久了，所以需要升级pip的版本，在cmd进入python的Scripts文件夹输入以下命令对pip库进行升级
+
+python -m pip install --upgrade pip
+
+完成安装后继续尝试pip install matplotlib 依旧失败
+
+此处可以看出pycharm依旧提示我更新pip，但我们此时已经是最高版本了。
+
+经查询matplotlib3.5.1是支持python3.7.3，排除了版本问题
+
+又检查一遍后发现我下载的是.whl文件，本人是Windows系统，此处也没有问题
+
+再次在cmd尝试pip install matplotlib，下载到一半失败
+
+到现在基本已经排除了大部分问题，我猜测或许是网站本身的问题
+
+
+解决方案：
+
+因此我换了国内的镜像网站进行下载
+
+cd C:\python3.7.3\Scripts
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple matplotlib
+
+#根据你自己的python安装路径修改
+
+成功下载了，最后检查一下是否安装成功
+
+python -m pip list
+
+可以看到matplotlib就算成功了。
+

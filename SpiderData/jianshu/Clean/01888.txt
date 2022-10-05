@@ -1,0 +1,27 @@
+使用win 10 pycharm直接pip安装pbjson的时候报错：
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x99 in position 6600: illegal multibyte sequence
+
+看着是编码格式不对，所以下载（下载地址）到本地后手动安装：
+
+使用原始下载包直接python安装查看错误：
+
+D:\pbjson-1.15\pbjson-1.15>python setup.py install
+Traceback (most recent call last):
+  File "setup.py", line 19, in <module>
+    LONG_DESCRIPTION = f.read()
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x99 in position 6600: illegal multibyte sequence
+
+是在setup.py读取同级目录文件报错，
+
+所以读取文件时添加编码格式：encoding = 'UTF-8'，然后python setup.py install安装即成功
+
+出现编码问题时可以从以下两个方面检查：
+
+1、目录是否是纯英文路径（有中文的路径经常报错）
+
+2、修改setup.py中读文件的代码，用utf-8：
+
+with open('DESCRIPTION.rst', 'r',encoding = 'UTF-8') as f:
+    LONG_DESCRIPTION = f.read()
+

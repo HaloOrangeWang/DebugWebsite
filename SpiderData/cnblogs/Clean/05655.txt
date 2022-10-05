@@ -1,0 +1,50 @@
+　　1. 安装rabbitmq，查看官网文档： https://www.rabbitmq.com/#getstarted
+
+　　由于我是先安装了rabbitmq后自己随手创建了queue,后面又按照官方给的"hello world"例子去测试，结果发生了“406, "PRECONDITION_FAILED - inequivalent arg 'durable'” 这个错误信息。
+
+　　1. 先在管理页面创建的queue
+
+　　
+
+2. 创建的exchanges
+
+　　
+
+上图中红线的 durable 是指是否持久化，可以看到我创建时设置的为true。
+
+　　3. 官方的hello world 例子：
+
+官网文档地址：https://www.rabbitmq.com/tutorials/tutorial-one-python.html
+
+　　代码（python版本）：
+
+　　 （生产者）
+
+　　（消费者）
+
+但是当我运行上面的代码时，却报错：
+
+　　
+
+错误信息翻译过来大致意思就是：当前的queue的durable属性是true,但是我们声明queue时过去的参数确实是false.
+
+　这个错误造成的原因是现在页面创建了queue和exchanges,但是代码中声明要使用的queue时，durable属性传递的是false.
+
+　ok,那么代码怎么搞了？ 可以从pyhton错误信息的中的堆栈部分找到返回错误的文件：File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pika/adapters/blocking_connection.py"
+
+那么找到这个文件，看看源码是什么情况：
+
+　　
+
+可以看出来，这个函数里默认durable为false,那么我们将自己的代码改造一下，设置durable为true.
+
+　　
+
+执行结果：
+
+　　
+
+可以看到是成功了的。
+
+要注意的是，生产者和消费者对queue的声明函数里，这个durable必须保持一致。
+

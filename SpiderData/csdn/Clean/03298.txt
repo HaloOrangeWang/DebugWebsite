@@ -1,0 +1,42 @@
+在用浏览器访问url的时候，如果url不正确会报404错误，默认的404错误太枯燥了，这里我讲述一下如何将404错误页面修改为好看的404页面
+
+1，首先，创建一个我们希望当出现404错误时展示的html页面，这里我随便写一个页面内容不多定义了，意思在这就行
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>404找不到文件资源</title>
+</head>
+<body>
+<h1><font color="red">这是一个404的错误页面，出现这个页面时说明404错误了</font></h1>
+</body>
+</html>
+
+2，保存好我们创建的404页面后，把这个html文件保存文件列表里，然后我们在flask添加404错误返回我们创建的html文件
+
+from flask import Flask, render_template_string, abort, render_template
+
+app = Flask(__name__)
+
+@app.route('/abcd')
+def abce():
+    return "1234"
+
+@app.errorhandler(404)  # 传入错误码作为参数状态
+def error_date(error):  # 接受错误作为参数
+    return render_template("404.html"), 404  # 返回对应的http状态码，和返回404错误的html文件
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
+
+3，当我们用浏览器请求这个实例里面的接口的时候出现了404错误的时候，浏览器上面就会显示我们自己定义的html页面啦
+
+这里有些地方需要注意下：
+
+1，我们创建的html文件要放在templates的文件目录下面，是要完全名称相同的目录。
+
+2，这个templates的文件目录要和我们运行flask的.py文件层级相同，比如 我运行这个flask程序的文件夹名字叫app，那我们装html的templates的文件夹要放在app的文件夹里面，并且与程序的.py文件同级
+
+加油!!
+

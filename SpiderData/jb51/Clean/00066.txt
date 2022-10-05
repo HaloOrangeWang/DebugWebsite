@@ -1,0 +1,24 @@
+问题一：安装模块时出现报错 Microsoft Visual C++ 14.0 is required，也下载安装了运行库依然还是这个错误
+
+解决：
+
+1.打开Unofficial Windows Binaries for Python Extension Packages（http://www.lfd.uci.edu/~gohlke/pythonlibs/），这里面有很多封装好的Python模块的运行环境
+
+2.找到所需要下载的模块文件对应版本进行下载。
+
+如，需要下载Pymssql，本机安装是32位的python3.6，则选择pymssql‑2.1.4.dev5‑cp36‑cp36m‑win32.whl下载；若本机安装的是64位的python2.7则选择pymssql‑2.1.3‑cp27‑cp27m‑win_amd64.whl，其他同理
+
+3.下载完后，把文件复制到Python的安装目录中的Scripts文件夹下
+
+4.打开cmd（命令提示符），跳转到该目录下，如运行pip install pymssql‑2.1.4.dev5‑cp36‑cp36m‑win32.whl（若是其他的模块安装相应的文件名），安装成功有successfully installed的提示
+
+问题二：在解决问题一的过程中遇到【is not a supported wheel on this platform】报错
+
+解决：
+
+1.根据报错里的提示，You are using pip version 8.1.1, however version 9.0.1 is available.You should consider upgrading via the 'python -m pip install --upgrade pip' command.（您正在使用pip版本8.1.1，但是版本9.0.1可用。您应该考虑通过“python -m pip install --upgrade pip”命令进行升级。）,所以输入python -m pip install --upgrade pip进行升级
+
+2.升级了pip后，没有步骤1里的错误提示，但是依然显示【is not a supported wheel on this platform】。仔细检查后发现，下载的模块文件版本与本机安装的python版本不匹配产生的，本机是32位的python3.6，但是下载的文件实际上是应用于64位的python3.6，所以重新下载即可。
+
+到此这篇关于Python3安装模块报错Microsoft Visual C++ 14.0 is required的解决方法的文章就介绍到这了,更多相关Python3 Visual C++ 报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

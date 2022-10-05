@@ -1,0 +1,48 @@
+执行sql:　　　
+
+SELECT ability,count
+FROM 
+(
+SELECT
+q.ability,
+count( 1 ) as count
+FROM
+spk_wrong_que_train t
+LEFT JOIN spk_hsk_question q ON t.question_id = q.id
+WHERE
+t.user_id = 1
+group by
+q.ability
+
+UNION
+SELECT '1' as ability,'0' as count
+union 
+SELECT '3' as ability,'0' as count
+union 
+SELECT '4' as ability,'0' as count
+union 
+SELECT '5' as ability,'0' as count
+union 
+SELECT '6' as ability,'0' as count
+
+) B
+GROUP BY B.ability
+
+结果：执行成功
+
+　　
+
+5.7以上版本 结果：报错
+
+问题：
+
+报错信息：　　1055 - Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'B.count' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+
+　由于本地环境mysql 是5.7以下版本，线上5.7以上版本：
+
+解决：
+
+　　　　使用ANY_VALUE（），MySQL会忽略每个名称组中的地址值的不确定性并接受查询，就可以了！
+
+　　
+

@@ -1,0 +1,400 @@
+(env2.7) Kaitlyns-Mac:bin kaitlyn$ pip install MySQL-python
+
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+
+Collecting MySQL-python
+
+Using cached https://pypi.tuna.tsinghua.edu.cn/packages/a5/e9/51b544da85a36a68debe7a7091f068d802fc515a3a202652828c73453cad/MySQL-python-1.2.5.zip
+
+Complete output from command python setup.py egg_info:
+
+Traceback (most recent call last):
+
+File "<string>", line 1, in <module>
+
+File "/private/var/folders/_9/7mz49zmd3lq389bq9b6k1src0000gn/T/pip-install-2ylc5w2y/MySQL-python/setup.py", line 13, in <module>
+
+from setup_posix import get_config
+
+File "/private/var/folders/_9/7mz49zmd3lq389bq9b6k1src0000gn/T/pip-install-2ylc5w2y/MySQL-python/setup_posix.py", line 2, in <module>
+
+from ConfigParser import SafeConfigParser
+
+ModuleNotFoundError: No module named 'ConfigParser'
+
+----------------------------------------
+
+Command "python setup.py egg_info" failed with error code 1 in /private/var/folders/_9/7mz49zmd3lq389bq9b6k1src0000gn/T/pip-install-2ylc5w2y/MySQL-python/
+
+环境：MacOS Mojave，python2.7
+
+使用pip install MySQL-python时报错以上信息，可以看到没有ConfigParser这个模块，在py2.7里，ConfigParser是six模块下的【from six.moves.configparser import ConfigParser】，所以解决办法是重装six这个模块。
+
+因为我安装了anaconda，所以使用anaconda安装了一个符合我系统的six模块，步骤如下：（用pip应该也可以）
+
+conda install six.moves
+
+报错：PackagesNotFoundError: The following packages are not available from current channels:
+
+所以使用另一个办法：先找包，找到的所有包里选一个合适自己系统的，查看详情进行安装。
+
+anaconda search -t conda six
+
+(env2.7) Kaitlyns-Mac:bin kaitlyn$ anaconda search -t conda six
+
+Using Anaconda API: https://api.anaconda.org
+
+Packages:
+
+Name                      |  Version | Package Types   | Platforms       | Builds
+
+------------------------- |   ------ | --------------- | --------------- | ----------
+
+Alges/six                 |   1.11.0 | conda           | linux-64, win-64 | py27_1
+
+: Python 2 and 3 compatibility utilities
+
+CEFCA/six                 |   1.10.0 | conda           | linux-64, linux-32, osx-64 | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+CIT/six                   |    1.9.0 | conda           | win-64          | py34_0
+
+: Python 2 and 3 compatibility utilities
+
+ChemDataExtractor/pdfminer.six | 20160614 | conda           | linux-64, win-32, osx-64, win-64 | py36_0, py27_0, py35_0, py34_0
+
+CommandCI/six             |    1.9.0 | conda           | linux-64, win-32, osx-64, linux-32, win-64 | py34_0, py33_0, py35_0, py26_0, py27_0
+
+: Python 2 and 3 compatibility utilities
+
+IzODA/six                 |   1.10.0 | conda           | zos-z           | py36_0
+
+MGIMM/six                 |          | conda           | osx-64          | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+Maggie-m/six              |    1.5.2 | conda           | osx-64          | py27_0
+
+: http://pypi.python.org/pypi/six/
+
+MaimonLab/posix_sched     |      1.1 | conda           | linux-64        | py27_0
+
+: Set and get POSIX scheduling algorithm/parameters
+
+ODSP-TEST/six             |   1.10.0 | conda           | zos-z           | py37_0, py36_0
+
+Pipeliner/six             |   1.11.0 | conda           | linux-64, osx-64 | py27h5f960f1_1, py27h7252ba3_1, py27hdcd7534_1
+
+: Python 2 and 3 compatibility utilities
+
+RahulJain/six             |   1.10.0 | conda           | win-64          | py27_0
+
+RaspberryPi/six           |    1.9.0 | conda           | linux-armv6l    | py34_0, py27_0
+
+: Python 2 and 3 compatibility utilities
+
+Trentonoliphant/six       |    1.8.0 | conda           | win-64          | py34_0, py33_0, py26_0, py27_0
+
+: Python 2 and 3 compatibility utilities
+
+ValkyrieSystemsCorporation/coda_six | 2.1.2.post1 | conda           | linux-64        | py35_3
+
+aarch64_gbox/six          |   1.10.0 | conda           | linux-aarch64   | py36_0
+
+abarto/six                |    1.2.0 | conda           | linux-64        | py27_0
+
+aetrial/six               |          | conda           | linux-64, osx-64 | py35_0, py27_0
+
+anaconda-mirror/six       |    1.2.0 | conda           | linux-64        | py27_0
+
+anaconda/posix_ipc        |    1.0.4 | conda           | linux-ppc64le, linux-64, linux-32, osx-64 | py36h1de35cc_0, py27_0, py36_0, py34_0, py35h1de35cc_0, py27h14c3975_0, py36h14c3975_0, py27h1de35cc_0, py35h14c3975_0, py35_0
+
+: POSIX IPC for Python
+
+anaconda/six              |   1.11.0 | conda           | linux-ppc64le, osx-32, linux-64, win-32, osx-64, linux-32, win-64 | py37_1, py27hdcd7534_1, py36_1, py36hd5049a8_1, py35h84ce60b_1, py27ha5e1701_1, py36h0e22d5e_1, py27hcc62b61_1, py35he5a9505_1, py35h06cf344_1, py36h2c0fdd8_1, py27_1, py27_0, py27h5de879c_1, py36h4647f2f_1, py27h9c1c466_1, py27h47fc262_1, py36_0, py35h423b573_1, py26_0, py27h0b002a5_1, py36hcdf3386_1, py35h39a4c60_1, py35h85ff2ce_1, py36h372c433_1, py36hcac75e4_1, py27h7252ba3_1, py27h5f960f1_1, py27hf6add30_1, py35hcd25d73_1, py35hc1da2df_1, py34_0, py35h5312c1b_1, py33_0, py36h4db2310_1, py35h291ec27_1, py36h7f2c006_1, py36h1d5bd22_1, py35_0, py35_1
+
+: Python 2 and 3 compatibility utilities
+
+andrvd/six                |    1.9.0 | conda           | linux-64        | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+archiarm/six              |   1.12.0 | conda           | linux-aarch64   | py27_1000, py36_1000, py37_1000
+
+: Python 2 and 3 compatibility utilities
+
+asmeurer/six              |    1.3.0 | conda           | osx-64          | py34_0, py33_0, py26_0, py27_0
+
+: Python 2 and 3 compatibility utilities
+
+astropy-ci-extras/six     |    1.7.2 | conda           | linux-64        | py32_0
+
+: Python 2 and 3 compatibility utilities
+
+auto/docsix               |      0.1 | conda           | linux-64, linux-32 | py27_0
+
+: UNKNOWN
+
+auto/pysixel              |    0.1.9 | conda           | linux-64        | py27_0
+
+: https://github.com/saitoha/PySixel
+
+auto/six                  |    1.5.1 | conda           | linux-32        | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+avalentino/qtsix          |      1.1 | conda           | linux-64, osx-64 | py34_2, py27_2, py34_1, py34_0
+
+: Compatibility layer for different Qt bindings.
+
+bioconda/bioconductor-rpsixml |   2.22.0 | conda           | linux-64, noarch, osx-64 | r351_0, r341_0, r3.4.1_0
+
+: Queries, data structure and interface to visualization of interaction datasets. This package inplements the PSI-MI 2.5 standard and supports up to now 8 databases. Further databases supporting PSI-MI 2.5 standard will be added continuously.
+
+bioconda/perl-posix       |  1.38_03 | conda           | linux-64, osx-64 | pl5.22.0_0, pl526_1
+
+bioconda/sixgill          |    0.2.4 | conda           | linux-64, noarch, osx-64 | py34_1, py27_1, py27_0, py36_1, py34_0, py_2, py35_0, py35_1
+
+bucricket/six             |    1.8.0 | conda           | osx-64          | py27_0
+
+c3i_test2/six             |   1.11.0 | conda           | linux-ppc64le, linux-64, win-32, osx-64, linux-32, win-64 | py27hdcd7534_1, py36hc336ab7_1, py36h167fade_1, py35h6fdc01f_1, py35h06cf344_1, py36he3a9121_1, py27hade2365_1, py36h2c0fdd8_1, py35he103cf6_1, py27h26b0d2b_1, py27h5de879c_1, py27h7c6c5a6_1, py36hacf5bc8_1, py27h9c1c466_1, py36hf47dc5c_1, py27h47fc262_1, py35h291ec27_1, py36hcdf3386_1, py35hd03a03d_1, py27h67e3194_1, py36h0749e7b_1, py36h4647f2f_1, py35h85ff2ce_1, py36hcac75e4_1, py27haf3d7ee_1, py35h79ff0fc_1, py27hf17f188_1, py35h4e33d95_1, py36h8a09226_1, py36h1d5bd22_1, py27hf6add30_1, py35hcd25d73_1, py36h27a2468_1, py36h332da60_1, py35hc61cff3_1, py35h81d6c25_1, py27h28a9b25_1, py35h5312c1b_1
+
+: Python 2 and 3 compatibility utilities
+
+cclements/six             |   1.11.0 | conda           | linux-64        | py27h3a1f0b0_1
+
+: Python 2 and 3 compatibility utilities
+
+cdat-forge/six            |   1.11.0 | conda           | linux-64, osx-64 | py36_1, py27_1
+
+: Python 2 and 3 compatibility utilities
+
+chembl/unittest2six       |    0.0.0 | conda           | linux-64, win-32, osx-64, linux-32, win-64 | py35_0, py27_0
+
+: Meta-package for unittest2 functionality on both Python 2 and Python 3
+
+clg_boar/six              |   1.10.0 | conda           | linux-64, win-64 | py27_0
+
+codelv/pip-six            |   1.11.0 | conda           | noarch          | h52e26dd_0, h8c82de0_0
+
+: Python 2 and 3 compatibility utilities
+
+compbiocore/perl-posix    |   1.3803 | conda           | linux-64        | pl526_1
+
+conda-forge/fissix        |   18.6a6 | conda           | noarch          | py_0
+
+: Backport of lib2to3, with enhancements
+
+conda-forge/lua-luaposix  |   33.4.0 | conda           | linux-64, osx-64 | pl5.22.2.1lua5.2_0, pl5.22.2.1lua5.2_1, pl5.22.0.1lua5.2_0, pl5.22.0.1lua5.2_1, pl5.20.3.1lua5.2_1, pl5.20.3.1lua5.2_0
+
+conda-forge/pdfminer.six  | 20170720 | conda           | linux-64, win-32, win-64, osx-64 | py36_0, py34_0, py35_0, py27_0
+
+: PDF parser and analyzer
+
+conda-forge/r-basix       |      1.1 | conda           | linux-64, win-64, osx-64 | r351h6115d3f_1000, r341h6115d3f_0, r341hc070d10_0, r351h96ca727_1000, r351h46e59ec_1000, r351h6115d3f_0, r351hc070d10_0
+
+: BASIX provides some efficient C/C++ implementations to speed up calculations in R.
+
+conda-forge/six           |   1.12.0 | conda           | linux-64, win-32, osx-64, noarch, win-64 | py37_1, py36_1001, py36_1000, py37_1000, py27_1, py34_1, py27_0, py36_1, py34_0, py27_1001, py37_1001, py_0, py27_1000, py35_0, py35_1
+
+: Python 2 and 3 compatibility utilities
+
+conda-forge/sixs          |      1.1 | conda           | linux-64, win-32, win-64, osx-64 | ha44fe06_1, h26a2512_1, h1c2f66e_1001, h8933c1f_1001, 0, h12d9a10_1001, h8933c1f_1
+
+darthhack/podsixnet       |       79 | conda           | win-64          | py36hea6d5d0_0
+
+david_baddeley/six        |   1.10.0 | conda           | linux-64, osx-64, win-64 | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+davidbgonzalez/six        |    1.9.0 | conda           | osx-64          | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+defusco/pdfminer.six      | 20170419 | conda           | win-64          | py36_0, py35_0, py27_0
+
+derickl/pdfminer.six      | 20170720 | conda           | osx-64          | py27hbab9120_0
+
+: PDF parser and analyzer
+
+derickl/pdftables.six     |    0.0.5 | conda           | osx-64          | py27he3f5d20_0
+
+: Parses PDFs and extracts what it believes to be tables.
+
+details786/six            |    1.5.2 | conda           | linux-64        | py27_0
+
+: dasda
+
+dfdx/pdfminer.six         | 20170720 | conda           | linux-64        | py36h0c29853_0
+
+: PDF parser and analyzer
+
+eklitzke/six              |   1.11.0 | conda           | linux-64        | py36h88ced0f_0
+
+: Python 2 and 3 compatibility utilities
+
+gus/posix_ipc             |    1.0.0 | conda           | linux-64        | py27_0
+
+: POSIX IPC primitives (semaphores, shared memory and message queues) for Python
+
+gusdunn/pdfminer.six      | 20151013 | conda           | linux-64        | py35h5804155_0
+
+: PDF parser and analyzer
+
+hargup/posix_ipc          |          | conda           | linux-64        | py27_0
+
+: POSIX IPC primitives (semaphores, shared memory and message queues) for Python
+
+hargup/six                |          | conda           | linux-64        | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+intel/six                 |   1.11.0 | conda           | linux-64, osx-64, win-64 | py27_3, py27_2, py36_intel_8, py36_3, py36_2, py27_intel_3, py27_intel_4, py27_intel_6, py27_intel_7, py27_intel_8, py35_intel_3, py35_intel_4, py35_intel_7, py35_intel_6
+
+: Python 2 and 3 compatibility utilities
+
+jetson-tx2/six            |   1.10.0 | conda           | linux-aarch64   | py36_0
+
+: Python 2 and 3 compatibility utilities
+
+jim-hart/pdfminer.six     | 20170419 | conda           | win-64          | py34_0, py35_0, py27_0
+
+: PDF parser and analyzer
+
+jjhelmus/six              |          | conda           | linux-aarch64   | py37_1
+
+: Python 2 and 3 compatibility utilities
+
+jlmenut/six               |   1.10.0 | conda           | linux-64        | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+josh/six                  |    1.9.0 | conda           | win-64          | py34_0
+
+: Python 2 and 3 compatibility utilities
+
+jrkerns/six               |   1.11.0 | conda           | linux-armv7l    | py34_0
+
+kitware-danesfield-cf/six |   1.11.0 | conda           | linux-64        | py36_1001
+
+: Python 2 and 3 compatibility utilities
+
+krrishnarraj/six          |   1.10.0 | conda           | linux-armv7l    | py27_0, py34_0
+
+lightsource2-tag/02-id-six-analysis | 2018C3.0 | conda           | linux-64        | 0
+
+lightsource2-tag/02-id-six-collection | 2018C3.0 | conda           | linux-64        | 0
+
+lightsource2-tag/sixtools |    0.0.1 | conda           | linux-64        | py36_0
+
+mbonix/pdfminer.six       | 20160614 | conda           | win-32          | py36_0
+
+: PDF parser and analyzer
+
+mikesilva/pdfminer.six    | 20170419 | conda           | linux-64, win-64 | py36_0
+
+: PDF parser and analyzer
+
+msarahan/six              |   1.10.0 | conda           | osx-64          | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+msft-sqlserver-example/six |   1.10.0 | conda           | win-64          | py35_0
+
+msys2/m2-libpcreposix     |     8.38 | conda           | win-32, win-64  | 1, 2
+
+: A library that implements Perl 5-style regular expressions
+
+msys2/posix               |    1.0.0 | conda           | win-32, win-64  | 1, 2
+
+ocordes/six               |   1.10.0 | conda           | linux-64, osx-64 | py35_0
+
+: Python 2 and 3 compatibility utilities
+
+omgarcia/six              |   1.10.0 | conda           | linux-64        | py27_0
+
+pmuller/six               |   1.10.0 | conda           | linux-64        | py27_0
+
+quanyuan/six              |   1.10.0 | conda           | osx-64          | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+rogerramos/qtsix          |      1.1 | conda           | linux-64        | py27hdaf214b_3, py27_3
+
+: Compatibility layer for different Qt bindings.
+
+rogerramos/six            |   1.10.0 | conda           | linux-64        | py27h82f3ff0_3
+
+: Python 2 and 3 compatibility utilities
+
+rpi/six                   |   1.11.0 | conda           | linux-armv6l, linux-armv7l | py36h1999902_0, py35h1e4a097_0, py27_1, py27_0, py36_1, py36_0, py27h5be941f_0, py35_0, py35_1
+
+: Python 2 and 3 compatibility utilities
+
+rpi64/six                 |   1.12.0 | conda           | linux-aarch64   | py36_1, py27_1000, py35_1000, py36_1000, py37_1000
+
+: Python 2 and 3 compatibility utilities
+
+ryan/six                  |    1.9.0 | conda           | linux-64        | py27_0
+
+tballance/six             |   1.10.0 | conda           | linux-armv7l    | py35_1
+
+: Python 2 and 3 compatibility utilities
+
+test_org_002/posix_ipc    |    1.0.0 | conda           | []              | py36_0, py34_0, py35_0, py27_0
+
+test_org_002/six          |   1.10.0 | conda           | []              | py34_0, py36_0, py27_0, py33_0, py35_0, py26_0
+
+thomasantony/six          |   1.10.0 | conda           | linux-aarch64   | py36_0
+
+timl/six                  |   1.10.0 | conda           | win-32          | py36_0, py27_0
+
+ukoethe/six               |    1.9.0 | conda           | win-64          | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+vberaudi/six              |   1.10.0 | conda           | osx-64          | py27_0
+
+: Python 2 and 3 compatibility utilities
+
+vpython/six               |   1.11.0 | conda           | linux-64, win-32, win-64, osx-64 | py27_1, py34_1, py34_0, py36_1, py27_0, py35_0, py35_1
+
+: Python 2 and 3 compatibility utilities
+
+Found 94 packages
+
+Run 'anaconda show <USER/PACKAGE>' to get installation details
+
+找到了众多的six包，我选择了anaconda show CEFCA/six查看详情：
+
+anaconda show CEFCA/six
+
+(env2.7) Kaitlyns-Mac:bin kaitlyn$ anaconda show CEFCA/six
+
+Using Anaconda API: https://api.anaconda.org
+
+Name:    six
+
+Summary: Python 2 and 3 compatibility utilities
+
+Access:  public
+
+Package Types:  conda
+
+Versions:
+
++ 1.10.0
+
+To install this package with conda run:
+
+conda install --channel https://conda.anaconda.org/CEFCA six
+
+按照提示输入conda install --channel https://conda.anaconda.org/CEFCA six即可安装：
+
+conda install --channel https://conda.anaconda.org/CEFCA six
+
+等待安装，成功。
+
+No module named 'ConfigParser'的错误就解决了。
+

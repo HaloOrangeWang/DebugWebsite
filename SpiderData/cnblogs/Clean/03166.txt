@@ -1,0 +1,43 @@
+在 linux服务器上运行代码报错： 
+Python3中遇到UnicodeEncodeError: ‘ascii’ codec can’t encode characters in ordinal not in range(128) 
+但是在windows上面运行代码正常。 
+原因是因为：linux系统语言导致的。 
+查看了一下系统环境编码
+
+>>> import sys
+>>> sys.stdout.encoding
+'US-ASCII'
+
+而另一台能正常打印的机器是 en_US.UTF-8
+
+解决办法
+
+（1）设置环境变量LANG
+
+在linux或Mac上设置环境变量的方式一样，编辑~/.bash_profile文件（’~’指的是用户登录后的默认目录），添加一行：
+
+export LANG="en_US.UTF-8"
+
+保存退出后重新打开命令行控制台
+
+（2）使用PYTHONIOENCODING
+
+在运行python命令前添加参数 PYTHONIOENCODING=utf-8 python test.py
+
+该参数的解释可查看官方文档： 
+https://docs.python.org/3.6/using/cmdline.html#envvar-PYTHONIOENCODING
+
+（3）重新定义标准输出
+
+在代码中添加 sys.stdout = codecs.getwriter(“utf-8”)(sys.stdout.detach()) ，使代码变为：
+
+import sys
+import codecs
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+print('中文')
+--------------------- 
+作者：蓝鲸123 
+来源：CSDN 
+原文：https://blog.csdn.net/th_num/article/details/80685389 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

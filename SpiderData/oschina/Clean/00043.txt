@@ -1,0 +1,19 @@
+背景：python2 前端上传一个txt文件，后端实现文件本地保存
+
+错误：
+
+原本代码：
+
+with open(os.path.join(file_path, filename), 'wb') as fp:
+    fp.write(file_info['body'])
+
+当上传的txt文件编码格式为'utf-8'时，一切正常。但是在windows环境下，生成的txt文件编码有时候为‘latin1’编码格式，此时上述代码在存储时，不会报错。但是查看文件，内容为乱码，导致后续使用出现问题。故，修改代码如下：
+
+with open(os.path.join(file_path, filename), 'wb') as fp:
+    try:
+        fp.write(file_info['body'].decode('utf-8'))
+    except Exception as e:
+        fp.write(file_info['body'].decode('gbk'))
+
+首先使用'utf-8'解码，如果正常则保证写入不乱码；如果不是'utf-8'，也保证写入过程会抛异常，进入下面逻辑，使用'gbk'进行解码，之后再进行保存，保证写入不乱码；
+

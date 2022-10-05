@@ -1,0 +1,34 @@
+
+Linux pip命令报错 -bash: pip: command not found—ImportError:No module named XXX
+
+​​一、Linux pip命令报错 -bash: pip: command not found​​
+
+​​二、ImportError:No module named XXX​​
+
+
+一、Linux pip命令报错 -bash: pip: command not found
+
+若是重新安装的python你需要配置环境变量
+
+执行source命令，更新PATH。
+
+
+二、ImportError:No module named XXX
+
+以下解决办法是在你已经安装好该模块了，出现问题的解决方法。
+
+shell中运行python程序出错，提示ImportError: No module named schedule
+ shell中输入python输出的python版本是python 2.7.5
+ 但是/root/anaconda/bin/python 在系统中存在
+ 分别输出了两种场景中的sys.path
+
+然后研究了一下sys.patch的生成方式：
+ A list of strings that specifies the search path for modules. Initialized from the environment variable PYTHONPATH, plus an installation-dependent default.
+ 这个不仅与PYTHONPATH有关系，而且与installation-dependent default有关系，这个估计与python的安装有关系，而且通过上面的sys.path输出发现机器上安装了两个python2.4和2.6，
+
+于是问题就得到了解决，在脚本中使用
+​​​/usr/bin/python XXX.py​​​而不是​​python XXX.py​​ 或者将XXX.py修改为可执行文件，在python头部添加如下内容
+
+python后台运行
+​​​ https://www.jb51.net/article/156969.htm​​
+

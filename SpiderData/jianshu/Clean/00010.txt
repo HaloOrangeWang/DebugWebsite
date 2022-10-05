@@ -1,0 +1,25 @@
+tag:python, pip, jieba, paddlepaddle-tiny
+
+本文写于2020年03月28日，阅读时请注意时效性。
+
+
+问题出现：
+
+在使用jieba分词的paddle模式时需要安装paddlepaddle-tiny，但是在使用pip安装的时候报错如下：
+
+(testenv) testuser@testnode:~$ pip install paddlepaddle-tiny
+Looking in indexes: http://pypi.tuna.tsinghua.edu.cn/simple
+ERROR: Could not find a version that satisfies the requirement paddlepaddle-tiny (from versions: none)
+ERROR: No matching distribution found for paddlepaddle-tiny
+
+
+解决方法和过程：
+
+在pypi直接搜索paddlepaddle-tiny得到了相应页面但是其中没有相关信息
+
+Google关键词paddlepaddle-tiny，第二个链接就是jieba分词中的issue，指出paddlepaddle-tiny仅支持到python 3.7
+
+python官网显示最新的版本为python 3.7.13但是conda不支持，使用conda search命令发现最新支持到python 3.7.10
+
+使用conda create -n newenv python==3.7.11创建新的虚拟环境后即可成功安装paddlepaddle-tiny
+

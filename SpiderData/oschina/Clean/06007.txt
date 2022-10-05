@@ -1,0 +1,2 @@
+在popwindow里加上spinner会报错，E/AndroidRuntime(6943): android.view.WindowManager$BadTokenException: Unable to add window -- token android.view.ViewRootImpl$W@4670d3b8 is not valid; is your activity running? 原因是当你点击spinner的时候，弹出的窗口找不到它的依附的点，也就是找不到当前activity的上下文，所以会报错。解决方法有多种，可以用popwindowl来的代替spinner，showasdropdown（）,最简便的改进方法就是更改spinner弹出窗口的mode,在xml中设置spinner的spinnerMode为dialog即可，虽然样式很原始，但是是可以解决崩溃的问题的。
+

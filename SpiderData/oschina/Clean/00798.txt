@@ -1,0 +1,65 @@
+1、SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 76-77: truncated \uXXXX escape
+
+原因是代码中的文件路径不正确。window 读取文件可以用\，但是在字符串中\是被当作转义字符来使用。’d:\a.txt’会被转义成’d:\a.txt’这是正确路径，所以不会报错。
+
+但是accounts_file = 'F:\Myself\xxx\xxx\user.txt'    这个就会报错，经过转义之后可能就找不到原本的文件路径了。所以，需要改成这样accounts_file = 'F:\\Myself\\xxx\\xxx\\xx\\user.txt' 或者 accounts_file = r'F:\Myself\xxx\xxx\user.txt' 或者按照linux的路径写法accounts_file = 'F:/Myself/xxx/xxx/user.txt'。Linux的写法在linux和windows都可以识别。
+
+2、使用input输入的字段全部按照string类型处理，若需要跟其他类型比较，可以转换类型。如转换成整型，可以直接用int, score = int(score)   score是input输入的
+
+3、break和continue的区别
+
+break：在循环里面，只要遇到break立即结束循环
+
+continue：在循环里面，只要遇到continue时，结束本次循环，继续下次循环。Continue后面的代码都不执行
+
+break和continue两个都写在循环中
+
+4、while和for下面都可以对应一个else,是指正常结束循环之后，执行else里面的代码。若循环时break结束的，那么不会执行
+
+5、print打印多个字段的时候，用逗号隔开即可。如     print("欢迎%s，今天是%s" % (username, time))    %s是占位符
+
+6、for循环的range中，是顾头不顾尾。如range(10)，就是0~9，若写（1,10），1~9，顾头不顾尾。想要输出10 ，那么就是range(1,11)
+
+7、print()里面没有写end时，默认相当于是print(end=’\n’)。可人工在print后加空格，写为print(xxx, end=’   ’)
+
+8、IndentationError: unindent does not match any outer indentation level
+
+最常见的原因是，的确没有对齐。去代码中看了下，有没有没对齐的
+
+python脚本中，是否有多余的不该有的空格。可以复制所有的代码在notepad++中查看。 Notepad++中需要设置，视图-->显示符号-->显示空格和制表符
+
+新的Python语法，是不支持的代码对齐中，混用TAB和空格的。
+
+9、TypeError: 'list' object is not callable    （11.22）
+
+出现该错误的原因是参数名称和函数名称相同
+
+list = ['a','b',2,5,'1']
+print(list)
+stus = []
+stus1 = list()
+print(stus)
+print(stus1)
+
+callable()是python的内置函数，用来检查对象是否可被调用，可被调用指的是对象能否使用()括号的方法调用
+
+在如上代码中，由于变量list和函数list重名了，所以函数在使用list函数时，发现list是一个定义好的列表，而列表是不能被调用的，因此抛出一个类型错误
+
+修改变量名list后，运行正常。
+
+10、读取自己写的文件，encoding=‘utf-8’时，会报错'utf-8' codec can't decode byte 0xca in position 0: invalid continuation byte，需要将读取的encoding改成encoding='gbk'
+
+with open(file,encoding='utf-8') as fr:
+                    data = fr.read()
+
+改成：
+
+with open(file,encoding='gbk) as fr:
+                    data = fr.read()
+
+11、pymysql.err.InternalError: (1054, "Unknown column 'uname in 'field list'")
+
+sql='insert into app_myuser(username,passwd,is_admin) values(uname,password,is_admin);')
+#报错,"Unknown column 'uname in 'field list'",改成下面将不会报错
+sql='insert into app_myuser(username,passwd,is_admin) values("%s","%s",is_admin);'%(uname,password))
+

@@ -1,0 +1,81 @@
+在我们的开发者交流Q群（1017250147）里面，大家每天都会提出各种各样的问题，但其中存在一部分问题，大家提出的概率非常高。
+
+所以我们决定推出几期“问题答疑”，专门针对高频问题进行解答。当然，如果大家有别的希望我们答疑的问题，也欢迎直接在我们公众号留言，我们会筛选一些问题加入到这几期的答疑推文中。
+
+下文是本期精选的8大问题，希望能帮助大家在自动化测试的研究中少走一些弯路：
+
+
+1. 在IDE中如何引入第三方库？
+
+AirtestIDE内置了一个精简的python环境，缺少很多第三方库；如果需要在IDE中引入各种第三方库，可以先在本地的python环境中装好，再设置IDE使用本地的python环境，具体步骤如下：
+
+① 请自行在你的电脑上安装属于你自己的Python（python<=3.7，3.8暂不支持），然后再安装对应的依赖库。你可以通过一些环境管理方案来管理你的python环境，例如virtualenv
+
+② 在刚才安装好的本地Python环境中，安装airtest相关的依赖库，详细内容请参考文档：https://airtest.doc.io.netease.com/IDEdocs/run_script/1_useCommand_runScript/#python
+
+③ 在本地安装完属于你自己的python环境后，再在IDE的设置里面设置好你本地的python.exe的路径，详细内容请参考文档：https://airtest.doc.io.netease.com/IDEdocs/settings/1_ide_settings/#python
+
+
+2. RuntimeError:minitouch setup timeout
+
+出现这个报错，最常见的是以下俩种情况：
+
+① 手机系统是MIUI11，此时我们需要在点击“connect”按钮之前，把 “use Javacap + use orientation” 这两个选项勾选上，再点击“connect”按钮即可正常使用
+
+② 手机的安卓版本是Android10，此时仅需要把IDE更新到最新版本即可；如果IDE使用的是本地的python环境，那还需要把本地python环境的Airtest更新到最新版本。
+
+
+3. Yosemite等apk在哪里可以下载
+
+有些设备可能因为某些权限问题，不能自动安装Yosemite、RotationWatcher等apk，同学们首先需要检查下手机设置里是否没有开启“允许通过USB安装应用”这样的设置。
+
+如果确定手机设置都开启了，但还是不能自动安装的话，再考虑手动进行安装。同学们可以在官网上下载一个最新版版本的IDE，然后在如下目录中找到这些apk，然后自行在设备上安装即可：
+
+
+4. ADB版本冲突
+
+在Windows环境中运行Airtest脚本时，假如运行环境本地已经存在有 adb.exe （例如装了android_sdk， 或者是别的工具带有adb.exe），并且ADB版本与Airtest中使用的不同，运行脚本时就可能会出现各种报错。
+
+常见情况下，我们会看到log中包含这样的语句:
+
+adb server version (40) doesn't match this client (39); killing...
+  * daemon started successfully *
+
+如log所示，我们可以看到环境里面使用了40和39版本，版本冲突导致报错。解决办法是将本地所有的adb.exe统一成同样的版本就行。
+
+另外，adb版本冲突，还会容易导致设备断开，出现如下报错：
+
+解决办法依旧是将本地所有的adb.exe统一成同样的版本。
+
+
+5. 连接模拟器出现黑屏
+
+① 先尝试在连接模拟器之前下拉勾选Use javacap选项，之后再点击“connect”按钮连接模拟器
+
+② 如果仍然黑屏，断开模拟器，下拉勾选Use javacap和Use ADB orientation这俩个选项，再次连接即可
+
+③ 如上述方式都不见效，可以上GitHub提一个issue，贴上使用的IDE和模拟器版本详情（GitHub地址：https://github.com/AirtestProject/AirtestIDE/issues）
+
+
+6. 复制IDE中log窗口生成的报告命令在命令行执行报错
+
+常见的情况可能有如下几种：
+
+① 复制的命令路径中含有空格，导致程序报错：找不到文件或者路径；只需要将命令中的路径用英文模式下的双引号括起来即可。
+
+② 命令行中包含了&这样的符号，可能会导致命令行被中断，常见于一些勾选了 “use javacap” 这样的选项后连接的设备。但是&这个字符需要转义才能够生效：Windows下改写成^&，MAC下改写成/&
+
+
+7. Airtest的报告步骤显示能否自定义
+
+当Airtest版本≥1.2.2，或者IDE版本≥1.2.2，支持在报告上自定义断言信息，其余操作在报告上的显示暂不支持自定义。
+
+
+8. 如何在报告中显示报错信息
+
+可以使用如下代码：
+
+AirtestProject开发者交流Q群：1017250147
+
+文章来源于公众号：AirtestProject
+

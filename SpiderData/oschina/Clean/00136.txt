@@ -1,0 +1,34 @@
+
+环境：
+
+Python 3.6 Django 2.2
+
+
+问题:
+
+我在Django的admin.py文件中对某个Models配置了fields字段，导致查看某个具体数据时，提示：Django "Key 'id' not found in 'xxx'. Choices are: xxx"
+
+导致报错代码：
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['id','name']
+    fields = ['id','name'] # 这行代码导致的报错
+
+
+原因：
+
+因为字段id设置的自增ID键，在数据库中对应的是AUTO_INCREMENT，所以这个字段是不允许编辑的，而fields这个配置设置的就是要展示那些编辑字段，这就导致冲突了，所以才会报错。
+
+
+解决办法：
+
+把代码改为以下内容就好了
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['id','name']
+    fields = ['name'] # 这行代码去掉id字段
+
+本文首发于BigYoung小站
+

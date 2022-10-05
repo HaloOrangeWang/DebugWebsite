@@ -1,0 +1,116 @@
+语法错误
+
+异常：大多数的异常都不会被程序处理，都以错误信息的形式展现在这里
+
+异常处理：
+
+while True:
+    try:
+        x = int(input("请输入一个错误："))
+        break
+    except ValueError:
+        print("不是有效数字，再试一遍")
+
+try 语句执行顺序：
+
+先执行try语句里面的语句，如果没有异常发生，忽略except语句，try子句执行后结束。
+
+如果在执行try子句的过程中发生了异常，那么try子句余下的部分将被忽略。如果异常的类型和 except 之后的名称相符，那么对应的except子句将被执行。
+
+如果一个异常没有与任何的except匹配，那么这个异常将会传递给上层的try中。（try可以嵌套try）
+
+一个except子句可以同时处理多个异常，这些异常将被放在一个括号里成为一个元组，例如:
+
+except (RuntimeError, TypeError, NameError):
+        pass
+
+最后一个except子句可以忽略异常的名称，它将被当作通配符使用。你可以使用这种方法打印一个错误信息，然后再次把异常抛出。
+
+except:
+    print("作为最后一个，我能捕获所有之前没有捕获的异常")
+
+try except 语句还有一个可选的else子句，如果使用这个子句，那么必须放在所有的except子句之后。这个子句将在try子句没有发生任何异常（正常执行）的时候执行。例如:
+
+else:
+    print("else在正常情况下会被执行")
+
+使用 else 子句比把所有的语句都放在 try 子句里面要好，这样可以避免一些意想不到的、而except又没有捕获的异常。
+
+异常处理而且还能处理子句中调用的函数（甚至间接调用的函数）里抛出的异常。例如:
+
+except...as err;(err为错误类型)，as可以返回错误类型
+
+'''
+学习中遇到问题没人解答？小编创建了一个Python学习交流群：531509025
+寻找有志同道合的小伙伴，互帮互助,群里还有不错的视频学习教程和PDF电子书！
+'''
+def this_fails():
+    x = 1 / 0
+
+try:
+    this_fails()
+except ZeroDivisionError as err:
+    print('Handling run-time error:', err)
+
+#结果：Handling run-time error: division by zero
+
+finally子句的语句在任何情况下都会被执行
+
+finally:
+    print("finally在任何情况写都会被执行")
+
+try-finally语句
+
+语法:
+
+try:
+
+可能触发异常的语句
+
+finally:
+
+最终语句
+
+说明：finally 子句不可以省略，一定不存在except子句
+
+作用：做必须要做的事情，无论异常是否发生，finally子句都会被执行
+
+注：   try-finally语句不会改变程序的(正常/异常)状态
+
+raise 语句
+
+作用:   触发一个错误,让程序进入异常状态
+
+语法:raise 异常类型或raise 异常对象
+
+# #raise 语句
+def make_except():
+    print("开始...")
+    # raise ZeroDivisionError  # 手动发生一个错误通知
+    e = ZeroDivisionError("被零除啦!!!!!")
+    raise e  # 触发e绑定的错误,进入异常状态
+    print("结束")
+
+try:
+    make_except()
+    print("make_except调用完毕!")
+except ZeroDivisionError as err:
+    print('出现了被零除的错误,已处理并转为正常状态!')
+    print('err 绑定的对象是:', err)
+
+#开始...
+#出现了被零除的错误,已处理并转为正常状态!
+#err 绑定的对象是: 被零除啦!!!!!
+
+assert 断言语句
+
+语法：assert  真值表达式 , 错误信息(通常是字符串)
+
+作用：如果真值表达式为假时，主动的发出异常；如果真值表达式为真，当断言语句不存在。
+
+assert b==1            # 也可以没有 异常说明
+assert len(lists) >=5,'列表元素个数小于5'        # 当len(lists)<5时，主动发出异常
+assert b==1,'2不等于1'                        # 当b不等于1时，主动发出异常，并提示异常
+
+出现使用print()函数打印出内存地址的情况，说明你输出的是打印函数名/模块名/类名，需要用函数把内存中的值取出来
+

@@ -1,0 +1,377 @@
+
+初学Python常见错误
+
+忘记写冒号
+
+误用=
+
+错误 缩紧
+
+变量没有定义
+
+中英文输入法导致的错误
+
+不同数据类型的拼接
+
+索引位置问题
+
+使用字典中不存在的键
+
+忘了括号
+
+漏传参数
+
+缺失依赖库
+
+使用了python中对关键词
+
+编码问题
+
+
+1. 忘记写冒号
+
+在 if、elif、else、for、while、def语句后面忘记添加 :
+
+age = 42
+
+if age == 42
+
+print('Hello!')
+  File "<ipython-input-19-4303141d6f97>", line 2
+
+if age == 42
+
+^
+
+SyntaxError: invalid syntax
+
+
+2. 误用 =
+
+=` 是赋值操作，而判断两个值是否相等是 `==
+gender = '男'
+
+if gender = '男':
+
+print('Man')
+  File "<ipython-input-20-191d01f95984>", line 2
+
+if gender = '男':
+
+^
+
+SyntaxError: invalid syntax
+
+
+3. 错误的缩进
+
+Python用缩进区分代码块，常见的错误用法：
+
+print('Hello!')
+
+print('Howdy!')
+  File "<ipython-input-9-784bdb6e1df5>", line 2
+
+print('Howdy!')
+
+^
+
+IndentationError: unexpected indent
+num = 25
+
+if num == 25:
+
+print('Hello!')
+  File "<ipython-input-21-8e4debcdf119>", line 3
+
+print('Hello!')
+
+^
+
+IndentationError: expected an indented block
+
+
+4. 变量没有定义
+
+if city in ['New York', 'Bei Jing', 'Tokyo']:
+
+print('This is a mega city')
+---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+<ipython-input-22-a81fd2e7a0fd> in <module>
+
+----> 1 if city in ['New York', 'Bei Jing', 'Tokyo']:
+
+2     print('This is a mega city')
+NameError: name 'city' is not defined
+
+
+5. 中英文输入法导致的错误
+
+英文冒号
+
+英文括号
+
+英文逗号
+
+英文单双引号
+
+if 5>3：
+
+print('5比3大')
+  File "<ipython-input-46-47f8b985b82d>", line 1
+
+if 5>3：
+
+^
+
+SyntaxError: invalid character in identifier
+if 5>3:
+
+print('5比3大'）
+  File "<ipython-input-47-4b1df4694a8d>", line 2
+
+print('5比3大'）
+
+^
+
+SyntaxError: invalid character in identifier
+spam = [1, 2，3]
+  File "<ipython-input-45-47a5de07f212>", line 1
+
+spam = [1, 2，3]
+
+^
+
+SyntaxError: invalid character in identifier
+if 5>3:
+
+print('5比3大‘)
+  File "<ipython-input-48-ae599f12badb>", line 2
+
+print('5比3大‘)
+
+^
+
+SyntaxError: EOL while scanning string literal
+
+
+6. 不同数据类型的拼接
+
+字符串/列表/元组 支持拼接
+
+字典/集合不支持拼接
+
+'I have ' + 12 + ' eggs.'
+
+#'I have {} eggs.'.format(12)
+---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+<ipython-input-29-20c7c89a2ec6> in <module>
+
+----> 1 'I have ' + 12 + ' eggs.'
+TypeError: can only concatenate str (not "int") to str
+['a', 'b', 'c']+'def'
+---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+<ipython-input-31-0e8919333d6b> in <module>
+
+----> 1 ['a', 'b', 'c']+'def'
+TypeError: can only concatenate list (not "str") to list
+('a', 'b', 'c')+['a', 'b', 'c']
+---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+<ipython-input-33-90742621216d> in <module>
+
+----> 1 ('a', 'b', 'c')+['a', 'b', 'c']
+TypeError: can only concatenate tuple (not "list") to tuple
+set(['a', 'b', 'c'])+set(['d', 'e'])
+---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+<ipython-input-35-ddf5fb1e6c8c> in <module>
+
+----> 1 set(['a', 'b', 'c'])+set(['d', 'e'])
+TypeError: unsupported operand type(s) for +: 'set' and 'set'
+grades1 = {'Mary':99, 'Henry':77}
+
+grades2 = {'David':88, 'Unique':89}
+
+grades1+grades2
+---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+<ipython-input-36-1b1456844331> in <module>
+
+2 grades2 = {'David':88, 'Unique':89}
+
+3
+
+----> 4 grades1+grades2
+TypeError: unsupported operand type(s) for +: 'dict' and 'dict'
+
+
+7. 索引位置问题
+
+spam = ['cat', 'dog', 'mouse']
+
+print(spam[5])
+---------------------------------------------------------------------------
+
+IndexError                                Traceback (most recent call last)
+
+<ipython-input-38-e0a79346266d> in <module>
+
+1 spam = ['cat', 'dog', 'mouse']
+
+----> 2 print(spam[5])
+IndexError: list index out of range
+
+
+8. 使用字典中不存在的键
+
+在字典对象中访问 key 可以使用 []，
+
+但是如果该 key 不存在，就会导致：KeyError: 'zebra'
+
+spam = {'cat': 'Zophie',
+
+'dog': 'Basil',
+
+'mouse': 'Whiskers'}
+
+print(spam['zebra'])
+---------------------------------------------------------------------------
+
+KeyError                                  Traceback (most recent call last)
+
+<ipython-input-39-92c9b44ff034> in <module>
+
+3         'mouse': 'Whiskers'}
+
+4
+
+----> 5 print(spam['zebra'])
+KeyError: 'zebra'
+
+为了避免这种情况，可以使用 get 方法
+
+spam = {'cat': 'Zophie',
+
+'dog': 'Basil',
+
+'mouse': 'Whiskers'}
+
+print(spam.get('zebra'))
+None
+
+key 不存在时，get 默认返回 None
+
+
+9. 忘了括号
+
+当函数中传入的是函数或者方法时，容易漏写括号
+
+spam = {'cat': 'Zophie',
+
+'dog': 'Basil',
+
+'mouse': 'Whiskers'}
+
+print(spam.get('zebra')
+  File "<ipython-input-43-100a51a7b630>", line 5
+
+print(spam.get('zebra')
+
+^
+
+SyntaxError: unexpected EOF while parsing
+
+
+10. 漏传参数
+
+def diyadd(x, y, z):
+
+return x+y+z
+
+diyadd(1, 2)
+---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+<ipython-input-44-7184f3f906ca> in <module>
+
+2     return x+y+z
+
+3
+
+----> 4 diyadd(1, 2)
+TypeError: diyadd() missing 1 required positional argument: 'z'
+
+
+11. 缺失依赖库
+
+电脑中没有相关的库
+
+
+12. 使用了python中的关键词
+
+如try、except、def、class、object、None、True、False等
+
+try = 5
+
+print(try)
+  File "<ipython-input-1-508e87fe2ff3>", line 1
+
+try = 5
+
+^
+
+SyntaxError: invalid syntax
+def = 6
+
+print(6)
+  File "<ipython-input-2-d04205303265>", line 1
+
+def = 6
+
+^
+
+SyntaxError: invalid syntax
+
+
+13. 文件编码问题
+
+import pandas as pd
+
+df = pd.read_csv('data/twitter情感分析数据集.csv')
+
+df.head()
+
+尝试encoding编码参数传入utf-8、gbk
+
+df = pd.read_csv('data/twitter情感分析数据集.csv', encoding='utf-8')
+
+df.head()
+
+都报错说明编码不是utf-8和gbk，而是不常见都编码，这里我们需要传入正确都encoding，才能让程序运行。
+
+python有个chardet库，专门用来侦测编码。
+
+import chardet
+
+binary_data = open('data/twitter情感分析数据集.csv', 'rb').read()
+
+chardet.detect(binary_data)
+{'encoding': 'Windows-1252', 'confidence': 0.7291192008535122, 'language': ''
+

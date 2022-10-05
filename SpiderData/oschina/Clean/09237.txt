@@ -1,0 +1,93 @@
+
+详细错误代码：
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Binding to target [Bindable@5bf217b type = org.springframework.boot.autoconfigure.web.ResourceProperties, value = 'provided', annotations = array<Annotation>[@org.springframework.boot.context.properties.ConfigurationProperties(prefix=spring.resources, value=spring.resources, ignoreInvalidFields=false, ignoreUnknownFields=false)]] failed:
+
+Property: spring.resources.cache-period
+    Value: 0
+    Origin: "spring.resources.cache-period" from property source "refresh"
+    Reason: The elements [spring.resources.cache-period] were left unbound.
+
+Action:
+
+Update your application's configuration
+
+
+问题分析
+
+何时出现？
+
+添加完热部署依赖，spring-boot-devtools 启动报错
+
+何时出现？
+
+添加完热部署依赖，spring-boot-devtools 启动报错
+
+spring boot 版本：springBootVersion = '2.0.1.RELEASE'
+
+spring boot 版本：springBootVersion = '2.0.1.RELEASE'
+
+devtools 版本：version: '1.5.12.RELEASE'
+
+devtools 版本：version: '1.5.12.RELEASE'
+
+
+如何解决
+
+既然报错有错误信息就有些头绪，不难发现：报错指向 spring.resources.cache-period
+
+既然报错有错误信息就有些头绪，不难发现：报错指向 spring.resources.cache-period
+
+直接全局搜索：spring.resources.cache-period 发现 前三项都是 springboot 自动配置的 最后devtools 又要配置？
+
+直接全局搜索：spring.resources.cache-period 发现 前三项都是 springboot 自动配置的 最后devtools 又要配置？
+
+进入之后发现 果然 如报错信息所示：devtools 中静态块配置了spring.resources.cache-period 并且value 为 0
+
+进入之后发现 果然 如报错信息所示：devtools 中静态块配置了spring.resources.cache-period 并且value 为 0
+
+问题解决：
+
+既然devtools 相关jar无法改变，那就是 springboot2.0后不支持老版的devtools ？
+使用了新版（2.0.0.RELEASE 以上）的 devtools 发现源码将 spring.resources.cache-period 换成了 spring.resources.cache.period
+再次导入jar后 重启并不会报错！
+
+问题解决：
+
+既然devtools 相关jar无法改变，那就是 springboot2.0后不支持老版的devtools ？
+
+使用了新版（2.0.0.RELEASE 以上）的 devtools 发现源码将 spring.resources.cache-period 换成了 spring.resources.cache.period
+
+再次导入jar后 重启并不会报错！
+
+总结：
+
+遇到问题还是应该仔细看报错信息
+多角度的分析 有利于问题的解决 而不是一直盯着一个
+
+总结：
+
+遇到问题还是应该仔细看报错信息
+
+多角度的分析 有利于问题的解决 而不是一直盯着一个
+
+还有
+
+记得刚加完热部署的依赖时候 启动并没有报错
+一定是又改动了什么。
+以后再说~
+
+还有
+
+记得刚加完热部署的依赖时候 启动并没有报错
+
+一定是又改动了什么。
+
+以后再说~
+

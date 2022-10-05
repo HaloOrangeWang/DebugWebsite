@@ -1,0 +1,48 @@
+
+一、问题源头
+
+Linux 使用自己python文件包时，出现ModuleNotFoundError: No module named。
+
+
+二、原因
+
+IDE环境下，例如pycharm下，会自动搜索代码所在目录，寻找相关的包，而Linux环境下，直接运行.py文件，只会搜索默认的路径此时需要把代码所在目录添加到sys.path当中
+
+在ide中执行python程序，都已经在默认的项目路径中，所以直接执行是没有问题的。但是在cmd中执行程序，所在路径是python的搜索路径，如果涉及到import引用就会报类似ImportError: No module named xxx这样的错误，解决方法：
+
+
+三、解决方案
+
+
+方案一：在报错的模块中添加：
+
+import sys
+
+import os
+
+curPath = os.path.abspath(os.path.dirname(__file__))
+
+rootPath = os.path.split(curPath)[0]
+
+sys.path.append(rootPath)
+
+
+方案二：
+
+sys.path是python的搜索模块的路径集，是一个list；可以在python环境下使用sys.path.append(path)添加相关的路径，但在退出python环境后添加的路径就会自动消失了。
+
+ImportError: No module named 'xxx'：模块不在搜索路径里，从而导致路径搜索失败。
+
+import sys
+
+sys.path.append("/usr/flink/alert/")
+
+sys.path.append("/usr/flink/alert/example/")
+
+from example import helloworld_pb2, helloworld_pb2_grpc
+
+
+本文采用
+
+本文采用方案一
+

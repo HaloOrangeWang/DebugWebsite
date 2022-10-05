@@ -1,0 +1,71 @@
+问题描述：我按照PaddlePaddle官方文档编写机器翻译模型，出现这个错误，对照了文档中的代码，也没有编写错误。
+
+问题描述：我按照PaddlePaddle官方文档编写机器翻译模型，出现这个错误，对照了文档中的代码，也没有编写错误。
+
+报错信息：
+
+报错信息：
+
+Original sentence:
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-27-e241afef7936> in <module>()
+     20 
+     21     print("Original sentence:")
+---> 22     print(" ".join([src_dict[w] for w in feed_data[0][0][1:-1]]))
+     23 
+     24     print("Translated score and sentence:")
+
+TypeError: 'map' object is not subscriptable
+
+问题复现：
+
+exe = Executor(place)
+exe.run(framework.default_startup_program())
+
+for data in test_data():
+    feed_data = map(lambda x: [x[0]], data)
+    feed_dict = feeder.feed(feed_data)
+    feed_dict['init_ids'] = init_ids
+    feed_dict['init_scores'] = init_scores
+
+results = exe.run(
+        framework.default_main_program(),
+        feed=feed_dict,
+        fetch_list=[translation_ids, translation_scores],
+        return_numpy=False)
+
+问题分析：
+ 在Python3中，map返回的会是一个map类型的可迭代对象，该对象不同直接通过下标获取，在Python2中是没有问题的，出现该问题，只需要将代码修改成python3兼容的模式则可
+
+问题分析：
+ 在Python3中，map返回的会是一个map类型的可迭代对象，该对象不同直接通过下标获取，在Python2中是没有问题的，出现该问题，只需要将代码修改成python3兼容的模式则可
+
+问题解决：
+
+问题解决：
+
+如果想通过下标获取map对象，可以先将map对象转为list对象，这样就可以直接通过下标获取了
+
+exe = Executor(place)
+exe.run(framework.default_startup_program())
+
+for data in test_data():
+    feed_data = list(map(lambda x: [x[0]], data))
+    feed_dict = feeder.feed(feed_data)
+    feed_dict['init_ids'] = init_ids
+    feed_dict['init_scores'] = init_scores
+
+results = exe.run(
+        framework.default_main_program(),
+        feed=feed_dict,
+        fetch_list=[translation_ids, translation_scores],
+        return_numpy=False)
+
+问题拓展：
+ map()方法是python内置方法，python2与python3中map()方法是有不同的，python3中考虑到一切性将数据全部返回会比较消耗内存，就就修改成生成对象的形式，即取的时候才会获得，而且只生效一次。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

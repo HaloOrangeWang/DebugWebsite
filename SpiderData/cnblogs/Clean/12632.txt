@@ -1,0 +1,168 @@
+bad operand type for unary +: 'str'
+
+字符串相加时多了额外的逗号。
+正确的应该是下面这样：
+
+“股票名:" + share.name + "当前价格:" + str(share.price)
+
+也就是逗号后不能紧跟着+号。
+
+字符串相加时多了额外的逗号。
+
+正确的应该是下面这样：
+
+“股票名:" + share.name + "当前价格:" + str(share.price)
+
+也就是逗号后不能紧跟着+号。
+
+Unused import statement解决方法
+
+这个并不是报错，只是提示当前代码中没有用到这个包而已，后面的代码用到这个包的话，它会自动恢复高亮的
+
+
+Unused import statement解决方法
+
+
+这个并不是报错，只是提示当前代码中没有用到这个包而已，后面的代码用到这个包的话，它会自动恢复高亮的
+
+
+pycharm import cx_Oracle模块引发的No module named 'custom_exceptions'
+
+
+pycharm import cx_Oracle模块引发的No module named 'custom_exceptions'
+
+我梳理了一下我安装cx_Oracle模块的过程:
+
+因为最开始在pycharm上查找cx_Oracle模块的时候没有找到，就随便安装了一个cx_oracle_on_ctypes模块，后面了解到pycharm上cx_Oracle模块的名字是cx-Oracle，然后重新安装，就报了提问的那个错误。刚刚测试了一下，把该项目下的cx_oracle_on_ctypes这个模块删除了，然后import cx_Oracle就正常了。
+
+我梳理了一下我安装cx_Oracle模块的过程:
+
+因为最开始在pycharm上查找cx_Oracle模块的时候没有找到，就随便安装了一个cx_oracle_on_ctypes模块，后面了解到pycharm上cx_Oracle模块的名字是cx-Oracle，然后重新安装，就报了提问的那个错误。刚刚测试了一下，把该项目下的cx_oracle_on_ctypes这个模块删除了，然后import cx_Oracle就正常了。
+
+4.无法保存问题，一般为未经管理员权限登录所致。
+
+5.TypeError: 'type' object is not subscriptable
+
+for i in range(2000):
+
+read_lines = random.shuffle(read_lines) # 问题出在这里了
+
+print(read_lines)
+
+咋一看是没啥问题，但是一运行就报错
+
+咋一看是没啥问题，但是一运行就报错
+
+TypeError: 'NoneType' object is not subscriptable
+
+发现原来 random.shuffle这个函数他是return None的，但是我把他赋值给了read_lines，导致后续在操作read_lines的时候一直都是这个报错，包括打印read_lines也报错。
+
+解决方案
+把上面一行赋值语句改掉就好了
+
+解决方案
+
+把上面一行赋值语句改掉就好了
+
+random.shuffle(read_lines)
+
+print(read_lines)
+
+content_list = []
+
+6."IndentationError: unexpected indent"错误解决办法
+
+Python是一种对缩进非常敏感的语言，最常见的情况是tab和空格的混用会导致错误，或者缩进不对
+
+a=int(input('请输入a值：'))
+
+print('您输入的a=',a)
+
+b=int(input('请输入b值：'))
+
+print('您输入的b=',b)
+
+print('a+b=',a+b);
+
+分析： indentation是缩进的意思。unexpected indent 就是说第二行这里存在一个“意外的”缩进。也就是说，这里的问题就是指“print”是一个意外的缩进。可以看到第二行是缩进了一个字符位。查了下百度，看了下别人说好像取消缩进顶格写，就可以了。
+
+结论： 在python中，每一句代码都应该顶格写。
+
+
+结论： 在python中，每一句代码都应该顶格写。
+
+7.NameError: name 'null' is not defined
+
+原因：将字符串转为字典时，存在null值
+
+
+7.NameError: name 'null' is not defined
+
+原因：将字符串转为字典时，存在null值
+
+ret = '{"createdAt":"","updatedAt":"", "dataSets":null}'
+ret = eval(ret)
+print(ret)
+out：
+ret = eval(ret)
+  File "<string>", line 1, in <module>
+NameError: name 'null' is not defined
+
+解决办法，使用json.loads()函数：将json格式数据转换为字典，存在null时，转为None
+
+ret = '{"createdAt":"","updatedAt":"", "dataSets":null}'
+ret = eval(ret)
+print(ret)
+
+out：
+ret = eval(ret)
+  File "<string>", line 1, in <module>
+NameError: name 'null' is not defined
+
+解决办法，使用json.loads()函数：将json格式数据转换为字典，存在null时，转为None
+
+import json
+
+ret = '{"createdAt":"","updatedAt":"", "dataSets":null}'
+ret = json.loads(ret)
+print(ret)
+print(type(ret))
+
+out：
+{'createdAt': '', 'updatedAt': '', 'dataSets': None}
+<class 'dict'>
+
+
+9.python中出现invalid syntax报错的几种原因
+
+符号使用不正确 例如：只写了半个括号，使用了中文符号等
+
+有些解释器会有自动补全符号的功能。有些则没有，这时对于新手朋友要特别注意，在写成对的符号时（例如括号、引号等）一定要一次把一对符号写完，再在符号中填写内容，避免因这种情况出现bug，后续检查花费大量时间。
+
+代码缩进问题
+
+python是一种严格依赖缩进的语言，如果缩进不正确或缩进格式不统一，一般错误信息会明确告诉你，但有时也会出现invalid syntax报错。
+所谓缩进不正确，python的缩进是四个空格或一个TAB，如果缩进三个空格，一定报错
+所谓缩进格式，即不能空格和TAB混用。如果不清楚是否存在混用，可以使用sublime统一调整即可。
+
+
+10.sql判断字段是否为空
+
+sql语句条件查询时，有时会判断某个字段是否为空。
+
+字段内容为空有两种情况
+
+　　1.为null
+
+　　2.为字符串的空''
+
+语句如下：
+
+select * from table where column is null or trim(column)=''
+这样就可以排除字段内容为null、''的。
+
+判断某个字段不为空
+
+select * from table where trim(column) != ''
+曾经尝试判断null：is not null.但是不起作用，放弃。。。直接 trim(column) != '' 就能解决。
+

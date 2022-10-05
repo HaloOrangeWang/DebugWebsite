@@ -1,0 +1,15 @@
+今天在Mq出来业务的时候发现使用JSONObject时会报错，只能获取String类型，所以使用JSONObject转换后获取，代码如下
+
+JSONObject mq = new JSONObject();
+mq.put("websiteCode",websiteCode);
+ 
+for (int i = 0, len = skuInfo.size(); i < len; i++) {
+itemCodes.add(skuInfo.getJSONObject(i).getString("itemSkuCode"));
+// 通知Mq刷新 TODO
+mq.put("itemSkuCode",skuInfo.getJSONObject(i).getString("itemSkuCode"));
+String s = JSONObject.toJSONString(mq);
+                rabbitTemplate.convertAndSend(MqKey.RECOMMENDED_PRODUCTS,MqKey.RECOMMENDED_PRODUCTS,s);
+}
+
+接收方代码
+

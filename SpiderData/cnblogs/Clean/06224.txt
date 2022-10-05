@@ -1,0 +1,30 @@
+源代码如下， 启动报错
+
+from flask import Flask
+
+# 实例化一个Flask对象
+app = Flask(__name__)
+# 打印默认配置信息
+
+# 引入开发环境的配置
+app.config.from_object('settings.DEV')
+
+# 引入生产环境的配置
+# app.config.from_object('settings.Pro')
+
+报错信息如下：
+
+报错原因： index1和index2添加了validate装饰器之后，它们的函数名称都变成了inner,同名了， 这样router建立路由关系时，就会报错。
+
+解决方法：
+
+第一种方式：
+
+　　添加endpoint
+
+第二种方式：
+
+　　使用functools工具类
+
+如此，便可解决报错问题
+

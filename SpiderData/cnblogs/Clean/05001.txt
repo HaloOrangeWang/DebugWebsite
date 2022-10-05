@@ -1,0 +1,39 @@
+操作系统，python3.5, oracle_11, 均为64位；plsql 正常连接。
+
+也顺利安装了cx_oracle 6.3，但是python进行连接的时候就会报错"DatabaseError: DPI-1047: 64-bit Oracle Client library cannot be loaded: " 。
+
+原因：
+
+instantclient版本为32位，需更换成64位。
+
+解决方案：
+
+一、已安装oracle客户端
+
+1. 重新下载 instantclient 64位， 下载链接：http://jvniu.jb51.net:81/201708/tools/instantclientx64_jb51.rar
+
+下载完成后，解压得到 文件夹
+
+2   将整个文件夹移动到oracle安装目录，client子文件夹内
+
+3.  添加环境变量（下图为win10系统）
+
+4.   重启python， 成功连接oracle。
+
+二、未安装oracle客户端（需要连接服务器数据库的情况）
+
+1、创建文件路径：
+
+D:\Oracle11g\product\11.2.0
+
+2、下载 instantclient 64位  放置到 1 创建的路径下
+
+3、将文件中后缀为 dll 的文件复制到 anaconda 安装位置
+
+3. 、添加环境变量（见第一种情况）
+
+4、重启python
+————————————————
+版权声明：本文为CSDN博主「guimaxingmc」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/guimaxingmc/article/details/80360840
+

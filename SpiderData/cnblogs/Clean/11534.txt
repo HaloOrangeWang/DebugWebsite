@@ -1,0 +1,16 @@
+
+出现问题场景：使用mysql数据库管理接口测试用例，新增接口用例时，传入的paras内容，有多层嵌套的时候，就会有【"】双引号括住【'】单引号的情况，可能在插入单双引号的数据到数据库的时候，会报语法错误
+
+解决方法：
+
+1、旧的方式，使用string.replace()，将双引号全部替换成单引号，但这种方法就会改变原本传入的paras多层嵌套的结构，发起请求的时候，就会存在语法错误；
+
+2、使用pymysql.converts.escape_string()方法，就可以解决这个报错，并可将包含单双引号的字段插入到数据库；
+
+from pymysql.converters import escape_string
+paras = escape_string(paras)
+
+　　
+
+参考文章：https://blog.csdn.net/qq_41318914/article/details/120853119
+

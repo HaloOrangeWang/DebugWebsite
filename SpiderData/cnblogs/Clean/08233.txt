@@ -1,0 +1,34 @@
+版本：
+
+Python=3.7
+
+TensorFlow=1.14
+
+具体代码：
+
+init=[tf.global_variables_initializer(), tf.local_variables_initializer()]
+
+# train optimization
+    trainer = tf.train.AdamOptimizer(learning_rate=0.00001, beta1=0.9, beta2=0.999).minimize(train_loss)
+
+报错：   Attempting to use uninitialized value beta2_power
+
+查找资料：
+
+https://stackoverflow.com/questions/47765595/tensorflow-attempting-to-use-uninitialized-value-beta1-power
+
+得知，  优化器  trainer = tf.train.AdamOptimizer(learning_rate=0.00001, beta1=0.9, beta2=0.999).minimize(train_loss)
+
+需要 局部变量，即 tf.local_variables  ,  在使用该优化器时需要在定义优化器之前定义对局部变量初始化的操作。
+
+将原代码改为：
+
+# train optimization
+    trainer = tf.train.AdamOptimizer(learning_rate=0.00001, beta1=0.9, beta2=0.999).minimize(train_loss)
+
+init=[tf.global_variables_initializer(), tf.local_variables_initializer()]
+
+代码可正常运行，报错问题解决。
+
+-------------------------------------------------------------------------------
+

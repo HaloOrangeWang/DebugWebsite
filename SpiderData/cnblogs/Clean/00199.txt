@@ -1,0 +1,120 @@
+
+本文内容
+
+Unable to find vcvarsall.bat的问题描述
+
+问题分析
+
+总结
+
+
+一、问题描述
+
+我们在windows下通过pip安装一些外部Python 模块（比如，pycrypto）时通常会遇到安装失败的问题，而且会看到类似这样的错误提示：
+
+如图所示：
+
+或
+
+如图所示：
+
+网上的很多文章给出的解决方案都安装Visual Studio，但是版本是有要求的，有的说安装Visual Studio 2008，有的说要安装Visual Studio 2010。那么为什么安装Visual Studio就能解决这个问题呢？到底该安装哪个版本的VisualStudio呢？是否有其他解决方案呢？ 这些问题是本文讨论的重点，希望大家以后遇到这些问题不再有那么多的困惑和慌乱感。
+
+
+二、问题分析
+
+
+1. 名词解释
+
+我们先对上面错误信息中几个名词做个简单的介绍：
+
+Microsoft Visual C++ ： 简称Visual C++、MSVC、VC++或VC，它是微软公司开发的Windows平台下的C++开发工具，具有集成开发环境，可以用来编辑和编译C、C++以及C++/CLI等编程语言。
+
+Microsoft Visual Studio ： 简称VS，它是美国微软公司的开发工具包系列产品，它是一个基本完整的开发工具集，包含了整个软件生命周期中所需要的大部分工具，如UML工具，代码管控工具，也包括上面这个集成开发环境Microsoft Visual C++。
+
+内部版本号： 由上可见VS是包含VC的，另外它们之间版本是有对应关系的，这个对应关系是由微软的内部版本来控制的，上面的报错信息 "Microsoft Visual C++ 9.0" 中的 9.0就是Microsoft Visual C++的一个内部版本。我们可以根据这个内部版本找到对应的VC版本是什么，以及对应的VS版本是什么。
+
+
+VS与VC及内部版本的对应关系如下：
+
+
+2. 问题分析
+
+了解了上面这些名词以及它们之间关系的之后，我们来分析一下本文第一部分中的错误信息：
+
+1）从上面的报错信息来看，是因为找不到vcvarsall.bat这个批处理文件引起的问题。
+
+2）其中有一张截图中提示：Microsoft Visual C++ 9.0 is required，说明根本原因是由于没有安装Microsoft Visual C++，且要求的内部版本是 9.0。
+
+
+3. 答疑解惑
+
+我们心里可能有一些疑惑，看看下面有没有你要找的答案：
+
+
+问题1：为什么安装python扩展模块需要安装Microsoft Visual C++呢？
+
+因为有些与操作系统底层密切相关的Python扩展，由于使用C/C++ 进行代码编写，因此在进行安装时需要进行C/C++ 代码的编译工作，而Windows平台的专用C/C++ 代码编译工具就是Microsoft Visual C++ ，因此Python的模块管理工具（如，pip）默认设置的用来编译C/C++ 代码的工具就是VC。Linux平台上所使用的C/C++ 代码编译工具通常都是gcc，因此不涉及安装VS的问题。
+
+
+问题2：为什么安装Visual Studio可以解决这个问题？
+
+上面已经说明过了，因为Visual Studio中包含Visual C++，安装了Visual Studio之后也就安装了Visual C++。
+
+
+问题3：为什么有时候安装Visual Studio最新版本都无法解决这个问题？
+
+因为我们当前大部分使用的是CPython，也就是C语言实现的Python版本，我们在Windows上安装的Python也是经过VC编译过的可执行程序。为了保证扩展模块的兼容性，使用Python的模块管理工具（如，pip）安装C语言实现的外部扩展模块时会默认查找并使用与编译当前Python时所使用的相同内部版本或相互兼容的内部版本的的VC，而VS的内部版本与其所包含的VC的内部版本是一致的，因此安装的VS版本过高或过低都可能会出现问题。
+
+
+问题4：如何确定需要安装哪个版本的Visual Studio呢？
+
+其实这个问题的本质就是确定需要安装的VS或VC的内部版本。
+
+本文开始列出的报错信息中，有一个是明确给出了所需要的VC的内部版本的，比如
+
+说明需要安装的VC内部版本号是 9.0，从上面的版本对应表中可以找到，我们需要安装的VS版本是 Visual Studio 2008。
+
+但是对于那些没有明确提示所需要的内部版本号的情况，我们怎么确定需要安装哪个版本的VC/VS呢？比如
+
+我当前的操作系统是Win 10，我安装Python的目录是C://Python27，在Python的安装目录下可以找到这样一个Python文件：C://Python27/Lib/distutils/msvccompiler.py，从文件名就能看出来这个Python文件就是用来处理与VC编译器有关的操作的。在该Python文件中可以找到这样一个函数：
+
+通过注释我们可以知道，这个函数就是用来确定编译当前Python所使用的VC编译器的版本号的，而且注释中告知从Python 2.3版本开始，VC的版本信息已经包含在sys.version中了，对于Python 2.3之前的版本就认为VC版本号是6。 如下图所示：
+
+“MSC V.”后面那个数字1500就是编译当前Python所使用的VC的版本信息，但还不是我们要找的那个内部版本号，我们要从这个版本信息中找到主版本号majorVersion和次版本号minorVersion，majorVersion + minorVersion的结果才是我们要找那个内部版本号。那么这里的majorVersion和minorVersion怎么获取到呢？我们可以从上面的get_build_version()函数中找到答案：
+
+上面代码中的s就是'MSC v.'后面那个数字1500，可见:
+
+前两位数减去6就是主版本号，即majorVersion = 15 - 6 = 9
+
+后面两位数除以10.0就是此版本号，即00 / 10.0 = 0.0
+
+所以我们可以得到我们要找的那个内部版本号：majorVersion + minorVersion = 9 + 0.0 = 9.0。
+
+从上面那个版本对应表中可以查到 内部版本号9.0对应的VC和VS名称分别是：Visual C++ 2008 和 Visual Studio 2008。
+
+如果你没看明白，可以直接看本文最后的总结，会列出不同版本的Python对应的内部版本号以及它们与VC和VS的对应关系。
+
+
+问题5：是否可以只安装VC，不安装VS呢？
+
+可以，请点击这里查看详细说明。
+
+
+问题6：是否有其他解决方案？
+
+有的，其实我们的目就是在当前Windows系统上安装一个与编译当前Python时所使用的VC版本一致的编译器，而微软专门为Python提供了相应的编译器：Microsoft Visual C++ Compiler for Python 2.7，我们直接安装这个软件程序就可以了。遗憾的是，目前还没有找到Microsoft Visual C++ Compiler for Python 3.x，所以对于Python 3.x，我们还是需要安装Visual Studio 或 Visual C++。或者，抛弃Windows平台吧！
+
+
+三、总结
+
+1）如果当前使用的是Python 2.7，可以安装Visual Studio 2008，也可以安装 Microsoft Visual C++ Compiler for Python 2.7来解决这个问题；
+
+2）如果当前当前使用的Python 3.x，只能通过安装相应版本的Visual Studio或Visual C++来解决这个问题。
+
+当然网上还有一些其他的解决方案，比如修改上面提到的get_build_version()函数，在函数的开始部分给version变量重新赋值来兼容Visual Studio的高版本；再比如，通过安装MinGW并修改Python扩展包管理程序的配置文件，将编译器改为mingw等。这些方案个人不提倡使用，因为可能会带来一些其他不可预知的问题。
+
+当前主流Python版本与VC和VS的版本对应关系及各版本VS下载地址：
+
+Microsoft Visual C++ Compiler for Python 2.7的下载地址在这里。
+

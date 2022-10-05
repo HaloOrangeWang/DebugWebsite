@@ -1,0 +1,31 @@
+建新表时遇到[Err] 1055 - Expression #1 of ORDER BY clause is not in GROUP BY clause and contains nonaggregated column 'information_schema.PROFILING.SEQ' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+
+USE test;  #选择数据库 
+CREATE TABLE IF NOT EXISTS student#创建数据表
+(student_id INT(8)NOT NULL AUTO_INCREMENT,/*使用自增长*/
+student_name CHAR(50) NOT NULL,
+student_sex CHAR(1) NOT NULL DEFAULT 0,
+student_birthday CHAR(20) NOT NULL,
+student_major CHAR(50) NOT NULL,
+student_adress CHAR(50) NOT NULL,
+PRIMARY KEY(student_id) /*设置主键*/
+)ENGINE = InnoDB;  /*使用INNODB引擎*/
+
+错误出在我的MY.INI文件中设置sql_mode为no_auto_create_user，代码第三行又使用了自增长，所以出错。
+
+-----------------------------------------------------------------------------------------------------
+
+解决办法 每次重启服务器都要更改，不能永久解决
+
+进入SQL，先执行select @@sql_mode;
+
+结果显示：
+
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION;
+
+接下来修改sql_mode （删掉 ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER）
+
+set sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION;'
+
+搞定！
+

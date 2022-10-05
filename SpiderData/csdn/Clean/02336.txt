@@ -1,0 +1,26 @@
+奇异矩阵出现的原因是因为出现了相同的一行或者一列
+ 
+ numpy.linalg.LinAlgError: singular matrix报错位置在
+
+daili = Rbf(*a.T,function='cubic')这一行
+
+
+错误原因和处理
+
+a数据转置发生了错误，因为a数据在添加数据的时候，添加重复了一列。
+
+或者因为产生了a奇异矩阵，用异常处理语句 try: except:重新处理a矩阵
+
+import logging
+import traceback
+while(p<q):
+        。。。
+        try:
+            daili = Rbf(*a.T,function='cubic') 
+            obj_trial = daili(*trial.T)#代入变异 
+        except Exception as e:
+            logging.error("Main program error:")
+            logging.error(e)
+            logging.error(traceback.format_exc())
+            continue
+

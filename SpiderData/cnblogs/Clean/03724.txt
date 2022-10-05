@@ -1,0 +1,15 @@
+报错：class BeholderHook(tf.estimator.SessionRunHook):
+AttributeError: module 'tensorflow.python.estimator.estimator_lib' has no attribute 'SessionRunHook'
+
+检查tensorboard的安装情况：pip3 list
+
+发现tensorboard与tensorflow的版本不一致；卸载 pip3 uninstall tensorboard；重新安装
+
+pip3 install tensorboard==1.6
+
+发现tensorboard 不是系统命令，需要将tensorboard配置到环境变量中去，先查看安装路径：
+
+pip3 show tensorboard
+
+重新启动：tensorboard --logdir=logs  成功启动tensorboard
+

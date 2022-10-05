@@ -1,0 +1,63 @@
+IDEA 下载源码时，有时候会报错，如下：
+
+java.rmi.ConnectException: Connection refused to host: 127.0.0.1; nested exception is:
+
+java.net.ConnectException: Connection refused (Connection refused)
+
+
+报错
+
+java.lang.RuntimeException: Cannot reconnect.
+    at org.jetbrains.idea.maven.server.RemoteObjectWrapper.perform(RemoteObjectWrapper.java:82)
+    at org.jetbrains.idea.maven.server.MavenEmbedderWrapper.customizeForResolve(MavenEmbedderWrapper.java:42)
+    at org.jetbrains.idea.maven.project.MavenProjectResolver.downloadSourcesAndJavadocs(MavenProjectResolver.java:256)
+    at org.jetbrains.idea.maven.project.MavenProjectsProcessorArtifactsDownloadingTask.perform(MavenProjectsProcessorArtifactsDownloadingTask.java:40)
+    at org.jetbrains.idea.maven.project.MavenProjectsProcessor.doProcessPendingTasks(MavenProjectsProcessor.java:146)
+    at org.jetbrains.idea.maven.project.MavenProjectsProcessor$1.run(MavenProjectsProcessor.java:115)
+    at org.jetbrains.idea.maven.utils.MavenUtil.lambda$runInBackground$6(MavenUtil.java:536)
+    at com.intellij.util.RunnableCallable.call(RunnableCallable.java:20)
+    at com.intellij.util.RunnableCallable.call(RunnableCallable.java:11)
+    at com.intellij.openapi.application.impl.ApplicationImpl$1.call(ApplicationImpl.java:265)
+    at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+    at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+    at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+    at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:668)
+    at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:665)
+    at java.base/java.security.AccessController.doPrivileged(Native Method)
+    at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1.run(Executors.java:665)
+    at java.base/java.lang.Thread.run(Thread.java:829)
+Caused by: java.rmi.ConnectException: Connection refused to host: 127.0.0.1; nested exception is: 
+    java.net.ConnectException: Connection refused (Connection refused)
+    at java.rmi/sun.rmi.transport.tcp.TCPEndpoint.newSocket(TCPEndpoint.java:623)
+    at java.rmi/sun.rmi.transport.tcp.TCPChannel.createConnection(TCPChannel.java:209)
+    at java.rmi/sun.rmi.transport.tcp.TCPChannel.newConnection(TCPChannel.java:196)
+    at java.rmi/sun.rmi.server.UnicastRef.invoke(UnicastRef.java:132)
+    at java.rmi/java.rmi.server.RemoteObjectInvocationHandler.invokeRemoteMethod(RemoteObjectInvocationHandler.java:217)
+    at java.rmi/java.rmi.server.RemoteObjectInvocationHandler.invoke(RemoteObjectInvocationHandler.java:162)
+    at com.sun.proxy.$Proxy153.createEmbedder(Unknown Source)
+    at jdk.internal.reflect.GeneratedMethodAccessor1094.invoke(Unknown Source)
+    at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+    at com.intellij.execution.rmi.RemoteUtil.invokeRemote(RemoteUtil.java:150)
+    at com.intellij.execution.rmi.RemoteUtil.access$400(RemoteUtil.java:21)
+
+
+原因
+
+因为IDEA在执行maven命令时，是启动另外一个java进程来执行任务，IDEA再使用Java RMI，通过本地回环网络与该进程通信。如果本地回环网络设置错误，就会导致连接异常
+
+
+解决
+
+在 /etc/hosts 文件中，只保留一个指向127.0.0.1的域名localhost，如下：
+
+127.0.0.1 localhost
+::1 localhost
+
+
+IDEA官方解释
+
+https://intellij-support.jetbrains.com/hc/en-us/articles/360014262940
+
+截图如下
+

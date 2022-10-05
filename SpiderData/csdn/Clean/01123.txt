@@ -1,0 +1,32 @@
+错误1：Python3 运行脚本，含有reload(sys) 报错  NameError: name 'reload' is not defined
+
+原因：  python2和python3的使用方式不同。
+
+
+【解决办法】python2脚本代码
+
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding(‘utf-8’)
+
+>= Python 3.4  python3解决办法，
+
+import importlib,sys
+importlib.reload(sys)
+
+再次运行，就不会错误。
+
+错误2：AttributeError: module 'sys' has no attribute 'setdefaultencoding'
+
+原因：  python新版本中，已经不支持setdefaultencoding函数了。
+
+Python3默认编码就是utf-8, 所以sys.setdefaultencoding也不存在了
+
+【解决办法】使用python3，直接移除 sys.setdefaultencoding("utf-8")这一行即可。
+
+错误3：python3运行出错：ModuleNotFoundError: No module named 'raw_input'
+
+raw_inp
+

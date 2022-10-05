@@ -1,0 +1,26 @@
+pip install MySQL-python 报错
+
+网上看需要安装python-devel mysql-devel 等
+
+尝试 yum install python-devel mysql-devel ，mysql-devel有依赖问题，有如下报错
+
+网上的建议是直接去mysql官网下载对应版本的MySQL-devel
+
+上传rpm包MySQL-devel-5.6.46-1.el7.x86_64.rpm到服务器，之后通过命令安装mysql-devel
+
+yum install MySQL-devel-5.6.46-1.el7.x86_64.rpm -y
+
+之后跑pip install MySQL-python 还有报错, 看了报错，好像还得需要一个MySQL-python
+
+yum install MySQL-python -y
+
+之后运行pip install MySQL-python成功
+
+总结：
+
+下次安装的时候先运行如下，试试，有报错，再查看
+
+yum install python-devel mysql-devel zlib zlib-devel openssl-devel MySQL-python -y
+
+pip install MySQL-python
+

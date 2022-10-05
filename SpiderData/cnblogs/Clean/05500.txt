@@ -1,0 +1,123 @@
+
+VMware
+
+
+vmware 模块“Disk”启动失败
+
+解决方案: 打开你存放虚拟机系统硬盘的所在文件夹，注意，是硬盘文件，不是虚拟机的安装目录，也就是你建立虚拟机的时候设置的位置。
+
+然后以下面关键字搜索这个文件夹：*.lck
+
+我这里找到了三个，删除即可，删除后，就不再提示上面第一个图的错误了：
+
+
+MYSQL
+
+
+使用pycharm连接mysql报错
+
+解决方案: 在jdbc连接的url后面加上?serverTimezone=Asia/Shanghai即可 (jdbc:mysql://127.0.0.1:3306/host?serverTimezone=Asia/Shanghai )
+
+
+Django
+
+
+ConnectionAbortedError: [WinError 10053]
+
+解决方法：找到``python/Lib/socketserver.py文件，修改SocketWriter`类的write方法
+
+参考博客
+
+
+python3 manager.py makemigration报错
+
+django.core.exceptions.ImproperlyConfigured: The app module <module 'web' (namespace)> has multiple filesystem locations (['D:\\桌面\\审计管理\\CrazyEye\\web', 'D:/桌面/审计管理/CrazyEye\\web']); you must configure this app with an AppConfig subclass with a 'path' class attribute.
+
+解决方法：django app没有__init__.py, 新建这个文件
+
+
+python3 manager.py migrate报错
+
+执行命令 python3 manager.py migrate, 出现报错:
+
+django.db.utils.InternalError: (1071, 'Specified key was too long; max key length is 767 bytes')
+
+解决方案:  python3 manager.py migrate <app名字>
+
+又出现了报错  django.db.utils.InternalError: (1050, "Table 'web_userprofile' already exists")
+
+解决方案: 执行命令 migrate <app名字> --fake, 然后再执行命令 migrate就正常了
+
+
+启动报错django.core.exceptions.ImproperlyConfigured
+
+django.core.exceptions.ImproperlyConfigured: Requested setting DEFAULT_INDEX_TABLESPACE, but settings are not configured. You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.
+
+解决方案: 环境选错, 选择django项目启动
+
+
+mysql.W002
+
+解决: 在setting.py中添加选项
+
+
+TypeError: init() missing 1 required positional argument: 'app_module'
+
+原因: 将app注册到MIDDLEWARE的列表中
+
+
+PIP
+
+
+[WinError 10061] 由于目标计算机积极拒绝，无法连接
+
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', NewConnectionError('<pip._vendor.urllib3.connection.VerifiedHTTPSConnection object at 0x03C98530>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。',))': /simple/django/
+
+解决方案: 关闭代理, 浏览器设置是没用的, 需要去注册表设置 计算机\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings, 将enable的值设置为0, 就是关闭代理
+
+
+SED
+
+
+mac下sed -i参数: command a expects \ followed by text
+
+mac下想要使用-i参数直接替换文件中的内容，使用的命令为：
+
+执行之后，提示的错误信息为：
+
+该命令，在redhat、ubuntu下执行则没有问题，这个问题产生的原因是Mac是基于FreeBSD,和RedHat不是一个系列。 查看mac下 sed 帮助文档，显示如下内容：
+
+修改命令
+
+
+SALT
+
+
+pip3 安装salt报错
+
+安装python36-devel 问题解决
+
+
+saltstack 执行命令出错  Minion did not return. [No response]
+
+查看minion的日志
+
+删除公钥并重启minion
+
+master端可以正常和minion通信
+
+
+ELK
+
+
+Java HotSpot(TM) 64-Bit Server VM warning: Cannot open file logs/gc.log due to Permission denied
+
+查看/usr/local/elasticsearch-6.6.0/bin/elasticsearch 权限
+
+删除root所属和所属组的文件, 无报错
+
+
+删除非空目录
+
+删除目录出现权限错误 "PermissionError: [WinError 5]拒绝访问"
+

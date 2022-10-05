@@ -1,0 +1,43 @@
+今天用python的pip安装模块python - docx的时候报错，看了很多文章解决了该问题！大致报错如下
+
+copying docx/text/paragraph.py -> build/lib/docx/text
+    creating build/lib/docx/oxml/text
+    copying docx/oxml/text/run.py -> build/lib/docx/oxml/text
+    copying docx/oxml/text/__init__.py -> build/lib/docx/oxml/text
+    copying docx/oxml/text/font.py -> build/lib/docx/oxml/text
+    copying docx/oxml/text/parfmt.py -> build/lib/docx/oxml/text
+    copying docx/oxml/text/paragraph.py -> build/lib/docx/oxml/text
+    creating build/lib/docx/opc/parts
+    copying docx/opc/parts/coreprops.py -> build/lib/docx/opc/parts
+    copying docx/opc/parts/__init__.py -> build/lib/docx/opc/parts
+    creating build/lib/docx/templates
+    copying docx/templates/default-header.xml -> build/lib/docx/templates
+    copying docx/templates/default-settings.xml -> build/lib/docx/templates
+    copying docx/templates/default-footer.xml -> build/lib/docx/templates
+    error: can't copy 'docx/templates/default-docx-template': doesn't exist or not a regular file
+ 
+    ----------------------------------------
+Command "/usr/bin/python -u -c "import setuptools, tokenize;__file__='/private/tmp/pip-install-KGZSNZ/python-docx/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /private/tmp/pip-record-Yt8bmt/install-record.txt --single-version-externally-managed --compile" failed with error code 1 in /private/tmp/pip-install-KGZSNZ/python-docx/
+
+最后找到问题所在是因为我的setuptools版本太低了
+
+接下来进行升级
+
+第一种方法：
+
+升级：sudo pip install -upgrade setuptools -user
+然后再执行安装python - docx
+
+sudo pip install python-docx
+
+第二种方法：
+
+下载pip包  使用命令安装
+
+安装成功
+--------------------- 
+作者：wuliZs_ 
+来源：CSDN 
+原文：https://blog.csdn.net/qq_34284638/article/details/86482819 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

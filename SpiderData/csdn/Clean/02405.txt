@@ -1,0 +1,36 @@
+目录
+
+python连接hbase出现message='No protocol version header' 报错
+
+python 连接habse所需步骤
+
+
+python连接hbase出现message='No protocol version header' 报错
+
+错误原因1: hbase的thrift服务没启动  2: 端口有误， 不是9090
+
+启动hbase thrift服务。
+
+[root@Machine6 hbase-1.2.0-cdh5.7.0]# bin/hbase-daemon.sh start thrift
+
+
+python 连接habse所需步骤
+
+1.启动hbase thrift服务
+ ./hbase-daemon.sh start thrift
+
+2.安装python 依赖库
+
+pip install thrift
+ pip install hbase-thrift
+ pip install happybase
+
+import happybase
+
+if __name__ == "__main__":
+    connection = happybase.Connection(host='192.168.3.173', port=9090)
+    table_name_list = connection.tables()
+    print(table_name_list)
+
+结果显示：
+

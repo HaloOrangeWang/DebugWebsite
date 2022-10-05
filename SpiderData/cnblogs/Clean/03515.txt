@@ -1,0 +1,19 @@
+一、from scipy import cluster 报错
+
+===》解决办法：
+
+1.安装pillow 
+同样在上面的链接中找到pillow，因为我的电脑是64位且是python3.7，所以我下载了Pillow-5.2.0-cp37-cp37m-win_amd64.whl 将文件放在D:\python3.7\Scripts中 
+在cmd中输入pip3 install Pillow-5.2.0-cp37-cp37m-win_amd64.whl
+
+2.执行完后检验，发现还是报错，以为是scipy的问题，重新下载安装还是不行，于是又看了scipy的安装需要，发现需要numpy+mkl（注意！是mkl啊！）。  Install numpy+mkl before installing scipy. 请不要错装成numpy+vanilla。这一点相当重要啊，要看清楚需要的文件。
+
+3.重新安装numpy 
+同样在上面的链接中找到numpy，因为我的电脑是64位且是python3.7，所以我下载了numpy-1.15.1+mkl-cp37-cp37m-win_amd64.whl 将文件放在D:\python3.7\Scripts中 
+在cmd中输入pip3 install numpy-1.15.1+mkl-cp37-cp37m-win_amd64.whl 
+系统会自动将旧的删除，安装新的
+
+4.重新进入python，输入from scipy.misc import imread, imsave, imresize，发现成功了！！！
+
+PS：下载python的任何包，请在该地址下载：https://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
+

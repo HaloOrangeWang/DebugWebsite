@@ -1,0 +1,198 @@
+ES报错具体错误如下：
+
+{
+ "error": {
+ "root_cause": [
+ {
+ "type": "illegal_argument_exception",
+ "reason": "Fielddata is disabled on text fields by default. Set fielddata=true on [createHour] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead."
+ }
+ ],
+ "type": "search_phase_execution_exception",
+ "reason": "all shards failed",
+ "phase": "query",
+ "grouped": true,
+ "failed_shards": [
+ {
+ "shard": 0,
+ "index": "gmall1205_order",
+ "node": "LCQa858ERH6qw_7asM2R3Q",
+ "reason": {
+ "type": "illegal_argument_exception",
+ "reason": "Fielddata is disabled on text fields by default. Set fielddata=true on [createHour] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead."
+ }
+ }
+ ],
+ "caused_by": {
+ "type": "illegal_argument_exception",
+ "reason": "Fielddata is disabled on text fields by default. Set fielddata=true on [createHour] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead.",
+ "caused_by": {
+ "type": "illegal_argument_exception",
+ "reason": "Fielddata is disabled on text fields by default. Set fielddata=true on [createHour] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead."
+ }
+ }
+ },
+ "status": 400
+}
+
+2:导致此错误查询的语句：
+
+GET gmall1205_order/_search
+{
+ "query" : {
+ "bool" : {
+ "filter" : {
+ "term" : {
+ "createDate" : "2019-09-17"
+ }
+ }
+ }
+ },
+ "aggregations" : {
+ "groupby_createHour" : {
+ "terms" : {
+ "field" : "createHour",
+ "size" : 24
+ },
+ "aggregations" : {
+ "sum_totalamount" : {
+ "sum" : {
+ "field" : "totalAmount"
+ }
+ }
+ }
+ }
+ }
+}
+
+3：java代码：
+
+@Override
+public Map getOrderAmontHourMap(String date) {
+
+SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    //过滤
+    BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+    boolQueryBuilder.filter(new TermQueryBuilder("createDate",date));
+    searchSourceBuilder.query(boolQueryBuilder);
+    //聚合
+    TermsBuilder termsBuilder = AggregationBuilders.terms("groupby_createHour")
+            .field("createHour.keyword").size(24);
+    SumBuilder sumBuilder = AggregationBuilders.sum("sum_totalamount").field("totalAmount");
+
+//子聚合
+    termsBuilder.subAggregation(sumBuilder);
+    searchSourceBuilder.aggregation(termsBuilder);
+
+Search search = new Search.Builder(searchSourceBuilder.toString()).addIndex(GmallConstant.ES_INDEX_ORDER).addType("_doc").build();
+
+System.out.println(searchSourceBuilder.toString());
+
+Map<String,Double> hourMap=new HashMap<>();
+    try {
+        SearchResult searchResult = jestClient.execute(search);
+        System.out.println("====>"+searchResult.toString() + searchResult.getTotal());
+        List<TermsAggregation.Entry> buckets = searchResult.getAggregations().getTermsAggregation("groupby_createHour").getBuckets();
+        for (TermsAggregation.Entry bucket : buckets) {
+            Double hourAmount = bucket.getSumAggregation("sum_totalamount").getSum();
+            String hourkey = bucket.getKey();
+            hourMap.put(hourkey,hourAmount);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+return hourMap;
+}
+
+错误分析：
+
+"Fielddata is disabled on text fields by default. Set fielddata=true on [createHour] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead
+
+Fielddata文本字段默认情况下是禁用的。设置fielddata = true (createHour)为了在内存中加载fielddata uninverting反向索引。注意,这个可以使用大量内存。或者使用一个关键字字段
+
+4：解决方法
+
+第一种：
+
+第二种：解决方法，自定义建立索引的规则，不使用默认值创建索引
+
+PUT gmall1205_order 
+ {
+ "mappings" : {
+ "_doc" : {
+ "properties" : {
+ "provinceId" : {
+ "type" : "keyword"
+ },
+ "consignee" : {
+ "type" : "keyword",
+ "index":false
+ },
+ "consigneeTel" : {
+ "type" : "keyword",
+ "index":false
+ },
+ "createDate" : {
+ "type" : "keyword"
+ },
+ "createHour" : {
+ "type" : "keyword"
+ },
+ "createHourMinute" : {
+ "type" : "keyword"
+ },
+ "createTime" : {
+ "type" : "keyword"
+ },
+ "deliveryAddress" : {
+ "type" : "keyword"
+ },
+ "expireTime" : {
+ "type" : "keyword"
+ },
+ "id" : {
+ "type" : "keyword"
+ },
+ "imgUrl" : {
+ "type" : "keyword",
+ "index":false
+ },
+ "operateTime" : {
+ "type" : "keyword"
+ },
+ "orderComment" : {
+ "type" : "keyword",
+ "index":false
+ },
+ "orderStatus" : {
+ "type" : "keyword"
+ },
+ "outTradeNo" : {
+ "type" : "keyword",
+ "index":false 
+ },
+ "parentOrderId" : {
+ "type" : "keyword" 
+ },
+ "paymentWay" : {
+ "type" : "keyword"
+ },
+ "totalAmount" : {
+ "type" : "double"
+ },
+ "trackingNo" : {
+ "type" : "keyword"
+ },
+ "tradeBody" : {
+ "type" : "keyword",
+ "index":false
+ },
+ "userId" : {
+ "type" : "keyword"
+ }
+ }
+ }
+ }
+ }
+

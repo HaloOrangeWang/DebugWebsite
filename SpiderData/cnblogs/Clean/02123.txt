@@ -1,0 +1,16 @@
+近期运行一个python程序用到了moviepy.editor.VideoFileClip()
+
+moviepy基于ffmpeg，但是并不是pip安装的ffmepg，
+
+执行
+
+时报错，检查各项依赖都没问题，pip安装了所有的依赖包，还是一直报错如下，在stackoverflow上找到一个类似的问题，PermissionError: [WinError 5] Access is denied python using moviepy to write gif
+
+, 仔细看了修复办法，主要还是改为管理员权限尝试和安装ImageMagicK, 尝试之后也不管用，不过moviepy上确实也写了不依赖ImageMagicK.
+
+在之后仔细看了imageio的api设计，意识到ffmpeg用的是imageio包装的，和pip安装的ffmepg不同，使用VideoFileClip之前，有一个指令是ffmpegimageio.plugins.ffmpeg.download()，随时下载了一个包，通过设置参数ffmpegimageio.plugins.ffmpeg.download(None, True)强制重新下载，看到了文件从 https://github.com/imageio/imageio-binaries/raw/master/ffmpeg/ffmpeg-win32-v3.2.4.exe下载到本地，
+
+AppData\Local\imageio\ffmpeg\ffmpeg-win32-v3.2.4.exe,有些诧异的是imageio选择下载的是32位文件，而我的pc是64位的，从github列表看到确实没有64位版本，
+
+搞清楚了原理，直接去ffmepg官网下载64位即可，链接是https://ffmpeg.org/download.html#build-windows，根据自己的机器平台，我则是下载ffmpeg-20180908-4cfb01d-win64-static.zip， 解压后将其中的ffmpeg.exe替换原来的AppData\Local\imageio\ffmpeg\ffmpeg-win32-v3.2.4.exe, 再次运行clip = VideoFileClip("a.mp4")，成功执行！
+

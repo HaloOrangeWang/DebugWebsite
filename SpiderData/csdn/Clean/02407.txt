@@ -1,0 +1,30 @@
+在使用既有的python的三种方法（SAX，DOM，以及ElementTree）解析XML时，若xml文件里有中文，如果不做特殊处理，通常会报错。以下代码是解决这个问题的一种方法：
+
+def getURLfromXML(filePath):
+    import xml.dom.minidom
+    
+    #f = open(r'E:\download\可汗学院\线性代数\2_M82ICR1D9_M83C7VICB.xml', "r")
+    f = open(filePath, "r")
+    r = f.read()
+    text = str(r.encode('utf-8'), encoding = "utf-8")
+    #print(text)
+    # 使用minidom解析器打开 XML 文档
+    DOMTree = xml.dom.minidom.parseString(text)
+    
+     
+    # 使用minidom解析器打开 XML 文档
+    #DOMTree = xml.dom.minidom.parse(r'E:\download\可汗学院\线性代数\2_M82ICR1D9_M83C7VICB.xml')
+    collection = DOMTree.documentElement
+    #if collection.hasAttribute("shelf"):
+    #   print("Root element : %s" % collection.getAttribute("shelf"))
+     
+    # 在集合中获取sub
+    subs = collection.getElementsByTagName("sub")
+     
+    # 打印每个字幕的详细信息
+    for sub in subs:
+       #name = sub.getElementsByTagName('name')[0]
+       #print(filePath + " Name: %s" % name.childNodes[0].data)
+       url = sub.getElementsByTagName('url')[0]
+       print(filePath + " Url: %s" % url.childNodes[0].data)
+

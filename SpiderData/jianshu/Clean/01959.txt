@@ -1,0 +1,36 @@
+CentOS7.x yum装包报错: ValueError: need more than 1 value to unpack
+
+一看还以为是python出问题了，检查发现没有动python版本
+
+# which yum
+
+# rpm -qf /bin/yum
+
+# yum info yum
+
+# file /bin/yum
+
+# cat /bin/yum
+
+解决方法：将其他节点/etc/yum.repo.d下的CentOS-Base.repo覆盖原来的Centos-Base.repo
+
+# yum clean all
+
+# yum clean metadata
+
+# yum clean dbcache
+
+# yum makecache
+
+
+
+参考
+
+yum install -y chrony 报错: ValueError: need more than 1 value to unpack
+
+https://www.cnblogs.com/huiandong/p/9483608.html
+
+Fix: Yum Error: ValueError: Need More Than 1 Value To Unpack
+
+https://www.freshblurbs.com/blog/2010/05/14/fix-yum-error-valueerror-need-more-1-value-unpack.html
+

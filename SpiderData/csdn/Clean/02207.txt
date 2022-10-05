@@ -1,0 +1,31 @@
+*******env1=no1*********
+zhangsan=80
+lisi=60
+
+*******env2=no2*********
+wangwu=88
+liliu=70
+
+# coding=utf-8
+
+f = open( r'D:\webinfo.txt', 'r' )  # 以r:读取的方式打开，w:写的方式打开
+infos = f.readlines()
+f.close()
+dict_data = {}
+print("==>键值对形式取参数")
+for index, info in enumerate(infos):
+    info = info.strip().split("=")  
+    dict_data[info[0]] = info[1]     
+return dict_data  # 以行的形式,返回文件的所有内容
+
+报错：
+
+File "D:\getinfo.py", line 10, in getinfo
+
+dict_data[info[0]] = info[1]  
+IndexError: list index out of range
+
+原因：以行读取参数文件txt数据，中间不能有空行，否则报错 IndexError: list index out of range
+
+解决办法：将参数文件a.txt中的空行去掉
+

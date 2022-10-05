@@ -1,0 +1,118 @@
+报错一：ModuleNotFoundError: No module named 'django.core.urlresolvers'
+
+1 ModuleNotFoundError: No module named 'django.core.urlresolvers'
+
+解决方法：按照提示找到出错的文件， 将所有 import django.core.urlresolvers 改成 import django.urls
+
+import django.core.urlresolvers
+
+#改成
+import django.urls
+
+报错二：TypeError: __init__() missing 1 required positional argument: 'on_delete'
+
+TypeError: __init__() missing 1 required positional argument: 'on_delete'
+
+解决方法：这个基本是models文件中models.ForeignKey（）中出错的，按照django文档，在括号里加上on_delete=models.CASCADE
+
+报错三：TypeError: __init__() takes 1 positional argument but 6 were given
+
+TypeError: __init__() takes 1 positional argument but 6 were given
+
+解决方法：提示说在xadmin\views\dashboard.py这个文件的，找到
+
+forms.Field.__init__(self, required, widget, label, initial, help_text,  *args, **kwargs)
+
+改成
+
+forms.Field.__init__(self)
+
+forms.Field.__init__(self, required, widget, label, initial, help_text,  *args, **kwargs)
+
+#改成
+forms.Field.__init__(self)
+
+报错四：ImportError: cannot import name 'login' from 'django.contrib.auth.views'
+
+ImportError: cannot import name 'login' from 'django.contrib.auth.views'
+
+解决方法：提示是在xadmin\views\website.py", line 5, in <module>
+                       from django.contrib.auth.views import login
+
+找到位置，将
+
+from django.contrib.auth.views import login
+                   from django.contrib.auth.views import logout
+
+改为
+
+from django.contrib.auth import authenticate, login, logout
+
+from django.contrib.auth.views import login
+from django.contrib.auth.views import logout
+
+#改为
+from django.contrib.auth import authenticate, login, logout
+
+　
+
+报错五： ImportError: cannot import name 'QUERY_TERMS' from 'django.db.models.sql.query'
+
+ImportError: cannot import name 'QUERY_TERMS' from 'django.db.models.sql.query'
+
+解决方法：提示 xadmin\plugins\filters.py", line 10, in <module>
+
+找到位置，将
+
+　　　　　from django.db.models.sql.query import LOOKUP_SEP, QUERY_TERMS
+
+　　　　 改为
+
+　　　　   from django.db.models.sql.query import LOOKUP_SEP, Query
+
+from django.db.models.sql.query import LOOKUP_SEP, QUERY_TERMS
+
+#改为
+from django.db.models.sql.query import LOOKUP_SEP, Query
+
+　　　　　
+
+报错六：ImportError: cannot import name 'password_reset_confirm' from 'django.contrib.auth.views'
+
+ImportError: cannot import name 'password_reset_confirm' from 'django.contrib.auth.views'
+
+解决方法：提示\xadmin\plugins\passwords.py", line 4, in <module>
+                  找到    from django.contrib.auth.views import password_reset_confirm
+
+　　　　　改为    from django.contrib.auth.views import PasswordResetConfirmView
+
+　　　　   找到77行，将   return password_reset_confirm
+
+改为   return PasswordResetConfirmView
+
+from django.contrib.auth.views import password_reset_confirm
+#改为   
+from django.contrib.auth.views import PasswordResetConfirmView
+
+#找到77行  
+return password_reset_confirm
+#改为   
+return PasswordResetConfirmView
+
+　　　　
+
+报错七：AttributeError: 'Settings' object has no attribute 'MIDDLEWARE_CLASSES'
+
+AttributeError: 'Settings' object has no attribute 'MIDDLEWARE_CLASSES'
+
+解决方法：提示    xadmin\plugins\language.py", line 24, in <module>
+                           if settings.LANGUAGES and 'django.middleware.locale.LocaleMiddleware' in settings.MIDDLEWARE_CLASSES:
+
+改为 if settings.LANGUAGES and 'django.middleware.locale.LocaleMiddleware' in settings.MIDDLEWARE:
+
+if settings.LANGUAGES and 'django.middleware.locale.LocaleMiddleware' in settings.MIDDLEWARE_CLASSES:
+#改为 
+if settings.LANGUAGES and 'django.middleware.locale.LocaleMiddleware' in settings.MIDDLEWARE:
+
+还有别的错误多为 ModuleNotFoundError: No module named，根据提示安装相应模块就行，安装了还不行可能是模块名写错。
+

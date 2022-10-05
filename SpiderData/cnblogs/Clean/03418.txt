@@ -1,0 +1,42 @@
+1.环境及版本
+
+python3.7.1+scrapy1.5.1
+
+2.问题及错误代码详情
+
+优先贴上问题代码，如下：
+
+import scrapy
+from scrapy.linkextractors import LinkExtractor
+
+运行代码后报错如下：
+
+出现错误后自检代码并未发现问题，上网查找也未发现相关的问题；于是将代码改成（restrict_css）去抓取数据，发现是能正常获取到数据的，于是改回xpath；但这次先不使用linkextractor，采用scrapy自带的response.xpath()方法去获取对应链接所在标签的href属性值；发现这样是可以获取到正常的数据的：
+
+即将：
+
+le = LinkExtractor(restrict_xpaths='//a[contains(@class, "reference internal")]/@href')
+links = le.extract_links(response)
+
+改成：
+
+links = respon.xpath(‘//a[contains(@class, "reference internal")]/@href').extract()
+
+然后又发现报错是： 'str' object has no attribute 'iter'
+
+而正常返回的links数据类型应该是list才对，不应该是str，所以猜测可能是由于规则写错了导致获取的数据不是list而变成了一个不知道的str；这样针对性的去修改restrict_xpaths中的规则，最后发现去掉／@href后能够获取我所需要的正常的数据；
+
+即将：
+
+le = LinkExtractor(restrict_xpaths='//a[contains(@class, "reference internal")]/@href')
+
+改成：
+
+le = LinkExtractor(restrict_xpaths='//a[contains(@class, "reference internal")]')
+
+重新运行代码，发现成功获取数据，输出结果如下截图所示：
+
+*****爬虫初学者，不喜勿喷*****
+
+　　
+

@@ -1,0 +1,34 @@
+使用TSfresh的例子时。原代码是
+
+from tsfresh.examples.robot_execution_failures import download_robot_execution_failures,load_robot_execution_failures
+from tsfresh import extract_features
+download_robot_execution_failures()
+timeseries, y = load_robot_execution_failures()
+# print(timeseries.head())
+extracted_features = extract_features(timeseries, column_id="id", column_sort="time")
+
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+如果修改为
+
+from tsfresh.examples.robot_execution_failures import download_robot_execution_failures,load_robot_execution_failures
+from tsfresh import extract_features
+download_robot_execution_failures()
+timeseries, y = load_robot_execution_failures()
+# print(timeseries.head())
+
+if __name__ == '__main__':
+    extracted_features = extract_features(timeseries, column_id="id", column_sort="time")
+
+不会报错。在windows上，子进程会自动import启动它的这个文件，而在import的时候是会自动执行这些语句的。如果不加__main__限制的化，就会无限递归创建子进程，进而报错。于是import的时候使用 name == “main” 保护起来就可以了。
+
+“__main__”是代码执行时的最高的命名空间（the name of the scope in which top-level code executes），当代码被当做脚本读入的时候，命名空间会被命名为“__main__”，对于在脚本运行过程中读入的代码命名空间都不会被命名为“__main__”。这也就是说创建的子进程是不会读取__name__=="__main__"保护下的代码。
+
+还不是很懂，参考python使用多进程multiprocessing进行做处理的时候报freeze_support错误的解决方法 - 灰信网（软件开发博客聚合） (freesion.com)
+

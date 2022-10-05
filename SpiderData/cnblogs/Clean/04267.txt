@@ -1,0 +1,22 @@
+今天由于装了高版本的显卡驱动，把机器搞瘫痪了，然后又一顿瞎操作把情况搞的更糟，然后从7点办搞到2点，又被朱帜帆抢救回来了。并且，更重要的是，把环境配置的相关操作又梳理了下，对各个相关的东西又有了清晰一些的了解了。
+    总结一下，首先是他移动来移动去硬盘分区，把开机只闪动下划线的问题搞好了（毅力惊人），能进入登陆界面了，然后ctrl+alt+f1，然后卸载高版本驱动，装回384版本驱动，可以重新开机，故障修复完成。然后是教我使用anaconda虚拟环境，这个虚拟环境相当于一个虚拟机，所有东西都在这个虚拟环境中操作，与外部隔离开，有问题直接删除这个环境就行。然后是在虚拟环境中重新装tensorflow1.4和cuda8，这时候了解到conda安装和pip安装来自不同的源，pip源官方，但是慢，conda源不官方，但是快而且会自动帮助安装所安装模块需要的其他依赖模块。安装完tensorflow后，import有问题，提示libculbas.so.10.0不存在，说明cuda与tensorflow版本不匹配，而且是需要cuda10，但是查阅官网https://www.tensorflow.org/install/source#common_installation_problems 发现明明装的是匹配的，朱帜帆这时候来了一个神操作，把外部的tensorflow删了，然后这个提示就消失了，说明啥？说明我们在虚拟环境中使用import tensorflow命令的时候，这个tensorflow不是我们虚拟环境中的tensorflow，而是外面的tensorflow，这是为什么呢，查看.bashrc，发现了这么一行 alias python=/home/cs1028/anaconda3/bin/python3.6，所有Python命令都被定位到这个位置的Python，而不是虚拟环境中的Python，随之，倒入的tensorflow也就不是虚拟环境中安装的tensorflow1.4而是外面的tensorflow1.13，所以之前报错需要安装cuda10，所以把这行注释掉。然后在虚拟环境中再import tensorflow的时候，发现又报错，缺少cuDNN6，在conda install cuda==8.0的时候，明明自动安装好了cuDNN7，之前只知道cuda和tensorflow和显卡驱动要匹配，没想到cuDNN也要匹配，这个也是查了https://www.tensorflow.org/install/source#common_installation_problems才知道需要装6版本的cuDNN，而且cuDNN也可以指定版本安装，然后卸载原来的装上6版本的，问题解决。
+    命令总结：
+        虚拟环境相关：
+            https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf 
+            conda create -n tf_zp python=3.6 (等价于conda create --name tf_zp python=3.6)
+            conda activate tf_zp
+            conda deactivate
+            conda install module
+            conda list
+            conda env list
+            conda search module
+            which python
+        
+        安装环境相关：
+            conda install tensorflow=1.4.0 （只能用一个“=”，两个会报错，不知道为毛）
+            conda uninstall tensorflow=1.4.0
+
+　　　 conda install cudatoolkit==8.0
+
+　　     conda install cuDNN==6.0
+

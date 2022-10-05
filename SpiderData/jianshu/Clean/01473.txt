@@ -1,0 +1,82 @@
+
+在CENTOS7上运行python，报错ImportError: No module named MySQLdb，具体问题如下：
+
+Traceback (most recent call last):
+
+File "main_fengxing_short_all.py", line 8, in <module>
+
+import db_test
+
+File "/home/python/short_video_all_source/db_test.py", line 4, in <module>
+
+import chang_db
+
+File "/home/python/short_video_all_source/chang_db.py", line 2, in <module>
+
+import MySQLdb
+
+ImportError: No module named MySQLdb
+
+
+直接运行pip install mysql-python，又会出现如下错误：
+
+ERROR: Command errored out with exit status 1:
+
+command: /bin/python -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-Fs3wje/mysql-python/setup.py'"'"'; file='"'"'/tmp/pip-install-Fs3wje/mysql-python/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(file);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, file, '"'"'exec'"'"'))' egg_info --egg-base /tmp/pip-install-Fs3wje/mysql-python/pip-egg-info
+
+cwd: /tmp/pip-install-Fs3wje/mysql-python/
+
+Complete output (10 lines):
+
+sh: mysql_config: command not found
+
+Traceback (most recent call last):
+
+File "<string>", line 1, in <module>
+
+File "/tmp/pip-install-Fs3wje/mysql-python/setup.py", line 17, in <module>
+
+metadata, options = get_config()
+
+File "setup_posix.py", line 43, in get_config
+
+libs = mysql_config("libs_r")
+
+File "setup_posix.py", line 25, in mysql_config
+
+raise EnvironmentError("%s not found" % (mysql_config.path,))
+
+EnvironmentError: mysql_config not found
+
+----------------------------------------
+
+ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+
+
+尝试了网上千千万的方式始终不行，折腾了一个小时，终于解决了，方法如下：
+
+
+第一步，升级pip：
+
+sudo python -m pip install --upgrade --force pip
+
+
+第二步，安装setuptools：
+
+sudo pip install setuptools==33.1.1
+
+
+第三步，安装mysql-devel:
+
+yum install mysql-devel
+
+
+第四步，安装python-devel:
+
+yum install python-devel
+
+
+最后，安装mysql-python，再运行脚本就会发现可以了。
+
+pip install mysql-python
+

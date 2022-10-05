@@ -1,0 +1,240 @@
+举例：打开一个不存在的文件时：
+
+>>open("abc.txt","r")
+
+会提示错误
+
+Traceback (most recent call last):
+
+File "D:/project1/test.py", line 11, in
+
+open("abc.txt","r")
+
+FileNotFoundError: [Errno 2] No such file or directory: 'abc.txt'
+
+这时可以用 try....except 语句来捕捉并处理这个异常
+
+try:
+
+open("abc.txt","r")
+
+except FileNotFoundError:
+
+print("出错啦")
+
+----------------------
+
+#这时运行就只会打印“出错啦”
+
+如果将语句换成：
+
+try:
+
+print(a)
+
+except FileNotFoundError:
+
+print("出错啦")
+
+----------------------
+
+Traceback (most recent call last):
+
+File "D:/project1/test.py", line 12, in
+
+print(a)
+
+NameError: name 'a' is not defined
+
+运行时还是报错了，这时因为“FileNotFoundError”是表示找不到文件时的报错，跟现在的“NameError”不符，所以代码改成如下所示就行了：
+
+try:
+
+print(a)
+
+except NameError:
+
+print("出错啦")
+
+但是，在Python中，所有的异常都继承于Exception,自2.5版本之后，出现的新的基类BaseException，新的基类可以接收所有的异常：
+
+try:
+
+print(a)
+
+open("abc.txt","r")
+
+except BaseException:
+
+print("出错啦")
+
+-------------------------
+
+#不管那一行出现异常，都能捕捉到并打印“出错啦”，但是并不能知道哪一行的语句出错，这时我们可以打印异常信息：
+
+try:
+
+print(a)
+
+open("abc.txt","r")
+
+except BaseException as msg:
+
+print(msg)
+
+print("出错啦")
+
+-------------------------
+
+[Errno 2] No such file or directory: 'abc.txt'
+
+以下列出Python中常见的异常：
+
+BaseException
+
+新的所有异常类的基类
+
+Exception
+
+所有异常的基类，但继承自BaseException
+
+AssertionError
+
+asser语句失败
+
+FileNotFoundError
+
+试图打开一个不存的文件或目录
+
+AttributeError
+
+试图访问的对象没有属性
+
+OSError
+
+当系统函数返回一个系统相关的错误(包括I/O故障)，如“找不到文件”或“磁盘已满”时，引发此异常
+
+NameError
+
+使用一个还未赋值对象的变量
+
+IndexError
+
+当一个序列超出范围时引发此异常
+
+SyntaxError
+
+当解析器遇到一个语法错误时引发此异常
+
+KeyboardInterrupt
+
+组合键Ctrl+C被按下，程序被强制终止
+
+TypeError
+
+传入的对象类型与要求不符
+
+异常结合else的用法：
+
+try:
+
+a ="异常测试："
+
+print(a)
+
+except NameError as msg:
+
+print(msg)
+
+esle:
+
+print("没有异常时执行")
+
+------------------------------
+
+#当出现异常时，打印异常信息“msg”，当没有异常时，执行esle，打印“没有异常时执行”
+
+异常结合finallyd的用法：
+
+try:
+
+print(a)
+
+except NameError as msg:
+
+print(msg)
+
+finally:
+
+print("不管有无异常，都执行finally)
+
+用户自定义的异常抛出 raise:
+
+class loogExcept(Exception):
+
+def __init__(self,leng):
+
+self.leng = leng
+
+def __str__(self):
+
+print("你的名字："+str(self.leng)+",超过长度啦！")
+
+def name_Test():
+
+try:
+
+name = input("enter your name:")
+
+if len(name) > 4:
+
+raise loogExcept(len(name))
+
+else:
+
+print(name)
+
+except loogExcept as e_result:
+
+print("捕捉到异常啦")
+
+print("打印异常：",e_result)
+
+if __name__ == "__main__":
+
+name_Test()
+
+---------------------------------------------
+
+enter your name:sadsadasd
+
+捕捉到异常啦
+
+打印异常： 你的名字：9,超过长度啦！
+
+你的名字：9,超过长度啦！
+
+Traceback (most recent call last):
+
+File "D:/project1/test.py", line 19, in name_Test
+
+raise loogExcept(len(name))
+
+__main__.loogExcept:
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "D:/project1/test.py", line 27, in
+
+name_Test()
+
+File "D:/project1/test.py", line 24, in name_Test
+
+print("打印异常：",e_result)
+
+TypeError: __str__ returned non-string (type NoneType)
+
+Process finished with exit code 1
+

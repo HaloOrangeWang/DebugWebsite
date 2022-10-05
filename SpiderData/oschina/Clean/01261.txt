@@ -1,0 +1,49 @@
+在学习Python的是后遇到点小问题，记录下来以后忘了再来看看。
+
+一. python2 和python3在继承父类的时候是不同的。super() 是一个特殊的函数，帮助Python将父类和子类关联起来。在Python3中，直接使用如下代码：
+
+
+Python3
+
+class Father():
+    def __init__(self,make,kkk,aaa)
+ ~~snip~~
+class Son(Father):
+ super().__init__(make,kkk,aaa)
+
+
+在Python2中有两种方法：
+
+
+第一种
+
+class Father():
+    def __init__(self,make,kkk,aaa)
+ ~~snip~~
+class Son(Father):
+ super(son,self).__init__(make,kkk,aaa)
+
+
+第二种
+
+class Father():
+    def __init__(self,make,kkk,aaa)
+ ~~snip~~
+class Son(Father):
+ Father.__init__(self,make,kkk,aaa) # 注意此处参数含self
+
+二. 在运行过程中还遇到了一个问题。
+
+遇到如下的报错，上网查询发现是调用对象函数的时候没有加 () .
+
+<bound method ElectricCar.get_descriptive_name of <__main__.ElectricCar object at 0x0000000003200A90>>
+​
+
+如下：
+
+加了括号后就运行正常了。
+
+在最后一行：print(my_tesla.get_descriptive_name)改为
+
+print(my_tesla.get_descriptive_name())   就解决问题了。
+

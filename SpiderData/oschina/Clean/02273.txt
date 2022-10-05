@@ -1,0 +1,111 @@
+### 12.2 静态文件的使用
+
+#### 12.2.1静态文件的配置和使用
+
+settings.py
+
+```python
+STATIC_URL = '/static/'  #别名
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,'static'),
+    os.path.join(BASE_DIR,'static1'),
+    os.path.join(BASE_DIR,'static2')
+    
+]
+```
+
+放置在static文件夹中的静态文件，应该这样找：
+
+```html
+<link rel="stylesheet" href="/static/css/login/css"
+//注意：无论静态文件的名字叫什么，查找需要交的静态文件时，用的是别名，不是文件夹真正的名字
+      按照列表的顺序来进行查找的
+```
+
+#### 12.2.2 简单的登录实例
+
+form表单提交数据注意的问题：
+
+1. 提交的抵制action="" 请求方式 method="post"
+2. 所有的input框都有name属性
+3. 有一个input框的type="submit"或者有一个button
+
+注意：提交post数据请求，把settings中MIDDLEWARE的'django.middleware.csrf.CsrfViewMiddleware'注释掉
+
+#### 12.2.3 app
+
+app：
+
+- admin.py   #Django后台管理的工具
+- modles.py  #跟ORM相关
+- views.py #写函数
+
+创建APP：
+
+- 命令行 python manage.py startapp app名称
+- pycharm：tools——>run manage.py task ——>startapp app名称
+
+注册APP：
+
+```python
+INSTALLED_APPS = [
+    ...
+    'app01',
+    'app01.apps.App01Config',  #推荐写法
+]
+```
+
+#### 12.2.4 ORM
+
+Django中使用MySQL数据库的流程：
+
+1. 创建一个MySQL数据库
+
+2. 在settings中配置，Django链接MySQL数据库：
+
+3. ```python
+   DATABASES = {
+       default:{
+           'ENGINE':'django.db.backends.mysql',   #引擎
+           'NAME':'day53',             #数据库名称
+           'HOST':'127.0.0.1',        #ip地址
+           'PORT':3306,        #端口
+           'USER':'root'      #用户
+           'PASSWORD':'123'    #密码
+       }
+   }
+   ```
+
+4. 在与settings同级目录下的init文件中写：
+
+5. ```python
+   import pymysql
+   pymysql.install_as_MySQLdb()
+   ```
+
+6. 创建表(在app下的models.py中写类)：
+
+7. ```python
+   from django.db import models
+   
+   class User(models.Model):
+       username = models.CharField(max_length=32)    #username varchar(32)
+       password = models.CharField(max_length=32)     #password varchar(32)
+   ```
+
+8. 执行数据库迁移的命令
+
+1. python manage.py makemigrations  #检测每个注册app下的model.py  记录model的变更记录
+   2. python manage.py migrate  #同步变更记录到数据库中
+
+orm操作
+
+```python
+# 获取表中所有的数据
+ret = models.User.objects.all()   #QuerySet 对象列表 [对象]
+#获取一个对象（有且唯一）
+obj = models.User.objects.get(username='alex')   #获取不到或者获取到多个对象会报错
+#获取满足条件的对象
+ret = models.User.objects.filter(username='alex',password='asd')   #QuerySet  对象列表
+```
+

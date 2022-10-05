@@ -1,0 +1,213 @@
+
+1.TypeError: __init__() missing 1 required positional argument: 'on_delete'
+
+在django2.0后，定义外键和一对一关系的时候需要加on_delete选项，此参数为了避免两个表里的数据不一致问题，不然会报错：
+TypeError: __init__() missing 1 required positional argument: 'on_delete'
+举例说明：
+user=models.OneToOneField(User)
+owner=models.ForeignKey(UserProfile)
+需要改成：
+user=models.OneToOneField(User,on_delete=models.CASCADE) --在老版本这个参数（models.CASCADE）是默认值
+owner=models.ForeignKey(UserProfile,on_delete=models.CASCADE) --在老版本这个参数（models.CASCADE）是默认值
+参数说明：
+on_delete有CASCADE、PROTECT、SET_NULL、SET_DEFAULT、SET()五个可选择的值
+CASCADE：此值设置，是级联删除。
+PROTECT：此值设置，是会报完整性错误。
+SET_NULL：此值设置，会把外键设置为null，前提是允许为null。
+SET_DEFAULT：此值设置，会把设置为外键的默认值。
+SET()：此值设置，会调用外面的值，可以是一个函数。
+一般情况下使用CASCADE就可以了。
+
+OSError: No translation files found for default language zh-CN.
+
+2.ImportError: cannot import name 'patterns'
+
+这个特性在1.9就声明了deprecated. 1.10正式移除了。使用 django 1.10 需要改用 django.conf.urls.url() 示范代码：
+
+from django.conf.urls import include, url
+from django.conf import settings
+
+# Uncomment the next two lines to enable the admin:
+from django.contrib.auth.decorators import login_required
+from django.contrib import admin
+admin.autodiscover()
+admin.site.login = login_required(admin.site.login) # 设置admin登录的页面，settings.LOGIN_URL
+
+import forum.urls, api.urls
+
+urlpatterns = [
+    # Examples:
+    # url(r'^$', 'xp.views.home', name='home'),
+    # url(r'^xp/', include('xp.foo.urls')),
+
+# Uncomment the admin/doc line below to enable admin documentation:
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
+# Uncomment the next line to enable the admin:
+    # url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include(forum.urls)),
+    url(r'^api/', include(api.urls)),
+    url(r'^manage/admin/', include(admin.site.urls)),
+]
+
+
+3.regex = re.compile(ur'@(?P<username>\w+)(\s|$)', re.I)^        SyntaxError: invalid syntax
+
+regex = re.compile('@(?P<username>\w+)(\s|$)', re.I)
+
+
+4.ImportError: No module named 'PIL'
+
+C:\Users\zte>pip3 install pillow
+Collecting pillow
+ Using cached https://files.pythonhosted.org/packages/b9/ba/43f2f2dd60f304d8563af82ecd4822ff0b57ddfd71631c407fce69da84d1/Pillow-5.4.1-cp35-cp35m-win_amd64.whl
+Installing collected packages: pillow
+Successfully installed pillow-5.4.1
+
+
+5.Django继承AbstractUser新建User Model时出现fields.E304错误
+
+auth.User.groups: (fields.E304) Reverse accessor for ‘User.groups’ clashes with reverse accessor for ‘User.groups’.
+HINT: Add or change a related_name argument to the definition for ‘User.groups’ or ‘User.groups’.
+auth.User.user_permissions: (fields.E304) Reverse accessor for ‘User.user_permissions’ clashes with reverse accessor for ‘User.user_permissions’.
+HINT: Add or change a related_name argument to the definition for ‘User.user_permissions’ or ‘User.user_permissions’.
+users.User.groups: (fields.E304) Reverse accessor for ‘User.groups’ clashes with reverse accessor for ‘User.groups’.
+HINT: Add or change a related_name argument to the definition for ‘User.groups’ or ‘User.groups’.
+users.User.head_url: (fields.E210) Cannot use ImageField because Pillow is not installed.
+HINT: Get Pillow at https://pypi.python.org/pypi/Pillow or run command “pip install Pillow”.
+users.User.user_permissions: (fields.E304) Reverse accessor for ‘User.user_permissions’ clashes with reverse accessor for ‘User.user_permissions’.
+HINT: Add or change a related_name argument to the definition for ‘User.user_permissions’ or ‘User.user_permissions’.
+
+解决方案：
+
+需要在setting中重载AUTH_USER_MODEL
+
+AUTH_USER_MODEL = 'users.UserProfile'
+
+users：你的app
+
+UserProfile：model
+
+
+6.LookupError: No installed app with label 'users'.
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'forum.apps.博客Config',]
+
+正确写法：
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'forum.apps.博客Config',
+
+# Uncomment the next line to enable the admin:
+    # 'django.contrib.admin',
+    # Uncomment the next line to enable admin documentation:
+    # 'django.contrib.admindocs',
+    'django.contrib.sitemaps', # Django sitemap framework
+    # 'forum',
+    'api',
+    'users',
+]
+AUTH_USER_MODEL ="users.UserProfile"
+
+
+7.django.core.exceptions.ImproperlyConfigured: Application labels aren't unique, duplicates: admin
+
+创建的应用中settings.py文件INSTALLED_APPS注册文件按之前手动自行注册了应用名称。
+其实不需要注册就好，更新django1.11.3后，django创建应用的时候已经帮你注册了xx.apps.XXConfig。
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'forum.apps.博客Config',
+   
+    # Uncomment the next line to enable the admin:
+    #'django.contrib.admin',
+    # Uncomment the next line to enable admin documentation:
+    # 'django.contrib.admindocs',
+    'django.contrib.sitemaps', # Django sitemap framework
+    'forum',
+    'api',
+]
+
+
+8.python reload(sys)找不到，name 'reload' is not defined
+
+import importlib
+importlib.reload(sys)
+# reload(sys)
+
+
+9.AttributeError: module 'sys' has no attribute 'setdefaultencoding
+
+Python3字符串默认编码unicode, 所以sys.setdefaultencoding也不存在了
+
+#sys.setdefaultencoding("utf8")
+
+
+10.ImportError: No module named 'MySQLdb'
+
+在 python2 中，使用 pip install mysql-python 进行安装连接MySQL的库，使用时 import MySQLdb 进行使用
+
+在 python3 中，改变了连接库，改为了 pymysql 库，使用pip install pymysql 进行安装，直接导入import pymysql使用
+
+本来在上面的基础上把 python3 的 pymysql 库安装上去就行了，但是问题依旧
+
+经过查阅得知， Django 依旧是使用 py2 的 MySQLdb 库的，得到进行适当的转换才行
+
+在__init__.py 文件中添加以下代码
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+
+11. OSError: No translation files found for default language zh-CN.
+
+IOError: No translation files found for default language zh-cn.
+
+检查  ...\Lib\site-packages\Django-1.10.2-py2.7.egg\django\conf\locale下无zh-cn文件夹，有zh-Hans和zh-Hant两个文件，
+
+其中 zh-Hans是简体中文    zh-Hant是繁体中文
+
+所以更改setttings.py 下
+
+LANGUAGE_CODE = 'zh-Hans'即可
+
+
+12.error: Microsoft Visual C++ 9.0 is required. Get it from http://aka.ms/vcpython27
+
+解决方法：下载 VCForPython27.msi 。
+
+地址： http://www.microsoft.com/en-us/download/confirmation.aspx?id=44266
+
+(Microsoft Visual C++ Compiler for Python 2.7)
+
+
+13.error: command 'C:\\Users\\zte\\AppData\\Local\\Programs\\Common\\Microsoft\\Visual C++ for Python\\9.0\\VC\\Bin\\amd64\\cl.exe' failed with exit status 2
+
+_mysql.c(42) : fatal error C1083: Cannot open include file: 'config-win.h': No such file or directory
+ error: command 'C:\\Users\\zte\\AppData\\Local\\Programs\\Common\\Microsoft\\Visual C++ for Python\\9.0\\VC\\Bin\\amd64\\cl.exe' failed with exit status 2
+
+注意：python2.x用mysql-python，从Python3.x起，变更为mysqlclient
+
+pip install mysql-python
+
+到 http://www.lfd.uci.edu/~gohlke/pythonlibs/ 下载二进制安装包
+pip install MySQL_python-1.2.5-cp27-none-win_amd64.whl
+

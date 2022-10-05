@@ -1,0 +1,33 @@
+
+1. fatal error: Python.h: 没有那个文件或目录
+
+问题：缺少 python-dev 包
+
+解决：安装对应包：
+
+sudo apt install python-dev # 最好指定 python 版本，比如：python3.6-dev
+
+
+2. ERROR: Package 'pylint' requires a different Python: 2.7.15 not in '>=3.5.*'
+
+问题：默认安装的 pylint 包为较新的版本，要求 python>=3.5，而当前系统 python 为 2.7.15 版本
+
+解决：手动指定安装旧版本的 pylint 包
+
+pip install pylint==1.9.3.
+
+
+3. No local packages or working download links found for pytest-runner
+
+问题：在安装其他 python 包时依赖该包，由于是其他包指定该包的安装源，所以可能是因为安装源的问题。本人就是因为这个原因：
+
+Download error on https://pypi.python.org/simple/pytest-runner/: [Errno 0] Error -- Some packages may not be found!
+
+解决：如果系统默认源不是报错的安装源，则直接手动安装：
+
+pip install pytest-runner
+
+如果系统默认源是报错的安装源，则可以考虑 pip -i URL pytest-runner 手动指定其他安装源或直接更换系统源，详情请参见，然后手动安装：
+
+pip install pytest-runner
+

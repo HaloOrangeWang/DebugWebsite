@@ -1,0 +1,225 @@
+最近在使用目标识别api,但是报错了:
+
+File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/ops/script_ops.py", line 158, in __call__
+ ret = func(*args)
+
+File "/home/lyz/code/share_pro/models/research/object_detection/utils/visualization_utils.py", line 694, in cdf_plot
+ fig = plt.figure(frameon=False)
+
+File "/usr/local/lib/python2.7/dist-packages/matplotlib/pyplot.py", line 535, in figure
+ **kwargs)
+
+File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 81, in new_figure_manager
+ return new_figure_manager_given_figure(num, figure)
+
+File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 98, in new_figure_manager_given_figure
+ icon_img = Tk.PhotoImage(file=icon_fname)
+
+File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 3370, in __init__
+ Image.__init__(self, 'photo', name, cnf, master, **kw)
+
+File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 3324, in __init__
+ self.tk.call(('image', 'create', imgtype, name,) + options)
+
+RuntimeError: main thread is not in main loop
+
+Traceback (most recent call last):
+ File "object_detection/model_main.py", line 101, in <module>
+ tf.app.run()
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/platform/app.py", line 125, in run
+ _sys.exit(main(argv))
+ File "object_detection/model_main.py", line 97, in main
+ tf.estimator.train_and_evaluate(estimator, train_spec, eval_specs[0])
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/training.py", line 447, in train_and_evaluate
+ return executor.run()
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/training.py", line 531, in run
+ return self.run_local()
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/training.py", line 669, in run_local
+ hooks=train_hooks)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/estimator.py", line 366, in train
+ loss = self._train_model(input_fn, hooks, saving_listeners)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/estimator.py", line 1119, in _train_model
+ return self._train_model_default(input_fn, hooks, saving_listeners)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/estimator.py", line 1135, in _train_model_default
+ saving_listeners)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/estimator.py", line 1336, in _train_with_estimator_spec
+ _, loss = mon_sess.run([estimator_spec.train_op, estimator_spec.loss])
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/training/monitored_session.py", line 577, in run
+ run_metadata=run_metadata)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/training/monitored_session.py", line 1053, in run
+ run_metadata=run_metadata)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/training/monitored_session.py", line 1144, in run
+ raise six.reraise(*original_exc_info)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/training/monitored_session.py", line 1129, in run
+ return self._sess.run(*args, **kwargs)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/training/monitored_session.py", line 1201, in run
+ run_metadata=run_metadata)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/training/monitored_session.py", line 981, in run
+ return self._sess.run(*args, **kwargs)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/client/session.py", line 900, in run
+ run_metadata_ptr)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/client/session.py", line 1135, in _run
+ feed_dict_tensor, options, run_metadata)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/client/session.py", line 1316, in _do_run
+ run_metadata)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/client/session.py", line 1335, in _do_call
+ raise type(e)(node_def, op, message)
+tensorflow.python.framework.errors_impl.UnknownError: exceptions.RuntimeError: main thread is not in main loop
+Traceback (most recent call last):
+
+File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/ops/script_ops.py", line 158, in __call__
+ ret = func(*args)
+
+File "/home/lyz/code/share_pro/models/research/object_detection/utils/visualization_utils.py", line 694, in cdf_plot
+ fig = plt.figure(frameon=False)
+
+File "/usr/local/lib/python2.7/dist-packages/matplotlib/pyplot.py", line 535, in figure
+ **kwargs)
+
+File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 81, in new_figure_manager
+ return new_figure_manager_given_figure(num, figure)
+
+File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 98, in new_figure_manager_given_figure
+ icon_img = Tk.PhotoImage(file=icon_fname)
+
+File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 3370, in __init__
+ Image.__init__(self, 'photo', name, cnf, master, **kw)
+
+File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 3324, in __init__
+ self.tk.call(('image', 'create', imgtype, name,) + options)
+
+RuntimeError: main thread is not in main loop
+
+[[Node: Loss/PyFunc_1 = PyFunc[Tin=[DT_FLOAT], Tout=[DT_UINT8], token="pyfunc_1", _device="/job:localhost/replica:0/task:0/device:CPU:0"](Loss/Squeeze_1/_6143)]]
+
+Caused by op u'Loss/PyFunc_1', defined at:
+ File "object_detection/model_main.py", line 101, in <module>
+ tf.app.run()
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/platform/app.py", line 125, in run
+ _sys.exit(main(argv))
+ File "object_detection/model_main.py", line 97, in main
+ tf.estimator.train_and_evaluate(estimator, train_spec, eval_specs[0])
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/training.py", line 447, in train_and_evaluate
+ return executor.run()
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/training.py", line 531, in run
+ return self.run_local()
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/training.py", line 669, in run_local
+ hooks=train_hooks)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/estimator.py", line 366, in train
+ loss = self._train_model(input_fn, hooks, saving_listeners)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/estimator.py", line 1119, in _train_model
+ return self._train_model_default(input_fn, hooks, saving_listeners)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/estimator.py", line 1132, in _train_model_default
+ features, labels, model_fn_lib.ModeKeys.TRAIN, self.config)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/estimator/estimator.py", line 1107, in _call_model_fn
+ model_fn_results = self._model_fn(features=features, **kwargs)
+ File "/home/lyz/code/share_pro/models/research/object_detection/model_lib.py", line 281, in model_fn
+ prediction_dict, features[fields.InputDataFields.true_image_shape])
+ File "/home/lyz/code/share_pro/models/research/object_detection/meta_architectures/ssd_meta_arch.py", line 597, in loss
+ flattened_class_ids, flattened_classification_losses)
+ File "/home/lyz/code/share_pro/models/research/object_detection/meta_architectures/ssd_meta_arch.py", line 660, in _summarize_anchor_classification_loss
+ 'NegativeAnchorLossCDF')
+ File "/home/lyz/code/share_pro/models/research/object_detection/utils/visualization_utils.py", line 704, in add_cdf_image_summary
+ cdf_plot = tf.py_func(cdf_plot, [values], tf.uint8)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/ops/script_ops.py", line 384, in py_func
+ func=func, inp=inp, Tout=Tout, stateful=stateful, eager=False, name=name)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/ops/script_ops.py", line 227, in _internal_py_func
+ input=inp, token=token, Tout=Tout, name=name)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/ops/gen_script_ops.py", line 128, in py_func
+ "PyFunc", input=input, token=token, Tout=Tout, name=name)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/framework/op_def_library.py", line 787, in _apply_op_helper
+ op_def=op_def)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/framework/ops.py", line 3414, in create_op
+ op_def=op_def)
+ File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/framework/ops.py", line 1740, in __init__
+ self._traceback = self._graph._extract_stack() # pylint: disable=protected-access
+
+UnknownError (see above for traceback): exceptions.RuntimeError: main thread is not in main loop
+Traceback (most recent call last):
+
+File "/usr/local/lib/python2.7/dist-packages/tensorflow/python/ops/script_ops.py", line 158, in __call__
+ ret = func(*args)
+
+File "/home/lyz/code/share_pro/models/research/object_detection/utils/visualization_utils.py", line 694, in cdf_plot
+ fig = plt.figure(frameon=False)
+
+File "/usr/local/lib/python2.7/dist-packages/matplotlib/pyplot.py", line 535, in figure
+ **kwargs)
+
+File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 81, in new_figure_manager
+ return new_figure_manager_given_figure(num, figure)
+
+File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 98, in new_figure_manager_given_figure
+ icon_img = Tk.PhotoImage(file=icon_fname)
+
+File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 3370, in __init__
+ Image.__init__(self, 'photo', name, cnf, master, **kw)
+
+File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 3324, in __init__
+ self.tk.call(('image', 'create', imgtype, name,) + options)
+
+RuntimeError: main thread is not in main loop
+
+[[Node: Loss/PyFunc_1 = PyFunc[Tin=[DT_FLOAT], Tout=[DT_UINT8], token="pyfunc_1", _device="/job:localhost/replica:0/task:0/device:CPU:0"](Loss/Squeeze_1/_6143)]]
+
+Exception RuntimeError: 'main thread is not in main loop' in <bound method StringVar.__del__ of <Tkinter.StringVar instance at 0x7fe4a8e7bd40>> ignored
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+ File "/usr/lib/python2.7/atexit.py", line 24, in _run_exitfuncs
+ func(*targs, **kargs)
+ File "/usr/local/lib/python2.7/dist-packages/matplotlib/_pylab_helpers.py", line 92, in destroy_all
+ manager.destroy()
+ File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 619, in destroy
+ self.window.destroy()
+ File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 1862, in destroy
+ for c in self.children.values(): c.destroy()
+ File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 715, in destroy
+ Tk.Frame.destroy(self, *args)
+ File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 2099, in destroy
+ for c in self.children.values(): c.destroy()
+ File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 2100, in destroy
+ self.tk.call('destroy', self._w)
+RuntimeError: main thread is not in main loop
+Error in sys.exitfunc:
+Traceback (most recent call last):
+ File "/usr/lib/python2.7/atexit.py", line 24, in _run_exitfuncs
+ func(*targs, **kargs)
+ File "/usr/local/lib/python2.7/dist-packages/matplotlib/_pylab_helpers.py", line 92, in destroy_all
+ manager.destroy()
+ File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 619, in destroy
+ self.window.destroy()
+ File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 1862, in destroy
+ for c in self.children.values(): c.destroy()
+ File "/usr/local/lib/python2.7/dist-packages/matplotlib/backends/backend_tkagg.py", line 715, in destroy
+ Tk.Frame.destroy(self, *args)
+ File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 2099, in destroy
+ for c in self.children.values(): c.destroy()
+ File "/usr/lib/python2.7/lib-tk/Tkinter.py", line 2100, in destroy
+ self.tk.call('destroy', self._w)
+RuntimeError: main thread is not in main loop
+
+其实,网上说解决方法是加:
+
+matplotlib.use('Agg')
+
+但是代码里面:
+
+# Set headless-friendly backend.
+import matplotlib；matplotlib.use('Agg')  # pylint: disable=multiple-statements
+import matplotlib.pyplot as plt  # pylint: disable=g-import-not-at-top
+已经有了呀,很奇怪,最后面看到网上的解决方案:https://github.com/tensorflow/models/issues/4777
+
+modified   object_detection/eval_util.py
+@@ -22,4 +22,5 @@ import numpy as np
+ import tensorflow as tf
+ 
++from object_detection.utils import visualization_utils as vis_utils
+ from object_detection.core import box_list
+ from object_detection.core import box_list_ops
+@@ -29,5 +30,4 @@ from object_detection.metrics import coco_evaluation
+ from object_detection.utils import label_map_util
+ from object_detection.utils import ops
+-from object_detection.utils import visualization_utils as vis_utils
+
+from object_detection.utils import visualization_utils as vis_utils
+

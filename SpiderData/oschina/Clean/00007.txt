@@ -1,0 +1,34 @@
+当我们yum命令的时候，会提示
+
+“File "/usr/bin/yum", line 30
+
+except KeyboardInterrupt, e:
+
+^
+
+SyntaxError: invalid syntax”
+
+可能是升级python引起的，yum是用python作为解释器的。
+
+1、当我们输入任何yum命令，都会报错。原因是升级python后，导致yum所需版本不一致导致！
+ 
+ 2、如图，我将python版本编译安装python3.3.0。将3.3链接到/usr/bin/python.
+ 
+ 3、我们查看/usr/bin/yum 文件，可以看到，yum调用的是/usr/bin/python这个文件。所以改变之后就会报错。
+ 
+ 4、这个时候我们只需要修改yum配置文件，将python版本只想以前的旧版就可以了。
+ vi /usr/bin/yum
+ 因为我的旧版本是2.7，所以将#!/usr/bin/python改为#!/usr/bin/python2.7就可以了！
+ 退出保存
+ 
+ 5、再次运行yum命令，就不回再报错了。
+ 如果运行后报以下错误File “/usr/libexec/urlgrabber-ext-down”, line 28 except OSError, e:
+ 就修改/usr/libexec/urlgrabber-ext-down文件，将python同样指向旧版本，就可以了
+ 
+ 6、也有方法说升级yum版本，使两者版本相匹配。本人还没成功！
+ 至少yum3.4.3与python3.3.0版本不匹配！
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

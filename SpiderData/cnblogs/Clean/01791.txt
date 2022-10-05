@@ -1,0 +1,64 @@
+无法安装的原因：
+
+因为remix依赖python 执行python又依赖c++的环境 所以连环导致出错
+
+https://github.com/nodejs/node-gyp
+
+措施一：降级处理
+
+先清理缓存或者清除缓存 两个命令其中一个就可以了
+
+npm cache clean --force
+
+npm cache clear --force
+
+然后手动去下面路径
+
+C:\Users\Administrator\AppData\Roaming\npm\node_modules里面把remix-ide和web3两个文件夹删掉，如果有的话
+
+然后依次执行
+
+npm install --global --production windows-build-tools  全局环境
+
+npm install -g --production windows-build-tools 局部环境
+
+npm install -g web3 安装web3版本
+
+npm install --save web3
+
+在项目中执行 可以把 web3的依赖添加到Json里面去供我们代码中
+
+npm install -g remix-ide -g 安装remix 可能报错 报错的话需要重装系统或者安装c++环境（vs2015） ，建议使用在线remix版本 地址：http://remix.ethereum.org
+
+开热点下，不要用教室的网络
+
+补充：
+
+https://www.cnblogs.com/yzeng/p/7205473.html
+
+措施二：
+
+https://blog.csdn.net/notejs/article/details/49681517
+
+查看windows-build-tools在不在 不在的话重装
+
+切换cnpm
+
+npm install -g cnpm
+
+npm config set registry "http://registry.npmjs.org/"
+
+cnpm install web3 --save
+
+原作者：https://blog.csdn.net/u013018357/article/details/79908420
+
+先安装
+
+npm install -g node-gyp
+
+Microsoft Visual Studio Express 2013 for Windows Desktop
+
+报错处理：
+
+https://blog.csdn.net/notejs/article/details/49681649
+

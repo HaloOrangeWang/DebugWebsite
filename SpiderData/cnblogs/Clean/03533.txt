@@ -1,0 +1,11 @@
+今天用python采集文章的时候发现有些中文会出现解码出错，UnicodeDecodeError: ‘gb2312’ codec can’t decode byte 0xb0 in position 18020: illegal multibyte sequence 百度了发现是繁体字之类的gb2312会出现错误，
+
+直接用errors = 'ignore'忽略
+
+html.decode("gb2312",errors = 'ignore')
+
+因为decode的函数原型是decode([encoding], [errors='strict'])，可以用第二个参数控制错误处理的策略，默认的参数就是strict，代表遇到非法字符时抛出异常；
+如果设置为ignore，则会忽略非法字符；
+如果设置为replace，则会用?取代非法字符；
+如果设置为xmlcharrefreplace，则使用XML的字符引用。
+

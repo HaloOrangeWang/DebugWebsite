@@ -1,0 +1,15 @@
+在Java服务器连接Redis时报错Caused by: io.lettuce.core.RedisCommandExecutionException: ERR Client sent AUTH, but no password is set
+
+
+原因
+
+产生这个问题的原因异常信息里已经说明，就是Redis服务器没有设置密码，但客户端向其发送了AUTH（authentication，身份验证）请求携带着密码，导致报错。既然是没有设置密码导致的报错，那我们就把Redis服务器给设置上密码就好了。
+
+
+解决办法
+
+打开redis配置文件，添加密码，然后重启
+
+# requirepass foobared
+requirepass 123456 //123456是设置的密码
+

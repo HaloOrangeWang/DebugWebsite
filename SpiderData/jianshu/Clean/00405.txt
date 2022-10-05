@@ -1,0 +1,46 @@
+
+问题1：
+
+git clone 时报错：Unable to negotiate with 207.97.227.239 port 22: no matching host key type found. Their offer: ssh-rsa
+
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+
+and the repository exists.
+
+介绍这种情况的原因就是新的ssh客户端不支持ssh-rsa算法，要修改本地配置重新使用ssh-rsa算法。
+
+具体做法：到当前用户目录下的.ssh文件中创建config文件（config没有后缀），使用记事本打开添加如下
+
+添加以下配置
+
+Host *
+
+HostkeyAlgorithms +ssh-rsa
+
+PubkeyAcceptedKeyTypes +ssh-rsa
+
+
+问题2：
+
+git clone 代码报Host key verification failed. fatal: Could not read from remote repository.  Please make sure you have the correct access rights and the repository exists.
+
+ssh 会验证对方服务器的 key。它没办法确认服务器出示的 key 是受信的，所以 key 是不是真的是你要连接的那个服务器的。没说「yes」所以 ssh 认为你不想继续连接，所以连接失败。
+
+解决方法
+
+请打开Git Bash，输入如下代码:
+
+ssh -T git@github.com
+
+如果提示“can't be established.”什么东西（如下代码），请不要管，直接按yes
+
+The authenticity of host 'github.com (207.97.227.239)' can't be established. RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48. Are you sure you want to continue connecting (yes/no)?
+
+然后提示输入密码（passphrase） 如果看到
+
+You've successfully authenticated, but GitHub does not provide shell access
+
+信息，就表示连接成功。
+

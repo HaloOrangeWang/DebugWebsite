@@ -1,0 +1,31 @@
+一、复现报错：
+
+docker exec -it  wsqtest  bash
+
+rpc error: code = 2 desc = oci runtime error: exec failed: 
+container_linux.go:247: starting container process caused "process_linux.go:110: 
+decoding init error from pipe caused \"read parent: connection reset by peer\""
+
+二、解决方案：
+
+it seems to be a bug introduced in a recent update to the docker RPM packages. A temporary workaround is to downgrade all docker packages to a previous release (75 seems to work).
+
+yum downgrade docker-1.13.1-75.git8633870.el7_5 \
+              docker-client-1.13.1-75.git8633870.el7_5 \
+              docker-common-1.13.1-75.git8633870.el7_5 \
+              docker-rhel-push-plugin-1.13.1-75.git8633870.el7_5
+
+（2）
+
+if you use
+
+yum update
+
+before and no idea for what the old version of docker, just run
+
+yum downgrade docker docker-client docker-common
+
+it work for me
+
+我用的第二种，重启docker后完美解决
+

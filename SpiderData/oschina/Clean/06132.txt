@@ -1,0 +1,59 @@
+认证报错
+
+[root@saltstack01 ~]# salt '*' test.ping
+saltstack01:
+True
+saltstack03:
+Minion did not return. [Not connected]
+saltstack02:
+Minion did not return. [Not connected]
+
+　　
+
+先到master上查看密钥情况
+
+[root@saltstack01 salt]# tree pki
+pki
+├── master
+│   ├── master.pem
+│   ├── master.pub
+│   ├── minions
+│   │   ├── saltstack01
+│   │   ├── saltstack02
+│   │   └── saltstack03
+│   ├── minions_autosign
+│   ├── minions_denied
+│   │   ├── saltstack02
+│   │   └── saltstack03
+│   ├── minions_pre
+│   └── minions_rejected
+└── minion
+    ├── minion_master.pub
+    ├── minion.pem
+    └── minion.pub
+
+　saltstack02与saltstack03显示拒绝验证
+
+删除mater上minions上面的密钥
+
+[root@saltstack01 ~]# salt-key -d saltstack02
+The following keys are going to be deleted:
+Accepted Keys:
+saltstack02
+Denied Keys:
+saltstack02
+Proceed? [N/y] y
+Key for minion saltstack02 deleted.
+Key for minion saltstack02 deleted.
+[root@saltstack01 ~]# salt-key -d saltstack03
+The following keys are going to be deleted:
+Accepted Keys:
+saltstack03
+Denied Keys:
+saltstack03
+Proceed? [N/y] y
+Key for minion saltstack03 deleted.
+Key for minion saltstack03 deleted.
+
+　　
+

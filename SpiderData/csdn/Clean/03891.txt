@@ -1,0 +1,24 @@
+昨天刚遇到了因为python版本更新而遇到的错误，今天一大早又遇到了一次......
+
+同样也是按照书《Python编程快速上手》P221页上的代码做练习，但是却遇到了如下的错误：
+
+import openpyxl
+from openpyxl.cell import get_column_letter,column_index_from_letter
+wb = openpyxl.load_workbook('example.xlsx')
+sheet = wb.get_sheet_by_name('Sheet1')
+get_column_letter(100)
+
+D:\>python test.py
+Traceback (most recent call last):
+  File "test.py", line 2, in <module>
+    from openpyxl.cell import get_column_letter,column_index_from_letter
+ImportError: cannot import name 'get_column_letter'
+
+这个错误的意思就是导入 get_column_letter方法失败，于是Google了一下发现，get_column_letter方法已经在Openpyxl 的2.4版本中重写了，如今想要用此方法需要从openpyxl.utils中导入，而非从openpyxl.cell。
+
+因此正确的导入方式应该为：
+
+from openpyxl.utils import get_column_letter
+
+关注我公众号【程序员向东】，此公众号专注分享Python、爬虫学习资料和干货，关注后回复【PYTHON】，无套路免费送你一个学习大礼包，包括爬虫视频和电子书~
+

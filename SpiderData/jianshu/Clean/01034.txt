@@ -1,0 +1,38 @@
+今天在学习用python做接口自动化解决excel数据依赖问题的时候，遇到了一个报错：
+
+
+具体是这样的：
+
+我的《get_data.py》文件中有一个方法 get_request_name，需要调用《operation_excel.py》文件中的 get_cell_value 方法，来获取excel文件某个单元格的内容；
+
+我的《get_data.py》文件中有一个方法 get_request_name，需要调用《operation_excel.py》文件中的 get_cell_value 方法，来获取excel文件某个单元格的内容；
+
+下面是代码部分的截图
+
+现在的问题是：单独运行《operation_excel.py》文件可以成功，get_cell_value 方法能正确输出我要的内容，但是我运行《get_data.py》文件，就会报“File "D:\Python37\lib\site-packages\xlrd\sheet.py", line 419, in cell_value
+
+return self._cell_values[rowx][colx]
+
+IndexError: list index out of range”的错误；
+
+现在的问题是：单独运行《operation_excel.py》文件可以成功，get_cell_value 方法能正确输出我要的内容，但是我运行《get_data.py》文件，就会报“File "D:\Python37\lib\site-packages\xlrd\sheet.py", line 419, in cell_value
+
+return self._cell_values[rowx][colx]
+
+IndexError: list index out of range”的错误；
+
+我看《sheet.py》文件里面，内容也没什么异常。
+
+我看《sheet.py》文件里面，内容也没什么异常。
+
+
+原因及解决办法：
+
+后来经过大佬一番指点，才知道是row这个数据出了问题，计算机基本是以0开始的，我以为的第七行，在计算机不一定是7，可能是6，所以我的row要排除第一行表头的数据，才能正确定位我要的值，就像下面两张图对比下：
+
+如果我换成（7,1），就是定位了B8的数据，但B8单元格内容为空，就会报错。
+
+这也就是网上给出的答案，但一开始看这篇文章没有看明白。原文地址：https://blog.csdn.net/weixin_43665935/article/details/84671678
+
+我的解决办法比较简单粗暴，直接将row换成了row-1，虽然不好看，但能用，以后再调整。
+

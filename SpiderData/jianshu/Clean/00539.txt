@@ -1,0 +1,36 @@
+
+ClickHouse删除大表报错
+
+这个是ClickHouse保护大表被误删的动作，有两个方法可以解除这个限制。
+
+
+1、设置max_table_size_drop属性为0，默认为50G。
+
+意思是删除大于50G的表都会提示无法删除，设置为0的就不会报告警提示。
+
+
+2、在实例节点机器执行下面语句后再操作删除
+
+sudo touch /data/clickhouse/flags/force_drop_table && sudo chmod 666 /data/clickhouse/flags/force_drop_table
+
+
+ClickHouse节点重启机器后无法启动
+
+
+1、在故障机器执行下面命令
+
+sudo -u clickhouse touch /var/lib/clickhouse/flags/force_restore_data
+
+
+2、然后重启CK服务
+
+CK会从另外一个备份中恢复数据。这里是CK自带的故障恢复机制，前提是使用复制表（Replicated开头），本质是告诉CK，强制重建数据。
+
+问题分析：
+
+启动时，检查本地文件系统中的数据集是否与预期的数据集（ZooKeeper中信息）一致。如果存在轻微的不一致，系统会通过与副本同步数据来解决，如果系统检测到损坏的数据片段（如文件大小错误）或无法识别的片段（写入文件系统但未记录在ZooKeeper中的部分），则会把它们移动到 ‘detached’ 子目录（相当于逻辑删除），然后再从其他备份中去恢复这个数据片段。
+
+但是注意这里是有一个安全机制的，即CK判断你损坏的片段大于一定的值（max_suspicious_broken_parts，对应源码图二中的逻辑），即“本地数据集与预期数据的差异太大”，CK将会拒绝帮你自动修复，并抛出异常、阻塞启动，这个时候你就必须手动执行恢复。
+
+通过查询配置得到，max_suspicious_broken_parts参数的默认值是10。
+

@@ -1,0 +1,33 @@
+import numpy as numpy
+a=np.zeros(3)
+a[0]=0; a[1]=1; a[2]=2
+if a==[1,2,3]:
+	print "OK"
+else:
+	print "NOT OK"
+
+Traceback (most recent call last):
+  File "<pyshell#45>", line 1, in <module>
+    if a==[1,2,3]:
+ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+报错原因：
+
+Numpy对逻辑表达式判别不清楚，它可以返回False如果等号两边两个式子是数值相等，也可以返回True因为等号两边两个式子是逻辑相等。它觉得这是模棱两可的，因此放弃做判断，统一用a.any()进行或比较，或a.all()进行与比较。可以从下面例子体会一下。
+
+import numpy as numpy
+a=np.zeros(3)
+a[0]=0; a[1]=1; a[2]=2
+print (a-[0,1,2]).any()	#[0,0,0] False
+print (a-[0,1,2]).all()	#[0,0,0] False
+print (a-[1,2,3]).any() #[-1,-1,-1] True
+print (a-[1,2,3]).all() #[-1,-1,-1] True
+print (a-[0,2,3]).any() #[0,-1,-1] True
+print (a-[0,2,3]).all() #[0,-1,-1] False
+
+numpy-array数组进行(a-b)比较时，True表示不同，False表示相同
+
+部分元素相等，.all()返False（一帮情况下不希望出现），.any()返回True; 所有元素都相等，二者均返回False
+
+因此最好使用.any()比较
+

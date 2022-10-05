@@ -1,0 +1,29 @@
+1、模型初始化环境：
+
+命令：python manage.py db init
+
+2、把表中模型映射到数据库中 先生成迁移文件
+
+命令：python manage.py db migrate
+
+这时打开migration文件夹后再打开versions文件夹会看到形如3007cf54a530_.py文件和3007cf54a530_.cpy文件
+
+3、再把迁移文件映射到数据库中
+命令：python manage.py db upgrade
+
+INFO [alembic.runtime.migration] Context impl MySQLImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 3007cf54a530, empty message
+
+当把后台与数据库建立关系后，双方会分别产生一个“接口”，后台的“接口”是migrations文件夹中的versions文件夹中的文件；数据库的“接口”是这个表“alembic_version”（蒸馏器版本？什么鬼名字？）
+我把migrations删除后，alembic_version没有改变。当我新建一个migrations后，两个“接口”对不上了，所以会报错：
+alembic.util.exc.CommandError: Can't locate revision identified by '68c8e45e399c'
+
+这种错误最简单的解决办法就是把数据库中的alembic_version表删掉，然后就可以继续后面的操作了
+
+文章转自CSDN大佬: https://blog.csdn.net/Super_Tiger_Lee/article/details/77772752?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-2.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-2.control
+
+以及:  http://blog.csdn.net/kevin_qq/article/details/52900151
+
+的文章
+

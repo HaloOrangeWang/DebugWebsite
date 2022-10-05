@@ -1,0 +1,40 @@
+python报错：TypeError: can’t multiply sequence by non-int of type 'float’
+
+注意：csdn标题没法用英文引号，以后注意别搜引号！！！！
+
+比如，想搜这个报错，别直接搜TypeError: can't multiply sequence by non-int of type 'float'，要搜multiply sequence by non-int of type！！！
+
+
+现象
+
+报了个错，不知啥情况
+
+
+解决办法
+
+检查了一下，发现是我像素值赋值的时候前面没加img，加上就好了- -
+
+
+报错原因
+
+没加img的时候，fq1和fq3是列表，而python中列表与数字相乘是这样，它是按列表最外层空间扩增的
+
+a = [[1, 2, 2.2], [4, 5], [4, 4]]
+print(a * 3)    # [[1, 2, 2.2], [4, 5], [4, 4], [1, 2, 2.2], [4, 5], [4, 4], [1, 2, 2.2], [4, 5], [4, 4]]
+
+b = [1.1, 2]
+print(b * 2)  # [1.1, 2, 1.1, 2]
+
+如果被乘的数是小数（浮点数float），肯定就不行啦
+
+b = [1.1, 2]
+print(b * 2.0)
+
+D:\20200228_play_with_pytorch\python\python.exe C:/Users/SIQI/Desktop/数字图像处理/test.py
+Traceback (most recent call last):
+  File "C:/Users/SIQI/Desktop/数字图像处理/test.py", line 15, in <module>
+    print(b * 2.0)  # [1.1, 2, 1.1, 2]
+TypeError: can't multiply sequence by non-int of type 'float'
+
+Process finished with exit code 1
+

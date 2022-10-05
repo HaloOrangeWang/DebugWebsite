@@ -1,0 +1,14 @@
+
+Python文件在cmd中运行报错
+
+在pycharm中点击run运行代码，一点错误没有，但是通过cmd命令行运行，会报错ModuleNotFoundError: No module named 'xxx'，这是因为在pycharm等IDE中运行程序的话，默认设置启动路径为项目根目录，所以直接执行是没有问题的。所以如果在cmd中启动项目的话，需要将本项目的路径加入系统变量中，在需要运行的代码上面加入以下代码
+
+import sys
+import os
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
+print(sys.path)
+
+解决方法参照的博客
+

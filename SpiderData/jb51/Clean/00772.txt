@@ -1,0 +1,43 @@
+错误代码如下：
+
+NotFoundError (see above for traceback): Unsuccessful TensorSliceReader constructor:
+
+Failed to find any matching files for xxx
+……
+
+经查资料分析，错误原因可能出在加载模型时的路径问题。我采用的加载模型方法：
+
+with tf.Session() as sess:
+  print("Reading checkpoints...")
+  ckpt = tf.train.get_checkpoint_state(logs_train_dir)
+  if ckpt and ckpt.model_checkpoint_path:
+   global_step = ckpt.model_checkpoint_path.split('/')    　　　　　　　　　　　　　　　　　　　　　　　　　　[-1].split('-')[-1]
+   saver.restore(sess, ckpt.model_checkpoint_path)
+   print('Loading success, global_step is %s' % global_step)
+  else:
+   print('No checkpoint file found')
+
+在保存模型时，采用的方法为
+
+saver = tf.train.Saver()
+……
+……
+……
+if step % 1000 == 0 or (step + 1) == MAX_STEP:
+ checkpoint_path = os.path.join(logs_train_dir, './model.ckpt')
+ saver.save(sess, checkpoint_path, global_step=step)
+
+注意代码块中的./model.ckpt，这是关键，原来为model.ckpt就会报错。如果在加载模型时采用直接加载模型文件的方法，则：
+
+改之前代码：
+
+saver.restore(sess,'model.ckpt')
+
+改之后的代码：
+
+saver.restore(sess,'./model.ckpt')
+
+我的改之后是没有什么问题了，如果这种方法不能解决你的问题，再查资料解决吧
+
+以上这篇解决tensorflow测试模型时NotFoundError错误的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

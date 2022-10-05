@@ -1,0 +1,11 @@
+线上项目转到测试，setting连接本地数据库报错。
+
+1 django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.3 or newer is required; you have 0.7.11.None
+
+Python安装路劲下的Python36-32\Lib\site-packages\django\db\backends\mysql\base.py文件下。
+
+注释下面语句
+
+1 if version < (1, 3, 3):
+2     raise ImproperlyConfigured("mysqlclient 1.3.3 or newer is required; you have %s" % Database.__version__)
+

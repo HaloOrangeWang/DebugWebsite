@@ -1,0 +1,103 @@
+今天执行python manage.py migrate 报错，
+
+(base) root@aaa*****:/www/wwwroot/mydjango# python manage.py migrate
+
+Operations to perform:
+   Apply all migrations: admin, auth, contenttypes, index, sessions
+
+Running migrations:
+   Applying auth.0001_initial...Traceback (most recent call last):
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 83, in _execute
+     return self.cursor.execute(sql)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+     return self.cursor.execute(query, args)
+   File "/root/anaconda3/lib/python3.6/site-packages/MySQLdb/cursors.py", line 209, in execute
+     res = self._query(query)
+   File "/root/anaconda3/lib/python3.6/site-packages/MySQLdb/cursors.py", line 315, in _query
+     db.query(q)
+   File "/root/anaconda3/lib/python3.6/site-packages/MySQLdb/connections.py", line 239, in query
+     _mysql.connection.query(self, query)
+
+MySQLdb._exceptions.OperationalError: (1050, "Table 'auth_permission' already exists")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+   File "manage.py", line 15, in <module>
+     execute_from_command_line(sys.argv)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/core/management/__init__.py", line 381, in execute_from_command_line
+     utility.execute()
+   File "/root/anaconda3/lib/python3.6/site-packages/django/core/management/__init__.py", line 375, in execute
+     self.fetch_command(subcommand).run_from_argv(self.argv)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/core/management/base.py", line 316, in run_from_argv
+     self.execute(*args, **cmd_options)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/core/management/base.py", line 353, in execute
+     output = self.handle(*args, **options)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/core/management/base.py", line 83, in wrapped
+     res = handle_func(*args, **kwargs)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/core/management/commands/migrate.py", line 203, in handle
+     fake_initial=fake_initial,
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/migrations/executor.py", line 117, in migrate
+     state = self._migrate_all_forwards(state, plan, full_plan, fake=fake, fake_initial=fake_initial)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/migrations/executor.py", line 147, in _migrate_all_forwards
+     state = self.apply_migration(state, migration, fake=fake, fake_initial=fake_initial)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/migrations/executor.py", line 244, in apply_migration
+     state = migration.apply(state, schema_editor)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/migrations/migration.py", line 124, in apply
+     operation.database_forwards(self.app_label, schema_editor, old_state, project_state)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/migrations/operations/models.py", line 91, in database_forwards
+     schema_editor.create_model(model)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/base/schema.py", line 312, in create_model
+     self.execute(sql, params or None)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/base/schema.py", line 133, in execute
+     cursor.execute(sql, params)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 100, in execute
+     return super().execute(sql, params)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 68, in execute
+     return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 77, in _execute_with_wrappers
+     return executor(sql, params, many, context)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 85, in _execute
+     return self.cursor.execute(sql, params)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/utils.py", line 89, in __exit__
+     raise dj_exc_value.with_traceback(traceback) from exc_value
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/utils.py", line 83, in _execute
+     return self.cursor.execute(sql)
+   File "/root/anaconda3/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 71, in execute
+     return self.cursor.execute(query, args)
+   File "/root/anaconda3/lib/python3.6/site-packages/MySQLdb/cursors.py", line 209, in execute
+     res = self._query(query)
+   File "/root/anaconda3/lib/python3.6/site-packages/MySQLdb/cursors.py", line 315, in _query
+     db.query(q)
+   File "/root/anaconda3/lib/python3.6/site-packages/MySQLdb/connections.py", line 239, in query
+     _mysql.connection.query(self, query)
+
+django.db.utils.OperationalError: (1050, "Table 'auth_permission' already exists")
+
+搞了一个晚上，最后在网看到“经过网上查找以后，确定问题为： 以前数据库中已经有一份有关用户的表，那是在配置环境时建的，今天正式开发，用的扩展django默认用户表，两份表应该是冲突了，所以，删除以前数据库中所有的表，之后再重新执行上述两个命令就好了。”，删除数据库中的所有表，后执行，一切正常
+
+(base) root@aaa*****:/www/wwwroot/mydjango# python manage.py migrate
+
+Operations to perform:
+   Apply all migrations: admin, auth, contenttypes, index, sessions
+
+Running migrations:
+   Applying contenttypes.0001_initial... OK
+   Applying auth.0001_initial... OK
+   Applying admin.0001_initial... OK
+   Applying admin.0002_logentry_remove_auto_add... OK
+   Applying admin.0003_logentry_add_action_flag_choices... OK
+   Applying contenttypes.0002_remove_content_type_name... OK
+   Applying auth.0002_alter_permission_name_max_length... OK
+   Applying auth.0003_alter_user_email_max_length... OK
+   Applying auth.0004_alter_user_username_opts... OK
+   Applying auth.0005_alter_user_last_login_null... OK
+   Applying auth.0006_require_contenttypes_0002... OK
+   Applying auth.0007_alter_validators_add_error_messages... OK
+   Applying auth.0008_alter_user_username_max_length... OK
+   Applying auth.0009_alter_user_last_name_max_length... OK
+   Applying index.0001_initial... OK
+   Applying sessions.0001_initial... OK
+
+数据库为
+

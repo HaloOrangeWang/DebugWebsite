@@ -1,0 +1,30 @@
+原文链接：https://blog.csdn.net/devalone/article/details/82459276
+
+在编译python3.7的时候有一个错误，这个错误是ssl模块不能编译，版本不对，虽然说python仍然能使用，但是不能使用https协议，这对于如今的网络环境肯定是不行的，下面介绍博主是如何解决这个问题的。
+ 下载libressl ，代替openssl，下载地址：https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-2.7.4.tar.gz
+
+编译安装：
+cd libressl-2.7.4
+./configure --prefix=/usr/local
+sudo make install
+
+新建或修改 /etc/ld.so.conf.d/local.conf 配置文件，添加如下内容：
+
+/usr/local/lib
+
+即将 /usr/local/lib 目录加入到模块加载目录。
+ 重新加载共享模块：
+
+sudo ldconfig -v
+
+重新编译python：
+ 回到 Python目录，编辑安装文件 Modules/Setup
+ 删除有关 ssl 编译代码的注释，共 4 行
+
+SSL=/usr/local
+_ssl _ssl.c \
+        -DUSE_SSL -I$(SSL)/include -I$(SSL)/include/openssl \
+        -L$(SSL)/lib -lssl -lcrypto
+
+这样重新编译python之后，就可以正常导入ssl模块了
+

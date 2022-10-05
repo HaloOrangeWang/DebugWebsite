@@ -1,0 +1,30 @@
+1.前言
+
+　　TensorFlow中的图和变量可以通过TensorBoard进行显示，主要使用tf.summary.FileWriter、tf.scalar_summary、tf.image_summary等API将信息保存。保存的文件名格式为：events.out.tfevents.timestamp.hostname，例如：events.out.tfevents.1530003338.BJSR-U10。
+
+　　然后执行命令：tensorboard --logdir=eventfile_dir(指定event file的路径)即可启动6006端口作为tensorboard的服务端口，通过浏览器便可以打开event file，显示其中保存的内容
+
+2.event file文件格式
+
+　　tensorflow源码中，保存event file的代码主要由两部分完成：其中大部分是由python实现，在python/summary目录下，包含了所有summary相关的操作；另外，最重要的event_writer类是由C++实现，
+
+文件目录为core/util/event_writer.h。其中保存eventFile的函数为EventsWriter::WriteEvent(const Event& event)，在这个函数中又调用了RecordWriter::WriteRecord(StringPiece data)，在这个函数中可以看到单个event记录的格式，分为4各部分：
+
+1  uint64   length                             //event序列化后的字符串长度
+
+2  uint32   masked crc of length     //对length的CRC校验
+
+3  byte      data[length]                   //event序列化后的字符串
+
+4  uint32   masked crc of data       //对这个字符串的CRC校验
+
+注意：Event这个类是由event.proto编译而来的（tf源码中包含大量的proto文件，proto文件的主要作用是实现数据的序列化，可以方便地跨平台，跨语言的实现数据的存储和解析），保存event file还涉及的proto文件包括：summary.proto、tensor.proto、tensor_shape.proto、types.proto（这里需要有proto的基础知识才能看懂源码，可以去简单学习下：https://developers.google.com/protocol-buffers/docs/overview）
+
+知道了tensorboard需要的数据存储格式，我们其实可以自己实现event file的保存。只要按照上面的格式进行存储，保存之后就可以用tensorboard进行显示，可以参考：https://github.com/RustingSword/tensorboard_logger/blob/master/README.md以及https://github.com/dmlc/tensorboard/blob/master/python/tensorboard/record_writer.py。分别为C++的实现和python的实现
+
+3. std::ofstream  operator<< 和  std::ofstream::write的区别
+
+　　在保存文件的时候可以使用ofstream  operator<< 或者write，一开始楼主使用的就是 operator<< (注:tf源码使用的string.append)，虽然成功生成了event file但是使用tensorboard打开时总是报错Unable to get first event timestamp for run。后来经过反复的尝试，改用了std::ofstream::write就可以正常显示了。
+
+　　这里记下二者的区别：operator<<会将存储的数据文本化，而write则会将内存的数据原封不动的存入文件，也就是说如果你的文件是二进制文件，那么你只能使用write，而tensorboard的文件正是二进制文件，所以改用write就解决了上面的问题。
+

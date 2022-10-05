@@ -1,0 +1,25 @@
+【问题】
+
+通过Feign调用微服务，IPage报错：
+
+com.fasterxml.jackson.databind.exc.InvalidDefinitionException: 
+Cannot construct instance of `com.baomidou.mybatisplus.core.metadata.IPage` 
+(no Creators, like default constructor, exist): 
+abstract types either need to be mapped to concrete types, 
+have custom deserializer, or contain additional type information\n 
+at [Source: (PushbackInputStream); line: 1, column: 55]
+
+【原因】
+
+报错信息提示，数据绑定时出了问题：
+
+无法构造IPage实例，因为不存在他的构造器；
+
+对于抽象类型，要么映射到他的具体类型，要么有自定义的序列化方法；
+
+【措施】
+
+1.将IPage改为Page
+
+2.序列化返回的实体(实现Serializable)
+

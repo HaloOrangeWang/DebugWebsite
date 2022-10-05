@@ -1,0 +1,108 @@
+python3.0 模拟用户登录,三次错误锁定的实例
+
+实例如下所示：
+
+# -*- coding:utf-8 -*-
+#需求模拟用户登录，超过三次错误锁定不允许登陆
+ 
+ 
+count = 0
+ 
+#realname passwd
+Real_Username = "test"
+Real_Password = "test"
+ 
+#读取黑名单的内容
+f = open('black_user','r')
+lock_file = f.read()
+f.close()
+ 
+Username = input('请输入用户名:')
+ 
+#判断输入用户是否在黑名单内，如果在则不允许输入密码
+for i in range(1):
+ if lock_file == Username:
+  print('对不起，您的用户已锁定，暂时不允许使用！')
+  exit()
+ else:
+  continue
+ 
+#尝试输入密码并对输入次数进行计数
+for i in range(3):
+ Password = input("请输入密码:")
+ if Username == Real_Username and Password == Real_Password:
+  print("登录成功")
+  break
+ else:
+  print("登录失败")
+ count += 1
+ 
+#如果输入三次错误密码，则提示用户名锁定，并将用户名拉黑
+if count == 3:
+ print("对不起，您输入的密码错误次数已经达到3次，您的用户名将被锁定")
+ f = open("black_user","w")
+ f.write("%s"%Username)
+ f.close()
+
+python基础-实现用户密码登录，输错三次锁定
+
+作业需求：
+
+1.输入用户名密码
+
+2.认证成功后显示欢迎信息
+
+3.输错三次后锁定
+
+实现思路：
+
+1.判断用户是否在黑名单，如果在黑名单提示账号锁定。
+
+2.判断用户是否存在，如果不存在提示账号不存在。
+
+3.判断账号密码是否正确，如果正确登录进去。如果不正确有三次输入密码机会。三次全部输错，账号锁定。
+
+#!/usr/bin/env python
+#_*_conding:utf-8_*_
+ 
+count = 0  #计数器
+username = "aaa" #登录用户名
+userpassword = "asd" #登录密码
+ 
+#读取黑名单用户
+f = open("aaa.txt","r")
+file_list = f.readlines()
+f.close()
+ 
+lock = []
+name = input("登录用户名:")
+ 
+#判断用户是否在黑名单
+for i in file_list:
+  line=i.strip("\n")
+  lock.append(line)
+if name in lock:
+  print ("您的账号已锁定，请联系管理员。")
+else:
+#如果用户没有在黑名单，判断用户是否存在。
+ if name == username:
+#如果密码连续输错三次，锁定账号。
+   while count <3:
+     password = input("登录密码：")
+     if name == username and password == userpassword:
+        print("欢迎，%s" %name )
+        break
+     else:
+        print("账号密码不匹配")
+        count += 1
+   else:
+    print ("对不起，您的账号连续输错三次账号已锁定，请联系管理员。")
+    f=open("aaa.txt","w+")
+    li=['%s'%username]
+    f.writelines(li)
+    f.close()
+ else:
+   print ("用户名不存在，请输入正确的用户名。")
+
+以上这篇python3.0 模拟用户登录,三次错误锁定的实例就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

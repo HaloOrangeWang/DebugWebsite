@@ -1,0 +1,25 @@
+产生原因：定义的视图函数login，没有返回HttpResponse对象。它返回None。所有导致访问报错
+
+解决：我在访问页面的时候把请求方式搞错了，本来是先获取页面，然后再提交数据。我这里变成直接提交数据了。
+
+改成get，先获取界面在post提交数据：
+
+附带一个启动django服务的脚本：
+
+import os
+
+def run_server(work_directory=r"D:\Software\Pycharm\Workspace\MyDjango",order = "python manage.py runserver 0.0.0.0:8000"):
+    '''
+
+:param work_directory:切换工作目录
+    :param order:需要执行的命令
+    :return:
+    '''
+    print(os.getcwd())      # todo 获取当前目录
+    os.chdir(work_directory)  # TODO 切换目录
+    print(os.getcwd())
+    os.system(order)
+
+if __name__ == '__main__':
+    run_server()
+

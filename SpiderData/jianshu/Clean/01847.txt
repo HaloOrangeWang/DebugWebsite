@@ -1,0 +1,16 @@
+Python版本：Python 3.6
+
+pandas.read_csv() 报错 Initializing from file failed，一般由两种情况引起：一种是函数参数为路径而非文件名称，另一种是函数参数带有中文。
+
+第一种情况，直接添加上文件名。
+
+第二种情况，路径对的，文件名也对的，但还是报错，是因为路径或文件名中有中文名。
+
+查阅https://pandas.pydata.org/pandas-docs/version/0.23.4/generated/pandas.read_csv.html
+
+engine : {‘c’, ‘python’}, optional Parser engine to use. The C engine is faster while the python engine is currently more feature-complete
+
+pandas的read_csv()，默认使用C engine作为parser engine，而当文件名中含有中文的时候，用C engine在部分情况下就会出错。所以在调用read_csv()方法时指定engine为Python就可以解决问题了。
+
+df1 =pd.read_csv(r"C:\test\DATA_Clean.csv",engine='python')
+

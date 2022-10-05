@@ -1,0 +1,75 @@
+安装过程问题多多，自己总结了一遍
+
+暂定都是python3以上，首先没有安装python3的可以先看这个安装python3:
+
+https://www.cnblogs.com/momo521/p/13937184.html
+
+1：已经安装python3的直接运行下方代码，其中pip是和python3是对应关系，即是python3的pip
+
+　yum install python-setuptools python-devel
+
+pip install -i https://pypi.douban.com/simple/ virtualenvwrapper
+
+　yum install python-setuptools python-devel
+
+2：创建目录用来存放虚拟环境(也可以不手动创建，这里只是让你看到明白)
+
+mkdir $HOME/.virtualenvs
+
+3：编辑.bashrc文件
+
+打开.bashrc文件将下面两行添加到末尾，其中source后跟的是上方find查找出来的，并且这里注意，一般情况这个路径就在你安装python3的bin目录下
+   vim ~/.bashrc
+   export WORKON_HOME=$HOME/.virtualenvs
+   source /usr/bin/virtualenvwrapper.sh
+
+4：保存
+
+source ~/.bashrc
+
+5：尝试创建虚拟环境
+
+mkvirtualenv -p python3 my_virtual    （指定Python3环境，找不到可以指定Python3路径）
+
+报错
+
+　ln -s /home/usr/python36/bin/virtualenv /usr/local/bin/virtualenv
+
+2：出现以下错误是libpython3.6m.so.1.0没有被关联上
+
+　　python3.6: error while loading shared libraries: libpython3.6m.so.1.0:cannot open shared object file: No such file or directory　
+
+　　使用如下方法解决：
+　　1、进入解压后的编译目录
+　　[root@www root]# cd /usr/local/Python3
+　　2、拷贝文件到lib库；
+
+　　[root@Python-3]# cp libpython3.6m.so.1.0 /usr/local/lib64/
+
+　　[root@Python-3]#  cp libpython3.6m.so.1.0 /usr/lib/
+
+　　[root@Python-3]#  cp libpython3.6m.so.1.0 /usr/lib64/
+
+3:出现 /usr/bin/python: No module named virtualenvwrapper
+
+　　1.错误原因：是因为安装了python3，而没有指定到这个python3版本。
+　　2.首先查看python3安装路径，命令 whereis python3
+　　3.找到位置之后，执行命令vim ~/.bashrc
+　　4.export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+
+　　
+
+6：进入虚拟环境
+
+workon py36
+
+7：退出虚拟环境
+
+deactivate
+
+8：删除虚拟环境
+
+rmvirtualenv my_virtual
+
+总结: 注意环境一一对应，以免后期造成问题
+

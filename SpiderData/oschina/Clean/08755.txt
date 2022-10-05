@@ -1,0 +1,47 @@
+关键字：测试程序，feed
+
+关键字：测试程序，feed
+
+问题描述：在使用测试程序预测自己的图片的时候，在执行run函数的时候出错，错误提示rank:2 != label_dims.size():1。
+
+问题描述：在使用测试程序预测自己的图片的时候，在执行run函数的时候出错，错误提示rank:2 != label_dims.size():1。
+
+报错信息：
+
+报错信息：
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in run(self, program, feed, fetch_list, feed_var_name, fetch_var_name, scope, return_numpy, use_program_cache)
+    468 
+    469         self._feed_data(program, feed, feed_var_name, scope)
+--> 470         self.executor.run(program.desc, scope, 0, True, True)
+    471         outs = self._fetch_data(fetch_list, fetch_var_name, scope)
+    472         if return_numpy:
+
+EnforceNotMet: Enforce failed. Expected rank == label_dims.size(), but received rank:2 != label_dims.size():1.
+Input(X) and Input(Label) shall have the same rank. at [/paddle/paddle/fluid/operators/cross_entropy_op.cc:33]
+PaddlePaddle Call Stacks:
+
+问题复现：使用克隆得到的测试程序test_program来预测自己的图片，图片通过feed参数以键值对的方式传入到预测程序中，但不传入label值。然后执行run函数。错误代码如下：
+
+results = exe.run(program=test_program,
+                  feed={
+   
+   
+   'image': img},
+                  fetch_list=[model])
+
+问题解决：因为测试程序是为了用于测试克隆得到的，在测试需要图片数据的同时，还需要label数据。所以我们使用测试程序预测图片时，还要输入label值。为了能够让程序运行，最简单的方式是模拟一个假的label值传入到程序中，就可以解决这个错误了。正确代码如下：
+
+results = exe.run(program=test_program,
+                  feed={
+   
+   
+   'image': img, "label": np.array([[1]]).astype("int64")},
+                  fetch_list=[model])
+
+问题拓展：测试程序是从主程序fluid.default_main_program中克隆得到的，所以也继承了主程序的输入数据的格式，需要同时输入图像数据和label数据。但真实的预测是不会使用label作为输入的。在真实预测中，还要对模型进行修剪，去掉label的输入。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

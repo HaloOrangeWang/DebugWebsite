@@ -1,0 +1,43 @@
+python读取xlsx文件报错，报错信息如下：
+
+有的说安装pyexcel-xls，亲测不行
+
+主要用的解决办法是是降低版本 ：
+
+
+1、确认自己安装的xlrd版本：
+
+pip show xlrd
+ 如果安装的xlrd 是 2.0.1 版本，且您所用的excel文件格式为.xlsx ，那么就有可能会遇到以上的报错。
+
+降低xlrd的版本：
+
+卸载原来的版本：pip uninstall xlrd
+
+再安装低版本的xlrd
+ pip install xlrd==1.2.0
+
+安装低版本是可能会报错
+
+You are using pip version 9.0.3, however version 10.0.1 is available.
+ You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+ 这时要运行命令：python -m pip install --upgrade pip
+
+但是资源一般在国外，所以还是不能成功运行，要重新选择镜像
+
+pip国内的一些镜像：
+
+  阿里云 Simple Index 
+   中国科技大学 Simple Index 
+   豆瓣(douban) Simple Index 
+   清华大学 Simple Index 
+   中国科学技术大学 Simple Index
+
+可以在使用pip的时候在后面加上-i参数，指定pip源
+
+1
+
+python -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+之后再安装其他版本即可：pip install xlrd==1.2.0
+

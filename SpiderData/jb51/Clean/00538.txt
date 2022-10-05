@@ -1,0 +1,158 @@
+以前从来没有写过特别多的代码，这次在阅读论文的时候跑别人的代码的时候出现了很多import的问题，这里我想跟大家分享一下，我在Ubuntu系统，使用的是anaconda3，版本为3.6，我一般会在pycharm上跑代码，但是有时候pycharm上跑通的代码，在命令行下总出现import的问题，所以这里来总结一下，我就举个简单的例子吧！
+
+一、同一目录下的import
+
+下面是我的文档的结构：你可以看到在工程tfexe下，存在两个文件夹一个是datasets，一个是parallel，dataset下还有一个in文件夹和一个out.py文件，in文件夹里面存在b.py和bb.py两个文件。parallel文件夹下存在的是两个文件a.py和aa.py。（推荐您先建立好这个结构）
+
+a.py文件代码：
+
+def say_hello():
+  print("hello world!")
+
+aa.py文件代码：你可以看到是调用a.py里面的函数say_hello()，但是在pycharm这里是报错的，但是可运行，你可以设置将文件夹设置成source root就可以让他不显示错误了，但是无所谓啦！
+
+import os
+import sys
+print("当前的工作目录：",os.getcwd())
+print("python搜索模块的路径集合：",sys.path)
+from a import say_hello
+say_hello()
+
+其他暂且无用，这里先不展示！
+
+（1）pycharm运行结果
+
+右击aa.py，来运行，你会观察到下面的结果：很显然，我们的a.py成功的调用了aa.py文件的函数say_hello()。
+
+你可以看到当前的工作目录是什么，那就是aa.py文件所在的绝对地址。
+
+关注重点，你可以看到Python搜索模块的路径集合，重点是前两个，你看到在pycharm上直接run运行的，我们的搜索路径有总的工程的绝对路径还有运行的文件所在的路径。
+
+（2）命令行运行结果
+
+需要你切换到parallel的文件夹下，然后运行aa.py，观察可得这个结果也是正确的。
+
+你看出与上面的区别了吗？很显然，当前的工作路径全部都是一样的，但是我们的Python的搜索模块的路径少了什么呀？观察第二个，你会发现，哇哦，少了我的整个工程所在的绝对路径。因为这里parallel的绝对路径是存在的，所以在搜索a模块的时候，发现是可以搜索到的，因为a就在parallel这个绝对路径的下面，当然是可以搜索到的，但是如果你需要调用别的文件夹的东西呢？很显然，这里就要出错啦～详见下一节
+
+总结：import同一文件夹下的模块是可以在pycharm还有命令行下都是可以运行的！
+
+二、不同的目录下的import
+
+b.py文件的内容：
+
+def say_goodbye():
+  print("goodbye!")
+
+bb.py文件的内容：
+
+import os
+import sys
+print("当前的工作目录：",os.getcwd())
+print("python搜索模块的路径集合",sys.path)
+#引入同一文件夹下的模块
+from b import say_goodbye
+say_goodbye()
+
+# #引入与本文件夹同级的文件夹
+# from in2 import c
+# c.say()
+
+#引入与本文件夹的上级文件夹同一级的文件夹下的模块
+from parallel import a
+a.say_hello()
+
+c.py的文件内容：
+
+def say():
+  print("say yes")
+
+（1）pycharm运行结果
+
+你会发现，在pycharm上import不同文件夹下的模块居然成功了，这是为什么呢？你看Python的搜索模块的路径出来的结果，里面包含了，我这个总的工程tfexe的绝对路径，所以在引入parallel的时候自然是成功的，因为parallel在我们的搜索路径上。所以我推测啊，pycharm自动的将整个工程的绝对路径加入sys.path,也就是Python的模块搜索路径！
+
+但是你肯定看到了我注释掉了那个进入in2模块的，为什么注释掉，因为跑不通啊，为什么跑不通呢？因为in2模块，没有搜到，很尴尬呀～那没搜到肯定是因为我的Python的搜索路径不包含这里，仔细观察结果，你发现只有tfexe的绝对路径和in的绝对路径，in2确实不在，怎么处理，把它加上绝对路径不就好了！
+
+加上能够搜索到in2的绝对路径:那不就是datasets的绝对路径嘛！
+
+在上面的bb.py里面添加上代码
+
+#-----这里是加上in2的绝对路径的操作代码------
+sys.path.append("/home/syq/PycharmProjects/tfexe/datasets")
+
+从运行结果来看，你会发现居然都成功了，这都归功于sys.path!
+
+（2）命令行运行结果
+
+很显然啊，这里报错了，为什么呢？他说模块parallel不存在，为什么明明之前的在pycharm上可以运行在这里不行了呢？
+
+我们在命令行运行注释掉in2的那个部分的代码，也就是（1）里面的未更改之前的bb.py的代码：为了防止大家搞混，我在这里在贴一下bb.py的代码：
+
+import os
+import sys
+print("当前的工作目录：",os.getcwd())
+print("python搜索模块的路径集合",sys.path)
+#引入同一文件夹下的模块
+from b import say_goodbye
+say_goodbye()
+
+# #引入与本文件夹同级的文件夹
+# from in2 import c
+# c.say()
+
+#引入与本文件夹的上级文件夹同一级的文件夹下的模块
+from parallel import a
+a.say_hello()
+
+结果：观察到报错了，报错parallel这个模块居然不存在，很显然观察sys.path的输出，你发现少了之前的tfexe的绝对路径，这就是parallel找不到的原因，因为他压根不在搜索路径上，所以这里我在bb.py的代码基础上添加上能够搜到parallel的搜索路径。
+
+修改后的bb.py的代码：
+
+import os
+import sys
+print("当前的工作目录：",os.getcwd())
+sys.path.append("/home/syq/PycharmProjects/tfexe")
+print("python搜索模块的路径集合",sys.path)
+
+#引入同一文件夹下的模块
+from b import say_goodbye
+say_goodbye()
+
+# #引入与本文件夹同级的文件夹
+# from in2 import c
+# c.say()
+
+#引入与本文件夹的上级文件夹同一级的文件夹下的模块
+from parallel import a
+a.say_hello()
+
+代码运行结果：注意我把未改之前的bb.py的运行结果也放在了这里，你可以观察到两者的差别所在，你就会发现，哦原来啊，下面的sys.path比更改之前的path多了一个可以搜索到parallel的绝对路径了，很显然就能成功的运行了！
+
+现在你差不多懂了吧，当你遇到了import的错误，你只需要输出sys.path来看看能不能搜索到你要加入的模块，如果不行就自己手动的添加！
+
+在引入in2模块试试看!
+
+bb.py文件的内容：
+
+import os
+import sys
+print("当前的工作目录：",os.getcwd())
+sys.path.append("/home/syq/PycharmProjects/tfexe")
+sys.path.append("/home/syq/PycharmProjects/tfexe/datasets")
+print("python搜索模块的路径集合",sys.path)
+
+#引入同一文件夹下的模块
+from b import say_goodbye
+say_goodbye()
+
+#引入与本文件夹同级的文件夹
+from in2 import c
+c.say()
+
+#引入与本文件夹的上级文件夹同一级的文件夹下的模块
+from parallel import a
+a.say_hello()
+
+不管是在命令行还是pycharm都是可以得到结果的！
+
+到此这篇关于关于Python3的import问题(pycharm可以运行命令行import错误)的文章就介绍到这了,更多相关Python3 import出错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

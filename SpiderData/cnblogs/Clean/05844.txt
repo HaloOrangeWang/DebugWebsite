@@ -1,0 +1,14 @@
+在ide中执行python程序，已经设置好项目路径中。
+
+但是在cmd中执行程序，所在路径是python的搜索路径，如果涉及到import引用就会报类似ImportError: No module named xxx这样的错误，
+
+解决方法：
+
+在报错的模块中添加：
+
+import sys
+import os
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
+

@@ -1,0 +1,18 @@
+问题描述：
+
+在python使用内置open()函数来对文件的操作时，如果参数传入的是windows路径很容易出现报错。比如：TypeError: invalid file，OSError: [Errno 22] Invalid argument。
+
+这是因为windows路径是以“\”作为分界符，与python中的转义字符“\”产生冲突，导致报错。
+
+解决方法：
+
+1.将路径改为以“/”，
+
+f = open('D:/test.txt','r')
+
+2.在路径前面加上r,表示字符串中的内容不进行转义表示
+
+f = open(r'D:\test.txt','r')
+
+3.使用pathlib中的Path类来完美解决问题！！！
+

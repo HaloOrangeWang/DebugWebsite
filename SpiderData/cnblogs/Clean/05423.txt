@@ -1,0 +1,16 @@
+
+问题描述
+
+Django项目启动，当我们执行命令 python manage.py makemigrations 出现如下错误：
+
+File "/usr/local/lib/python3.6/dist-packages/django/db/backends/mysql/operations.py", line 147, in last_executed_query
+    query = query.decode(errors='replace')
+AttributeError: 'str' object has no attribute 'decode'
+
+
+解决办法
+
+顺着报错信息，找到报错的位置，把
+
+query = query.decode(errors='replace') 修改成 query = query.encode(errors='replace')
+

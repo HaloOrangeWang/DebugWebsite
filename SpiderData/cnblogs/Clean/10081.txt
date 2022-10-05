@@ -1,0 +1,23 @@
+本来就是用pip3命令     ，pip3 install 包名
+
+但是报错  No matching distribution found for...........
+
+此时有点懵逼，从来没出现过这个问题，遂尝试用apt-get安装：
+
+sudo apt-get install python-sklearn
+
+结果也报错，试着apt-get升级一下，我又执行 sudo apt-get update，结果还是不行。
+
+后来查资料，试了试修改了DNS，就改好了，pip install xxx，apt-get update 统统ok
+
+修改方法：
+
+1. 打开’/etc/network/interfaces’文件，没有则创建一个，添加
+
+dns-nameservers  223.5.5.5   223.6.6.6
+
+2. 打开’/etc/resolv.conf’文件并添加两行’
+
+nameserver  223..5.5.5 
+nameserver  223.6.6.6
+

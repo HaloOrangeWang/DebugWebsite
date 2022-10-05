@@ -1,0 +1,24 @@
+在控制台输入python -m weditor后，报错：
+
+[E 210224 12:04:57 web:1789] Uncaught exception GET /api/v2/devices/-/hierarchy (::1)
+    HTTPServerRequest(protocol='http', host='localhost:17310', method='GET', uri='/api/v2/devices/-/hierarchy', version='HTTP/1.1', remote_ip='::1')
+    Traceback (most recent call last):
+      File "D:\Python39\lib\site-packages\tornado\web.py", line 1702, in _execute
+        result = method(*self.path_args, **self.path_kwargs)
+      File "D:\Python39\lib\site-packages\weditor\web\handlers\page.py", line 93, in get
+        d = get_device(device_id)
+      File "D:\Python39\lib\site-packages\weditor\web\device.py", line 105, in get_device
+        platform, uri = id.split(":", maxsplit=1)
+    ValueError: not enough values to unpack (expected 2, got 1)
+[E 210224 12:04:57 web:2239] 500 GET /api/v2/devices/-/hierarchy (::1) 2.70ms
+
+解决方法：
+
+打开报错文件的105行，将1改成2即可
+
+"D:\Python39\lib\site-packages\weditor\web\device.py", line 105,
+
+platform, uri = id.split(":", maxsplit=1)改为2
+
+关闭控制台，并重新启动python -m weditor，正常，不再报错。
+

@@ -1,0 +1,29 @@
+首先是在网上找了一下教程，代码很简单
+
+#!/bin/bash
+
+folder=~/test
+time=`date +%Y%m%d`
+
+mysqldump -u user -p pwd -hlocalhost databasename | gzip > $folder/databasename_$time.sql.gz
+#
+find $folder -name 'databasename_*.sql.gz' -type f -mtime +7 -exec rm {} \;
+#
+gunzip < $folder/databasename_$time.sql.gz | mysql -hlocalhost -uuser -ppwd databasename
+
+因为写python代码习惯了，碰到=就自然而然敲空格，结果很多变量都没有值，所以这里需要注意一下，然后user和pwd就是你自己数据的用户名和密码，databasename就是你要操作的数据库名称，因为不想浪费内存就直接将mysqldump生成的sql文件进行了压缩处理，然后中间的命令就是找到七天以前的文件并进行删除操作，-exec是值后面的命令将会被执行，大括号是被执行对象集合，后面以分号结尾，加一个反斜杠防止被转义，第三行命令就是从gzip文件中恢复数据到数据库，一开始我是用gzip，然后就报了一个错误：
+
+ERROR: ASCII '\0' appeared in the statement, but this is not allowed unless option --binary-mode is enabled and mysql is run in non-interactive mode. Set --binary-mode to 1 if ASCII '\0' is expected. Query: '.
+
+我去搜索了一下发现没有什么好的解决方案，然后把sql语句解压后用命令发现可以执行.sql文件，就试了一下不使用gzip改用gunzip，然后就脚本就成功运行并且没有相类似的报错了。
+
+后面的定时执行也顺带提一下，
+
+# chmod +x bashname.sh  --为脚本添加执行权限
+
+# crontab -e
+00 3 * * * root ~/bashname.sh
+# 表示每天3点00分执行脚本
+
+然后重启一下crontab就可以了。
+

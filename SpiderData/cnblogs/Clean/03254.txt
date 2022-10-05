@@ -1,0 +1,23 @@
+1.django.db.utils.OperationalError: no such table
+
+意思：没有这个app应用对应的数据表的,可以用
+
+python manage.py makemigrations
+
+以及python  manage.py migrate
+方法：
+
+一.
+即使这样做了,还是提示报错,这时候就不是这两个命令这么简单了.在你数据库中有一个django_migrations数据表,这里存储了你之前很多的信息,找到你需要创建数据表的那个name,然后delete,再运行上面两个文件即可解决报错问题
+
+二.
+
+如果还是一样显示上面的错误，有可能是数据库出问题，请直接把项目下面的数据库文件db.sqlite3，直接删除，再重新执行一次迁移，即可正常
+
+2.django.db.utils.OperationalError: table "django_content_type" already exists
+
+意思：django.db.utils.OperationalError：表"django_content_type”已经存在
+方法：
+执行python manage.py migrate --fake
+再次执行python manage.py migrate
+

@@ -1,0 +1,40 @@
+最近在看一个手势识别的项目时，遇到了一些错误，主要原因是该项目是使用python2.7+opencv2.4.8，而我的环境是python3.5.2+opencv3.1.0，
+
+于是将一些解决方法记录下来，希望能够帮助其他人少走些弯路。
+
+1.       背景分离函数
+
+bg_model = cv2.BackgroundSubtractorMOG2(0， 10.0)
+
+报错：       AttributeError: module 'cv2.cv2' has no attribute 'BackgroundSubtractorMOG2'
+
+找了一些资料也查看了opencv3.1.0的官方文档，发现里面没有BackgroundSubtractorMOG2（），给的例程是cv2.createBackgroundSubtractorMOG2()，因此将代码改为下面，问题解决
+
+bg_model = cv2.createBackgroundSubtractorMOG2()
+
+2.    寻找轮廓函数
+
+contours, hierarchy = cv2.findContours(contour_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMP
+
+报错：        too many values to unpack (expected 2)  这个error信息是指返回的参数多于接收的
+
+但是在查看 findContours() 时，确实是返回两个参数：第一个为轮廓的点集，第二个是各层轮廓的索引，但是在查看其他人博客，说是实际上返回三个参数，第一个是返回了所处理的图像，后面两个才是我们所需要的两个参数，将代码改为如下，错误解决。
+
+binary, contours, hierarchy = cv2.findContours(contour_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMP
+
+3.     报错：
+
+cv2.error: D:\Build\OpenCV\opencv-3.1.0\modules\python\src2\cv2.cpp:163:error: (-215) The data should normally be NULL! in functionNumpyAllocator::allocate
+
+在python文件开头加上如下代码，问题解决
+
+cv2.ocl.setUseOpenCL(False)
+
+PS：这行代码应该是禁用opencl，opencl是一个GPU的加速技术，但是据说在计算量小的时候GPU在数据转移上耗时占大头，还不如不用，至于错误的原因，也可能是我的GPU不支持opencl？具体不清楚，以后有机会可以深入研究一下，不过禁用之后确实没有这个error了
+
+4.      xrange 和 range 的区别，这个是由于python版本的区别，在python3之后貌似是不支持xrange了，换成range就OK了
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+希望可以一起交流进步！
+

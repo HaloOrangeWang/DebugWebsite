@@ -1,0 +1,8 @@
+在进行RSA加密时，代码编写后运行直接报错：ModuleNotFoundError: No module named 'winrandom'。
+
+查看报错文件对应行代码，确实有导入 'winrandom'模快
+
+仔细查看报错信息，及其他模块导入地址，修改“import winrandom”为“from Crypto.Random.OSRNG import winrandom”，如下，即可解决报错问题。
+
+# from Crypto.Random.OSRNG import winrandom
+

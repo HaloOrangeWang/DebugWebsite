@@ -1,0 +1,36 @@
+环境：
+
+ubuntu
+
+django 1.5
+
+virtualenv环境中
+
+原因是缺少环境变量，我们导入环境变量即可。解决方法如下。
+
+方法1：
+
+方法2：
+
+方法3：
+
+#################################################################
+
+摘自 The Django Book 2.0
+
+我们先来看一下为什么不引入setting会报错。
+
+启动python有两种方式：python manage.py shell和python。
+
+这两个命令 都会启动交互解释器，但是manage.py shell命令有一个重要的不同： 在启动解释器之前，它告诉Django使用 哪个设置文件。 Django框架的大部分子系统，包括模板系统，都依赖于配置文件；如果Django不知道使用哪 个配置文件，这些系统将不能工作。
+
+如果你想知道，这里将向你解释它背后是如何工作的。 Django搜索DJANGO_SETTINGS_MODULE环境变 量，它被设置在settings.py中。例如，假设mysite在你的Python搜索路径中，那么 DJANGO_SETTINGS_MODULE应该被设置为：’mysite.settings’。 
+当你运行命令：python manage.py shell，它将自动帮你处理DJANGO_SETTINGS_MODULE。 在当前的这 些示例中，我们鼓励你使用`` python manage.py shell``这个方法，这样可以免去你大费周章地去配置那些你 不熟悉的环境变量。 
+随着你越来越熟悉Django，你可能会偏向于废弃使用`` manage.py shell`` ，而是在你的配置文 件.bash_profile中手动添加 DJANGO_SETTINGS_MODULE这个环境变量。
+
+所以，另两种解决方案就是：
+
+1.使用 python manage.py shell启动Python
+
+2.在你的配置文 件.bash_profile中手动添加 DJANGO_SETTINGS_MODULE这个环境变量。
+

@@ -1,0 +1,16 @@
+今天在使用python爬取数据并将其写入mysql数据库时，使用该如下语句：
+
+　　
+
+报错如下：
+
+TypeError: %d format: a number is required, not str
+
+解决方案：The format string is not really a normal Python format string. Youmust always use %s for all fields.
+
+也就是MySQLdb的字符串格式化不是标准的python的字符串格式化,应当一直使用%s用于字符串格式化。
+
+所以将代码的sql语句的value格式均改为%s（无论要插入的数据是什么类型），即可正常运行。
+
+　　
+

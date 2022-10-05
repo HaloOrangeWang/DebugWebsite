@@ -1,0 +1,42 @@
+gatk4.2.5版本中
+
+gatk AnalyzeCovariates在使用时若报错：
+
+Rscript exited with 1
+Command Line: Rscript -e tempLibDir = '/tmp/Rlib.4985987672588968687';source('/tmp/BQSR.6542223343845608053.R'); /tmp/AnalyzeCovariates8794324168528716252.csv /home/u2011
+1230014/workspace/genome/GCF_GRCm38.p6/DPP-0-GRCm38_recal1.table /home/u20111230014/workspace/genome/GCF_GRCm38.p6/DPP-0-GRCm38_AnalyzeCovariates.pdf
+Stdout: WARNING: ignoring environment value of R_HOME
+^L
+Welcome at  Thu Apr 21 16:28:20 2022
+
+Stderr: Error in readRDS(pfile) : 
+  cannot read workspace version 3 written by R 4.1.1; need R 3.5.0 or newer
+Calls: source ... library -> find.package -> lapply -> FUN -> readRDS
+Execution halted
+
+则代表，你的gatk没有在有R的环境下运行，
+
+
+解决
+
+###conda设置专属于R的环境
+conda create -n R4.1
+###安装报错写的最高版本R4.1.1
+conda activate R4.1
+conda install r-base=4.1.1
+###安装好R, 激活启动
+R
+q()
+##接下来，由于gatk 需要出图，它会报错 gplots gsalib 包没有安装，按指示安装一下
+conda install -y r-gplots
+conda install -y r-gsalib
+
+环境布置好，重新输命令即可秒出图：
+
+实例
+gatk AnalyzeCovariates -before DPP-0-GRCm38_recal1.table -after DPP-0-GRCm38_recal2.table -plots DPP-0-GRCm38_AnalyzeCovariates.pdf
+
+PS:1.gatk AnalyzeCovariates 无需安装 Rstudio，只要在有R的环境下，以及其指定的画图软件就可以运行；
+
+2.命令中 recal1.table recal2.table 的文件格式均以 .table为准，或 .csv 为结尾
+

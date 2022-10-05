@@ -1,0 +1,48 @@
+Python读取中文文件名和含有中文字符 出错/乱码解决
+
+小白学习总结，如有错误请指正。
+ 我使用的是spyder
+ 首先设置python的工作路径
+
+import os
+os.getcwd() #查看工作路径
+os.chdir('C:\\Users\\123\\Desktop\\水文') #设置工作目录
+
+读取文件：
+
+先读取文件名是英文，文件内含有中文的文件：
+
+import pandas as pd
+a  =   pd.read_csv("./grade.csv",encoding = 'gb18030')
+'''
+encoding = 'gb18030'表示编码，gb18030表示中文编码
+这里读取的是ecxel的csv文件，若要读取xls/xlsx的文件则使用
+pd.read_excel函数，例如：
+'''
+import pandas as pd
+b  =   pd.read_excel("./grade.xlsx",encoding = 'gb18030')
+'''
+这里使用该函数，读取xlsx文件，不加中文编码没有报错，也没有
+乱码，但若有中文，最好加上该中文编码
+'''
+
+原始excel文件如下：
+
+读取文件显示如下：
+
+若read_csv那里没有加中文编码，这里显示报错，错误如下：
+
+这里报错显示编码错误
+
+读取含有中文名的excel文件：
+
+import pandas as pd
+t  =   pd.read_csv("./津市.csv",engine='python',encoding = 'gb18030')  
+#加上engine='python'，可以不用加中文编码
+
+若没有engine=‘python’，则会报错如下：
+ 显示读取失败
+
+注意
+ 若读取csv文件有中文报错编码错误，则加上engine='python’也可以，不需要加中文编码也会正确读取文件。
+

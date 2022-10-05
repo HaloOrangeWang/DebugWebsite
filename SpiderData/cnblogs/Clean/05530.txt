@@ -1,0 +1,40 @@
+这个错误困扰了好久，因为集群有多台，暂放到其他几台机器上执行了SQL操作，一直在找解决方法，无意间得到真传，喜出望外啊
+
+报错信息：
+
+Traceback (most recent call last):
+  File "b.py", line 3, in <module>
+    cur=conn.cursor()
+  File "/usr/local/python2.7/lib/python2.7/site-packages/impyla-v0.14.0-py2.7.egg/impala/hiveserver2.py", line 125, in cursor
+    session = self.service.open_session(user, configuration)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/impyla-v0.14.0-py2.7.egg/impala/hiveserver2.py", line 995, in open_session
+    resp = self._rpc('OpenSession', req)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/impyla-v0.14.0-py2.7.egg/impala/hiveserver2.py", line 923, in _rpc
+    response = self._execute(func_name, request)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/impyla-v0.14.0-py2.7.egg/impala/hiveserver2.py", line 940, in _execute
+    return func(request)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/impyla-v0.14.0-py2.7.egg/impala/_thrift_gen/TCLIService/TCLIService.py", line 174, in OpenSession
+    self.send_OpenSession(req)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/impyla-v0.14.0-py2.7.egg/impala/_thrift_gen/TCLIService/TCLIService.py", line 181, in send_OpenSession
+    args.write(self._oprot)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/impyla-v0.14.0-py2.7.egg/impala/_thrift_gen/TCLIService/TCLIService.py", line 1069, in write
+    oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+TypeError: expecting list of size 2 for struct args
+
+解决方法：
+
+[root@cdh3 tmp]# pip install thrift==0.9.3
+Looking in indexes: http://mirrors.tencentyun.com/pypi/simple
+Collecting thrift==0.9.3
+  Downloading http://mirrors.tencentyun.com/pypi/packages/ae/58/35e3f0cd290039ff862c2c9d8ae8a76896665d70343d833bdc2f748b8e55/thrift-0.9.3.tar.gz
+Installing collected packages: thrift
+  Found existing installation: thrift 0.13.0
+    Uninstalling thrift-0.13.0:
+      Successfully uninstalled thrift-0.13.0
+  Running setup.py install for thrift ... done
+Successfully installed thrift-0.9.3
+
+原因：应该是thrift模块版本的问题
+
+Thrift是Facebook于2007年开发的跨语言的rpc服框架，提供多语言的编译功能，并提供多种服务器工作模式；用户通过Thrift的IDL（接口定义语言）来描述接口函数及数据类型，然后通过Thrift的编译环境生成各种语言类型的接口文件，用户可以根据自己的需要采用不同的语言开发客户端代码和服务器端代码。
+

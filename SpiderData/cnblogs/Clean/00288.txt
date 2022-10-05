@@ -1,0 +1,24 @@
+ 今天在用pycharm创建数据库的表的时候碰见了一个报错，这还是头一次碰见这种奇怪的错误。这里记住希望能避免错误。
+
+我所创建的表是用的django原有的用户表，做了一下继承。
+
+报错信息
+
+django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency blog.0001_initial on database 'default'.
+
+解决方案：
+
+方案一：
+
+删除数据库中 除了auth_user的其他表，然后重新来一次
+
+由于您使用的是自定义用户模型，所以您可以首先注释掉。
+
+因为admin的模型依赖了之前默认的user模型吧
+
+setting.py
+
+方案二：
+
+直接在setting.py中添加一行代码
+

@@ -1,0 +1,16 @@
+　　最近因为要使用Python的缘故，安装了python IDE+pycharm，如此安装的原因是因为Pycharn 并不像anaconda一样拥有相对完整的依赖库和开发包，可以直接运行python，但因为某些原因，我改用了pycharm，这不重要，所以就不多赘述了，重点说一下pycharm安装库失败的问题。
+
+　　具体情况是这样的，因为pycharm并非集成了所有的python库，有些第三方库需要自行安装，我在cmd下使用pip install pygame成功安装了pygame，并测试了是否安装成功。
+
+　　在cmd中输入"python"运行python，然后在python环境下输入“import pygame”，cmd显示出了当前pygame版本为1.9.6,这说明python的第三方库pygame安装成功，具体操作情况如下：
+
+　　然后在打开pycharm运行python时发现pycharm提示“未找到pygame库”，上网搜了一下，发现是pycharm所拥有的python依赖库安装位置和python IDE所拥有的依赖库安装位置不同所导致的，也就是说刚才在cmd下运行的pip install pygame是把pygame库安装到了Python IDE的库目录下了而非安装到了pycharm的库目录下，所以pycharm找不到pygame。
+
+　　但是，问题来了，既然pycharm找不到库，而且python和pycharm的目录不同，在pycharm下安装pygame应该没什么问题吧，但是pycharm竟然报错了，大概意思是检测到已经安装了pygame，不能重复安装，What's!!!!!!!!
+
+　　那么，我的解决方法是：在Pycharm的创建项目界面中，勾选上 inherit global site-package 和 make available to all project 即可。
+
+这时候，打开设置后会发现，pycharm已经加载进来了pygame库。
+
+　　最后，在代码中加入pygame库，并未再报错，表示已经成功安装和导入了pygame库，安装和导入其他库的方法类似。
+

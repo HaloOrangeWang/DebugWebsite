@@ -1,0 +1,11 @@
+在使用pd.concat((A,B)axis = 1)这个函数合并两个相同的DataFrame的时候，出现了报错：
+
+InvalidIndexError: Reindexing only valid with uniquely valued Index objects
+
+原因是待合并的两个dataFrame索引并不相同，需要对他们分别重新设置索引：
+
+A = A.reset_index()
+B = B.reset_index()
+
+然后再应用concat函数，就可以正常合并了。
+

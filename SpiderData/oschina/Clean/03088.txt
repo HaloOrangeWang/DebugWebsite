@@ -1,0 +1,164 @@
+
+1.itsdangerous
+
+第三方模块。
+
+一般情况下，用户登录时，根据密码（有时候加盐）等生成token，和id一起-->存入redis；
+
+用户再次访问时（比如说支付时），请求中带着id和token，后台会将用户带来的token和redis中的进行对比，若一致，则匹配。
+
+使用itsdangerous仅需生成一次，且不用存redis。
+
+
+1.1加密token
+
+1 import itsdangerous
+2 
+3 salt='sdf234^#$@G'#设置盐值
+4 t = itsdangerous.TimedJSONWebSignatureSerializer(salt,expires_in=30)#expires_in设置过期时间
+5 res = t.dumps({'username':'yangfan','user_id':1})#参数为要加密的数据，为字典
+6 token = res.decode()#返回bytes类型 decode解码
+7 print(token)
+
+#运行结果
+eyJhbGciOiJIUzUxMiIsImlhdCI6MTU0MjAzMDg3NywiZXhwIjoxNTQyMDMwOTA3fQ.eyJ1c2VybmFtZSI6InlhbmdmYW4iLCJ1c2VyX2lkIjoxfQ.jLwz4aL1ETAPFOs6CmDXYNECu4lNPVg0HjTcLkn-CUtWtrB9yKkO6fczxVJuwECEW83Y6FTgy47oV3X_EL45OQ
+
+
+1.2解密token
+
+1 import itsdangerous
+2 
+3 salt='sdf234^#$@G'
+4 t = itsdangerous.TimedJSONWebSignatureSerializer(salt,expires_in=30)
+5 s='eyJhbGciOiJIUzI1NiIsImlhdCI6MTU0MTgyMDA1NiwiZXhwIjoxNTQxODIwMDg2fQ.eyJ1c2VybmFtZSI6InlhbmdmYW4iLCJ1c2VyX2lkIjoxfQ.FUfs92HuVKrt61AKpMjv1Iye8QDP7XUGOfgcrSusMv8'
+6 res = t.loads(s)
+7 print(res)
+
+#如果解析成功，返回原来加密的参数
+{'username':'yangfan','user_id':1}
+
+#如果token已过期，会报错
+......
+  File "C:\Users\tyourai\AppData\Local\Programs\Python\Python36\lib\site-packages\itsdangerous\signer.py", line 169, in unsign
+    raise BadSignature("Signature %r does not match" % sig, payload=value)
+itsdangerous.exc.BadSignature: Signature b'FUfs92HuVKrt61AKpMjv1Iye8QDP7XUGOfgcrSusMv8' does not match
+
+
+2.sys.argv
+
+
+2.1sys.argv的作用
+
+sys.argv的作用是获取到运行python文件时，传入参数
+
+默认如果运行python文件的时候，不传参数，argv里面只有一个元素，就是当前这个python文件的文件名
+
+1 import sys
+2 print(sys.argv)
+
+#运行结果，是个List
+['D:/我的文档/day11/test.py']
+
+
+2.2实例
+
+1 import flask
+ 2 import sys
+ 3 import time
+ 4 server = flask.Flask(__name__)
+ 5 
+ 6 @server.route('/')
+ 7 def index():
+ 8     return '<h1>success</h1>'
+ 9 if len(sys.argv)>1: #有参数传入，不传参时list长度为1
+10     port = sys.argv[1]
+11     if port.isdigit():
+12         server.run(port=port)#输入的参数作为端口号
+13     elif port=='--help':
+14         print('这个python文件的作用是让你发财！')
+15     elif port=='--time':
+16         print(time.strftime('%Y-%m-%d %H:%M:%S'))
+17     else:
+18         print('端口号必须是整数！')
+19 else:
+20     print('运行错误！请在运行的时候指定端口号\n'
+21           '请按照下面的方式运行python文件！\n'
+22           'python mock_server.py 8989')
+
+
+3.glob
+
+内置模块，可用来过滤目录下的文件
+
+使用以前的方法
+
+import os
+print(os.listdir())#获取当前目录下的文件，返回List
+
+for f in os.listdir():
+    if f.endswith('.py'):
+        os.remove(f)#删除指定目录下.py结尾的文件
+
+使用glob来实现
+
+1 import glob
+2 #过滤目录下的文件
+3 print(glob.glob('*.py'))#返回一个List，内容是以.py结尾的文件
+4 print(glob.glob('*1*'))#中间包含1的文件
+
+#运行结果
+C:\Users\tyourai\AppData\Local\Programs\Python\Python36\python.exe D:/我的文档/day11/test.py
+['a.py', 'b.py', 'mock_server.py', 'op_mysql.py', 'test.py', 'token111.py', '作业1，下载qq头像.py', '呵呵呵.py', '析构函数.py', '类变量.py', '继承.py']
+['token111.py', '作业1，下载qq头像.py']
+
+Process finished with exit code 0
+
+
+4.异常处理　　
+
+
+4.1基本格式
+
+1 def calc(a,b):
+2     try:
+3         res = a/b
+4     except ZeroDivisionError as e: #可以捕捉到ZeroDivisionError
+5          res = '除数不能为零, %s'%e
+6     return res
+7 # res = calc('k',1) #TypeError try后可以跟多个except
+8 # res = calc(10,0)  # ZeroDivisionError
+9 # res = calc(10,0) #TypeError
+
+
+4.2else和finally
+
+1 money = input('enter:')
+2 try:
+3     money = int(money)
+4 except Exception as e:#产生异常了，走这边
+5     print('输入金额错误！')
+6 else:#没有出现异常的话就走这里
+7     print(money+1)
+8 finally:#无论怎样都会执行
+9     print('finally')
+
+
+4.3e.args
+
+1 try:
+2     x = 2 / 0
+3 except Exception as e:
+4     print(e)
+5     print(e.args) #这是一个元组，在实际使用中，作为返回值
+6     print(type(e))
+7     print(type(e.args))
+8 else:
+9     print('hahaha')
+
+division by zero
+('division by zero',)
+<class 'ZeroDivisionError'>
+<class 'tuple'>
+
+　　
+

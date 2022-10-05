@@ -1,0 +1,46 @@
+安装pyspider启动发现一系列报错
+
+首先安装完后启动报错为
+
+File "e:\py\mongodbtest\venv\lib\site-packages\pyspider\run.py", line 231
+    async=True, get_object=False, no_input=False):
+
+复制上面等等位置
+
+e:\py\mongodbtest\venv\lib\site-packages\pyspider
+
+在电脑上找到这个文件夹拖进pycharm然后点菜单栏Edit -->Find -->Find in Path搜索async然后把所有async改为shark，注意区分大小写，如SimpleAsyncHTTPClient 就别改了
+然后pyspider all启动，然后报错
+
+ValueError: Invalid configuration:
+  - Deprecated option 'domaincontroller': use 'http_authenticator.domain_controller' instead.
+
+现在pycharm打开了pyspider包的路径，在里面找到webui，然后找到webdav.py，修改：
+
+'domaincontroller': NeedAuthController(app),
+
+替换成
+
+'http_authenticator':{
+        'HTTPAuthenticator':NeedAuthController(app),
+    },
+
+然后启动，报错：
+
+ImportError: cannot import name 'DispatcherMiddleware' from 'werkzeug.wsgi' (E:\py\mongodbtest\venv\lib\site-packages\werkzeug\wsgi.py)
+
+解决：
+
+卸载werkzeug，重新安装低版本的werkzeug
+
+python -m pip uninstall werkzeug
+
+#安装指定版本
+python -m pip install werkzeug==0.16.0
+
+然后启动：
+
+[I 200704 15:01:27 app:76] webui running on 0.0.0.0:5000
+
+成功
+

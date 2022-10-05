@@ -1,0 +1,85 @@
+这个错误是最新的错误哈，目前只在tensorflow上的github仓库上面有提出，所以你在百度上面找不到。
+
+是个tensorflow的bug十天前提出的，只有github仓库上一个地方有提出。
+
+NotFoundError (see above for traceback): Unsuccessful TensorSliceReader constructor:
+
+Failed to find any matching files for xxx
+
+Traceback (most recent call last):
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\client\session.py", line 1022, in _do_call
+  return fn(*args)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\client\session.py", line 1004, in _run_fn
+  status, run_metadata)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\contextlib.py", line 66, in __exit__
+  next(self.gen)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\errors_impl.py", line 466, in raise_exception_on_not_ok_status
+  pywrap_tensorflow.TF_GetCode(status))
+tensorflow.python.framework.errors_impl.NotFoundError: Unsuccessful TensorSliceReader constructor: Failed to find any matching files for D://model.ckpt
+	 [[Node: save_1/RestoreV2_10 = RestoreV2[dtypes=[DT_FLOAT], _device="/job:localhost/replica:0/task:0/cpu:0"](_recv_save_1/Const_0, save_1/RestoreV2_10/tensor_names, save_1/RestoreV2_10/shape_and_slices)]]
+ 
+During handling of the above exception, another exception occurred:
+ 
+Traceback (most recent call last):
+ File "F:/DeepStock/DeepStock/testCapacity.py", line 77, in <module>
+  prediction(out)
+ File "F:/DeepStock/DeepStock/testCapacity.py", line 63, in prediction
+  saver.restore(sess, 'D://model.ckpt')
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\training\saver.py", line 1428, in restore
+  {self.saver_def.filename_tensor_name: save_path})
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\client\session.py", line 767, in run
+  run_metadata_ptr)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\client\session.py", line 965, in _run
+  feed_dict_string, options, run_metadata)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\client\session.py", line 1015, in _do_run
+  target_list, options, run_metadata)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\client\session.py", line 1035, in _do_call
+  raise type(e)(node_def, op, message)
+tensorflow.python.framework.errors_impl.NotFoundError: Unsuccessful TensorSliceReader constructor: Failed to find any matching files for D://model.ckpt
+	 [[Node: save_1/RestoreV2_10 = RestoreV2[dtypes=[DT_FLOAT], _device="/job:localhost/replica:0/task:0/cpu:0"](_recv_save_1/Const_0, save_1/RestoreV2_10/tensor_names, save_1/RestoreV2_10/shape_and_slices)]]
+ 
+Caused by op 'save_1/RestoreV2_10', defined at:
+ File "F:/DeepStock/DeepStock/testCapacity.py", line 77, in <module>
+  prediction(out)
+ File "F:/DeepStock/DeepStock/testCapacity.py", line 60, in prediction
+  saver = tf.train.Saver(tf.global_variables())
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\training\saver.py", line 1040, in __init__
+  self.build()
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\training\saver.py", line 1070, in build
+  restore_sequentially=self._restore_sequentially)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\training\saver.py", line 675, in build
+  restore_sequentially, reshape)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\training\saver.py", line 402, in _AddRestoreOps
+  tensors = self.restore_op(filename_tensor, saveable, preferred_shard)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\training\saver.py", line 242, in restore_op
+  [spec.tensor.dtype])[0])
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_io_ops.py", line 668, in restore_v2
+  dtypes=dtypes, name=name)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 763, in apply_op
+  op_def=op_def)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2327, in create_op
+  original_op=self._default_original_op, op_def=op_def)
+ File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1226, in __init__
+  self._traceback = _extract_stack()
+ 
+NotFoundError (see above for traceback): Unsuccessful TensorSliceReader constructor: Failed to find any matching files for D://model.ckpt
+	 [[Node: save_1/RestoreV2_10 = RestoreV2[dtypes=[DT_FLOAT], _device="/job:localhost/replica:0/task:0/cpu:0"](_recv_save_1/Const_0, save_1/RestoreV2_10/tensor_names, save_1/RestoreV2_10/shape_and_slices)]]
+
+改之前代码：
+
+saver.restore(sess, 'D://model.ckpt')
+
+将前面加上个点斜杠就好了。
+
+saver.restore(sess, 'D://./model.ckpt')
+
+如果你目录太复杂实在搞不明白用这个（默认加载checkout 文件中的最新的保存的数据）：
+
+module_file = tf.train.latest_checkpoint('E://deeplearning-master/deeplearning-master/tensorflow-program/save/')
+with tf.Session() as sess:
+  sess.run(tf.global_variables_initializer())
+  if module_file is not None:
+    saver.restore(sess, module_file)
+
+以上这篇解决tensorflow1.x版本加载saver.restore目录报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

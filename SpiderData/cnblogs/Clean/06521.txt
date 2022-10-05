@@ -1,0 +1,47 @@
+
+最近使用python时遇到了两个问题
+
+
+list的使用,好久没用都不记得怎么用了- -
+
+出错代码段如上
+
+报错信息： TypeError: can't multiply sequence by non-int of type 'float'
+
+这是因为把一个list类型的变量v传入func(),在t1*x这里是无法运行的，因为一个list乘一个int在python里是表示将这个list复制这么多次
+
+比如
+
+如果和List相乘的不是整数就会报错。就算不报错其实也达不到预期的目的。我的目的是将list的每个元素都乘num。
+
+我的解决办法是使用numpy包中的array来作类型转化。也就是将list转化为np.array
+
+只需要改一句
+
+yvals = func(np.array(v),k)
+
+这样就没问题了。
+
+
+pip install 报错 [Error 11001]
+
+打算安装一个autograd或者tangent包来做微分
+
+python -m pip install autograd
+
+系统是win10，也是用管理员身份打开的cmd
+
+报错信息 **Failed to establish a new connection: [Errno 11001] **
+
+本来想复现一下错误截个图结果这次居然安装成功了……
+
+总之，这个错误的主要原因就是网络的问题，我当时把wifi换成热点就不报错了，只是速度很慢，最后time out了。
+
+遇到这个错误可以
+
+尝试切换网络
+
+如果还不行可能就是下载镜像的问题了，不着急的话可以过段时间再试（比如我）
+
+或者换个国内镜像试试
+

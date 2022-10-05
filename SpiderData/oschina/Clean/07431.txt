@@ -1,0 +1,15 @@
+
+kubeadm初始化时报错Swap，详细报错内容如下
+
+这是因为swap导致的，两种解决办法：
+
+一、关闭swap
+
+二、通过参数忽略swap报错
+
+在kubeadm初始化时增加--ignore-preflight-errors=Swap参数，注意Swap中S要大写
+
+另外还要设置/etc/sysconfig/kubelet参数
+
+在以往老版本中是必须要关闭swap的，但是现在新版又多了一个选择，可以通过参数指定，忽略swap报错！
+

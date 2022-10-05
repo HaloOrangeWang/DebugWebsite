@@ -1,0 +1,79 @@
+转载自：https://blog.csdn.net/weixin_43336281/article/details/100055435
+
+=========
+
+启动Django
+
+python36 manage.py runserver 0.0.0.0:8888
+
+报错信息如下:
+
+django.core.exceptions.ImproperlyConfigured: SQLite 3.8.3 or later is required (found 3.7.17)
+
+sqlite的版本太低需要升级.
+
+下载sqlite源码包安装:
+
+wget http://www.sqlite.org/2019/sqlite-autoconf-3280000.tar.gz
+
+解压:
+
+tar zxvf sqlite-autoconf-3280000.tar.gz -C /usr/src/
+
+编译安装:
+
+cd /usr/src/sqlite-autoconf-3280000/
+
+./configure --prefix=/usr/local/sqlite
+
+make && make install
+
+替换版本
+
+mv /usr/bin/sqlite3 /usr/bin/sqlite3_old
+
+cd /usr/local/sqlite/bin/
+
+ln -s sqlite3 /usr/bin/sqlite3
+
+共享库修改，注意sqlite的安装路径
+
+vim /etc/profile
+
+export LD_LIBRARY_PATH="/usr/local/sqlite/lib"
+
+配置生效
+
+source /etc/profile
+
+查看sqlite版本信息
+
+sqlite3 --version
+
+3.28.0 2019-04-16 19:49:53 884b4b7e502b4e991677b53971277adfaf0a04a284f8e483e2553d0f83156b50
+
+python查看sqlite版本信息:
+
+[root@crawler-03 bin]# python36
+
+Python 3.6.8 (default, Apr 4 2019, 10:34:20)
+
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-36)] on linux
+
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> import sqlite3
+
+>>> sqlite3.sqlite_version
+
+'3.28.0'
+
+>>>
+
+运行django
+
+python36 manage.py runserver 0.0.0.0:8888
+————————————————
+版权声明：本文为CSDN博主「Alex_996」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_43336281/article/details/100055435
+

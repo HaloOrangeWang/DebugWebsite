@@ -1,0 +1,94 @@
+TensorFlow的代码报错，信息如下：
+
+Traceback (most recent call last):
+  File "main3.py", line 120, in <module>
+    tf.app.run()
+  File "C:\Python35\lib\site-packages\tensorflow\python\platform\app.py", line 48, in run     _sys.exit(main(_sys.argv[:1] + flags_passthrough))
+  File "main3.py", line 99, in main
+    data_file=FLAGS.imglist_file)
+  File "D:\trunk\model3.py", line 90, in __init__     self.build_model()
+  File "D:\trunk\model3.py", line 124, in build_model     self.output_height, self.output_width, 3, self.is_crop)
+  File "D:\trunk\utils.py", line 30, in transform_with_tf     return image/127.5 - 1
+TypeError: unsupported operand type(s) for /: 'Tensor' and 'float'
+
+查看报错的消息可能来自于tensorflow\python\kernel_tests\matmul_op_test.py文件，看来其实是没有实现这个除法，但真的是这样的话。多次运行出错的代码，发现代码有时候能顺利运行，有时候不能运行，会上述错误，或者报错如下：
+
+Traceback (most recent call last):
+  File "main3.py", line 111, in <module>
+    tf.app.run()
+  File "C:\Python35\lib\site-packages\tensorflow\python\platform\app.py", line 48, in run
+    _sys.exit(main(_sys.argv[:1] + flags_passthrough))
+  File "main3.py", line 92, in main
+    dcgan.train(FLAGS)
+  File "D: \trunk\model3.py", line 227, in train
+    is_grayscale=self.is_grayscale
+  File "D: \trunk\utils.py", line 37, in get_batch_image
+    img = transform_with_tf(img,input_height,input_width,resize_height,resize_wi
+dth, depth, is_crop)
+  File "D: \trunk\utils.py", line 58, in transform_with_tf
+    return image/127.5 - 1.
+  File "F:\Program Files\Python35\lib\site-packages\tensorflow\python\ops\math_o
+ps.py", line 820, in binary_op_wrapper
+    y = ops.convert_to_tensor(y, dtype=x.dtype.base_dtype, name="y")
+  File "F:\Program Files\Python35\lib\site-packages\tensorflow\python\framework\
+ops.py", line 639, in convert_to_tensor
+    as_ref=False)
+  File "F:\Program Files\Python35\lib\site-packages\tensorflow\python\framework\
+ops.py", line 704, in internal_convert_to_tensor
+    ret = conversion_func(value, dtype=dtype, name=name, as_ref=as_ref)
+  File "F:\Program Files\Python35\lib\site-packages\tensorflow\python\framework\
+constant_op.py", line 113, in _constant_tensor_conversion_function
+    return constant(v, dtype=dtype, name=name)
+  File "F:\Program Files\Python35\lib\site-packages\tensorflow\python\framework\
+constant_op.py", line 102, in constant
+    tensor_util.make_tensor_proto(value, dtype=dtype, shape=shape, verify_shape=
+verify_shape))
+  File "F:\Program Files\Python35\lib\site-packages\tensorflow\python\framework\
+tensor_util.py", line 370, in make_tensor_proto
+    _AssertCompatible(values, dtype)
+  File "F:\Program Files\Python35\lib\site-packages\tensorflow\python\framework\
+tensor_util.py", line 302, in _AssertCompatible
+    (dtype.name, repr(mismatch), type(mismatch).__name__))
+TypeError: Expected uint8, got 127.5 of type 'float' instead.
+
+检查renturn image / 127.5 – 1的上一句是
+
+image = tf.image.resize_images(image,[resize_height, resize_width])
+
+查看tf.image.resize_images的实现源码，找到下列这段：
+
+if all(x is not None
+         for x in [new_width_const, width, new_height_const, height]) and (
+             width == new_width_const and height == new_height_const):
+    if not is_batch:
+      images = array_ops.squeeze(images, squeeze_dims=[0])
+    return images
+
+if method == ResizeMethod.BILINEAR:
+    images = gen_image_ops.resize_bilinear(images,
+                                           size,
+                                           align_corners=align_corners)
+
+意思就是如果resize设置的大小与原大小一致，就直接返回原来的数据了，而如果确实要改变图片大小，则会根据设置的参数，调用对应的改变图片大小的算法，在使用中发现，数据如果resize_images中改变了大小，那么不会报上述的错误，但是没有改变的话，就会报上述的错误。检查gen_image_ops.resize_bilinear对应源码为ResizeBilinear的操作，在resize_bilinear_op.h文件中定义如下：
+
+template <typename Device, typename T>
+    struct ResizeBilinear {
+      void operator()(const Device& d, typename TTypes<T, 4>::ConstTensor images,
+                      const float height_scale, const float width_scale,
+                      typename TTypes<float, 4>::Tensor resized_images);
+    };
+
+很显然，这里resized_images变量被转换成了float的类型，而图片一般的数据类型是uint8类型，这里在处理图片的时候，进行了隐性转换，这就导致了代码同样的数据，不同参数调用会出现报错与不报错的区别。
+
+解决的办法其实很简单：
+
+在return image/127.5 -1之前加上显式的类型转换tf.cast即可，例如
+
+image = tf.cast(image, tf.float32)
+
+最后吐槽下：
+
+1.同样的函数，对于数据没有做统一的格式处理，这里是不是算一个BUG，因此要尽量的减少隐性的数据转换。
+
+2.报错信息的问题，报错是不支持的Tensor和float类型的除法操作，其实际上是不支持uint8类型的Tensor与float类型的数据的除法操作（将上述报错的内容改成image/2-1是可以正常运行的），这里说明报错的信息不全，导致报错的信息容易造成误导（以偏概全的情况）。
+

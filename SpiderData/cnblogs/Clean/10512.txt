@@ -1,0 +1,54 @@
+
+背景
+
+刚才修改了Python目录名，重新添加了环境变量，命令行可以正常执行python。
+
+打开Vim开始编辑文件，发现一输入或刚输入几个字符就闪退了。
+
+
+解决
+
+重新打开禁用了插件加载，运行正常，逐个开启检查发现Ultisnip开启时，导致这种情况，:PlugStatus （Vim-Plug管理器命令）检查插件状态，文件完好，突然想到Ultisnip依赖Python执行环境，可能是改到路径导致的错误。
+
+在控制台执行：
+
+py	显示：Can't find a default Python
+
+py --list	来列出安装的python，显示无法找到已安装的python
+
+Installed Pythons found by py Launcher for Windows
+
+No Installed Pythons Found!
+
+执行：py --help，发现py并没有给出直接指明解释器的方法
+
+经过查询，发现py.exe是用于做启动真实python解释器的中间转换器，会从外部读取一些信息来确定调用哪个版本的python解释器，例如：可以传入版本号作为启动参数；读取文件开始的前几行shebang注释：#!/usr/bin/python3。
+
+猜测py.exe在win上读取了注册表。
+
+查询到有人修改了python的注册表项：
+
+计算机\HKEY_LOCAL_MACHINE\SOFTWARE\Python\PythonCore\3.9\InstallPath
+
+该项下有一个字段：ExecutablePath，修改为解释器路径：D:\software\Python\Python3.9\python.exe
+
+重新执行：py
+
+成功进入Python 3.9.1执行环境
+
+执行：py --list
+
+Installed Pythons found by py Launcher for Windows -3.9-64 *
+
+成功列出了安装的Python
+
+由此确定py.exe在win上是通过读取注册表的...\Python...\InstallPath来寻找Python解释器的
+
+注意：在修改Python安装目录后，同时要修改...\Python项下所有与目录关联的字段值，以确保其他功能可以正常使用。
+
+参考：
+
+https://stackoverflow.com/questions/57765741/how-to-fix-cant-find-a-default-python-error/59595474#59595474
+
+https://docs.python.org/3/using/windows.html#launcher
+

@@ -1,0 +1,323 @@
+
+错误和异常
+
+
+概念
+
+两种容易辨认的错误
+
+​ 语法错误：一些关于语法的错误【缩进】
+
+​ 异常：代码完全正确，但是，程序运行之后，会报出 的错误
+
+exception/error
+
+代码演示：
+
+list1 = [23,54,6,6]
+print(list1[2])
+print(list1[3])
+print(list1[4])
+
+print("over")
+
+"""
+6
+6
+Traceback (most recent call last):
+  File "C:/Users/Administrator/Desktop/SZ-Python/Day15Code/textDemo01.py", line 4, in <module>
+    print(list1[4])
+IndexError: list index out of range
+"""
+
+异常特点：当程序在执行的过程中遇到异常，程序将会终止在出现异常的代码处，代码不会继续向下执行
+
+解决问题：越过异常，保证后面的代码继续执行【实质：将异常暂时屏蔽起来，目的是为了让后面的代码的执行不受影响】
+
+
+常见的异常
+
+NameError:变量未被定义
+
+TypeError:类型错误
+
+IndexError:索引异常
+
+keyError:
+
+ValueError:
+
+AttributeError:属性异常
+
+ImportError:导入模块的时候路径异常
+
+SyntaxError:代码不能编译
+
+UnboundLocalError:试图访问一个还未被设置的局部变量
+
+
+异常处理方式
+
+捕获异常
+
+抛出异常
+
+
+捕获异常
+
+
+try-except-else
+
+语法：
+
+​ try:
+
+​ 可能存在异常的代码
+
+​ except 错误表示码 as 变量：
+
+​ 语句1
+
+​ except 错误表示码 as 变量：
+
+​ 语句2
+
+​ 。。。
+
+​ else:
+
+​ 语句n
+
+说明：
+
+​ a.try-except-else的用法类似于if-elif-else
+
+​ b.else可有可无，根据具体的需求决定
+
+​ c.try后面的代码块被称为监测区域【检测其中的代码是否存在异常】
+
+​ d.工作原理：首先执行try中的语句，如果try中的语句没有异常，则直接跳过所有的except语句，执行else；如果try中的语句有异常，则去except分支中进行匹配错误码，如果匹配到了，则执行except后面的语句；如果没有except匹配，则异常仍然没有被拦截【屏蔽】
+
+代码演示：
+
+#一、try-except-else的使用
+
+#1.except带有异常类型
+try:
+    print(10 / 0)
+except ZeroDivisionError as e:
+    print("被除数不能为0",e)
+
+print("~~~~")
+"""
+总结：
+a.try-except屏蔽了异常，保证后面的代码可以正常执行
+b.except ZeroDivisionError as e相当于声明了一个ZeroDivisionError类型的变量【对象】，变量e中携带了错误的信息
+"""
+
+#2.try后面的except语句可以有多个
+class Person(object):
+    __slots__ = ("name")
+try:
+    p = Person()
+    p.age = 19
+
+print(10 / 0)
+except AttributeError as e:
+    print("属性异常",e)
+except ZeroDivisionError as e:
+    print("被除数不能为0",e)
+
+print("over")
+
+"""
+总结：
+a.一个try语句后面可以有多个except分支
+b.不管try中的代码有多少个异常，except语句都只会被执行其中的一个，哪个异常处于try语句的前面，则先先执行对应的except语句
+c.后面的异常不会报错【未被执行到】
+"""
+
+#3.except语句的后面可以不跟异常类型
+try:
+    print(10 / 0)
+except:
+    print("被除数不能为0")
+
+#4.一个except语句的后面可以跟多种异常的类型
+#注意：不同的异常类型使用元组表示
+try:
+    print(10 / 0)
+except (ZeroDivisionError,AttributeError):
+    print("出现了异常")
+
+#5.else分支
+try:
+    print(10 / 4)
+except ZeroDivisionError as e:
+    print("出现了异常",e)
+else:
+    print("hello")
+
+"""
+总结：
+a.如果try中的代码出现了 异常，则直接去匹配except，else分支不会被执行
+b.如果try中的代码没有出现异常，则try中的代码正常执行，except不会被执行，else分支才会被执行
+"""
+
+#6.try中不仅可以直接处理异常，还可以处理一个函数中的异常
+def show():
+    x = 1 / 0
+
+try:
+    show()
+except:
+    print("出现了异常")
+
+#7.直接使用BaseException代替所有的异常
+try:
+    y = 10 / 0
+except BaseException as e:
+    print(e)
+
+"""
+总结：在Python中，所有的异常其实都是类，他们都有一个共同的父类BaseException，可以使用BaseException将所有异常“一网打尽”
+"""
+
+
+try-except-finally
+
+语法：
+
+​ try:
+
+​ 可能存在异常的代码
+
+​ except 错误表示码 as 变量：
+
+​ 语句1
+
+​ except 错误表示码 as 变量：
+
+​ 语句2
+
+​ 。。。
+
+​ finally:
+
+​ 语句n
+
+说明:不管try中的语句是否存在异常，不管异常是否匹配到了except语句，finally语句都会被执行
+
+作用：表示定义清理行为，表示无论什么情况下都需要进行的操作
+
+代码演示：
+
+#二、try-except-finally的使用
+
+#1.
+try:
+    print(10 / 5)
+except ZeroDivisionError as e:
+    print(e)
+
+finally:
+    print("finally被执行")
+
+#2.特殊情况
+#注意：当在try或者except中出现return语句时，finally语句仍然会被执行
+def show():
+    try:
+        print(10 / 0)
+        return
+    except ZeroDivisionError as e:
+        print(e)
+
+finally:
+        print("finally被执行~~~~")
+
+show()
+
+
+抛出异常
+
+raise抛出一个指定的异常对象
+
+语法：raise 异常对象 或者 raise
+
+说明：异常对象通过错误表示码创建，一般来说错误表示码越准确越好
+
+代码演示：
+
+#raise的使用主要体现在自定义异常中
+
+#1.raise表示直接抛出一个异常对象【异常是肯定存在的】
+#创建对象的时候，参数表示对异常信息的描述
+try:
+    raise NameError("hjafhfja")
+except NameError as e:
+    print(e)
+
+print("over")
+
+"""
+总结：
+通过raise抛出的异常，最终还是需要通过try-except处理
+"""
+
+#2.如果通过raise抛出的异常在try中不想被处理，则可以通过raise直接向上抛出
+try:
+    raise NameError("hjafhfja")
+except NameError as e:
+    print(e)
+    raise
+
+
+assert断言
+
+对某个问题做一个预测，如果预测成功，则获取结果；如果预测失败，则打印预测的信息
+
+代码演示：
+
+def func(num,divNum):
+
+#语法：assert表达式，当出现异常时的信息描述
+    #assert关键字的作用：预测表达式是否成立，如果成立，则执行后面的代码；如果不成立，则将异常的描述信息打印出来
+    assert (divNum != 0),"被除数不能为0"
+
+return  num / divNum
+
+print(func(10,20))
+print(func(10,0))
+
+
+自定义异常
+
+实现思路：
+
+a.定义一个类，继承自Exception类
+
+b.书写构造函数，属性保存异常信息【调用父类的构造函数】
+
+c.重写__str__函数，打印异常的信息
+
+d.定义一个成员函数，用来处理自己的异常
+
+代码演示：
+
+class MyException(Exception):
+    def __init__(self,msg):
+        super(MyException,self).__init__()
+        self.msg = msg
+
+def __str__(self):
+        return self.msg
+
+def handle(self):
+        print("出现了异常")
+
+try:
+     raise MyException("自己异常的类型")
+except MyException as e:
+     print(e)
+     e.handle()
+

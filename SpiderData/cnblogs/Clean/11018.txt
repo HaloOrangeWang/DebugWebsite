@@ -1,0 +1,22 @@
+ython打包exe运行报错ConfigParser.NoSectionError: No section: '节点名' 打包后的exe程序运行找不到节点，代码调试的时候明明可以找到配置文件的节点并能成功解析的啊，为啥打包后找不到了呢？各种度娘后。。。得出结论：配置文件路径错了。
+
+解决办法：
+
+import ConfigParser
+
+cf = ConfigParser.ConfigParser()
+
+exeruningpath=os.path.dirname(sys.executable)#获取exe所在路径
+
+cf.read(exeruningpath + "\config.ini")#拼接配置文件路径
+
+------缺点是，调试代码时os.path.dirname(sys.executable)获取的是python的安装路径，并非是工程中的路径，所以。。。。调试就用os.getcwd()，打包就用os.path.dirname(sys.executable)
+
+os.getcwd() 刚开始用的是这句代码
+
+为啥不用os.getcwd()获取当前路径再拼接配置文件路径呢？
+
+os.getcwd()获取的是当前程序运行的路径，并非是，打包后exe所在路径。
+
+转载地址：https://www.testyuming.com/
+

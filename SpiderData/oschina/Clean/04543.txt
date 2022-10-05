@@ -1,0 +1,52 @@
+分析：
+
+1.尝试在Python中对数据转码成utf8，'中文'.encode("utf-8")，还是报错
+
+2.观察堆栈发现应该是操作mysql数据库的时候，将数据插入表里出错
+
+所以第一种方式排除；集中从第二种原因找突破：
+
+在mysql中查看字符相关的变量:
+
+发现character_set_database 编码是latin1不是utf8，问题应该就在这里。
+
+那我们现在就要把这个字符改过来。
+
+这里注意：你们其他变量名的值也不是utf8,这里是你们my.ini配置文件里没有设置，mysql就用的是默认值
+
+[client]
+
+default-character-set =utf8
+
+[mysql]
+
+default-character-set =utf8
+
+[mysqld]
+
+collation-server = utf8_unicode_ci
+init_connect ='SET NAMES utf8'
+character_set_server=utf8
+
+其中：
+
+init_connect ='SET NAMES utf8' 相当于把charact_set_client ,character_set_server,character_set_connection都设置成utf8了，我怕到时又出啥问题就没去掉了。
+
+我也尝试了在[mysqld]下
+
+添加：character_set_database =utf8 可是启动mysql服务的时候报错。查找资料跟mysql的版本有问题，我mysql的版本是5.6.*
+
+那就只有通过mysql的命令去修改编码了：
+
+set character_set_database=utf8;
+
+在查看的时候编码就修改了
+
+再次测试代码后发现还是有问题。
+
+然后查看了下django连接的数据库，以及生成的表的编码发现编码不是utf8，所以这里还要修改数据库，表的编码
+
+修改后查看编码都已经是utf8了应该不会有错了。果然测试可以了。
+
+下面附上mysql的一些相关命令：
+

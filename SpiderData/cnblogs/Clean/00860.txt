@@ -1,0 +1,46 @@
+1.with open('1.text', 'wb') as file:
+
+　　file.write(xxxx)
+
+此处wb模式为二进制写方式打开，如果传入str，则会报错，str does not support the buffer inter face. 我的天，我花了一个多小时才明白过来。
+
+2.使用jieba，导入
+
+此时使用ChineseAnalyzer()报错：python cannot import name 'ChineseAnalyzer'，
+
+修改代码为：
+
+使用analyse.ChineseAnalyzer()就不会报错，同理在对于许多导入模块正确的情况下，如果发生报错，可以使用此种方法。
+
+3 mysql  修改列名字
+
+　　alter table 表名 change  column address address1 varchar(30)--修改表列名一定要加黄色字段。
+
+4 git 添加远程仓库的步骤：（目前我在本地init了一个仓库叫interview，在远程也建立了interview）
+
+5、匹配xpath中多段text内容时，如：（完全是抄的别人的）
+
+而且内部的标签还不固定，如果我有一百段这样类似的html代码，又如何使用xpath表达式，以最快最方便的方式提取出来？
+
+使用xpath的string(.)
+
+这样，就可以把“我左青龙，右白虎，上朱雀，下玄武。老牛在当中，龙头在胸口”整个句子提取出来，赋值给info变量。
+
+6、RE正则中search和findall 略有区别，search不消耗匹配字符，findall消耗匹配字符，如下：
+
+结果为：
+
+kkkbo 123#*456789ko
+
+123#*456789k
+
+7、mysql 中 如果使用python插入 datetime 插入的必须为 str 否则会 报错，可以用str()
+
+（...for the right syntax to use near '19:34:55)'
+
+8、 mysql 批量删除表 SELECT CONCAT('drop table ',t.`TABLE_NAME`,'; ') dropsql FROM information_schema.`TABLES` t WHERE t.`TABLE_NAME` LIKE 'hangzhou%';
+
+import pymysql
+
+到时候再复制到mysql 粘贴就搞定啦
+

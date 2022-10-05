@@ -1,0 +1,28 @@
+
+为 Python 2 安装 pip
+
+Python 2的 pip 没有被包含在 Ubuntu 20.04源仓库中。我们将会使用get-pip.py脚本来为 Python 2 安装 pip。
+
+启用 universe 源仓库：
+
+sudo add-apt-repository universe
+
+更新软件包索引，并且安装 Python 2：
+
+sudo apt update 
+sudo apt install python2
+
+使用curl命令来下载get-pip.py脚本：
+
+curl  https://bootstrap.pypa.io/pip/2.7/get-pip.py  --output get-pip.py
+
+一旦源仓库被启用，以 sudo 用户身份使用 python2运行脚本来为 Python 2 安装 pip：
+
+sudo python2 get-pip.py
+
+Pip 将会被全局安装。如果你仅仅想为当前用户安装，不要使用sudo运行上面的命令。这个脚本还将会安装setuptools 和 wheel,它们允许你安装源码版本。
+
+打印 Pip 版本号，验证安装过程：
+
+pip2 --version
+

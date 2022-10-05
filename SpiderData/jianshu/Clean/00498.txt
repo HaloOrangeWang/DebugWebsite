@@ -1,0 +1,33 @@
+现象：某主机远程登录数据库出现如下报错
+
+[xxxx01 ~]$ mysql -h 10.1.254.139 -u root -p
+Enter password: 
+ERROR 1045 (28000): Plugin caching_sha2_password could not be loaded: /usr//usr/lib64/mysql/plugin/caching_sha2_password.so: cannot open shared object file: No such file or directory
+
+原因：在数据库服务器本地登录数据库，查看用户表，由于root的plugin值为caching_sha2_password
+
+mysql> use mysql;
+mysql> select host,user,select_priv,plugin from user;
++---------------+------------------+-------------+-----------------------+
+| host          | user             | select_priv | plugin                |
++---------------+------------------+-------------+-----------------------+
+| %             | root             | N           | caching_sha2_password |
+| localhost     | mysql.infoschema | Y           | caching_sha2_password |
+| localhost     | mysql.session    | N           | caching_sha2_password |
+| localhost     | mysql.sys        | N           | caching_sha2_password |
+| localhost     | robot            | Y           | caching_sha2_password |
++---------------+------------------+-------------+-----------------------+
+7 rows in set (0.00 sec)
+
+mysql>
+
+处理：修改用户root的plugin属性为mysql_native_password后，登录正常
+
+mysql> alter user 'root'@'%' identified with mysql_native_password by '123456';
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> flush privileges;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+

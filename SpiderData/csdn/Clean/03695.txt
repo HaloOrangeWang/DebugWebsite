@@ -1,0 +1,270 @@
+1.当输入包括数字且需要根据数字大小进行排序时，一定要加上int,否则就是字符串类型的数字比较了——来自蓝桥杯算法训练：预备爷的悲剧
+
+这张图表示的是某个字符出现在第几页，页数是数字类型，比方说你要创建字典，key为页数，最后按照key升序，那就必须在添加键值对的时候把key转化为int类型。
+
+2.gcd（最大公约数）和lcm（最小公倍数）关系及板子
+
+关系：若a,b>0 那么a*b=gcd(a,b)*lcm(a,b)
+
+gcd板子（太常用了)：
+
+def gcd(a,b):
+    while b:
+        a,b=b,a%b
+    return a
+
+那么lcm的板子可以由gcd推得
+
+def lcm(a,b):
+    t=a*b
+    while b:
+        a,b=b,a%b
+    return t//a
+#因为到最后a,b的值都不是原来的了，需要一开始用t存a*b
+
+掌握了这两个还需要再掌握一个:求N个数字的gcd（最大公约数）
+
+板子思想：递归(不难，好理解的，前N//2个数字与后N//2个数字的最大公约数就是N个数字的最大公约数)
+
+def gcd(a,b):
+    while b:
+        a,b=b,a%b
+    return a
+
+3.唯一分解定理和质因数分解关系和板子
+
+唯一分解定理:对于n>1，n=(2^a)*(3^b)*(5^c)....*(x^y)
+
+其中y>=0，x为质数，简单来说就是一个数一定可以分解为多个质数的连乘积。
+
+推论：n的约数个数=(a+1)(b+1)...(y+1)
+
+那么我们该如何分解，即如何展开质因数分解 (短除法)
+
+#为了灵活使用,我写一个函数，并把分解出来的质数存到列表里并输出
+#怎么加工利用看自己需要
+
+def f(x):
+    i=2
+    l=[]
+    while i<=x:
+        if x%i==0:
+            l.append(i)
+            x//=i
+        else:
+            i+=1
+    return l
+
+4.判断质数(最基本的)和埃筛法板子（很多题用到）
+
+判断质数：
+
+#由于一个数n的因子是成对出现的 故只需要枚举到int(n**0.5)
+
+def judge(x):
+    for i in range(2,int(x**0.5)+1):
+        if x%i==0:
+            return False
+    return True
+
+埃筛板子:
+
+maxn=10000#这个范围自己依据要查找数据范围内的质数设定
+
+is_prime=[True for i in range(maxn+1)]
+
+prime=[]
+
+for i in range(2,maxn):
+    if is_prime[i]:
+        prime.append(i)
+        j=i
+        while j<=maxn:
+            is_prime[j]=False
+            j+=i
+
+5.当输入的字符串需要跨行 需要用到"""   """ 三引号
+
+6.二分板子（这个不同人有不同的习惯 小郑觉得自己的这个方法不容易出错）
+
+l=0
+r=N
+
+while l+1!=r
+    mid=(l+r)//2
+    if #符合条件:
+        r=mid
+    else:
+        l=mid
+#划分红蓝区域
+
+详细内容可以看我这篇二分博客！Py小郑的博客-CSDN博客
+
+7. 重要模块，函数
+
+itertools模块(排列组合常用)
+
+import itertools
+
+s=[1,2,3]#序列
+#l为排列组合的长度:从序列里面取几个出来
+l=2
+x=itertools.permutations(s,l)
+
+y=itertools.combinations(s,l)
+
+#如果要查看x,y的内容,转化为列表
+
+阶乘函数：
+
+import math
+
+math.factorial(n)
+#求n!
+
+提一下数学知识：不妨令n>=m,A（n,m）=n!/(n-m)!
+
+C(n,m)=A(n,m)/m!=n!/[(n-m)!*m!]
+
+手写组合数函数，通常会比直接调factorial来直接表达组合数快很多倍
+
+def C(n,m):#计算组合数
+    t=1
+    i,j=n,1
+    while j<=m:
+        t*=i/j
+        i-=1
+        j+=1
+    return int(t)
+
+datetime模块
+
+提一下基本知识：平年2月28天，闰年29天，闰年：能被4整除却不能被100整除或能被400整除的年份
+
+import datetime
+#设置开始年份
+s=datetime.date(2022,4,5)
+
+#查询星期几
+s.weekday()
+
+#查询年月日,在后面跟上year或month或day
+s.day
+
+#设置时间间隔 一般以天为单位吧
+delta=datetime.timedelta(days=1)
+
+#判断日期合法性
+
+def judge(x,y,z):
+    try:
+        s=datetime.date(x,y,z)
+    except:
+        print('日期不合法')
+
+进制转换函数+字符串有关函数：
+
+ord：把字符转化为对应的Ascii（ord('A')=65）
+
+chr:把Ascii转化为对应的字符  ord和chr混淆了没事比赛两个试一下就行了！！
+
+lower()和upper()函数顾名思义
+
+判断某个字符是否为字母 isalpha()函数:
+
+判断某个字符是否为数字isdigit()函数：
+
+十进制转二进制 bin函数():注意的是出来的是字符串，且有前缀'0b'，注意去除
+
+十进制转十六进制 hex函数()):注意的是出来的是字符串，且有前缀'0x'，注意去除
+
+十进制转八进制 oct函数()):注意的是出来的是字符串，且有前缀'0o'，注意去除
+
+二进制，十六进制，八进制转十进制 都是一个函数:int ,用法int(#字符串，#字符串对应的进制)
+
+collections模块
+
+import collections
+
+queue=collections.deque()
+#在两头插入元素的时候效率很高
+#常用操作append,popleft(),pop()
+
+8.数学公式
+
+1^2+2^2+3^2+.....n^2=n(n+1)(2n+1)/6,用立法差公式(a+1)^3-a^3推得，累加法得到
+
+最大不能表示的数：若gcd(a,b)=1 a,b>0,那么a,b最大不能表示的数为ab-(a+b)，如果不互质，那么不能表示的数有无穷多个，红色部分可以推广到n个数字
+
+9.字典和列表的快速创建
+
+#字典快速初始化
+p=dict((i,0) for i in range(10))
+
+#列表解析式(初始化
+
+l=[[0]*10 for i in range(10)]
+
+10.原码，反码，补码详细介绍可以看我这篇文章：蓝桥杯 真题：明码 一题掌握3种码_Py小郑的博客-CSDN博客y
+
+原码范围[-127,127]，反码是在原码的基础上除了符号位全部取反
+
+补码实在反码的基础上加一，计算机一律用补码存储数字
+
+正数的三种码一样，负数从原码开始转化就行了。
+
+补码的范围[-128,127]，特别的，规定-128的补码为10000000
+
+11.树
+
+满二叉树：1：最后一层结点无子结点 2：除掉最后一层，任何一层的结点都有两个孩子
+
+完全二叉树：1：最后一层从左往右排列 2：除掉最后一层为满二叉树
+
+求两种树的深度：满二叉树>>log(2,n+1)
+
+完全二叉树>>[log(2,n)]+1
+
+树的直径：DFS求法,先随便取一个出发点，然后搜出第一个端点，然后以这个端点为出发点，继续DFS，搜出另一个端点。
+
+板子：
+
+#三个容器
+#根据题意创建散列表
+
+edge=dict((i,{}) for i in range(n))
+
+#例如edge[1]={2:12,3:14}表示1到2费用是12，1到3费用是14
+
+vis=[False for i in range(n)]
+
+d=[0 for i in range(n)]
+
+def dfs(x):
+    global vis,edge
+    for i in edge[x]:
+        if not vis[i]:
+            d[i]=d[x]+edge[x][i]
+            vis[i]=True
+            dfs(i)
+            vis[i]=False
+
+#初始化
+vis[0]=0
+dfs(0)
+
+Q=d.index(max(d))#一个端点
+
+#接下来重复上述，重置
+vis=[False for i in range(n)]
+d=[0 for i in range(n)]
+vis[Q]=True
+dfs(Q)
+
+W=d.index(max(d))
+
+#QW为直径
+
+
+其他的明天继续更，6，7，8还有三天，好好准备，拿个省一回来！
+

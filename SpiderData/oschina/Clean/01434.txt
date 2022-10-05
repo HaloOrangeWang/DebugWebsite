@@ -1,0 +1,41 @@
+学习python编程 从入门到实践第18章时，创建数据库失败
+
+python manage.py migrate 执行失败，报错：
+
+'%s=%s' % (k, v) for k, v in params.items(),
+
+SyntaxError: Generator expression must be parenthesized
+
+解决方法：
+
+找到widgets.py文件，使用vim编辑器打开
+
+修改
+
+'%s=%s' % (k, v) for k, v in params.items(),
+
+为：
+
+'%s=%s' % (k, v) for k, v in params.items()
+
+然后再次执行 python manage.py migrate 即成功
+
+System check identified no issues (0 silenced).
+(ll_env) [wangq@localhost Django]$ python3 manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying sessions.0001_initial... OK
+

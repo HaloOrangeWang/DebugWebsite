@@ -1,0 +1,109 @@
+本文实例讲述了Python错误和异常及访问错误消息。分享给大家供大家参考，具体如下：
+
+错误和异常
+
+当 Python 无法解析代码时，就会发生语法错误，因为我们没有遵守正确的 Python 语法。
+
+当在程序执行期间出现意外情况时，就会发生异常，即使代码在语法上正确无误。Python 有不同类型的内置异常。
+
+指定异常
+
+可以指定要在 except 块中处理哪个错误，如下所示：
+
+try:
+  # some code
+except ValueError:
+  # some code
+
+现在它会捕获 ValueError 异常，但是不会捕获其他异常。如果我们希望该处理程序处理多种异常，我们可以在 except 后面添加异常元组。
+
+try:
+  # some code
+except (ValueError, KeyboardInterrupt):
+  # some code
+
+或者，如果我们希望根据异常执行不同的代码块，可以添加多个 except 块。
+
+try:
+  # some code
+except ValueError:
+  # some code
+except KeyboardInterrupt:
+  # some code
+
+处理除以零的案例：
+
+def create_groups(items, num_groups):
+  try:
+    size = len(items) // num_groups
+  except ZeroDivisionError:
+    print("WARNING: Returning empty list. Please use a nonzero number.")
+    return []
+  else:
+    groups = []
+    for i in range(0, len(items), size):
+      groups.append(items[i:i + size])
+    return groups
+  finally:
+    print("{} groups returned.".format(num_groups))
+print("Creating 6 groups...")
+for group in create_groups(range(32), 6):
+  print(list(group))
+print("\nCreating 0 groups...")
+for group in create_groups(range(32), 0):
+  print(list(group))
+
+正确的输出应该是：
+
+Creating 6 groups...
+
+6 groups returned.
+
+[0, 1, 2, 3, 4]
+
+[5, 6, 7, 8, 9]
+
+[10, 11, 12, 13, 14]
+
+[15, 16, 17, 18, 19]
+
+[20, 21, 22, 23, 24]
+
+[25, 26, 27, 28, 29]
+
+[30, 31]
+
+Creating 0 groups...
+
+WARNING: Returning empty list. Please use a nonzero number.
+
+0 groups returned.
+
+访问错误消息
+
+在处理异常时，依然可以如下所示地访问其错误消息：
+
+try:
+  # some code
+except ZeroDivisionError as e:
+  # some code
+  print("ZeroDivisionError occurred: {}".format(e))
+
+应该会输出如下所示的结果：
+
+ZeroDivisionError occurred: division by zero
+
+如果没有要处理的具体错误，依然可以如下所示地访问消息：
+
+try:
+  # some code
+except Exception as e:
+  # some code
+  print("Exception occurred: {}".format(e))
+
+此处：Exception 是所有内置异常的基础类。
+
+更多Python相关内容感兴趣的读者可查看本站专题：《Python入门与进阶经典教程》、《Python字符串操作技巧汇总》、《Python列表(list)操作技巧总结》、《Python编码操作技巧总结》、《Python数据结构与算法教程》、《Python函数使用技巧总结》及《Python文件与目录操作技巧汇总》
+
+希望本文所述对大家Python程序设计有所帮助。
+

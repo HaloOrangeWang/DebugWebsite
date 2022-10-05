@@ -1,0 +1,48 @@
+
+前言
+
+未加'automationName': 'Uiautomator2'参数使用Uiautomator可以正常使用driver.keyevent()方法，使用Uiautomator2时driver.keyevent()方法报错：
+
+selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not proxy. Proxy error: Could not proxy command to remote server. Original error: 404 - undefined
+
+python V3.6
+
+selenium   V2.53.6
+
+Appium-Python-Client   V0.26
+
+appium  server V1.7.1
+
+Uiautomator2
+
+
+遇到问题
+
+未加'automationName': 'Uiautomator2'参数使用Uiautomator可以正常使用driver.keyevent()方法，使用Uiautomator2时driver.keyevent()方法报错：
+
+调用keyevent方法，执行back事件，对应的code值是4，发现报错
+
+主要原因是Uiautomator2上对keyevent不支持了，用driver.press_keycode()方法可以解决
+
+
+press_keycode 和keyevent
+
+查看press_keycode 和keyevent 源码，发现这2个方法没啥区别，keyevent上面有个备注Needed for Selendroid，可能是老版本里面的功能。
+
+新版本用Uiautomator2可以使用 press_keycode 方法
+
+使用 press_keycode 替换 keyevent即可解决问题
+
+
+keycode相关方法
+
+driver.press_keycode(4)          #发送keycode，功能：按键 Uiautomator2使用keyevent事件报错
+
+driver.keyevent(4)               #发送keycode，功能：按键，与press_keycode无区别 Uiautomator2正常使用
+
+driver.hide_keyboard()           #iOS使用key_name隐藏，安卓不使用参数，功能：隐藏键盘
+
+driver.long_press_keycode(4)     #发送keycode，功能：长按键
+
+appiumQQ交流群:779429633
+

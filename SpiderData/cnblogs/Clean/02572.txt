@@ -1,0 +1,20 @@
+Python版本：Python 3.6 
+pandas.read_csv() 报错 OSError: Initializing from file failed，一般由两种情况引起：一种是函数参数为路径而非文件名称，另一种是函数参数带有中文。
+
+import pandas as pd
+da1=pd.read_csv('F:\\数据源')
+da2=pd.read_csv('F:\\2.0 数据源\\工程清单.csv')
+
+这两种情况报错信息都是一样：
+
+对于第一种情况很简单，原因就是没有把文件名称放到路径的后面，把文件名称添加到路径后面就可以了。还可以在代码中把文件夹切换到目标文件所在文件夹，过程太繁杂，不喜欢也不推荐，所以就不做展示了。 
+第二种情况，即使路径、文件名都完整，还是报错的原因是这个参数中有中文，但是Python3不是已经支持中文了吗？参考了错误原因和pandas的源码，发现调用pandas的read_csv()方法时，默认使用C engine作为parser engine，而当文件名中含有中文的时候，用C engine在部分情况下就会出错。所以在调用read_csv()方法时指定engine为Python就可以解决问题了。
+
+da4=pd.read_csv('F:\\数据源\\工程清单.csv',engine='python')
+
+对于第二种情况还有另外一种解决方法，就是使员工open函数打开文件，再取访问里面的数据：
+
+da3=pd.read_csv(open('F:\\4.0 居配工程监测\\2.0 数据源\\02.南京新居配工程清单.csv'))
+
+好了这个报错的原因都了解了，解决方法也很简单粗暴，是不是很简短简单！
+

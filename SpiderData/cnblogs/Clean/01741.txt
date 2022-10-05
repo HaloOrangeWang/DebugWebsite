@@ -1,0 +1,36 @@
+　
+
+今天在运用Pycharm时遇到一个错误
+
+　　SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape（Unicode unicodeescape”错误）的编解码器不能解码的字节的位置：在2～3 uxxxxxxxx截断
+
+刚开始以为是不识别，于是在python文件的头部加上
+
+#-- coding:utf-8 --
+
+但是加完这个还是报错一脸懵逼呀。
+
+后来在其他文件上操作，原来是路径写的 有问题，错误代码如下
+
+f=('C:\Users\Administrator\PycharmProjects\untitled\full.log')
+
+正确结果
+
+f=('C:\Users\Administrator\PycharmProjects\untitled\full.log')
+
+或者
+
+f=open(r'C:\Users\Administrator\PycharmProjects\untitled\full.log')date= f.read()print(date)
+
+原因：
+
+window 读取文件可以用\，但是在字符串中\是被当作转义字符来使用，所以’d:\a.txt’会被转义成’d:\a.txt’这是正确路径，所以不会报错。
+
+而‘C:\Users\FrankYuan\Pictures\Camera Roll\WIN_20161010_08_51_57_Pro.jpg ’中经过转义之后可能就找不到路径的资源了，例如\t可能就转义成tab键了。
+
+解决办法python在描述路径时可以有多种方式，现列举常见的三种
+
+方式一:转义的方式'd:\a.txt'方式二:显式声明字符串不用转义'd:r\a.txt'
+
+方式三:使用Linux的路径/'d:/a.txt'
+

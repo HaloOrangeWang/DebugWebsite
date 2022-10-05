@@ -1,0 +1,44 @@
+
+报错信息
+
+今天使用Centos Stream 8进行下载软件时报错，错误如下：
+
+上面是报的两个错误，我们一个个来解决:
+
+
+问题一
+
+Configuration: OptionBinding with id “failovermethod” does not exist（配置：ID 为 “failovermethod” 的 OptionBinding 不存在）
+
+1. 首先切换到目录：/etc/yum.repos.d/ 查看源文件
+
+2. 备份源文件信息，并清除无用源文件
+
+3. 注释CentOS-Epel.repo源文件中的failovermethod=priority
+
+第一个问题解决！
+
+
+问题二
+
+Error: Failed to download metadata for repo ‘appstream’: Cannot prepare internal mirrorlist: No URLs in mirrorlist
+
+这个问题需要逐步排查。
+
+1. 查看网路是否出现问题
+
+尝试ping百度进行测试
+
+2. 检查对应的软件源是否出现问题
+
+CentOs Linux 8 从 2021.10.31 号后已经停止维护，所以之后更新镜像需要通过 vault.centos.org来获取更新。
+
+所以需要修改软件源mirrors 地址，具体操作如下：
+
+3. 修改源地址为阿里地址
+
+第二个问题解决！
+
+-----------------------------------
+作者：怒吼的萝卜
+

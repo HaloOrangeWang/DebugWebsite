@@ -1,0 +1,24 @@
+django 执行python manage.py makemigrations
+报错：TypeError: __init__() missing 1 required positional argument: 'on_delete'
+解决方法：由于建表时有外键字段，需要加on_delete参数，如：tea=models.ForeignKey("teacher", on_delete=models.CASCADE)
+由于添加时，误将on_delete=models.CASCADE后面加了括号[on_delete=models.CASCADE()]
+TypeError: CASCADE() missing 4 required positional arguments: 'collector', 'field', 'sub_objs', and 'using'
+
+重新执行：python manage.py makemigrations 命令执行正常
+执行：python manage.py migration 
+时报错：Running migrations:
+        No migrations to apply.
+解决方法：
+第一步：
+
+删除该app名字下的migrations下的__init__.py等文件。
+
+第二步：
+
+进入数据库，找到django_migrations的表，删除该app名字的所有记录。
+
+第三步：执行下面这两条命令：（在项目目录下）
+ 
+python manage.py makemigrations
+python manage.py migrate
+

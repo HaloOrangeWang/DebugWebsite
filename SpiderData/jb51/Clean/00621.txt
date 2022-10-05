@@ -1,0 +1,222 @@
+
+常见触发错误的情况
+
+如果传入的字段多了会自动过滤
+
+如果传入的少了会报错，必填字段
+
+如果传入的字段名称对不上也会报错
+
+如果传入的类型不对会自动转换
+
+如果不能转换则会报错
+
+
+错误的触发
+
+pydantic 会在它正在验证的数据中发现错误时引发 ValidationError
+
+
+注意
+
+验证代码不应该抛出 ValidationError 本身
+
+而是应该抛出 ValueError、TypeError、AssertionError 或他们的子类
+
+ValidationError 会包含所有错误及其发生方式的信息
+
+
+访问错误的方式
+
+e.errors() ：返回输入数据中发现的错误的列表
+
+e.json() ：以 JSON 格式返回错误(推荐)
+
+str(e) ：以人类可读的方式返回错误
+
+
+简单栗子
+
+# 一定要导入 ValidationError
+from pydantic import BaseModel, ValidationError 
+class Person(BaseModel):
+    id: int
+    name: str
+ try:
+    # id是个int类型，如果不是int或者不能转换int会报错
+    p = Person(id="ss", name="hallen")  
+except ValidationError as e:
+　　# 打印异常消息
+    print(e.errors())
+
+e.errors() 的输出结果
+
+[{'loc': ('id',), 'msg': 'value is not a valid integer', 'type': 'type_error.integer'}]
+
+e.json() 的输出结果
+
+[
+  {
+    "loc": [
+      "id"
+    ],
+    "msg": "value is not a valid integer",
+    "type": "type_error.integer"
+  }
+]
+
+str(e) 的输出结果
+
+1 validation error for Person
+id
+  value is not a valid integer (type=type_error.integer)
+
+
+复杂栗子
+
+class Location(BaseModel):
+    lat = 0.1
+    lng = 10.1
+class Model(BaseModel):
+    is_required: float
+    gt_int: conint(gt=42)
+    list_of_ints: List[int] = None
+    a_float: float = None
+    recursive_model: Location = None  
+data = dict(
+    list_of_ints=['1', 2, 'bad'],
+    a_float='not a float',
+    recursive_model={'lat': 4.2, 'lng': 'New York'},
+    gt_int=21
+) 
+try:
+    Model(**data)
+except ValidationError as e:
+    print(e.json(indent=4))
+
+输出结果
+
+[
+    {
+        "loc": [
+            "is_required"
+        ],
+        "msg": "field required",
+        "type": "value_error.missing"
+    },
+    {
+        "loc": [
+            "gt_int"
+        ],
+        "msg": "ensure this value is greater than 42",
+        "type": "value_error.number.not_gt",
+        "ctx": {
+            "limit_value": 42
+        }
+    },
+    {
+        "loc": [
+            "list_of_ints",
+            2
+        ],
+        "msg": "value is not a valid integer",
+        "type": "type_error.integer"
+    },
+    {
+        "loc": [
+            "a_float"
+        ],
+        "msg": "value is not a valid float",
+        "type": "type_error.float"
+    },
+    {
+        "loc": [
+            "recursive_model",
+            "lng"
+        ],
+        "msg": "value is not a valid float",
+        "type": "type_error.float"
+    }
+]
+
+value_error.missing：必传字段缺失
+
+value_error.number.not_gt：字段值没有大于 42
+
+type_error.integer：字段类型错误，不是 integer
+
+
+自定义错误
+
+# 导入 validator
+from pydantic import BaseModel, ValidationError, validator 
+class Model(BaseModel):
+    foo: str
+ 
+    # 验证器
+    @validator('foo')
+    def name_must_contain_space(cls, v):
+        if v != 'bar':
+            # 自定义错误信息
+            raise ValueError('value must be bar')
+        # 返回传进来的值
+        return v 
+try:
+    Model(foo="ber")
+except ValidationError as e:
+    print(e.json())
+
+输出结果
+
+[
+  {
+    "loc": [
+      "foo"
+    ],
+    "msg": "value must be bar",
+    "type": "value_error"
+  }
+]
+
+
+自定义错误模板类
+
+from pydantic import BaseModel, PydanticValueError, ValidationError, validator 
+class NotABarError(PydanticValueError):
+    code = 'not_a_bar'
+    msg_template = 'value is not "bar", got "{wrong_value}"' 
+class Model(BaseModel):
+    foo: str
+ 
+    @validator('foo')
+    def name_must_contain_space(cls, v):
+        if v != 'bar':
+            raise NotABarError(wrong_value=v)
+        return v
+  try:
+    Model(foo='ber')
+except ValidationError as e:
+    print(e.json())
+
+输出结果
+
+[
+  {
+    "loc": [
+      "foo"
+    ],
+    "msg": "value is not \"bar\", got \"ber\"",
+    "type": "value_error.not_a_bar",
+    "ctx": {
+      "wrong_value": "ber"
+    }
+  }
+]
+
+
+PydanticValueError
+
+自定义错误类需要继承这个或者 PydanticTypeError
+
+以上就是Python编程pydantic触发及访问错误处理的详细内容，更多关于pydantic触发及访问错误的资料请关注脚本之家其它相关文章！
+

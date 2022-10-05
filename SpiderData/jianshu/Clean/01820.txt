@@ -1,0 +1,74 @@
+日期：2020-11-04
+
+macos版本：10.15.7
+
+Python版本：anaconda python 3.8
+
+CPU：AMD Ryzen5 3600
+
+参考文档：
+
+http://bbs.pcbeta.com/forum.php?mod=viewthread&tid=1860593
+
+https://gist.github.com/naveenkrdy/26760ac5135deed6d0bb8902f6ceb6bd
+
+https://github.com/pytorch/pytorch/issues/31106
+
+报错原因：mac上的Python包numpy和pytorch以及adobe系软件依赖Intel MKL，MKL是英特尔数学核心函数库，AMD安装黑苹果时，MKL_DEBUG_CPU_TYPE会被错误地自动设置为0，导致numpy和pytorch以及adobe软件在读取这个配置时报错。
+
+解决方法：似乎MKL_DEBUG_CPU_TYPE设置为5时表示avx2指令集，所以对于支持avx2指令集的处理器（比如Ryzen），可以将MKL_DEBUG_CPU_TYPE设置为5。可以在终端中执行export MKL_DEBUG_CPU_TYPE=5然后再启动Python并引入numpy包试一下看会不会再报错。
+
+如果在终端中尝试有效，则复制以下命令到终端，并回车，使这个设置永久生效：
+
+（此脚本参考https://github.com/pytorch/pytorch/issues/31106，如果你是想解决Adobe软件的问题，则原文档中还有另一个脚本需要执行）
+
+[ ! -d $HOME/Library/LaunchAgents ] && mkdir $HOME/Library/LaunchAgents
+
+AGENT=$HOME/Library/LaunchAgents/environment.plist
+
+sysctl -n machdep.cpu.brand_string | grep FX  >/dev/null 2>&1 #判断处理器是不是AMD FX系列
+
+x=$(echo $(($? != 0 ? 5 : 4))) #如果是FX系列则x=4，否则x=5
+
+cat >$AGENT <<EOF
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+<plist version="1.0">
+
+<dict>
+
+<key>Label</key>
+
+<string>mkl-debug</string>
+
+<key>ProgramArguments</key>
+
+<array>
+
+<string>sh</string>
+
+<string>-c</string>
+
+<string>launchctl setenv MKL_DEBUG_CPU_TYPE $x;</string>
+
+</array>
+
+<key>RunAtLoad</key>
+
+<true/>
+
+</dict>
+
+</plist>
+
+EOF
+
+launchctl load ${AGENT} >/dev/null 2>&1
+
+launchctl start ${AGENT} >/dev/null 2>&1
+
+执行后重启软件生效。
+

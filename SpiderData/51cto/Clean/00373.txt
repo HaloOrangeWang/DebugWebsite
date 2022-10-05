@@ -1,0 +1,240 @@
+我在使用阿里云centos7.4布置django网站的时候，因为自带的是python2，而我需要的是python3。为了图方便我安装了anaconda来引入python3，但是造成了不少的环境混乱的问题，在启动uwsgi的时候会报错找不到python。
+
+
+安装uwsgi
+
+# 在这里默认你的pip3已经添加到环境
+pip install uwsgi
+
+1
+
+2
+
+如果pip无法使用，可以在/etc/profile 文件最后添加Anaconda环境路径
+
+# Anaconda
+export PATH=$PATH:/root/anaconda3/bin
+
+1
+
+2
+
+
+测试uwsgi是否安装成功
+
+随便找个干净的目录下(我这里找的/home)新建一个py文件
+
+cd /home
+vim test.py
+
+1
+
+2
+
+在里面写上
+
+# test.py
+def application(env, start_response):
+    start_response('200 OK', [('Content-Type','text/html')])
+    return [b"Hello World"] # python3
+
+1
+
+2
+
+3
+
+4
+
+然后在当前目录下执行
+
+uwsgi --http :8000 --wsgi-file test.py
+
+1
+
+这里的8000端口是可以随意写的，也可以写8001,8080都没问题，但是要注意在阿里云的安全组里面开放相应的端口号，不然是无法访问的~
+
+在浏览器输入# 你的ip:8000
+如果能够看到"Hello World"就成功啦，说明uwsgi没问题
+
+
+配置连接django的uwgi的.ini文件
+
+进入你的django目录
+
+cd /path/to/your/django
+
+1
+
+创建uwsgi.ini文件，该文件是用来和django，nginx联系的，创建该文件启动就不需要再用命令行大量加后缀了
+
+#声明这是个uwsgi文件
+[uwsgi]
+# 设置端口号socket，和nginx实现通讯，需要和nginx的配置相同，如果直接访问需要设置http
+socket = 127.0.0.1:8000  
+# 你的django项目目录
+chdir = /home/mysite 
+# 配置wsgi接口模块文件路径
+wsgi-file= /home/mysite/.../wsgi.py
+# Django的uwsgi项目名
+module = mysite.wsgi  
+# 启动管理主进程
+master = true
+# 每个进程的线程数
+threads = 2
+# 启动的进程数
+processes = 4
+# 配置存放主进程的进程号文件
+pidfile = uwsgi.pid
+# 日志记录
+daemonize = uwsgi.log
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+
+20
+
+当然这里面还有很多很多其他的配置，有需要的可以查看官方文档
+
+尝试运行uwsgi.ini
+
+uwsgi --ini uwsgi.ini
+
+1
+
+重点来了，运行报错了!
+查看uwsgi.log
+
+
+错误日志
+
+*** Starting uWSGI 2.0.18 (64bit) on [Mon Apr 6 13:32:46 2020] ***
+compiled with version: 4.8.5 20150623 (Red Hat 4.8.5-39) on 20 January 2020 05:57:29
+os: Linux-3.10.0-1062.18.1.el7.x86_64 #1 SMP Tue Mar 17 23:49:17 UTC 2020
+nodename: iz2iu53qtx793rz
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 1
+current working directory: /data/ecust-job/Project
+writing pidfile to /data/ecust-job/Project/project-master.pid
+detected binary path: /root/anaconda3/bin/uwsgi
+uWSGI running as root, you can use --uid/–gid/–chroot options
+setgid() to 2000
+setuid() to 1000
+chdir() to /data/ecust-job/Project
+your processes number limit is 65535
+your memory page size is 4096 bytes
+detected max file descriptor number: 65535
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:8000 fd 3
+Python version: 3.7.4 (default, Aug 13 2019, 20:35:49) [GCC 7.3.0]
+Could not find platform independent libraries
+Could not find platform dependent libraries <exec_prefix>
+Consider setting $PYTHONHOME to [:<exec_prefix>]
+Fatal Python error: initfsencoding: Unable to get the locale encoding
+ModuleNotFoundError: No module named 'encodings’
+
+
+解决方案，添加虚拟环境
+
+这个问题困扰了我好久，一直解决不了，查阅了很多资料都不成，一度怀疑是anaconda的环境在搞我心态
+直到后来看了b站的教学视频，才搞明白是要用虚拟环境启动，不能用本地环境…
+
+pip install virtualenv
+cd /
+virtualenv Env
+cd /Env/bin
+
+1
+
+2
+
+3
+
+4
+
+# 启动虚拟环境  
+source activate
+# 关闭
+deactivate
+
+1
+
+2
+
+3
+
+4
+
+然后在uwsgi.ini下添加home
+
+# 虚拟环境
+home=/Env
+
+1
+
+2
+
+运行成功
+
+
+其他错误
+
+比如：
+
+bind(): Cannot assign requested address [core/socket.c line 769]
+
+1
+
+这是端口占用，将端口释放即可
+
+netstat -apn|grep 8000
+kill -9 (对应的进程)
+
+1
+
+2
+
+
+参考
+
+[1]javascript:void(0)
+[2]https://www.jianshu.com/p/0e85cf58e677
+

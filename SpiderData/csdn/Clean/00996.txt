@@ -1,0 +1,29 @@
+报错的原因是本机用户名为中文，将该报错的Unicode字符在word中使用Alt+X命令转换中文，可以发现是你本机用户名的第一个汉字。
+ 鉴于此，解决的办法是：
+ 1、新建一个英文的用户名，每次需要安装所需的python包时注销当前中文用户，登录到该英文用户下安装。或用该用户名，删除原用户名。
+ 2、或者一劳永逸，修改修改用户名与目录名。
+ 修改C:\Users下的用户名，参考：
+ http://www.jb51.net/os/Windows8/66011.html
+
+![Uploading Paste_Image_382107.png . . .]
+
+Exception:
+ Traceback (most recent call last):
+ File "C:\Python27\lib\site-packages\pip\basecommand.py", line 215, in main
+ status = self.run(options, args)
+ File "C:\Python27\lib\site-packages\pip\commands\install.py", line 310, in run
+
+wb.build(autobuilding=True)
+
+File "C:\Python27\lib\site-packages\pip\wheel.py", line 836, in build
+ path_to_url(wheel_file))
+ File "C:\Python27\lib\site-packages\pip\download.py", line 457, in path_to_url
+
+url = urllib_parse.urljoin('file:', urllib_request.pathname2url(path))
+
+File "C:\Python27\lib\nturl2path.py", line 67, in pathname2url
+ path = path + '/' + urllib.quote(comp)
+ File "C:\Python27\lib\urllib.py", line 1303, in quote
+ return ''.join(map(quoter, s))
+ KeyError: u'\u98de'
+

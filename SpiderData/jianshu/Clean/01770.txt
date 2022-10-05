@@ -1,0 +1,12 @@
+直接用mktime会报错：Out of range，是因为只能时间戳只能传入1970以后的时间。
+
+下面是解决方法：
+
+datetime转换成时间戳：
+
+timestamp = (dtime - datetime.datetime(1970, 1, 1)).total_seconds()
+
+时间戳转换成datetime：
+
+times = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=timestamp)
+

@@ -1,0 +1,18 @@
+今天在执行脚本的时候，unittest引入报错(报错如下:)
+
+AttributeError: 'module' object has no attribute 'TestResult'
+
+最后发现是因为我文件的名字叫unittest 和我要引入的包名字一样，修改后再删除生成的 .pyc文件，脚本执行正常
+
+问题解决方法：
+
+1. 命名py脚本时，不要与python预留字，模块名等相同
+
+2. 删除.pyc文件（因为py脚本每次运行时均会生成.pyc文件；在已经生成.pyc文件的情况下，若代码不更新，运行时依旧会走pyc，所以要删除.pyc文件），重新运行代码。
+
+附录:
+
+pyc文件介绍
+
+pyc文件，是python编译后的字节码（bytecode）文件。只要你运行了py文件，python编译器就会自动生成一个对应的pyc字节码文件。这个pyc字节码文件，经过python解释器，会生成机器码运行（这也是为什么pyc文件可以跨平台部署，类似于java的跨平台，java中JVM运行的字节码文件）。下次调用直接调用pyc，而不调用py文件。直到你这个py文件有改变。python解释器会检查pyc文件中的生成时间，对比py文件的修改时间，如果py更新，那么就生成新的pyc。
+

@@ -1,0 +1,119 @@
+
+环境配置
+
+操作系统：Windows10
+
+Apache版本：Apache/2.4.41 (Win64)
+
+MySQL版本：Ver 8.0.17 for Win64 on x86_64
+
+TestLink版本：1.9.19
+
+
+事件经过
+
+错误发生在TestLink的安装引导第4步
+
+Create DB, testlink DB user, structures and default data & create configuration file.
+
+在网页上的报错情况如下图所示：
+
+然而在网页上的报错只能看出是TestLink执行创建数据库的脚本时出错，具体原因要去log里找
+
+log一般放在/testlink/logs目录下，打开log可以发现
+
+userlog0.log
+
+[>>][5d70612922bd6680329335][DEFAULT][/testlink/install/installCheck.php][19/Sep/5 01:13:13]
+
+[<<][5d70612922bd6680329335][DEFAULT][/testlink/install/installCheck.php][19/Sep/5 01:13:13][19/Sep/5 01:13:13][took 0.576229 secs]
+
+[>>][5d7061ab10742000849940][DEFAULT][/testlink/install/installNewDB.php][19/Sep/5 01:15:23]
+
+[19/Sep/5 01:15:23][ERROR][<nosession>][DATABASE]
+
+ERROR ON exec_query() - database.class.php <br />1064 - You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'IDENTIFIED BY '123456'' at line 1 - GRANT SELECT, UPDATE, DELETE, INSERT ON testlink.* TO 'testlink'@'localhost' IDENTIFIED BY '123456'<br />THE MESSAGE : GRANT SELECT, UPDATE, DELETE, INSERT ON testlink.* TO 'testlink'@'localhost' IDENTIFIED BY '123456'
+
+Query failed: errorcode[1064]
+
+errormsg:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'IDENTIFIED BY '123456'' at line 1
+
+[<<][5d7061ab10742000849940][DEFAULT][/testlink/install/installNewDB.php][19/Sep/5 01:15:23][19/Sep/5 01:15:23][took 0.150082 secs]
+
+竟然是创建TestLink DB的sql语句报errorcode1064，当时我就纳闷了不应该啊，这语法怎么看怎么没问题
+
+然后我不信邪打开本地的数据库手动执行了一遍语句，真的报错了
+
+这时我想，不会是MySQL语法更新了吧，我马上打开官方文档开始查起来
+
+
+出错原因
+
+原来从MySQL8开始，创建用户和赋予权限2个语句已经分开来了，不能再像以前一样GRANT的同时创建用户
+
+旧版语句
+
+GRANT 权限列表 ON 数据库 TO '用户名'@'访问主机' IDENTIFIED BY '密码';
+
+新版语句
+
+创建用户：CREATE USER '用户名'@'访问主机' IDENTIFIED BY '密码';
+
+赋予权限：GRANT 权限列表 ON 数据库 TO '用户名'@'访问主机';
+
+
+解决办法
+
+既然TestLink的脚本没有同步更新语句，这里我想到2种办法
+
+1.将MySQL退回8以下版本
+
+2.自己手动更新TestLink脚本
+
+这里我选择第2种方法：
+
+第一步
+
+因为TestLink脚本里没有创建账户语句，所以我们先在数据库里手动执行语句
+
+CREATE USER 'testlink'@'localhost' IDENTIFIED BY '123456';
+
+注：如果是用连接工具，比如navicat之类执行创建语句，需要手动再执行语句
+
+ALTER USER 'testlink'@'localhost' IDENTIFIED WITH mysql_native_password BY '123456';
+
+因为这类工具默认的加密方式为mysql_native_password
+
+而MySQL8用的是caching_sha2_password
+
+第二步
+
+打开/testlink/install目录下的installUtils.php
+
+将498行的$stmt注释掉
+
+if (strlen(trim($db_host)) != 0)
+{
+  $stmt .= "@" . "'" . $dbhandler->prepare_string($db_host) . "'";
+}         
+#$stmt .= " IDENTIFIED BY '" .  $passwd . "'";
+
+再找到523行的$stmt，删除代码尾部的IDENTIFIED BY语句
+
+$stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
+             "`" . $dbhandler->prepare_string($db_name) . "`" . ".* TO " . 
+             "'" . $dbhandler->prepare_string($login) . "'@'localhost'";
+
+第三步
+
+最后重新执行TestLink安装引导，就成功了！
+
+
+感悟
+
+平时公司上班时的环境都是选择相对稳定的旧版本，轻易不会升级
+
+也只有像这次自己电脑安装TestLink玩时，因为下了各个环境最新版本才会发现这种问题
+
+想起自己用惯的python2.7马上要停止维护了，最近才迫不得已逼迫自己适应起了python3，果然干it这行墨守成规早晚是要吃亏的-_-II
+

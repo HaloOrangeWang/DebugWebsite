@@ -1,0 +1,29 @@
+在Django的项目中安装了kafka-python，但是不能正常运行，直接就报错了。
+
+import sys
+from kafka import KafkaConsumer
+
+def kafkatest():
+    print "Step 1 complete"
+    consumer=KafkaConsumer('test',bootstrap_servers=['localhost:9092'])
+    for message in consumer:
+        print "Next message"
+        print message
+
+if __name__=="__main__":
+    kafkatest()
+
+然后在使用时，报错提示：ImportError: cannot import name 'KafkaConsumer'
+
+找了半天没有找到解决方案，最后发现自己创建的文件名叫做：kafka.py，突然意识到问题出在哪里了。
+
+原因：
+
+简单说就是因为，创建的文件名是kafka.py，这会导致代码运行时，python解释器查找kafka的模块时，就找到自身（kafka.py）了，所以就报错。
+
+解决办法：
+
+修改文件名字为其他名字，比如：com_kafka.py，在运行就可以运行了。
+
+本文首发于BigYoung小站
+

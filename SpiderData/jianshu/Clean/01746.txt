@@ -1,0 +1,56 @@
+代码如下：
+
+from tkinter import *
+from PIL import Image,ImageTk
+
+class Window(Frame):
+
+def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.master = master
+        self.init_window()
+
+def init_window(self):
+        self.master.title("第一个窗体")
+
+self.pack(fill=BOTH, expand=1)
+
+# 实例化一个Menu对象，这个在主窗体添加一个菜单
+        menu = Menu(self.master)
+        self.master.config(menu=menu)
+
+# 创建File菜单，下面有Save和Exit两个子菜单
+        file = Menu(menu)
+        file.add_command(label='Save')
+        file.add_command(label='Exit', command=self.client_exit)
+        menu.add_cascade(label='File', menu=file)
+
+# 创建Edit菜单，下面有一个Undo菜单
+        edit = Menu(menu)
+        edit.add_command(label='Undo')
+        edit.add_command(label='Show  Image', command=self.showImg)
+        edit.add_command(label='Show  Text', command=self.showTxt)
+        menu.add_cascade(label='Edit', menu=edit)
+
+def client_exit(self):
+        exit()
+
+def showImg(self):
+        load = Image.open('picture.jpg')  # 图片放项目.py的路径下
+        render = ImageTk.PhotoImage(load)
+
+img = Label(self, image=render)
+        img.image = render
+        img.place(x=1, y=0)
+
+def showTxt(self):
+        text = Label(self, text='GUI图形编程')
+        text.pack()
+
+root = Tk()
+root.geometry("1060x980")
+app = Window(root)
+root.mainloop()
+
+运行，点击Edit菜单下的Show Image，会显示一张图片，点击Show Text会出现一行文本。
+

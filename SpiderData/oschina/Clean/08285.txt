@@ -1,0 +1,98 @@
+关键字：stride，步长
+
+关键字：stride，步长
+
+问题描述：在使用fluid.nets.simple_img_conv_pool()接口建立一个卷积神经网络时，当通过参数stride设置卷积操作的滑动步长，在训练的时候报错，提示stride参数不存在。
+
+问题描述：在使用fluid.nets.simple_img_conv_pool()接口建立一个卷积神经网络时，当通过参数stride设置卷积操作的滑动步长，在训练的时候报错，提示stride参数不存在。
+
+报错信息：
+
+报错信息：
+
+<ipython-input-7-b3ae5da446df> in main()
+     10 
+     11     trainer = Trainer(
+---> 12         train_func=train_program, place=place, optimizer_func=optimizer_program)
+     13 
+     14     # Save the parameter into a directory. The Inferencer can load the parameters from it to do infer
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/contrib/trainer.py in __init__(self, train_func, optimizer_func, param_path, place, parallel, checkpoint_config)
+    257 
+    258         with framework.program_guard(self.train_program, self.startup_program):
+--> 259             program_func_outs = train_func()
+    260             self.train_func_outputs = program_func_outs if isinstance(
+    261                 program_func_outs, list) else [program_func_outs]
+
+<ipython-input-6-e0d473e7889c> in train_program()
+      5     # predict = softmax_regression() # uncomment for Softmax
+      6     # predict = multilayer_perceptron() # uncomment for MLP
+----> 7     predict = convolutional_neural_network()  # uncomment for LeNet5
+      8 
+      9     # Calculate the cost from the prediction and label.
+
+<ipython-input-4-0966b62f60c9> in convolutional_neural_network()
+      9         pool_size=2,
+     10         pool_stride=2,
+---> 11         act="relu")
+     12     conv_pool_1 = fluid.layers.batch_norm(conv_pool_1)
+     13     # second conv pool
+
+TypeError: simple_img_conv_pool() got an unexpected keyword argument 'stride'
+
+问题复现：使用fluid.nets.simple_img_conv_pool()定义一个卷积神经网络，并使用stride参数设置卷积操作的滑动步长。最后使用这个卷积神经网络进行训练，便出现该问题。错误代码如下：
+
+def convolutional_neural_network():
+    img = fluid.layers.data(name='img', shape=[1, 28, 28], dtype='float32')
+    # first conv pool
+    conv_pool_1 = fluid.nets.simple_img_conv_pool(
+        input=img,
+        filter_size=5,
+        num_filters=20,
+        stride=1,
+        pool_size=2,
+        pool_stride=2,
+        act="relu")
+    conv_pool_1 = fluid.layers.batch_norm(conv_pool_1)
+    # second conv pool
+    conv_pool_2 = fluid.nets.simple_img_conv_pool(
+        input=conv_pool_1,
+        filter_size=5,
+        num_filters=50,
+        stride=1,
+        pool_size=2,
+        pool_stride=2,
+        act="relu")
+    prediction = fluid.layers.fc(input=conv_pool_2, size=10, act='softmax')
+    return prediction
+
+问题解决：错误的原因是fluid.nets.simple_img_conv_pool()接口没有stride这个参数，如果需要设置卷积操作的滑动步长，可以使用这个paddle.fluid.layers.conv2d()接口，这个接口有stride参数可以设置卷积操作的步长。
+
+def convolutional_neural_network():
+    img = fluid.layers.data(name='img', shape=[1, 28, 28], dtype='float32')
+    # first conv pool
+    conv_pool_1 = fluid.nets.simple_img_conv_pool(
+        input=img,
+        filter_size=5,
+        num_filters=20,
+        pool_size=2,
+        pool_stride=2,
+        act="relu")
+    conv_pool_1 = fluid.layers.batch_norm(conv_pool_1)
+    # second conv pool
+    conv_pool_2 = fluid.nets.simple_img_conv_pool(
+        input=conv_pool_1,
+        filter_size=5,
+        num_filters=50,
+        pool_size=2,
+        pool_stride=2,
+        act="relu")
+    prediction = fluid.layers.fc(input=conv_pool_2, size=10, act='softmax')
+    return prediction
+
+问题拓展：卷积操作的需要使用到的参数有：滑动步长(stride)、填充长度(padding)、卷积核窗口大小(filter size)、分组数(groups)、扩张系数(dilation rate)。针对卷积操作，PaddlePaddle提供了这个接口paddle.fluid.layers.conv2d。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

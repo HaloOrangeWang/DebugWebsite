@@ -1,0 +1,59 @@
+
+java.lang.NoClassDefFoundError: Lorg/apache/log4j/Logger报错
+
+
+错误提示：
+
+
+java.lang.NoClassDefFoundError: Lorg/apache/log4j/Logger报错(lib包没有导入)
+
+第一步、检查maven的配置：
+
+maven管理的项目,里面已经引入了log4j的包
+
+maven引入如下:
+
+<dependency>
+
+<groupId>log4j</groupId>
+
+<artifactId>log4j</artifactId>
+
+<version>1.2.16</version>
+
+<scope>compile</scope>
+
+</dependency>
+
+确定引入了log4j的包。
+
+第二步、检查builder的项目
+
+在编译的过程中，已经包括了log4j的包。
+
+第三步、检查部署
+
+错误的项目是没有maven dependencies这一项的，需要add，选择add按钮，
+
+添加以后，然后，从新部署下项目。成功运行！
+
+========================================
+
+上面这些是网上找的，但是我并没有用到。
+
+但是另一个同事却是用到了上文的 第三步 解决了同样的问题，故在这里标记下。
+
+我的问题是：
+
+从svn检出一个项目，运行就报错，  by cause :java.lang.NoClassDefFoundError: Lorg/apache/log4j/Logger
+
+问题处理方法：
+
+但是检查项目，发现  jar 包都在，项目名上有个小红叉号，但是项目里面代码中又没有问题，在 problems 窗口 显示 是项目 编译错误
+
+检查该项目的 pom 文件，发现 其依赖了两个本地的其他maven项目，于是想着把 其依赖的另外两个项目  maven install 一下，结果发现 install 居然报错，无法安装到 仓库，
+
+经过一番折腾，发现是 Eclipse的  preference中的 Java—— Installd JREs 中的 路径配置成了 jre的目录，将其改为 jdk 的目录 后，再 install 就可以了。
+
+将两个被 依赖的 项目 install 完成后，再次 启动原来报错的目标项目，就不报错了。
+

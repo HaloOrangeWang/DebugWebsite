@@ -1,0 +1,35 @@
+### 报错/ERROR ld: cannot find -lOSMesa
+
+### need to install Mesa
+
+#### Ubuntu18.04 and above:
+```
+apt install *OSmesa*
+```
+
+#### Ubuntu16.04 and low
+-- 
+1. Download source: (i using mesa-19.2.0 )
+https://gitlab.freedesktop.org/mesa/mesa
+
+2. build source:
+```
+meson configure build/ -Dosmesa=classic
+ninja -C build/
+ninja -C build/ install
+```
+3. success result: 
+./build/src/mesa/drivers/osmesa/libOSMesa.so
+
+、usr/bin/ld: cannot find -lGL
+
+原因是 ： 缺少一个lib （ libgl1-mesa-dev ）
+
+
+bin/ld: cannot find -lGLU
+
+安装：
+
+apt install libglu1-mesa
+apt install libglu1-mesa-dev
+

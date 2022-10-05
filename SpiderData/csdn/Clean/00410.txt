@@ -1,0 +1,46 @@
+
+pip install mysql-python或python setup.py install安装报错
+
+C:\Users\16283\Desktop\MySQL-python-1.2.5 (1)\MySQL-python-1.2.5>python setup.py install
+running install
+running bdist_egg
+running egg_info
+writing MySQL_python.egg-info\PKG-INFO
+writing dependency_links to MySQL_python.egg-info\dependency_links.txt
+writing top-level names to MySQL_python.egg-info\top_level.txt
+reading manifest file 'MySQL_python.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'MySQL_python.egg-info\SOURCES.txt'
+installing library code to build\bdist.win-amd64\egg
+running install_lib
+running build_py
+creating build
+creating build\lib.win-amd64-3.7
+copying _mysql_exceptions.py -> build\lib.win-amd64-3.7
+creating build\lib.win-amd64-3.7\MySQLdb
+copying MySQLdb\__init__.py -> build\lib.win-amd64-3.7\MySQLdb
+copying MySQLdb\converters.py -> build\lib.win-amd64-3.7\MySQLdb
+copying MySQLdb\connections.py -> build\lib.win-amd64-3.7\MySQLdb
+copying MySQLdb\cursors.py -> build\lib.win-amd64-3.7\MySQLdb
+copying MySQLdb\release.py -> build\lib.win-amd64-3.7\MySQLdb
+copying MySQLdb\times.py -> build\lib.win-amd64-3.7\MySQLdb
+creating build\lib.win-amd64-3.7\MySQLdb\constants
+copying MySQLdb\constants\__init__.py -> build\lib.win-amd64-3.7\MySQLdb\constants
+copying MySQLdb\constants\CR.py -> build\lib.win-amd64-3.7\MySQLdb\constants
+copying MySQLdb\constants\FIELD_TYPE.py -> build\lib.win-amd64-3.7\MySQLdb\constants
+copying MySQLdb\constants\ER.py -> build\lib.win-amd64-3.7\MySQLdb\constants
+copying MySQLdb\constants\FLAG.py -> build\lib.win-amd64-3.7\MySQLdb\constants
+copying MySQLdb\constants\REFRESH.py -> build\lib.win-amd64-3.7\MySQLdb\constants
+copying MySQLdb\constants\CLIENT.py -> build\lib.win-amd64-3.7\MySQLdb\constants
+running build_ext
+building '_mysql' extension
+creating build\temp.win-amd64-3.7
+creating build\temp.win-amd64-3.7\Release
+F:\Program Files (x86)\Visual Studio 2017\VC\Tools\MSVC\14.13.26128\bin\HostX86\x64\cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -Dversion_info=(1,2,5,'final',1) -D__version__=1.2.5 "-IC:\Program Files (x86)\MySQL\MySQL Connector C 6.0.2\include" -ID:\python\include -ID:\python\include "-IF:\Program Files (x86)\Visual Studio 2017\VC\Tools\MSVC\14.13.26128\ATLMFC\include" "-IF:\Program Files (x86)\Visual Studio 2017\VC\Tools\MSVC\14.13.26128\include" "-IC:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\ucrt" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\shared" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\um" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\winrt" "-IC:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\cppwinrt" /Tc_mysql.c /Fobuild\temp.win-amd64-3.7\Release\_mysql.obj /Zl
+_mysql.c
+_mysql.c(42): fatal error C1083: 无法打开包括文件: “config-win.h”: No such file or directory
+error: command 'F:\\Program Files (x86)\\Visual Studio 2017\\VC\\Tools\\MSVC\\14.13.26128\\bin\\HostX86\\x64\\cl.exe' failed with exit status 2
+
+
+其实很简单：mysql-python不支持python3.x，而与之功能相同的pymysql支持python3，所以安装pymysql模块即可
+

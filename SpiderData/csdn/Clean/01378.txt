@@ -1,0 +1,126 @@
+pip install numpy 时 报错：
+
+Traceback (most recent call last):
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_vendor\urllib3\response.py", line 331, in _error_catcher
+
+yield
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_vendor\urllib3\response.py", line 413, in read
+
+data = self._fp.read(amt)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_vendor\cachecontrol\filewrapper.py", line 62, in read
+
+data = self.__fp.read(amt)
+
+File "d:\学习\python\python-3.6.5\lib\http\client.py", line 449, in read
+
+n = self.readinto(b)
+
+File "d:\学习\python\python-3.6.5\lib\http\client.py", line 493, in readinto
+
+n = self.fp.readinto(b)
+
+File "d:\学习\python\python-3.6.5\lib\socket.py", line 586, in readinto
+
+return self._sock.recv_into(b)
+
+File "d:\学习\python\python-3.6.5\lib\ssl.py", line 1009, in recv_into
+
+return self.read(nbytes, buffer)
+
+File "d:\学习\python\python-3.6.5\lib\ssl.py", line 871, in read
+
+return self._sslobj.read(len, buffer)
+
+File "d:\学习\python\python-3.6.5\lib\ssl.py", line 631, in read
+
+v = self._sslobj.read(len, buffer)
+
+socket.timeout: The read operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\basecommand.py", line 141, in main
+
+status = self.run(options, args)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\commands\install.py", line 299, in run
+
+resolver.resolve(requirement_set)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\resolve.py", line 102, in resolve
+
+self._resolve_one(requirement_set, req)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\resolve.py", line 256, in _resolve_one
+
+abstract_dist = self._get_abstract_dist_for(req_to_install)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\resolve.py", line 209, in _get_abstract_dist_for
+
+self.require_hashes
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\operations\prepare.py", line 283, in prepare_linked_requirement
+
+progress_bar=self.progress_bar
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\download.py", line 836, in unpack_url
+
+progress_bar=progress_bar
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\download.py", line 673, in unpack_http_url
+
+progress_bar)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\download.py", line 897, in _download_http_url
+
+_download_url(resp, link, content_file, hashes, progress_bar)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\download.py", line 617, in _download_url
+
+hashes.check_against_chunks(downloaded_chunks)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\utils\hashes.py", line 48, in check_against_chunks
+
+for chunk in chunks:
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\download.py", line 585, in written_chunks
+
+for chunk in chunks:
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\utils\ui.py", line 159, in iter
+
+for x in it:
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_internal\download.py", line 574, in resp_read
+
+decode_content=False):
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_vendor\urllib3\response.py", line 465, in stream
+
+data = self.read(amt=amt, decode_content=decode_content)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_vendor\urllib3\response.py", line 430, in read
+
+raise IncompleteRead(self._fp_bytes_read, self.length_remaining)
+
+File "d:\学习\python\python-3.6.5\lib\contextlib.py", line 99, in __exit__
+
+self.gen.throw(type, value, traceback)
+
+File "d:\学习\python\python-3.6.5\lib\site-packages\pip\_vendor\urllib3\response.py", line 336, in _error_catcher
+
+raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+
+pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+解决：使用映像安装
+
+格式：pip install 包名 -i https://pypi.doubanio.com/simple
+
+pip install numpy -i https://pypi.doubanio.com/simple
+

@@ -1,0 +1,42 @@
+示例代码：
+
+映射URL
+
+打开项目主文件夹learning_log中的文件urls.py，我们需要包含learning_logs的URL：
+
+from django.conf.urls import include, url
+from django.contrib import admin
+
+练习中 django版本：3.0.3
+
+实验中urls.py：
+
+from django.contrib import admin
+from django.urls import path
+
+报错：
+
+File "D:\python_work\learning_log\learning_log\urls.py", line 22, in <module>
+    path('',learning_logs.urls),
+NameError: name 'learning_logs' is not defined
+
+解决办法：
+
+path('',’learning_logs.urls‘),
+
+继续报错：
+
+查看path用法之一：
+
+urls.py:13: 1. Import the include() function: from django.urls import include, path
+urls.py:14: 2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+
+解决办法：
+
+from django.contrib import admin
+from django.urls import include,path
+
+如果使用
+
+namespace='learning_logs'
+

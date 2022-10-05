@@ -1,0 +1,12 @@
+明明我只是简单跑了一个数据清洗28W数据的python脚本，不知道怎么就报错如下：
+
+too many threads running within your python process
+
+The "can't start new thread" error almost certainly due to the fact that you have already have too many threads running within your python process,
+
+and due to a resource limit of some kind the request to create a new thread is refused. You should probably look at the number of threads you're creating; the maximum number you will be able to create will be determined by your environment,
+
+but it should be in the order of hundreds at least.  It would probably be a good idea to re-think your architecture here;
+
+seeing as this is running asynchronously anyhow, perhaps you could use a pool of threads to fetch resources from another site instead of always starting up a thread for every request. Another improvement to consider is your use of Thread.join and Thread.stop; this would probably be better accomplished by providing a timeout value to the constructor of HTTPSConnection.
+

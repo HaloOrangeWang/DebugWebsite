@@ -1,0 +1,24 @@
+在写一个绝对值输出时，x定义为input()，结果报错
+
+报错内容：Traceback (most recent call last):
+
+File "c:/Users/zhanghao/Desktop/练习/test.py", line 8, in <module>
+
+print("输出结果为：%s" %my_abs(x))
+
+File "c:/Users/zhanghao/Desktop/练习/test.py", line 4, in my_abs
+
+if x >= 0:
+
+TypeError: '>=' not supported between instances of 'str' and 'int'
+
+分析：input()返回的数据类型是str，不能直接和整数进行比较，必须先把str换成整数，使用int()方法
+
+因此，将input变量转换为int型即可
+
+x = int(input("请输入你要测试的数:"))
+
+但在运行程序时，输入x=1.25，依旧报错：ValueError: invalid literal for int() with base 10:
+
+原来是因为定义的x为整形，改为浮点型float就可以了：
+

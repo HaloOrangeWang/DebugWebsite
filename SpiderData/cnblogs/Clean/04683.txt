@@ -1,0 +1,42 @@
+报错描述
+- 代码逻辑大致是， 开启线程， 监听kafka生产者push的topic消息。
+- 问题出现在监听过程中， 线程在接收几条topic之后出现报错， 不再处理数据
+1
+2
+报错代码
+Exception ignored in: <generator object _yield_value at 0x0000011ACEDF22B0>
+Traceback (most recent call last):
+ File‘F:\PycharmProjects\PycharmProjects\Source\addons\kafka\models\kafka_operation.py’, line 100, in _yield_value
+    yield item
+SystemError: error return without exception set
+1
+2
+3
+4
+5
+出现原因
+- 查了报错，一种可能是其他语言的代码（C语言）编译成Python字节码但没有设置错误，就会出现这种报错
+- 另一种可能是调试器干扰了生成器的实际内部Python代码， 因为我们看到的报错代码块都是yield部分
+1
+2
+解决方案
+1、基于我们是在pycharm中调试的
+在Run->Edit Configurations中添加Environment variable：
+PYDEVD_USE_FRAME_EVAL=NO
+
+2、 其他环境可以设置env变量
+PYDEVD_USE_FRAME_EVAL=NO
+1
+2
+3
+4
+5
+6
+更新问题
+一个很蠢的问题， 线程死活接收不到生产者消息， 是因为我手动打开了数据库游标，但是没在结束的时候关闭 ，记下来喵喵喵
+--------------------- 
+作者：Breakaway4here 
+来源：CSDN 
+原文：https://blog.csdn.net/weixin_42371158/article/details/83856174 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

@@ -1,0 +1,108 @@
+下载代码需要Python3.+的，切换后再编译代码遇到错误：
+
+ImportError: No module named Crypto.Signature
+
+OSError: [Errno 2] No such file or directory: '/home/androidxxxx/cert.sig'
+
+之后在
+
+如图：
+
+我这里解决方式是，回退到Python2.7的版本
+
+再安装 pip-9.0.1  pycrypto-2.6.1
+
+查看有哪些已安装的Python
+
+一般都是安装到 /usr/local/Python+/ 文件下面
+
+ls /usr/local/
+
+Python下载地址
+
+https://www.python.org/downloads/source/
+
+解压 安装
+
+tar -zxvf Python-3.x.tgz
+
+cd Python-3.x
+
+./configure --prefix=/usr/local/python2.7/
+
+make
+
+make install
+
+查看所有的python命令链接
+
+ls /usr/bin/python* -l
+
+删除已存在的
+
+rm  /usr/bin/python
+
+rm  /usr/bin/python2 等等
+
+重新建立 python 链接
+
+ln -s /usr/local/python2.7.18/bin/python2.7 /usr/bin/python
+
+输入 python (ctrl + D 退出)
+
+输出如下:
+
+Python 2.7.18 (default, Oct 31 2021, 17:55:51)
+
+[GCC 4.4.7] on linux2
+
+Type "help", "copyright", "credits" or "license" for more information.
+
+'>>>>>
+
+===================
+
+pycrypto 手动下载位置
+
+https://www.dlitz.net/software/pycrypto/
+
+pip 载链接下次更新
+
+===================
+
+执行pip相关命令报错后，需要重新安装一下pip
+
+pip -V 查看版本，如果有问题会提示
+
+pip 安装
+
+手动下载解压后，进入pip文件夹执行  python setup.py install
+
+注意输出的安装位置，是否是目前python链接的位置
+
+如果位置不是当前的使用python，需要重新链接python后再安装一下
+
+我的是：
+
+Installing pip script to /usr/local/python2.7.18/bin
+
+Installing pip2.7 script to /usr/local/python2.7.18/bin
+
+Installing pip2 script to /usr/local/python2.7.18/bin
+
+再次查看版本  pip -V
+
+pycrypto 安装
+
+执行 pip install pycrypto 报错
+
+手动下载后安装 pycrypto
+
+解压后进入文件夹内
+
+cd /pycrypto-2.6.1
+
+安装 pycrypto: python setup.py install
+
+完成后应该可以编译了
+

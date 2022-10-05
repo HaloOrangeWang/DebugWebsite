@@ -1,0 +1,31 @@
+
+0x01 问题
+
+一次同事反馈在环境中，执行go run xx.go时出现如下异常提示。
+
+fork/exec /tmp/go-build104992250/b001/exe/h: permission denied
+
+有点兴趣，所以就动手查了下。查的过程比较简单，希望会有所帮助。
+
+
+0x02 分析
+
+出现这个问题，原因是go在/tmp目录下生成的可执行文件没有执行权限，当Go去执行时就会报错。 为什么会没有执行权限呢？ 请教了同事之后，确认了开发环境中的/tmp的挂载选项中如下所示。
+
+tmpfs on /run/shm type tmpfs (rw,nosuid,nodev,noexec,relatime,size=524288k)
+
+其中有一个选项为noexec。mount的man page中如下描述，这个选项是可以禁止掉二进制的可执行权限，这会提高系统的安全性。实测这个选项对Shell、Python这种脚本语言的可执行脚本也有效果。
+
+noexec Do not permit direct execution of any binaries on the mounted filesystem.
+
+
+0x03 解决
+
+既然这个选项是安全要求的，自然不能去修改。转换下思路，能不能让Go换个地方。直觉告诉我，应该有个环境变量控制这个行为。很遗憾在国内并没有搜到。
+ 既然是环境变量，那就去源码目录里搜索下。 通过GOROOT环境变量，确认了Go中的环境变量具有如下特征。 env GOROOT=$WORK/parent/goroot 有一个env的前缀。 grep 'env ' -rIn . | grep -i tmp 执行后，找到了GOTMPDIR这个环境变量。 在环境里试了下，GOTMPDIR=/root go run xxx.go之后，运行成功。问题解决了。
+
+
+0x04 总结
+
+网上找不到的，可以尝试搜源码，Go的整个源码都有，是很方便。
+

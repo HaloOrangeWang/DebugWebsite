@@ -1,0 +1,22 @@
+报错：
+
+1、缺少gcc依赖环境  报错提示：
+
+gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -fPIC -I/usr/include/python2.7 -c psutil/_psutil_linux.c -o build/temp.linux-x86_64-2.7/psutil/_psutil_linux.o
+
+unable to execute gcc: No such file or directory
+
+error: command 'gcc' failed with exit status
+
+1  解决：  yum -y install gcc
+
+2、缺少python-dev依赖环境
+
+报错提示：  psutil/_psutil_linux.c:12:20: fatal error: Python.h: No such file or directory
+
+#include <Python.h>                     ^ compilation terminated. error: command 'gcc' failed with exit status 1
+
+解决：  yum -y install python-devel.x86_64
+
+总结：安装过程中，可能仍存在其它的环境依赖包情况。解决的思路----缺啥补啥。
+

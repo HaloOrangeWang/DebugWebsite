@@ -1,0 +1,30 @@
+Python的第三方包NetfilterQueue 功能强大，当需要对特定类型的报文进行修改或者丢弃等操作时，可以使用这个第三方包，该包(Package)可以提供对 Linux 中 匹配iptables 规则的数据包的访问，针对这些匹配的数据包可以被接受、丢弃、更改、重新排序或给予标记。
+
+但是在安装netfilterqueue的时候 利用pip3（pip3 install netfilterqueue）或者源码包方式安装都会报错，经常会下面的报错：
+
+#include "Python.h"                        ^
+
+compilation terminated.
+
+error: command 'gcc' failed with exit status 1
+
+----------------------------------------
+
+Command "/root/hack_env/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-cn6q9sa2/netfilterqueue/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /tmp/pip-hr_y_3c6-record/install-record.txt --single-version-externally-managed --compile --install-headers /root/hack_env/include/site/python3.6/netfilterqueue" failed with error code 1 in /tmp/pip-build-cn6q9sa2/netfilterqueue/
+
+在网上查找解决方案找了了很久，一直没有搞定，几近放弃，今天终于找到解决方案，解决步骤如下：
+
+第一步：由于 NetfilterQueue 是一个与 libnetfilter_queue 链接的 C 扩展模块。因此在安装之前，确保已经有安装C编译器，比如gcc。
+
+apt install gcc
+
+第二步：安装下述的包
+
+apt-get install build-essential python-dev-is-python3 libnetfilter-queue-dev
+
+第三步：最后正常用pip3 安装netfilterqueue
+
+pip3 install netfilterqueue
+
+按照上述步骤即可正常安装Netfilterqueue。我使用的Python版本是3.9.10。
+

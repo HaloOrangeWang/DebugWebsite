@@ -1,0 +1,72 @@
+不到万不得已千万不要升级，不然可能会踩坑！！ （反正我是踩坑了，折腾了一下午，坑在结尾哟）
+
+升级：
+
+随着jenkins新版本的不断更新，我们根据需要会升级jenkins，我的jenkins是采用apache tomcat的方式安装的，即将jenkins.war放在webapps下的方式，那么如何升级jenkins的版本呢？
+
+第一步：下载稳定版本的jenkins.war
+
+当服务器上https://get.jenkins.io/war-stable/下载你需要的jenkins.war,这里说明下，最好不要用最新的，用最近的版本就可以了，就我个人而言，我会觉得最新的会不会不太稳定，我是才能够2.60升级到2.222_1,下载了2.222_1的jenkins.war
+
+第二步：暂停你当前的jenkins服务
+
+进到apache_tomcat目录下，我的目录是/usr/local/apache-tomcat-8.0.37,执行 sh bin/shutdown.sh来暂停tomcat服务。
+
+第三步：替换webapps下的jenkins.war
+
+进入到webapps目录下，备份当前目录下的jenkins.war 和jenkins目录：  mv jenkins.war  old_jenkins.war ; mv jenkins old_jenkins  （你也可以备份到其它地方，或者心大的话，直接删除jenkins和jenkins.war也可以）
+
+然后将第一步刚才下载的jenkins.war复制到该目录下（/usr/local/apache-tomcat-8.0.37/webapps/）
+
+第四步：重启服务
+
+在/usr/local/apache-tomcat-8.0.37/目录下执行sh bin/startup.sh
+
+第五步：检查进程起来没
+
+ps -aux |grep tomcat
+
+另外：千万不要去jenkins管理页面下他提醒的最新的jenkins.war,及其不好用，反正我刚开始就是这下的，踩坑了，修改工程后点save完全没反应，并且界面真的是我不能接受。
+
+就是下面这个地方的jenkins.war,所以还是去官网下一个稳定的比较靠谱。
+
+踩坑+填坑
+
+记录下吧，升级完就遇到一个大坑，curl访问过来就403了，forbidden了！升级以后就不能降级了，反正我试图降会原来的老版本，连jenkins界面就起不来了！
+
+原因：从2.204以后，据说为了安全性考虑，默认开启了CSRF(跨站请求伪造保护),界面上没有这个配置项的打开关闭配置，默认给你打开了，所以curl请求过来就发生了403，
+
+我的命令是：curl -u admin:123456 -X POST http://120.76.1.2:8080/jenkins/view/Android/job/App-Test/buildWithParameters?"build_aliyun_path=111&build_appid=222"
+
+那么我们就需要把这个关闭，界面配置不了，只能在配置文件里想办法了。
+
+解决：
+
+apache-tomcat-8.0.37/bin/catalina.sh  添加(大概254行)：
+
+-Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true
+
+（如果是windows的，修改catalina.bat，修改和linux的差不多）
+
+如下：
+
+JAVA_OPTS="$JAVA_OPTS $JSSE_OPTS -Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true"
+
+这样重启jenkins进程时会带着这个配置项起来执行这条（sh bin/startup.sh），将csrf(跨站点伪造请求)关掉，进程如下：
+
+这个时候去看jenkins的配置，就会发现他被关掉了:
+
+如果是其它低版本的话，直接界面关掉就可以了：
+
+参考：
+
+https://blog.csdn.net/qq_39218530/article/details/108574026
+
+https://blog.csdn.net/qq_22260641/article/details/109187250
+
+https://blog.csdn.net/qq_30679953/article/details/107591321
+
+https://www.it1352.com/1472184.html
+
+https://blog.csdn.net/a910196454/article/details/107325036/
+

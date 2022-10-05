@@ -1,0 +1,16 @@
+1， py es client 使用是 http ，java  api 使用是 tcp
+
+2, es.scroll（） 方法 在查询多个索引的时候会报 ：
+
+elasticsearch.exceptions.RequestError: RequestError(400, u'too_long_frame_exception', u'An HTTP line is larger than 4096 bytes.')
+
+因为多个索引的时候 ， _scroll_id 会很长，超过4096， 4096 是 http请求中默认的最大值，所以在请求的时候， 服务端会报错。
+
+向下跟代码，把代码改一下：
+
+原来是
+
+改为
+
+python 库中代码如下：
+

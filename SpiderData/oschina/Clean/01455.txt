@@ -1,0 +1,123 @@
+在某次运行过程中出现了如下两个报错：
+
+报错1： ModuleNotFoundError: No module named '__main__.src_test1'; '__main__' is not a package
+报错2： ImportError: attempted relative import with no known parent package
+
+于是基于这两个报错探究了一下python3中的模块相互引用的问题，下面来逐个解析，请耐心看完。
+
+好的，我们先来构造第一个错，测试代码结构如下：
+
+|--- test_main.py
+|--- src
+  |--- __init__.py                                                              
+    |--- src_test1.py
+    |--- src_test2.py
+
+src_test2.py 代码
+
+class Test2(object):
+    def foo(self):
+        print('I am foo')
+
+src_test1.py 代码，引用Test2模块
+
+from .src_test2 import Test2
+
+def fun1():
+    t2 = Test2()
+    t2.foo()
+if __name__ == "__main__":
+    fun1()
+
+此时运行 src_test1.py 报错“No module named '__main__.src_test1'; '__main__' is not a package”
+
+
+问题原因：
+
+主要在于引用src_test2模块的时候，用的是相对路径"."，在import语法中翻译成"./"，也就是当前目录下，按这样理解也没有问题，那为什么报错呢？
+
+从 PEP 328 中，我们找到了关于 the relative imports（相对引用）的介绍
+
+通俗一点意思就是，你程序入口运行的那个模块，就默认为主模块，他的name就是‘main’，然后会将本模块import中的点(.)替换成‘__main__’，那么 .src_test2就变成了 __main__.src_test2，所以当然找不到这个模块了。
+
+
+解决方法：
+
+因此，建议的做法是在 src同层级目录创建 引用模块 test_main.py（为什么不在src目录下创建，待会下一个报错再讲），并引用src_test1模块，代码如下：
+
+from src.src_test1 import fun1
+
+if __name__ == "__main__":
+    fun1()
+
+那为什么这样执行就可以了呢，其中原理是什么呢？我是这样理解的（欢迎纠正）：test_main执行时，他被当做根目录，因此他引用的src.src_test1 是绝对路径，这样引用到哪都不会错，此时他的name=‘main’，当执行src_test1的时候，注意了此时test1的name是 src.src_test1，那么在test1中使用的是相对路径，查找逻辑是先找到父节点（src目录），再找父节点下面的src_test2，因此可以成功找到，Bingo！
+
+
+辅证：
+
+构造一个例子，就可以理解上面的 执行目录就是根目录 的说法了，修改test1，使引用test_main:
+
+from .. import test_main
+
+报错：ValueError: attempted relative import beyond top-level package
+
+OK，那继续构造第二个报错：
+
+上文中说过，解决main 的问题，就是创建一个模块，来调用使用相对路径的模块，那么为什么我不能在相同目录下创建这个文件来调用呢？让我们来测试下代码：
+
+创建test_src.py文件，代码结构变更如下：
+
+|--- test_main.py
+|--- src
+  |--- __init__.py                                                              
+    |--- src_test1.py
+    |--- src_test2.pys
+    |--- test_src.py
+
+test_src 代码:
+
+from src_test1 import fun1
+
+if __name__ == "__main__":
+    fun1()
+
+执行报错：ImportError: attempted relative import with no known parent package
+
+
+问题原因：
+
+当执行test_src时，按上文理解，此时执行文件所在的目录为根目录，那么引用test1的时候，需要注意的是，此时test1的name属性不再是src.src_test1，因为程序感知不到src的存在，此时他的绝对路径是 src_test1，此时再次引用相对路径查找的test2，同样的步骤，需要先找到父节点，而此时他自己就是根节点了，已经没有父节点了，因此报错“no known parent package”。
+
+
+解决方法：
+
+此时为了避免父节点产生矛盾，因此将test1中的引入去掉相对引用即可
+
+from .src_test2 import Test2    -->    from src_test2 import Test2
+
+
+继续深入：
+
+那使用相对路径和绝对路径，编译器是怎么找到这个模块的呢？
+
+执行import的时候，存在一个引入的顺序，即优先查找执行目录下有没有此文件，如没有，再查找lib库下，如还没有，再查找sys.path中的路径，如再没有，报错。
+
+所以不管是当前目录，还是 sys.path中的目录，都可以查到 src_test2这个模块，就可以编译成功。
+
+
+号外：
+
+解决完上述问题后，不管我们用哪种方式，我们调试代码时，都是单个文件调试，但此时根目录就不对了，import方式又要改动，执行起来很麻烦，所以这里推荐另一种方式（有更好的方式欢迎留言），使用sys.path.append()的方法
+
+import sys,os
+sys.path.append(os.getcwd())
+from src.src_test2 import Test2
+
+使用append的方式，将程序文件根目录放进了sys.path中，然后再引用绝对路径，这样的方式，不管使用上文中的第一或第二执行方式都可以调用，也可以单独编译test1文件，不用修改import路径，也是相对安全的方式。但是缺点就是，如果你修改了某一个包名，需要将所有引用地方都修改一下，工作量大，所以因地制宜。
+
+综上，详细讲解了相对路径和绝对路径的引用方法，现在你应该对import导入的问题有了清晰的理解吧
+
+备注：本文基于Python3.7版本测试
+
+点击关注，第一时间了解华为云新鲜技术~
+

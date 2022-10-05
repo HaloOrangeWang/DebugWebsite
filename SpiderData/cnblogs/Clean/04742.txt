@@ -1,0 +1,138 @@
+在程序中做python版本判断
+
+sys.version_info
+
+# sys.version_info(major=2, minor=7, micro=16, releaselevel='final', serial=0)
+
+sys.version_info.major
+
+# 2
+
+代码示例：
+
+如果兼容过程出现“中文字符在cmd窗口乱码”，建议更改cmd的编码方式为unicode：
+
+右击cmd窗口，点默认值。
+
+在选项中默认代码页，选择936。
+
+链接：https://www.cnblogs.com/sunshuhai/p/6242275.html
+
+需要把一段py2的代码转为py3，执行后，遇到一个错误就解决一个错误，一般都会有替换方案。
+
+楼主遇到的如下：
+
+“print X” 更改为“print(X)”
+否则报错：SyntaxError: Missing parentheses in call to 'print'。
+
+xrange改为range
+python3 中取消了 range 函数，而把 xrange 函数重命名为 range，所以现在直接用 range 函数即可。
+
+m.itervalues() 改为 m.values()
+否则报错：AttributeError: 'collections.defaultdict' object has no attribute 'itervalues'
+
+import cv报错
+
+OpenCV是基于C/C++的，”cv”和”cv2”表示的是底层C API和C++API的区别，”cv2”表示使用的是C++API。
+
+python-3.0以后得版本就没有cv了，直接在cv2里可以调用cv的功能，可以试试：
+
+import cv2
+
+import cv2 as cv
+
+然后要把所有cv的函数替换为cv2的函数，如：
+
+cv.LoadImage --》cv2.imread
+cv.SaveImage --》cv2.imwrite
+
+文件'rb'方式打开报错
+原始代码：with open('a.csv', 'rb') as csvfile。
+
+报错：_csv.Error: iterator should return strings, not bytes (did you open the file in text mode?)
+
+原因：因为此csv文件并非二进制文件， 只是一个文本文件。
+
+使用’rb’按照二进制位进行读取的，不会将读取的字节转换成字符；rt模式下，python在读取文本时会自动把\r\n转换成\n；
+
+解决：改成以'rt'方式打开。
+
+报错：AttributeError: module 'string' has no attribute 'atoi'
+解决：v_i = string.atoi(s) 改为 v_i = int(s)
+
+报错：TypeError: 'dict_keys' object does not support indexing
+解决：将dict_keys()类型转化为list
+
+visit_sequence = self._G.keys()； random.shuffle(visit_sequence) 改为 visit_sequence = list(self._G.keys())； random.shuffle(visit_sequence)
+
+报错: csv.write()中str转成bytes类型后用csv.writerow()写入csv文件仍然出错
+根本原因是Python版本问题python2.x中要求用‘wb’，python3.x中要求用'w'
+
+报错：Python map object is not subscriptable（map对象不可用下标索引）
+解决方案：
+
+In Python 3, map returns an iterable object of type map, and not a subscriptible list, which would allow you to write map[i]. To force a list result, write
+
+payIntList = list(map(int,payList))
+However, in many cases, you can write out your code way nicer by not using indices. For example, with list comprehensions:
+
+payIntList = [pi + 1000 for pi in payList]
+for pi in payIntList:
+    print(pi)
+报错：TypeError: 'dict_keys' object is not subscriptable
+解决：self._G.node.keys()[:] 改为 list(self._G.node.keys())
+
+在Python 3+中，__builtin__模块被命名为builtins
+Python3中的reload需要从imp中导入，sys.setdefaultencoding被删除
+python2.7：
+
+reload(sys)
+
+sys.setdefaultencoding('utf-8')
+
+python3：
+
+from imp import reload
+reload(sys)
+
+sys.setdefaultencoding('utf-8')被删除，会报错
+
+报错：ValueError: can't have unbuffered text I/O 
+ 报错代码为：
+
+fd = open(txt_file, "a+", buffering=0)
+
+”不能有未缓冲的文本“原因是：缓冲是一个可选的整数，用于设置缓冲策略。通过0关闭缓冲(仅允许在二进制模式下)
+
+报错更正方式为：
+
+fd = open(WORDLIST_FILENAME, 'r')，或
+
+fd = open(WORDLIST_FILENAME, 'rb', 0)
+
+python2.7：
+
+reload(sys)
+
+sys.setdefaultencoding('utf-8')
+
+python3：
+
+from imp import reload
+reload(sys)
+
+sys.setdefaultencoding('utf-8')被删除，会报错
+
+报错：ValueError: can't have unbuffered text I/O 
+ 报错代码为：
+
+fd = open(txt_file, "a+", buffering=0)
+
+”不能有未缓冲的文本“原因是：缓冲是一个可选的整数，用于设置缓冲策略。通过0关闭缓冲(仅允许在二进制模式下)
+
+报错更正方式为：
+
+fd = open(WORDLIST_FILENAME, 'r')，或
+
+fd = open(WORDLIST_FILENAME, 'rb', 0)
+

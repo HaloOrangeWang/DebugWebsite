@@ -1,0 +1,16 @@
+问题：
+
+Could NOT find PythonLibs (missing: PYTHON_LIBRARIES PYTHON_INCLUDE_DIRS)
+
+解决办法
+
+cmake -DPYTHON_INCLUDE_DIR=/usr/include/python2.7 -DPYTHON_LIBRARY=/usr/lib/python2.7/config/libpython2.7.so ..
+
+上面/usr/include/python2.7以及/usr/lib/python2.7/config/libpython2.7.so只是一个示例，这是Linux自带的Python（如果没有，自己apt install一下即可），如果是使用anaconda的Python  自己照葫芦画瓢改写一下。
+
+附辅助代码
+
+cmake .. \
+-DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")  \
+-DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
+

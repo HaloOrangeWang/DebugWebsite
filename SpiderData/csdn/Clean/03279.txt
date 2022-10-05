@@ -1,0 +1,37 @@
+
+Python更新失败——SSL错误
+
+（1）是正常Python环境下的错误：
+ 例如：
+
+Could not fetch URL
+ https://pypi.tuna.tsinghua.edu.cn/simple/openpyxl/: There was a
+ problem confirming the ssl certificate:
+ HTTPSConnectionPool(host=‘pypi.tuna.tsinghua.edu.cn’, port=443): Max
+ retries exceeded with url: /simple/openpyxl/(Caused by
+ SSLError(SSLError(1, ‘[SSL: CERTIFICATE_VERIFY_FAILED] certificate
+ verify failed (_ssl.c:833)’),)) - skipping
+
+解决办法：
+ ①添加信任主机
+
+pip --trusted-host pypi.tuna.tsinghua.edu.cn install openpyxl
+
+②指定镜像源
+
+pip --trusted-host pypi.tuna.tsinghua.edu.cn install openpyxl -i https://pypi.mirrors.ustc.edu.cn/simple/
+
+（2）Conda环境下的更新失败：SSL错误：[SSL：CERTIFICATE_VERIFY_FAILED]
+ 例如：
+
+Could not fetch URL http://pypi.mirrors.ustc.edu.cn/simple/pip/: There
+ was a problem confirming the ssl certificate: [SSL:
+ CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:748) -
+ skipping
+
+解决办法：
+
+conda config --set ssl_verify false
+
+详细信息：传送门
+

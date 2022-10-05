@@ -1,0 +1,27 @@
+读取csv文件时报错
+
+df = pd.read_csv('c:/Users/NUC/Desktop/成绩.csv' )
+
+Traceback (most recent call last):
+  File "D:/学习/helloworld/helloworld.py", line 268, in <module>
+    df = pd.read_csv('c:/Users/NUC/Desktop/成绩.csv' )
+  File "D:\学习\Python\Python-3.6.5\lib\site-packages\pandas\io\parsers.py", line 678, in parser_f
+    return _read(filepath_or_buffer, kwds)
+  File "D:\学习\Python\Python-3.6.5\lib\site-packages\pandas\io\parsers.py", line 440, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "D:\学习\Python\Python-3.6.5\lib\site-packages\pandas\io\parsers.py", line 787, in __init__
+    self._make_engine(self.engine)
+  File "D:\学习\Python\Python-3.6.5\lib\site-packages\pandas\io\parsers.py", line 1014, in _make_engine
+    self._engine = CParserWrapper(self.f, **self.options)
+  File "D:\学习\Python\Python-3.6.5\lib\site-packages\pandas\io\parsers.py", line 1708, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+  File "pandas\_libs\parsers.pyx", line 384, in pandas._libs.parsers.TextReader.__cinit__
+  File "pandas\_libs\parsers.pyx", line 697, in pandas._libs.parsers.TextReader._setup_parser_source
+OSError: Initializing from file failed
+
+解决：
+
+df = pd.read_csv('c:/Users/NUC/Desktop/成绩.csv', engine='python' )
+加上 engine = 'python'
+engine的参数有三个  'c','python','python_fwf'
+

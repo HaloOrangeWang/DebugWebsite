@@ -1,0 +1,148 @@
+# 导入 excel 和文件操作库
+import xlrd
+import xlwt
+from pathlib import Path, PurePath
+
+class ExcelMerger(object):
+    """
+    Excel 的合并类
+    实现的功能：
+    1、读取所有 Excel ，并创建新的 Excel 进行存储；
+    2、可以指定读取路径、保存路径；
+    3、自定义生成 Excel 的头部；
+    4、支持数据去重，默认为 False；
+    5、适合少量的 Excel 数据，具体最大的数据量还未测试，欢迎小伙伴反馈；
+    6、新增在列表中是否添加原本的 Excel 名称 whether_to_add_filename ；
+    7、增添添加 Excel 原本文件名称的次数指定 filename_num；
+    """
+
+def __init__(self, src_path=".", res_path="默认路径.xls", sheet_header=[], result_sheeet="合并结果",
+                 duplicate_removal=False, whether_to_add_filename=True, filename_num=None):
+        # 指定要合并 excel 的路径
+        self.src_path = src_path
+        # 指定合并完成的路径
+        self.res_path = res_path
+        # 准备一个列表存放读取结果
+        self.content = []
+        # 读取的 Excel 的文件的内容数，也就是几列的数据
+        # self.content_num = content_num
+        # 合并之后的头部
+        self.sheet_header = sheet_header
+        # 合并之后的 Excel 中 sheet 表名称
+        self.result_sheet = result_sheeet
+        # 设置去重的判断
+        self.duplicate_removal = duplicate_removal
+        # 设置是否在 Excel 中添加文件名称
+        self.whether_to_add_filename = whether_to_add_filename
+        # 如果要有 filename 的次数
+        self.filename_num = filename_num
+
+def read_the_excel_file_path(self):
+        """
+        读取 Excel 文件的路径
+        :return path_files
+        """
+        # 取得该目录下所有的 xls 格式文件
+        p = Path(self.src_path)
+        path_files = [x for x in p.iterdir() if PurePath(x).match('*.xls')]
+        return path_files
+
+def read_excel_full(self, filename, sheet):
+        """
+        读取 Excel 中的全部内容，暂时开发全部的 sheet 读取之后直接存放在最终同一个 sheet
+        :param sheet:
+        :return:
+        """
+        # 去的全部的行列数
+        content = []
+        rows = sheet.nrows
+        cols = sheet.ncols
+        # 取得每一项的结果
+        base_str = ","
+        for row in range(1, rows):
+            temp = []
+            if self.whether_to_add_filename:
+                for i in range(self.filename_num):
+                    temp.append(filename)
+            for col in range(cols):
+                # print(sheet.cell(row, col).value, end=",")
+                value = sheet.cell(row, col).value
+                temp.append(value)
+            self.content.append(temp)
+
+# return self.content
+
+def write_excel_data(self, data):
+        workbook = xlwt.Workbook(encoding='utf-8')
+        xlsheet = workbook.add_sheet(self.result_sheet)
+        # 写入表头，方法一
+        # col = 0
+        # for cell_header in self.sheet_header:
+        #   xlsheet.write(0, col, cell_header)
+        #   col += 1
+
+# 写入方法二
+        for cell_header in self.sheet_header:
+            xlsheet.write(0, self.sheet_header.index(cell_header), cell_header)
+
+row = 1
+        # 取出每一行内容
+        for line in data:
+            col = 0
+            # 取出每个单元格内容
+            for cell in line:
+                # 写入内容
+                xlsheet.write(row, col, cell)
+                # 向右移动一个单元格
+                col += 1
+            # 向下移动一行
+            row += 1
+        # 保存最终结果
+        workbook.save(self.res_path)
+
+def processing(self):
+        # 对每一个文件进行重复处理
+        for pathfile in self.read_the_excel_file_path():
+            # 用文件名作为每个用户的标识
+            filename = pathfile.stem
+            data = xlrd.open_workbook(pathfile)
+            table_num = data.sheets()
+            if len(table_num) == 1:
+                table = table_num[0]
+                # data_text = self.read_excel_full(filename, table)
+                self.read_excel_full(filename, table)
+            # data_list.append(data_text)
+            # self.write_excel_data(data_list)
+            else:
+                for t in table_num:
+                    table = t
+                    self.read_excel_full(filename, table)
+
+def data_to_heavy(self):
+        """Excel 数据去重，因为我使用的数据类型是：list 所以，处理的目标也就是 Python 中 list 去重"""
+        for i in self.content:
+            count_number = self.content.count(i)
+            if count_number != 1:
+                for x in range((count_number - 1)):
+                    self.content.remove(i)
+
+def main(self):
+        self.processing()
+        if self.duplicate_removal:
+            self.data_to_heavy()
+        self.write_excel_data(self.content)
+
+if __name__ == '__main__':
+    # 准备写入文件的表头
+    src_path = "../调查问卷"
+    sheet_header = ['文件名称', '姓名', '地址', '手机号', '城市']
+    excel_merger = ExcelMerger(
+        src_path="../调查问卷",
+        res_path="合并结果3.xls",
+        sheet_header=sheet_header,
+        duplicate_removal=False,
+        whether_to_add_filename=True,
+        filename_num=6,
+    )
+    excel_merger.main()
+

@@ -1,0 +1,60 @@
+在引用自己构造模块包时，总是不成功
+
+from XXXLib.Pub import *
+
+dumpString("XXXX......")
+
+总是报：NameError: name 'dumpString' is not defined
+
+后来才想到是没有引用到具体的模块：
+
+from XXXLib.Pub.shareDef import *
+
+dumpString("XXXX......")
+
+借此机会再来回顾一下如何构造自己的模块包：
+
+首先创建一个Package（我用的是Eclipse IDE）
+
+然后再创建子包，记得用Package.SubPackage的方式命名
+
+然后再创建子包里的Python模块，就是一个个py文件
+
+在每个包的下面创建一个空的__init__.py文件，表示该目录为python的包
+
+然后就可以在别的py文件中引用包中的函数了，引用方式是
+
+from Package.SubPackage.Module import *
+
+==================================
+
+Python模块包中__init__.py文件的作用
+
+http://hi.baidu.com/nkhzj/blog/item/a6f0df00b2c39716728b65f1.html
+
+模块包：
+
+包通常总是一个目录，目录下为首的一个文件便是 __init__.py。然后是一些模块文件和子目录，假如子目录中也有 __init__.py 那么它就是这个包的子包了。差不多就像这样吧：
+
+我们可以就这样导入一个包：
+
+或者调入一个子模块和子包：
+
+可以深入好几层包结构：
+
+大致就这样吧，我觉得，包的精髓应该是在 __init__.py 这个文件之中的。
+
+__init__.py 文件:
+
+我们需要在 __init__.py 里把 Module1 预先导入：
+
+测试：
+
+__init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使出一招“全部导入”，也就是这样：
+
+这时 import 就会把注册在包 __init__.py 文件中 __all__ 列表中的子模块和子包导入到当前作用域中来。比如：
+
+测试：
+
+__init__.py 文件会在导入时被执行。
+

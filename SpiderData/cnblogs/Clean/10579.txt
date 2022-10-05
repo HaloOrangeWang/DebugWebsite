@@ -1,0 +1,51 @@
+Win10系统不支持安装UWSGI, 不用尝试了
+
+安装
+
+pip install uwsgi
+
+
+windows安装报错
+
+AttributeError: module 'os' has no attribute 'uname'
+
+报错说明：
+
+是因为uwsgiconfig.py文件中，os.uname()是不支持windows系统的，platform模块是支持任何系统。
+
+解决方案:
+
+uwsgi离线安装：
+
+https://pypi.python.org/pypi/uWSGI/
+
+放入项目的虚拟环境中，如下图所示：
+
+修改uwsgiconfig.py文件中的os.uname()为platform.uname()。
+
+修改前：
+
+修改后
+
+进入目录
+
+cd E:\WorkSpace\Python_worksapce\AXF\venv\Lib\site-packages\uWSGI-2.0.19.1
+
+执行：
+
+python setup.py install
+
+报错说明：需要安装C语言编译环境
+
+如果本机上没有C编译环境,需要下载一个编译器
+
+推荐下载：MinGW
+
+下载地址：https://osdn.net/projects/mingw/downloads/68260/mingw-get-setup.exe/
+
+再次执行：python setup.py install
+
+如遇报错参考如下文章：
+
+https://www.cnblogs.com/ningy1009/p/12769776.html
+

@@ -1,0 +1,51 @@
+安装报错类型，解决方案；
+
+1. 数据库连接报错
+
+mysqldb只支持python2,pymysql支持3，都是使用c写的驱动，性能更好
+
+# django中修改配置文件setting.py添加如下代码：
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+解决方案：
+
+修改数据库：mysqldb=>pymysql
+
+2. 因为切换数据库导致版本错误
+
+raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+解决方案：
+
+注释掉检测数据库版本的代码
+
+# "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 36, in <module>
+ 
+# if version < (1, 3, 13):
+#  raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+
+3. 切换数据库导致转码错误
+
+"/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/django/db/backends/mysql/operations.py", line 146, in last_executed_query
+
+query = query.decode(errors='replace')
+
+解决方案： ==暂时使用第二种类型==
+
+修改decode为encode
+
+把条件注释掉，防止出现不可预知的错误，这个错误很可能是python2中类型str和unicode的原因，python3中只有unicode类型数据
+
+# "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/django/db/backends/mysql/operations.py", line 146
+
+# if query is not None:
+  #query = query.encode(errors='replace')
+
+解决完成之后完美运行
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

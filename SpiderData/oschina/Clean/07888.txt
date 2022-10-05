@@ -1,0 +1,7 @@
+在paas平台上部署镜像应用，很多时候都会出现报错说用户权限问题，即使我们启动的时候是用非root用户，也会报错这个错。下面有一个简单的办法。
+
+# 在dockerfile 里面修改启动命令的权限
+RUN chown -R dmdba:dinstall /home/dmdba
+RUN chgrp -R 0 /home/dmdba/dmdbms/bin/DmServicedmserver \
+ && chmod -R g=u /home/dmdba/dmdbms/bin/DmServicedmserver
+

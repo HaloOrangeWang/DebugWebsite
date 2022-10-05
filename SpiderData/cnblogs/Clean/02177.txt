@@ -1,0 +1,34 @@
+问题描述：from PIL import Image报错
+
+环境：
+
+Python 2.7.3
+
+Centos 4.3
+
+问题一：/.jumbo/lib/python2.7/site-packages/setuptools-1.1.4-py2.7.egg/pkg_resources.py:979: UserWarning: ~/.python-eggs is writable by group/others and vulnerable to attack when used with get_resource_filename. Consider a more secure location (set with .set_extraction_path or the PYTHON_EGG_CACHE environment variable).
+
+解决：chmod g-wx ~/.python-eggs
+
+这个问题网上有较多解答，修改对应文件权限即可
+
+问题二： ImportError: ~/.jumbo/lib/python2.7/site-packages/PIL/_imaging.so: undefined symbol: TIFFSetWarningHandlerExt
+
+某机器可运行，Pillow 5.1.0（Centos 6.3）
+
+某机器import即报错，Pillow 4.3.0（Centos 4.3）
+
+分析：很多提示是首先确认Pillow与PIL冲突，需要先卸载PIL，确认两台机器均无PIL安装
+
+pip list
+
+解决：感谢这篇文章回答者，尝试有效
+
+if your python >= 2.7
+
+try these:
+
+pip install http://effbot.org/media/downloads/Imaging-1.1.6.tar.gz
+
+感谢来源：http://queasy.me/programming/questions/47671664/python+pillow+_imagingso+undefined+symbol+tiffsetwarninghandlerext+error
+

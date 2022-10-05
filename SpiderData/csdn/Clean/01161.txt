@@ -1,0 +1,16 @@
+
+Python-pandas Passing list-likes to .loc or [] with any missing labels is no longer supported错误的解决
+
+最近pandas升级后，之前的代码会报错：
+ "Passing list-likes to .loc or [] with any missing labels is no longer supported. The following labels were missing: XXXXXXXX See https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#deprecate-loc-reindex-listlike
+
+官网链接: link.
+
+官网给出的解决方法：
+
+s = pd.Series([0, 1, 2])  #s只有0，1，2的索引
+labels = [1, 2, 3]
+#如果直接用s.loc[labels]  会报错
+#需要采用以下方式，就不会报错了
+s.loc[s.index.intersection(labels)]
+

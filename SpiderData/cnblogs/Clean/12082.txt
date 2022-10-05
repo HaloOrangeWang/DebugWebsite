@@ -1,0 +1,25 @@
+今天写python的时候，用pyinstaller打包的时候，引用了cv2，出现了这个报错：
+
+ImportError: OpenCV loader: missing configuration file: ['config.py']. Check OpenCV installation.
+
+然后查了很多方法....说什么升级pyinstaller和opencv模块就可以处理好。
+
+但是。。。。。不行~我怀疑就是模块引入问题~
+
+新建一个python文件，获取opencv的路径：
+
+import cv2
+print(cv2.__file__)
+
+这里我得到的是:C:\Anaconda3\lib\site-packages\cv2\__init__.py
+
+在重新使用pyinstaller打包，加入 paths参数：
+
+pyinstaller main.py -F --paths="C:\Anaconda3\lib\site-packages\cv2"
+
+报错没了，成功运行！
+
+转载地址：http://www.nbzhuti.cn/491.html
+
+https://www.dchuanbao.com/
+

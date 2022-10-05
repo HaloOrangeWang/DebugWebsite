@@ -1,0 +1,31 @@
+
+前言
+
+django 查询的结果有日期时间格式的时候，返回的是datetime.datetime(2021, 9, 8, 0, 0)类型数据。
+
+一般需要返回json格式数据，使用json.dumps()转的时候就会报错了
+
+
+查询带时间的
+
+Teacher模型有add_time日期时间类型DateTimeField
+
+查询结果'add_time': datetime.datetime(2021, 9, 8, 0, 0)
+
+
+重写JSONEncoder
+
+Json 格式是由 JavaScript 对象为基础创建的轻量级数据格式，而 JS 没有 datetime 数据类型，所以在 Python 中使用 json.dumps 会报错。
+
+但是django查询数据库默认返回的时间日期就是datetime.datetime()格式的，直接用json.dumps()转会报错TypeError: Object of type 'datetime' is not JSON serializable
+
+结果返回
+
+django里面关于日期处理，可以看之前写的
+
+extra格式化日期时间https://www.cnblogs.com/yoyoketang/p/13215719.html
+
+ModelSerializer 序列号日期https://www.cnblogs.com/yoyoketang/p/14291166.html
+
+在Model模型自定义to_dict()方法可以完美解决 https://www.cnblogs.com/yoyoketang/p/15244171.html
+

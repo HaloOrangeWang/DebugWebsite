@@ -1,0 +1,33 @@
+centos7.8环境下python3.6.10安装mysqlclient报错 /usr/bin/ld: cannot find -lperconaserverclient 的问题处理
+
+# python3 setup.py install
+/usr/local/python3.6.7/lib/python3.6/distutils/dist.py:261: UserWarning: Unknown distribution option: 'long_description_content_type'
+  warnings.warn(msg)
+running install
+running bdist_egg
+running egg_info
+writing mysqlclient.egg-info/PKG-INFO
+writing dependency_links to mysqlclient.egg-info/dependency_links.txt
+writing top-level names to mysqlclient.egg-info/top_level.txt
+reading manifest file 'mysqlclient.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'mysqlclient.egg-info/SOURCES.txt'
+installing library code to build/bdist.linux-x86_64/egg
+running install_lib
+running build_py
+copying MySQLdb/release.py -> build/lib.linux-x86_64-3.6/MySQLdb
+running build_ext
+building 'MySQLdb._mysql' extension
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -Dversion_info=(2,0,1,'final',0) -D__version__=2.0.1 -I/usr/local/mysql/include -I/usr/local/python3.6.7/include/python3.6m -c MySQLdb/_mysql.c -o build/temp.linux-x86_64-3.6/MySQLdb/_mysql.o
+gcc -pthread -shared build/temp.linux-x86_64-3.6/MySQLdb/_mysql.o -L/usr/local/mysql/lib/mysql -lperconaserverclient -lpthread -lm -lrt -ldl -o build/lib.linux-x86_64-3.6/MySQLdb/_mysql.cpython-36m-x86_64-linux-gnu.so
+/usr/bin/ld: cannot find -lperconaserverclient
+collect2: error: ld returned 1 exit status
+error: command 'gcc' failed with exit status 1
+
+问题分析：
+系统中安装了percona mysql 数据库，在默认的路径下找不到，需要软连接单独设置处理一下
+
+# 处理办法
+# ln -s /usr/local/mysql/lib/libperconaserverclient.so /usr/lib64/mysql/libperconaserverclient.so
+# ln -s /usr/local/mysql/lib/libperconaserverclient.so /usr/lib/libperconaserverclient.so
+

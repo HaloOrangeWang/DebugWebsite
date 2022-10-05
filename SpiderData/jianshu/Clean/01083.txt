@@ -1,0 +1,20 @@
+原因：
+
+pep476中详细描述了该问题的前因后果，python ssl的证书验证依赖于本地的证书数据库。一般是机器系统本身提供的数据库，如果找不到数据库或数据库中没有匹配的证书，将会是一个错误，需要用户定位来修复它。
+
+  PEP建议使用系统提供的证书数据库，OpenSSL中的一对环境变量SSL_CERT_DIR和SSL_CERT_FILE，可将Python指向不同的证书数据库。
+
+在文件顶端添加如下代码
+
+import ssl
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    # Legacy Python that doesn't verify HTTPS certificates by default
+    pass
+else:
+    # Handle target environment that doesn't support HTTPS verification
+    ssl._create_default_https_context = _create_unverified_https_context
+
+上述代码创建了一个未验证的上下文来访问https链接，这会全局禁用证书验证，尽管危险，但这是简单的解决办法。该方法等同于在urllib2.urlopen方法中将context参数赋值为ssl._create_unverified_context()，requests库的方法中将verify参数设置为false，都是关闭证书验证的原理。
+

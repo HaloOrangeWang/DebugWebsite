@@ -1,0 +1,79 @@
+之前处理过这个问题，因为没有记录，所以第二次踩坑了，所以此次留存处理记录
+
+centos6.5、默认的python2.6、pip1.5.4
+
+安装django
+
+pip install django
+
+执行结果：
+
+Downloading/unpacking django
+  Downloading Django-2.1.1.tar.gz (8.6MB): 8.6MB downloaded
+  Running setup.py (path:/tmp/pip_build_root/django/setup.py) egg_info for package django
+    Traceback (most recent call last):
+      File "<string>", line 17, in <module>
+      File "/tmp/pip_build_root/django/setup.py", line 32, in <module>
+        """.format(*(REQUIRED_PYTHON + CURRENT_PYTHON)))
+    ValueError: zero length field name in format
+    Complete output from command python setup.py egg_info:
+    Traceback (most recent call last):
+
+File "<string>", line 17, in <module>
+
+File "/tmp/pip_build_root/django/setup.py", line 32, in <module>
+
+""".format(*(REQUIRED_PYTHON + CURRENT_PYTHON)))
+
+ValueError: zero length field name in format
+
+----------------------------------------
+Cleaning up...
+Command python setup.py egg_info failed with error code 1 in /tmp/pip_build_root/django
+Storing debug log for failure in /root/.pip/pip.log
+
+日志内容：
+
+ValueError: zero length field name in format
+
+----------------------------------------
+Cleaning up...
+  Removing temporary dir /tmp/pip_build_root...
+Command python setup.py egg_info failed with error code 1 in /tmp/pip_build_root/django
+Exception information:
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/site-packages/pip-1.5.4-py2.6.egg/pip/basecommand.py", line 122, in main
+    status = self.run(options, args)
+  File "/usr/lib/python2.6/site-packages/pip-1.5.4-py2.6.egg/pip/commands/install.py", line 278, in run
+    requirement_set.prepare_files(finder, force_root_egg_info=self.bundle, bundle=self.bundle)
+  File "/usr/lib/python2.6/site-packages/pip-1.5.4-py2.6.egg/pip/req.py", line 1229, in prepare_files
+    req_to_install.run_egg_info()
+  File "/usr/lib/python2.6/site-packages/pip-1.5.4-py2.6.egg/pip/req.py", line 325, in run_egg_info
+    command_desc='python setup.py egg_info')
+  File "/usr/lib/python2.6/site-packages/pip-1.5.4-py2.6.egg/pip/util.py", line 697, in call_subprocess
+    % (command_desc, proc.returncode, cwd))
+InstallationError: Command python setup.py egg_info failed with error code 1 in /tmp/pip_build_root/django
+
+怀疑是没装setuptools
+
+install --upgrade pip setuptools
+
+Successfully installed pip setuptools
+Cleaning up...
+
+继续安装django尝试....报错
+
+Traceback (most recent call last):
+  File "/usr/bin/pip", line 7, in <module>
+    from pip._internal import main
+  File "/usr/lib/python2.6/site-packages/pip/_internal/__init__.py", line 42, in <module>
+    from pip._internal import cmdoptions
+  File "/usr/lib/python2.6/site-packages/pip/_internal/cmdoptions.py", line 16, in <module>
+    from pip._internal.index import (
+  File "/usr/lib/python2.6/site-packages/pip/_internal/index.py", line 536
+    {str(c.version) for c in all_candidates},
+
+这个报错就比较明显了
+
+是python版本问题，因为默认的2.6不支持，最低要求2.7，所以升级2.7之后解决。
+

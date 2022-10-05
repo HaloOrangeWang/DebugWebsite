@@ -1,0 +1,33 @@
+原文链接：https://blog.csdn.net/HH18700418030/article/details/101035561
+
+新建的项目使用 lang="scss 报错，如下所示：
+
+解决方法：
+
+输入如下命令：
+
+npm install sass-loader@7.3.1 --save-dev
+npm install node-sass --save
+npm install style-loader --save
+
+不能直接使用命令：
+
+npm install sass-loader --save-dev
+
+不然会报以下错误：
+
+Module build failed: TypeError: this.getResolve is not a function at Object.loader
+
+1
+
+因为当前sass的版本太高，webpack编译时出现了错误，所以指定：npm install sass-loader@7.3.1 --save-dev 安装低版本的。
+
+接下来，在build/webpack.base.config.js中添加：
+
+{
+        test: /\.scss$/,
+        loaders: ['style', 'css', 'sass']
+      }
+
+如图：
+

@@ -1,0 +1,21 @@
+windows下python3.6安装flask时报错：
+
+Exception:
+Traceback (most recent call last):
+  File "d:\python36\python36\lib\site-packages\pip\compat\__init__.py", line 73, in console_to_str
+    return s.decode(sys.__stdout__.encoding)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xd5 in position 2: invalid continuation byte
+
+原因是windows下命令行的代码页为GBK编码而非GBK。
+
+解决方法：
+ 找到报错文件，即python安装目录下\Lib\site-packages\pip\compat的__init__.py，文件中约75行
+
+def console_to_str(s):
+    try:
+        return s.decode(sys.__stdout__.encoding)
+    except UnicodeDecodeError:
+        return s.decode('utf-8')
+
+将’utf-8’修改为’gbk’即可
+

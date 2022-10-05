@@ -1,0 +1,66 @@
+
+问题描述
+
+我是debain 系的linux系统没遇到这个问题,在centos系统遇到的
+
+Collecting dlib
+  Downloading http://mirrors.cloud.aliyuncs.com/pypi/packages/63/92/05c3b98636661cb80d190a5a777dd94effcc14c0f6893222e5ca81e74fbc/dlib-19.19.0.tar.gz (3.2MB)
+    100% |████████████████████████████████| 3.2MB 99.4MB/s 
+Building wheels for collected packages: dlib
+  Running setup.py bdist_wheel for dlib ... error
+  Complete output from command /usr/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-ld86u12i/dlib/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" bdist_wheel -d /tmp/tmp0zu3_xkcpip-wheel- --python-tag cp36:
+  running bdist_wheel
+  running build
+  running build_py
+  package init file 'dlib/__init__.py' not found (or not a regular file)
+  running build_ext
+  Building extension for Python 3.6.8 (default, Aug  7 2019, 17:28:10)
+  Invoking CMake setup: 'cmake /tmp/pip-build-ld86u12i/dlib/tools/python -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/tmp/pip-build-ld86u12i/dlib/build/lib.linux-x86_64-3.6 -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_BUILD_TYPE=Release'
+  -- The C compiler identification is GNU 4.8.5
+  -- The CXX compiler identification is unknown
+  -- Check for working C compiler: /usr/bin/cc
+  -- Check for working C compiler: /usr/bin/cc -- works
+  -- Detecting C compiler ABI info
+  -- Detecting C compiler ABI info - done
+  CMake Error: your CXX compiler: "CMAKE_CXX_COMPILER-NOTFOUND" was not found.   Please set CMAKE_CXX_COMPILER to a valid compiler path or name.
+  CMake Error: your CXX compiler: "CMAKE_CXX_COMPILER-NOTFOUND" was not found.   Please set CMAKE_CXX_COMPILER to a valid compiler path or name.
+  -- Found PythonInterp: /usr/bin/python3 (found version "3.6.8")
+  -- Found PythonLibs: python3.6m
+  -- Performing Test HAS_CPP14_FLAG
+
+主要报错就是
+
+CMake Error: your CXX compiler: "CMAKE_CXX_COMPILER-NOTFOUND" was not found.   Please set CMAKE_CXX_COMPILER to a valid compiler path or name.
+
+
+解决办法
+
+yum install cmake gcc-c++
+
+
+另一个问题
+
+另外一个地方可能会报错
+
+fatal error: Python.h: No such file or directory
+ #include <Python.h>
+ 
+                    ^
+ 
+compilation terminated.
+
+这种报错很常见了
+
+
+解决办法:
+
+debain系
+
+sudo apt install python3-dev
+
+rehat系
+
+yum install python3-devel
+
+作者：Hello_wshuo​
+

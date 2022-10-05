@@ -1,0 +1,15 @@
+今天在写一个发送带附件的邮件的python小程序时，运行后在读取本地一个图片的地方突然报了打开文件错误：
+
+Traceback (most recent call last):
+  File "D:/python/workspace/demo/emails/send_email.py", line 90, in <module>
+    sendEmail_file()
+  File "D:/python/workspace/demo/emails/send_email.py", line 68, in sendEmail_file
+    with open(r'D:\python\workspace\demo\test.jpg', 'rb') as f:
+OSError: [Errno 22] Invalid argument: '\u202aD:\\python\\workspace\\demo\\test.jpg'
+
+仔细检查代码发下没问题啊，就是很简单open(file)方法打开文件啊：
+
+with open(r'D:\python\workspace\demo\test.jpg', 'rb') as f:
+
+由报错信息来看貌似是文件路径问题，    但我是直接从该图片文件右键属性里边复制的文件带路径全称啊，而且加了 r' ' 来避免某些字符转义所以感觉这不应该有问题啊，于是我就试着自己亲手打出来了，结果完美运行，终于找到问题了，我在win10文件资源管理器中通过文件右键属性复制的带路径的文件名中，前面 'D:' 的部分貌似有编码问题，删了重新在英文输入状态下打出来就没问题了，具体是什么原因暂时没搞明白，这里记录一下，顺便给碰巧遇见这个问题的朋友一个小提示。
+

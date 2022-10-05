@@ -1,0 +1,52 @@
+Superset_报错解决
+
+No module named sqlite2
+
+由于元数据管理统一使用mysql，后面就没有认真分析失败原因了。可能与当前系统的python版本有关
+
+No module named sqlite2
+
+由于元数据管理统一使用mysql，后面就没有认真分析失败原因了。可能与当前系统的python版本有关
+
+superset 采用mysql作为数据源
+
+修改config.py配置文件中的sql_alchemy_conn
+
+示例如下：
+
+superset 采用mysql作为数据源
+
+修改config.py配置文件中的sql_alchemy_conn
+
+示例如下：
+
+sql_alchemy_conn = mysql://airflow:airflow@192.168.50.23:3306/airflow
+
+修改后报：No module named MYSQLdb
+
+需要安装python读取mysql客户端程序
+
+采用pip安装
+
+pip install mysqlclient
+
+4.cx_Oracle找不到libclntsh.so.10.1错误
+
+在/etc/profile中添加
+
+LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib:/usr/local/lib;
+
+export LD_LIBRARY_PATH
+
+然后用source /etc/profile 生效一下
+
+注意：上文提到的路径需要修改为真正的oracle路径
+
+可以先echo $ORACLE_HOME查看
+
+5.报错信息：’twophase’ is an invalid keyword errors connecting to Oracle
+
+网上资料查到的是说安装5.1.3版本可以使用
+
+cx_Oracle version 5.1.3
+

@@ -1,0 +1,41 @@
+在windows上问题不大，根据相关教程一切ok。
+
+这里主要整理debian上的坑
+
+IOError: wkhtmltopdf exited with non-zero code -6. error: QXcbConnection: Could not connect to display
+
+系统上主要装三个东西 如下
+
+解决一：
+
+运行xvfb服务, 为了避免显示设备冲突，指定一个编号，这里是 10
+
+sudo Xvfb :10 -ac   （不是后台启动，一直挂起，如果需要自己搜索）
+
+指定显示设备，和上面的编号一致
+
+export DISPLAY=:10   （环境变量）
+执行 pdfkit 代码
+
+解决二：
+
+因为我们用的Python，一般不会在系统上自己启动xvfb，Python中 pyvirtualdisplay 这个库就是xvfb的封装，安装pip install pyvirtualdisplay，
+
+from pyvirtualdisplay import Display
+
+display = Display()
+
+display.start() 启动
+
+执行pdfkit代码
+
+display.stop() 停止
+
+display.is_alive() 判断是否存活
+
+当然需要也可以这样
+
+with Display() as display:
+
+　　pdfkit 代码
+

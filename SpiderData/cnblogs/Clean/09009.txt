@@ -1,0 +1,38 @@
+运行wxpython程序，提示：
+This program needs access to the screen. Please run with a Framework build of python, and only when you are logged in on the main display of your Mac.
+
+原因是在MAC下通过虚拟Python环境运行，就会有这个问题。
+
+之后搜索，找到了一个旧的官方一个通过脚本解决的页面，他的虚拟环境是VirtualEnv(我的是conda)，照着他的的代码写了个脚本依旧不管用。
+
+重新好好看了官方wiki的安装文档，也没有这方面的信息。
+
+机缘巧合，终于在wxpython的下载页面找到了解决办法，这里不得不吐槽下，为啥不更新在安装帮助文档中！！！
+
+https://www.wxpython.org/pages/downloads/
+在如上页面中有一栏“Conda or Anaconda”，原文如下：
+If you are using a Python environment managed by Conda or Anaconda then you can install wxPython using the conda tool just like you would install any other package. Check here for details on what builds are available. The fine folks at Conda-forge have done a good job at keeping it up to date with new releases.
+
+One small gotcha to be aware of with the conda builds of wxPython is that on OSX/macOS you will need to use pythonw to execute your wxPython applications, not the typical python command. To use pythonw you will need to install the python.app pacakge from conda.
+
+简单说就是运行wxpython，得用pythonw，不能用python。而且得安装python.app
+
+切到我建的虚拟环境：
+>conda activate myevnname
+
+安装python.app
+>conda install -c conda-forge python.app
+
+之后用pythonw运行
+>pythonw main.py
+运行成功，不再报错
+
+那么在pycharm中怎么设置呢
+点击‘PyCharm’菜单->Preferences菜单->Project:mypro一级菜单->Python Interpreter二级菜单->点击右上齿轮->Add菜单
+
+选Conda Environment菜单->选Existing enviroment(前提是你已经新建了conda的虚拟环境并安装了wxpython和python.app)->在Interpreter项后点...按钮
+
+选择你虚拟环境的pythonw->点OK->点OK->点OK
+
+这样，在pycharm中也可以直接运行wxpython的代码了。
+

@@ -1,0 +1,33 @@
+一个出错的例子
+
+#coding:utf-8
+s = u'中文'
+f = open("test.txt","w")
+f.write(s)
+f.close()
+
+原因是编码方式错误，应该改为utf-8编码
+
+解决方案一：
+
+#coding:utf-8
+s = u'中文'
+f = open("test.txt","w")
+f.write(s.encode("utf-8"))
+f.close()
+
+解决方案二：
+
+#coding:utf-8
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+s = u'中文'
+f = open("test.txt","w")
+f.write(s)
+f.close()
+
+以上这篇解决python中 f.write写入中文出错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

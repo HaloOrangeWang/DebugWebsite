@@ -1,0 +1,32 @@
+DoPrebuildOp Failed to call prebuild_op, need to check op info
+
+PreBuildTbeOp Failed to prebuild op. Name=[-1_0_add1]
+
+Traceback (most recent call last):
+   File "/usr/local/Ascend/ascend-toolkit/latest/x86_64-linux_gcc7.3.0/atc/python/site-packages/te/te/platform/fusion_manager.py", line 525, in prebuild_op
+     opfunc(*op_args, **kwargs)
+   File "/usr/local/Ascend/ascend-toolkit/latest/x86_64-linux_gcc7.3.0/atc/python/site-packages/te/te/utils/op_utils.py", line 555, in _in_wrapper
+     return func(*args, **kwargs)
+   File "/usr/local/Ascend/ascend-toolkit/20.0.0.RC1/x86_64-linux_gcc7.3.0/opp/op_impl/built-in/ai_core/tbe/impl/eltwise.py", line 228, in eltwise
+     (errorInfo['op_name'], errorInfo['shapes_list']))
+ RuntimeError: ({'errCode': 'E81003', 'op_name': 'eltwise', 'shapes_list': '[(1, 4, 33, 40, 16), (1, 4, 34, 40, 16)]'}, 'In op[eltwise], the shapes[[(1, 4, 33, 40, 16), (1, 4, 34, 40, 16)]] of inputs should be the same.')
+ [ERROR] TEFUSION(30365,atc):2020-09-06-21:11:43.709.149 [tensor_engine/te_fusion/fusion_op.cc:1921]DoPrebuildOp Failed to call prebuild_op, need to check op info: module name[<module 'impl.eltwise' from '/usr/local/Ascend/ascend-toolkit/20.0.0.RC1/x86_64-linux_gcc7.3.0/opp/op_impl/built-in/ai_core/tbe/impl/eltwise.py'>], op name [eltwise], op args (({'shape': (1, 4, 33, 40, 16), 'ori_shape': (1, 64, 33, 40), 'format': 'NC1HWC0', 'ori_format': 'NCHW', 'dtype': 'float16', 'addr_type': 0, 'valid_shape': (), 'slice_offset': (), 'use_L1_workspace': 0, 'L1_workspace_size': -1, 'L1_fusion_type': -1, 'L1_addr_offset': 0, 'total_shape': (), 'split_index': 0}, {'shape': (1, 4, 34, 40, 16), 'ori_shape': (1, 64, 34, 40), 'format': 'NC1HWC0', 'ori_format': 'NCHW', 'dtype': 'float16', 'addr_type': 0, 'valid_shape': (), 'slice_offset': (), 'use_L1_workspace': 0, 'L1_workspace_size': -1, 'L1_fusion_type': -1, 'L1_addr_offset': 0, 'total_s
+ [ERROR] TEFUSION(30365,atc):2020-09-06-21:11:43.711.471 [tensor_engine/te_fusion/fusion_op.cc:1921]DoPrebuildOp hape': (), 'split_index': 0}), {'shape': (1, 4, 33, 40, 16), 'ori_shape': (1, 64, 33, 40), 'format': 'NC1HWC0', 'ori_format': 'NCHW', 'dtype': 'float16', 'addr_type': 0, 'valid_shape': (), 'slice_offset': (), 'use_L1_workspace': 0, 'L1_workspace_size': -1, 'L1_fusion_type': -1, 'L1_addr_offset': 0, 'total_shape': (), 'split_index': 0}, 1, ()).
+ [ERROR] TEFUSION(30365,atc):2020-09-06-21:11:43.713.105 [tensor_engine/te_fusion/fusion_api.cc:657]PreBuildTbeOp Failed to prebuild op. Name=[-1_0_add1], Module=[/usr/local/Ascend/ascend-toolkit/20.0.0.RC1/x86_64-linux_gcc7.3.0/opp/op_impl/built-in/ai_core/tbe/impl/eltwise], FuncName=[eltwise].
+ [ERROR] FE(30365,atc):2020-09-06-21:11:43.714.730 [fusion_engine/adapter/tbe_adapter/tbe_op_store_adapter.cpp:96]SerialPreCompileOp:"Pre-build Tbe op failed."
+ [ERROR] FE(30365,atc):2020-09-06-21:11:43.716.369 [fusion_engine/graph_optimizer/op_compiler/op_compiler.cpp:431]PreCompileOp:"PreCompileOp failed, graph name = partition0_rank1_new_sub_graph1"
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.718.074 [framework/domi/graph/optimize/graph_optimize.cc:113]30374 OptimizeSubGraph: ErrorNo: -1(failed) [OptimizeSubGraph][OptimizeFusedGraph]: graph optimize failed, ret:-1
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.719.765 [framework/domi/graph/manager/graph_manager.cc:2011]30374 ProcessSubGraphWithMultiThreads: ErrorNo: -1(failed) SubGraph optimize Failed AIcoreEngine
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.721.555 [framework/domi/graph/manager/graph_manager.cc:343]30365 SetSubgraph: ErrorNo: -1(failed) subgraph 0 optimize failed
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.725.350 [framework/domi/graph/manager/graph_manager.cc:2324]30365 OptimizeSubgraph: ErrorNo: -1(failed) Graph set subgraph Failed
+ [EVENT] GE(30365,atc):2020-09-06-21:11:43.727.523 [framework/domi/graph/manager/graph_manager.cc:389]30365 PreRun:[GEPERFTRACE] The time cost of GraphManager::OptimizeSubgraph is [14541756] micro second.
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.729.561 [framework/domi/graph/manager/graph_manager.cc:389]30365 PreRun: ErrorNo: -1(failed) Failed to process GraphManager_OptimizeSubgraph
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.731.318 [framework/domi/graph/manager/graph_manager.cc:424]30365 StartForRunGraph: ErrorNo: -1(failed) PreRun Failed.
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.733.022 [framework/domi/graph/manager/graph_manager.cc:732]30365 BuildGraph: ErrorNo: 1343242268(PreRun failed.) [BuildGraph] StartForRunGraph failed!
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.734.754 [framework/domi/generator/ge_generator.cc:502]30365 BuildModel: ErrorNo: 1343266819(Graph manager build graph failed.) GraphManager build graph fail, graph id: 0
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.736.552 [framework/domi/generator/ge_generator.cc:310]30365 GenerateModel: ErrorNo: 1343266819(Graph manager build graph failed.) Build model failed.
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.738.866 [framework/domi/offline/main.cc:916]30365 GenerateModel: ErrorNo: -1(failed) GE GenerateOfflineModel execute failed
+ [ERROR] GE(30365,atc):2020-09-06-21:11:43.740.615 [framework/domi/offline/main.cc:917]30365 GenerateModel: ErrorNo: -1(failed) ATC Generate execute failed
+ [EVENT] FE(30365,atc):2020-09-06-21:11:43.947.020 [fusion_engine/fusion_manager/fusion_manager.cpp:316]Finalize:"[FE_PERFORMANCE]The time cost of FusionManager::Finalize is [190132] micro second."
+ ATC run failed, Please check the detail log, Try 'atc --help' for more information
+

@@ -1,0 +1,42 @@
+一，问题背景
+
+作者在用tensorflow做实验时，import tensorflow忽然报错：cannot import name 'abs'。错误情况如下所示：
+
+这个问题出现的比较新，网上暂时没有太多的讨论。
+
+二，可能原因
+
+对于这个问题，讨论最多的在github上，附上链接：https://github.com/tensorflow/tensorflow/issues/20778
+
+提问者也是遇到了同样的问题：
+
+tensorflow官方暂时将这个问题标记为了“待回应”。
+
+有网友指出该问题的产生原因可能为：
+
+1.需要正确版本的protobuf
+
+2.可能是_impl路径的问题
+
+3.可能与python的版本有关
+
+4.这个bug几乎只有在windows下出现，目前针对该问题，官方还未给出具体原因和解决方法
+
+三，解决办法
+
+有人尝试更新protobuf，重新安装tensorflow，但是问题仍旧存在：
+
+后续有人给出了解决办法，经测试，下面这种方法能解决这个问题：
+
+解决方法：
+
+1. 运行tensorflow，此时会报错，按后面的步骤继续做
+
+2. 删除tensorflow文件夹
+
+3. 卸载tensorflow后再重新安装即可解决问题
+
+总的来说，执行这些步骤后，可成功导入tensorflow：
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

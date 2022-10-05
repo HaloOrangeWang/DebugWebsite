@@ -1,0 +1,21 @@
+#现象 React项目，npm run build中用到了babel与browserify，如下：
+
+babel --presets es2015,react js/source -d js/build
+browserify js/build/index.js -o bundle.js
+
+运行时报错：
+
+/bin/sh: /c/Users/xxx/AppData/Local/Yarn/bin/../Data/global/node_modules/.bin/babel: No such file or directory
+/bin/sh: /c/Users/xxx/AppData/Local/Yarn/bin/../Data/global/node_modules/.bin/browserify: No such file or directory
+
+#解决 在文件夹目录访问c:/Users/xxx/AppData/Local/Yarn/Data/global/node_modules/.bin/，该文件夹中只有一个serve：  缺少所需的babel与browserify（具体为什么没有还没有找到原因） 既然缺少，那就重新yarn add：
+
+yarn global add babel
+yarn global add browserify
+
+但在装包yarn global add babel的过程中，又报了如下错误：
+
+error An unexpected error occurred: "EPERM: operation not permitted, unlink 'C:\\Users\\xxx\\AppData\\Local\\Yarn\\Data\\global\\node_modules\\.bin\\serve'".
+
+解决方案请转至本站另一篇随笔：Yarn add 装包报错: operation not permitted, unlink ...
+

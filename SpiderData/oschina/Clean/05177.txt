@@ -1,0 +1,22 @@
+在Linux中编译.c或.cpp文件时，当编译找不到链接库的时候，可能会有如下报错：
+
+****：cannot find -ldrm
+
+collect2: error: ld returned 1 exit status
+
+如上错误是我的Makefile中找不到libdrm.so库，出现这类错误要自己手动补齐lib，若错误是cannot find -l***，即找不到lib***.so库文件。
+
+解决办法：
+
+1.如果是用Makefile进行编译的话，需要自己确定Makefile中的库文件的指定位置或配置；比如下面是我自己的Makefile中的配置PRG_LIB_DIR    := $(PROJECT_DIR)/lib，即没有在lib文件夹中找到相对应的库文件，就会报错；
+
+2.看usr/lib目录下有没有这些库文件，如果有的话看链接有没有出错，如果链接出错的话，修复链接即可，修复步骤如下：
+
+ln -s lib***.so.6(根据你具体的情况来看数字是多少) lib***.so
+
+3.如果usr/lib目录下没有这些库文件的话，需要找到这些库文件，然后赋值到usr/lib文件夹中：
+
+sudo cp ***.so  /usr/lib
+
+希望以上方法能帮到你，谢谢！
+

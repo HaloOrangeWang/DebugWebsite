@@ -1,0 +1,66 @@
+由于最近呢，比较得空。无意中浏览到新闻XXX事件（你懂的）。后面直接去百度云搜索下载，果然有资源。
+
+怀着迫不及待的心情去打开，解压。我艹，竟然有解压密码。万恶的资本主义啊。作为程序员的我，怎么可能为这种事所难倒。
+
+所以呢，我就迫不及待的到手了，使用最近所学的python研究怎么破解这个rar解压密码。
+
+下面呢，贴上我初步的密码试探。
+
+import os
+
+for i in range(0, 1000000):
+    p = str(i)
+    cmd = "WinRAR e ./js/test.rar -y -p%s" %(p)
+ 
+    r = os.system(cmd)
+    if r == 1 or r == 0:
+        print("pass = %s" % p)
+        break
+ 
+    print("%s %d" % (p, r))
+
+OK ctrl+B 运行。出现 winrar不是内部命令。可是我明明已经把winrar 写到环境变量里面了啊。
+
+再次cmd，path  出现了我的环境变量路劲。没错啊 。再运行 winrar  嗯  没报错。
+
+奇怪。换个IDE试试。又打开 pycharm，crtl+shift+F10  还是报一样的错啊
+
+思考思考 。Linux上是不会报这样的错。windows为什么会报这样的错。
+
+后面我联想到 OS模块与python 交互 ，好像只认windows下面的程序额。
+
+那我是不是能直接复制exe到windows模块下呢。想到就做。将winrar.exe和unrar.exe复制到windows文件夹下。
+
+再次运行，果然没报错。哈哈。
+下面开始破解之路。
+
+。。。。。。。。。。。。。。。。。。。。。
+
+运行了N久，等啊等，效率太慢了。这怎么能行。
+
+想了下，还是使用密码字典比较好。
+
+从网上下载了密码字典 ，嗯 ，丧心病狂，28G的密码字典，强吧？（要字典的私我）
+
+还有什么密码能阻拦我？
+
+首先呢，读取文件，然后开始一一匹配。原理是这样。
+
+file = open(r"D:\phpStudy\PHPTutorial\WWW\demo\js\28G超大密码字典.txt")
+f  = file.readlines()
+for line in f:
+	s = line.split('\n') #去掉空格
+	passwd = s[0]
+	cmd = "WinRAR -e ./js/江苏女神宁梓.rar -y -p%s"(passwd)
+
+r = os.system(cmd)
+	if r ==1 or r ==0:
+		print("pass = %s"% p)
+		break         #成功后结束
+ 
+	print("%s %d"(passwd,r))
+
+嗯，慢慢等吧  总会破解成功的。其实破解的成功与否在于字典的好坏。
+
+如果大家有什么其他破解方法，请私我。大家共同讨论，共同进步。
+

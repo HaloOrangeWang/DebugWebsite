@@ -1,0 +1,56 @@
+
+跑了一个python2的ERP
+
+刚启动django就出现了bug
+
+
+UnicodeDecodeError: 'ascii' codec can't decode byte 0x?? in position 1
+
+无从改起
+
+赶紧去百度了一下
+
+原来是大家都有这个问题
+
+python2.7解释器自带问题
+
+所以
+
+以下是解决方案
+
+python在安装时，默认的编码是ascii，当程序中出现非ascii编码时，python的处理常常会报这样的错UnicodeDecodeError: 'ascii' codec can't decode byte 0x?? in position 1: ordinal not in range(128)，python没办法处理非ascii编码的，此时需要自己设置将python的默认编码，一般设置为utf8的编码格式。
+　　查询系统默认编码可以在解释器中输入以下命令：
+python代码
+　　>>>sys.getdefaultencoding() 
+　　设置默认编码时使用：
+python代码
+　　>>>sys.setdefaultencoding('utf8') 
+　　可能会报AttributeError: 'module' object has no attribute 'setdefaultencoding'的错误。执行reload(sys)，再执行以上命令就可以顺利通过。
+此时再执行sys.getdefaultencoding()就会发现编码已经被设置为utf8的了，但是在解释器里修改的编码只能保证当次有效，在重启解释器后，会发现，编码又被重置为默认的ascii了。
+　　有2种方法设置python的默认编码：
+　　一个解决的方案在程序中加入以下代码：
+　　Python代码
+　　# encoding=utf8 
+　　import sys 
+　　reload(sys) 
+　　sys.setdefaultencoding('utf8') 
+　　另一个方案是在python的Lib\site-packages文件夹下新建一个sitecustomize.py，内容为：
+　　Python代码 
+　　# encoding=utf8 
+　　import sys
+　　reload(sys) 
+　　sys.setdefaultencoding('utf8') 
+　　此时重启python解释器，执行sys.getdefaultencoding()，发现编码已经被设置为utf8的了，多次重启之后，效果相同，这是因为系统在python启动的时候，自行调用该文件，设置系统的默认编码，而不需要每次都手动的加上解决代码，属于一劳永逸的解决方法。
+
+之后出现了这种报错
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc8 in position 0: invalid continuation byte
+
+我又去把utf-8改成了gbk
+
+然后项目起来了
+
+但是项目里还有错
+
+欲哭无泪
+

@@ -1,0 +1,70 @@
+SQL 2008 R2
+
+请看语句：
+
+ALTER TABLE #t ADD col2 INT
+
+UPDATE #t
+
+SET col2 = 0
+
+报错：列名'col2'无效。
+
+但如果紧接的是SELECT，一切正常，可以发现col2成功添加到表中。
+
+非要接UPDATE的话，必须在ALTER后GO一下，不然报错无悬念。
+
+请问：能不能不GO，也能UPDATE。因为前面我定义了很多变量，一GO回到解放前，不甘心。
+
+可以通过EXEC ，把UPDATE的执行计划生成放到执行时进行
+
+ALTER TABLE #t ADD col2 INT
+
+EXEC('
+
+UPDATE #t
+
+SET col2 = 0
+
+')
+
+sql 的执行，是先分析并生成执行计划，再做实际的执行
+
+当你把 alter table 和 update 放在一齐的时候，在分析并生成执行计划这步，由于列不存在，所以无法为 update 生成执行计划，所以就报错了
+
+所以最好的习惯是用go代替分号，养成好习惯
+
+注意使用go的时候需换行
+
+附Sql Server 增加字段、修改字段、修改类型、修改默认值
+
+1、修改字段名：
+
+　　alter table 表名 rename column A to B
+
+2、修改字段类型：
+
+　　alter table 表名 alter column 字段名 type not null
+
+3、修改字段默认值 　　alter table 表名 add default (0) for 字段名 with values
+
+　　如果字段有默认值，则需要先删除字段的约束，在添加新的默认值，
+
+　　select c.name from sysconstraints a 　　inner join syscolumns b on a.colid=b.colid 　　inner join sysobjects c on a.constid=c.id 　　where a.id=object_id('表名') 　　and b.name='字段名'
+
+　　根据约束名称删除约束
+
+　　alter table 表名 drop constraint 约束名
+
+　　根据表名向字段中增加新的默认值
+
+　　alter table 表名 add default (0) for 字段名 with values
+
+4、增加字段：
+
+　　alter table 表名 add 字段名 type not null default 0
+
+5、删除字段：
+
+　　alter table 表名 drop column 字段名;
+

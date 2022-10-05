@@ -1,0 +1,28 @@
+
+1.1  现象描述
+
+Centos系统在正常重启后，运行yum命令安装软件工具的时候出现以下报错：
+
+cannot open Packages index using db5 - Structure needs cleaning (117)
+
+error: cannot open Packages database in /var/lib/rpm
+
+
+1.2  原因分析
+
+看到这两个报错后，首先想到的就是先进入到/var/lib/rpm目录看下，进去之后使用ls命令提示也是报Structure needs cleaning (117)报错且看不到任何文件，没办法开始通过百度去搜索关键词找相关解决办法，
+搜了一通大多都是rm -f /var/lib/rpm/__db*;rpm --rebuilddb即可，可是我这边连文件都看不到，经确认解决不了当前这种情况；没办法，使用重启大法试试，重启之后还是没有解决。怎么办，怎么办，查看linux
+系统日志，出现以下报错：
+
+推测可能是文件系统磁盘块有问题，尝试使用xfs_repair修复错误。
+
+
+1.3  解决方法
+
+1、启动救援模式，网上一堆自行搜索进入（选择Skip to shell）
+2、xfs_repair /dev/sda3(我这边提示/dev/sda3)
+3、reboot
+4、再次运行yum命令正常
+
+　　至此yum源命令运行报错问题处理完成，记录下方便自己查看；当然如果能帮到小伙伴们也是很开心的，哈哈！
+

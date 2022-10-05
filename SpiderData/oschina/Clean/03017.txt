@@ -1,0 +1,49 @@
+问题描述：使用Fluid运行官方models中的rnn_search的模型，报错
+
+问题描述：使用Fluid运行官方models中的rnn_search的模型，报错
+
+报错输出：
+
+报错输出：
+
+Traceback (most recent call last):
+  File "train.py", line 173, in <module>
+    train()
+  File "train.py", line 103, in train
+    exe.run(framework.default_startup_program())
+  File "/Users/jizhi/anaconda3/envs/paddle/lib/python3.5/site-packages/paddle/fluid/executor.py", line 470, in run
+    self.executor.run(program.desc, scope, 0, True, True)
+paddle.fluid.core.EnforceNotMet: Cannot run operator on place CUDAPlace(0) at [/Users/paddle/minqiyang/Paddle/paddle/fluid/framework/operator.cc:146]
+PaddlePaddle Call Stacks:
+0          0x10d0eaa68p paddle::platform::EnforceNotMet::EnforceNotMet(std::exception_ptr, char const*, int) + 760
+1          0x10df0f1f9p paddle::framework::OperatorBase::Run(paddle::framework::Scope const&, boost::variant<paddle::platform::CUDAPlace, paddle::platform::CPUPlace, paddle::platform::CUDAPinnedPlace, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_, boost::detail::variant::void_> const&) + 761
+2          0x10d1b83a6p paddle::framework::Executor::RunPreparedContext(paddle::framework::ExecutorPrepareContext*, paddle::framework::Scope*, bool, bool, bool) + 390
+3          0x10d1b7dd3p paddle::framework::Executor::Run(paddle::framework::ProgramDesc const&, paddle::framework::Scope*, int, bool, bool) + 163
+4          0x10d11e837p void pybind11::cpp_function::initialize<paddle::pybind::pybind11_init()::$_64, void, paddle::framework::Executor&, paddle::framework::ProgramDesc const&, paddle::framework::Scope*, int, bool, bool, pybind11::name, pybind11::is_method, pybind11::sibling>(paddle::pybind::pybind11_init()::$_64&&, void (*)(paddle::framework::Executor&, paddle::framework::ProgramDesc const&, paddle::framework::Scope*, int, bool, bool), pybind11::name const&, pybind11::is_method const&, pybind11::sibling const&)::'lambda'(pybind11::detail::function_call&)::__invoke(pybind11::detail::function_call&) + 135
+5          0x10d0f53aap pybind11::cpp_function::dispatcher(_object*, _object*, _object*) + 5786
+6          0x10038859fp PyCFunction_Call + 127
+7          0x1004537e7p PyEval_EvalFrameEx + 33207
+8          0x100449fafp _PyEval_EvalCodeWithName + 335
+9          0x1004502a7p PyEval_EvalFrameEx + 19575
+10         0x100449fafp _PyEval_EvalCodeWithName + 335
+11         0x1004502a7p PyEval_EvalFrameEx + 19575
+12         0x100449fafp _PyEval_EvalCodeWithName + 335
+13         0x10049c758p PyRun_FileExFlags + 248
+14         0x10049beeep PyRun_SimpleFileExFlags + 382
+15         0x1004c0d86p Py_Main + 3622
+16         0x100302861p main + 497
+17      0x7fff5f4da015p start + 1
+18                 0x2p
+
+问题分析：
+
+报错输出中有Cannot run operator on place CUDAPlace(0)，通常是运行设备中没有GPU，使用CPU运作则可。
+
+解决方法：
+
+place  = core.CPUPlace()
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

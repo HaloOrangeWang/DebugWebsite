@@ -1,0 +1,69 @@
+
+1.设置默认编码
+
+在Python代码中的任何地方出现中文，编译时都会报错，这时可以在代码的首行添加相应说明,明确utf-8编码格式，可以解决一般情况下的中文报错。当然，编程中遇到具体问题还需具体分析啦。
+
+#encoding:utf-8
+或者
+# -*- coding: utf-8 -*- 
+import sys  
+reload(sys)  
+sys.setdefaultencoding(’utf8’)  # 设置默认编码格式为'utf-8'
+
+
+2.文件读写
+
+文件读写中遇到中文，通常不会报错，但是最后运行结果显示乱码，给后续处理带来不便。
+
+
+2.1 读文件
+
+读文件时，如果文件路径、文件名中有中文，需要使用unicode函数将其编码为’utf-8’格式，然后再进行正常的文件读取。以我常用的pandas的read_csv函数为例，使用如下代码可以成功地读取名为“POI总表”的csv文件，保存在DataFrame数据类型的poi_list。
+
+import pandas as pd
+inpath = 'C:\\POI总表.csv'
+**path = unicode(inpath, 'utf-8')**
+poi_list = pd.read_csv(path)
+
+
+2.2 写文件
+
+文件名有中文，文件名乱码 
+当想要将程序运行结果保存到文本文件时，文本文件的命名中如果有中文，不做处理文件名会出现乱码。利用unicode函数进行编码可解。unicode(‘中文.csv’,’utf-8’)
+
+文件名有中文，文件名乱码 
+当想要将程序运行结果保存到文本文件时，文本文件的命名中如果有中文，不做处理文件名会出现乱码。利用unicode函数进行编码可解。unicode(‘中文.csv’,’utf-8’)
+
+文件内容有中文，excel打开内容乱码 
+如果将包含中文的结果输出到csv文件，一般默认使用Excel打开文件时，文件内容会出现乱码，而使用文本编辑器打开不会乱码。这是因为Excel默认的编码方式为‘GBK‘，而文本编辑器默认的格式为‘utf-8’。使用codecs包在创建文件后添加语句f.write(codecs.BOM_UTF8)可解
+
+文件内容有中文，excel打开内容乱码 
+如果将包含中文的结果输出到csv文件，一般默认使用Excel打开文件时，文件内容会出现乱码，而使用文本编辑器打开不会乱码。这是因为Excel默认的编码方式为‘GBK‘，而文本编辑器默认的格式为‘utf-8’。使用codecs包在创建文件后添加语句f.write(codecs.BOM_UTF8)可解
+
+name='语文'
+f = open(name+'.csv','w')
+f.write('123,语文') f.close() #修改编码 import codecs f = open(**unicode(name+'.csv','utf-8')**,'w') # 文件名不乱码 **f.write(codecs.BOM_UTF8) # excel打开内容不乱码的核心语句** f.write('123,语文') f.close()
+
+输出结果：
+
+#文件名：璇枃.csv
+#Excel打开   123  璇枃
+#文本编辑器打开 123,语文
+
+#改编码后
+#文件名：语文.csv #Excel打开 123 语文 #文本编辑器打开 123,语文
+
+列表打印时,展示unicode,转换成中文显示方法:
+打印时:
+
+print custs
+
+[u'1', u'\u534e\u4fa8\u57ce\u5317\u65b9\u6295\u8d44\u6709\u9650\u516c\u53f8', u'9cff34f0-09c0-4c83-a8e3-ba4bee5293f1', u'-', u'1.0.1905.900', u'\u8be6\u60c5\n\u7f16\u8f91\n\u5220\u9664', u'2', u'\u6df1\u5733\u534e\u4fa8\u57ce\u57ce\u5e02\u66f4\u65b0\u6295\u8d44\u6709\u9650\u516c\u53f8', u'f533411b-c60b-4500-a4e8-9eacae279332', u'-', u'1.0.1904.800', u'\u8be6\u60c5\n\u7f16\u8f91\n\u5220\u9664']
+
+通过json.dumps方法,可以转换
+
+print json.dumps(custs,encoding='UTF-8', ensure_ascii=False)
+
+["1", "华侨城北方投资有限公司", "9cff34f0-09c0-4c83-a8e3-ba4bee5293f1", "-", "1.0.1905.900", "详情\n编辑\n删除", "2", "深圳华侨城城市更新投资有限公司", "f533411b-c60b-4500-a4e8-9eacae279332", "-", "1.0.1904.800", "详情\n编辑\n删除"]
+['9cff34f0-09c0-4c83-a8e3-ba4bee5293f1', 'f533411b-c60b-4500-a4e8-9eacae279332']
+

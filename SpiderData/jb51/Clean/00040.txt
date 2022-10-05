@@ -1,0 +1,135 @@
+
+前言
+
+最近在使用Pycharm，在运行或者安装的过程中出现了各种各样的报错，前面已经介绍过安装pygame出现报错的解决方法。文章总结了大部分可能会出现的报错，包含原因以及解决方法。
+
+
+（一）Pycharm报错：No R interpreter defined
+
+No R interpreter defined: Many R related features like completion, code checking and help won’t be available. You can set an interpreter under Preferences->Languages->R
+
+解决方法：
+
+①方法1：下载安装R，然后将R的路径添加到Pycharm中，（R语言官网https://mirrors.tuna.tsinghua.edu.cn/CRAN/），安装好后将R的安装路径添加到pycharm中：
+
+Files->Settings->Plugins->Languages & Frameworks->R Language
+
+②方法2：如无需R语言，直接卸载R语言插件：
+
+Files->Settings->Plugins->R Language Support->Uninstall
+
+
+（二）找不到指定的模板：ImportError:DDL load failed while importing ft2font：
+
+解决办法：
+
+File->settings->Project: 你的项目名 ->Python Interpreter
+
+在右侧找到matplotlib双击
+
+然后选择版本3.3.1，Install
+
+Python 导入pyecharts模块绘图时报错： “所有图表类型将在 v1.9.0 版本开始强制使用 ChartItem 进行数据项配置 ”的解决方法操作如上，将pyecharts版本更改为1.7.0即可
+
+
+（三）pycharm中无法识别导入自己写的模块
+
+有时候在同级目录下自己写的函数模块，却不能在同级目录下另一个文件中导入
+
+解决办法：
+
+（1）打开"file"->Settings打开 Console下的Python Console，把选项（Add source roots to PYTHONPAT）点击勾选上
+
+（2）右键点击自己的工作空间(文件/文件夹），点击“Mark Directory as",选择 Sources Root
+
+还有一种情况是，自己写的函数所在的文件夹中没有初始化函数，即__init__.py，在文件夹中创建一个—个__init__.py即可，内容可以啥也不写。
+
+
+（四）pycharm光标变粗，无法编辑代码
+
+光标变黑块是因为输入方式变成了改写方式，INSERT可以切换 插入/改写模式
+
+解决办法：按一下键盘上的insert键。不同型号的insert键所在位置可能不一样，我的是联想小新14寸，insert键在键盘的右下侧，与PgDn在一个键上，使用insert需要按Fn+Insert
+
+
+（五）使用Pycharm给Python程序传递参数
+
+程序运行时，如果需要输入参数，如下图中程序代码：
+
+此时输入参数需要在命令行中运行：python 文件名.py 参数1 参数2
+
+如果直接在Pycharm环境中简单执行“Run”菜单下的“Run”命令，会出现错误，提示需要输入参数。
+
+为了能够直接在Pycharm中运行，可以使用一下方式设置参数：
+
+Run->Edit Configurations->选择需要设置参数的.py文件->Parameters
+
+设置好后点击OK即可完成。这下运行就不会报错啦！
+
+pycharm 导入项目报错no python interpreter configured for the project
+
+找到设置 project interpreter ，添加pythonw.exe 解释器即可
+
+报错：IndentationError:expected an indented block
+
+分析：缩进错误！
+
+解决：在出现错误的那一行，按空格或Tab（但不能混用）键缩进就行。该缩进的地方就要缩进，不缩进反而会出错
+
+报错：AttributeError: 'NoneType' object has no attribute 'shape'
+
+分析：多发生在图像处理问题
+
+解决：经过检查发现是python中图像不存在
+
+报错：error: (-215:Assertion failed) !ssize.empty() in function 'cv::resize'
+
+分析：在该路径下没有图像，或者说该路径不存在。也就是说，cv读到的是0byte数据
+
+解决：
+
+① 看是不是没有路径
+
+② 看是不是该路径下的图片不存在
+
+③ 即使图片存在，但是为0byte也是错误的
+
+报错：FileNotFoundError: [Errno 2] No such file or directory: 'data/coco.names'
+
+分析：这一般都是当前工程文件的文件夹中，后面标注的这个文件夹里没有文件
+
+解决：添加文件即可
+
+报错：SyntaxError: invalid syntax
+
+分析：英文是“非法语句”的意思。漏标点符号（例如漏分号，漏&号），多标点符号，拼写错，等等都会造成这种错
+
+解决：检查拼写错误
+
+报错：RuntimeError: invalid argument 0: Sizes of tensors must match except in dimension 0
+
+分析：使用DataLoader加载图像，这些图像中的一些具有3个通道（彩色图像），而其他图像可能具有单个通道（BW图像），由于dim1的尺寸不同，因此无法将它们连接成批次。尝试将img = img.convert（‘RGB’）添加到数据集中的__getitem__中
+
+解决：dataloader
+
+def __getitem__(self,index):
+        img_path=self.imgs[index]
+        label=self.labels[index]
+        data=Image.open(img_path)
+#         data = data.convert('RGB')
+        data=self.transform(data)
+        return data,label
+
+selenium报错“selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable needs to be in PATH.”
+
+如图所示字段，运行后报错原因是缺少‘geckodriver’的插件在路径内
+
+解决方案为：下载相应版本的'geckodriver' 插件，并将其放置在Python.exe相同路径的地方
+
+如图：
+
+
+总结
+
+到此这篇关于Pycharm最全报错的原因与解决的文章就介绍到这了,更多相关Pycharm最全报错解决内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

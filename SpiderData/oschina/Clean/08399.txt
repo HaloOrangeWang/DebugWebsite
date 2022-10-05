@@ -1,0 +1,44 @@
+flutter中的ListView组件和GridView组件都是常用的布局组件，有时候ListView中需要嵌套GridView来使用，例如下图：
+
+这种情况就需要在ListView里面再嵌套一个GridView用于排放图片等信息，先来看一下GridView一些常用的参数
+
+GridView.count(
+  crossAxisCount: 3,                            // 每行显示多少个
+  crossAxisSpacing: 1.5,                        // 横轴网格间距
+  mainAxisSpacing: 1.5,                         // 纵轴网格间距
+  childAspectRatio: 11/16,                      // 网格比例
+)
+
+在GridView中的元素无法设置其宽高，主要通过childAspectRatio来设置其比例，通过比例来显示其大小。
+
+在项目中如果直接使用ListView嵌套GridView进行布局，其会出现报错异常，例如下面异常：
+
+I/flutter ( 5969): ══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+I/flutter ( 5969): The following assertion was thrown during performResize():
+I/flutter ( 5969): Vertical viewport was given unbounded height.
+I/flutter ( 5969): Viewports expand in the scrolling direction to fill their container.In this case, a vertical
+I/flutter ( 5969): viewport was given an unlimited amount of vertical space in which to expand. This situation
+I/flutter ( 5969): typically happens when a scrollable widget is nested inside another scrollable widget.
+I/flutter ( 5969): If this widget is always nested in a scrollable widget there is no need to use a viewport because
+I/flutter ( 5969): there will always be enough vertical space for the children. In this case, consider using a Column
+I/flutter ( 5969): instead. Otherwise, consider using the "shrinkWrap" property (or a ShrinkWrappingViewport) to size
+I/flutter ( 5969): the height of the viewport to the sum of the heights of its children.
+
+　　
+
+出现这种情况可在GridView中设置shrinkWrap:true即可解决：
+
+GridView.count(
+  shrinkWrap:true,                              // 处理listview嵌套报错
+),
+
+　　
+
+此时有可能出现手指在GridView区域滑动时ListView无法进行滚动，处理该问题可在GridView中设置physics: NeverScrollableScrollPhysics()来处理：
+
+GridView.count(
+  physics: NeverScrollableScrollPhysics(),      // 处理GridView中滑动父级Listview无法滑动
+)
+
+　　
+

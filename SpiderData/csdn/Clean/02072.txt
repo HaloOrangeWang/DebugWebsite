@@ -1,0 +1,13 @@
+利用print函数打印字符串报以下错误，原因是因为字符串里面包含Unicode字符。
+
+Traceback (most recent call last):
+ UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f6d2' in position 130: illegal multibyte sequence
+
+解决办法：
+
+在文件中加入以下代码即可解决
+
+import io
+import sys
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, errors='replace', line_buffering=True)
+

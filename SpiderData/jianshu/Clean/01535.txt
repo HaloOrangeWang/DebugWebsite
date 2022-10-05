@@ -1,0 +1,31 @@
+报错日志:
+
+>>> import cv2
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/cheung/anaconda3/lib/python3.7/site-packages/cv2/__init__.py", line 3, in <module>
+    from .cv2 import *
+ImportError: libSM.so.6: cannot open shared object file: No such file or directory
+
+报错原因: 缺少共享库
+
+解决方法:
+
+查看缺少什么库:
+
+命令: yum whatprovides libSM.so.6
+响应: 
+(base) [root@VM_30_16_centos machine]# yum whatprovides libSM.so.6
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+libSM-1.2.2-2.el7.i686 : X.Org X11 SM runtime library
+
+安装缺少的库
+
+yum install libSM-1.2.2-2.el7.x86_64 --setopt=protected_multilib=false
+
+查看问题是否解决
+
+>>> import cv2
+>>> quit()
+

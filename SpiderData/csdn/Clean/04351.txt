@@ -1,0 +1,115 @@
+
+1、RecursionError: maximum recursion depth exceeded while calling a Python object
+
+加入如下代码
+
+#__init__.py
+import sys
+
+sys.setrecursionlimit(100000)
+
+
+2、ImportError: dlopen: cannot load any more object with static TLS
+
+Traceback (most recent call last):
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__check_build/__init__.py", line 44, in <module>
+    from ._check_build import check_build  # noqa
+ImportError: dlopen: cannot load any more object with static TLS
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/geopandas/plotting.py", line 659, in _mapclassify_choro
+    import mapclassify.classifiers as classifiers
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/mapclassify/__init__.py", line 4, in <module>
+    from .classifiers import (
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/mapclassify/classifiers.py", line 8, in <module>
+    from sklearn.cluster import KMeans as KMEANS
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__init__.py", line 79, in <module>
+    from . import __check_build  # noqa: F401
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__check_build/__init__.py", line 46, in <module>
+    raise_build_error(e)
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__check_build/__init__.py", line 41, in raise_build_error
+    %s""" % (e, local_dir, ''.join(dir_content).strip(), msg))
+ImportError: dlopen: cannot load any more object with static TLS
+___________________________________________________________________________
+Contents of /data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__check_build:
+setup.py                  __pycache__               _check_build.cpython-36m-x86_64-linux-gnu.so
+__init__.py
+___________________________________________________________________________
+It seems that scikit-learn has not been built correctly.
+
+If you have installed scikit-learn from source, please do not forget
+to build the package before using it: run `python setup.py install` or
+`make` in the source directory.
+
+If you have used an installer, please check that it is suited for your
+Python version, your operating system and your platform.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__check_build/__init__.py", line 44, in <module>
+    from ._check_build import check_build  # noqa
+ImportError: dlopen: cannot load any more object with static TLS
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/geopandas/plotting.py", line 662, in _mapclassify_choro
+    import pysal.viz.mapclassify.classifiers as classifiers
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/pysal-2.3.0-py3.6.egg/pysal/viz/__init__.py", line 1, in <module>
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/mapclassify/__init__.py", line 4, in <module>
+    from .classifiers import (
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/mapclassify/classifiers.py", line 8, in <module>
+    from sklearn.cluster import KMeans as KMEANS
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__init__.py", line 79, in <module>
+    from . import __check_build  # noqa: F401
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__check_build/__init__.py", line 46, in <module>
+    raise_build_error(e)
+  File "/data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__check_build/__init__.py", line 41, in raise_build_error
+    %s""" % (e, local_dir, ''.join(dir_content).strip(), msg))
+ImportError: dlopen: cannot load any more object with static TLS
+___________________________________________________________________________
+Contents of /data/software/anaconda3/envs/py36/lib/python3.6/site-packages/sklearn/__check_build:
+setup.py                  __pycache__               _check_build.cpython-36m-x86_64-linux-gnu.so
+__init__.py
+___________________________________________________________________________
+It seems that scikit-learn has not been built correctly.
+
+If you have installed scikit-learn from source, please do not forget
+to build the package before using it: run `python setup.py install` or
+`make` in the source directory.
+
+If you have used an installer, please check that it is suited for your
+Python version, your operating system and your platform.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+ ....
+ImportError: The 'mapclassify' or 'pysal' package is required to use the 'scheme' keyword
+
+库冲突，删除
+
+import requests
+from requests.adapters import HTTPAdapter
+
+
+3、OSError: Could not find lib c or load any of its variants [].
+
+shapely版本太低，需要1.7.1
+
+pip install shapely --upgrade
+# shapely                   1.7.1                    pypi_0    pypi
+
+cartopy需要0.18.0
+
+
+注意：安装其他库，比如tqdm可能会把cartopy给弄到0.17.0
+
+
+4、Process finished with exit code 139 (interrupted by signal 11: SIGSEGV)
+
+待解决
+

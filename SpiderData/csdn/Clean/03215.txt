@@ -1,0 +1,51 @@
+mongo数据库出错：http://www.cnblogs.com/TankMa/archive/2011/06/08/2074947.html
+
+解决办法：
+mongo卸载再重装
+mongo卸载教程（点击链接）
+mongo安装的教程（点击链接）#!/usr/bin/python
+
+
+mongo数据库出错：http://www.cnblogs.com/TankMa/archive/2011/06/08/2074947.html
+
+解决办法：
+mongo卸载再重装
+mongo卸载教程（点击链接）
+mongo安装的教程（点击链接）#!/usr/bin/python
+
+#-*- coding:utf-8 -*-
+
+import pymongo
+'''
+>>> from pymongo import Connection #导入模块
+>>> con = Connection()
+连接方法较多
+'''
+con = pymongo.Connection('127.0.0.1',27017) 
+'''
+创建数据库
+'''
+db = con.mydb
+'''
+创建类似与表的东西
+'''
+posts = db.post
+a = {'id':1,'name':'pymongo'}
+b = {'id':2,'name':'python'}
+'''
+数据库的基本操作增删改查,没有commit一说
+
+'''
+posts.insert(a)
+posts.insert(b)
+ps = posts.find()
+
+count = posts.count()
+print count
+
+post = posts.find_one()
+print post
+
+for i in ps:
+    print i
+

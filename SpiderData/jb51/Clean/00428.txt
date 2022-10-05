@@ -1,0 +1,82 @@
+本文实例讲述了Python使用try except处理程序异常的三种常用方法。分享给大家供大家参考，具体如下：
+
+如果你在写python程序时遇到异常后想进行如下处理的话,一般用try来处理异常，假设有下面的一段程序：
+
+try:
+  语句1
+  语句2
+  .
+  .
+  语句N
+except .........:
+  do something .......
+
+但是你并不知道"语句1至语句N"在执行会出什么样的异常，但你还要做异常处理，且想把出现的异常打印出来，并不停止程序的运行，所以在"except ......"这句应怎样来写呢？
+
+总结了一下3个方法：
+
+方法一：捕获所有异常
+
+try:
+  a=b
+  b=c
+except Exception,e:
+  print Exception,":",e
+
+测试结果：
+
+<type 'exceptions.Exception'> : name 'b' is not defined
+
+方法二：采用traceback模块查看异常
+
+#引入python中的traceback模块，跟踪错误
+import traceback
+try:
+  a=b
+  b=c
+except:
+  traceback.print_exc()
+
+方法三：采用sys模块回溯最后的异常
+
+#引入sys模块
+import sys
+try:
+  a=b
+  b=c
+except:
+  info=sys.exc_info()
+  print info[0],":",info[1]
+
+运行结果：
+
+<type 'exceptions.NameError'> : name 'b' is not defined
+
+但是，如果你还想把这些异常保存到一个日志文件中，来分析这些异常，那么请看下面的方法：
+
+把　traceback.print_exc()　打印在屏幕上的信息保存到一个文本文件中
+
+import traceback
+try:
+  a=b
+  b=c
+except:
+  f=open("c:\log.txt",'a')
+  traceback.print_exc(file=f)
+  f.flush()
+  f.close()
+
+此时C盘根目录下生成一个log.txt文件，内容如下：
+
+Traceback (most recent call last):
+
+File "C:\py\jb51PyDemo\src\Demo\test.py", line 3, in <module>
+
+a=b
+
+NameError: name 'b' is not defined
+
+更多Python相关内容感兴趣的读者可查看本站专题：《Python入门与进阶经典教程》、《Python字符串操作技巧汇总》、《Python列表(list)操作技巧总结》、《Python编码操作技巧总结》、《Python数据结构与算法教程》、《Python函数使用技巧总结》及《Python文件与目录操作技巧汇总》
+
+希望本文所述对大家Python程序设计有所帮助。
+

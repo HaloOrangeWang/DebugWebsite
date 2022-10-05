@@ -1,0 +1,21 @@
+import configparser
+
+class ReadConfig:
+    """定义一个读取配置文件的类"""
+
+def __init__(self):
+        configpath = "config.ini文件的绝对路径"
+        self.cf = configparser.ConfigParser()
+        self.cf.read(configpath)
+
+def get_db(self, param):
+        value = self.cf.get("Mysql", param)
+        return value
+
+if __name__ == '__main__':
+    test = ReadConfig()
+    t = test.get_db("host")
+    print(t)
+
+将configpath修改为绝对路径
+

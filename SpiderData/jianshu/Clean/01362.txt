@@ -1,0 +1,79 @@
+错误信息：
+
+Retrying (Retry(total=4, connect=None, read=None, redirect=None, 
+status=None)) after connection broken by 
+'ReadTimeoutError("HTTPSConnectionPool(host='pypi.org', 
+port=443): Read timed out. (read timeout=15)",)': /simple/queuelib/
+
+原因是数据源有问题。要更换python的pip源。
+
+通过几次ｐｉｐ的使用，对于默认的pip源的速度实在无法忍受，于是便搜集了一些国内的pip源，如下：
+
+阿里云 http://mirrors.aliyun.com/pypi/simple/
+
+中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/
+
+豆瓣(douban) http://pypi.douban.com/simple/
+
+清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
+
+中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/
+
+
+Mac下设置
+
+Mac电脑先找一下.pip文件件，如果没有则需要手动创建。
+
+cd ~/
+ls -a
+
+发现没有这个.pip文件件，手动创建：
+
+mkdir .pip
+cd .pip/
+vi pip.conf
+
+加入以下内容
+
+推荐清华大学的源：
+
+[global]
+
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+
+[install]
+
+trusted-host=pypi.tuna.tsinghua.edu.cn
+
+或者阿里云
+
+[global]
+
+index-url = http://mirrors.aliyun.com/pypi/simple/
+
+[install]
+
+trusted-host=mirrors.aliyun.com
+
+或者可以使用豆瓣的镜像：
+
+[global]
+
+index-url = http://pypi.douban.com/simple
+
+[install]
+
+trusted-host=pypi.douban.com
+
+
+Linux
+
+需要创建或修改配置文件（一般都是创建），
+
+linux的文件在~/.pip/pip.conf，
+
+
+windows
+
+windows在%HOMEPATH%\pip\pip.ini下
+

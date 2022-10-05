@@ -1,0 +1,25 @@
+使用pymysql连接MySQL会报1366错
+
+engine=create_engine('mysql+pymysql://root:1234@localhost/b',#指定连接的数据库engine，如MySQL，Oracle等
+                     encoding='utf-8',
+                     echo=False)
+
+　　报错：
+
+E:\Anacoda\lib\site-packages\pymysql\cursors.py:170: Warning: (1366, "Incorrect string value: '\\xD6\\xD0\\xB9\\xFA\\xB1\\xEA...' for column 'VARIABLE_VALUE' at row 497")
+  result = self._query(query)
+
+解决办法
+
+　　到MySQL官网下载mysql-connector-python:https://dev.mysql.com/downloads/connector/python/
+
+　　下载并安装后将原来连接代码中的pymysql改成mysqlconnector
+
+engine=create_engine('mysql+mysqlconnector://root:1234@localhost/b',
+                     encoding='utf-8',
+                     echo=False)
+
+　　再运行就不报错了
+
+https://dev.mysql.com/downloads/connector/python/
+

@@ -1,0 +1,25 @@
+导入json文件报错，TypeError expected string or buffer
+
+原因：用字符串赋值后，python会把双引号转换为单引号
+
+import json
+
+data = [{"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}]
+print(type(data),data)
+
+执行结果：
+
+<class 'list'> [{'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5}]
+
+但是了，json是不支持单引号的。可以用下面的方法转换
+
+json_string=json.dumps(s)
+
+python_obj=json.loads(json_string)
+
+实例：
+
+import json
+
+执行结果：
+

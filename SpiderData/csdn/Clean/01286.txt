@@ -1,0 +1,27 @@
+两种方法：
+
+直接打印错误：
+
+try:
+	a=2/0
+except Exception as e:
+	print(e)
+
+结果：division by zero
+ 2. 用traceback模块打印
+ 上述结果看不到具体错误信息，不方便调试定位，可用traceback模块。
+
+import traceback
+try:
+	a=2/0
+except Exception as e:
+	print(traceback.format_exc())
+	#traceback.print_exc() #等价于上一条语句
+
+结果：
+
+Traceback (most recent call last):
+  File "/Users/Desktop/project/data_5_6/test.py", line 48, in <module>
+    a=2/0
+ZeroDivisionError: division by zero
+

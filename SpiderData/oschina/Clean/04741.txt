@@ -1,0 +1,40 @@
+比如说界面变成了这样：
+
+解决办法：
+
+1、在服务器上打开python，然后imort django ，print django.__file__查看django包的目录路径，然后在settings.py的路径里加上admin的static文件的路径
+
+STATICFILES_DIRS = (
+     os.path.join(BASE_DIR, 'static').replace('\\', '/'),
+    os.path.join(django.__file__.rstrip('__init__.py'), 'contrib/admin/static/admin').replace('\\', '/'),
+)
+
+2、修改settings.py中STATIC_ROOT为你的static静态文件的物理路径，比如说我静态文件存放在 /opt/jira_platform/static中，最后修改settings.py中STATIC_ROOT指向 /opt/jira_platform/static。这个目录是服务器上用来收集静态文件的目录
+
+3、在服务器上运行python manage.py collectstatic命令，这将从Django资源包中复制必须的静态文件到STATIC_ROOT指示的static文件夹中，这其中包括admin界面所必须的样式表（style）、图片（image）及脚本（js）等。
+
+这里提示一下，假如不做第1步的话，直接运行这个命令会导致如下的错误提示（最后几行）：
+
+File "/usr/lib/python2.7/dist-packages/django/contrib/staticfiles/management/commands/collectstatic.py", line 41, in __init__ self.storage = get_storage_class(settings.STATICFILES_STORAGE)() File "/usr/lib/python2.7/dist-packages/django/contrib/staticfiles/storage.py", line 23, in __init__ raise ImproperlyConfigured("You're using the staticfiles app " django.core.exceptions.ImproperlyConfigured: You're using the staticfiles app without having set the STATIC_ROOT setting.
+
+如果出现上述提示，说说明需要配置STATIC_ROOT文件（You’re using the staticfiles app without having set the STATIC_ROOT setting）。
+
+4、修改Nginx配置，比如/etc/nginx/nginx.conf或者/etc/nginx/sites-enabled/里面的配置文件，在server节中添加如下内容（请根据实际情况修改）：
+
+location /static {
+ alias /opt/jira_platform/static; # 这个路径需要与第二步设置的路径一致
+ }
+
+完成上面三步后，重新加载相应设置：
+
+uwsgi reload
+nginx -s reload
+
+然后就可以成功了
+
+二、模板丢失问题
+
+由于nginx运行后代管了静态目录，所以如果后台有nginx进程时，修改的一些文件无法正常显示，页面展示的都是缓存，此时需要重启nginx
+
+如果不重启nginx，单纯修改django项目并启动django进程，可能会遇到报错或静态文件和模板文件丢失的问题
+

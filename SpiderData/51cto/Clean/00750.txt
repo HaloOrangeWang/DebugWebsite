@@ -1,0 +1,41 @@
+
+报错内容：
+
+
+报错内容，所在文件
+
+/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/peewee.py
+
+venv/lib/python3.6/site-packages/pymysql/init.py
+
+
+原因
+
+使用的python版本为3.5
+
+Flask-MySQL使用了peewee；Flask-MySQL 会安装PyMySQL的最新版
+
+peewee使用 MySQLdb 或 pymysql 来连接MySQL数据库
+
+PyMySQL的最新版，不支持Python 2.7 和 3.5版本了（而我使用的是3.5版本），所以peewee报错
+
+
+解决
+
+不使用 Flask-MySQL 安装的PyMySQL最新版，指定PyMySQL版本为0.10.1，requirements.txt文件中写入：​​PyMySQL==0.10.1​​
+
+
+资料
+
+资料
+
+网址
+
+Flask-MySQL
+
+​​https://github.com/cyberdelia/flask-mysql/blob/master/setup.py​​ （会安装PyMySQL的最新版）
+
+PyMySQL 版本历史
+
+​​https://github.com/PyMySQL/PyMySQL/blob/master/CHANGELOG.md​​ （v1.0.0：Python 2.7 and 3.5 are not supported.）
+

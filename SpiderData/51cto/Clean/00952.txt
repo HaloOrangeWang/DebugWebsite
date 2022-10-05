@@ -1,0 +1,89 @@
+自己编写函数:利用map和reduce编写一个str2float函数，把字符串’123.456’转换成浮点数123.456： 
+题目来源——致敬廖雪峰
+
+
+初步的解决方法
+
+def str2float(s):
+    def char2num(s):
+        return {'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9}[s]
+    #这事实上是一个字典
+    index_point=s.find('.')
+    if index_point==-1:
+        daichu=1
+    else:
+        daichu=0.1**(len(s)-1-index_point)
+        s=s[0:index_point]+s[index_point+1:]#这里是除去小数点
+    from functools import reduce
+    result1=reduce(lambda x,y:x*10+y,map(char2num,s))
+    return result1*daichu
+
+这里用到字符串的find()函数进行模式匹配。
+
+>>> 0.1**3
+0.0010000000000000002
+
+所以这样不行，那么我们就是用除法
+
+
+改用除法
+
+def str2float(s):
+    def char2num(s):
+        return {'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9}[s]
+    #这事实上是一个字典
+    index_point=s.find('.')
+    if index_point==-1:
+        daichu=1
+    else:
+        daichu=10**(len(s)-1-index_point)
+        s=s[0:index_point]+s[index_point+1:]#这里是除去小数点
+    from functools import reduce
+    result1=reduce(lambda x,y:x*10+y,map(char2num,s))
+    return result1/daichu
+
+这样就能得到正确的结果了。
+
+可是这里我们使用find()函数还要用切片生成新的字符串，这里能够用split()函数
+
+def str2float(s):
+    def char2num(s):
+        return {'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9}[s]
+    #这事实上是一个字典
+    strs,index_point=s.split('.'),len(s.split('.')[1])
+    daichu=10**index_point
+    s=strs[0]+strs[1]#这里是除去小数点
+    from functools import reduce
+    result1=reduce(lambda x,y:x*10+y,map(char2num,s))
+    return result1/daichu
+
+这里的char2num事实上是全然不必要定义的，由于已经有int(str)这样的构造函数了
+
+
+改用int函数
+
+def str2float(s):
+    strs,index_point=s.split('.'),len(s.split('.')[1])
+    daichu=10**index_point
+    s=strs[0]+strs[1]#这里是除去小数点
+    from functools import reduce
+    result1=reduce(lambda x,y:x*10+y,map(int,s))
+    return result1/daichu
+
+当然我们也能够把小数部分倒着计算，这样代码会更简短。花更短的时间思考就能写更短的代码
+
+
+小数部分倒着算
+
+from functools import reduce
+def str2float(s):
+    a = s.split('.')
+    return reduce(lambda x, y: x*10+y, map(int, a[0]))\
+           + reduce(lambda x, y: x/10+y, map(int, a[1][::-1])) / 10
+
+a[1][::-1])这种方法非常巧妙。能够用于把字符串倒序输出。比如
+
+a[::-1]
+
+也就是设置步长为1从右往左取，第二个參数表示右边開始取的位置，第一个參数表示第一个不用取的位置。
+

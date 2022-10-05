@@ -1,0 +1,50 @@
+用Appium1.4.16.1测试Android8.1.0出现以下报错：
+
+C:\ProgramData\Anaconda3\python.exe D:/python/appium_learn/calculator_test_1.0.py
+Traceback (most recent call last):
+  File "D:/python/appium_learn/calculator_test_1.0.py", line 11, in <module>
+    driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\appium\webdriver\webdriver.py", line 96, in __init__
+    super(WebDriver, self).__init__(command_executor, desired_capabilities, browser_profile, proxy, keep_alive)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 157, in __init__
+    self.start_session(capabilities, browser_profile)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\appium\webdriver\webdriver.py", line 137, in start_session
+    response = self.execute(RemoteCommand.NEW_SESSION, parameters)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 321, in execute
+    self.error_handler.check_response(response)
+  File "C:\ProgramData\Anaconda3\lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: A new session could not be created. (Original error: Command failed: C:\Windows\system32\cmd.exe /s /c "F:\android-sdk_r24.4.1-windows\android-sdk-windows\platform-tools\adb.exe -s BYYDDEV8YSJFNN7T shell "ps 'uiautomator'""
+ps: uiautomator
+)
+
+首先解释一下关键提示信息：
+
+A new session could not be created. (Original error: Command failed: C:\Windows\system32\cmd.exe /s /c "F:\android-sdk_r24.4.1-windows\android-sdk-windows\platform-tools\adb.exe -s BYYDDEV8YSJFNN7T shell "ps 'uiautomator'""
+ps: uiautomator
+)
+
+新会话创建失败，具体的失败原因是：命令执行失败，我们知道C:\Windows\system32\cmd.exe 是调用命令行程序，
+
+/c
+
+执行 String 指定的命令，然后停止，
+
+/s
+
+修改 /c 或 /k 后对 String 的处理，
+
+此处，string代表的就是："F:\android-sdk_r24.4.1-windows\android-sdk-windows\platform-tools\adb.exe -s BYYDDEV8YSJFNN7T shell "ps 'uiautomator'""
+
+下面我们再来拆分一下string部门的含义：F:\android-sdk_r24.4.1-windows\android-sdk-windows\platform-tools\adb.exe是adb在我本地的安装目录，adb-- Android Debug Bridge, Android 调试桥的缩写，-s <设备序列号> ，此处我们要执行的命令是adb  shell ps |  grep ‘uiautomator’，由于老版本的adb.js中定义的shell命令格式是：
+
+ADB.prototype.shell = function (cmd, cb) {
+  if (cmd.indexOf('"') === -1) {
+    cmd = '"' + cmd + '"';
+  }
+  var execCmd = 'shell ' + cmd;
+  this.exec(execCmd, cb);
+};
+
+从代码的含义上可以看出，这里面调用的命令为：adb  shell  ps ，缺少了‘ |  grep ‘uiautomator’’部分，故对上面的代码进行修改。
+

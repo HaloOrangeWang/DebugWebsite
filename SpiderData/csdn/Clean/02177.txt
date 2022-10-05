@@ -1,0 +1,43 @@
+
+问题
+
+使用pandas创建新的dataframe时报错
+
+df=pd.DataFrame(columns=['code', 'name'])
+    for row in results:
+        i= i+1
+        print(i)
+        print("总数%s, 当前%s 编码%s" % (str(cursor.rowcount), str(i), row[0]))
+        codeValue = row[0]
+        nameValue = row[1]
+		temp=[{'code':codeValue,'name':nameValue}]
+		df=df.append(temp)
+
+报错信息：
+
+>>> df = pd.DataFrame(columns=result_columns)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/local/python3/lib/python3.7/site-packages/pandas/core/frame.py", line 392, in __init__
+    mgr = init_dict(data, index, columns, dtype=dtype)
+  File "/usr/local/python3/lib/python3.7/site-packages/pandas/core/internals/construction.py", line 196, in init_dict
+    nan_dtype)
+  File "/usr/local/python3/lib/python3.7/site-packages/pandas/core/dtypes/cast.py", line 1175, in construct_1d_arraylike_from_scalar
+    dtype = dtype.dtype
+AttributeError: type object 'object' has no attribute 'dtype'
+
+
+原因：
+
+pandas的版本不对，需要更新或者升级版本。
+
+
+解决办法：
+
+# 如果想要使用最新版本的pandas使用命令安装：
+ pip install pandas --upgrade
+ # 或者你想使用特定版本的pandas使用以下命令安装：
+ pip install pandas=1.1.5
+
+升级后再试就可以了。
+

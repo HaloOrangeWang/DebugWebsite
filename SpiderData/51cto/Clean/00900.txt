@@ -1,0 +1,190 @@
+转载请注明出处：https://blog.csdn.net/l1028386804/article/details/79957607
+
+最近，在做Python套接字编程时，在Python2.7上的功能，迁移到Python3.6上，尼玛，各种发送、接收数据问题，查了相关的文档后，发现，Python3.6和Python2.7在套接字编程方便是有区别的，尼玛，好坑啊！特此记录，以查备忘。
+
+发现这里python3.6和Python2.7在套接字返回值解码上有区别。
+
+先介绍一下 python bytes和str两种类型转换的函数encode(),decode()
+
+str通过encode()方法可以编码为指定的bytes
+
+反过来，如果我们从网络或磁盘上读取了字节流，那么读到的数据就是bytes。要把bytes变为str，就需要用decode()方法：
+
+
+python核心编程书中的2-1例子
+
+TCP服务器:
+
+#coding=utf-8
+#创建TCP服务器
+from socket import *
+from time import ctime
+
+HOST=''
+PORT=21567
+BUFSIZ=1024
+ADDR=(HOST,PORT)
+
+tcpSerSock=socket(AF_INET,SOCK_STREAM) #创服务器套接字
+tcpSerSock.bind(ADDR) #套接字与地址绑定
+tcpSerSock.listen(5)  #监听连接,传入连接请求的最大数
+
+while True:
+    print('waiting for connection...')
+    tcpCliSock,addr =tcpSerSock.accept()
+    print('...connected from:',addr)
+
+while True:
+        data =tcpCliSock.recv(BUFSIZ)
+        #print('date=',data)
+        if not data:
+            break
+        tcpCliSock.send(('[%s] %s' %(ctime(),data)))
+
+tcpCliSock.close()
+tcpSerSock.close()
+
+TCP客户端
+
+#coding=utf-8
+
+from socket import *
+
+HOST = 'localhost' #  or 'localhost'
+PORT = 21567
+BUFSIZ = 1024
+ADDR=(HOST,PORT)
+
+tcpCliSock = socket(AF_INET,SOCK_STREAM)
+tcpCliSock.connect(ADDR)
+
+while True:
+    data = input('> ')
+    print('data=',data);
+    if not data:
+        break
+    tcpCliSock.send(data)
+    data = tcpCliSock.recv(BUFSIZ)
+    if not data:
+        break
+    print(data)
+
+tcpCliSock.close()
+
+返回的错误提示： 
+TypeError: a bytes-like object is required, not ‘str’ 
+指的是18行tcpCliSock.send(data)传入的参数是应该是bytes类型，而不是str类型。
+
+于是我去百度，发现在StackOverflow上发现有人也出现同样的问题，并一个叫Scharron的人提出了解答：
+
+In python 3, bytes strings and unicodestrings are now two different types. Since sockets are not aware of string encodings, they are using raw bytes strings, that have a slightly differentinterface from unicode strings.
+
+So, now, whenever you have a unicode stringthat you need to use as a byte string, you need toencode() it. And whenyou have a byte string, you need to decode it to use it as a regular(python 2.x) string.
+
+Unicode strings are quotes enclosedstrings. Bytes strings are b”” enclosed strings
+
+When you use client_socket.send(data),replace it by client_socket.send(data.encode()). When you get datausing data = client_socket.recv(512), replace it by data =client_socket.recv(512).decode()
+
+于是我去查python3.6的帮助手册。
+
+socket.send(bytes[, flags])
+
+Send data to the socket. The socket must be connected to a remote socket. The optional flags argument has the same meaning as for recv() above. Returns the number of bytes sent. Applications are responsible for checking that all data has been sent; if only some of the data was transmitted, the application needs to attempt delivery of the remaining data. For further information on this topic, consult the Socket Programming HOWTO.
+
+Changed in version 3.5: If the system call is interrupted and the signal handler does not raise an exception, the method now retries the system call instead of raising an InterruptedError exception (see PEP 475 for the rationale).
+
+Receive data from the socket. The return value is a bytes object representing the data received. The maximum amount of data to be received at once is specified by bufsize. See the Unix manual page recv(2) for the meaning of the optional argument flags; it defaults to zero.
+
+Note
+
+For best match with hardware and network realities, the value of bufsize should be a relatively small power of 2, for example, 4096.
+
+Changed in version 3.5: If the system call is interrupted and the signal handler does not raise an exception, the method now retries the system call instead of raising an InterruptedError exception (see PEP 475 for the rationale).
+
+
+修正后：
+
+tcp服务器
+
+#coding=utf-8
+#创建TCP服务器
+from socket import *
+from time import ctime
+
+HOST=''
+PORT=21567
+BUFSIZ=1024
+ADDR=(HOST,PORT)
+
+tcpSerSock=socket(AF_INET,SOCK_STREAM) #创服务器套接字
+tcpSerSock.bind(ADDR) #套接字与地址绑定
+tcpSerSock.listen(5)  #监听连接,传入连接请求的最大数
+
+while True:
+    print('waiting for connection...')
+    tcpCliSock,addr =tcpSerSock.accept()
+    print('...connected from:',addr)
+
+while True:
+        data =tcpCliSock.recv(BUFSIZ).decode()
+        print('date=',data)
+        if not data:
+            break
+        tcpCliSock.send(('[%s] %s' %(ctime(),data)).encode())
+
+tcpCliSock.close()
+tcpSerSock.close()
+
+#coding=utf-8
+
+from socket import *
+
+HOST = 'localhost' #  or 'localhost'
+PORT = 21567
+BUFSIZ = 1024
+ADDR=(HOST,PORT)
+
+tcpCliSock = socket(AF_INET,SOCK_STREAM)
+tcpCliSock.connect(ADDR)
+
+while True:
+    data = input('> ')
+    #print('data=',data);
+    if not data:
+        break
+    tcpCliSock.send(data.encode())
+    data = tcpCliSock.recv(BUFSIZ).decode()
+    if not data:
+        break
+    print(data)
+
+tcpCliSock.close()
+
+Send data to the socket. The socket should not be connected to a remote socket, since the destination socket is specified by address. The optional flags argument has the same meaning as for recv() above. Return the number of bytes sent. (The format of address depends on the address family — see above.)
+
+Changed in version 3.5: If the system call is interrupted and the signal handler does not raise an exception, the method now retries the system call instead of raising an InterruptedError exception (see PEP 475 for the rationale).
+
+Receive data from the socket. The return value is a pair (bytes, address) where bytes is a bytes object representing the data received and address is the address of the socket sending the data. See the Unix manual page recv(2) for the meaning of the optional argument flags; it defaults to zero. (The format of address depends on the address family — see above.)
+
+
+同理修正udp服务器：
+
+from socket import *
+from time import ctime
+HOST=''
+PORT=21546
+BUFSIZ=1024
+ADDR=(HOST,PORT)
+
+udpSerSock = socket(AF_INET,SOCK_DGRAM)
+udpSerSock.bind(ADDR)
+
+while True:
+    print('waiting for message...')
+    data,addr=udpSerSock.recvfrom(BUFSIZ)
+    data=data.decode()
+    udpSerSock.sendto(('[%s] %s'%(ctime(),data)).encode(),addr)
+    print('...received from and returned to:',addr)
+
+udpSerSock.close()
+

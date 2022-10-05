@@ -1,0 +1,66 @@
+尝试非管理员权限使用命令升级pip。
+
+pip install --upgrade pip
+
+升级过程中，提示未使用管理员权限导致升级失败，报错如下
+
+Microsoft Windows [版本 10.0.19041.329]
+(c) 2020 Microsoft Corporation. 保留所有权利。
+
+C:\Users\lenovo>pip list
+Script file 'D:\ProgramData\Anaconda3\Scripts\pip-script.py' is not present.
+
+C:\Users\lenovo>
+
+管理员权限打开命令行窗口，执行命令。具体步骤如下所示
+
+Windows PowerShell
+版权所有 (C) Microsoft Corporation。保留所有权利。
+
+尝试新的跨平台 PowerShell https://aka.ms/pscore6
+
+PS C:\WINDOWS\system32> easy_install pip
+WARNING: The easy_install command is deprecated and will be removed in a future version.
+Searching for pip
+Reading https://pypi.org/simple/pip/
+Downloading https://files.pythonhosted.org/packages/fe/3b/0fc5e63eb277d5a50a95ce5c896f742ef243be27382303a4a44dd0197e29/pip-20.2b1-py2.py3-none-any.whl#sha256=b4e230e2b8ece18c5a19b818f3c20a8d4eeac8172962779fd9898d7c4ceb1636
+Best match: pip 20.2b1
+Processing pip-20.2b1-py2.py3-none-any.whl
+Installing pip-20.2b1-py2.py3-none-any.whl to d:\programdata\anaconda3\lib\site-packages
+Adding pip 20.2b1 to easy-install.pth file
+Installing pip-script.py script to D:\ProgramData\Anaconda3\Scripts
+Installing pip.exe script to D:\ProgramData\Anaconda3\Scripts
+Installing pip3-script.py script to D:\ProgramData\Anaconda3\Scripts
+Installing pip3.exe script to D:\ProgramData\Anaconda3\Scripts
+Installing pip3.8-script.py script to D:\ProgramData\Anaconda3\Scripts
+Installing pip3.8.exe script to D:\ProgramData\Anaconda3\Scripts
+
+Installed d:\programdata\anaconda3\lib\site-packages\pip-20.2b1-py3.7.egg
+Processing dependencies for pip
+Finished processing dependencies for pip
+PS C:\WINDOWS\system32>
+
+#该方法安装pip可能会比较慢，请耐心等待，安装过程中出现失败，请重复执行安装命令
+
+问题解决，验证安装是否存在其他问题。
+
+PS C:\WINDOWS\system32> pip --version
+pip 20.2b1 from D:\ProgramData\Anaconda3\lib\site-packages\pip-20.2b1-py3.7.egg\pip (python 3.7)
+PS C:\WINDOWS\system32> pip list
+Package                            Version
+---------------------------------- -------------------
+-ip                                20.0.2
+alabaster                          0.7.12
+anaconda-client                    1.7.2
+anaconda-navigator                 1.9.12
+anaconda-project                   0.8.3
+#更多信息未显示
+
+推荐升级方法如下
+
+#管理员权限运行cmd或powershell，推荐使用python命令升级
+PS C:\WINDOWS\system32> python -m pip install -U pip
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Requirement already up-to-date: pip in d:\programdata\anaconda3\lib\site-packages\pip-20.2b1-py3.7.egg (20.2b1)
+PS C:\WINDOWS\system32>
+

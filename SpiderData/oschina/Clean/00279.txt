@@ -1,0 +1,68 @@
+最近在外网笔记本电脑上在Python环境下使用k-modes做聚类分析算法，今天迁移到公司内网电脑（无法接入互联网）遇到如下问题记录一下。
+
+前提Python环境已安装且完成配置
+
+Python Version：Python 3.7.4
+
+1 #Python脚本引入第三方包如下
+2 import sys
+3 import pymysql
+4 import numpy as np
+5 from kmodes.kmodes import KModes
+
+执行python文件后主要错误信息如下：
+
+1 from ._sparsetools import (csr_tocsc, csr_tobsr, csr_count_blocks,
+2                            get_csr_submatrix)
+3 ImportError: DLL load failed: The specified module could not be found.
+
+报错代码位置出自KModes包依赖的其它包中的scipy包，具体文件为\Python37\Lib\site-packages\scipy\sparse\csr.py
+
+解决：
+
+最终在google上找了一个歪果仁遇到了同样类似的问题，stackoverflow地址，下面的一条回复如下：
+
+
+Answers：
+
+I believe I have solved your issue, as I encountered the same problem in a completely different way.
+
+You need to update your windows C++ redistributable compiler.
+
+To understand if this is the solution.
+
+Check what versions of microsoft C++ redistributable you have installed 
+  
+if you're using windows 10 type apps and features into the start bar and scroll down to where it says microsoft visual C++ and look at the year. In my case I was using a version from 2010
+
+if you're using windows 10 type apps and features into the start bar and scroll down to where it says microsoft visual C++ and look at the year. In my case I was using a version from 2010
+
+If you aren't running the latest version download microsoft visual studio 2017
+
+Select the visual studio community 2017
+
+Once prompted to install specific packages, click on the menu item that says "individual components", it is located next to the menu item "Workloads"
+Scroll down and look for Visual C++ 2017 Redistributable Update
+Install that restart your machine
+You'll be able to verify that this worked by running the following code in your console
+
+Select the visual studio community 2017
+
+Once prompted to install specific packages, click on the menu item that says "individual components", it is located next to the menu item "Workloads"
+
+Scroll down and look for Visual C++ 2017 Redistributable Update
+
+Install that restart your machine
+
+You'll be able to verify that this worked by running the following code in your console
+
+主要问题是Microsoft Visual C++版本较低，需升级较高版。
+
+查看内网电脑（控制面板->程序与功能），该电脑安装的最高版本为Microsoft Visual C++ 2013 Redistributable。从官网获取最新支持的 Visual C++ 下载并安装。
+
+最终安装Microsoft Visual C++ 2017 Redistributable版本后，重启电脑，运行代码上述问题解决！
+
+写在最后：
+
+工作学习中遇到过很多问题，很久前就想着记录在Blog上面，但始终没有养成这个良好的习惯，仅仅是记录在本地文档上面。第一次写技术Blog作一记录，并对自己当作鼓励！
+

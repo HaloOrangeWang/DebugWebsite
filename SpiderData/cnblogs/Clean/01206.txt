@@ -1,0 +1,100 @@
+转载自：https://blog.csdn.net/shen123me/article/details/80621103
+
+
+下面的报错信息困扰了一天，网上的各种方法也都试过了，还是失败，最后自己瞎试，把问题给解决了，希望能给遇到同样问题的人一个借鉴
+
+
+具体报错信息如下：
+
+Traceback (most recent call last):
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 18, in swig_import_helper
+return importlib.import_module(mname)
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\importlib_init_.py", line 126, in import_module
+return _bootstrap._gcd_import(name[level:], package, level)
+File "", line 986, in _gcd_import
+File "", line 969, in _find_and_load
+File "", line 958, in _find_and_load_unlocked
+File "", line 666, in _load_unlocked
+File "", line 577, in module_from_spec
+File "", line 906, in create_module
+File "", line 222, in _call_with_frames_removed
+ImportError: DLL load failed with error code -1073741795
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow.py", line 58, in 
+from tensorflow.python.pywrap_tensorflow_internal import *
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 21, in 
+_pywrap_tensorflow_internal = swig_import_helper()
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 20, in swig_import_helper
+return importlib.import_module('pywrap_tensorflow_internal')
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\importlib_init.py", line 126, in import_module
+return _bootstrap._gcd_import(name[level:], package, level)
+ImportError: No module named '_pywrap_tensorflow_internal'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+File "<pyshell#0>", line 1, in 
+import tensorflow
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow_init_.py", line 24, in 
+from tensorflow.python import *
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python_init_.py", line 49, in 
+from tensorflow.python import pywrap_tensorflow
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow.py", line 74, in 
+raise ImportError(msg)
+ImportError: Traceback (most recent call last):
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 18, in swig_import_helper
+return importlib.import_module(mname)
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\importlib_init_.py", line 126, in import_module
+return _bootstrap._gcd_import(name[level:], package, level)
+File "", line 986, in _gcd_import
+File "", line 969, in _find_and_load
+File "", line 958, in _find_and_load_unlocked
+File "", line 666, in _load_unlocked
+File "", line 577, in module_from_spec
+File "", line 906, in create_module
+File "", line 222, in _call_with_frames_removed
+ImportError: DLL load failed with error code -1073741795
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow.py", line 58, in 
+from tensorflow.python.pywrap_tensorflow_internal import *
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 21, in 
+_pywrap_tensorflow_internal = swig_import_helper()
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 20, in swig_import_helper
+return importlib.import_module('pywrap_tensorflow_internal')
+File "C:\Users\Nhan\AppData\Local\Programs\Python\Python35\lib\importlib_init.py", line 126, in import_module
+return _bootstrap._gcd_import(name[level:], package, level)
+ImportError: No module named '_pywrap_tensorflow_internal'
+
+Failed to load the native TensorFlow runtime.
+
+See https://www.tensorflow.org/install/install_sources#common_installation_problems
+
+for some common reasons and solutions. Include the entire stack trace
+above this error message when asking for help.
+
+——————————————————————————————————————————————————
+
+解决办法：因为不知道我的电脑显卡支不支持Tensorflow-GPU，所以我只装了Tensorflow（CPU版本的）
+
+出现上面那个问题的原因是CPU版本不支持安装的Tensorflow版本，我装Tensorflow的时候直接cmd命令窗口打开，pip install Tensorflow，系统默认安装的Tensorflow 1.8版本的（注意：安装Tensorflow之前默认已经全部安装Tensorflow依赖的其他包，比如scipy+mkl等等，具体可以百度）
+
+具体操作：
+
+在cmd命令窗口直接使用pip安装相关包的时候记得先提前把pip安装路径添加到系统环境变量，这样下面的步骤才可以顺利执行。
+
+1、打开cmd命令窗口，先 pip uninstall tensorflow
+
+2、接着 pip install Tensorflow==1.5
+
+3、关掉pycharm，再重新打开pycharm项目程序
+
+4、运行
+
+至此，以上报错信息解决
+

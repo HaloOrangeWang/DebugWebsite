@@ -1,0 +1,96 @@
+[django1.2+python2.7]ajax异步post数据，出现Forbidden的错误
+
+假设我们现在需要ajax异步post数据到服务进行处理，下面是客户端的javascript代码。
+
+$("#ajaxpost").click(function(){
+
+data=$('form').serializeArray();
+
+data=$.toJSON(data);
+
+//alert(data);
+
+$.ajax({
+
+url:"/ajax_post/",
+
+type:"POST",
+
+contentType:"application/json; charset=utf-8",
+
+//dataType:"json",
+
+data:data,
+
+success:function(data, textStatus, jqXHR){
+
+alert(decodeURIComponent(data));
+
+},
+
+error:function(jqXHR, textStatus, errorThrown){
+
+alert(textStatus);
+
+alert(errorThrown);
+
+}
+
+});
+
+return false;
+
+});
+
+下面是服务端view的处理代码
+
+def ajax_post(request):
+
+if request.is_ajax() and request.method=="POST":
+
+message="hello, ajax",request.raw_post_data
+
+json_data=simplejson.loads(request.raw_post_data)
+
+message=json_data
+
+else:
+
+message="hello"
+
+return HttpResponse(message)
+
+完成之后，进行测试，发现弹出了错误对话框，而不是正确的对话框。
+
+对话框提示内容
+
+“FORBIDDEN”
+
+解决办法是在python的view方法前面添加一个decorater
+
+[@csrf_exempt]
+
+@csrf_exempt
+
+def ajax_post(request):
+
+if request.is_ajax() and request.method=="POST":
+
+message="hello, ajax",request.raw_post_data
+
+json_data=simplejson.loads(request.raw_post_data)
+
+message=json_data
+
+#message=json_data['data']
+
+else:
+
+message="hello"
+
+return HttpResponse(message)
+
+关于CSRF（Cross Site Request Forgery）的一些内容可以参考官方文档：
+
+https://docs.djangoproject.com/en/1.2/ref/contrib/csrf/
+

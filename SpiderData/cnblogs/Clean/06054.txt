@@ -1,0 +1,52 @@
+报错1：
+
+**原因分析：**也就是说mysql的驱动程序jdbc放的位置不对，ambari无法找到这个驱动程序，也就无法连上mysql的ambari数据库，从而报错。
+
+解决方法:
+
+方法1：
+
+yum install -y mysql-connector-java
+
+方法2：
+
+需要查看如下几个目录, 确保 JDBC 在
+
+　　/usr/share/java
+
+　　 /var/lib/ambari-server/resources  和  /var/lib/ambari-server
+
+　　 /usr/lib/ambari-server
+
+如果不在，就把jdbc的jar包复制进去，如果/usr/share/java这个目录不存在，那么可以创建这个目录。
+
+报错2：
+
+REASON: Server not yet listening on http port 8080 after 90 seconds. Exiting.
+
+原因分析： 可能来不及监听吧,导致在一定时间内没有响应，就直接退出了。
+
+解决方法：
+
+重启ambari。
+
+报错3：
+
+原因分析：
+
+由于这个报错原因太过笼统(概括性), 所以查看日志进行分析：
+
+tail -200 /var/log/ambari-server/ambari-server.log
+
+可以看到这里：
+
+报错说，ambari这个user没有权限直接连上数据库。
+
+解决方法：
+
+方法1： 打开mysql终端，写sql语句给ambari用户权限，我用了方法2。
+
+方法2：重新config 用root用户配置。
+
+最后，成功排除万难：
+

@@ -1,0 +1,30 @@
+vue 报错：Cannot read property 'instrumentId' of undefined"
+
+相关代码如下：
+
+<template>
+    ...
+    <span>{{data.params.instrumentId}}</span> ... </template> <script> export default { data () { return { data: {} }; }, methods: { // 请求接口获得数据 getData () { request({ url: '/tapi/futures/' }).then(response => { if (response) { allData = response; // allData 是一个对象，用来储蓄数据 this.data = allData.IF; } }); } }, created () { this.getData(); } }; </script>
+
+结果返回的数据结构如图：
+
+虽然页面可以正常显示，但 Vue 和浏览器控制台都报错如下，一直找不到原因，求解。
+
+
+解决方法
+
+1.因为是异步请求，页面渲染刚的时候还没有拿到这个值，所以会报错。你需要在节点上用if判断一下，在有数据的时候再进行渲染。或者你在声明data的时候，将里面的字段也一并声明出来。
+
+<template>
+    ...
+    <span v-if="data.params && data.params.instrumentId">{{data.params.instrumentId}}</span> ... </template>
+
+2.
+
+created () {
+    this.getData();
+  }
+把上面改成如下：
+ created () {
+    this.$nextTick(function(){ this.getData(); }); }
+

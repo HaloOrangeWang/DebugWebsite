@@ -1,0 +1,115 @@
+$ python -V
+
+python: error while loading shared libraries: libpython3.6m.so.1.0: cannot open shared object file: No such file or directory
+
+ldd是列出动态库依赖关系：
+
+$ ldd /usr/local/bin/python3.6
+
+linux-vdso.so.1 => (0x00007fffecbba000)
+libpython3.6m.so.1.0 => not found
+libpthread.so.0 => /usr/lib64/libpthread.so.0 (0x00007fe1400ff000)
+libdl.so.2 => /usr/lib64/libdl.so.2 (0x00007fe13fefb000)
+libutil.so.1 => /usr/lib64/libutil.so.1 (0x00007fe13fcf8000)
+libm.so.6 => /usr/lib64/libm.so.6 (0x00007fe13f9f6000)
+libc.so.6 => /usr/lib64/libc.so.6 (0x00007fe13f628000)
+/lib64/ld-linux-x86-64.so.2 (0x00007fe14031b000)
+
+查找动态库：
+
+$ find / -name 'libpython3.6m.so.1.0'
+
+/root/Python-3.6.9/libpython3.6m.so.1.0
+/usr/local/lib/libpython3.6m.so.1.0
+
+(2)将libpython3.6m.so.1.0文件路径的目录添加到/etc/ld.so.conf :
+
+$ vim /etc/ld.so.conf 　　
+文件末尾新添加一行，/usr/local/lib/
+
+(3)保存，使得修改生效：
+
+$ ldconfig
+
+ps：下面看下python中使用动态库的方法
+
+首先，创建一个简单的动态库
+
+编程生成dll.so:   gcc -fPIC -O2 -shared dll.c -o dll.so
+
+C文件:dll.c  如下
+
+#include <stdio.h>
+
+struct param {
+  int a;
+  int b;
+  char c;
+  float f;
+  int arr[3];
+  };
+  
+void print0(struct param arg)
+{
+  printf("in print:\n");
+  printf("a: %d\n", arg.a);
+  printf("b: %d\n", arg.b);
+  printf("c: %c\n", arg.c);
+  printf("f: %f\n", arg.f);
+  printf("arr: %d %d %d\n", arg.arr[0], arg.arr[1], arg.arr[2]);
+}
+
+void print2(struct param *arg)
+{
+  printf("in print2 :\n");
+  printf("a: %d\n", arg->a);
+  printf("b: %d\n", arg->b);
+  printf("c: %c\n", arg->c);
+  printf("f: %f\n", arg->f);
+  printf("arr: %d %d %d\n", arg->arr[0], arg->arr[1], arg->arr[2]);
+}
+
+void print3(int a)
+{
+  printf("in print3:\n");
+  printf("a: %d\n", a);
+}
+
+python定义传给动态库的结构体
+
+from ctypes import *
+
+class ss(Structure):
+  _fields_ = [
+  ("a", c_int),
+  ("b", c_int),
+  ("c", c_char),
+  ("f", c_float),
+  ("arr", c_int*3), //定义数组
+  ]
+
+python 使用dll.so实例
+
+#加载动态库
+fileName = "/home/primax/Desktop/Work/Test/python/dll.so"
+lib = cdll.LoadLibrary(fileName)
+#定义变量
+param = ss()
+#给结构体赋值
+param.a = 1
+param.b = 2
+param.c = 'a'
+param.f = 1.2345
+param.arr[0] = 0
+param.arr[1] = 1
+param.arr[2] = 2
+
+lib.print0(param)
+lib.print3(2)
+#传指针 pointer取指针
+lib.print2(pointer(param))
+
+总结
+
+到此这篇关于浅析python 动态库m.so.1.0错误问题的文章就介绍到这了,更多相关python m.so.1.0内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

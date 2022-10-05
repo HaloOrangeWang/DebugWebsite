@@ -1,0 +1,51 @@
+今天在使用CMplot画曼哈顿图时遇到一个bug：
+
+Error in if (sum(pvalueT <= 0) != 0 || sum(pvalueT > 1) != 0) stop("p values should be at range of (0, 1).") :
+
+missing value where TRUE/FALSE needed
+
+> pmap <- read.csv("pmap.csv")
+> CMplot(pmap, threshold = threshold, amplify = F, memo = "", file = "tiff", plot.type=c("m","q"))
+Error in if (sum(pvalueT <= 0) != 0 || sum(pvalueT > 1) != 0) stop("p values should be at range of (0, 1).") : 
+  missing value where TRUE/FALSE needed
+
+看字面的意思是p值需要在（0-1）之间，去检查了原始数据，没有在范围外的，猜想可能是最近换了电脑，R版本的问题。回到旧电脑，R版本4.0.4，画图没有报错。新电脑R版本4.2.0报错，更换到4.0.4依旧报错。那只能猜想是CMplot版本的问题。
+
+查看旧电脑中CMplot版本，Version：3.6.2
+
+查看新电脑中CMplot版本，Version：4.0.0
+
+果然，可以确定是CMplot版本的问题了，随后解决问题。
+
+
+1.检查数据：
+
+> any(is.na(pmap))
+[1] TRUE
+
+存在缺失值
+
+
+2.删除缺失值所在行
+
+> pmap<-na.omit(pmap)
+
+
+3.再次检查数据
+
+> any(is.na(pmap))
+[1] FALSE
+
+
+4.重新绘图
+
+> CMplot(pmap, threshold = threshold, amplify = F, memo = "", file = "tiff", plot.type=c("m","q"))
+
+绘图成功~~
+
+总结：2022-01-13之后下载的CMplot不支持数据中有缺失值，需要剔除再进行绘图。
+
+如果有遇到相同问题的小伙伴，希望我今天踩的坑，可以帮到你们！
+
+引用转载请注明出处，如有错误敬请指出。
+

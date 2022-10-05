@@ -1,0 +1,52 @@
+1、从gitlab下单包解压后导入 pycharm
+
+2、执行damon报错如下
+
+Driver [/Users/name/.wdm/drivers/chromedriver/mac64/97.0.4692.71/chromedriver] found in cache
+
+Traceback (most recent call last):
+
+File "/Users/name/PycharmProjects/seldom-master/demo/run.py", line 4, in <module>
+
+seldom.main(path="./test_dir",
+
+File "/Users/name/PycharmProjects/seldom-master/seldom/running/next_runner.py", line 86, in init
+
+self.open_browser()
+
+File "/Users/name/PycharmProjects/seldom-master/seldom/running/next_runner.py", line 163, in open_browser
+
+Seldom.driver = Browser(BrowserConfig.NAME)
+
+File "/Users/name/PycharmProjects/seldom-master/seldom/driver.py", line 67, in new
+
+return cls.chrome()
+
+File "/Users/name/PycharmProjects/seldom-master/seldom/driver.py", line 100, in chrome
+
+driver = webdriver.Chrome(options=chrome_options,
+
+File "/usr/local/lib/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 70, in init
+
+super(WebDriver, self).init(DesiredCapabilities.CHROME['browserName'], "goog",
+
+File "/usr/local/lib/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 90, in init
+
+self.service.start()
+
+File "/usr/local/lib/python3.9/site-packages/selenium/webdriver/common/service.py", line 105, in start
+
+raise WebDriverException("Can not connect to the Service %s" % self.path)
+
+selenium.common.exceptions.WebDriverException: Message: Can not connect to the Service /Users/name/.wdm/drivers/chromedriver/mac64/97.0.4692.71/chromedriver
+
+根源： 之前电脑用switchhost切换过host，切换后系统host全部是空
+
+4、运行pytest UI脚本报错：
+
+pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='mirrors.aliyun.com', port=80): Read timed out.
+
+解决方案：刚开始用pycharm安装失败，然后用pip3命令安装，第一次失败后按照提示升级了pip3，再次执行后成功
+
+5、运行报错 allure:command not found
+

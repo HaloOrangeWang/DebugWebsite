@@ -1,0 +1,14 @@
+前情提要：
+
+因为需要使用kenlm语言模型工具 所以在远程Linux服务器上安装了这个工具，现在在windows上使用pycharm平台，通过远程的python解释器进行使用。但是在进行import kenlm 的时候 总是报错，说找不到该库文件 。然而，我通过终端，在远程服务器上是可以执行该语句，且不会报错的（说明kenllm正确安装，且能够使用）
+
+问题的根本：
+
+在设置新的SSH interpreter 的时候，在选择远程服务器的python的路径时，设置错误
+
+可以看到  这里给的默认路径是  /usr/bin/python  这是服务器自身带的python环境 不是我自己安装的python环境  所以，需要在这里给更改为自己安装的python环境 路径（我的路径是：/root/anaconda3/bin/python3/）这个时候就可以解决问题！
+
+当然，还有着一种方法就是，对创建好的解释器进行编辑（正常打开时候 是配置的Deployment configuration），设置它的SSH Credentials 信息，在该出的python path 指定路径为/root/anaconda3/bin/python3/ 也是能行的痛的  至于为什么 暂时还不明白
+
+同时，对于pycharm而言 在进行python解释器的选择的时候 ，下方面板显示的则是该解释器已安装的第三方库。也可以点击+进行别的库文件安装  或者在终端通过pip命令进行安装均可
+

@@ -1,0 +1,39 @@
+
+报错信息
+
+os.symlink() 软连接建立失败
+
+报错信息：FileExistsError: [Errno 17] File exists: '/home/xxx/lib' ->'.bundle'
+
+
+解决办法
+
+替换法：
+
+import os
+os.symlink(target, tmpLink)
+os.rename(tmpLink, linkName)
+
+删除法：
+
+import os, errno
+
+def symlink_force(target, link_name):
+    try:
+        os.symlink(target, link_name)
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+            os.remove(link_name)
+            os.symlink(target, link_name)
+        else:
+            raise e
+
+注：
+
+For python3, except condition should be except OSError as e:
+
+
+参考链接
+
+https://stackoverflow.com/questions/8299386/modifying-a-symlink-in-python
+

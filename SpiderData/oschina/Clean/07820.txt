@@ -1,0 +1,46 @@
+如题，在做登录时，点击输入用户名的输入框，唤起键盘报错溢出BUG：bottom overflowed by 104 PIXELS。
+
+报错时直接使用的Scaffold布局，在body中创建Column。出错误代码：
+
+return new Scaffold(
+      appBar: new AppBar(
+        title: new Text("搜索"),
+      ),
+      //使用ScrollView包装一下，否则键盘弹出时会报错空间溢出
+      body: new Column( ... )
+            ),
+          ),
+ );
+
+解决办法是使用SingleChildScrollView包装一下：
+
+return new Scaffold(
+      appBar: new AppBar(
+        title: new Text("搜索"),
+      ),
+      //使用ScrollView包装一下，否则键盘弹出时会报错空间溢出
+      body: new SingleChildScrollView(
+            child: new ConstrainedBox(
+              constraints: new BoxConstraints(
+                minHeight: 120.0,
+              ),
+              child: new Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  new Padding(
+                    padding: EdgeInsets.fromLTRB(0.0, 40.0, 0.0, 10.0),
+                    child:new Text("注意",style: new TextStyle(fontSize: 18.0,color: Colors.orangeAccent),),
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+
+原文链接：https://www.choupangxia.com/topic/detail/93
+
+本文同步分享在 博客“程序新视界”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

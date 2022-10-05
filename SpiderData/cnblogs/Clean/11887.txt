@@ -1,0 +1,23 @@
+这两天给新电脑安装环境后发现之前的代码不能进行mongodb数据库用户认证，报错如标题所示，查看一番后发现是pymongo的版本问题
+
+在pymongo 3.9版本的时候进行用户认证代码如下：
+
+self.client = pymongo.MongoClient(host="127.0.0.1", port=27017)
+self.client["admin"].authenticate("admin", "12345678")
+
+在pymongo 3.9及以前是可以正常运行的，能够进行用户认证，当我升级到4.0后报错如下
+
+查看官方文档后发现解释如下：
+
+4.0文档地址：https://pymongo.readthedocs.io/en/stable/migrate-to-pymongo4.html#database-authenticate-and-database-logout-are-removed
+
+这里其实写的很明白了，在新版本中移除了之前的认证方式，变成了实例化时输入用户名和密码参数，所以我的代码也随之更新为：
+
+self.client = pymongo.MongoClient(host="127.0.0.1", port=27017,username="admin",password="12345678")　　# 地址  端口  用户名  密码
+
+如果不知道自己的pymongo是什么版本可以使用pip3 list -v或者 pip list -v进行查看，视自己的情况选择
+
+除了改写代码，还可以通过降级pymongo为3.9  也能使代码正常运行，先使用pip3 uninstall pymongo 输入y进行删除，然后再次安装时指定pymongo的版本为3.9: pip3 install pymongo==3.9
+
+如我写的有问题还请大家指出
+

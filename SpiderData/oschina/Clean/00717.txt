@@ -1,0 +1,58 @@
+关键字：rank，优化方法，损失函数
+
+关键字：rank，优化方法，损失函数
+
+问题描述：执行定义损失函数代码后，再执行优化方法就报错，提示执行失败，dy_dims.size():1 != rank:2。
+
+问题描述：执行定义损失函数代码后，再执行优化方法就报错，提示执行失败，dy_dims.size():1 != rank:2。
+
+报错信息：
+
+报错信息：
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/optimizer.py in minimize(self, loss, startup_program, parameter_list, no_grad_set)
+    253         """
+    254         params_grads = append_backward(loss, parameter_list, no_grad_set,
+--> 255                                        [error_clip_callback])
+    256 
+    257         params_grads = sorted(params_grads, key=lambda x: x[0].name)
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/backward.py in append_backward(loss, parameter_list, no_grad_set, callbacks)
+    588     _rename_grad_(root_block, fwd_op_num, grad_to_var, {})
+    589 
+--> 590     _append_backward_vars_(root_block, fwd_op_num, grad_to_var, grad_info_map)
+    591 
+    592     program.current_block_idx = current_block_idx
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/backward.py in _append_backward_vars_(block, start_op_idx, grad_to_var, grad_info_map)
+    424         # infer_shape and infer_type
+    425         op_desc.infer_var_type(block.desc)
+--> 426         op_desc.infer_shape(block.desc)
+    427         # ncclInit dones't need to set data_type
+    428         if op_desc.type() == 'ncclInit':
+
+EnforceNotMet: Enforce failed. Expected dy_dims.size() == rank, but received dy_dims.size():1 != rank:2.
+Input(Y@Grad) and Input(X) should have the same rank. at [/paddle/paddle/fluid/operators/cross_entropy_op.cc:82]
+PaddlePaddle Call Stacks:
+
+问题复现：定义一个交叉熵损失函数，直接使用这个损失函数传给优化方法，再执行到这一行代码就出现这个问题。错误代码如下：
+
+cost = fluid.layers.cross_entropy(input=model, label=label)
+
+optimizer = fluid.optimizer.AdamOptimizer(learning_rate=0.001)
+opts = optimizer.minimize(cost)
+
+问题解决：训练是一个Batch进行训练的，所以计算的损失值也是计算一个Batch的损失值。优化方法参数使用的是一个平均的损失函数，所以不能直接使用损失函数，还需要对损失函数求平均值。正确代码如下：
+
+cost = fluid.layers.cross_entropy(input=model, label=label)
+avg_cost = fluid.layers.mean(cost)
+
+optimizer = fluid.optimizer.AdamOptimizer(learning_rate=0.001)
+opts = optimizer.minimize(avg_cost)
+
+问题拓展：如果在训练的时候，fetch_list参数使用的是cost，而不是avg_cost的话，训练输出的也会是一个Batch的损失值。所以在训练的时候，fetch_list参数的值最好使用avg_cost，输出的是平均损失值，从而更方便观察训练情况。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

@@ -1,0 +1,146 @@
+本文仅供学习交流~如有任何问题请联系~
+
+
+更新内容
+
+------------------------------------------------------------
+
+补充完整代码~
+
+2022-06-10测试有效
+
+# -*- coding = utf-8 -*-
+# @Time : 2022/1/30 11:11
+# @Author :蜡笔小新星
+# @File : 基于selenium实现12306模拟登录.py
+# @Software : PyCharm
+
+# 导包
+from selenium import webdriver
+from time import sleep
+from selenium.webdriver import ActionChains
+from selenium.webdriver import ChromeOptions
+
+# 去除浏览器识别
+option = ChromeOptions()
+option.add_experimental_option('excludeSwitches', ['enable-automation'])
+option.add_experimental_option("detach", True)
+
+# 实例化一个浏览器对象（传入浏览器的驱动程序）
+driver = webdriver.Chrome(executable_path='./chromedriver', options=option)
+
+# 让浏览器发起一个对12306url的请求
+driver.get('https://kyfw.12306.cn/otn/resources/login.html')
+
+# 解决特征识别
+script = 'Object.defineProperty(navigator, "webdriver", {get: () => false,});'
+driver.execute_script(script)
+
+sleep(1)
+
+# 标签定位到账号密码输入框中
+userName_tag = driver.find_element_by_id('J-userName')
+password_tag = driver.find_element_by_id('J-password')
+
+# 输入账号
+userName_tag.send_keys('********')
+sleep(1)
+# 输入密码
+password_tag.send_keys('********')
+sleep(1)
+
+# 点击登陆
+btn = driver.find_element_by_id('J-login')
+btn.click()
+
+sleep(2)
+
+# 标签定位滑块id
+span = driver.find_element_by_id('nc_1_n1z')
+
+action = ActionChains(driver)  # 行为链实例化
+action.click_and_hold(span)
+
+for i in range(10):
+    action.move_by_offset(36, 0).perform()   # perform()立即执行动作链操作，move_by_offset(x, y):x水平方向  y竖直方向
+    sleep(0.1)
+
+# 释放行为链
+action.release()
+
+------------------------------------------------------------
+
+不想看我废话的可以直接看代码段中的代码，都有注释！
+
+文章很详细，还会有关于登录失败的问题，没用过selenium的还请移步到此，就登录这个问题，简直不要太简单，跟着我一起来去实现叭！
+
+就是这个，简单一看，欸嘿，怎么只有账号密码，没有验证方式？？不不不，当你点击立即登录后就会有验证码了，这里的验证方式是滑块验证，很简单就能实现。
+
+前面这些基础的我就不说了，直接上代码：
+
+# 实例化一个浏览器对象（传入浏览器的驱动程序）
+driver = webdriver.Chrome(executable_path='./chromedriver.exe', options=option)
+
+# 让浏览器发起一个对12306url的请求
+driver.get('https://kyfw.12306.cn/otn/resources/login.html')
+
+然后就是标签定位到账号密码这两个输入框，获取其id，再然后就是输入账号密码了，再再然后就是点击登录了，直接上代码叭，简单到没啥好说的，不懂的就去看看我另一篇文章叭。
+
+# 标签定位到账号密码输入框中
+userName_tag = driver.find_element_by_id('J-userName')
+password_tag = driver.find_element_by_id('J-password')
+
+# 输入账号
+userName_tag.send_keys('**********')  # 记得更改账号
+
+# 输入密码
+password_tag.send_keys('**********')  # 记得更改密码
+
+# 点击登陆
+btn = driver.find_element_by_id('J-login')
+btn.click()
+
+然后就是验证部分了，先看看图叭：
+
+可以看到是让你拖动滑块进行验证，打开开发者工具，定位到滑块的位置，如下图蓝色框框：
+
+获取滑块的id后，就需要使用动作链来进行操作了，这里有一点，拖动条的长度是可以看到的，包括滑块在内是340，知道这个我们可以在敲写动作链的时候用到，在这里看👇
+
+依旧是很简单，直接上代码，很好懂。这里也说一点，我这里是用了for循环的，也可以不适用for循环，这个影响不大，看个人喜欢。
+
+# 标签定位滑块id
+span = driver.find_element_by_id('nc_1_n1z')
+
+action = ActionChains(driver)  # 行为链实例化
+action.click_and_hold(span)
+
+for i in range(10):
+    action.move_by_offset(36, 0).perform()   # perform()立即执行动作链操作，move_by_offset(x, y):x水平方向  y竖直方向
+    sleep(0.1)
+
+# 释放行为链
+action.release()
+
+关键点来了，解决滑块验证登录问题
+
+按照上面的方法去运行，会出现上图的问题，这个该怎么解决呢？
+
+很简单，这个只需要一行JavaScript代码就可以解决了
+
+# 解决特征识别
+script = 'Object.defineProperty(navigator, "webdriver", {get: () => false,});'
+driver.execute_script(script)
+
+到这就可以成功登录啦~~
+
+再啰嗦一个问题，浏览器上方有“Chrome正受到自动测试软件的控制”，其实这个是可以去除的，实例化浏览器对象时加多一个参数就可以了
+
+# 去除浏览器识别
+option = ChromeOptions()
+option.add_experimental_option('excludeSwitches', ['enable-automation'])
+option.add_experimental_option("detach", True)
+
+如果想让程序运行不弹出浏览器，可以看一下这篇文章中的第九个实现无可视化界面的操作（无头浏览器），都是有讲到的。
+
+小可爱们下篇文章见~
+

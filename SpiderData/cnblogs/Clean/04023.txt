@@ -1,0 +1,71 @@
+
+一、问题描述
+
+在Django视图函数中，导入 gevent 模块
+
+import gevent
+from gevent import monkey; monkey.patch_all()
+from gevent.pool import Pool
+
+启动Django报错：
+
+原因在于执行这行 monkey.patch_all() 代码时报错了。
+
+既然Django不能使用协程，那我需要使用异步执行，怎么办？
+
+请看下文
+
+
+二、进程池、线程池与异步调用、回调机制
+
+
+进程池、线程池使用案例
+
+进程池与线程池使用几乎相同，只是调用模块不同~！！
+
+from concurrent.futures import ProcessPoolExecutor  # 进程池模块
+from concurrent.futures import ThreadPoolExecutor  # 线程池模块
+import os, time, random
+
+
+异步调用与同步调用
+
+concurrent.futures模块提供了高度封装的异步调用接口 
+ThreadPoolExecutor：线程池，提供异步调用 
+ProcessPoolExecutor: 进程池，提供异步调用
+
+
+同步调用
+
+from concurrent.futures import ProcessPoolExecutor  # 进程池模块
+import os, time, random
+
+
+异步调用
+
+from concurrent.futures import ProcessPoolExecutor  # 进程池模块
+import os, time, random
+
+def talk(name):
+    print('name: %s  pis%s  run' % (name,os.getpid()))
+    time.sleep(random.randint(1, 3))
+
+
+回调机制
+
+可以为进程池或线程池内的每个进程或线程绑定一个函数，该函数在进程或线程的任务执行完毕后自动触发，并接收任务的返回值当作参数，该函数称为回调函数
+
+#parse_page拿到的是一个future对象obj，需要用obj.result()拿到结果
+p.submit(这里异步调用).add_done_callback(方法)
+
+
+案例：下载解析网页页面
+
+import time
+import requests
+from concurrent.futures import ThreadPoolExecutor  # 线程池模块
+
+本文参考链接：
+
+https://blog.csdn.net/weixin_42329277/article/details/80741589
+

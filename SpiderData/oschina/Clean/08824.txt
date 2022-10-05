@@ -1,0 +1,22 @@
+由于项目里一直使用sharding-jdbc做分表分库，今天突然发现，对于唯一性索引报错，sharding-jdbc报错是
+
+com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException    mysql唯一性约束错误
+
+正常来讲，我们看到的唯一性约束错误应该是
+
+org.springframework.dao.DuplicateKeyException    重复的key异常
+
+根据报错信息去找
+
+sharding-jdbc  ：  at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:77)
+
+spring ：at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:73)
+
+关键在于这里
+
+sharding-jdbc：
+
+spring：
+
+由于sharding-jdbc对mysql的唯一性约束做了封装，所以就不能抛出org.springframework.dao.DuplicateKeyException 错误，然后抛出了
+

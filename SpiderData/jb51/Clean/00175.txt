@@ -1,0 +1,96 @@
+训练用PyTorch编写的LSTM或RNN时，在loss.backward()上报错：
+
+RuntimeError: Trying to backward through the graph a second time, but the buffers have already been freed. Specify retain_graph=True when calling backward the first time.
+
+千万别改成loss.backward(retain_graph=True)，会导致显卡内存随着训练一直增加直到OOM：
+
+RuntimeError: CUDA out of memory. Tried to allocate 20.00 MiB (GPU 0; 10.73 GiB total capacity; 9.79 GiB already allocated; 13.62 MiB free; 162.76 MiB cached)
+
+
+正确做法：
+
+LSRM / RNN模块初始化时定义好hidden，每次forward都要加上self.hidden = self.init_hidden():
+Class LSTMClassifier(nn.Module):
+    def __init__(self, embedding_dim, hidden_dim)：
+    # 此次省略其它代码
+    self.rnn_cell = nn.LSTM(embedding_dim, hidden_dim)
+    self.hidden = self.init_hidden()
+    # 此次省略其它代码
+    
+    def init_hidden(self):
+        # 开始时刻, 没有隐状态
+        # 关于维度设置的详情,请参考 Pytorch 文档
+        # 各个维度的含义是 (Seguence, minibatch_size, hidden_dim)
+        return (torch.zeros(1, 1, self.hidden_dim),
+                torch.zeros(1, 1, self.hidden_dim))
+    def forward(self, x):
+        # 此次省略其它代码
+        self.hidden = self.init_hidden()  # 就是加上这句!!!!
+        out, self.hidden = self.rnn_cell(x, self.hidden)     
+        # 此次省略其它代码
+        return out
+
+或者其它模块每次调用这个模块时，其它模块的forward()都对这个LSTM模块init_hidden()一下。
+
+
+如定义一个模型LSTM_Model()：
+
+Class LSTM_Model(nn.Module):
+    def __init__(self, embedding_dim, hidden_dim)：
+        # 此次省略其它代码
+        self.rnn = LSTMClassifier(embedding_dim, hidden_dim)
+        # 此次省略其它代码
+        
+    def forward(self, x):
+        # 此次省略其它代码
+        self.rnn.hidden = self.rnn.init_hidden()  # 就是加上这句!!!!
+        out = self.rnn(x)     
+        # 此次省略其它代码
+        return out
+
+这是因为：
+
+根据 官方tutorial，在 loss 反向传播的时候，pytorch 试图把 hidden state 也反向传播，但是在新的一轮 batch 的时候 hidden state 已经被内存释放了，所以需要每个 batch 重新 init （clean out hidden state）， 或者 detach，从而切断反向传播。
+
+补充：pytorch:在执行loss.backward()时out of memory报错
+
+在自己编写SurfNet网络的过程中，出现了这个问题，查阅资料后，将得到的解决方法汇总如下
+
+
+可试用的方法：
+
+1、reduce batch size, all the way down to 1
+
+2、remove everything to CPU leaving only the network on the GPU
+
+3、remove validation code, and only executing the training code
+
+4、reduce the size of the network (I reduced it significantly: details below)
+
+5、I tried scaling the magnitude of the loss that is backpropagating as well to a much smaller value
+
+在训练时，在每一个step后面加上：
+
+torch.cuda.empty_cache()
+
+在每一个验证时的step之后加上代码：
+
+with torch.no_grad()
+
+不要在循环训练中累积历史记录
+
+total_loss = 0
+for i in range(10000):
+    optimizer.zero_grad()
+    output = model(input)
+    loss = criterion(output)
+    loss.backward()
+    optimizer.step()
+    total_loss += loss
+
+total_loss在循环中进行了累计，因为loss是一个具有autograd历史的可微变量。你可以通过编写total_loss += float(loss)来解决这个问题。
+
+本人遇到这个问题的原因是，自己构建的模型输入到全连接层中的特征图拉伸为1维向量时太大导致的，加入pool层或者其他方法将最后的卷积层输出的特征图尺寸减小即可。
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

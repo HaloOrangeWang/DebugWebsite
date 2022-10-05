@@ -1,0 +1,28 @@
+此文章默认读者已经安装好Python环境以及Selenium第三方库。
+
+小伙伴们总会有喜欢用Edge，然后爱屋及乌想要用selenium驱动Edge浏览器的，不过这里有一些细节问题需要注意，不然有可能即使已经配置了环境变量，也无法通过代码直接调用Edge（如果代码中是写了浏览器绝对路径的话，也就无视环境变量以及我要解决的这个问题了，不过每次都要写绝对路径的话就比较麻烦，这里介绍的是直接webdriver方法调用）
+
+1、下载合适的驱动浏览器。
+
+首先，要知道自己edge浏览器的版本，这里，我的浏览器版本 89.0.774.50 （64 位），所以要下载对应版本的驱动浏览器，不然会提示版本错误。
+
+Edge驱动浏览器官方下载地址：https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+
+因为我的edge浏览器版本是 89.0.774.50 （64 位），所以我要选择的是相应的这个，如下图。
+
+2、解压、拷贝edge驱动文件然后重命名并放置在相同目录。
+
+下载好安装包后，解压里面的exe文件，然后放到随便一个文件夹(注意：文件夹名称不能是汉字，不然有可能报错)，这里我是放到了Python安装目录下C:\Users\ITX\AppData\Local\Programs\Python\Python39。同时，将msedgedriver.exe拷贝一份，并重命名为MicrosoftWebDriver.exe，放在同一个目录下。（注意：这里是重中之重，如果没有重命名的话，就会出现配置了环境变量也无法直接调用的问题）
+
+3、配置环境变量。
+
+在环境变量path，添加msedgedriver.exe所在的目录路径，然后确定即可（注意：尾缀不需要添加文件名msedgedriver.exe，如我下图所示即可，因为环境变量一般只需要确定到目录路径即可）如图
+
+附上简单驱动代码：
+
+1 from selenium import webdriver
+2 browser = webdriver.Edge()
+3 browser.get('https://www.baidu.com')
+
+注意：这里webdriver.Edge()中是Edge()而不是edge()，否者会报错。具体自己体验。
+

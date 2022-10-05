@@ -1,0 +1,27 @@
+在我删了python3.8，换成最新版的python3.10之后，安装三方库wordcloud时出现了如下错误：
+
+一出现就惊了，这一大串的红字太吓人了吧！？一时间不知该如何是好。不过我们学了编程之后都知道出错了就要逐步找bug，于是我就冷静下来，喝了口水，开始看这些红字是什么玩意。发现最后出现的错误提示：error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
+   Extracting /project/freetype/freetype2/2.6.1/freetype-2.6.1.tar.gz
+
+马上谷歌去搜，搜到 了很多大神给出的方案，要下载提示所给的工具？？大神们当然不会这么乖的，他们给的方案是直接本地安装wordcloud，方法如下：
+
+1.首先去“https://www.lfd.uci.edu/~gohlke/pythonlibs/#wordcloud”下载了wordcloud.whl文件
+
+我的电脑使用的是win10 64位、python的版本是3.10（64bit），所以我下载的是第三个。（这里，一定要看自己的操作系统位数和python 的版本号，以便下载对应版本的wordcloud。如果彼此不对应的话，就会报错。）
+
+2.下载好了后，先安装wheel，使用命令“pip install wheel”
+
+3.把下载的文件放在自己想放的位置，然后我在cmd里输入：“pip install 位置路径\wordcloud-1.6.0-cp310-cp310-win_amd64.whl” 回车
+
+于是我按照大神给的以上步骤开始操作，心情有点小忐忑和激动，当我完成第三步，点击回车之后满心期待的看着我那黑黑的cmd界面，等等，不是应该成功了吗？怎么又出现了以下提示：
+
+冷静，我们再仔细看看这些红字，发现了下面这些提示：
+
+原来我还没有安装matplotlib，所以它在安装wordcloud过程时需要matplotlib安装，但它在安装时与我的python版本不一致，它的是3.43，而我的python是310，怎么办？这不就是和wordcloud出现的情况一样吗！？于是在我们上面的网站 “https://www.lfd.uci.edu/~gohlke/pythonlibs/#wordcloud”下载matplotlib310版，然后按照大神的三部曲安装，
+
+yes，成功了，于是继续安装wordcloud
+
+终于成功啦！！(撒花......)
+
+以上就是我的安装wordcloud的心路历程！
+

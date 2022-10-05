@@ -1,0 +1,51 @@
+挂起/关闭实例时，/var/log/neutron/linuxbridge-agent.log中报错，但不影响使用
+
+2017-10-12 19:42:47.949 14857 INFO neutron.plugins.ml2.drivers.agent._common_agent [req-de491ea7-0b5f-487e-8c77-5613110f59f1 - - - - -] Linux bridge agent Agent out of sync with plugin!
+2017-10-12 19:42:47.950 14857 INFO neutron.agent.securitygroups_rpc [req-de491ea7-0b5f-487e-8c77-5613110f59f1 - - - - -] Preparing filters for devices set(['tapb4df7cd7-a6', 'tap91343e4a-b8'])
+2017-10-12 19:42:48.214 14857 INFO neutron.plugins.ml2.drivers.agent._common_agent [req-de491ea7-0b5f-487e-8c77-5613110f59f1 - - - - -] Port tapb4df7cd7-a6 updated. Details: {u'profile': {}, u'network_qos_policy_id': None, u'qos_policy_id': None, u'allowed_address_pairs': [], u'admin_state_up': True, u'network_id': u'e8f5001c-50a5-4ba8-9463-de88ef6d2a33', u'segmentation_id': None, u'mtu': 1500, u'device_owner': u'compute:nova', u'physical_network': u'provider', u'mac_address': u'fa:16:3e:3b:0f:d9', u'device': u'tapb4df7cd7-a6', u'port_security_enabled': True, u'port_id': u'b4df7cd7-a6f3-43de-92f9-e4c1462eee24', u'fixed_ips': [{u'subnet_id': u'1be13265-fa6c-449b-872e-a798af521b34', u'ip_address': u'192.168.1.38'}], u'network_type': u'flat'}
+2017-10-12 19:42:48.494 14857 INFO neutron.plugins.ml2.drivers.agent._common_agent [req-de491ea7-0b5f-487e-8c77-5613110f59f1 - - - - -] Port tap91343e4a-b8 updated. Details: {u'profile': {}, u'network_qos_policy_id': None, u'qos_policy_id': None, u'allowed_address_pairs': [], u'admin_state_up': True, u'network_id': u'e8f5001c-50a5-4ba8-9463-de88ef6d2a33', u'segmentation_id': None, u'mtu': 1500, u'device_owner': u'compute:nova', u'physical_network': u'provider', u'mac_address': u'fa:16:3e:d1:41:75', u'device': u'tap91343e4a-b8', u'port_security_enabled': True, u'port_id': u'91343e4a-b88f-4838-89f0-a39b471899f6', u'fixed_ips': [{u'subnet_id': u'1be13265-fa6c-449b-872e-a798af521b34', u'ip_address': u'192.168.1.32'}], u'network_type': u'flat'}
+2017-10-12 19:42:48.679 14857 INFO neutron.agent.securitygroups_rpc [req-de491ea7-0b5f-487e-8c77-5613110f59f1 - - - - -] Remove device filter for set(['tap78dc04ab-26'])
+2017-10-12 19:42:48.680 14857 ERROR neutron.agent.linux.utils [req-de491ea7-0b5f-487e-8c77-5613110f59f1 - - - - -] Rootwrap error running command: ['conntrack', '-D', '-f', 'ipv4', '-d', '192.168.1.33', '-w', '1']
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent [req-de491ea7-0b5f-487e-8c77-5613110f59f1 - - - - -] Error in agent loop. Devices info: {'current': set(['tapb4df7cd7-a6', 'tap91343e4a-b8']), 'timestamps': {'tapb4df7cd7-a6': 13, 'tap91343e4a-b8': 10}, 'removed': set(['tap78dc04ab-26']), 'added': set(['tapb4df7cd7-a6', 'tap91343e4a-b8']), 'updated': set([u'tapb4df7cd7-a6'])}
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent Traceback (most recent call last):
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/plugins/ml2/drivers/agent/_common_agent.py", line 454, in daemon_loop
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     sync = self.process_network_devices(device_info)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/osprofiler/profiler.py", line 153, in wrapper
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     return f(*args, **kwargs)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/plugins/ml2/drivers/agent/_common_agent.py", line 213, in process_network_devices
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     resync_b = self.treat_devices_removed(device_info['removed'])
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/osprofiler/profiler.py", line 153, in wrapper
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     return f(*args, **kwargs)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/plugins/ml2/drivers/agent/_common_agent.py", line 332, in treat_devices_removed
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     self.sg_agent.remove_devices_filter(devices)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/agent/securitygroups_rpc.py", line 238, in remove_devices_filter
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     self.firewall.remove_port_filter(device)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/agent/linux/iptables_firewall.py", line 224, in remove_port_filter
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     self._remove_conntrack_entries_from_port_deleted(port)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/agent/linux/iptables_firewall.py", line 196, in _remove_conntrack_entries_from_port_deleted
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     [device_info], ethertype, set())
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/agent/linux/ip_conntrack.py", line 126, in delete_conntrack_state_by_remote_ips
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     self._delete_conntrack_state(device_info_list, rule)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/agent/linux/ip_conntrack.py", line 108, in _delete_conntrack_state
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     extra_ok_codes=[1])
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/agent/linux/utils.py", line 132, in execute
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     execute_rootwrap_daemon(cmd, process_input, addl_env))
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/agent/linux/utils.py", line 119, in execute_rootwrap_daemon
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     LOG.error(_LE("Rootwrap error running command: %s"), cmd)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/oslo_utils/excutils.py", line 220, in __exit__
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     self.force_reraise()
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/oslo_utils/excutils.py", line 196, in force_reraise
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     six.reraise(self.type_, self.value, self.tb)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/neutron/agent/linux/utils.py", line 116, in execute_rootwrap_daemon
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     return client.execute(cmd, process_input)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib/python2.7/site-packages/oslo_rootwrap/client.py", line 129, in execute
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     res = proxy.run_one_command(cmd, stdin)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "<string>", line 2, in run_one_command
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent   File "/usr/lib64/python2.7/multiprocessing/managers.py", line 773, in _callmethod
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent     raise convert_to_error(kind, result)
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent RemoteError: 
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent ---------------------------------------------------------------------------
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent Unserializable message: ('#ERROR', ValueError('I/O operation on closed file',))
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent ---------------------------------------------------------------------------
+2017-10-12 19:42:48.697 14857 ERROR neutron.plugins.ml2.drivers.agent._common_agent
+

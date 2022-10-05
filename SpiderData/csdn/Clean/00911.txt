@@ -1,0 +1,75 @@
+-
+
+a bytes-like object is required, not 'str' 背景：想要执行htmltestrunner跑一些简单的测试套件
+ 解决：wb改成w解决，b代表二进制，为什么有的电脑可以wb运行成功，原因待探究。。
+
+
+a bytes-like object is required, not 'str'
+
+'module' object is not callable 背景：导入HTMLTestRunner类报错
+ 原因：一般就是重名or包没有导入到位
+ 解决：需要导入到具体类/函数，而不是导入py文件
+扩展：同理于xlrd，其实可以导入文件夹，但是这里有特例，比如文件夹名称和py文件/类名有重复也会这样报错
+
+
+'module' object is not callable
+
+module 'ddt' has no attribute 'unittestDDT' 背景：使用ddt数据驱动时提示没有这个属性
+ 原因：ddt与py文件名重名了【低级错误】
+ 解决：py文件注意不要和第三方库、自建的类等重名
+
+
+module 'ddt' has no attribute 'unittestDDT'
+
+list index out of range 原因：一般就是list[index]中index超出范围or这个list本身就是空的去取下标了
+ 解决：根据具体case修改代码
+
+
+list index out of range
+
+InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate ver 背景：requests库简单爬招聘网站，移除SSL验证后报错
+ 原因：移除SSL验证后会抛出警告导致代码无法正常运行
+ 解决：在模拟请求前加入requests.packages.urllib3.disable_warnings()
+
+
+InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate ver
+
+expected string or bytes-like object 背景：requests库简单爬招聘网站，正则匹配的代码报错
+ 原因：请求的返回是响应码，但是要的是字符串，故报错
+ 解决：res改成res.text
+
+
+expected string or bytes-like object
+
+SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED]。 背景：requests库简单爬招聘网站，请求中SSL验证报错 ⁣
+ 解决：因为该项目对安全性要求不高，只是练习爬虫，故可以在请求中加上verify=false
+
+
+SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED]。
+
+selenium报错--unknown error: DevToolsActivePort file doesn't exist    1.chromedriver版本和chrome不一致 2.可以加一些配置解决 from selenium import webdriver chrome_options= webdriver.ChromeOptions() chrome_options.add_argument('--no-sandbox')#解决DevToolsActivePort文件不存在的报错 chrome_options.add_argument('window-size=1920x3000') #指定浏览器分辨率 chrome_options.add_argument('--disable-gpu') #谷歌文档提到需要加上这个属性来规避bug chrome_options.add_argument('--hide-scrollbars') #隐藏滚动条, 应对一些特殊页面 chrome_options.add_argument('blink-settings=imagesEnabled=false') #不加载图片, 提升速度 chrome_options.add_argument('--headless') #浏览器不提供可视化页面. linux下如果系统不支持可视化不加这条会启动失败
+
+
+selenium报错--unknown error: DevToolsActivePort file doesn't exist
+
+
+1.chromedriver版本和chrome不一致
+
+2.可以加一些配置解决
+
+from selenium import webdriver
+
+chrome_options= webdriver.ChromeOptions()
+
+chrome_options.add_argument('--no-sandbox')#解决DevToolsActivePort文件不存在的报错
+
+chrome_options.add_argument('window-size=1920x3000') #指定浏览器分辨率
+
+chrome_options.add_argument('--disable-gpu') #谷歌文档提到需要加上这个属性来规避bug
+
+chrome_options.add_argument('--hide-scrollbars') #隐藏滚动条, 应对一些特殊页面
+
+chrome_options.add_argument('blink-settings=imagesEnabled=false') #不加载图片, 提升速度
+
+chrome_options.add_argument('--headless') #浏览器不提供可视化页面. linux下如果系统不支持可视化不加这条会启动失败
+

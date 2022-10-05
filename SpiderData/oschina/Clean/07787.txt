@@ -1,0 +1,276 @@
+
+背景
+
+在开发Vue项目时，使用浏览器调试可以比较清晰的看到报的什么错、在哪报错，或者使用console.log()打印出报错信息，以便快速定位到报错源头并解决，但是如果项目上线了又怎么查看呢。对于上线项目来说，一般都是会有代码混淆以及禁用console.log()，这个时候再使用浏览器调试就有点不太方便了。另一种场景，如果要做一个前端报错监控平台，那这些报错信息又应该如何收集呢。本文就重点介绍四种方式，即error、unhandledrejection、errorHandler、errorCaptured，用于监听Vue项目可能遇到的报错。
+
+
+onerror
+
+当JavaScript运行时错误，包括语法错误，则window会触发ErrorEvent接口的error事件，并执行window.onerror()方法，用于处理监听到的错误。 如果是资源加载失败，包括img的src加载失败或者引入的script加载失败，则加载资源的元素会触发Event接口的error事件，并指定该元素上的onerror()方法处理错误。这些error不会冒泡到window，也就是说window.onerror将无法监听到报错。
+
+特点：
+
+可以监听所有的JavaScript错误，也能监听Vue组件的报错，包括一些异步错误
+
+无法根据报错识别Vue组件的详细信息，也无法监听已经被try/catch捕获的错误
+
+无法监听资源加载失败的报错
+
+window.onerror
+
+window.onerror接收4个参数，分别是：
+
+message： 错误信息
+
+source：发生错误的资源
+
+line：发生错误的行号
+
+column：发生错误的列数
+
+error：Error错误对象
+
+完整用法：
+
+window.onerror = function(message,source,line,column,error) {
+    // do something
+};
+复制代码
+
+如果函数返回true，则会阻止执行默认事件处理函数。
+
+window.addEventListener('error')
+
+使用事件监听，并在全局监听error事件。使用效果同window.onerror类似，语法有所差异：
+
+window.addEventListener('error', event => {});
+复制代码
+
+注意：此event指的是ErrorEvent类型，包含了有关事件以及具体的错误信息
+
+举个栗子：(本文涉及的示例代码都是基于Vue项目，下同)
+
+// App.vue
+// window.onerror是全局监听，因此放在入口是比较合理的，尽管也可以放在其他位置
+...
+<script>
+export default {
+    mounted() {
+        window.onerror = function(message,source,line,column,error) {
+            console.log('window.onerror----', message,source,line,column,error);
+        }
+        // 效果与上一个类似，都是挂载到全局，两者使用其一即可。如果两者都使用，会重复处理error
+        window.addEventListener('error', event => {
+            console.log('window error on listener---', event);
+        })
+    }
+}
+</script>
+...
+复制代码
+
+element.onerror
+
+针对一些资源加载失败的情况，例如img、script，将会触发该元素的onerror()处理函数，并且error不会冒泡到window。遇到这种情况，可以手动抛出异常，就可以被全局异常监听到是资源加载失败了。
+
+举个栗子
+
+// child.vue
+// 图片资源加载失败
+<img src="123" alt="" @error="event => handleError(event)" />
+...
+handleError(event) {
+    console.log('handleError-----', event);
+    throw new Error('图片加载失败了'); // 手动抛出异常，以便全局事件可以监听到
+}
+复制代码
+
+
+errorHandler
+
+Vue全局错误监听处理，所有组件的错误信息默认都会汇总到此。 由于errorHandler是全局配置的，因此window.onerror将会“失效”，即errorHandler能捕获的错误，onerror将不能捕获；errorHandler不能捕获的异常，onerror将捕获错误。如果errorCaptured函数返回为false，那么此error将不会传到errorHandler
+
+举个栗子
+
+// main.js
+...
+const app = createApp(App)
+app.config.errorHandler = (err, vm info) => {
+    console.log('errorHandle', err, vm, info);
+    // err，错误对象
+    // vm，发生错误的组件实例
+    // info，Vue特定的错误信息，例如错误发生的生命周期、错误发生的事件
+}
+复制代码
+
+
+errorCaptured
+
+errorCaptured是Vue生命周期中的一个，用于捕获当前组件的所有后代组件产生的错误。函数如果返回为false，则会阻止error继续上传，全局的错误监听将不能捕获该error；否则，全局的错误监听也会再处理error。
+
+此钩子接收三个参数：
+
+error：Error错误对象
+
+vm：发生错误的组件实例，可访问组件属性
+
+info：包含错误来源信息的字符串
+
+在钩子函数中，可以修改组件的状态
+
+
+error传播规则（划重点）
+
+默认情况下，如果定义了全局的errorHandler，所有的error都将最终汇总到errorHandler中做统一处理
+
+如果一个组件的继承链或父链存在多个errorCaptured钩子，则这些钩子将会被相同的错误逐级唤起。
+
+如果当前组件的errorCaptured钩子本身继续抛出错误，那么这些新的错误和原本的错误都将上传到父级组件的errorCaptured钩子，以及汇总到errorHandler
+
+如果一个errorCaptured钩子返回了false，则会阻止此error的继续向上传播，也就是说这个error到此就已经处理完毕了。这个会阻止其他任何被这个错误唤起的errorCaptured钩子以及全局的errorHandler。
+
+tips：如果errorCaptured本身抛出error，return false也就不会执行了。
+
+举个栗子也许更能说明白
+
+代码写的比较简洁，但是“言简意赅”
+
+// main.js
+const app = createApp(App)
+app.config.errorHandler = (err, vm info) => {
+    console.log('errorHandle', err, vm, info); // errorHandler也会执行两次
+    // err，错误对象
+    // vm，发生错误的组件实例
+    // info，Vue特定的错误信息，例如错误发生的生命周期、错误发生的事件
+}
+// App.vue
+...
+<!-- 引入父组件，并注册组件 -->
+<FatherErrorDemo />
+...
+errorCaptured: (err, vm, info) => {
+    console.log('根组件 捕获异常 errorCaptured', err,vm,info)
+    // 根组件的errorCaptured会执行两次，先捕获FatherErrorDemo钩子自身的错误，然后捕获childErrorDemo的错误
+    // 因此vm也分别指向FatherErrorDemo和childErrorDemo
+    console.log('根组件 vm', vm.$data);
+    // return false;
+}
+// FatherErrorDemo.vue
+...
+<div>
+this is FatherErrorDemo
+<!-- 引入子组件，并注册组件 -->
+<childErrorDemo />
+</div>
+...
+errorCaptured: (err, vm, info) => {
+    console.log('父组件 错误捕获', err,vm,info);
+    console.log('父组件 vm', vm.$data); // vm 指向childErrorDemo实例
+    this.father(); // 未定义，此处会抛出错误。errorCaptured钩子函数自身产生错误
+    // return false;
+}
+// childErrorDemo.vue
+...
+<div>
+this is childErrorDemo
+</div>
+...
+mounted() {
+    this.child(); // 未定义，会抛出错误
+}
+复制代码
+
+执行结果：
+
+根据执行过程可知：
+
+每一个error产生后，将从产生error的组件，逐级上传到父级组件的errorCaptured，直到根节点，最后汇总到errorHandler。表示error完整的生命周期
+
+errorCaptured返回false，将会阻止当前error向上传递，errorHandler也就收不到此error。（本处未执行相关代码）
+
+errorCaptured自身的error，将会优先向上传递，直到“被处理”或者到达errorHandler。然后才会传递捕获到的子组件错误。
+
+
+如何监听异步错误
+
+异步错误无法直接使用Vue的errorCaptured和errorHandler来监听，根据异步类型的不同，处理方式有所差异。一般来说，监听异步错误，多采用window.onerror，如果是监听Promise的错误，则使用unhandledrejection事件来监听。
+
+举个栗子吧
+
+// main.js
+const app = createApp(App)
+app.config.errorHandler = (err, vm info) => {
+    console.log('errorHandle', err, vm, info); // errorHandler不会被调用
+    // err，错误对象
+    // vm，发生错误的组件实例
+    // info，Vue特定的错误信息，例如错误发生的生命周期、错误发生的事件
+}
+// App.vue
+...
+<!-- 引入父组件，并注册组件 -->
+<FatherErrorDemo />
+...
+mounted() {
+    window.onerror = function(msg,source,line,column,err) {
+      console.log('window.onerror----', msg,source,line,column,err);
+      return true;
+    }
+    window.addEventListener('unhandledrejection', event => {
+      console.log('监听Promise unhandledrejection', event)
+    })
+},
+errorCaptured: (err, vm, info) => {
+    // errorCaptured不会被调用
+    console.log('根组件 捕获异常 errorCaptured', err,vm,info)
+    console.log('根组件 vm', vm.$data);
+    // return false;
+}
+// FatherErrorDemo.vue
+...
+<div>
+this is FatherErrorDemo
+</div>
+...
+mounted() {
+    setTimeout(() => {
+        this.father();
+    }, 1000); // 异步执行
+    new Promise((resolve, reject) => {
+      this.father();
+      resolve();
+    })
+}
+复制代码
+
+执行结果
+
+由此可见，Vue的钩子和配置函数并没有执行，但是window.onerror、unhandledrejection却可以捕获到错误。
+
+为了不写重复代码，setTimeout和Promise我放在一起了。实际上，Promise的产生错误且没有被reject处理，那么可以通过监听unhandledrejection事件来捕获异常。setTimeout产生的错误也只能用window.onerror来捕获（使用window.addEventListener('error')也是一样）。
+
+
+总结
+
+本文共总结了4种常见的监听错误的方法，监听方法没有对错，只有使用场景的不同
+
+在Vue环境中，大多数错误可使用errorHandler配置和errorCaptured钩子解决，但是不能处理异步错误
+
+异步错误根据类型的不同，可全局监听error和unhandledrejection事件
+
+全局捕获错误，可便于快速排查并定位上线项目的问题
+
+可基于错误捕获，实现前端错误监控页，也可以用于埋点、数据分析等场景。
+
+这四种方式通常组合起来使用，会实现更好的效果
+
+
+最后
+
+如果你觉得这篇文章对你有点用的话，麻烦请给我们的开源项目点点star:http://github.crmeb.net/u/defu不胜感激 ！
+
+免费获取源码地址：http://ym.baisouvip.cn/html/wzym/36.html
+
+PHP学习手册：https://doc.crmeb.com
+
+技术交流论坛：https://q.crmeb.com
+

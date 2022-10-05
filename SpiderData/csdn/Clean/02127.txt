@@ -1,0 +1,27 @@
+出现这种错误，首先要看一下你是否使用了字典，错误提示的意思是找不到对应的键值。
+
+例如，给定如下字典：
+
+book_dict = {"price": 500, "bookName": "Python设计", "weight": "250g"}
+
+若是查找字典中存在的key，则正常输出：
+
+print(book_dict["price"])
+
+运行结果如下：
+ 
+ 若是查找字典中不存在的key，则报错：
+
+print(book_dict["sdfs"])
+
+如上所示，报错提示就是KeyError:。对于这种问题，可以使用get()方法解决：
+
+dict.get(key, default)
+
+即对于要查找的key，给定一个缺省值，若是在字典中找到了，则返回字典中的value，否则返回缺省值。
+
+print(book_dict.get("price", "111"))
+print(book_dict.get("sdfs", "hhh"))
+
+运行结果如下：
+

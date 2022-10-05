@@ -1,0 +1,46 @@
+1.问题描述
+
+Python打印中文报错
+
+[root@TDExpress1620_Sles11]$  cat 2.py
+#!/usr/bin/python
+print("百度经验")
+
+执行报错
+
+[root@TDExpress1620_Sles11]$  python 2.py 
+File "2.py", line 2
+SyntaxError: Non-ASCII code starting with '\xb0' in file 2.py on line 2, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+
+或者报错
+
+[root@TDExpress1620_Sles11]$  python 2.py 
+File "2.py", line 2
+SyntaxError: (unicode error) 'utf-8' codec can't decode byte 0xb4 in position 0: invalid start byte
+
+2.原因分析
+
+原因一：使用ptyhon 2.x默认编码格式为ASCII，打印中文时，如果程序中没有额外指定编码的话，会出现错误。
+
+原因二：使用Python3.x默认编码格式是 UTF-8，打印中文时乱码，可能是文件存储的格式是ANSI，可以使用notepad++打开文件确认。
+
+原因三：显示乱码，系统的字符集不为UTF-8
+
+3.解决方法
+
+原因一：在第一行#!/usr/bin/python后面依次尝试加入如下语句，指定编码字符集：
+
+原因二：只用notepad++打开test.py >> 菜单栏Encoding（编码）>> Convert to UTF-8（转化成utf-8）
+
+原因三：设定LC_ALL的值为zh_cn.utf-8
+
+export LC_ALL=zh_cn.utf-8   #加入环境变量可以永久生效
+
+参考文档：
+
+如何让python支持中文
+
+python3：(unicode error) 'utf-8' codec can't decode
+
+python中含有中文字符无法运行的解决方法
+

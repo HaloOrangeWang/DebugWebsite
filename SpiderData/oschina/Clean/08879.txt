@@ -1,0 +1,14 @@
+今天创建一个maven工程，创建完成时没有考虑要创建子maven项目。
+
+在编码过程中发现需要创建子模块，于是在maven工程下创建新的子maven项目，子项目创建完成后设置maven，其中发现子项目pom.xml文件报错，错误如下：
+
+Invalid packaging for parent POM XXXXXXX, must be "pom" but is "jar"
+
+按照网上的做法：
+
+parent工程的pom.xml文件的project节点下加入如下配置就行了
+
+<packaging>pom</packaging>
+
+我加上配置后，重新设置maven依然报错，最后发现，把子项目中的target目录删除就好了
+

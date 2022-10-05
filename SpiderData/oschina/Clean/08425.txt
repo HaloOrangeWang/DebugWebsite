@@ -1,0 +1,587 @@
+【编写程序，输人一个大于2的自然数，然后输出小于该数字的所有素数组成的列表。】所谓素数，是指除了1和自身之外没有其他因数的自然数，最小的素数是2，后面依次是3、5、7、11、13...
+
+c++代码：
+
+#include<iostream>
+#include<bits/stdc++.h>
+#define int long long
+using namespace std;
+
+signed main()
+{
+    int x;
+    cin >> x;
+    for(int i = 2;i < x;i++)
+    {
+        int flag = 0;
+        for(int j = 2;j <= sqrt(i);j++)
+        {
+            if(i % j == 0)
+            {
+                flag = 1;
+                break;
+            }
+        }
+        if(flag == 0)
+            cout << i << " ";
+    }
+    cout << endl;
+    return 0;
+}
+
+python代码：
+
+import math
+a = input("请输入一个大于2的整数：")
+
+for i in range(2,int(a)):
+    flag = 0
+    for j in range(2,int(math.sqrt(i) + 1)):
+        if i % j == 0:
+            flag = 1
+            break
+    if flag == 0:
+        print("{} ".format(int(i)))
+print("\n")
+
+【编写程序，格式化输出杨辉三角。】杨辉三角即二项式定理的系数表，各元素满足如下条件：第一列及对角线上的元素均为1；其余每个元素等于它上一行同一列元素与前一列元素之和。
+
+c++代码：
+
+#include<bits/stdc++.h>
+#define int long long
+#define maxx 9999
+using namespace std;
+int a[maxx][maxx];
+signed main()
+{
+    int n;
+    cin >> n;
+    //初始化边 
+    for(int i = 1;i <= n;i++)//先初始化第一列即对角线的数值，都为1 
+    {
+        a[i][i] = 1;
+        a[i][1] = 1;
+    }
+    
+    //计算出杨辉三角的各个值 
+    for(int i = 3;i <= n;i++)//从第三行第二列开始 
+        for(int j = 2;j <= i - 1;j++)//每一行所拥有的列数最大值即为当前行数减一 
+            a[i][j] = a[i - 1][j - 1] + a[i - 1][j];//杨辉三角的性质，当前元素的值=上一行同一列的值+上一行前一列的值
+
+//输出打印 
+    for(int i = 1;i <= n;i++)//注意观察以下两个for循环的边界条件，之和为n，这有助于你的理解 
+    {    
+        for(int j = 1;j <= n - i;j++)//先打印空格 
+            cout << " ";
+        for(int k = 1;k <= i;k++)//再打印数值（数值后带一个空格）  
+            cout << a[i][k] << " ";
+        cout << endl;
+    }
+    return 0;
+}
+
+python代码：
+
+import math
+import numpy as np
+n = eval(input("请输入一个整数："))
+#a = np.zeros((n,n),dtype = np.int)
+#下面使用了列表推导式。
+array = [([0] * (n + 1)) for i in range(n + 1) ]#Python中正确的构造二维数组，应该使用列表推导式，这样就非常Python：array = [ [0] * m for i in range(n) ]，行和列的数一定要大于已知矩阵的行数和列数，不然会报列表越界等错误，这里要格外的注意
+for i in range(1,n + 1):
+    array[i][i] = 1
+    array[i][1] = 1
+for i in range(3,n + 1):
+    for j in range(2,i):
+        array[i][j] = array[i - 1][j - 1] + array[i - 1][j]
+for i in range(1,n + 1):
+    for j in range(1,n - i + 1):
+        print(" ",end = "")
+    for k in range(1,i + 1):
+        print(array[i][k],end = " ")
+    print("\n",end = "")
+
+【编程计算有固定工资收入的党员每月所交纳的党费。】
+
+(0,3000] ：工资基数3000元及以下者，交纳工资基数的0.5%；
+
+(3000, 5000] ：工资基数3000~5000元者，交纳工资基数的1%；
+
+(5000,10000] ：工资基数在5000~10000元者，交纳工资基数的1.5%；
+
+(10000,+) ：工资基数超过10000元者,交纳工资基数的2%。
+
+c++代码：
+
+#include<iostream>
+#include<bits/stdc++.h>
+#define int long long
+using namespace std;
+
+signed main()
+{
+    float x,y;
+    cout << "请输入有固定工资收入的党员的月工资：";
+    cin >> x;
+    if(0 < x <= 3000)
+        y = x * 0.005;
+    if(3000 < x <= 5000)
+        y = x * 0.01;
+    if(5000 < x <= 10000)
+        y = x * 0.015;
+    if(x > 10000)
+        y = x * 0.02;
+    printf("月工资 = %.0f,交纳党费 = %.1f\n",x,y);
+    return 0;
+}
+
+python代码：
+
+import math
+x = eval(input("请输入有固定工资收入的党员的月工资："))#输入的时候使用eval函数的话，你键入什么类型的值，待接收的变量就是什么类型的值，不需要再进行转换
+if 0 < x <= 3000:
+    y = x * 0.005
+if 3000 < x <= 5000:
+    y = x * 0.01
+if 5000 < x <= 10000:
+    y = x * 0.015
+if x > 10000:
+    y = x * 0.02
+print("月工资 = {}".format(int(x)),end = '，')
+print("交纳党费 = {}".format(y))
+
+【统计所输入字符串中单词的个数，单词之间用空格分隔。】
+
+c++代码：
+
+#include<iostream>
+#include<bits/stdc++.h>
+#define int long long
+using namespace std;
+
+signed main()
+{
+    string str;
+    cout << "请输入字符串：";
+    getline(cin,str);
+    int len = str.length();
+    int flag = 1;
+    for(int i = 0;i < len;i++)
+        if(str[i] == ' ')
+            flag++;
+    cout << "其中的单词总数有：" << flag << endl;
+    cout << "分别为：" << endl;
+    for(int i = 0;i < len;i++)
+        if(str[i] != ' ' && str[i] != '.')
+            cout << str[i];
+        else
+            cout << endl;
+    return 0;
+}
+
+python代码：
+
+import math
+str = input("请输入字符串：")
+len1 = len(str)
+#print(len)
+flag = 1
+for i in range(len1):
+    if str[i] == ' ':
+        flag = flag + 1
+print("其中的单词总数有：{}\n分别为：\n".format(int(flag)),end = '')
+for i in range(len1):
+    if(str[i] != ' ' and str[i] != '.'):
+        print(str[i],end = '')
+    else:
+        print("\n",end = '')
+
+【编程实现一个简单的计算器。】要求输入两个操作数和一个操作符(+、-、*、/、%)，根据操作符输出运算结果。注意“/”和“%”运算符的零除异常问题。
+
+c++代码：
+
+#include<iostream>
+#include<cmath>
+#define int long long
+using namespace std;
+
+signed main()
+{
+    while(1)
+    {
+        double x,y,sum;
+        char z;
+        cout << "请输入操作数x：";
+        cin >> x;
+        cout << "请输入操作数y：";
+        cin >> y;
+        cout << "请输入操作符：";
+        cin >> z;
+        if((z == '/' || z == '%') && y == 0)
+        {
+            cout << "分母=0，零除异常！" << endl;
+            continue;
+        }
+        if(z == '+')
+        {
+            printf("计算结果为：%.1lf\n",x + y);
+            continue;
+        }
+        if(z == '-')
+        {
+            printf("计算结果为：%.1lf\n",x - y);
+            continue;
+        }
+        if(z == '*')
+        {
+            printf("计算结果为：%.1lf\n",x * y);
+            continue;
+        }
+        if(z == '/')
+        {
+            printf("计算结果为：%.1lf\n",x / y);
+            continue;
+        }
+        if(z == '%')
+        {
+            printf("计算结果为：%.1lf\n",fmod(x,y));
+            continue;
+        }
+    }
+    return 0;
+}
+
+python代码：
+
+import math
+x = eval(input("请输入操作数x："))
+y = eval(input("请输入操作数y："))
+z = input("请输入操作符：")
+if((z == '/' or z == '%') and y == 0):
+    print("分母=0，零除异常！")
+else:
+    if(z == '+'):
+        print("计算结果为：{}".format(float(x + y)))
+    if(z == '-'):
+        print("计算结果为：{}".format(float(x - y)))
+    if(z == '*'):
+        print("计算结果为：{}".format(float(x * y)))
+    if(z == '/'):
+        print("计算结果为：{}".format(float(x / y)))
+    if(z == '%'):
+        print("计算结果为：{}".format(float(x % y)))
+
+一般地，可以作为密码字符的主要有数字、小写字母、大写字母和几个标点符号。
+
+密码安全强度主要和字符串的复杂程度有关系，
+
+字符串中包含的字符种类越多，认为其安全强度越高。
+
+按照这个标准，可以把安全强度分为强密码、中高、中低、弱密码。
+
+其中，强密码表示字符串中同时含有数字、小写字母、大写字母、标点符号这4类字符，
+
+而弱密码表示字符串中仅包含4类字符中的1种。
+
+中低强度密码表示字符串中仅包含4类字符中的2种。
+
+中高强度密码表示字符串中仅包含4类字符中的3种。
+
+【编写程序，输人一个字符串，输出该字符串作为密码时的安全强度。】
+
+c++代码：
+
+#include<iostream>
+#define int long long
+using namespace std;
+
+signed main()
+{
+    string str;
+    int shu = 0,xiaoxie = 0,daxie = 0,fuhao = 0;
+    cin >> str;
+    int len = str.length();
+    for(int i = 0;i < len;i++)
+    {
+        //数字 
+        if(48 <= str[i] && str[i] <= 57)
+            shu = 1;
+        //大写字母 
+        if(str[i] <= 90 && str[i] >= 65)
+            daxie = 1;
+        //小写字母 
+        if(str[i] >= 97 && str[i] <= 122)
+            xiaoxie = 1;
+        //标点符号 
+        if((str[i] >= 32 && str[i] <= 47)||(str[i] >= 58 && str[i] <= 64))
+            fuhao = 1;
+    }
+    int sum = shu + daxie + xiaoxie + fuhao;
+    if(sum == 1)
+        cout << "弱密码";
+    if(sum == 2)
+        cout << "中低密码";
+    if(sum == 3)
+        cout << "中高密码";
+    if(sum == 4)
+        cout << "强密码";
+    return 0;
+}
+
+python代码：
+
+import math
+str = input("请输入密码：")
+len1 = len(str)
+shu = 0
+daxie = 0
+xiaoxie = 0
+fuhao = 0
+for i in range(len1):
+    if(ord(str[i]) >= 48 and ord(str[i]) <= 57):
+        shu = 1
+    if(ord(str[i]) >= 65 and ord(str[i]) <= 90):
+        daxie = 1
+    if(ord(str[i]) >= 97 and ord(str[i]) <= 122):
+        xiaoxie = 1
+    if((ord(str[i]) >= 32 and ord(str[i]) <= 47) or (ord(str[i]) >= 58 and ord(str[i]) <= 64)):
+        fuhao = 1
+sum = shu + daxie + xiaoxie + fuhao
+if sum == 1:
+    print("弱密码")
+if sum == 2:
+    print("中低密码")
+if sum == 3:
+    print("中高密码")
+if sum == 4:
+    print("强密码")
+
+附加python中常用的一些数字和字符转换：
+
+整数字符串转换为对应的整数：int('12')
+
+小数字符串转换为对应小数：float('12.34')
+
+数字转换为字符串：str(123.45)
+
+ASCII码转换为相应字符：chr(97)
+
+字符转换为响应ASCII码：ord('a')
+
+凯撒加密算法的原理：把明文中每个英文字母替换为该字母在宇母表中后面第k个字母。
+
+如果后面第k个字符超出字母表的范围，则把字母表首尾相接。
+
+也就是字母Z的下一个字母是 A，字母z的下一个字母是a。
+
+要求明文中的大写字母和小写字母分别进行处理，
+
+大写字母加密后仍为大写字母，小写字母加密后仍为小写字母。
+
+凯撒加密算法是一种经典加密算法，虽然抗攻击能力非常弱，
+
+现在也没有很好的应用价值了，但其中的思路还是值得借鉴的。
+
+【编写程序：输入一个字符串作为待加密的明文，然后输入一个整数作为凯撒加密算法的密钥，最后输出该字符串使用该密钥加密后的结果。】
+
+c++代码：
+
+#include<iostream>
+#define int long long
+using namespace std;
+
+signed main()
+{
+    /*
+    下面给出加解密的公式：
+    加密公式：f(a) = (a + n) mod 26
+    解密公式：f(a) = (a + (26 - n)) % 26 
+    */
+    string str;
+    int n;
+    cout << "请输入待加密的明文：";
+    cin >> str;
+    cout << "请输入密钥：";
+    cin >> n; 
+    int len = str.length();
+    //加密 
+    for(int i = 0;i < len;i++)
+    {
+        if(str[i] >= 'A' && str[i] <= 'Z')
+            str[i] = ((str[i] - 'A') + n) % 26 + 'A';
+        if(str[i] >= 'a' && str[i] <= 'z')
+            str[i] = ((str[i] - 'a') + n) % 26 + 'a';
+    }
+    
+    //解密
+//    int nn = 26 - n;
+//    for(int i = 0;i < len;i++)
+//    {
+//        if(str[i] >= 'A' && str[i] <= 'Z')
+//            str[i] = ((str[i] - 'A') + nn) % 26 + 'A';
+//        if(str[i] >= 'a' && str[i] <= 'z')
+//            str[i] = ((str[i] - 'a') + nn) % 26 + 'a';
+//    }
+    cout << str;
+    return 0;
+}
+
+python代码：
+
+import math
+str = input("请输入待加密的明文：")
+s = list(str)#可以先将字符串转换成列表，然后再进行赋值操作，再将其转变回来
+n = eval(input("请输入密钥："))
+len1 = len(str)
+for i in range(len1):
+    if(ord(s[i]) >= ord('A') and ord(s[i]) <= ord('Z')):
+        s[i] = chr(((ord(s[i]) - ord('A')) + n) % 26 + ord('A'))
+    if(ord(s[i]) >= ord('a') and ord(s[i]) <= ord('z')):
+        s[i] = chr(((ord(s[i]) - ord('a')) + n) % 26 + ord('a'))
+str = ''.join(s)
+print(str)
+
+注释：
+
+str = "My friend and i hang out together"
+str[14] = 'I'
+
+当要实现以上两个语句时，会发生错误：TypeError: 'str' object does not support item assignment
+
+这种错误的原因是string（区别于list）是一种不可变的数据类型，应该用str = str[:14] + 'I' + out_str[15:]，代替上面的第二行即可
+
+还有一种方法去解决这个错误：
+
+s = '312141'
+s[0] = '0'
+
+也会报错
+
+因为，python中的字符串跟C++的有点不一样，python的字符串是一种不可变对象(immutabel object)，意味着只读不写，线程安全。C++的字符串我们可以直接使用s[0]='0’这种语法对字符串中的某个字符赋值，而python不可以。
+
+在python中，可以先将字符串转换成列表，然后再进行赋值操作，再将其转变回来。
+
+s = '312141'
+t = list(s)
+t[0] = '0'
+s = ''.join(t)
+
+据说古代有一个梵塔，塔内有3个底座A、B、C，
+
+A座上有64个盘子，盘子大小不等，大的在下，小的在上。
+
+有一个和尚想把这64个盘子从A座移到C座，
+
+但每次只能允许移动一个盘子。
+
+在移动盘子的过程中可以利用B座，
+
+但任何时刻3个座上的盘子都必须始终保持大盘在下、小盘在上的顺序。
+
+如果只有一个盘子，则不需要利用B座，直接将盘子从A移动到C即可。
+
+【编写函数，接收一个表示盘子数量的参数和分别表示源、目标、临时底座的参数，然后输出详细移动步骤和每次移动后3个底座上的盘子分布情况。】
+
+c++代码：略
+
+python代码：
+
+def change(data):
+    #将一个数字列表转换成字符串
+    new_data = []
+    for i in range(len(data)):#先将数字列表编程每个元素都是字符的列表
+        new_data.append(str(data[i]))
+    
+    string = ' '.join(new_data)#将字符列表的每个元素连接起来，中间分隔符为空格
+    return string
+
+def fun(n):
+    width = n * 6#设置字符串的宽度
+    print('1'.center(width))
+    line = [1,1]
+    print('1 1'.center(width))
+    for i in range(2,n):
+        r = []
+        for j in range(0,len(line) - 1):
+            r.append(line[j] + line[j + 1])
+        line = [1] + r + [1]
+        print(change(line).center(width))
+        #print(str(line).center(width))
+
+a = eval(input("请输入阶层数："))
+fun(a)
+
+"""
+#其实可以不用change这个自定义函数的，我们可以在输出的语句中将变量强制转换为str型输出即可
+
+#def change(data):
+#    """将一个数字列表转换成字符串"""
+#    new_data = []
+#    for i in range(len(data)):#先将数字列表编程每个元素都是字符的列表
+#        new_data.append(str(data[i]))
+#    
+#    string = ' '.join(new_data)#将字符列表的每个元素连接起来，中间分隔符为空格
+#    return string
+
+def fun(n):
+    width = n * 6#设置字符串的宽度
+    print('[1]'.center(width))
+    line = [1,1]
+    print('[1 1]'.center(width))
+    for i in range(2,n):
+        r = []
+        for j in range(0,len(line) - 1):
+            r.append(line[j] + line[j + 1])
+        line = [1] + r + [1]
+        print(str(line).center(width))
+
+a = eval(input("请输入阶层数："))
+fun(a)
+"""
+
+下一个较为简陋的版本（手动hahaha）
+
+def transfor(fun):   #定义一个转换函数，
+    def war(N):  #带参数的装饰器，把参数传闭包里
+        L = N.copy()
+        for j in range(len(L)):
+            temp = str(L[j])
+            L[j] = temp
+        l = ' '.join(L).center(90)
+        fun(l)
+    return war
+@transfor   #甜甜的函数糖
+def f1(N):    #把print定义成f1()函数
+    print(N)
+
+N = [1]
+a = eval(input("请输入阶乘数："))
+for i in range(a):
+    f1(N)   #这里注意要用f()代替print()
+    N.append(0)
+    N = [N[k] + N[k-1] for k in range(i+2)]
+
+import math
+import numpy as np
+n = eval(input("请输入一个整数："))
+#a = np.zeros((n,n),dtype = np.int)
+#下面使用了列表推导式。
+array = [([0] * (n + 1)) for i in range(n + 1) ]#Python中正确的构造二维数组，应该使用列表推导式，这样就非常Python：array = [ [0] * m for i in range(n) ]，行和列的数一定要大于已知矩阵的行数和列数，不然会报列表越界等错误，这里要格外的注意
+for i in range(1,n + 1):
+    array[i][i] = 1
+    array[i][1] = 1
+for i in range(3,n + 1):
+    for j in range(2,i):
+        array[i][j] = array[i - 1][j - 1] + array[i - 1][j]
+for i in range(1,n + 1):
+    for j in range(1,n - i + 1):
+        print(" ",end = "")
+    for k in range(1,i + 1):
+        print(array[i][k],end = " ")
+    print("\n",end = "")
+
+以上三个版本的python代码实现同一个问题，各有不同，请好好理解并且掌握。
+
+。
+

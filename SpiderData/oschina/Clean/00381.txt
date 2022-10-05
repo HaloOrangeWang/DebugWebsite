@@ -1,0 +1,54 @@
+右键运行pytest run时报错，原因是pytest版本过高导致的。有时候会遇到在自己本机没问题，拉取服务器代码下来后就出问题了，所以把pytest版本改低就可以，亲测有效，希望对你有帮助
+
+完整报错信息如下：
+
+plugins: allure-adaptor-1.7.10, forked-1.0.2, html-1.20.0, metadata-1.8.0, xdist-1.29.0
+collected 17 items / 1 errors / 16 selected
+INTERNALERROR> Traceback (most recent call last):
+INTERNALERROR>   File "C:\Users\Administrator\AppData\Roaming\Python\Python37\site-packages\_pytest\main.py", line 213, in wrap_
+session
+INTERNALERROR>     session.exitstatus = doit(config, session) or 0
+INTERNALERROR>   File "C:\Users\Administrator\AppData\Roaming\Python\Python37\site-packages\_pytest\main.py", line 256, in _main
+
+INTERNALERROR>     config.hook.pytest_collection(session=session)
+INTERNALERROR>   File "e:\python3\python3.7.332\lib\site-packages\pluggy\hooks.py", line 289, in __call__
+INTERNALERROR>     return self._hookexec(self, self.get_hookimpls(), kwargs)
+INTERNALERROR>   File "e:\python3\python3.7.332\lib\site-packages\pluggy\manager.py", line 87, in _hookexec
+INTERNALERROR>     return self._inner_hookexec(hook, methods, kwargs)
+INTERNALERROR>   File "e:\python3\python3.7.332\lib\site-packages\pluggy\manager.py", line 81, in <lambda>
+INTERNALERROR>     firstresult=hook.spec.opts.get("firstresult") if hook.spec else False,
+INTERNALERROR>   File "e:\python3\python3.7.332\lib\site-packages\pluggy\callers.py", line 208, in _multicall
+INTERNALERROR>     return outcome.get_result()
+INTERNALERROR>   File "e:\python3\python3.7.332\lib\site-packages\pluggy\callers.py", line 80, in get_result
+INTERNALERROR>     raise ex[1].with_traceback(ex[2])
+INTERNALERROR>   File "e:\python3\python3.7.332\lib\site-packages\pluggy\callers.py", line 187, in _multicall
+INTERNALERROR>     res = hook_impl.function(*args)
+INTERNALERROR>   File "C:\Users\Administrator\AppData\Roaming\Python\Python37\site-packages\_pytest\main.py", line 266, in pytes
+t_collection
+INTERNALERROR>     return session.perform_collect()
+INTERNALERROR>   File "C:\Users\Administrator\AppData\Roaming\Python\Python37\site-packages\_pytest\main.py", line 460, in perfo
+rm_collect
+INTERNALERROR>     self.config.pluginmanager.check_pending()
+INTERNALERROR>   File "e:\python3\python3.7.332\lib\site-packages\pluggy\manager.py", line 270, in check_pending
+INTERNALERROR>     % (name, hookimpl.plugin),
+INTERNALERROR> pluggy.manager.PluginValidationError: unknown hook 'pytest_namespace' in plugin <module 'allure.pytest_plugin' fr
+om 'e:\\python3\\python3.7.332\\lib\\site-packages\\allure\\pytest_plugin.py'>
+
+　　
+
+具体解决方案如下：
+
+1、检查自己的pytest版本为5.0.0
+
+2、卸载已有的pytest
+
+pip uninstall pytest
+
+3、指定安装pytest4.0.2版本：
+
+pip install pytest==4.0.2
+
+进入设置查看安装成功
+
+4、再次右键使用pytest运行代码，运行成功，结果如下
+

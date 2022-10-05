@@ -1,0 +1,60 @@
+一、与直接执行的区别
+命令行执行.py文件时有两种加载方式：
+python xxx.py与python -m xxx。
+这是两种加载py文件的方式：
+前者叫做直接运行，此时脚本的__name__为'main'；
+后者把模块当作脚本来启动，相当于import，此时脚本的__name__为'xxx'。这种启动方式时最好不要带后缀.py。
+
+不同的加载py文件的方式，主要是影响sys.path这个属性。sys.path是一个list，是当前Python解析器运行的环境，Python解析器会在这些目录下去寻找依赖库。python导入文件或模块时默认会先在sys.path里找其的路径。
+
+通过不同方式启动现有的文件run.py，看看结果有何不同。
+
+# run.py 内容如下
+import sys
+print(sys.path)
+
+# 直接启动：python run.py
+
+# 以模块方式启动：python -m run
+
+test_import_project git:(master) ✗ python -m run
+['', 
+'/usr/local/Cellar/python/2.7.11/Frameworks/Python.framework/Versions/2.7/lib/python27.zip',
+
+对比一下就可以发现，-m运行比直接运行仅是多了一个’’，也就是当前所在的目录。
+直接启动：把run.py文件所在的目录放到了sys.path属性中。
+模块启动：把也就是当前路径放到了sys.path属性中
+
+那么，在工作场景中有什么用呢？
+
+# 目录结构如下
+
+# run.py 内容如下
+
+import sys
+from package import mod1
+print(sys.path)
+
+现在就尝试以两种不同的方法启动run.py文件。
+
+# 直接启动（失败）
+
+接下来分析一下原因。
+需要注意的是，当需要启动的py文件引用了一个模块，在启动的时候需要考虑sys.path中有没有import的模块的路径。这个时候，到底是使用直接启动，还是以模块的启动？目的就是把import的那个模块的路径放到sys.path中。
+导入一个模块时，解释器先在当前目录中搜索它。如果没有找到的话，就会到 sys.path变量中给出的目录列表中查找。
+
+我们要启动package2文件夹下的run.py，所需模块在package目录中。因此当我们直接执行run.py时，只是把run.py文件所在的目录放到了sys.path属性中，sys.path并没有把package目录收录。故会报错。
+当我们使用-m参数时，把当前路径放到了sys.path属性中。当前路径包含了package目录与package2目录，故均在sys.path中。运行成功。
+
+二、pycharm如何设置.py作为脚本启动，即带-m参数运行
+
+首先是如何以python xxx.py方式直接运行：
+Edit Configurations选项中，选择的是Script path。输入框是run.py的绝对路径。
+
+如何以python -m xxx方式运行，将xxx.py作为模块运行（感谢stackoverflow）：
+Edit Configurations选项中，点击Script path输入框左侧的倒三角，选择Module name，右边输入框输入xxx，即模块的名字，不带.py后缀。然后就可以在Parameters设置任何参数。这种方法不需要在任何地方包含 -m 参数。
+
+————————————————
+版权声明：本文为CSDN博主「djw931017」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/djw931017/article/details/88981481
+

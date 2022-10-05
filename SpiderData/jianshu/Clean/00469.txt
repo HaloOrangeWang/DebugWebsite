@@ -1,0 +1,24 @@
+NavigationDuplicated: Avoided redundant navigation to current location: "/selfscoring".
+
+翻译:避免冗余导航到当前位置:"/selfscoring"。
+
+这是由于我重复点击了导航的某一个选项，在实际开发中，这种情况还是很常见的
+
+解决方法如下:
+
+在router/index.js文件中添加如下代码即可解决这个报错:
+
+router/index.js
+
+// 获取原型对象上的push函数
+import Vue from 'vue'
+import Router from 'vue-router'
+Vue.use(Router)
+
+//将这段代码添加到你的index.js中即可
+const originalPush = Router.prototype.push
+// 修改原型对象中的push方法
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+

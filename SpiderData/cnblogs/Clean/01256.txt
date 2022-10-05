@@ -1,0 +1,304 @@
+python使用requests时报错requests.exceptions.SSLError: HTTPSConnectionPool
+
+
+python使用requests时报错requests.exceptions.SSLError: HTTPSConnectionPool
+
+报错信息
+
+
+报错信息
+
+Traceback (most recent call last):
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "<stdin>", line 1, in <module>
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\api.py", line 72, in get
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\api.py", line 72, in get
+
+return request('get', url, params=params, **kwargs)
+
+return request('get', url, params=params, **kwargs)
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\api.py", line 58, in request
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\api.py", line 58, in request
+
+return session.request(method=method, url=url, **kwargs)
+
+return session.request(method=method, url=url, **kwargs)
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 508, in request
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 508, in request
+
+resp = self.send(prep, **send_kwargs)
+
+resp = self.send(prep, **send_kwargs)
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 640, in send
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 640, in send
+
+history = [resp for resp in gen] if allow_redirects else []
+
+history = [resp for resp in gen] if allow_redirects else []
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 218, in resolve_redirects
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 218, in resolve_redirects
+
+**adapter_kwargs
+
+**adapter_kwargs
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 618, in send
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 618, in send
+
+r = adapter.send(request, **kwargs)
+
+r = adapter.send(request, **kwargs)
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\adapters.py", line 506, in send
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\adapters.py", line 506, in send
+
+raise SSLError(e, request=request)
+
+raise SSLError(e, request=request)
+
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.baidu.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:581)'),))
+
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.baidu.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:581)'),))
+
+
+过程
+
+
+测试1
+
+不指定headers时GET:
+
+>>> import requests
+
+>>> import requests
+
+>>> requests.get('http://www.baidu.com/')
+
+>>> requests.get('http://www.baidu.com/')
+
+<Response [200]>
+
+<Response [200]>
+
+>>> requests.get('http://www.baidu.com/')
+
+>>> requests.get('http://www.baidu.com/')
+
+<Response [200]>
+
+<Response [200]>
+
+>>> requests.get('http://www.baidu.com/')
+
+>>> requests.get('http://www.baidu.com/')
+
+<Response [200]>
+
+<Response [200]>
+
+>>> header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',}
+
+>>> header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',}
+
+>>> requests.get('http://www.baidu.com/', headers = header)
+
+>>> requests.get('http://www.baidu.com/', headers = header)
+
+<Response [200]>
+
+<Response [200]>
+
+
+测试2
+
+当指定headers的User-Agent为火狐浏览器时:
+
+>>> header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',}
+
+>>> header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',}
+
+>>> requests.get('http://www.baidu.com/', headers = header)
+
+>>> requests.get('http://www.baidu.com/', headers = header)
+
+<Response [200]>
+
+<Response [200]>
+
+>>> requests.get('http://www.baidu.com/', headers = header)
+
+>>> requests.get('http://www.baidu.com/', headers = header)
+
+Traceback (most recent call last):
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "<stdin>", line 1, in <module>
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\api.py", line 72, in get
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\api.py", line 72, in get
+
+return request('get', url, params=params, **kwargs)
+
+return request('get', url, params=params, **kwargs)
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\api.py", line 58, in request
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\api.py", line 58, in request
+
+return session.request(method=method, url=url, **kwargs)
+
+return session.request(method=method, url=url, **kwargs)
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 508, in request
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 508, in request
+
+resp = self.send(prep, **send_kwargs)
+
+resp = self.send(prep, **send_kwargs)
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 640, in send
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 640, in send
+
+history = [resp for resp in gen] if allow_redirects else []
+
+history = [resp for resp in gen] if allow_redirects else []
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 218, in resolve_redirects
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 218, in resolve_redirects
+
+**adapter_kwargs
+
+**adapter_kwargs
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 618, in send
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\sessions.py", line 618, in send
+
+r = adapter.send(request, **kwargs)
+
+r = adapter.send(request, **kwargs)
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\adapters.py", line 506, in send
+
+File "D:\python\lib\site-packages\requests-2.18.3-py2.7.egg\requests\adapters.py", line 506, in send
+
+raise SSLError(e, request=request)
+
+raise SSLError(e, request=request)
+
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.baidu.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:581)'),))
+
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.baidu.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:581)'),))
+
+
+分析
+
+现象:第一次GET时正常,第二次GET时,会报错.
+
+不同点:User-Agent不相同
+
+分析:由于报错SSL证书验证失败,所以这次的访问应该是https协议.但是我们明明使用的是http,所以,猜测访问该网站后,被重定向到了https://www.baidu.com/
+
+
+验证
+
+首先,进行GET时,关闭证书验证.因为,如果不关闭,请求总是失败,不能获取到重定向的信息.
+
+>>> response = requests.get('http://www.baidu.com/', headers = header, verify=False)
+
+>>> response = requests.get('http://www.baidu.com/', headers = header, verify=False)
+
+D:\python\lib\site-packages\urllib3\connectionpool.py:858: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+
+D:\python\lib\site-packages\urllib3\connectionpool.py:858: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+
+InsecureRequestWarning)
+
+InsecureRequestWarning)
+
+>>> response.history
+
+>>> response.history
+
+[<Response [302]>]
+
+[<Response [302]>]
+
+>>> response.url
+
+>>> response.url
+
+u'https://www.baidu.com/'
+
+u'https://www.baidu.com/'
+
+当不指定User-Agent时
+
+>>> response = requests.get('http://www.baidu.com/', verify=False)
+
+>>> response = requests.get('http://www.baidu.com/', verify=False)
+
+>>> response.history
+
+>>> response.history
+
+[]
+
+[]
+
+>>> response.url
+
+>>> response.url
+
+u'http://www.baidu.com/'
+
+u'http://www.baidu.com/'
+
+
+结论
+
+当指定headers的User-Agent时,baidu的服务器会重定向到https的网址.因此报出SSL验证失败的错误.
+
+
+解决方法
+
+
+方法1:
+
+在进行GET时,指定SSL证书.详情见附件
+
+
+方法2:
+
+关闭证书验证. 详情见附件
+
+
+附件
+
+[各浏览器的User-Agent] http://www.useragentstring.com/pages/useragentstring.php
+
+[SSL 证书验证] http://docs.python-requests.org/zh_CN/latest/user/advanced.html#ssl
+

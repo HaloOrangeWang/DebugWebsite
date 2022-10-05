@@ -1,0 +1,49 @@
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc8 in position 3: invalid continuation byte
+
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc8 in position 3: invalid continuation byte
+
+2017年07月05日 10:04:58
+阅读数：14275
+
+2017年07月05日 10:04:58
+阅读数：14275
+
+阅读数：14275
+
+python 3.6；安装scrapy框架 ；报错；UnicodeDecodeError：'utf-8' codec can't decode byte 0xc8 in position 3: invalid continuation byte
+
+python 3.6；安装scrapy框架 ；报错；UnicodeDecodeError：'utf-8' codec can't decode byte 0xc8 in position 3: invalid continuation byte
+
+Exception:
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc8 in position 3: invalid continuation byte
+
+根据trackback信息找到文件d:\program files (x86)\python\python36\lib\site-packages\pip\compat\__init__.py
+
+相关代码为
+
+sys.__stdout__.encoding指的是什么呢？根据 'utf-8' codec can't decode byte 0xc8 in position 3: invalid continuation byte
+
+应该是utf-8
+
+方法一：
+
+我们把73行的sys.__stdout__.encoding改为‘gbk’ 就万事大吉了。
+
+具体为什么是‘gbk ’ 因为被‘gbk’虐太多次了一有问题基本上就是这个玩意，也可能是Windows系统的原因
+
+ctrl+s保存下
+
+重新输入安装命令pip install Scrapy
+
+安装成功后，我选择把sys.__stdout__.encoding改回去（虽然以后都在win下弄，但还是小心点好。。），小心翼翼的
+
+方法二（未测试）：
+
+import sys
+
+sys.setdefaultencoding('gbk')
+
+#把sys.__stdout__.encoding改成‘gbk’ ？
+

@@ -1,0 +1,24 @@
+Spring Boot启动时，报错：
+
+***************************
+ APPLICATION FAILED TO START
+ ***************************
+
+Description:
+
+The bean 'org.springframework.transaction.config.internalTransactionalEventListenerFactory', defined in null, could not be registered. A bean with that name has already been defined in class path resource [org/springframework/transaction/annotation/ProxyTransactionManagementConfiguration.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+原因：
+
+启动类中的@EnableTransactionManagement与xml配置文件中的<tx:annotation-driven/>重复
+
+解决方式：
+
+1. 保留其中一个
+
+2. 在Spring Boot配置文件中添加
+

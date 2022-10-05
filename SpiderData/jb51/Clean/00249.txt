@@ -1,0 +1,98 @@
+本文实例讲述了Flask教程之重定向与错误处理。分享给大家供大家参考，具体如下：
+
+Flask类有一个redirect()方法. 当我们调用它时, 它会返回一个响应对象并且按指定的状态码将用户重定向到另一个位置.
+
+redirect()方法的原型如下:
+
+Flask.redirect(location, statuscode, response)
+
+在上面的函数中,
+
+location 我们要重定向的URL位置
+
+statuscode 状态码会在http头中发送给浏览器, 默认为302
+
+response 用这个参数来初始化响应对象
+
+下面是一些标准的状态码:
+
+HTTP_300_MULTIPLE_CHOICES
+
+HTTP_301_MOVED_PERMANENTLY
+
+HTTP_302_FOUND
+
+HTTP_303_SEE_OTHER
+
+HTTP_304_NOT_MODIFIED
+
+HTTP_305_USE_PROXY
+
+HTTP_306_RESERVED
+
+HTTP_307_TEMPORARY_REDIRECT
+
+重定向的状态码默认是302, 也就是已找到(found).
+
+在下面的例子中, redirect()方法用于当登录失败的时候再次展示登录页面.
+
+from flask import Flask, redirect, url_for, render_template, request
+# Initialize the Flask application
+app = Flask(__name__)
+@app.route('/')
+def index():
+  return render_template('log_in.html')
+@app.route('/login',methods = ['POST', 'GET'])
+def login():
+  if request.method == 'POST' and
+  request.form['username'] == 'admin' :
+  return redirect(url_for('success'))
+  return redirect(url_for('index'))
+@app.route('/success')
+def success():
+  return 'logged in successfully'
+if __name__ == '__main__':
+  app.run(debug = True)
+
+Flask类有个abort()方法, 参数包括一个错误状态码.
+
+Flask.abort(code)
+
+400 错误请求
+
+401 未授权请求
+
+403 禁止
+
+404 找不到资源
+
+406 不可接受
+
+415 未知媒体类型
+
+429 太多请求
+
+我们来对上面代码中的login()函数做一点修改. 如果我们在登录失败时不重新展示登录页, 而是展示"未授权"页面, 那么我们需要把重定向那行代码替换为abort(401).
+
+from flask import Flask, redirect, url_for, render_template, request, abort
+app = Flask(__name__)
+@app.route('/')
+def index():
+  return render_template('log_in.html')
+@app.route('/login',methods = ['POST', 'GET'])
+def login():
+  if request.method == 'POST':
+   if request.form['username'] == 'admin' :
+     return redirect(url_for('success'))
+   else:
+     abort(401)
+  else:
+   return redirect(url_for('index'))
+@app.route('/success')
+def success():
+  return 'logged in successfully'
+if __name__ == '__main__':
+  app.run(debug = True)
+
+希望本文所述对大家基于flask框架的Python程序设计有所帮助。
+

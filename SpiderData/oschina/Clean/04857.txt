@@ -1,0 +1,121 @@
+安装 mysqlclient 报 “OSError: mysql_config not found” 执行 pip install mysqlclient==1.4.5 时，报以下错误： Complete output from command python setup.py egg_info:
+ /bin/sh: mysql_config: command not found
+ /bin/sh: mariadb_config: command not found
+ /bin/sh: mysql_config: command not found
+ Traceback (most recent call last):
+   File "<string>", line 1, in <module>
+   File "/private/var/folders/05/csb3hqmx0blc315g_bk1dsdw0000gn/T/pycharm-packaging/mysqlclient/setup.py", line 16, in <module>
+     metadata, options = get_config()
+   File "/private/var/folders/05/csb3hqmx0blc315g_bk1dsdw0000gn/T/pycharm-packaging/mysqlclient/setup_posix.py", line 61, in get_config
+     libs = mysql_config("libs")
+   File "/private/var/folders/05/csb3hqmx0blc315g_bk1dsdw0000gn/T/pycharm-packaging/mysqlclient/setup_posix.py", line 29, in mysql_config
+     raise EnvironmentError("%s not found" % (_mysql_config_path,))
+ OSError: mysql_config not found
+ python 的 mysqlclient 在安装时需要进行编译，会使用 mysql-connector-c，如果本机没有安装 mysql-connector-c，或者安装了，找不到安装位置，都会报这个错，所以需要先安装 mysql-connector-c。 brew install mysql-connector-c
+ 安装完成后，后有类似如下提示： ==> openssl@1.1
+	A CA file has been bootstrapped using certificates from the system
+	keychain. To add additional certificates, place .pem files in
+	  /usr/local/etc/openssl@1.1/certs
+
+and run
+	  /usr/local/opt/openssl@1.1/bin/c_rehash
+
+openssl@1.1 is keg-only, which means it was not symlinked into /usr/local,
+	because openssl/libressl is provided by macOS so don't link an incompatible version.
+
+If you need to have openssl@1.1 first in your PATH run:
+	  echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.zshrc
+
+For compilers to find openssl@1.1 you may need to set:
+	  export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+	  export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+
+==> mysql-client
+	mysql-client is keg-only, which means it was not symlinked into /usr/local,
+	because it conflicts with mysql (which contains client libraries).
+
+If you need to have mysql-client first in your PATH run:
+	  echo 'export PATH="/usr/local/opt/mysql-client/bin:$PATH"' >> ~/.zshrc
+
+For compilers to find mysql-client you may need to set:
+	  export LDFLAGS="-L/usr/local/opt/mysql-client/lib"
+	  export CPPFLAGS="-I/usr/local/opt/mysql-client/include"
+ 按照提示将设置 PATH 和 FLAGS： export PATH="/usr/local/opt/mysql-client/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+ 再执行 pip install mysqlclient==1.4.5 就可以安装成功。
+
+安装 mysqlclient 报 “OSError: mysql_config not found”
+
+执行 pip install mysqlclient==1.4.5 时，报以下错误：
+
+Complete output from command python setup.py egg_info:
+ /bin/sh: mysql_config: command not found
+ /bin/sh: mariadb_config: command not found
+ /bin/sh: mysql_config: command not found
+ Traceback (most recent call last):
+   File "<string>", line 1, in <module>
+   File "/private/var/folders/05/csb3hqmx0blc315g_bk1dsdw0000gn/T/pycharm-packaging/mysqlclient/setup.py", line 16, in <module>
+     metadata, options = get_config()
+   File "/private/var/folders/05/csb3hqmx0blc315g_bk1dsdw0000gn/T/pycharm-packaging/mysqlclient/setup_posix.py", line 61, in get_config
+     libs = mysql_config("libs")
+   File "/private/var/folders/05/csb3hqmx0blc315g_bk1dsdw0000gn/T/pycharm-packaging/mysqlclient/setup_posix.py", line 29, in mysql_config
+     raise EnvironmentError("%s not found" % (_mysql_config_path,))
+ OSError: mysql_config not found
+
+python 的 mysqlclient 在安装时需要进行编译，会使用 mysql-connector-c，如果本机没有安装 mysql-connector-c，或者安装了，找不到安装位置，都会报这个错，所以需要先安装 mysql-connector-c。
+
+brew install mysql-connector-c
+
+安装完成后，后有类似如下提示：
+
+==> openssl@1.1
+	A CA file has been bootstrapped using certificates from the system
+	keychain. To add additional certificates, place .pem files in
+	  /usr/local/etc/openssl@1.1/certs
+
+and run
+	  /usr/local/opt/openssl@1.1/bin/c_rehash
+
+openssl@1.1 is keg-only, which means it was not symlinked into /usr/local,
+	because openssl/libressl is provided by macOS so don't link an incompatible version.
+
+If you need to have openssl@1.1 first in your PATH run:
+	  echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.zshrc
+
+For compilers to find openssl@1.1 you may need to set:
+	  export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+	  export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+
+==> mysql-client
+	mysql-client is keg-only, which means it was not symlinked into /usr/local,
+	because it conflicts with mysql (which contains client libraries).
+
+If you need to have mysql-client first in your PATH run:
+	  echo 'export PATH="/usr/local/opt/mysql-client/bin:$PATH"' >> ~/.zshrc
+
+For compilers to find mysql-client you may need to set:
+	  export LDFLAGS="-L/usr/local/opt/mysql-client/lib"
+	  export CPPFLAGS="-I/usr/local/opt/mysql-client/include"
+
+按照提示将设置 PATH 和 FLAGS：
+
+export PATH="/usr/local/opt/mysql-client/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+
+再执行 pip install mysqlclient==1.4.5 就可以安装成功。
+
+安装 Crypto 后提示找不到 Crypto 先安装 Crypto，又安装了 pycrypto，然后发现以下代码会报错，提示Unresolved reference Crypto： from Crypto.Cipher import AES
+ 原来是因为 Mac 文件名默认是不区分大小的，安装了 Crypto 后，生成的目录名是 crypto，再安装 pycrypto，就会导致 pycrypto 把文件安装到了 crypto 目录下，而不是 Crypto 目录下。 解决办法是手动将 crypto 改名为 Crypto，或者不安装 Crypto，直接安装 pycrypto。
+
+安装 Crypto 后提示找不到 Crypto
+
+先安装 Crypto，又安装了 pycrypto，然后发现以下代码会报错，提示Unresolved reference Crypto：
+
+from Crypto.Cipher import AES
+
+原来是因为 Mac 文件名默认是不区分大小的，安装了 Crypto 后，生成的目录名是 crypto，再安装 pycrypto，就会导致 pycrypto 把文件安装到了 crypto 目录下，而不是 Crypto 目录下。
+
+解决办法是手动将 crypto 改名为 Crypto，或者不安装 Crypto，直接安装 pycrypto。
+

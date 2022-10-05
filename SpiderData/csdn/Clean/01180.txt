@@ -1,0 +1,59 @@
+
+Python RocketMQ 报错及其解决方法
+
+1 报错信息
+
+2 定位原因
+
+2.1 RocketMQ-Python-SDK2.2 实例信息
+
+2.1 RocketMQ-Python-SDK
+
+2.2 实例信息
+
+3 解决方法
+
+3.1 instance_id3.2 协议
+
+3.1 instance_id
+
+3.2 协议
+
+某天根据某同事给的RocketMQ实例接入信息，配置好后准备收发和订阅普通消息:Python调用阿里MQ HTTP SDK，然而却一直报错…
+
+
+1 报错信息
+
+Consume Message Fail! Exception:MQClientNetworkException (“NetWorkException”, “Remote end closed connection without response”)
+
+查阅了相关文档:消息队列RocketMQ版常见问题,并没有找到相应的报错和解决方法，于是只能静下心来查找具体原因。
+
+
+2 定位原因
+
+
+2.1 RocketMQ-Python-SDK
+
+RocketMQ-SDK如上，Python相关的SDK只能走http协议。
+ Remote end closed connection without response,远程端关闭连接无响应，那么原因只能是配置信息有误。于是自己登录阿里后台，查看MQ跟协议相关信息，果然，所创建group协议不对—初步查看只注意到这个很明显的点。
+ 
+ 重新创建http群组接入后，依旧报错；
+
+
+2.2 实例信息
+
+只能从实例 到 Topic 到 Group依次排查，最终确认为：所给实例ID不对，给的是实例名称；接入点给的不对，Python应该是HTTP 协议客户端接入点，给的是TCP 协议客户端接入点;
+
+
+3 解决方法
+
+
+3.1 instance_id
+
+instance_id即实例id，并非实例名称，实例id可从实例列表或实例详情获得。
+
+
+3.2 协议
+
+除了group区分tcp 和 http协议外，，MQ实例也区分http和tcp,所以如果是用python接入的话，记得选用 HTTP 协议客户端接入点
+

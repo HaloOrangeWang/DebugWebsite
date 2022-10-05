@@ -1,0 +1,39 @@
+集合set：unhashable type XXX
+
+元祖tuple：’tuple’ object does not support item assignment
+
+UnboundLocalError
+
+
+集合set：unhashable type XXX
+
+集合可变，但集合元素是唯一、无序、不可改变的，所以不能将可变对象放入集合中。比如集合、列表、字典对象均不能加入集合中，否则报错TypeError: unhashable type: ‘list’。元祖对象可以加入集合。
+
+
+元祖tuple：’tuple’ object does not support item assignment
+
+-元祖可包含任意类型的对象
+
+-元祖有序，可以索引和分片
+
+-元祖大小不能改变，不能添加或删除元素
+
+-元祖中的对象也不能改变
+
+
+UnboundLocalError
+
+一般出现在函数内部，当在函数内部有一条语句对一个变量进行了赋值，且没有使用对该变量使用global，那么程序就认为该变量为本地变量，不管在外面有没有同名的全局变量。既然认为是本地变量，而且又在使用它之前没有赋过值，那么就会报错UnboundLocalError。
+
+运行结果为：UnboundLocalError: local variable ‘a’ referenced before assignment
+
+就算外部有全局变量a，也一样报错：
+
+运行结果为：UnboundLocalError: local variable ‘a’ referenced before assignment。
+
+只要把a=10放在print前面就不会报错了。
+
+使用+=也一样报错，因为等价a=a+10，一样是赋值语句，程序同样认为是本地变量，却没有赋过初值：
+
+以上两段代码都会报错：UnboundLocalError: local variable ‘a’ referenced before assignment。
+

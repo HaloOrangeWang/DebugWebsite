@@ -1,0 +1,232 @@
+转自：白月黑羽Python3教程之异常处理：http://www.python3.vip/doc/tutorial/python/0019/
+
+
+异常对象
+
+请大家运行如下代码
+
+a = 100/0
+print(a)
+
+　　
+
+就会发现解释器显示如下的错误提示
+
+Traceback (most recent call last):
+  File "xxxxxxxxxx.py", line 1, in <module>
+    a = 100/0
+ZeroDivisionError: division by zero
+
+　　
+
+大家要学会看解释器的报错。
+
+这就是解释器向我们报告， 有一个 ZeroDivisionError 错误对象 或者说 异常对象 产生了。
+
+这个 ZeroDivisionError 对象 代表的是一个除以0 的异常。 我们知道0是不能作为除数的。
+
+因为这个问题，解释器没有办法继续执行后面的代码了。所以程序就此结束执行了。
+
+ZeroDivisionError就是一个异常对象的类，继承自标准库里面的 Exception 类。
+
+Python标准库中还有很多其他的异常类 都是继承自标准库里面的 Exception 类，代表各种不同类型的错误。
+
+大家可以在命令行窗口 运行 Python 解释器交互命令行，分别输入如下代码:
+
+xxxx
+
+会产生 NameError，表示xxxx没有定义
+
+dict1 = {1:1}
+print(dict1[2])
+
+　　
+
+会产生 KeyError，表示该字典没有key为2的元素
+
+import xxxx
+
+　　
+
+会产生 ModuleNotFoundError，表示找不到xxxx这样的模块
+
+
+捕获异常
+
+解释器执行代码过程中，如果发生异常，就会导致解释器没法继续按照正常流程往下执行代码，所以解释器会结束当前线程的执行。
+
+如果执行的程序是个单线程的程序，整个程序执行就会结束了。
+
+如果我们在编码的时候，就预料到了某些代码运行时可能出现某些异常，就可以使用 try...except... 这样的方法来捕获和处理异常。
+
+比如，我们要开发程序，实现一个把用户输入的身高从英尺换算成米，如下所示
+
+while True:
+    miles = input('请输入英里数:')
+    km = int(miles) * 1.609344
+    print(f'等于{km}公里')
+
+　　
+
+编写这段代码的时候， 我们就可以预料到，可能用户会输入非数字的字符，用int转化就会出错了，导致整个程序就退出了。
+
+这时，我们就可以这样写
+
+while True:
+    try:
+        miles = input('请输入英里数:')
+        km = int(miles) * 1.609344
+        print(f'等于{km}公里')
+    except ValueError:
+        print('你输入了非数字字符')
+
+　　
+
+try 下面缩进的代码出现异常时，解释器会结束 try中 后续代码的执行，并检查这个异常的类型是否匹配后面的except 语句中声明的类型。
+
+如果匹配上，就认为该异常是预先有对应的处理方案的，就执行匹配的except下面缩进的代码。从而不会结束当前线程。
+
+上面的例子中，执行 try 下面缩进的代码时，如果用户输入了 hello 这样的非数字， 就会在这行语句处
+
+km = int(miles) * 1.609344
+
+　　
+
+产生 ValueError 类型的异常， 解释器就会去查看后面的 except 语句是否声明了对 ValueError 异常的处理。
+
+发现有， 就会执行后面缩进的代码。也就是这句代码
+
+print('你输入了非数字字符')
+
+except 后面缩进的代码 就是对这种类型错误 的一种处理。
+
+既然程序已经知道如何处理这种问题， 就不需要结束执行，只需要执行完 处理代码后， 进行原来正常的执行流程。
+
+在这里，就是继续 while True 循环。
+
+try:
+    choice = input('输入你的选择:')
+    if choice == '1':
+        100/0
+    elif choice == '2':
+        [][2]
+except ZeroDivisionError:
+    print ('出现 ZeroDivisionError')
+except IndexError  :
+    print ('出现 IndexError')
+
+　　
+
+如果 输入’1’, 则会产生 ZeroDivisionError 异常， 就会被 except ZeroDivisionError 捕获，执行对应的代码
+
+print ('出现 ZeroDivisionError')
+
+　　
+
+如果 输入’2’, 则会产生 IndexError 异常， 就会被 except IndexError 捕获，执行对应的代码
+
+print ('出现 IndexError')
+
+　
+
+
+获取异常对象
+
+我们使用except 语句匹配异常类型的时候， 可以使用as关键字，后面加一个变量名，如下所示：
+
+try:
+    100/0
+except ZeroDivisionError as e:
+    print (f'异常对象信息:{e}')
+
+　　
+
+这样，运行代码的时候，当try中的语句产生异常对象时，就会 把产生的异常对象赋值给as后的变量。
+
+上面的代码，运行输出
+
+异常对象信息:division by zero
+
+产生的异常对象赋值给了变量 e。
+
+这样我们就可以在后续的代码中得到产生的异常对象的信息。
+
+
+匹配所有异常
+
+如果我们在写一段代码的时候，不知道这段代码会抛出什么样的异常，并且我们不希望程序因为异常而中止。
+
+这时我们可以匹配所有类型的异常，这样任何类型的异常发生都不会终止程序了。 如下：
+
+try:
+    100/0
+except Exception as e:
+    print('未知异常:', e)
+
+　　
+
+因为所有的异常都是 Exception 的子类。 所以 Exception能匹配所有类型的异常。
+
+except 为空，也可以匹配所有类型的异常，而且可以通过traceback库，显示异常的信息和异常产生处的函数调用栈的信息，如下
+
+import traceback
+
+try:
+    100/0
+except :
+    print(traceback.format_exc())
+
+　　
+
+上面的代码会打印出导致异常的详细的函数调用栈的信息，如下
+
+Traceback (most recent call last):
+  File "xxxx/xxx.py", line 4, in <module>
+    100/0
+ZeroDivisionError: division by zero
+
+　　
+
+
+自定义异常
+
+异常类型都是 继承自Exception的类，表示各种类型的错误。
+
+我们也可以自己定义异常，比如我们写一个用户注册的函数， 要求用户输入的电话号码只能是中国的电话号码，并且电话号码中不能有非数字字符。
+
+可以定义下面这两种异常类型：
+
+# 异常对象，代表电话号码有错误的字符
+class InvalidCharError(Exception):
+    pass
+
+# 异常对象，代表电话号码非中国号码
+class NotChinaTelError(Exception):
+    pass
+
+　　
+
+定义了上面的异常，当用户输入电话号码时，出现相应错误的时候，我们就可以使用raise 关键字来抛出对应的自定义异常
+
+def  register():
+    tel = input('请注册您的电话号码:')
+
+# 如果有非数字字符
+    if not tel.isdigit(): 
+        raise InvalidCharError
+
+# 如果不是以86开头，则不是中国号码
+    if not tel.startswith('86'): 
+        raise NotChinaTelError
+    
+    return tel
+
+try:
+    ret = register()
+except InvalidCharError:
+    print('电话号码中有错误的字符')
+except NotChinaTelError:
+    print('非中国手机号码')
+
+　　
+

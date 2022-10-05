@@ -1,0 +1,49 @@
+
+1. 问题背景
+
+之前用了Pycharm好好的，结果运行个简单的test.py文件，里面的内容是：
+
+print("hello world")
+
+居然报错，程序运行居然不是 exit code 0
+ 报错结果如下：程序返回了一个异常参数，这个参数实际上是说：“你的python解释器未安装成功”。
+
+Process finished with exit code -1073741515 (0xC0000135)
+
+网上百度了这个参数报错的意思，我就去找了我的解释器：【File】–>【Setting】，找到解释器的位置
+ 
+ 发现我之前安装的package全没了，而且奇怪的出现了Permission denied
+ 
+ 然后你如果手动重新安装之前的包（如果你真的肯愿意这么大费周章地做的话），发现你的Package全部变成非法的了。
+
+网上找到了出现了类似的情况，类似问题的解决方案，但是并没有什么用。
+
+
+2. 解决方案
+
+我很奇怪为什么之前运行项目都好好的，我不是新手安装才出现这个问题的。所以我怀疑是不是文件损坏了，我根据之前保存的解释器路径，就是直接找到下面路径下的python.exe文件。
+ 
+ 到达python.exe文件下，直接双击运行 ，然后报错。
+
+由于找不到python37.dll，无法继续执行代码问题解决
+
+这才是你解释器非法的原因！因为python37.dll文件损坏。
+
+由于各种原因系统删掉了python37.dll，只要重新下载python37.dll解压复制到C:\Windows\System32\这里就行了，地址：https://cn.dll-files.com/python37.dll.html
+只要电脑上丢失或损坏文件，遇到过“无法找到****.dll文件…”的消息弹窗，都可以上https://cn.dll-files.com/
+重新下载回
+
+根据上面的步骤，网上直接单独下载一个python.dll文件，复制到你之前解释器下，问题就解决了。
+ 官网   python3.7.dll文件下载的地址
+ 如果上面的网页打不开，那么下载我这里分享的python37.dll文件
+ python37.dll 分享文件（CSDN）
+
+下载好后，我直接放到 python.exe 的同级目录：
+
+C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python37_64
+
+添加好dll文件记得重启PyCharm
+ 最后就解决成功了，
+ 
+ setting里面我的package又回来啦！
+

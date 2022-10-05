@@ -1,0 +1,106 @@
+1 使用变量时，输入错误
+
+message = "Hello Python Crash Course reader!"
+
+print(mesage) 变量错误
+
+Traceback (most recent call last):                                          #错误追踪信息
+
+print(mesage)
+
+NameError: name 'mesage' is not defined                            #变量名‘mesage’未被定义
+
+2  使用字符串避免语法错误
+
+message = 'One of Python's strengths is its diverse community.'
+
+print(message)
+
+SyntaxError: invalid syntax#撇号位于单引号之间，Python无法正确判断字符串结束位置，错误发生在第二个单引号后面，其内容为无效的Python代码。
+
+3 使用函数str()避免类型错误
+
+age = 23 #23可以代表int,也可以代表字符型。强制转换成字符型，需要加str
+
+message = "Happy " + age+ "rd Birthday!"
+
+print(message)
+
+Traceback (most recent call last):
+
+message = "Happy " + age + "rd Birthday!"
+
+TypeError:can only concatenate str (not "int") to str
+
+注：在这个示例中，Python发现你使用了一个值为整数(int )的变量，但它不知道该如何解读这个值。Python知道，这个变量表示的可能是数值23，也可能是字符2和3。像上面这样在字符串中使用整数时，需要显式地指出你希望Python将这个整数用作字符串。为此，可调用函数str() ，它让Python将非字符串值表示为字符串：
+
+age = 23
+
+message = "Happy " + str(age) + "rd Birthday!"
+
+print(message)
+
+注：这样，Python就知道你要将数值23转换为字符串，进而在生日祝福消息中显示字符2和3。
+
+4忘记缩进
+
+magicians = ['alice', 'david', 'carolina']
+
+for magician in magicians:
+
+print(magician)  没有缩进
+
+Traceback (most recent call last):
+
+IndentationError: expected an indented block                             # 期望一个缩进的代码块
+
+5 不必要的缩进
+
+message = "Hello Python world!"
+
+print(message) 不必要缩进
+
+Traceback (most recent call last):
+
+IndentationError: unexpected   indent# 不期望的缩进
+
+6 遗漏冒号
+
+magicians = ['alice', 'david', 'carolina']
+
+for magician in magicians 缺失冒号
+
+print(magician)
+
+Traceback (most recent call last):
+
+IndentationError: SyntaxError: invalid  syntax                                             # 无效的 语法
+
+7 不能给元组的元素赋值
+
+dimensions = (200, 50)
+
+dimensions[0] = 250
+
+Traceback (most recent call last):
+
+TypeError:'tuple' object does not support item assignment                   # '元组' 对象不支持的一项任务
+
+8 避免实参错误
+
+调用函数describe_pet() 时没有指定任何实参报错。
+
+def describe_pet(animal_type, pet_name):
+
+print("\nI have a " + animal_type + ".")
+
+print("My " + animal_type + "'s name is " + pet_name.title() + ".")
+
+describe_pet()
+
+Traceback (most recent call last):
+
+describe_pet()
+
+TypeError: describe_pet() missing 2 required positional arguments: 'animal_type' and 'pet_name'      #  函数describe_pet() 上缺少2个需要的位置上论点：'动物种类' 和'宠物名字'。
+

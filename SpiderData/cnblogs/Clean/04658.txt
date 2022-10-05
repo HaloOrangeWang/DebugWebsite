@@ -1,0 +1,12 @@
+
+django使用search_fields报错（in get_lookup_constraint）
+
+
+FieldError at /api/workorder/order/
+
+异常原因：
+
+这是在view中模糊查询的字段，其中submitter字段是一个外键ForeignKey字段，而作为一个外键，它所对应的不是一个具体的字段，而是一个类。
+
+所以我们应该将其对应成为一个外键关联的摸一个具体的字段，如submitter__username
+

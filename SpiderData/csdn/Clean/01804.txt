@@ -1,0 +1,108 @@
+
+问题一
+
+SyntaxError: Non-ASCII character ‘\xe6’ in file /study/…
+
+解决方法：添加下面几行代码
+
+#!/usr/bin/python 
+ # coding=utf-8 
+ 或者 
+ #!/usr/bin/python 
+ # -- coding: utf-8 --
+
+
+问题二
+
+with open(data_filepath) as f:
+
+此处报错UnicodeDecodeError: ‘utf-8’ codec can’t decode byte 0xb2 in position 94: invalid start byte
+
+解决方法：因为utf-8无法读取该文件，需要指定编码格式：
+
+with open(data_filepath, encoding="GB18030") as f:
+
+
+问题三
+
+from pyname import classname
+
+出现红线
+
+解决方法：一定是工程下出现与pyname同名的文件
+
+
+问题四
+
+读txt文件时，相同的文件，在python2.7读入没有报错，python3.5报错如下：
+
+'utf-8' codec can't decode byte 0xed in position 0: invalid continuation bytes
+
+解决方法：文件中出现非utf-8编码字符（类似于乱码的字符），py2.7可以编译通过，py3.5不行。（原因不知）
+
+
+问题五
+
+运行pyltp的语义角色标注时，报错如下：
+
+# -*- coding: utf-8 -*-
+import os
+from pyltp import Parser
+LTP_DATA_DIR = './ltp_data'  # ltp模型目录的路径
+srl_model_path = os.path.join(LTP_DATA_DIR, 'srl')  # 语义角色标注模型目录路径，模型目录为`srl`。注意该模型路径是一个目录，而不是一个文件。
+parser = Parser() # 初始化实例
+from pyltp import SementicRoleLabeller
+labeller = SementicRoleLabeller() # 初始化实例
+labeller.load(srl_model_path)  # 加载模型
+
+words = ['元芳', '你', '怎么', '看']
+postags = ['nh', 'r', 'r', 'v']
+arcs = parser.parse(words, postags)  # 句法分析
+roles = labeller.label(words, postags, arcs)  # 语义角色标注
+
+# 打印结果
+for role in roles:
+    print role.index, "".join(
+        ["%s:(%d,%d)" % (arg.name, arg.range.start, arg.range.end) for arg in role.arguments])
+labeller.release()  # 释放模型
+
+Boost.Python.ArgumentError: Python argument types in
+    SementicRoleLabeller.label(SementicRoleLabeller, list, list, VectorOfParseResult)
+did not match C++ signature:
+
+解决方法：labeller.label()传递参数类型与函数声明中不一致，少传了命名实体识别的结果，正确调用为 roles = labeller.label(words, postags, netags, arcs) # 语义角色标注
+
+
+问题六
+
+运行如下代码报错：
+
+import Queue
+que = Queue()
+
+TypeError: 'module' object is not callable
+
+解决方法： 
+ Python导入模块的方法有两种，import module 和 from module import，区别是前者所有导入的东西使用时需加上模块名的限定，而后者不要。
+
+import Queue
+que = Queue.Queue()
+
+or
+
+from queue import Queue
+que = Queue()
+
+
+问题七
+
+报错 ERROR (UnicodeEncodeError): ‘ascii’ codec can’t encode character u’\uff08’ in position 9: ordinal not in range(128)
+
+解决方法： 
+ python在安装时，默认的编码是ascii，当程序中出现非ascii编码时，python的处理常常会报这样的错，python没办法处理非ascii编码的，此时需要自己设置将python的默认编码，一般设置为utf8的编码格式。 
+ 在py文件中添加如下代码：
+
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf8')
+

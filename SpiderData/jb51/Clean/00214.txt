@@ -1,0 +1,424 @@
+开个贴，用于记录平时经常碰到的Python的错误同时对导致错误的原因进行分析，并持续更新，方便以后查询，学习。
+
+知识在于积累嘛！微笑
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+错误:
+
+复制代码 代码如下:
+
+>>> def f(x, y):
+
+print x, y
+
+>>> t = ('a', 'b')
+
+>>> f(t)
+
+错误:
+
+复制代码 代码如下:
+
+>>> D1 = {'x':1, 'y':2}
+
+>>> D1['x']
+
+1
+
+>>> D1['z']
+
+错误:
+
+复制代码 代码如下:
+
+>>> from math import sqrt
+
+>>> exec "sqrt = 1"
+
+>>> sqrt(4)
+
+【错误分析】join是split的逆方法，是非常重要的字符串方法，但不能用来连接整数型列表，所以需要改成:
+
+复制代码 代码如下:
+
+>>> seq = ['1', '2', '3', '4']
+
+>>> sep = '+'
+
+>>> sep.join(seq)
+
+'1+2+3+4'
+
+错误:
+
+复制代码 代码如下:
+
+>>> print r'C:\Program Files\foo\bar\'
+
+SyntaxError: EOL while scanning string literal
+
+【错误分析】因所用的Python版本2.7,比较高的版本，raise触发的异常，只能是自定义类异常，而不能是字符串。所以会报错，字符串改为自定义类，就可以了。
+
+复制代码 代码如下:
+
+class Bad(Exception):
+
+pass
+
+执行上面一段代码，错误如下:
+
+复制代码 代码如下:
+
+>>>
+
+Sub's method
+
+【错误分析】Python中调用类的方法，必须与实例绑定，或者调用自身.
+
+复制代码 代码如下:
+
+ClassName.method(x, 'Parm')
+
+ClassName.method(self)
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+复制代码 代码如下:
+
+>>> reload(sys)
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+NameError: name 'sys' is not defined
+
+【错误分析】args是一个元祖，如果是f(args)，那么元祖是作为一个整体作为一个参数
+
+*args，才是将元祖中的每个元素作为参数
+
+复制代码 代码如下:
+
+>>> f(*args)
+
+6
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+复制代码 代码如下:
+
+>>> def f(a,b,c,d):
+
+...   print a,b,c,d
+
+...
+
+>>> args = (1,2,3,4)
+
+>>> f(**args)
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+TypeError: f() argument after ** must be a mapping, not tuple
+
+【错误分析】错误原因**匹配并收集在字典中所有包含位置的参数，但传递进去的却是个元祖。
+
+所以修改传递参数如下:
+
+复制代码 代码如下:
+
+>>> args = {'a':1,'b':2,'c':3}
+
+>>> args['d'] = 4
+
+>>> f(**args)
+
+1 2 3 4
+
+【错误分析】在函数hider()内使用了内置变量open，但根据Python作用域规则LEGB的优先级:
+
+先是查找本地变量==》模块内的其他函数==》全局变量==》内置变量，查到了即停止查找。
+
+所以open在这里只是个字符串，不能作为打开文件来使用，所以报错，更改变量名即可。
+
+可以导入__builtin__模块看到所有内置变量：异常错误、和内置方法
+
+复制代码 代码如下:
+
+>>> import __builtin__
+
+>>> dir(__builtin__)
+
+['ArithmeticError', 'AssertionError', 'AttributeError',..
+
+.........................................zip,filter,map]
+
+【错误分析】字典中的键必须是不可变对象，如(整数，浮点数，字符串，元祖).
+
+可用hash()判断某个对象是否可哈希
+
+复制代码 代码如下:
+
+>>> hash('string')
+
+-1542666171
+
+【错误分析】列表属于可变对象,其append(),sort(),reverse()会在原处修改对象，不会有返回值，
+
+或者说返回值为空，所以要实现反转并排序，不能并行操作，要分开来写
+
+复制代码 代码如下:
+
+>>> L = [2,1,4,3]
+
+>>> L.reverse()
+
+>>> L.sort()
+
+>>> L
+
+[1, 2, 3, 4]
+
+【错误分析】class是Python保留字，Python保留字不能做变量名，可以用Class，或klass
+
+同样，保留字不能作为模块名来导入，比如说，有个and.py，但不能将其作为模块导入
+
+复制代码 代码如下:
+
+>>> import and
+
+SyntaxError: invalid syntax
+
+复制代码 代码如下:
+
+try:
+
+print 1 / 0
+
+【错误分析】错误原因，else, finally执行位置;正确的程序应该如下:
+
+复制代码 代码如下:
+
+try:
+
+print 1 / 0
+
+报错如下:
+
+复制代码 代码如下:
+
+>>>
+
+secretCount is: 1
+
+secretCount is: 2
+
+【错误分析】双下划线的类属性__secretCount不可访问，所以会报无此属性的错误.
+
+解决办法如下:
+
+复制代码 代码如下:
+
+# 1. 可以通过其内部成员方法访问
+
+# 2. 也可以通过访问
+
+ClassName._ClassName__Attr
+
+#或
+
+ClassInstance._ClassName__Attr
+
+#来访问，比如：
+
+print count1._JustCounter__secretCount
+
+print JustCounter._JustCounter__secretCount
+
+【错误分析】Python不允许使用未赋值变量
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+复制代码 代码如下:
+
+>>> t = (1,2)
+
+>>> t.append(3)
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+AttributeError: 'tuple' object has no attribute 'append'
+
+>>> t.remove(2)
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+AttributeError: 'tuple' object has no attribute 'remove'
+
+>>> t.pop()
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+AttributeError: 'tuple' object has no attribute 'pop'
+
+【错误分析】空元祖和空列表，没有索引为0的项
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+复制代码 代码如下:
+
+>>> if X>Y:
+
+...  X,Y = 3,4
+
+...   print X,Y
+
+File "<stdin>", line 3
+
+print X,Y
+
+^
+
+IndentationError: unexpected indent
+
+【错误分析】一般出在代码缩进的问题
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+复制代码 代码如下:
+
+>>> f = file('1.txt')
+
+>>> f.readline()
+
+'AAAAA\n'
+
+>>> f.readline()
+
+'BBBBB\n'
+
+>>> f.next()
+
+'CCCCC\n'
+
+【错误分析】如果文件里面没有行了会报这种异常
+
+复制代码 代码如下:
+
+>>> f.next() #
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+StopIteration
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+复制代码 代码如下:
+
+>>> string = 'SPAM'
+
+>>> a,b,c = string
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+ValueError: too many values to unpack
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+复制代码 代码如下:
+
+>>>def A():
+
+return A()
+
+>>>A() #无限循环，等消耗掉所有内存资源后，报最大递归深度的错误
+
+File "<pyshell#2>", line 2, in A return A()RuntimeError: maximum recursion depth exceeded
+
+class Bird:
+
+def __init__(self):
+
+self.hungry = True
+
+def eat(self):
+
+if self.hungry:
+
+print "Ahaha..."
+
+self.hungry = False
+
+else:
+
+print "No, Thanks!"
+
+SingBird是Bird的子类，但如果调用Bird类的eat()方法时,
+
+复制代码 代码如下:
+
+>>> s.eat()
+
+Traceback (most recent call last):
+
+File "<pyshell#5>", line 1, in <module>
+
+s.eat()
+
+File "D:\Learn\Python\Person.py", line 42, in eat
+
+if self.hungry:
+
+AttributeError: SingBird instance has no attribute 'hungry'
+
+【错误分析】代码错误很清晰,SingBird中初始化代码被重写，但没有任何初始化hungry的代码
+
+复制代码 代码如下:
+
+class SingBird(Bird):
+
+def __init__(self):
+
+self.sound = 'squawk'
+
+self.hungry = Ture #加这么一句
+
+def sing(self):
+
+print self.sound
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+复制代码 代码如下:
+
+class Bird:
+
+def __init__(self):
+
+self.hungry = True
+
+def eat(self):
+
+if self.hungry:
+
+print "Ahaha..."
+
+self.hungry = False
+
+else:
+
+print "No, Thanks!"
+

@@ -1,0 +1,28 @@
+
+报错信息
+
+Traceback (most recent call last): 
+File "/Applications/Reveal.app/Contents/SharedSupport/Scripts/RevealServerCommands.py", line 18, in __lldb_init_module
+   HandleRevealCommand.__doc__ = CreateRevealCommandOptionsParser().format_help()
+ File "/Applications/Reveal.app/Contents/SharedSupport/Scripts/RevealServerCommands.py", line 36, in CreateRevealCommandOptionsParser
+   for key, info in subcommands.iteritems():
+AttributeError: 'dict' object has no attribute 'iteritems'
+
+
+分析
+
+提示问题很明显 python 代码报错
+
+Xcode 11 升级了 Python 由 2.7 -> 3
+
+查看 RevealServerCommands.py 定位到底 36 行 代码 :
+
+方法 Python3 废弃了，改为
+
+👌 大功告成，又可以用了。
+
+
+其他
+
+RevealServerCommands.py 位置
+

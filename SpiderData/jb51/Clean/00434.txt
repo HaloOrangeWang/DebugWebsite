@@ -1,0 +1,40 @@
+目的： 找出路径坐在的所有python文件（.py结尾），返回列表。
+
+代码：
+
+def list_py(path = None):
+ if path == None:
+  path = os.getcwd()
+ return [fname for fname in os.listdir(path)
+ if os.path.isfile(fname) and fname.endswith('.py')
+
+错误：
+
+不传入参数没有问题
+
+>>> list_py()
+['cmdtest.py', 'datatest.py', 'excel_combine.py', 'input.py', 'iotest.py', 'load_data_test.py', 'numpy_arraytest.py', 'ooptest.py', 'pandas_test.py', 'str_test.py', 'test.py', 'wordstats.py']
+
+但是传入参数后
+
+>>> list_py('D:\Python\PythonProject\data_mining_with_python')
+[]
+
+返回：[]
+
+一度以为将路径作为参数会出问题，但是在删除列表中if条件后又正常返回。所以显而易见。
+
+解决：
+
+os.path.isfile()
+
+接收的参数是路径+文件名，所以不单单是fname或者path。
+
+而应该用：
+
+os.path.join(path,fname)
+
+作为参数
+
+以上这篇python os.path.isfile()因参数问题判断错误的解决就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

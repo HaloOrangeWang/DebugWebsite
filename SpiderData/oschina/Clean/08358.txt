@@ -1,0 +1,87 @@
+异常信息
+
+exception.ServiceException: com.mysql.jdbc.MysqlDataTruncation: Data truncation: Data too long for column 'XXX' at row 1
+
+问题
+
+代码运行发现有一行报警，很明显可以判断字段插入内容超过表结构设置的长度了。不过比较奇怪的是，为什么测试环境一直没测试出来呢，难道是测试和线上环境Mysql配置不同？咨询了dba，得到的反馈是一致的。
+
+分析
+
+首先可以确定的是测试环境和线上表单是一致的，因此排除字段长度不一致的原因。
+
+然后怀疑是否是测试环境有什么配置导致插入时会自动截断？
+
+1、捷径，先搜索关键字“mysql设置插入超长自动截断”
+
+发现mysql的sql_mode：
+
+mysql支持的sql_mode模式：ANSI、TRADITIONAL、STRICT_ALL_TABLES和STRICT_TRANS_TABLES。
+
+ANSI模式：宽松模式，对插入数据进行校验，如果不符合定义类型或长度，对数据类型调整或截断保存，报warning警告。
+
+TRADITIONAL模式：严格模式，当向mysql数据库插入数据时，进行数据的严格校验，保证错误数据不能插入，报error错误。用于事物时，会进行事物的回滚。
+
+STRICT_TRANS_TABLES模式：严格模式，进行数据的严格校验，错误数据不能插入，报error错误。只对支持事务的表有效。
+
+STRICT_ALL_TABLES模式：严格模式，进行数据的严格校验，错误数据不能插入，报error错误。对所有表都有效。
+
+测试了命令行插入超长字段内容，确实是有warning，但是插入成功了。也就是说我所执行的命令行默认是ANSI模式的，所以只报了warning
+
+难道是代码运行时jdbc设置了严格模式？
+
+2、查源码
+
+首先根据错误位置
+
+找到对应位置
+
+看下xopen哪来的
+
+public final static int ER_DATA_TOO_LONG = 1406; //SQLSTATE: 22001 Message: Data too long for column '%s' at row %ld
+...
+    public static final String SQL_STATE_STRING_DATA_RIGHT_TRUNCATION = "22001";
+...
+　　mysqlToSqlState.put(MysqlErrorNumbers.ER_DATA_TOO_LONG, SQL_STATE_STRING_DATA_RIGHT_TRUNCATION);
+
+具体源码不展开，基本可以看到先从mysql返回了一个1406的ERROR SQLSTATE，然后转译成了22，进行错误判断，后抛出MysqlDataTruncation异常。
+
+注意到，这里是ERROR，也就是说jdbc的sql_mode应该是严格模式，搜索下，发现以下代码：
+
+private void setupServerForTruncationChecks() throws SQLException {
+        if (getJdbcCompliantTruncation()) {
+            if (versionMeetsMinimum(5, 0, 2)) {
+                String currentSqlMode = this.serverVariables.get("sql_mode");
+
+boolean strictTransTablesIsSet = StringUtils.indexOfIgnoreCase(currentSqlMode, "STRICT_TRANS_TABLES") != -1;
+
+if (currentSqlMode == null || currentSqlMode.length() == 0 || !strictTransTablesIsSet) {
+                    StringBuffer commandBuf = new StringBuffer("SET sql_mode='");
+
+if (currentSqlMode != null && currentSqlMode.length() > 0) {
+                        commandBuf.append(currentSqlMode);
+                        commandBuf.append(",");
+                    }
+
+commandBuf.append("STRICT_TRANS_TABLES'");
+
+execSQL(null, commandBuf.toString(), -1, null, DEFAULT_RESULT_SET_TYPE, DEFAULT_RESULT_SET_CONCURRENCY, false, this.database, null, false);
+
+setJdbcCompliantTruncation(false); // server's handling this for us now
+                } else if (strictTransTablesIsSet) {
+                    // We didn't set it, but someone did, so we piggy back on it
+                    setJdbcCompliantTruncation(false); // server's handling this for us now
+                }
+
+}
+        }
+    }
+
+可以看到，默认设置了严格模式，终于破案了。
+
+这个问题遇到后，事先知道有这么一个坑，以后如果遇到命令行可以执行，而jdbc执行报错的问题，就可以道出原因了。另外命令行也可以设置sql_mode，这样二者就一致了。
+
+set sql_mode='STRICT_TRANS_TABLES';
+
+验证结果：
+

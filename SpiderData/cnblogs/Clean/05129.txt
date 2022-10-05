@@ -1,0 +1,37 @@
+我使用的是python3.6+pymysql+mysql8.0
+
+在cmd命令行直接输入mysql回车出现：ERROR 1045 (28000): Access denied for user 'ODBC'@'localhost' (using password: N
+
+O)
+
+这时在cmd命令行输入mysql -u root -p 回车输入密码，就可以成功连接数据库
+
+但用pymysql登陆报错，脚本如下：
+
+def connectdb():
+    print('连接到mysql服务器...')
+    db = pymysql.connect(
+        host="localhost",
+        user="root",
+        passwd="dong1990",
+        port=3306,
+        db="fund_db",
+        charset='utf8',
+        cursorclass=pymysql.cursors.DictCursor)
+    print('连接上了!')
+    return db
+这时报错pymysql.err.OperationalError: (1045, u"Access denied for user 'root'@'localhost' (using password: No)")
+
+网上给了各种各样的方法，大多是通过各种方式修改密码。
+
+最简单的方法是更换了root密码的认证方式解决的，新版mysql使用的caching_sha2_password，换成mysql_native_password我就可以连上了。
+
+步骤是在cmd命令行连接mysql, 通过mysql -u root -p dong1990
+
+然后输入ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'dong1990';
+
+DONE!
+
+这时再跑下python脚本就可以连接了。
+原文链接：https://blog.csdn.net/dongweionly/article/details/80273095
+

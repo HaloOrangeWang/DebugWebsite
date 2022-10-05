@@ -1,0 +1,15 @@
+
+今天因为环境需要，除了py2，还需要共存py3,但是发现在安装python3之后，设置了pip3的环境变量，却报错Fatal error in launcher: Unable to create process using '"，通过猜测试了几下，完美解决
+
+环境：win10,
+
+首先，我添加pip2和pip3的时候，都是进入文件夹下改了当前pip的名字，后来我试了试，pip2.7把名字改了，也会报错，于是得到一个结论，pip和pip2.7或者3.6之间应该有某种联系，查了查资料，发现不少人也碰到过这个问题，大部分建议更新
+
+python3 -m pip install --upgrade pip
+
+OK,这样确实是能解决问题的，但是pip已经最新了怎么办？
+
+有两种方法，一种是uninstall卸载，然后下载包重新安装，天呐，麻烦，另一种是通过命令python3 -m pip install --upgrade pip --force-reinstall, ok,简单快捷,这个时候会在相对应的目录下又生成了一个pip.exe，之前的pip3也在，直接删除pip.exe即可
+
+pip2出问题同方法可解决
+

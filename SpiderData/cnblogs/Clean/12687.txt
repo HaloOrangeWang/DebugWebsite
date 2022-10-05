@@ -1,0 +1,72 @@
+
+一、环境准备
+
+前提条件：已安装好python3和开发环境vscode
+
+
+1、安装pytest和allure
+
+这两个安装好后，才能在python中import pytest和import allure
+
+pip install pytest -i https://pypi.doubanio.com/simple/
+
+pip install allure-pytest -i https://pypi.doubanio.com/simple/
+
+
+2、安装allure-commandline
+
+下载地址：https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/
+
+下载完后直接解压到某路径下，然后将其bin目录添加到系统环境变量中（只有做了此步骤才能使用allure指令生成测试报告）
+
+
+二、pytest的使用过程中遇到的问题及解决方法
+
+
+1.import自己的代码模块时报错：No module named xxx
+
+问题产生原因：系统找不到你自己定义的python模块，我们需要将自己的项目路径加入到python的搜索路径中（注意以下的这种方式是暂停的，只在当前项目中生效，不过这样就已经够用了，我们并不需要在任意地方都能Import该模块）
+
+解决办法：调用sys.path.append()函数将自己的项目路径添加到python的搜索路径中（我这里使用的是相对路径，这里的.代表的就是我的项目路径，我将此两行代码放在了和pytest.ini文件同级的conftest.py文件中，也可以放在其他地方）
+
+qiuer_path = os.path.abspath(".")
+sys.path.append(qiuer_path)
+
+qiuer_path = os.path.abspath(".")
+
+sys.path.append(qiuer_path)
+
+
+2.执行pytest指令跑用例时报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0xb0 in position 53: illegal multibyte sequence
+
+解决办法：修改pytest.ini文件的编码方式为GBK
+
+
+3.执行pytest指令跑用例时警告：InsecureRequestWarning: Unverified HTTPS request is being made to host 'rds-frame.qiuer.org'. Adding certificate verification is strongly advised.
+
+这个是python解释器发出的警告
+
+解决办法：在import了requests库的地方，加上requests.packages.urllib3.disable_warnings()
+
+
+4.报错pytest.ini文件中有内容没有找到：ERROR: file or directory not found:
+
+产生原因：pytest.ini--metadata中key和value中引入了空格
+
+解决办法：去掉空格即可
+
+
+5.报错fixture 'xxx' not found，但是使用pytest --fixtures查看的时候可以看到自己定义的fixture
+
+从上面两张图可以看出，虽然报错fixture 'GetCookie' not found，但其实确实是有这个fixture的，这种情况的产生有两种情况，见如下分析
+
+产生原因（1）：对于有返回值的fixture，我们给fixture命名了，如下图所示，第一张图可以看到在用例中我们需要用到GetCookie这个fixture的返回值，第二张图可以看到我们给该fixture进行了命名，取名为‘获取cookie’
+
+解决办法：去掉下面第二张图中红色框框中的命名部分，即可解决此报错
+
+产生原因（2）：对于没有有返回值的fixture，我们也给fixture命名了，但是在用例中使用fixture的时候我们的使用方式是将fixture以参数的形式传递给了用例。如下图所示，第一张图可以看到在用例中以传参的形式使用了RemoveMethodForFunction这个fixture，第二张图可以看到我们给该fixture进行了命名，取名为‘删除功能点’
+
+解决办法：有两种，一种是保留该fixture的命名，但是用例里使用@pytest.mark.usefixtures("删除功能点")的方式来使用该fixture，如下图第三张图所示；另一种方式是用例中仍然以传参的形式使用该fixture，但是去掉下面第四张图中红色框框中的命名部分。这两种方法都可解决此报错
+
+根据上面的分析我们得出的一个结论是：对于有返回值的fixture，且我们需要使用其返回值（这种情况我们在用例中只能使用直接传fixture参数来在用例中使用该fixture），那么我们就不要给该fixture进行命名了。对于没有返回值的fixture（包含有返回值但是我们用例中不使用其返回值的情况），我们要么给fixture命名，然后在用例中以@pytest.mark.usefixtures("")的方式使用它，要么不给其命名，然后用直接传fixture参数来使用它。听着可能有一点绕，但其实用的时候遵循一个简单的规则，就不绕了：对于有返回值的fixture，我们就不要给fixture命名，然后用直接传fixture参数来使用它；对于没有返回值的fixutre，我们就给fixture命名，然后用@pytest.mark.usefixtures("")的方式使用它。
+

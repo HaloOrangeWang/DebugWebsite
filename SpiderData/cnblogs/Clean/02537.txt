@@ -1,0 +1,16 @@
+转换成json时使用的方法如下：
+
+json.dumps(list(models.userlist.objects.values("vu")))
+
+报错信息如下：
+
+解决方案如下：
+
+>>> from django.core.serializers.json import DjangoJSONEncoder
+
+>>> import json
+
+>>> json.dumps(list(models.userlist.objects.values()), cls=DjangoJSONEncoder)
+
+'[{"vu": 1, "username": "jwh", "password": "0e01234c7d1c41dda9376d21467330bd", "isVip": true, "vipEndtime": "2018-02-20T10:53:01", "is_whitelist": false, "subscription_status": false}, {"vu": 3, "username": "jiang", "password": "", "isVip": false, "vipEndtime": "2018-09-03T16:42:13", "is_whitelist": false, "subscription_status": false}, {"vu": 4, "username": "jiangwenhui", "password": "", "isVip": false, "vipEndtime": "2018-09-05T14:22:37.911", "is_whitelist": false, "subscription_status": false}, {"vu": 5, "username ": "test", "password": "", "isVip": false, "vipEndtime": "2018-09-05T14:36:47", "is_whitelist": false, "subscription_status": false}]'
+

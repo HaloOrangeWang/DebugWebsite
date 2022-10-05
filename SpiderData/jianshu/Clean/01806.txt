@@ -1,0 +1,113 @@
+
+UnboundLocalError
+
+
+1.错误的例子
+
+def run_with_cgi(application):
+    header_set = []
+    def start_response(status, headers):
+        if header_set:
+            raise AssertionError("headers have been setted")
+        header_set = [status, headers]
+
+运行报错：
+
+Traceback (most recent call last):
+  File "wsgi-gateway.py", line 44, in <module>
+    run_with_cgi(simple_app)
+  File "wsgi-gateway.py", line 31, in run_with_cgi
+    result = application(environ, start_response)
+  File "D:\文档\python\Algorithm\0123\wsgi_app.py", line 5, in simple_app
+    start_response(status, headers)
+  File "wsgi-gateway.py", line 27, in start_response
+    if header_set:
+UnboundLocalError: local variable 'header_set' referenced before assignment
+
+注意：报错的地方是if header_set:这里。
+
+
+2. 不报错的例子
+
+def run_with_cgi(application):
+    header_set = []
+    def start_response(status, headers):
+        if header_set:
+            raise AssertionError("headers have been setted")
+        header_set[:] = [status, headers] #区别在这里
+
+
+3.为什么
+
+第一个例子为什么会报错
+
+内部函数header_set = [status, headers]修改了header_set这个全局变量，python就会把它作为局部变量，此处相当于是对局部变量的定义。而if header_set:先于局部变量的定义，所以会抛出UnboundLocalError的错误。
+
+第二个例子为什么不报错
+
+注意到这个写法header_set[:] = [status, headers]，这样写header_set的id是不变的（列表的复制），python对修改的定义是id改变了。上面这种写法相当于更换原列表中的元素，python只是把它当作是对全局变量的访问，所以不报错。
+
+
+内部函数访问和修改全局变量
+
+
+1. 内部函数访问全局变量
+
+sum=5
+def add(a=1,b=3):
+    print(a,b)
+    print(sum)  #仅仅访问 
+add(4,8)
+print(sum)
+
+输出：
+
+48
+5
+5
+
+结论：仅仅访问没有问题！
+
+
+2. 内部函数修改全局变量
+
+sum=5
+def add(a=1,b=3):
+    print(a,b) #python会认为它是一个局部变量
+    sum=b+a #在函数内部修改
+    print(sum)
+add(4,8)
+print(sum)
+
+输出：
+
+4 8
+12
+5
+
+结论：python会认为它是一个局部变量，修改只对局部变量修改，对全局变量无影响。
+
+
+3.内部函数访问和修改全局变量
+
+sum=5
+def add(a=1,b=3):
+    print(a,b)
+    print(sum)  #内部函数引用同名变量，并且修改这个变量。python会认为它是局部变量。因为在此处print之前，没有定义sum变量，所以会报错（建议与情况一比较，备注：此处只是比上例先print sum）
+    sum=b+a
+    print(sum)
+add(4,8)
+print sum
+
+输出：
+
+48
+Traceback(mostrecentcalllast):
+ File"local.py",line10,in?
+   add(4,8)
+ File"local.py",line6,inadd
+   printsum
+UnboundLocalError:localvariable'sum'referencedbeforeassignment
+
+结论：内部函数引用同名变量，并且修改这个变量。python会认为它是局部变量。因为在此处print之前，没有定义sum变量，所以会报错（建议与情况一比较，备注：此处只是比上例先print sum）
+

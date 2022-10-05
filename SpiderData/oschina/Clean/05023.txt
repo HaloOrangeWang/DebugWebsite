@@ -1,0 +1,76 @@
+AssertionError: .accepted_renderer not set on Response
+
+出错原因，没有在合法的方法内使用 response 响应，之前在dispatch内直接return 了，导致报错，return response 必须放在 get post 等方法内。
+
+按道理讲，django视图会先经过dispatch分发，如果我们在分发的时候发现权限问题，那么提前响应应该没问题，那么为啥会报错呢？
+
+报错信息显示accepted_renderer没有在Response内设定，找一下源码，如下(具体原因都在下面代码后面的注释里了)：
+
+def dispatch(self, request, *args, **kwargs):
+    """
+    `.dispatch()` is pretty much the same as Django's regular dispatch,
+    but with extra hooks for startup, finalize, and exception handling.
+    """
+    self.args = args
+    self.kwargs = kwargs
+    request = self.initialize_request(request, *args, **kwargs)
+    self.request = request
+    self.headers = self.default_response_headers  # deprecate?
+
+try:
+        self.initial(request, *args, **kwargs)
+
+# Get the appropriate handler method
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(self, request.method.lower(),
+                              self.http_method_not_allowed)
+        else:
+            handler = self.http_method_not_allowed
+
+response = handler(request, *args, **kwargs)　　　　# 这里发现了，请求响应是在dispatch方法内部完成的，响应也是dispatch代为返回的，到这里也没问题，问题在下面。
+
+except Exception as exc:
+        response = self.handle_exception(exc)
+
+self.response = self.finalize_response(request, response, *args, **kwargs)　　　　# 在响应之前，dispatch对视图方法返回的响应又加工了一次
+    return self.response
+
+def finalize_response(self, request, response, *args, **kwargs):
+    """
+    Returns the final response object.
+    """
+    # Make the error obvious if a proper response is not returned
+    assert isinstance(response, HttpResponseBase), (
+        'Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` '
+        'to be returned from the view, but received a `%s`'
+        % type(response)
+    )
+
+if isinstance(response, Response):
+        if not getattr(request, 'accepted_renderer', None):
+            neg = self.perform_content_negotiation(request, force=True)
+            request.accepted_renderer, request.accepted_media_type = neg
+
+response.accepted_renderer = request.accepted_renderer　　　　　　# 这里，Response 会定义一个属性 accepted_renderer，也就是说，视图响应的不仅仅是一个 Response，而是加工过的Response，所以如果在dispatch内直接响应Response，就是跳过了后面加工哪一步，就会报错。
+        response.accepted_media_type = request.accepted_media_type
+        response.renderer_context = self.get_renderer_context()
+
+for key, value in self.headers.items():
+        response[key] = value
+
+return response
+
+　　
+
+　　
+
+django.core.exceptions.AppRegistryNotReady: Apps aren't loaded yet.
+
+出错原因，两个，第一，相关包没有安装或者版本有问题；第二，在不合适的地方使用了项目的model模型，版本不同情况不一样。
+
+XXX doesn't declare an explicit app_label and either isn't in an application in INSTALLED_APPS or else was imported before its application was loaded. This will no longer be supported
+
+出错原因，在不合适的地方导用了model，如本次是在 app.__init__.py中导入本app的model导致的
+
+虚拟环境中，Python库的安装直接使用pip安装，不用加sudo，不然项目没有权限使用该库，会导致出现 Apps aren't loaded yet.
+

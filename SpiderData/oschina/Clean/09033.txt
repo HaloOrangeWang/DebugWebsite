@@ -1,0 +1,26 @@
+
+报错过程：
+
+进入sqoop2之后，
+
+输入命令：show connector，报错
+
+
+报错现象：
+
+Exception has occurred during processing command 
+Exception: java.lang.NoSuchMethodError Message: org.apache.hadoop.security.authentication.client.Authenticator.setConnectionConfigurator(Lorg/apache/hadoop/security/authentication/client/ConnectionConfigurator;)V
+
+
+报错原因：
+
+jar包冲突，org.apache.hadoop.security.authentication.client 这个包找不到，或者不同版本冲突。
+
+
+解决方法：
+
+将CDH中的hadoop-auth-2.6.0-cdh5.15.1.jar包直接放到 /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/lib/sqoop2/client-lib目录中
+
+
+运行结果：
+

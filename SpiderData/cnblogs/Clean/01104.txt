@@ -1,0 +1,208 @@
+
+更换yum源的流程
+
+查看当前yum程序 
+$ rpm -qa|grep yum 
+这里推荐将其结果截屏或拷贝出来，以免后面报错修复。
+
+查看当前yum程序
+
+$ rpm -qa|grep yum
+
+这里推荐将其结果截屏或拷贝出来，以免后面报错修复。
+
+删除原有yum源 
+$ rpm -aq | grep yum|xargs rpm -e --nodeps
+
+删除原有yum源
+
+$ rpm -aq | grep yum|xargs rpm -e --nodeps
+
+判断自己的系统适合哪个CentOS源 
+放在第一位的判断标准就是系统自带python的版本。 
+如果自带python2.6版本，那么你比较适合CentOS 6.9系统，你所需要的rpm包的存放地址为 
+http://mirrors.163.com/centos/6.9/os/x86_64/Packages/
+如果自带Python2.7版本，那么你比较适合CentOS 7.0系统，你所需要的rpm包的存放地址为 
+http://mirrors.163.com/centos/7/os/x86_64/Packages/
+(我这里演示的就是安装CentOS7的yum源)
+
+判断自己的系统适合哪个CentOS源
+
+放在第一位的判断标准就是系统自带python的版本。
+
+如果自带python2.6版本，那么你比较适合CentOS 6.9系统，你所需要的rpm包的存放地址为
+
+http://mirrors.163.com/centos/6.9/os/x86_64/Packages/
+
+如果自带Python2.7版本，那么你比较适合CentOS 7.0系统，你所需要的rpm包的存放地址为
+
+http://mirrors.163.com/centos/7/os/x86_64/Packages/
+
+(我这里演示的就是安装CentOS7的yum源)
+
+使用CentOS的yum源下载新的yum安装包 
+我就不推荐使用wget命令获取rpm安装包了，因为我懒得写并且wget老是会下载不下来，这里推荐下面的方法： 
+（如果网络不好）推荐直接用浏览网页http://mirrors.163.com/centos/7/os/x86_64/Packages/，然后分别按关键词python-iniparse，yum-metadata-parser，yum-，yum-plugin-fastestmirror搜索出对应的四个rpm文件，点击链接用浏览器或迅雷下载。下载文件到本地再上传到服务器上。
+
+使用CentOS的yum源下载新的yum安装包
+
+我就不推荐使用wget命令获取rpm安装包了，因为我懒得写并且wget老是会下载不下来，这里推荐下面的方法：
+
+（如果网络不好）推荐直接用浏览网页http://mirrors.163.com/centos/7/os/x86_64/Packages/，然后分别按关键词python-iniparse，yum-metadata-parser，yum-，yum-plugin-fastestmirror搜索出对应的四个rpm文件，点击链接用浏览器或迅雷下载。下载文件到本地再上传到服务器上。
+
+安装yum源 
+首先切换到rpm文件存放地址。 
+$ rpm -ivh yum-metadata-parser-1.1.4-10.el7.x86_64.rpm 
+$ rpm -ivh yum-3.4.3-158.el7.centos.noarch.rpm yum-plugin-fastestmirror-1.1.31-45.el7.noarch.rpm 
+最后两个包一起装，不然会报错，因为他们之间存在依赖关系.
+
+安装yum源
+
+首先切换到rpm文件存放地址。
+
+$ rpm -ivh yum-metadata-parser-1.1.4-10.el7.x86_64.rpm
+
+$ rpm -ivh yum-3.4.3-158.el7.centos.noarch.rpm yum-plugin-fastestmirror-1.1.31-45.el7.noarch.rpm
+
+最后两个包一起装，不然会报错，因为他们之间存在依赖关系.
+
+更改yum源 
+#我们使用网易的CentOS镜像源 
+$ cd /etc/yum.repos.d/ 
+$ rm -f /etc/yum.repos.d/redhat.repo
+
+更改yum源
+
+#我们使用网易的CentOS镜像源
+
+$ cd /etc/yum.repos.d/
+
+$ rm -f /etc/yum.repos.d/redhat.repo
+
+清理yum缓存 
+$ yum clean all # 清除原有缓存 
+$ yum makecache # 将服务器上的软件包信息缓存到本地,以提高搜索安装软件的速度 # 
+$ yum update 
+现在可以使用CentOS的yum源在线安装软件了！
+
+清理yum缓存
+
+$ yum clean all # 清除原有缓存
+
+$ yum makecache # 将服务器上的软件包信息缓存到本地,以提高搜索安装软件的速度 #
+
+$ yum update
+
+现在可以使用CentOS的yum源在线安装软件了！
+
+参考教程： 
+https://www.cnblogs.com/wutengbiao/p/4188986.html
+https://www.cnblogs.com/eason-liu/p/5519585.html
+https://blog.csdn.net/u013605322/article/details/79726564
+
+参考教程：
+
+https://www.cnblogs.com/wutengbiao/p/4188986.html
+
+https://www.cnblogs.com/eason-liu/p/5519585.html
+
+https://blog.csdn.net/u013605322/article/details/79726564
+
+
+踩坑1：rpm版本过低
+
+安装yum-3.4.3-118.el7.centos.noarch.rpm时报错了。
+
+这是因为我的python-urlgrabber版本为小于3.10-8，可以用下面的命令来查看python-urlgrabber的版本。
+
+$ rpm -qa|grep python-urlgrabber
+
+可以使用下面的命令查看当前rpm命令的版本。
+
+$ rpm –version
+
+其中python-urlgrabber是很好更新的，在http://mirrors.163.com/centos/7/os/x86_64/Packages/搜索并下载python-urlgrabber-3.10-8.el7.noarch.rpm，然后使用命令安装即可
+
+$ rpm -Uvh python-urlgrabber-3.10-8.el7.noarch.rpm
+
+至于rpm的更新我是踩了不少坑。开始觉得用rpm自我更新可能会出问题，然后打算想采用CentOS6.9的yum源，但是报错结果是其依赖于python2.6。如果卸载系统自带的python，那么yum命令和rpm命令都不能使用了。所以判断这样做更不合适。
+
+直到参考了https://www.cnblogs.com/jym1/p/8088005.html，才明白可以用rpm包的方式更新rpm。
+
+还是在http://mirrors.163.com/centos/7/os/x86_64/Packages/这里找到了rpm-4.11.3-25.el7.x86_64.rpm，然后使用命令（这个命令会不考虑依赖关升级rpm命令）
+
+$ rpm -Uvh rpm-4.11.3-25.el7.x86_64.rpm --nodeps
+
+如果命令里不加—nodeps，结果是这样的：
+
+升级完python-urlgrabber和rpm-4.11.3-25就可以使用rpm命令安装yum了，详细参考第一节的第五步。
+
+但是由于rpm命令的升级没有考虑他的依赖，所以在使用yum命令时经常会提示一些信息：
+
+** Found 6 pre-existing rpmdb problem(s), 'yum check' output follows:
+
+PackageKit-0.8.9-11.el7.x86_64 has missing requires of PackageKit-backend
+
+anaconda-19.31.79-1.el7.x86_64 has missing requires of yum-utils >= ('0', '1.1.11', '3')
+
+rhn-check-2.0.2-5.el7.noarch has missing requires of yum-rhn-plugin >= ('0', '1.6.4', '1')
+
+rpm-build-4.11.1-16.el7.x86_64 has missing requires of rpm = ('0', '4.11.1', '16.el7')
+
+rpm-libs-4.11.1-16.el7.x86_64 has missing requires of rpm = ('0', '4.11.1', '16.el7')
+
+rpm-python-4.11.1-16.el7.x86_64 has missing requires of rpm = ('0', '4.11.1', '16.el7')
+
+可以这样做：使用yum命令来安装或更新rpm和yum的依赖包。
+
+$ yum install yum-utils
+
+$ yum install yum-rhn-plugin
+
+$ yum update rpm-build
+
+$ yum update rpm-libs
+
+$ yum update rpm-python
+
+
+踩坑2：一直找不到PackageKit-backend
+
+坑1解决后，6个提示信息只剩下一个：
+
+** Found 6 pre-existing rpmdb problem(s), 'yum check' output follows:
+
+PackageKit-0.8.9-11.el7.x86_64 has missing requires of PackageKit-backend
+
+PackageKit-backend在任何一个rpm源里都是找不到的，我开始认为PackageKit应该是Redhat遗留下来的，二者不兼容，这里选择将PackageKit卸载，重新安装CentOS 7的PackageKit。
+
+$ rpm -aq | grep PackageKit|xargs rpm -e --nodeps # 卸载PackageKit
+
+然后使用yum命令时系统提示：
+
+gnome-packagekit-3.8.2-10.el7.x86_64 has missing requires of PackageKit >= ('0', '0.5.0', None)
+
+gnome-packagekit-3.8.2-10.el7.x86_64 has missing requires of PackageKit-device-rebind >= ('0', '0.5.0', None)
+
+gnome-packagekit-3.8.2-10.el7.x86_64 has missing requires of PackageKit-libs >= ('0', '0.5.0', None)
+
+gnome-packagekit-3.8.2-10.el7.x86_64 has missing requires of libpackagekit-glib2.so.16()(64bit)
+
+gnome-settings-daemon-updates-3.8.6.1-9.el7.x86_64 has missing requires of libpackagekit-glib2.so.16()(64bit)
+
+realmd-0.14.6-6.el7.x86_64 has missing requires of libpackagekit-glib2.so.16()(64bit)
+
+这让人很难受，下载CentOS 7的PackageKit，发现它的版本如下。使用yum命令安装后系统提示缺失其他软件，
+
+这里就不列出来了。
+
+仍然让人很难受，无奈只好谷歌搜索PackageKit-0.8.9-11.el7.x86_64，在http://buildlogs-seed.centos.org/c7.00.02/PackageKit/20140529191922/0.8.9-11.el7.x86_64/ 找到了相应的rpm包。
+
+将rpm包下载下来后，用rpm命令一一安装。我这时想起来当时用rpm -qa|grep yum命令时有一条是PackageKit-yum*****，而我现在使用rpm -qa|grep yum所得到的结果没有PackageKit-yum*****了，我就尝试从这个网站上下载PackageKit-yum-0.8.9-11.el7.x86_64.rpm 和PackageKit-yum-plugin-0.8.9-11.el7.x86_64.rpm，使用rpm命令安装，发现安装了PackageKit-yum-0.8.9-11.el7.x86_64.rpm之后系统就不提示信息了，至此问题得到完满解决。
+
+另记：PackageKit似乎是用来自动更新软件的，yum命令可能会被它占用很久，如果想要停止PackageKit自动更新，可以参考：centos7下yum升级被PackageKit锁定
+
+在这个过程中不仅更新了yum源，还更新了rpm命令，处理了包依赖的问题，消除了每一条系统提示信息。
+
+这个过程给我的教训就是：以后用rpm -aq | grep yum|xargs rpm -e --nodeps命令卸载软件之前一定要使用rpm -qa|grep yum记录下来所有的软件，用于后期比较。发现有缺少的东西最好补上，说不定就能解决问题。
+

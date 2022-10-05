@@ -1,0 +1,34 @@
+出错：
+
+Traceback (most recent call last):
+ File "train.py", line 305, in <module>
+ train_model(model_conv, criterion, optimizer_conv, exp_lr_scheduler)
+ File "train.py", line 145, in train_model
+ for inputs, age_labels, gender_labels in dataloaders[phase]:
+ File "/home/home/anaconda3/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 637, in __next__
+ return self._process_next_batch(batch)
+ File "/home/home/anaconda3/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 658, in _process_next_batch
+ raise batch.exc_type(batch.exc_msg)
+RuntimeError: Traceback (most recent call last):
+ File "/home/home/anaconda3/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 138, in _worker_loop
+ samples = collate_fn([dataset[i] for i in batch_indices])
+ File "/home/home/anaconda3/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 232, in default_collate
+ return [default_collate(samples) for samples in transposed]
+ File "/home/home/anaconda3/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 232, in <listcomp>
+ return [default_collate(samples) for samples in transposed]
+ File "/home/home/anaconda3/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 209, in default_collate
+ return torch.stack(batch, 0, out=out)
+RuntimeError: invalid argument 0: Sizes of tensors must match except in dimension 0. Got 224 and 228 in dimension 3 at /pytorch/aten/src/TH/generic/THTensorMoreMath.cpp:1307
+
+这是因为输入的大小不匹配，跟数据集有关，也跟数据预处理中的函数相关：
+
+transforms.Resize(input_size)
+
+该函数是按比例缩放，可能是因为该数据集的分辨率不同，所以出来的结果不是(224,224)的，解决办法是改为使用：
+
+transforms.Resize((input_size, input_size))
+
+即可
+
+以上这篇pytorch数据预处理错误的解决就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

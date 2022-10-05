@@ -1,0 +1,54 @@
+在vue项目中执行 npm install 时，报 “ Can’t find Python executable “python”, you can set the PYTHON env variable.” 错误的原因是因为在系统环境变量中找不到python环境。
+ 正常情况下，我们如果安装了python，并配置了环境变量，可以在系统环境变量中看到如图的配置：
+
+情况一：已安装python，但没有配置环境变量
+ （1）如果我们不知道电脑有没有已安装python，可以在控制面版中查看是否存在python程序，存在则表示已安装，如图所示：
+
+（2）然后找到python的安装路径，配置下python的环境变量，再在cmd中执行命令
+
+npm install --python=python2.7
+
+和命令
+
+npm config set python python2.7 （注意：如果python安装的路径是默认路径，则执行这条命令）
+
+npm config set python "E:\python2.7.12\python.exe" （注意：python安装的路径为自定义的路径时，则执行这条命令。"E:\python2.7.12\python.exe"为我安装python的自定义路径）
+
+（3）最后在vue项目里重新执行 npm install ，这样报错就可以解决了。
+
+情况二：电脑没有安装python
+ （1）下载python2，python3不行。从这个链接下载python安装
+ https://www.python.org/downloads/release/python-2712/
+ 如图：
+ 
+ （2）因为我的电脑是 Windows x64的，所以我下载的版本为 Windows x86-64 MSI installer
+ （3）下载成功后，点击安装包安装，如果要设置自定义路径的，则设置安装路径，其它的不用设置，直接默认，点击next，直到出现finish表示安装完成。
+ （4）配置环境变量，在windows中搜索环境变量，如图：
+ 
+ （5）点击进入：
+ 
+ （6）点击右下角的 “环境变量(N)…” 按钮，进进入如下页
+ 
+ （7）在 “系统变量(S)” 选项里面双击 “Path”，再在弹出的窗体右边点击浏览，选择python的安装路径，如图：
+
+（8）最后点击确定。
+ （9）在cmd中输入
+
+python --version
+
+出现版本信息，表示python环境变量配置成功
+ 
+ 如果报错或者没有什么也没有输出，则表示配置失败。
+
+（10）在cmd中执行命令
+
+npm install --python=python2.7
+
+和命令
+
+npm config set python python2.7 （注意：如果python安装的路径是默认路径，则执行这条命令）
+
+npm config set python "E:\python2.7.12\python.exe" （注意：python安装的路径为自定义的路径时，则执行这条命令。"E:\python2.7.12\python.exe"为我安装python的自定义路径）
+
+（11）最后在vue项目里重新执行 npm install ，这样报错就可以解决了。
+

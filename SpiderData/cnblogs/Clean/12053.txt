@@ -1,0 +1,54 @@
+node不同版本下载：https://nodejs.org/en/download/releases/
+
+1：nvm是控制node版本的工具
+
+第一步：下载nvm并安装 (推荐下载使用nvm-setup.zip) https://github.com/coreybutler/nvm-windows/releases
+
+第二步：使用nvm命令切换node版本:
+
+nvm                  // 会提示nvw下的相关命令
+
+nvm ls               // 查看已安装node版本
+
+nvm install vXX      // 安装对应vXX版本的node
+
+nvm uninstall vXX    // 卸载对应vXX版本的node
+
+nvm use xxx          // 选择使用XXX版本
+
+2：卸载node_modules
+
+npm uninstall
+
+3:node-sass 安装报错，提示缺少python。首先看是否缺少Python环境变量导致的。因为node-sass是需要用到python环境支持的
+
+node版本与node-sass的版本需要对应。这一点非常重要，版本不对应会出现各种各样的问题，导致node-sass下载失败。由于我使用的node版本是14.16.0，所以选择node-sass 4.14.1。
+
+https://blog.csdn.net/manonggeerdan/article/details/121260754
+
+4：npm install 的时候报错gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.
+
+我的项目里面是node-sass 的版本是4.5.3，把它升级到4.11.0， 不需要依赖node-gyp 就不需要安装python这样安装就不会报错了
+
+5：npm ERR! command failednpm ERR! command C:\WINDOWS\system32\cmd.exe /d /s /c node-gyp rebuild；npm ERR! gyp ERR! node -v v10.22.1
+
+npm ERR! gyp ERR! node-gyp -v v7.1.2
+
+npm ERR! gyp ERR! not ok
+
+问题归根结底是我之前安装的python没有配置环境变量。解决方法：https://blog.csdn.net/belle_mei/article/details/118089295
+
+1、window+R打开cmd命令窗口。
+
+2、输入npm install -g node-gyp。
+
+3、cmd配置以来，输入npm config set python python3.8.0（python根据自己电脑的版本）。
+
+4、配置python环境变量。右键计算机打开属性，分别点击高级系统配置、环境变量，在系统环境变量中选择Path，然后点击右下角的编辑，最终进入以下这个界面。
+
+5、在cmd命令窗口中输入python，如果出现以下结果则说明环境配置成功。
+
+6、在cmd窗口中输入node-gyp list，出现以下结果，则说明安装成功。
+
+总结陈词：说这么多，其实大方向是node版本与sass（sass-loader  node-sass）版本对应问题，不匹配就会失败
+

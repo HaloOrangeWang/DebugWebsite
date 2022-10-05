@@ -1,0 +1,32 @@
+
+问题描述
+
+参考“​​快速入门：在 Linux 上的 Azure 应用服务中创建 Python 应用​​” 文档，在App Service For Linux环境中部署Python应用，在添加了pandas，应用本地运行成功，但是部署到App Service后，启动报错：Application Error
+
+
+问题分析
+
+
+获取日志：
+
+可以通过高级工具（kudu）连接到App Service后台，因为是Linux系统，所以通过SSH或者Bash都可以查看网站的部署文件及日志(LogFiles文件夹)。针对在启动时候就出现错误，另一种有效的方式是查看日志流：
+
+
+分析日志：
+
+其中的原因就是因为没有成功加载pandas模块，所以应用启动失败。而在Linux的环境中，是因为在部署时候，缺少了antenv.tar.gz文件包。
+
+
+问题解决
+
+在部署时，成功导入antenv.tar.gz文件，项目运行成功
+
+
+参考资料
+
+快速入门：在 Linux 上的 Azure 应用服务中创建 Python 应用 : ​​https://docs.azure.cn/zh-cn/app-service/quickstart-python?tabs=bash&pivots=python-framework-flask​​
+
+Local git 部署：​​https://docs.microsoft.com/zh-cn/azure/app-service/deploy-local-git?tabs=cli ​​
+
+当在复杂的环境中面临问题，格物之道需：浊而静之徐清，安以动之徐生。 云中，恰是如此!
+

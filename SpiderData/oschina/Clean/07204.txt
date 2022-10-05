@@ -1,0 +1,8 @@
+在android高版本开发环境（sdk 4.4）导入低版本（sdk 3.0）的工程时编译报错，报错信息如：Conversion to Dalvik format failed: Unable to execute dex: java.nio.BufferOv，这个错误是由于错误的添加了不必要的core library或重复添加了同一个library jar包措施产生冲突造成的，可以采用一下方法解决：
+
+1）修改SDK 选择工程，build path --> configure build path ---> library 删除引用的低版本SDK， 然后add External JARs,选择高版本SDK,OK,保存
+
+2) 修改AndroidManifest.xml在AndroidManifest.xml文件中，application标签后添加<uses-sdk android:targetSdkVersion="19"ses-sdk>即添加一句android工程的目标版本
+
+3) 修改default.properties 中的target=android-11（sdk3.0）修改为高版本的号，如sdk 4.4是19
+

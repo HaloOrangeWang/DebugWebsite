@@ -1,0 +1,65 @@
+
+安装pip3
+
+1、安装 zlib组件：
+
+安装完成后，执行命令 python3 -m pip install redis，报错： RuntimeError: Compression requires the (missing) zlib module   或者zipimport.ZipImportError: can’t decompress data，是因为缺少zlib 的相关工具包导致的，知道了问题所在，那么我们只需要安装相关依赖包即可，
+
+1、打开终端，输入一下命令安装zlib相关依赖包：
+
+yum -y install zlib*
+
+2、修改编辑Modules/Setup.dist文件，进入python安装路径,修改Module路径的Setup.dis文件：
+
+
+2、安装setuptools
+
+wget --no-check-certificate  https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz#md5=c607dd118eae682c44ed146367a17e26
+
+tar -xvf setuptools-19.6.tar.gz
+
+cd setuptools-19.6
+
+python3 setup.py build
+
+python3 setup.py install
+
+
+3、安装pip
+
+wget --no-check-certificate  https://pypi.python.org/packages/source/p/pip/pip-8.0.2.tar.gz#md5=3a73c4188f8dbad6a1e6f6d44d117eeb
+
+tar -zxvf pip-8.0.2.tar.gz
+
+cd pip-8.0.2
+
+python3 setup.py build
+
+python3 setup.py install
+
+4、安装openssl
+
+如果没有意外的话，pip安装完成。
+
+测试：
+
+我们使用pip安装一个python3第三方库： python3 -m pip install redis
+
+又报错了！ImportError: cannot import name 'HTTPSHandler'
+
+根据老衲多年的经验，应该是缺少openssl的开发环境，我们继续安装
+
+yum install openssl-devel
+
+继续重新编译安装python3.6：
+
+./conifigure
+
+make & make install
+
+ok，我们终于完成了整个python3环境的安装，试着安装一个第三方模块：python3 -m pip install redis, 成功安装。
+
+另外可以通过下面命令，将pip升级到最新版本：
+
+python3 -m pip install --upgrade pip
+

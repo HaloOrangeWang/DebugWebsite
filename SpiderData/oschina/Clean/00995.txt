@@ -1,0 +1,34 @@
+UnicodeDecodeError异常
+
+UnicodeDecodeError: 'utf8' codec can't decode byte 0xb2 in position 154: invalid start byte
+
+从报错日志找问题，很显然不太适合去utf-8.py这里去做改动，因为这是个比较公共的库了，那么找到前一处报错，是在Python27\Lib\site-packages\robotide\contrib\testrunner下的testrunner.py文件的第400行pop方法里的这一句：
+
+return result.decode('UTF-8')
+
+那我们进入这个目录：
+
+D:\Python\Lib\site-packages\robotide\contrib\testrunner
+
+用Python的IDLE打开testrunner.py，其他工具最好是Python常用的IDE，避免用文本工具改的缩进有问题，如果你改完后发现报错信息是IndentationError: unexpected indent，通常就是缩进有问题。
+
+在源码文件里找到这个pop函数，可以看到出错的那行语句：
+
+加个try catch：
+
+注意try是和for对其的，这里的代码如下：
+
+try:
+
+result = result.decode('UTF-8')
+
+except UnicodeDecodeError:
+
+pass
+
+return result
+
+主要作用就是判断出现了UnicodeDecodeError的异常的时候，直接用pass过滤，然后不做decode，直接return result，当然如果没有异常，那么原先的decode逻辑已经做了，所以可以解决掉前面日志不见的问题。
+
+# (替换后，删除testrunner.pyc文件，然后重新打开RIDE，可恢复正常。)
+

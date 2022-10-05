@@ -1,0 +1,25 @@
+今天在用pip安装pyspark时，遇到一个错误，折腾了半天，通过在网上查资料查了很久，最后得以解决。
+
+pip安装Matplot库时遇到MemoryError的错误，类似以下的提示信息：
+
+查找到是由于pip的缓存机制尝试将希望安装库的整个文件缓存到内存，而在限制缓存大小的环境中如果安装包较大就会出现MemoryError的这个错误。
+解决方法:
+
+可以看到pip有个–no-cache-dir参数，失能缓冲即可。
+
+$pip --no-cache-dir install matplotlib
+
+在弄完这个以后，我以为就会和网上的情况一样就好了，但是万万没想到，还是报错，于是我又找啊找啊
+
+终于有找到一个解决方法，报错与之前的报错类似，解决方法如下：
+
+wget https://bootstrap.pypa.io/pip/2.7/get-pip.py
+python get-pip.py
+pip install --upgrade setuptools
+
+在执行这三行命令后，问题得以解决，看来是自己的pip有问题，所以重新下载后就好了。
+
+文章参考地址：pip安装Python第三方库时MemoryError的解决方法_Chan的博客-CSDN博客
+
+pip 安装错误 Command "python setup.py egg_info" failed with error code - 靳闯博客 (jinchuang.org)
+

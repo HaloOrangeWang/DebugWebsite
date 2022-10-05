@@ -1,0 +1,42 @@
+今天在用Pycharm执行脚本时，报错。如下：
+
+问题排查：
+
+1，检查是否安装了requests
+
+cmd输入命令：pip install requests
+
+提示有新版本可以升级，那 我就升级了。
+
+然后输入命令：pip list
+
+说明环境没有问题。
+
+2，检查是否电脑中有多个版本的python。
+
+注意：如果电脑有python2和python3 共存的情况需要pip指定安装路径，系统一般自带了python2.7，pip会默认安装在python2的版本上。所以你在使用python3的时候依然提示No module named 'requests'。
+
+这里我已经删掉了2.7的版本，并且也查到不了，到最后找到真正的问题后，都可以证明，我这边电脑就一个Python版本。因此也不是这个问题。
+
+如果电脑有多个Python的朋友。可能是这个原因，解决方法，网上有很多，可以搜
+3，项目的解释器问题。
+
+我的就是这个配置问题，找到这个原因，也花了好久时间
+
+之前确定了下载了requests但pycharm在import的时候还是报错，那么可能是pycharm配置的Python解析器的路径有问题
+
+第一次修改，成功，但是发现新建项目之后，又不行。
+（可以直接跳转到第二次修改看，因为第一次不算真正的成功）
+
+解决方法
+
+l 打开pycharm->File->Settings->Project Interpreter->设置为你的python路径，我的是:D:\Python36\python.exe,根据各自python安装路径修改一下即可。（不过我这里路径是对的）
+
+最开始我查看Project Interpreter（点击添加，查看路径是这样的。就以为没有问题。
+
+保存后，重新运行，问题解决。
+
+参考文档：
+
+https://blog.csdn.net/u012106306/article/details/80760744
+

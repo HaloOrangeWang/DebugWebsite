@@ -1,0 +1,23 @@
+报错了：
+
+UnicodeDecodeError: ‘ascii’ codec can’t decode byte 0xb0 in position 1: ordinal not in range(128)
+
+应该是出了编码问题
+
+在python的Lib\site-packages文件夹下新建一个sitecustomize.py：
+
+import sys  
+sys.setdefaultencoding('gb2312')
+
+再次运行，OK，问题解决了，看一下结果：
+
+或者在代码中加入下面几行代码
+
+import sys
+reload(sys)
+sys.setdefaultencoding( "utf-8" )
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

@@ -1,0 +1,58 @@
+Django在执行python manage.py makemigrations的时候一切正常
+
+但是执行python manage.py migrate提示异常：
+
+raise InconsistentMigrationHistory( django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency user.0001_initial on database 'default'
+
+原因：Django中有一个原生的User模型类，admin的模型依赖这个模型类，由于前面一个应用中的模型类User继承了AbstractUser类，所以提示这个错误。
+
+
+解决方案一：
+
+把之前数据库中生成的所有表删除，重新进行迁移
+
+执行删库命令（服务器远端慎用）：drop database [数据库名]
+
+然后然后重新创建数据库：create database [数据库名]
+
+我是以上方案就解决了
+
+PS：
+
+因为我是本地测试环境，想怎么玩都可以
+
+服务器远端推荐使用方案三
+
+当然有人说是删除数据库中除了auth_user的其他表，具体都可以尝试一下
+
+
+解决方案二：
+
+删除数据库中 除了auth_user的其他表，然后重新执行数据库迁移命令。
+
+
+解决方案三：
+
+服务远端的话就别执行删库跑路命令了，解决方案如下：
+
+在settings.py文件里面注释掉admin app
+
+INSTALLED_APPS = [
+    # 'django.contrib.admin',
+    ...
+]
+
+执行数据库迁移同步命令：
+
+python manage.py makemigrations
+python manage.py migrate
+
+然后取消注释
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    ...
+]
+
+到此这篇关于Django数据库迁移报错InconsistentMigrationHistory的文章就介绍到这了,更多相关Django数据库迁移报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

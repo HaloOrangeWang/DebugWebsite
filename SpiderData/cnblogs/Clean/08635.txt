@@ -1,0 +1,66 @@
+1）查看redhat 7.0系统本身所安装的那些yum软件包
+
+2）卸载掉上面的yum包
+
+3）下载Cenos的yum相关软件包，下载地址：http://mirrors.163.com/centos/7/os/x86_64/Packages/ ，下载后上传至linux服务器
+
+4）安装这些rpm包
+
+rpm -ivh python-*
+
+rpm -ivh yum-*
+
+报错，error: Failed dependencies:
+
+python-urlgrabber >= 3.10-8 is needed by yum-3.4.3-168.el7.centos.noarch
+
+rpm >= 0:4.11.3-22 is needed by yum-3.4.3-168.el7.centos.noarch
+
+使用：rpm -qa | grep python 查看当前的python-urlgrabber的版本
+
+卸载版本较低的python-urlgarbber
+
+rpm -e python-urlgrabber-3.10-4.el7.noarch
+
+下载新的python-urlgrabber版本，并上传到服务器上
+
+安装新的python-urlgrabber
+
+再次执行 rmp -ivh yum-*
+
+原来的 python-urlgrabber >= 3.10-8 is needed by yum-3.4.3-168.el7.centos.noarch 错误消失了
+
+不过还在报错：
+
+重新下载了 rpm-4.11.3-45.el7.x86_64.rpm
+
+再次执行 rmp -ivh yum-*，安装成功
+
+但是执行 yum ，还是报错
+
+查了下资料，重新安装了下面几个rpm包
+
+rpm -ivh  --nodeps yum-plugin-fastestmirror-1.1.31-54.el7_8.noarch.rpm
+
+rpm -ivh --nodeps  yum-metadata-parser-1.1.4-10.el7.x86_64.rpm
+
+rpm -ivh --nodeps  yum-3.4.3-168.el7.centos.noarch.rpm
+
+截图如下：
+
+执行 yum 验证，没问题了
+
+查看了下/usr/bin/yum文件也存在了
+
+执行 yum install wget，还是不行
+
+解决办法：
+
+vi  /etc/yum.repos.d/rhel-debuginfo.repo
+
+内如如下：
+
+执行  yum  install wget
+
+成功了！！！
+

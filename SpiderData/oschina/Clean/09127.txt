@@ -1,0 +1,24 @@
+1,本地链接服务器链接不上
+
+Connection to project_name@ip failed.
+[08S01] Communications link failure.
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server
+
+这是因为mysql里面的配置没有配置你本机
+
+1,找到mysql文件夹,然后找到内部的mysqld.conf文件
+2,修改里面的bind-address,修改成你的ip或者是0.0.0.0(任何ip都允许)
+
+cd /etc/mysql/mysqld.conf.d
+vim mysqld.conf 
+修改bind-address,并把之前屏蔽掉
+bind-address   = 0.0.0.0
+
+2,链接本地mysql报错
+
+ERROR 1524 (HY000): Plugin 'auth_socket' is not loaded
+
+解决办法:重启mysql
+
+sudo /etc/init.d/mysql stop sudo /etc/init.d/mysql start # reset mysql
+

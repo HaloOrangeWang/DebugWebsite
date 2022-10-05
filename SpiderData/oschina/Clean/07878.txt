@@ -1,0 +1,65 @@
+一、问题  $ is not defined
+
+在使用Vs Code编写Vue应用的时候，从页面中引入jquery后，在.vue文件编写使用时，ESLint编译报错，程序运行正常。
+
+错入内容如下：
+
+error: Unexpected console statement (no-console) at src\components\HelloWorld.vue:16:7:
+  14 |   methods: {
+  15 |     getOne: function() {
+> 16 |       console.info("click");
+     |       ^
+  17 |       $.get("http://www.gongjuji.net", function(data) {
+  18 |         console.info(data);
+  19 |       });
+
+error: '$' is not defined (no-undef) at src\components\HelloWorld.vue:17:7:
+  15 |     getOne: function() {
+  16 |       console.info("click");
+> 17 |       $.get("http://www.gongjuji.net", function(data) {
+     |       ^
+  18 |         console.info(data);
+  19 |       });
+  20 |     }
+
+二、错误原因和解决方案
+
+在VS Code编写Vue代码时使用ESLint编译js源代码，针对不同的环境代码检查方式不同。
+
+方式1.修改ESLint的检查环境，增加jquery即可。推荐
+
+"eslintConfig": {
+    "root": true,
+    "env": {
+      "browser":true,
+      "node": true,
+      "jquery": true
+    },
+
+"eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true,
+      "jquery":true
+    },
+
+2.设ESLint规则，忽略指定错误，例如no-console
+
+"eslintConfig": {
+    "extends": "eslint:recommended",
+    "env": {
+      "node": true
+    },
+    "rules": {
+      "no-console": "off"
+    }
+  }
+
+更多：
+
+Vue开发异常： Error: custom keyword definition is invalid: data.errors should be boolean
+
+基于Vue的手机端UI框架整理
+
+Vue 引用全局样式
+

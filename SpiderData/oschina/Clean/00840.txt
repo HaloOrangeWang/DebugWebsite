@@ -1,0 +1,30 @@
+问题：win系统下，python 3+、Django 2.0.3环境，在Django运行时报错，信息如下：
+
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x000002203F3FEC80>
+
+Traceback (most recent call last):
+
+File "C:\Program Files\Python\Python36\lib\site-packages\django\utils\autoreload.py", line 225, in wrapper
+
+fn(*args, **kwargs)
+
+File "C:\Program Files\Python\Python36\lib\site-packages\django\core\management\commands\runserver.py", line 120, in inner_run
+
+self.check(display_num_errors=True)
+
+File "C:\Program Files\Python\Python36\lib\site-packages\django\core\management\base.py", line 410, in check
+
+raise SystemCheckError(msg)
+
+django.core.management.base.SystemCheckError: SystemCheckError: System check identified some issues:
+
+ERRORS:
+
+?: (staticfiles.E001) The STATICFILES_DIRS setting is not a tuple or list.
+
+HINT: Perhaps you forgot a trailing comma?
+
+System check identified 1 issue (0 silenced).
+
+答案：在settings.py中配置静态文件路径时没有在结尾加逗号
+

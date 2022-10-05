@@ -1,0 +1,110 @@
+一、安装步骤如下：
+1）安装开发工具
+yum groupinstall "Development tools"
+
+2）安装编译Python需要的软件包
+
+yum install zlib-devel
+yum install bzip2-devel
+yum install openssl-devel
+yum install ncurses-devel
+yum install sqlite-devel
+
+3）下载并解压Python 2.7.9的源代码
+
+cd /data/app
+wget --no-check-certificate https://www.python.org/ftp/python/2.7.9/Python-2.7.9.tar.xz
+tar -xf Python-2.7.9.tar.xz
+cd Python-2.7.9
+
+4）编译与安装Python 2.7.9
+./configure --prefix=/usr/local
+make && make altinstall
+
+5）将python命令指向Python 2.7.9
+ln -s /usr/local/bin/python2.7 /usr/local/bin/python
+
+source /etc/profile
+
+6）检查Python版本
+[root@dell-09 tmp]# python -V
+Python 2.7.9
+
+二、安装pip
+
+pip是一个安装和管理 Python 包的工具 ,是easy_install的替代品。
+
+安装python之后发现没有pip: command not found
+
+安装及下载：
+
+wget  --no-check-certificate https://github.com/pypa/pip/archive/1.5.5.tar.gz
+注意：wget获取https的时候要加上：--no-check-certificate
+tar -zvxf 1.5.5.tar.gz    #解压文件
+cd pip-1.5.5/
+python setup.py install
+
+处理：
+
+ImportError: No module named setuptools 解决方法：
+
+note：（python下的setuptools带有一个easy_install的工具，在安装python的每三方模块、工具时很有用，也很方便。安装setuptools前先安装pip）
+
+下载setuptools包
+shell# wget http://pypi.python.org/packages/source/s/setuptools/setuptools-0.6c11.tar.gz
+解压setuptools包
+shell# tar -zxvf setuptools-0.6c11.tar.gz
+shell# cd setuptools-0.6c11
+编译setuptools
+shell# python setup.py build
+开始执行setuptools安装
+shell# python setup.py install
+安装完成后再去pip执行安装
+
+python setup.py install
+
+验证：
+
+安装姜狗pip install 'django==1.5'
+
+三、python安装模块遇到的报错及解决
+
+#没有安装姜狗
+ImportError: No module named django.core.management
+pip install django
+
+#在Python环境下，如果想操作MySQL数据库，难免会调用相应的包，比如常用的：MySQLdb通过导入：import MySQLdb 后，可直接调用里面的方法。
+Error loading MySQLdb module: No module named MySQLdb
+
+#pip install MySQL-python
+>>>  import MySQLdb
+  File "<stdin>", line 1
+    import MySQLdb
+    ^
+IndentationError: unexpected indent
+>>>
+
+#软链接
+ln -s /usr/local/mysql/lib/libmysqlclient.so.18 /usr/lib64/libmysqlclient.so.18
+
+>>> import MySQLdb
+>>> 
+>>>
+
+#IOError: No translation files found for default language zh_cn
+#其中 zh-Hans是简体中文    zh-Hant是繁体中文
+
+File "/usr/local/python2.7.12/lib/python2.7/site-packages/django/utils/translation/trans_real.py", line 134, in __init__
+    raise IOError("No translation files found for default language %s." % settings.LANGUAGE_CODE)
+IOError: No translation files found for default language zh_cn.
+处理：
+把settings.py中LANGUAGE_CODE配置中zh-cn，改成 zh-Hans。
+LANGUAGE_CODE = 'zh-Hans'
+
+#python中使用xlrd、xlwt操作excel表格详解,python操作excel主要用到xlrd和xlwt这两个库，即xlrd是读excel，xlwt是写excel的库
+pip install xlwt
+
+================================
+
+啃书看python/(ㄒoㄒ)/~~，人生苦短，我用python。
+

@@ -1,0 +1,53 @@
+Python中try块可以捕获测试代码块中的错误。except块可以处理错误。finally块可以执行代码，而不管try-和except块的结果如何。本文主要介绍Python 抛出引发异常(raise)。
+
+Python 常用术语
+
+抛出引发异常(raise)
+
+作为Python开发人员，可以在某些情况下引发异常。
+
+要抛出（或引发）异常，请使用raise关键字。
+
+例如：
+
+当x小于0时，抛出异常并停止程序:
+
+x = -1
+
+if x < 0:
+    raise Exception("x需要是大于等于0的数字")
+
+raise关键字用于引发异常。
+
+可以定义引发哪种错误，以及向用户显示文本。
+
+例如：
+
+如果x不是整数，则引发TypeError：
+
+x = "hello"
+
+if not type(x) is int:
+    raise TypeError("只允许是整数")
+
+实例扩展：
+
+try:
+  s = None
+  if s is None:
+    print("s 是空对象")
+    # 如果引发NameError异常，后面的代码将不能执行
+    raise NameError
+  # 这句不会执行，但是后面的except还是会走到
+  print(len(s))
+except TypeError:
+  print("空对象没有长度")
+ 
+s = None
+if s is None:
+  raise NameError
+# 如果不使用try......except这种形式，那么直接抛出异常，不会执行到这里
+print("is here?")
+
+到此这篇关于Python抛出引发异常(raise)知识点总结的文章就介绍到这了,更多相关Python 抛出引发异常(raise)用法内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

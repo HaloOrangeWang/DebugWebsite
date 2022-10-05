@@ -1,0 +1,66 @@
+import requests
+
+import json
+
+url = "http://10.1.12.101:33355/api/Login/CheckLogin"
+
+head={
+
+"Content-Type": "application/json;charset=UTF-8"
+
+}
+
+body={
+
+"UserName": "admin",
+
+"UserPassword": "202cb962ac59075b964b07152d234b70",
+
+"funcCode": "DCARP",
+
+"systemCode": "150"}
+
+r = requests.post(url,data=body,headers=head)
+
+result = r.json()
+
+print(result)
+
+运行报错：
+
+requests.exceptions.JSONDecodeError: [Errno Extra data] {"errors":{"":["Unexpected character encountered while parsing value: U. Path '', line 0, position 0."]}
+
+原因为入参格式为json格式需要使用json.dumps()将入参转换为jsOn格式
+
+如下：
+
+import requests
+
+import json
+
+url = "http://10.1.12.101:33355/api/Login/CheckLogin"
+
+head={
+
+"Content-Type": "application/json;charset=UTF-8"
+
+}
+
+body={
+
+"UserName": "admin",
+
+"UserPassword": "202cb962ac59075b964b07152d234b70",
+
+"funcCode": "DCARP",
+
+"systemCode": "150"}
+
+r = requests.post(url, data=json.dumps(body),headers=head)  #使用json.dumps()将一个Python数据结构转换为JSON
+
+print(r.status_code)
+
+result = r.json()
+
+print(result)
+

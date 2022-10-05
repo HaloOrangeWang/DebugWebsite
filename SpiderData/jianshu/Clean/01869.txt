@@ -1,0 +1,123 @@
+
+报这种类似的错：django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.3 or newer is required; you have 0.7.11.None
+
+
+解决办法：
+
+找到Python安装路径下的Python\Lib\site-packages\django\db\backends\mysql\base.py文件
+
+将文件中的如下代码注释
+
+if version < (1, 3, 3):
+    raise ImproperlyConfigured("mysqlclient 1.3.3 or newer is required; you have %s" % Database.__version__)
+
+
+报错：  File "D:\SoftwareIntsall\Python\lib\site-packages\django\db\backends\mysql\operations.py", line 146, in last_executed_query
+
+query = query.decode(errors='replace')
+
+AttributeError: 'str' object has no attribute 'decode'
+
+
+解决办法：
+
+File "...\django\db\backends\mysql\operations.py", line 146, in last_executed_query
+
+打开此文件把146行的decode修改为encode
+
+
+django导入重定向函数
+
+from django.shortcuts import render, redirect  # 导入重定向函数redirect
+# 函数直接返回到指定的网址下:index.html
+return redirect('/index')
+
+
+报错：Forbidden (403) CSRF verification failed. Request aborted.
+
+
+解决办法：
+
+注释setting.py文件下的MIDDLEWARE列表下的代码
+
+'django.middleware.csrf.CsrfViewMiddleware'
+
+
+ajax：异步的JavaScript
+
+作用：在不重新加载页面的情况下，对页面进行局部的刷新。
+
+方法1：
+$.ajax({
+    'url': '请求地址',
+    'type': '请求方式',
+    'dataType': '预期返回的数据格式',
+}).success(function(data){
+    //执行成功后的回调函数
+    alert(data);
+})
+方法2：
+$.ajax({
+    'url': '请求地址',
+    'type': '请求方式',
+    'dataType': '预期返回的数据格式',
+    'success': function (data) {
+        // 执行成功后的回调函数
+        alert(data);
+    }
+})
+
+
+Cookie状态保持(保存在浏览器端)
+
+
+设置cookie信息：需要一个HttpResponse类的对象或者是它子类的对象(HttpResponseRedirect, JsonResponse)，设置cookie过期时间可以使用max_age或expires属性
+
+response = HttpResponse('设置cookie信息')
+# max_age是秒为单位设置cookie的过期时间，此时设置两周后过期，max_age设置的是多少秒之后
+response.set_cookie('num', 1, max_age=14*24*3600)
+# 同上一样设置两周后过期，expires设置的是日期
+response.set_cookie('num2', 2, expires=datetime.now() + timedelta(days=14))
+
+以键值对方式进行存储
+
+以键值对方式进行存储
+
+通过浏览器访问一个网站时，会将浏览器存储的跟网站相关的所有cookie信息发送给该网站的服务器。
+
+通过浏览器访问一个网站时，会将浏览器存储的跟网站相关的所有cookie信息发送给该网站的服务器。
+
+存放位置：request.COOKIES
+
+cookie是基于域名安全的
+
+cookie是基于域名安全的
+
+cookie是有过期时间的，如果不指定，默认关闭浏览器之后cookie就会过期
+
+cookie是有过期时间的，如果不指定，默认关闭浏览器之后cookie就会过期
+
+
+session状态保持(保存在服务器端)
+
+session 存储在服务器端
+
+
+session 的特点：
+
+1） session 是以键值对进行存储的。
+
+2） session 依赖于cookie。唯一的标识码保存在sessionid cookie中。
+
+3） session 也有过期时间，如果不知道，默认两周就会过期。
+
+
+设置session：
+
+request.session['username'] = 'admin'
+
+
+获取session：
+
+request.session['username']
+

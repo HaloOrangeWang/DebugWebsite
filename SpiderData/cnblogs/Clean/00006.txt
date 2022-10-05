@@ -1,0 +1,27 @@
+assert "login" in browser.title
+
+browser.implicitly_wait(10)
+
+elem = browser.find_element_by_id("txtAccount") # Find the query box elem.send_keys("0@cm.com")
+
+log=browser.find_element_by_id("txtPwd2") log.send_keys("123456" + Keys.RETURN)
+
+#be carefully the big-small time.sleep(2)# Let the page load, will be added to the API #
+
+browser.find_elements_by_xpath("//ul[@id='menu']/li[2]/a").click() print"contract to be assigned"
+
+browser.implicitly_wait(10) browser.find_elements_by_xpath("//body/div[2]/div/div/div[2]/table/tbody/tr/td/a").click()
+
+报错信息：
+
+Traceback (most recent call last):
+  File "E:\eclipse\PythonCase\src\Python27\btn_test.py", line 20, in <module>
+    browser.find_elements_by_xpath("//body/div[2]/div/div/div[2]/table/tbody/tr/td/a").click()    
+AttributeError: 'list' object has no attribute 'click'
+
+解决办法：
+
+browser.find_elements_by_xpath("//body/div[2]/div/div/div[2]/table/tbody/tr/td/a") 这个方法返回一个list webelement 的集合
+
+要想返回单个webelement 得用browser.find_element_by_xpath，这个要特别注意对于初学者加S和不加S的区别
+

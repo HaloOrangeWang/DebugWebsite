@@ -1,0 +1,18 @@
+遇到“No remote repository specified……”的错误
+
+git pull
+
+fatal: No remote repository specified. Please, specify either a URL or a
+
+remote name from which new revisions should be fetched
+
+其实出问题的原因是.git/config的配置出问题了。 在配置文件中加入你自己的url 及分支名 即可。
+
+[remote "origin"]  
+        url = https://---------.git  
+        fetch = +refs/heads/*:refs/remotes/origin/*  
+        pushurl = https://-------------.git  
+[branch "master"]  
+        remote = origin  
+        merge = refs/heads/master
+

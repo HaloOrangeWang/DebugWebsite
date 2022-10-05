@@ -1,0 +1,62 @@
+python
+
+import matplotlib.pyplot as plt
+
+报错
+
+zzzz@zzzz-virtual-machine:~$ python show.py
+
+Traceback (most recent call last):
+
+File "show.py", line 1, in <module>
+
+import matplotlib.pyplot as plt
+
+File "/home/zzzz/anaconda3/lib/python3.6/site-packages/matplotlib/pyplot.py", line 39, in <module>
+
+from matplotlib.figure import Figure, figaspect
+
+File "/home/zzzz/anaconda3/lib/python3.6/site-packages/matplotlib/figure.py", line 40, in <module>
+
+from matplotlib.axes import Axes, SubplotBase, subplot_class_factory
+
+File "/home/zzzz/anaconda3/lib/python3.6/site-packages/matplotlib/axes/__init__.py", line 4, in <module>
+
+from ._subplots import *
+
+File "/home/zzzz/anaconda3/lib/python3.6/site-packages/matplotlib/axes/_subplots.py", line 10, in <module>
+
+from matplotlib.axes._axes import Axes
+
+File "/home/zzzz/anaconda3/lib/python3.6/site-packages/matplotlib/axes/_axes.py", line 24, in <module>
+
+import matplotlib.dates as _  # <-registers a date unit converter
+
+File "/home/zzzz/anaconda3/lib/python3.6/site-packages/matplotlib/dates.py", line 152, in <module>
+
+from dateutil.rrule import (rrule, MO, TU, WE, TH, FR, SA, SU, YEARLY,
+
+File "/home/zzzz/anaconda3/lib/python3.6/site-packages/dateutil/rrule.py", line 55
+
+raise ValueError, "Can't create weekday with n == 0"
+
+^
+
+SyntaxError: invalid syntax
+
+原因：The file rrule.py from the dateutil module uses old (invalid) syntax to raise an exception.
+
+因为dateutil版本太旧
+
+解决方案：
+
+安装新版本python-dateutil
+
+首先卸载原有旧版本 再进行安装
+
+pip uninstall python-dateutil
+
+pip install python-dateutil
+
+之后再次运行程序即可
+

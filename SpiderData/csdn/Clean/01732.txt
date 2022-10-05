@@ -1,0 +1,110 @@
+syntaxError :        语法错误
+
+NameError :         未定义使用
+
+TypeError :           类型错误
+
+try//except
+
+#try//except
+"""
+    try:
+        可能报错的代码
+    except exception :
+        捕获报错的代码并加以处理
+"""
+
+#学习例子：
+try:
+    print(1/1)
+except ZeroDivisionError:
+    print("发生了除零异常!")
+print("已经捕获了异常，程序继续运行！！")
+
+try:
+    print(1/0)
+    print("我是第一人")
+    print("1"/1)
+except ZeroDivisionError:
+    print("发生了除零异常!")
+except TypeError:
+    print("发生了类型异常!")
+print("已经捕获了异常，程序继续运行！！")
+
+#全能捕获手: Exception
+
+try:
+    print(1/0)
+    print("我是第一人")
+    print("1"/1)
+except ZeroDivisionError:    #except ZeroDivisionError as e 
+    print("发生了除零异常!")
+except Exception:
+    print("发生了错误！！")
+print("已经捕获了异常，程序继续运行！！")
+
+try//except...else...finally
+
+try:
+    print("当前是Try语句块")
+except Exception as e:
+    print("当前是except语句块")
+else:
+    print("当前是else语句块")
+finally:
+    print("当前是finally语句块")
+
+#结果：没有发生报错 try->else->finally
+#      如果发生报错 try->except->finally
+
+手动抛出异常：关键字：raise
+
+try:
+    a=int(input("请输入一个数："))
+    if a<0:
+        raise ValueError("变量不允许小于0！")
+    print(a)
+
+except ValueError as e:
+    print(e)
+
+文件处理
+
+1，打开文件;open(file,mode,buffering,encoding
+
+file:文件路径
+
+相对路径：./data.txt  (./当前目录        ../ 上一级目录         ../../ 上上级目录)
+
+绝对路径（从根源目录开始找：C:/python3/mydjangoproject/data.txt）
+
+mode:操作文件的方案
+
+文件的打开模式：
+
+t        文本模式（默认）
+
+x        写模式，新建文件，若该文件已经存在则报错
+
+b        二进制模式
+
+打开文件的操作：
+
+r  (read)        以只读的方式打开文件，文件的指针会放在文件的开头
+
+w  (write)      用于写入，会把文本原有内容删除，然后再写入，若文件不存在，会新建一个文件，若文件存在不会报错
+
+a  (append)  用于追加内容，新内容会以追加的形式添加到原内容末尾
+
+混合模式：
+
++        混合模式既可以读也可以写，保留原来文件操作的性质
+
+buffering：缓冲区，在内存中，节约效率
+
+f = open("./data.txt",'r')
+f.read()    #file.read()读取文件
+f.close()
+
+注意：在UTF-8模式下，一个汉字三个字节；在GBK模式下，一个汉字两个字节
+

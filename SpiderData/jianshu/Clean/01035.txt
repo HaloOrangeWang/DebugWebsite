@@ -1,0 +1,56 @@
+
+1. 情景
+
+写好了一个 python 文件，进入 cmd 运行，执行命令 python Test001.py，报错“No module named bs4”
+
+源码如下：
+
+# coding=UTF-8
+# 通过 requests 模块发起 http 请求
+import requests 
+from bs4 import BeautifulSoup   # BeautifulSoup库提供了很多解析html的方法，可以帮助我们很方便地提取我们需要的内容
+
+# 请求的首部信息
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:67.0) Gecko/20100101 Firefox/67.0'
+}
+url = 'https://xx.xxxx.com/dweb/#/index/5584558414';    # 
+res = requests.get(url, headers=headers);   #利用requests对象的get方法，对指定的url发起请求，得到Response对象
+print(res.txt); # 通过Response对象的text方法获取网页的文本信息
+
+soup = BeautifulSoup(res.text, 'lxml')      # 通过 BeautifulSoup 对象对网页内容进行解析，lxml 是html解析器
+# tags1 = soup.find_all('span',{'class': 'topic-pp'})       # 找出所有 class 为 topic-pp 的 span 标签，并将所有的结果都放入一个 list 返回
+# tags2 = soup.find_all('span',{'class': 'reply_text'})     # 找出所有 class 为 reply_text 的 span 标签，并将所有的结果都放入一个 list 返回
+
+topic_list_wrapper = soup.find('div', {'class': 'topic_list_wrapper'})      # 找出 class 属性值为 topic_list_wrapper 的 div
+topics = topic_list_wrapper_all('li')                                       #找出 topic_list_wrapper 下的所有 li 标签
+
+topics_content = []
+topics_comments = []
+
+# 遍历 topics
+for i in topics:
+    try:        
+        content = i.find('p', {'class': 'topic-pp'}).get_text().strip()         # 提取主题内容        
+        comments = i.find('span', {'class': 'reply_text'}).get_text().strip()   # 提取评论
+
+# 存储爬取结果
+        topics_content.append(content)
+        topics_comments.append(comments)
+        print('主题内容', content)
+        print('成员评论', comments)
+        print()
+
+except AttributeError as e:
+        continue
+
+
+2. 原因
+
+没有安装bs4
+
+
+3. 解决办法
+
+进入 Python 安装路径下的 Scripts目录，执行 pip install beautifulsoup4 。
+

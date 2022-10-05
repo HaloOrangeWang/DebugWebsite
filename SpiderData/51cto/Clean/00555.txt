@@ -1,0 +1,16 @@
+自己用 python 写项目，文件系统结构如下：
+
+在 entity 中写了个文件 source.py ，想在 test.py 调用，但是报错：
+
+在 pyCharm 中就没有这个问题，这因为 VS Code 并没有把项目的根目录加入到 path 中。
+
+解决方案，把项目根目录加入到 path 中。
+
+在 test.py （你要运行的 python 文件中）加入前四行代码：
+
+即，把项目根目录加入到 path 中：
+
+os.path.abspath(os.path.join(os.getcwd())) 用于提取项目根目录；
+
+sys.path.append(projectPath) 用于把根目录加入到搜索路径中。
+

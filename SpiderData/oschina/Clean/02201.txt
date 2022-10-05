@@ -1,0 +1,41 @@
+今天在通过python文件中单独操作并运行django orm操作的时候，运行.py文件时遇到以下的问题：
+
+Traceback (most recent call last):
+...
+    self.db_tablespace = db_tablespace or settings.DEFAULT_INDEX_TABLESPACE
+  File "D:\Program\Python37\lib\site-packages\django\conf\__init__.py", line 56, in __getattr__
+    self._setup(name)
+  File "D:\Program\Python37\lib\site-packages\django\conf\__init__.py", line 39, in _setup
+    % (desc, ENVIRONMENT_VARIABLE))
+django.core.exceptions.ImproperlyConfigured: Requested setting DEFAULT_INDEX_TABLESPACE, but settings are not configured. You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.
+
+查看.py文件的代码如下，简单的几行，看起来也没什么问题：
+
+import os
+import django
+from orm_practice import models
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "BookManage.settings")
+django.setup()
+
+ret = models.Person.objects.all()
+print(ret)
+
+经过对比老师课上写的代码，发现from orm_practice import models 这一行不能放在环境变量设置之前，按以下修改的代码就可以正常运行：
+
+import os
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "BookManage.settings")
+django.setup()
+
+from orm_practice import models
+ret = models.Person.objects.all()
+print(ret)
+
+再运行的话就不再报错了。
+
+<QuerySet []>
+
+Process finished with exit code 0
+

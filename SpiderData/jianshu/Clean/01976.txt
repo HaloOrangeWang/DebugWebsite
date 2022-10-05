@@ -1,0 +1,32 @@
+最近在玩DFRobot出的阿里云Iot套件，其中的控制板是基于乐鑫ESP32芯片的FireBettle Board-ESP32，在做Blink实验时，Arduino IDE编译时报错，提示
+
+为开发板FireBettle-ESP32编译时出错
+
+在 …… 文件 ……行
+
+import serial
+
+ImportError: No module named serial
+
+网上搜了一下报此错误，是因为ESP32编译需要安装Python，而本地没有安装python的插件pyserial，只需安装此插件即可。本人电脑为mac，根据网上搜索结果可按以下方式处理：
+
+1.下载get-pip.py文件
+
+在此网址下载https://bootstrap.pypa.io
+
+2.执行安装pip
+
+pip是python的库文件管理工具，类似easy_install、brew
+
+sudo python get-pip.py
+
+3.安装pyserial
+
+sudo pip install pyserial
+
+mac系统自带的python是2.7版本，如果你装的是Python3.0以上，可换成以下命令
+
+sudo pip3 install pyserial
+
+至此pyserial安装完毕，再次回到Arduion，点击“编译”按钮，完成编译。
+

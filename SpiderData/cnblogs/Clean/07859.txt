@@ -1,0 +1,31 @@
+
+Django模型迁移
+
+安装MySQL驱动， 命令如下
+
+在mysite文件下的__init__.py文件
+
+打开项目的文件的mysite/settings.py文件， 默认的数据库是sqlite
+
+找到DATABASES选项，修改数据库的配置， 我本地的配置如下
+
+运行数据迁移命令
+
+若出现如下异常 django.core.exceptions.ImproperlyConfigured: mysqlclient 1.4.0 or newer is required; you have 0.10.0.
+
+windows10下先下载安装mysqlclient， 下载链接https://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python
+
+根据你的python版本和操作系统位数选择相应的下载版本
+
+pip install mysqlclient‑1.4.6‑cp38‑cp38‑win_amd64.whl
+
+继续运行迁移命令同步骤4， 发现还是报错 django.core.exceptions.ImproperlyConfigured: mysqlclient 1.4.0 or newer is required; you have 0.10.0.
+
+打开mysite文件夹下的，init.py文件
+
+加入一行命令 pymysql.version_info = (1, 4, 0, "final", 0) 其中 1， 4， 0就是异常出现的命令mysqlclient版本
+
+本地的__init__.py文件配置
+
+运行迁移命令
+

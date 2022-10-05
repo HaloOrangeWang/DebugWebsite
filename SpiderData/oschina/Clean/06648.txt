@@ -1,0 +1,41 @@
+前提：连接数据库时，mysql数据库需要保持启动状态
+
+错误如下：
+
+解决思路：
+
+1、检查user 和 password 是否有错
+
+2、检查连接池是否正确
+
+3、试试更改区时  （往往问题出在这）
+
+3.1 在终端里先使用管理员登录mysql,也就是root,接着输入下面的命令
+
+show variables like '%time_zone%'
+
+3.2 Mysql默认为美国时间，我国时区要晚8小时，因此修改时间即可
+
+set global time_zone = '+8:00';
+
+3.3 设置完以后，退出mysql,重新登录，检查时间是否被修改
+
+结束以后再去试试重新连接Mysql,祝愿你可以成功。
+
+说一千道一万，还是不要用新版本的pycharm，搞不清哪天遇到一个百度不了的bug就心塞塞了！
+
+另外一个问题：连接mysql数据库时，输入python manage migrate时，出现如下报错信息：
+
+WARNINGS:
+?: (mysql.W002) MySQL Strict Mode is not set for database connection 'default'
+    HINT: MySQL's Strict Mode fixes many data integrity problems in MySQL, such as data truncation upon insertion, by escalating warnings into errors. It is strongly recommended you activate it. See: https://docs.djangoproject.com/en/1.10/ref/databases/#mysql-sql-mode
+---------------------
+
+直接忽视它,会导致生产的数据库如下状况：
+
+即没有表字段，虽然在终端登录到mysql,发现数据真实存在！
+
+解决方案：
+
+如果还不能解决问题，试试把django版本或者pymysql版本降低一些即可！
+

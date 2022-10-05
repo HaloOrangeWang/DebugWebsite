@@ -1,0 +1,66 @@
+前言
+
+“1 + 1 = 2” 耳濡目染，从而引出下方“公式”：
+
+url + request headers + request method + request body(data) = response headers + response data
+
+Http接口测试中或接口调用中的场景，header头构造
+            1、服务端可能不会全部校验header，字段可以少传
+            2、部分服务端校验比较多，手动复制贴错误率高
+
+原始的方法是cv，再“”构造字典header，速度有点慢，然后可能会用错误，复用率不高。
+
+遇见问题，发现问题，定位问题并解决问题，静下心看看公式慢慢调试，理解其“构造原理”。
+
+常见问题：
+
+1、Python 3.6.4 调用requests库中headers定义字段值发生变化 “梗”待解决_Benjamin CSDN博客-CSDN博客
+
+2、​​​Python之request库请求header头中常见异常错误，如：空格、中文、float、int类型错误总结_Benjamin CSDN博客-CSDN博客
+
+解决“Fiddler中请求可以，Python发送请求失败等问题排查和问题原因说明”，Python发送Http请求400等错误
+
+Header头信息
+
+Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+Cache-Control: max-age=0
+Connection: keep-alive
+Cookie: phusr=Benjamin; phsid=fb4fvrv3oeauoysiomva6dqndjbzasakp5abpnhpkcoy
+Host: 10.11.11.235:8070
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36
+
+Python代码部分
+
+# 格式化Header头
+def CheckStr(Header):
+    Headers = {}
+    for i in Header.split("\n"):
+        if i != None or i != "" or i != '':
+            data = i.split("\n")
+            if data[0] != None or data[0] != '' or data[0] != '\n':
+                twodata = data[0].split(": ")
+                try:
+                    Headers[twodata[0]] = twodata[1]
+                except:
+                    pass
+    return Headers
+
+GetHeaderP = CheckStr(open("requestsHeadersP","r+").read())
+
+解决方法：
+
+1、抓包请求从Chrome或Fiddler中获取，需二次利用或构造
+
+2、建议直接复制对应的Headers中全部信息并保存
+
+3、读取并构造静态文件的Headers信息
+
+4、关于Headers中的静态或动态处理处理，走dict思想，缺则加，多则删除，建立公共模板思维
+
+小结
+
+关于构造数据能够CV（复制粘贴）的尽量CV别手动串改数据（时间成本）效率不高，还容易出错。
+

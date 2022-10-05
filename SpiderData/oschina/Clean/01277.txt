@@ -1,0 +1,118 @@
+
+一、背景
+
+openstack页面无法创建也无法终止云主机
+
+
+二、解决思路
+
+点击错误实例，找到它的id 03f0403f-74cd-4d88-b1fb-1d3f4ceaa9e4
+
+猜测是cinder的问题，于是进cinder日志目录下,在所有日志中查找该ID，发现报错信息
+
+# cd /var/log/cinder
+
+# grep 03f0403f-74cd-4d88-b1fb-1d3f4ceaa9e4  *
+
+# view api.log
+
+Caught error: [Errno [Errno 13] Permission denied: '/var/lock/cinder'
+Traceback (most recent call last):
+
+File "/usr/lib/python2.7/site-packages/oslo_messaging/rpc/dispatcher.py", line 142, in _dispatch_and_reply
+    executor_callback))
+
+File "/usr/lib/python2.7/site-packages/oslo_messaging/rpc/dispatcher.py", line 186, in _dispatch
+    executor_callback)
+
+File "/usr/lib/python2.7/site-packages/oslo_messaging/rpc/dispatcher.py", line 130, in _do_dispatch
+    result = func(ctxt, **new_args)
+
+File "/usr/lib/python2.7/site-packages/osprofiler/profiler.py", line 105, in wrapper
+    return f(*args, **kwargs)
+
+File "/usr/lib/python2.7/site-packages/cinder/volume/manager.py", line 157, in ldo_inner1
+    return ldo_inner2(inst, context, volume_id, attachment_id, **kwargs)
+
+File "/usr/lib/python2.7/site-packages/oslo_concurrency/lockutils.py", line 439, in inner
+    do_log=False, semaphores=semaphores, delay=delay):
+
+File "/usr/lib64/python2.7/contextlib.py", line 17, in __enter__
+    return self.gen.next()
+
+File "/usr/lib/python2.7/site-packages/oslo_concurrency/lockutils.py", line 395, in lock
+    ext_lock.acquire(delay=delay)
+
+File "/usr/lib/python2.7/site-packages/oslo_concurrency/lockutils.py", line 194, in acquire
+    fileutils.ensure_tree(basedir)
+
+File "/usr/lib/python2.7/site-packages/oslo_concurrency/openstack/common/fileutils.py", line 35, in ensure_tree
+    os.makedirs(path)
+
+File "/usr/lib64/python2.7/os.py", line 157, in makedirs
+    mkdir(name, mode)
+
+OSError: [Errno 13] Permission denied: '/var/lock/cinder'
+] Permission denied
+
+
+三、解决经过
+
+根据报错信息可以看到/var/lock/cinder目录权限不足，进入该目录，发现并没有cinder的目录。
+
+[root@bdc212 ~]# cd /var/lock/
+[root@bdc212 lock]# ls -lrt
+total 0
+drwx------ 2 root root 40 Jul 13 08:16 lvm
+drwx------ 2 root root 60 Jul 13 08:16 iscsi
+drwxr-xr-x 2 root root 40 Jul 13 08:16 ppp
+drwxrwxr-x 2 root lock 40 Jul 13 08:16 lockdev
+-rw-r--r-- 1 root root  0 Jul 13 08:16 ceph-disk
+-rw-r--r-- 1 root root  0 Jul 13 08:16 kdump
+drwxr-xr-x 2 root root 80 Jul 13 10:09 subsys
+
+于是手动创建目录
+
+# mkdir cinder
+
+再次终止实例，日志依旧报错
+
+Caught error: [Errno [Errno 13] Permission denied: u'/var/lock/cinder/cinder-a0403e20-5cf6-4abd-a469-e166e2fd37d3-detach_volume'
+
+修改目录的权限
+
+# chown cinder:cinder cinder/
+
+再次终止实例，发现成功终止，而且没有报错。
+
+另外，发现之前创建失败的云硬盘也可以删除掉了。
+
+openstack在创建和终止云主机的时候会在/var/lock/cinder目录下生成一个文件，在没有该目录，没有权限的情况下自然无法正常创建和终止云主机，同时也包括云硬盘的创建删除。
+
+奇怪的现象
+
+机器重启后， /var/lock/cinder 这个目录会消失了
+
+所以为了避免重启之后缺少这个目录带来的影响，将创建改目录的命令写入到开机自动执行的文件中
+
+# vi /etc/rc.local
+
+...
+
+if  [ ! -d  /var/lock/cinder  ] ;
+   then
+        mkdir /var/lock/cinder;
+        chown -R cinder:cinder /var/lock/cinder;
+fi
+
+修改添加可执行的权限
+
+# cd /etc/rc.d/
+
+# chmod 755 rc.local
+
+
+四、总结
+
+出现错误，千万不要想着重启就能解决问题，重启并不是还原，错误还摆在那里，需要去检查日志，找出错误的原因才能有效的处理问题。
+

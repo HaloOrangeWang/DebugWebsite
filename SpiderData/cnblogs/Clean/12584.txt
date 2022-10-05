@@ -1,0 +1,148 @@
+
+从Python调用matlab并执行，以及matplotlib 中文乱码问题
+
+因为需要调用一下matlab执行，因此记录一下在配置的过程以及踩过的坑
+
+
+1. 安装用于 Python 的 MATLAB 引擎 API
+
+官网给出了很详细的方法：https://ww2.mathworks.cn/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
+
+注意MATLAB与Python版本的对应关系：
+
+python setup.py install 安装失败的问题
+
+首先，确认是否是Python版本的问题
+
+（网上一个方法）由于anaconda中可能配置了很多python环境，需要在环境变量中，将对应的配置环境放到anaconda默认环境前面，这样自定义的python环境才会是window默认的python环境。（但这个方法在pycharm中，笔者发现 import matlab.engine 始终变灰，导入不进去，后续查到说是anaconda环境太多，得将MATLAB下的engine文件夹放到对应默认python环境下进行安装，但笔者尝试后发现依然不通。
+
+python setup.py install 安装失败的问题
+
+首先，确认是否是Python版本的问题
+
+首先，确认是否是Python版本的问题
+
+（网上一个方法）由于anaconda中可能配置了很多python环境，需要在环境变量中，将对应的配置环境放到anaconda默认环境前面，这样自定义的python环境才会是window默认的python环境。（但这个方法在pycharm中，笔者发现 import matlab.engine 始终变灰，导入不进去，后续查到说是anaconda环境太多，得将MATLAB下的engine文件夹放到对应默认python环境下进行安装，但笔者尝试后发现依然不通。
+
+（网上一个方法）由于anaconda中可能配置了很多python环境，需要在环境变量中，将对应的配置环境放到anaconda默认环境前面，这样自定义的python环境才会是window默认的python环境。（但这个方法在pycharm中，笔者发现 import matlab.engine 始终变灰，导入不进去，后续查到说是anaconda环境太多，得将MATLAB下的engine文件夹放到对应默认python环境下进行安装，但笔者尝试后发现依然不通。
+
+我的解决方法：
+
+重新下载一个Python3.8的环境（注：笔者MATLAB环境为R2021a），并在环境变量中设置为windows默认Python环境
+
+我的解决方法：
+
+重新下载一个Python3.8的环境（注：笔者MATLAB环境为R2021a），并在环境变量中设置为windows默认Python环境
+
+重新下载一个Python3.8的环境（注：笔者MATLAB环境为R2021a），并在环境变量中设置为windows默认Python环境
+
+进入MATLAB根目录下：x:\MATLAB\R2021a\extern\engines\python 在cmd环境下，执行 python setup.py install
+
+进入MATLAB根目录下：x:\MATLAB\R2021a\extern\engines\python 在cmd环境下，执行 python setup.py install
+
+
+2. 调用MATLAB文件
+
+参考：https://www.jianshu.com/p/bc1d2fae3aa0
+
+Python处理完的数据，使用scipy的savemat()方法将数据先存起来，matlab再读取
+
+关于这点的解释：是避免Python数据类型直接传给MATLAB造成数据类型不一致的问题，开始笔者在这里搞了很久，最后还是使用了这种保守的方法，如果有人看到比较好的方法，欢迎留言
+scio.savemat(filename, {'data': data}) # 保存数据，方便matlab程序读取，避免数据类型不一致
+
+savemat()参考：https://blog.csdn.net/weixin_43575157/article/details/90230523
+
+Python处理完的数据，使用scipy的savemat()方法将数据先存起来，matlab再读取
+
+关于这点的解释：是避免Python数据类型直接传给MATLAB造成数据类型不一致的问题，开始笔者在这里搞了很久，最后还是使用了这种保守的方法，如果有人看到比较好的方法，欢迎留言
+scio.savemat(filename, {'data': data}) # 保存数据，方便matlab程序读取，避免数据类型不一致
+
+savemat()参考：https://blog.csdn.net/weixin_43575157/article/details/90230523
+
+关于这点的解释：是避免Python数据类型直接传给MATLAB造成数据类型不一致的问题，开始笔者在这里搞了很久，最后还是使用了这种保守的方法，如果有人看到比较好的方法，欢迎留言
+
+savemat()参考：https://blog.csdn.net/weixin_43575157/article/details/90230523
+
+matlab.engine.start_matlab()
+
+启动matlab engine：eng = matlab.engine.start_matlab()
+
+调用自己的matlab文件（注意与python文件在同一目录下，且定义为matlab函数形式）：f,P1 = eng.myfft(filename, fs, nargout = 2) # nargout 返回值数目
+% 自定义快速傅里叶变换函数
+function [f,P1] = myfft(filename, fs)
+tempData = load(filename); % 读取.mat文件
+data = tempData.data;
+Fs = double(fs);            % Sampling frequency 解决数据类型不一致问题
+T = 1/Fs;             % Sampling period       
+L = length(data);             % Length of signal
+t = (0:L-1)*T;        % Time vector
+
+Y = fft(data)
+P2 = abs(Y/L);
+P1 = P2(1:L/2+1);
+P1(2:end-1) = 2*P1(2:end-1);
+f = Fs*(0:(L/2))/L;
+end
+
+这里踩了坑：一直报错说是有数据类型不一致的问题，排查之后，发现是引入的fs，怀疑是fs是python的数据类型，matlab并不支持，所以在matlab文件中，我用了double()将其进行转换，解决了这个问题。
+
+matlab.engine.start_matlab()
+
+启动matlab engine：eng = matlab.engine.start_matlab()
+
+启动matlab engine：eng = matlab.engine.start_matlab()
+
+调用自己的matlab文件（注意与python文件在同一目录下，且定义为matlab函数形式）：f,P1 = eng.myfft(filename, fs, nargout = 2) # nargout 返回值数目
+% 自定义快速傅里叶变换函数
+function [f,P1] = myfft(filename, fs)
+tempData = load(filename); % 读取.mat文件
+data = tempData.data;
+Fs = double(fs);            % Sampling frequency 解决数据类型不一致问题
+T = 1/Fs;             % Sampling period       
+L = length(data);             % Length of signal
+t = (0:L-1)*T;        % Time vector
+
+Y = fft(data)
+P2 = abs(Y/L);
+P1 = P2(1:L/2+1);
+P1(2:end-1) = 2*P1(2:end-1);
+f = Fs*(0:(L/2))/L;
+end
+
+这里踩了坑：一直报错说是有数据类型不一致的问题，排查之后，发现是引入的fs，怀疑是fs是python的数据类型，matlab并不支持，所以在matlab文件中，我用了double()将其进行转换，解决了这个问题。
+
+调用自己的matlab文件（注意与python文件在同一目录下，且定义为matlab函数形式）：f,P1 = eng.myfft(filename, fs, nargout = 2) # nargout 返回值数目
+
+这里踩了坑：一直报错说是有数据类型不一致的问题，排查之后，发现是引入的fs，怀疑是fs是python的数据类型，matlab并不支持，所以在matlab文件中，我用了double()将其进行转换，解决了这个问题。
+
+记得关闭engine：eng.exit()
+
+如果是需要多次调用并执行matlab文件的话，建议如下：（不然会导致速度很慢，每次调用都启动一次）
+eng = matlab.engine.start_matlab() # 启动matlab
+第一次调用方法
+第二次调用方法
+。。。。
+第n次调用方法
+eng.exit() # 关闭
+
+记得关闭engine：eng.exit()
+
+如果是需要多次调用并执行matlab文件的话，建议如下：（不然会导致速度很慢，每次调用都启动一次）
+eng = matlab.engine.start_matlab() # 启动matlab
+第一次调用方法
+第二次调用方法
+。。。。
+第n次调用方法
+eng.exit() # 关闭
+
+如果是需要多次调用并执行matlab文件的话，建议如下：（不然会导致速度很慢，每次调用都启动一次）
+
+
+3. matplotlib 中文乱码问题
+
+print(matplotlib.matplotlib_fname()) ，用文本打开
+
+找到font.family改成Simhei，axes.unicode_minus 改为False，不然负号显示不出来
+
+然后去https://www.fontpalace.com/font-details/SimHei/下载，下载下来之后，放到D：\Anaconda\Lib\site-packages\matplotlib\mpl-data\fonts\ttf文件夹下
+

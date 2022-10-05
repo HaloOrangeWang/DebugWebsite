@@ -1,0 +1,21 @@
+在看同事的tornado代码时，需要导入ujson包
+
+在cmd命令行下，输入pip install ujson，出现如下报错
+
+pip install ujson
+error：...Microsoft Visual C++ 14.0 is required...
+
+参考这个解决方式pip安装pycrypto报错：Microsoft Visual C++ 14.0 is required. 的解决办法，安装了最新版的visual，并且在系统的用户变量中添加了VCINSTALLDIR变量，结果依旧报错:
+
+error: [WinError 3] 系统找不到指定的路径。: 'C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\PlatformSDK\\lib'
+
+我去翻了这个目录，确实找不到这个目录。
+
+于是参考# python setup.py install 报错：error: [WinError 3] 系统找不到指定的路径。: 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\PlatformSDK\lib，在visual studio中依次选择文件 --> 新建 --> 项目 --> Visual C++  --> 确定安装了一系列的包
+
+最后使用
+
+pip install ujson
+
+完成安装
+

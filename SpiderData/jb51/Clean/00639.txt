@@ -1,0 +1,38 @@
+软件版本及环境：Python 3.9 + pycharm 2020.2.1 + Windows10 运行报错：
+
+DeprecationWarning: loop argument is deprecated
+
+app = web.Application(loop=loop)
+
+DeprecationWarning: Application.make_handler(…) is deprecated, use AppRunner API instead
+
+srv = await loop.create_server(app.make_handler(), ‘127.0.0.1', 8000)
+
+出错代码
+
+async def init(loop):
+ app = web.Application(loop=loop)
+ app.router.add_route('GET', '/', index)
+ app.router.add_route('GET', '/hello/{name}', hello)
+ srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8000)
+ print("Server started at http://127.0.0.1:8000...")
+ return srv
+
+解决方法 删除loop=loop
+
+app = web.Application()
+
+将app.make_handler()改为app()
+
+srv = await loop.create_server(app(), '127.0.0.1', 8000)
+
+运行结果
+
+Server started at http://127.0.0.1:8000...
+
+出错原因
+
+新版本改动了库函数的使用
+
+到此这篇关于Python中使用aiohttp模拟服务器出现错误的文章就介绍到这了,更多相关Python中使用aiohttp模拟服务器出现错误内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

@@ -1,0 +1,18 @@
+今天写Servlet使用跳转：
+
+response.sendRedirect("main.jsp");
+
+这两种跳转方式（内跳、外跳）运行时都报错，如下：(网页上报HTTP Status 405错误)
+
+Java.lang.IllegalStateException: Cannot call sendRedirect() after the response has been committed
+
+检查了一遍程序逻辑，发现应该无误，而且之前写的Servlet也从未报错，最后知道了报错原因，记录如下：
+
+大致三种解决方法：
+
+（1）Servlet要重写doGet()、doPost()方法，网上说是只重写doGet方法，而不重写doPost方法的话，是会报这个错的，但是我不是这个原因；
+
+（2）在跳转之后要加上return这条语句，这在一些书籍上也是可以找到的，因为跳转以后，下面的代码已经完全无用，只会产生影响，所以加上return语句可以防止产生错误，我也不是这个原因。
+
+（3）删除重写的doGet()、doPost()这两个方法里面的super.doGet()和super.doPost()语句。因为如果使用eclipse开发，使用eclipse来自动生成重写方法的话，默认是会去调用父类的doGet()、doPost()方法的，我之前开发的时候，都把这两句删掉的，今天可能操作不当，没删掉，所以导致报错，这种原因导致报错的话，就删掉父类方法调用那两句代码就行了。
+

@@ -1,0 +1,38 @@
+在Navicat中进行连接测试时，发现报错2509，还有乱码！
+
+mysql 2509 加密方式导致的报错，在8以后的版本默认的加密方式都改为了caching_sha2_password
+
+此时要更改加密方式
+
+进入mysql的命令行界面，选择mysql数据库
+
+use mysql;
+
+更改加密方式
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'password' PASSWORD EXPIRE NEVER;  #更改加密方式
+
+更改密码
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '新密码'; #更新用户密码
+
+如果更改失败
+
+执行 select user,host from user;
+
+因为root 对应host %
+
+因为root 对应host %
+
+执行 ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '新密码';
+
+执行 ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '新密码';
+
+刷新更改
+
+刷新更改
+
+FLUSH PRIVILEGES; #刷新权限
+
+大功告成~
+

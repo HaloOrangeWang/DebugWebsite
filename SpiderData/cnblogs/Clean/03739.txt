@@ -1,0 +1,33 @@
+交代一下环境，win10系统，已经装了anaconda。现在是要安装TensorFlow
+
+选择直接安装TensorFlow，一般直接pip install tensoflow 就可以了。
+
+但是我安装的时候遇到两个问题。就是下面的两个问题。然后逐一解决了，就可以安装了
+
+Windows在pip 一些python安装包的时候，超时问题以及权限问题
+
+1.在pip install 一些安装包的时候，有时候会由于网速的问题，或者资源的问题，导致安装过程中  连接超时，然后下载不了，
+报错如下：
+
+Retrying (Retry(total=4, connect=None, read=None, redirect=None)) after connection broken by 'ConnectTimeoutError(<pip._vendor.requests.packages.urllib3.connection. VerifiedHTTPSConnection object at 0x10b058850>, 'Connection to pypi.python.org timed out. (connect timeout=15)')': /simple/scrapy/
+
+解决方法：使用国内镜像解决问题。
+解决方法：
+
+pip install pyinstaller -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+使用这个方式安装模块，非常快.......
+
+2.在安装一些包的时候，会报一些关于权限的错。
+报错如下：
+
+PermissionError: [Errno 13] Permission denied: 'C:\\Program Files\\Anaconda3\\Lib\\site-packages\\protobuf-3.4.0-py2.7-nspkg.pth'
+
+解决方式：这是因为权限的问题，导致无法安装成功，这是我在安装TensorFlow的时候遇到的问题。
+解决问题：只要以管理员的额身份打开cmd去pip install相关的包就可以了
+
+对于 windows 用户，在开始菜单中输入 cmd，右键以 run as administrator（以管理员身份运行）。
+Python - PIP install trouble shooting - PermissionError: [WinError 5] Access is denied
+
+感谢这位大神的博客。http://blog.csdn.net/lanchunhui/article/details/64439814
+

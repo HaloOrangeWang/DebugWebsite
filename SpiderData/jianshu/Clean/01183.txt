@@ -1,0 +1,26 @@
+在更新scikit-learn到0.23之后再用xgboost时，用GridSearchCV时报错，到github上找了一下，原因是XGBClassifier 使用 kwargs, 然而scikit-learn的 pretty print假定所有的parameters 都被定义在__init__.py.
+
+(from the doc):
+
+The arguments accepted by __init__ should all be keyword arguments with a default value.
+
+我们要让 sklearn.utils._pprint._changed_params 对不遵守这个规则的参数更宽容一点,比如说保留所有在 __init__ 未被明确定义的参数。
+
+(from here):
+
+解决办法就是修改下sklearn/utils/tests/test_pprint.py 这个文件，把原98-99行
+
+for k, v in params.items():
+        if (repr(v) != repr(init_params[k]) and
+                not (is_scalar_nan(init_params[k]) and is_scalar_nan(v))):
+
+替换成
+
+if (k not in init_params or (  # happens if k is part of a **kwargs
+                repr(v) != repr(init_params[k]) and
+                not (is_scalar_nan(init_params[k]) and is_scalar_nan(v)))):
+
+具体更详细的可以去github看看
+
+保存好重新导入包就可以了。
+

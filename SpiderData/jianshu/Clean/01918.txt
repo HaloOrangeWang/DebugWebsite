@@ -1,0 +1,4 @@
+在做jupyter中用python3 结合highcharts做图时，import charts 会报错 cannot import plot，查了一下，应该是python3的bug，在python2中导入charts 是没问题的，搜到的解决方案有两种，一是修改pythonpath，好像很麻烦，貌似坑还很多，没有尝试就放弃了。二是修改替换chats中文件，我的charts在 /Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/ (mac版本,windows不清楚)这个目录下，找到chats目录，在https://github.com/AnthonyCoder/Plan-for-combating/tree/master/week3/charts_replace_file 中下载这几个文件，全部替换掉。可是仍有坑。最终的想到是一点点解决，就是在jupyter中，import charts，看下报什么错误，
+
+在这里面打开对应的文件，核对下，然后用vim或者你熟悉的编辑器修改/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/charts中的文件，这几个文件基本都有涉及，大约十分钟左右，就改好了，总结了一下，错误基本就两种，一是虽然我用的pip3 install charts ，可文件中的print的仍然是python2的格式（在python3中print内容要加括号），所以在print后添加括号，二是找不到路径的问题，直接在from plot import plot.....中修改为from .plot import plot....就ok了（ 因为问题已经解决了，所以没办法贴图），基本就这两类问题，如果不明白，就按照https://github.com/AnthonyCoder/Plan-for-combating/tree/master/week3/charts_replace_file这个中一一修改就ok了。
+

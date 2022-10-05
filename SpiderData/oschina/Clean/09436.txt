@@ -1,0 +1,307 @@
+
+CentOS7 安装RabbitMQ 亲测
+
+我按照别的博文，使用 yum install erlang 命令安装了erlang，然后再RabbitMQ下载了 rabbitmq-server-3.7.4-1.el7.noarch.rpm 在执行rpm -ivh rabbitmq-server-3.7.4-1.el7.noarch.rpm命令时，报错
+
+warning: rabbitmq-server-3.7.4-1.el7.noarch.rpm: Header V4 RSA/SHA1 Signature, key ID 6026dfca: NOKEY
+error: Failed dependencies:
+	erlang >= 19.3 is needed by rabbitmq-server-3.7.4-1.el7.noarch
+	socat is needed by rabbitmq-server-3.7.4-1.el7.noarch
+
+这儿存在两个问题： 问题一、erlang >= 19.3 is needed by rabbitmq-server-3.7.4-1.el7.noarch 问题二、socat is needed by rabbitmq-server-3.7.4-1.el7.noarch 接下来围绕这两个问题。
+
+
+准备
+
+RabbitMQ：rpm -ivh rabbitmq-server-3.7.4-1.el7.noarch.rpm 下载请戳这儿； erlang：下载请戳这儿
+
+
+问题二、socat is needed by rabbitmq-server-3.7.4-1.el7.noarch
+
+解决方案：使用命令 yum -y install socat 进行安装即可，我看有些博主在这步的时候 会遇到另一个问题 会报错没有socat包或是找不到socat包，解决方法安装centos的epel的扩展源，这个问题解决方案：yum -y install epel-release 执行这个命令后再执行之前的 socat安装命令
+
+
+问题一、erlang >= 19.3 is needed by rabbitmq-server-3.7.4-1.el7.noarch
+
+由于我们使用yum install erlang命令安装了erlang，它的版本不支持rabbitmq-server-3.7.4-1.el7.noarch所以我们重新安装提示给的 19.3的版本。
+
+
+准备开始安装 erlang 19.3(otp_src_19.3)
+
+使用命令获取erlang 19.3的文件
+
+命令： wget http://erlang.org/download/otp_src_19.3.tar.gz
+
+# wget http://erlang.org/download/otp_src_19.3.tar.gz
+--2018-04-26 09:33:06--  http://erlang.org/download/otp_src_19.3.tar.gz
+Resolving erlang.org (erlang.org)... 192.121.151.106
+Connecting to erlang.org (erlang.org)|192.121.151.106|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 68510871 (65M) [application/x-tar]
+Saving to: ‘otp_src_19.3.tar.gz’
+
+100%[=====================================================================================================================================================>] 68,510,871   246KB/s   in 4m 31s
+
+2018-04-26 09:37:38 (247 KB/s) - ‘otp_src_19.3.tar.gz’ saved [68510871/68510871]
+
+解压erlang安装包，会有很多的东西
+
+# tar -xzvf otp_src_19.3.tar.gz
+
+然后我们在进入解压后的目录
+
+# cd otp_src_19.3
+
+[root@ otp_src_19.3]# ll
+total 596
+-rw-r--r--  1 516 wheel  90488 Mar 15  2017 aclocal.m4
+
+-rw-r--r--  1 516 wheel    601 Mar 15  2017 AUTHORS
+
+drwxr-xr-x  2 516 wheel   4096 Mar 15  2017 bin
+drwxr-xr-x  3 516 wheel   4096 Mar 15  2017 bootstrap
+-rwxr-xr-x  1 516 wheel 152066 Mar 15  2017 configure
+
+-rw-r--r--  1 516 wheel  15300 Mar 15  2017 configure.in
+
+-rw-r--r--  1 516 wheel   4325 Mar 15  2017 CONTRIBUTING.md
+
+-rw-r--r--  1 516 wheel   1146 Mar 15  2017 erl-build-tool-vars.sh
+
+drwxr-xr-x 18 516 wheel   4096 Mar 15  2017 erts
+drwxr-xr-x  2 516 wheel   4096 Mar 15  2017 HOWTO
+drwxr-xr-x 50 516 wheel   4096 Mar 15  2017 lib
+
+-rw-r--r--  1 516 wheel  10175 Mar 15  2017 LICENSE.txt
+
+drwxr-xr-x  2 516 wheel   4096 Mar 15  2017 make
+
+-rw-r--r--  1 516 wheel  40401 Mar 15  2017 Makefile.in
+
+-rwxr-xr-x  1 516 wheel  39280 Mar 15  2017 otp_build
+
+-rwxr-xr-x  1 516 wheel  12980 Mar 15  2017 otp_patch_apply
+
+-rw-r--r--  1 516 wheel      5 Mar 15  2017 OTP_VERSION
+
+-rw-r--r--  1 516 wheel  55916 Mar 15  2017 otp_versions.table
+drwxr-xr-x  2 516 wheel   4096 Mar 15  2017 plt
+
+-rw-r--r--  1 516 wheel 100089 Mar 15  2017 prebuilt.files
+
+-rw-r--r--  1 516 wheel    239 Mar 15  2017 proposed_updates.json
+
+-rw-r--r--  1 516 wheel   2581 Mar 15  2017 README.md
+
+drwxr-xr-x  2 516 wheel   4096 Mar 15  2017 scripts
+drwxr-xr-x  3 516 wheel   4096 Mar 15  2017 system
+
+-rw-r--r--  1 516 wheel    372 Mar 15  2017 TAR.include
+
+drwxr-xr-x  2 516 wheel   4096 Mar 15  2017 xcomp
+
+编译安装erlang语言环境 prefix=/usr/local/erlang 为安装目录
+
+./configure  --prefix=/usr/local/erlang --enable-smp-support  --enable-threads  --enable-sctp --enable-kernel-poll --enable-hipe  --with-ssl --without-javac
+
+编译报错：
+
+configure: error: No curses library functions found
+configure: error: /bin/sh '/usr/local/tool/otp_src_19.3/erts/configure' failed for erts
+
+上面的报错，我起初没注意，结果导致后面安装的时候 报错。
+
+编译完成后会提示(ps：这是我出了一次错以后我才注意到这个。)
+
+*********************************************************************
+**********************  APPLICATIONS DISABLED  **********************
+*********************************************************************
+
+jinterface     : Java compiler disabled by user
+
+*********************************************************************
+*********************************************************************
+**********************  APPLICATIONS INFORMATION  *******************
+*********************************************************************
+
+wx             : wxWidgets not found, wx will NOT be usable
+
+*********************************************************************
+*********************************************************************
+**********************  DOCUMENTATION INFORMATION  ******************
+*********************************************************************
+
+documentation  : 
+                 fop is missing.
+                 Using fakefop to generate placeholder PDF files.
+
+*********************************************************************
+
+erlang语言编译配置选项：
+
+–prefix 指定安装目录
+
+–enable-smp-support启用对称多处理支持（Symmetric Multi-Processing对称多处理结构的简称）
+
+–enable-threads启用异步线程支持
+
+–enable-sctp启用流控制协议支持（Stream Control Transmission Protocol，流控制传输协议）
+
+–enable-kernel-poll启用Linux内核poll
+
+–enable-hipe启用高性能Erlang –with-ssl 启用ssl包 –without-javac
+
+不用java编译
+
+开始安装编译：
+
+make && make install
+
+报错：
+
+Makefile:248: /usr/local/tool/otp_src_19.3/make/x86_64-unknown-linux-gnu/otp_ded.mk: No such file or directory
+make: *** No rule to make target `/usr/local/tool/otp_src_19.3/make/x86_64-unknown-linux-gnu/otp_ded.mk'.  Stop.
+
+该错是由于编译报错后导致，而编译出错应该是由于我有些依赖没有准备好。 依赖环境的安装-如果需要用编译安装erlang语言环境，需要安装C++编译 yum -y install make gcc gcc-c++ kernel-devel m4 ncurses-devel openssl-devel unixODBC unixODBC-devel httpd python-simplejson我将这些东西重新用yum命令安装一下后 在进行编译，然后编译就没有报错。再次执行安装命令。
+
+配置erlang环境变量:
+
+vim /etc/profile
+
+export PATH=$PATH:/usr/local/erlang/bin
+
+source /etc/profil
+
+验证是否安装成功：
+
+//注释：输入erl Erlang/OTP 17 [erts-6.2] [source] [smp:2:2] [async-threads:10] [kernel-poll:false]，会输出版本号信息
+
+# erl Erlang/OTP 17 [erts-6.2] [source] [smp:2:2] [async-threads:10] [kernel-poll:false]
+
+Erlang R16B03-1 (erts-5.10.4) [source] [64-bit] [async-threads:10] [hipe] [kernel-poll:false]
+
+Eshell V5.10.4  (abort with ^G)
+1>
+
+
+开始安装rabbitmq rpm包
+
+需要回到 rabbitmq 安装包目录
+
+执行rpm安装命令
+
+# rpm -ivh rabbitmq-server-3.7.4-1.el7.noarch.rpm
+
+安装了前面准备的东西 但是还是报错
+
+[root@ tool]#  rpm -ivh rabbitmq-server-3.7.4-1.el7.noarch.rpm 
+warning: rabbitmq-server-3.7.4-1.el7.noarch.rpm: Header V4 RSA/SHA1 Signature, key ID 6026dfca: NOKEY
+error: Failed dependencies:
+	erlang >= 19.3 is needed by rabbitmq-server-3.7.4-1.el7.noarch
+
+安装了还是在报之前那个错误，由于我现在工作需要用，所以我暂时妥协了，换了一个版本的rabbitmq
+
+[root@ tool]#  wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.5.0/rabbitmq-server-3.5.0-1.noarch.rpm
+--2018-04-26 11:07:47--  http://www.rabbitmq.com/releases/rabbitmq-server/v3.5.0/rabbitmq-server-3.5.0-1.noarch.rpm
+Resolving www.rabbitmq.com (www.rabbitmq.com)... 104.20.62.197, 104.20.63.197, 2400:cb00:2048:1::6814:3ec5, ...
+Connecting to www.rabbitmq.com (www.rabbitmq.com)|104.20.62.197|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 4198248 (4.0M) [application/x-redhat-package-manager]
+Saving to: ‘rabbitmq-server-3.5.0-1.noarch.rpm’
+100%[==============================================>] 4,198,248   2.14MB/s   in 1.9s   
+2018-04-26 11:07:50 (2.14 MB/s) - ‘rabbitmq-server-3.5.0-1.noarch.rpm’ saved [4198248/4198248]
+
+rpm -ivh rabbitmq-server-3.5.0-1.noarch.rpm 
+warning: rabbitmq-server-3.5.0-1.noarch.rpm: Header V4 DSA/SHA1 Signature, key ID 056e8e56: NOKEY
+Preparing...                          ################################# [100%]
+Updating / installing...
+   1:rabbitmq-server-3.5.0-1          ################################# [100%]
+
+检查是否安装成功
+
+[root@ tool]# rabbitmqctl -q status
+Error: unable to connect to node rabbit@: nodedown
+
+DIAGNOSTICS
+===========
+
+attempted to contact: [rabbit@]
+
+rabbit@:
+  * connected to epmd (port 4369) on 
+  * epmd reports: node 'rabbit' not running at all
+                  no other nodes on 
+  * suggestion: start the node
+
+current node details:
+- node name: 'rabbitmq-cli-17848@'
+- home dir: /var/lib/rabbitmq
+- cookie hash: Qt5otymo+nmYhicDOdbv/w==
+
+打开服务：
+
+[root@ tool]# service rabbitmq-server start
+Starting rabbitmq-server (via systemctl):                  [  OK  ]
+
+关闭服务：
+
+[root@ tool]# service rabbitmq-server stop
+Stopping rabbitmq-server (via systemctl):                  [  OK  ]
+
+常用rabbitMq启动命令：
+
+service rabbitmq-server   start
+service rabbitmq-server   stop
+service rabbitmq-server   status
+service rabbitmq-server   rotate-logs|
+service rabbitmq-server   restart
+service rabbitmq-server   condrestart
+service rabbitmq-server   try-restart
+service rabbitmq-server   reload
+service rabbitmq-server   force-reload
+
+ps -ef | grep rabbitmq  查看rabbitMq进程
+
+netstat -anplt | grep LISTEN  rabbitmq默认监听端口15672/5672
+
+然后开启管理页面插件
+
+rabbitmq-plugins enable rabbitmq_management
+
+The following plugins have been enabled:
+  mochiweb
+  webmachine
+  rabbitmq_web_dispatch
+  amqp_client
+  rabbitmq_management_agent
+  rabbitmq_management
+
+Applying plugin configuration to rabbit@... failed.
+ * Could not contact node rabbit@.
+   Changes will take effect at broker restart.
+ * Options: --online  - fail if broker cannot be contacted.
+            --offline - do not try to contact broker.
+
+添加管理员账号
+
+rabbitmqctl add_user rabbitadmin 123456
+
+[root@tool]# rabbitmqctl add_user rabbitadmin 123456
+Error: unable to connect to node rabbit@: nodedown
+
+DIAGNOSTICS
+===========
+
+attempted to contact: [rabbit@]
+
+rabbit@:
+  * connected to epmd (port 4369) on 
+  * epmd reports: node 'rabbit' not running at all
+                  no other nodes on 
+  * suggestion: start the node
+
+current node details:
+- node name: 'rabbitmq-cli-18489@'
+- home dir: /var/lib/rabbitmq
+- cookie hash: Qt5otymo+nmYhicDOdbv/w==
+

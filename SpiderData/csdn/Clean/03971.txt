@@ -1,0 +1,28 @@
+今天在练习Python类相关的知识时遇到了一个TypeError，也就是类型错误。该错误的意思是Int型的对象是不可调用的（not callable）。
+
+class User():
+	def __init__(self,name,age,number):
+		self.name = name
+		self.age = age
+		self.custom = number
+
+def custom(self):
+		print('the number of custom is '+str(self.custom))
+
+u = User('reborn',23,40)
+u.custom()
+
+D:\>python test.py
+Traceback (most recent call last):
+  File "test.py", line 11, in <module>
+    u.custom()
+TypeError: 'int' object is not callable
+
+看到这个错误我先是一愣，心想：“int对象不可调用？我没有调用Int型数据啊，我调用的是一个函数方法！”。调来调去都没有解决。Google后才发现，这个错误之所以发生，是因为我变量名和函数名写重复了！都用的custom。
+
+当这两个名称重复时，程序会默认调用Int型对象，但Int对象没有什么调用可言，就爆出了这个错误，解决方法也很简单，要么更改变量名，要么更改方法名。
+
+欢迎关注我公众号【小众技术】，此公众号专注分享Python、爬虫学习资料和干货，关注后回复【PYTHON】，无套路免费送你一个学习大礼包，包括爬虫视频和电子书~
+
+​
+

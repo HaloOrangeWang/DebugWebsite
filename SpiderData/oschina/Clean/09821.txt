@@ -1,0 +1,19 @@
+在adminx.py文件定义的类里面添加这三个字段
+list_display = ['code','email','send_type','send_time']   #显示的字段类型
+search_fields = ['code','email','send_type']   #搜索的字段（所有字段一起搜索）这里不要带有外键的字段
+list_filter =  ['code','email','send_type','send_time']   #搜索字段（单个字段搜索）和时间
+
+一、问题描述
+
+使用xadmin实现Django后台功能时，使用search_fields = [字段名,字段名]，在搜索的时候报错Related Field got invalid lookup: icontains
+
+二、问题分析
+
+search_fields 控制可以通过搜索框搜索的字段名称，search_fields=()或search_fields=[]，xadmin使用的是模糊查询
+
+报错信息翻译出来为：相关字段的查找无效，因为search_fields中的项不是字符类型，例如字段类型是ForeignKey，则会报错
+
+三、解决方法
+
+删除search_fields中类型不符的项，例如删除字段类型为ForeignKey的项
+

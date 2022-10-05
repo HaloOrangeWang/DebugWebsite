@@ -1,0 +1,178 @@
+
+一. 不同用户下配置virtualenvwrapper的问题
+
+
+问题描述:
+
+安装virtualnev和virtualnevwrapper之后,在.bashrc进行virtualenvwrapper的相关配置后重新加载.bashrc文件时报错.
+
+报错内容大致如下:
+
+/usr/bin/python: No module named virtualenvwrapper
+virtualenvwrapper.sh: There was a problem running the initialization hooks.
+
+也就是说系统检测当前pip下的安装软件中查找不到virtualenv和virtualenvwrapper.
+
+之所以会出现这样的问题有可能是以下几条原因:
+
+在安装虚拟环境时, 可能是在使用普通用户下加了sudo命令进行安装了virtualenv和virtualenvwrapper.
+使用命令   pip list   进行查看,是否安装成功, 如果使用了pip3 进行安装虚拟环境要使用 pip3 list进行查看.
+
+如果当前用户下pip已安装软件中没有看到 virtualenv 和  virtualenvwrapper 基本上就是以上的原因
+
+解决方法:
+- 如果是普通用户不要加sudo进行安装
+
+pip install  virtualenv 
+pip install  virtualenvwrapper
+
+安装之后使用pip list可以查看到已经成功的安装了两个软件, 接下来进行配置即可
+
+配置.bashrc
+注意!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+这时要在当前用户的目录下修改.bashrc, 意思就是root用户和普通用户的~目录下都存在一个.bashrc配置文件
+
+使用不同的用户执行 vim ~/.bashrc 这句命令时 其实是操作了不同的文件
+root 用户相当于执行了 vim /root/.bashrc
+普通用户则是  vim /home/allen(普通用户名)/.bashrc
+
+root用户要在/root/.bashrc中进行配置
+普通用户要在/home/allen(用户名)/.bashrc 下进行安装
+
+在配置文件中添加配置内容
+WORKON_HOME=~/Envs # 设置virtualenv的统一管理目录, 创建的虚拟环境文件都会放在这里 
+VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages' # 添加virtualenvwrapper的参数，生成干净隔绝的环境 
+VIRTUALENVWRAPPER_PYTHON=/opt/python3/bin/python3 # 指定python解释器的本体(注意此路径随不同的linux环境改变而改变)  
+解释器一定要进行配置, 否则会报错, 要指定pip对应的python解释器, 可以通过 pip -V 进行查看 pip对应的python解释器版本
+
+source /opt/python34/bin/virtualenvwrapper.sh # 执行virtualenvwrapper安装脚本
+无法确定virtualenvwrapper.sh路径时可以通过find 进行查找, 查找范围基本可以确定到 /home/(用户名)/   和   /usr/
+
+find /usr/ -name "virtualenvwrapper.sh" -type f
+find /home/ -name "virtualenvwrapper.sh" -type f
+
+使用普通用户安装的一般都会在/home目录下, root用户安装的会在/usr目录下
+
+添加配置信息后重新加载配置文件  source ~/.bashrc
+
+如果当前用户下pip已安装软件中没有看到 virtualenv 和  virtualenvwrapper 基本上就是以上的原因
+
+解决方法:
+
+pip install  virtualenv 
+pip install  virtualenvwrapper
+
+安装之后使用pip list可以查看到已经成功的安装了两个软件, 接下来进行配置即可
+
+配置.bashrc
+注意!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+使用不同的用户执行 vim ~/.bashrc 这句命令时 其实是操作了不同的文件
+root 用户相当于执行了 vim /root/.bashrc
+普通用户则是  vim /home/allen(普通用户名)/.bashrc
+
+root用户要在/root/.bashrc中进行配置
+普通用户要在/home/allen(用户名)/.bashrc 下进行安装
+
+添加配置信息后重新加载配置文件  source ~/.bashrc
+
+使用sudo pip list 和 pip list 查看后发现都安装了virtualenv 和 virtualenvwrapper ,切换root 用户输入find / -name "virtualenvwrapper.sh" 命令进行查找 会发现有两个查找结果.
+
+这是因为在bashrc配置文件中指定的python解释器与安装的virtualenvwrapper的解释器没有对应上导致的.
+
+解决方法:
+
+重新编辑配置文件内容, 修改配置信息
+
+可以通过一下的方法来查找虚拟环境和python解释器的对应关系:
+
+首先: 查看pip版本, 获取到pip对应的默认的版本
+pip -V
+
+可以得到到类似下面的信息 (有一些情况pip会指向python3)
+pip 19.2.3 from /usr/local/lib/python2.7/dist-packages/pip (python 2.7)
+确认pip指定的是python2版本的解释器, 然后使用which python查看python的解释器路径
+
+然后在配置中配置python解释器和对应的virtualenvwrapper.sh
+
+与情况一相同, 要修改自己使用的用户对应的配置文件.
+
+重新编辑配置文件内容, 修改配置信息
+
+可以通过一下的方法来查找虚拟环境和python解释器的对应关系:
+
+首先: 查看pip版本, 获取到pip对应的默认的版本
+pip -V
+
+可以得到到类似下面的信息 (有一些情况pip会指向python3)
+pip 19.2.3 from /usr/local/lib/python2.7/dist-packages/pip (python 2.7)
+确认pip指定的是python2版本的解释器, 然后使用which python查看python的解释器路径
+
+然后在配置中配置python解释器和对应的virtualenvwrapper.sh
+
+与情况一相同, 要修改自己使用的用户对应的配置文件.
+
+不过当root 和 普通用户都安装虚拟环境并进行配置之后,在切换用户时可能会出现如下报错:
+
+虽然看起来是又搞砸了, 但是这个问题并不影响使用创建虚拟环境的使用, 个人不建议在root 和 普通用户下都安装虚拟环境.
+
+有强迫症的同学可以自己去研究一下.
+
+
+二. 存在多个python版本, 使用虚拟环境指定版本时出错
+
+不同项目中可能会使用到不同的python版本,想要使用虚拟环境指定python版本创建虚拟环境时要注意:
+
+　　只需要安装一次虚拟环境, 在创建虚拟环境时通过指定python解释器的方式来创建不同python版本的虚拟环境.
+
+解决方案和问题一种的基本类似, 最主要的问题还是要让配置信息中的虚拟环境和python解释器相对应,
+
+建议安装其他的python版本时使用编译安装, 然后在/usr/bin下创建软连接, 连接中标明安装的版本号.
+
+
+目前已知使用virtualenvwrapper过程中可能出现的错误:
+
+
+1.zlib错误
+
+
+触发错误的背景:
+
+使用pip3安装virtualenv 和 virtualenvwrapper , 在指定自己安装的python2.7.16为python解释器时报错,无法引入zlib模块.
+
+ImportError: No module named zlib
+
+解决方案:
+
+使用apt安装pip
+
+sudo apt install python-pip
+
+如果安装速度太慢可以更换apt官方源为国内源, 如ali源或者清华源. 
+但要注意要使用官方网站中提供的源,不要随便使用百度中博客中提供的源,有大概率会和你的系统版本不匹配导致更新源失败,无法下载软件
+
+安装成功之后,再次指定python2为解释器创建虚拟环境, 就可以成功创建.
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+如果安装了pip仍然报如上错误, 极大可能是存在多个python版本冲突. 解决版本冲突请移步
+
+
+2.stevedore模块错误
+
+
+触发错误的背景:
+
+使用python3作为解释器创建虚拟环境时,提示缺少stevedore模块
+
+ModuleNotFoundError: No module named 'stevedore'
+
+解决方案:
+
+使用pip3进行安装该模块即可
+
+成功安装stevedore模块之后,就可以创建虚拟环境
+
+欢迎指出文章中的错误和不足~~~~~
+

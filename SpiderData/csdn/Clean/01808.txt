@@ -1,0 +1,34 @@
+
+python报错集锦
+
+001. AttributeError: module 'scipy' has no attribute 'io'
+
+001. AttributeError: module 'scipy' has no attribute 'io'
+
+001. AttributeError: module 'scipy' has no attribute 'io'
+
+
+001. AttributeError: module ‘scipy’ has no attribute ‘io’
+
+类似的还有AttributeError: module 'scipy' has no attribute 'misc'等等。
+
+原因：import模块不对，不能直接import scipy，如果要使用io，应该import scipy.io；如果要使用misc，应该import scipy.misc。
+
+代码示例如下：
+
+错误：
+
+import scipy
+
+data = [1, 2, 3]
+res = {'data': data}
+scipy.io.savemat('data.mat', res)
+
+正确：
+
+import scipy.io
+
+data = [1, 2, 3]
+res = {'data': data}
+scipy.io.savemat('data.mat', res)
+

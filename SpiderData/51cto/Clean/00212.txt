@@ -1,0 +1,76 @@
+报错信息：sys.meta_path is None, Python is likely shutting down
+
+1.我的环境：
+
+python 3.6
+
+selenium 2.53.6
+
+chrome 65
+
+chromedriver 2.33.50
+
+2.执行代码：
+
+# 作者：上海-悠悠
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+
+driver.get("https://www.cnblogs.com/yoyoketang")
+
+driver.close()  # close这句报错了
+
+3.报错信息：sys.meta_path is None, Python is likely shutting down
+
+Exception ignored in: <bound method Service.__del__ of <selenium.webdriver.chrome.service.Service object at 0x0000000001E69748>>
+Traceback (most recent call last):
+  File "D:\soft\python3.6\lib\site-packages\selenium\webdriver\common\service.py", line 163, in __del__
+  File "D:\soft\python3.6\lib\site-packages\selenium\webdriver\common\service.py", line 139, in stop
+  File "D:\soft\python3.6\lib\site-packages\selenium\webdriver\common\service.py", line 110, in send_remote_shutdown_command
+ImportError: sys.meta_path is None, Python is likely shutting down
+
+1.遇到这个报错，首先对比了Firefox浏览器，火狐上是没有这个问题的。
+
+# 作者：上海-悠悠
+from selenium import webdriver
+
+driver = webdriver.Firefox()
+
+driver.get("https://www.cnblogs.com/yoyoketang")
+
+driver.close()  # close这句报错了
+
+2.然后用driver.quit()也不会报错
+
+# 作者：上海-悠悠
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+
+driver.get("https://www.cnblogs.com/yoyoketang")
+
+driver.quit()  # quit退出进程不会报错
+
+3.经过对比分析：
+
+selenium2+Firefox46以下版本是不需要驱动的；
+
+driver.close()只是关闭当前的窗口（chromedriver并没有退出进程,如下图），driver.quit()这个才是完全退出了进程
+
+1.close和quit方法各有各的用途，一般在多窗口时候，需要关掉其中一个窗口就用close
+
+2.写完代码，最后最好要加上一个quit,让进程退出。如下，可以先close，最后quit。
+
+# 作者：上海-悠悠
+# 交流qq群：646645429
+
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+
+driver.get("https://www.baidu.com")
+
+driver.close()  # close 这里没关掉进程
+driver.quit()
+

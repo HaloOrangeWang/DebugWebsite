@@ -1,0 +1,101 @@
+一、错误
+
+1、语法错误
+
+num = 1
+if num > 1
+    print("num > 1")  # 系统报错提示：SyntaxError: expected ':'
+
+2、逻辑错误(编写业务逻辑错误)
+
+3、系统错误
+
+二、异常
+
+1、程序执行过程中出现的未知错误
+
+2、语法和逻辑都正常
+
+3、程序业务逻辑不完善引起的程序漏洞（bug）
+
+def div(a, b):
+    return a / b
+
+print(div(1, 0))  # 程序会报错：ZeroDivisionError: division by zero  考虑不全面
+
+三、错误与异常的区别
+
+1、异常可以被捕获和处理
+
+2、错误一般是编码错误，逻辑错误，系统错误
+
+四、常见的异常类型
+
+1、异常类型：Built-in Exceptions — Python 3.10.2 documentation
+
+2、常见的异常类型：
+
+除零异常
+
+def div(a, b):
+    return a / b
+
+print(div(1, 0))  # 程序会报错：ZeroDivisionError: division by zero  考虑不全面
+
+名称异常
+
+num = 1
+if name > 1:
+    print("num > 1")  # 系统会报错：NameError: name 'name' is not defined
+
+索引异常
+
+list1 = [1, 2, 1]
+print(list1[3])  # 系统会报错： IndexError: list index out of range
+
+键异常
+
+dic1 = {'name': '杨幂'}
+print(dic1['age'])  # 系统会报错：KeyError: 'age'
+
+值异常
+
+num = input("请输入：")
+print(int(num)) #
+
+# 输入字符串
+# 系统会报错：ValueError: invalid literal for int() with base 10: '""'
+
+五、异常捕获与异常处理
+
+try:
+    list1 = [1, 2, 1]
+    print(list1[3])
+except Exception as e:
+    print(e)
+
+try:
+    list1 = [1, 2, 1]
+    print(list1[2])
+except Exception as e:
+    print(e)
+else:
+    print('没有异常')
+
+try:
+    执行代码
+ except:
+    发送异常时执行的代码
+ else:
+    没有异常时执行的代码
+ finally:
+    不管有没有异常都会执行代码
+
+六、自定义异常
+
+class MyError(Exception):
+    def __init__(self,value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+

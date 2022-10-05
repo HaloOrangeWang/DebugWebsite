@@ -1,0 +1,37 @@
+主要是用svn Checkout一个web项目，然后导入eclipse中运行。正常情况应该是没什么问题的，但是有时候也会有点题。是看了别人的博客之后，确实解决了问题，就记录一下。因为很多坑，要自己掉过再爬起来，就会有一种莫名的情绪
+
+一、项目有红色感叹号
+
+把项目导入eclipse，项目会有红色感叹号，代码内容没什么报错。网上百度出来的大家说，或者是jdk版本不对，或者是jar包有问题。
+
+右击项目，选择“Build Path------>Configure  Build Path”，然后，Libraries栏目下就可以看见提示的错误项了。
+
+我的错是有一个jar包missing，jar包前面有红色叉，后面有括号（missing）把这个jar包remove之后，进行下一步
+
+二、启动tomcat报错
+
+启动项目，tomcat就开始报错。
+
+1、The required Server component failed to start so Tomcat is unable to start.
+
+这个错误可以双击 server 在overview里面的一个Options里勾选publish开头的
+
+2、org.apache.catalina.LifecycleException:Failed to start component 异常
+
+这个主要是因为jar包的问题引起，有两种方法解决
+
+（1） 可以把缺失的jar包下载好之后Add进去。
+
+我的错是因为之前把报错jar包删除了，没有导入。
+
+（2）这个是在百度上找到的，对我目前的状况也可以解决。具体的原理我不是很知道
+
+在Tomcat配置文件/conf/catalina.properties中将(约122行)
+
+org.apache.catalina.startup.ContextConfig.jarsToSkip=
+           后添加 *.jar
+           改为:
+           org.apache.catalina.startup.ContextConfig.jarsToSkip=*.jar
+
+当然以上是根据自己掉的坑之后，在百度上众多不认识的朋友的博客得到的决定办法。也不是绝对的解决办法，掉坑之后，多看看众多朋友的解决方法，让自己不这么慌。谢谢大家的分享。
+

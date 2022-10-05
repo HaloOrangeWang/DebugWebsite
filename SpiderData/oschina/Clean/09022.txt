@@ -1,0 +1,14 @@
+报错信息如下：
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'orderInfoController': Unsatisfied dependency expressed through field 'baseFeign'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'com.sinoeve.ctm.orderconsumer.Feign.BaseFeign': FactoryBean threw exception on object creation; nested exception is java.lang.IllegalStateException: No Feign Client for loadBalancing defined. Did you forget to include spring-cloud-starter-netflix-ribbon?
+ at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:596) ~[spring-beans-5.1.8.RELEASE.jar:5.1.8.RELEASE]
+ at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:90) ~[spring-beans-5.1.8.RELEASE.jar:5.1.8.RELEASE
+
+界面没有明显提示错误，所以只能先把目标放在pom配置文件。果不其然是POM配置问题
+
+此处引入错误正确应该是
+
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+</dependency>
+

@@ -1,0 +1,10 @@
+遇到一个很诡异的事情：直接执行python脚本或把它放到shell脚本执行没啥问题，一放到crontab里执行，就报错找不到相关库。
+
+搜罗了一圈资料，由于机器安装了2个不同版本的python, 才发觉是crontab执行时，调用的是低版本的python，引用的库的路径变了。
+
+解决办法：
+
+crontab里执行时，直接把高版本python的全路径写上去，比如：
+
+0 * * * * /usr/local/python3.6/bin/python test.py
+

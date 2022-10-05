@@ -1,0 +1,28 @@
+Warning: require(): open_basedir restriction in effect. File(/home/www/blog/vendor/autoload.php) is not within the allowed path(s): (/home/www/blog/public/:/tmp/:/proc/) in /home/www/blog/public/index.php on line 25
+
+Warning: require(/home/www/blog/vendor/autoload.php): failed to open stream: Operation not permitted in /home/www/blog/public/index.php on line 25
+
+Fatal error: require(): Failed opening required '/home/www/blog/public/../vendor/autoload.php' (include_path='.:/usr/local/php/lib/php') in /home/www/blog/public/index.php on line 25
+
+自己的laravel项目一直报错,很惆怅,网上的答案
+
+排查php一定要打开  display_errors
+
+、分析错误内容
+
+　　查看问题描述以及资料，发现是php open_basedir 配置的问题，php不能引入其授权目录上级及其以上的文件，默认配置在php.ini（/usr/local/php/etc/php.ini）,但是我的open_basedir 并没有配置，默认被注释了。
+
+文献说可能在服务器配置目录下，如nginx、Apache等，于是用户sublime打开nginx进行全局搜索，open_base，果真还是搜到了，如下图
+
+　　
+
+四、修改配置
+
+　　line 27 是默认配置，默认配置是nginx.conf root 文件下的权限目录
+
+　　line 27 我复制了一行改了授权目录 改成了项目文件夹的上级，重启nginx，项目可以打开了。
+
+五、总结
+
+　　就是open_basedir 配置项的文件权限问题，如果你们也遇到了这样的情况，把php.ini 服务器nginx、Apache的配置文件都检查下。
+

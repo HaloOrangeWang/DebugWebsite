@@ -1,0 +1,22 @@
+R使用cluster profile进行功能富集小白踩坑
+
+在go富集结束后，使用emapplot功能画图，报错
+
+运行：p2 = emapplot(go_enrich,cex_category = 0.8,layout = 'kk')
+
+报错：Error in has_pairsim(x) :  Term similarity matrix not available. Please use pairwise_termsim function to deal with the results of enrichment analysis.
+
+需要使用pairwise_termsim处理下富集的结果：
+
+处理如下：
+
+library(enrichplot)
+
+ego_CC2 <- pairwise_termsim(ego_CC)
+
+emapplot(ego_CC2)
+
+主要参考大佬生信记录
+
+让你的基因有名字 | 生信菜鸟团 (bio-info-trainee.com)
+

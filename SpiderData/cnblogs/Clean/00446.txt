@@ -1,0 +1,64 @@
+
+1、pyaudio安装大背景
+
+最近在做智能音箱，需要编写声音拾取代码，我先是百度两篇比较常见的用python进行录音的操作的文章：
+
+python写一个录音小程序：http://blog.csdn.net/yexiaohhjk/article/details/73132562
+
+利用百度语言识别API实现语音识别python：http://blog.csdn.net/yexiaohhjk/article/details/73134815
+
+发现需要用到pyaudio，然后在其官网找到如何安装：http://people.csail.mit.edu/hubert/pyaudio/
+
+但是，在py虚拟环境中通过pip安装会报错，而采用sudo apt-get install python-pyaudio python3-pyaudio安装没有报错，但是在虚拟环境中不行。
+
+注：全局安装不适用于python虚拟环境中，python虚拟环境和全局环境互不影响。
+
+
+2、解决python虚拟环境中安装pyaudio走过的坑
+
+坑一：utbutu16.10 安装pyaudio模块过程出现错误 fatal error: portaudio.h: 没有那个文件或目录 error: command 'x86_64-linux-gn
+
+尝试：http://blog.csdn.net/hellodrawing/article/details/60868939，发现没用
+
+坑二：安装pyaudio找不到portaudio.h的问题
+
+尝试：http://blog.csdn.net/qq_23729557/article/details/78956602，发现无用
+
+坑三：Installing pyaudio with pip in a virtualenv
+
+尝试：https://stackoverflow.com/questions/35708238/installing-pyaudio-with-pip-in-a-virtualenv，在操作时，安装一个东西会报错！！！
+
+
+3、最终解决方案
+
+首先在virtualenv中安装pyaudio安装失败，搜索下说要先安装portaudio19-dev：
+
+　　https://stackoverflow.com/questions/35708238/installing-pyaudio-with-pip-in-a-virtualenv
+
+安装portaudio19-dev失败，搜索说缺少依赖（依赖版本不对），因此要安装sudo apt-get install jackd2
+
+　　https://ubuntuforums.org/showthread.php?t=1680154
+
+之后在虚拟环境中安装(du_tts_stt) ➜ ~ pip install pyaudio，出现因SOCK proxy导致有问题，关闭所有FQ的服务，重启电脑再次安装OK
+
+　 （真是费劲呀，哈哈哈）
+
+之后调用官方的一些demo ：http://people.csail.mit.edu/hubert/pyaudio/运行有效果，但是有警告（可以忽略）
+
+
+4、官方简单DEMO
+
+官方一个简单的录音3S的DEMO：
+
+官方一个播放上述录制音频的DEMO：
+
+参考链接
+
+1. python写一个录音小程序
+
+2. 利用百度语言识别API实现语音识别python
+
+3. pyaudio官网
+
+:: 如果您觉得不错，请推荐给更多人，帮助他们更快地解决实际问题中的坑~
+

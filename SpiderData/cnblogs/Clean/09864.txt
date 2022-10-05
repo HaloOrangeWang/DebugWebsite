@@ -1,0 +1,24 @@
+
+问题&&解决方案
+
+今天在用openai gym库的时候想用monitor来输出视频，但是最后失败了，先是看到了如下的错误提示
+
+感觉应该是ffmpeg的问题，我就去Terminal对应的conda环境里输了一下ffmpeg --version发现的确报错了，而且错误信息是一样的
+
+1⃣️尝试运行conda update ffmpeg，看更新是否能解决问题
+
+在更新后输出视频的时候没有报错了，但是输出的视频全都是一样的大小「262bytes」，而且还无法播放
+
+2⃣️顺藤摸瓜接着找bug，最后找到了解决方案⬇️
+
+问题出在gym/wrappers/monitoring/video_recorder.py这个文件的303行
+
+本来是⬇️
+
+应该更改最后一行的缩进⬇️
+
+
+参考
+
+https://github.com/openai/gym/pull/2139/commits/5c94ebabded3af1929033b72cba1c00e87c84dcf
+

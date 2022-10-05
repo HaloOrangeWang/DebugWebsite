@@ -1,0 +1,32 @@
+一、报错场景
+
+使用python遇到报错:“UnicodeDecodeError: ‘gb2312’ codec can’t decode byte 0xa4 in position… : illegal multibyte sequence”一般有如下两种场景:
+
+1.爬取中文网站内容
+
+html = urllib.request.urlopen(request).read().decode("gb2312")
+
+2.读取gbk编码的文件
+
+result = open(filename, 'r', encoding='gb2312')
+
+二、报错原因
+
+gb2312收录的中文字符集不够全面，在遇到如繁体字的时候会出现解码错误。
+
+汉字字符集范围 gb2312 < gbk < gb18030
+
+三、报错解决
+
+1.忽略解码错误
+
+html = urllib.request.urlopen(request).read().decode('gb2312'，errors = 'ignore')
+
+decode函数默认的参数就是strict，decode([encoding], [errors='strict'])，可以用第二个参数控制错误处理的策略，strict表示遇到非法字符时抛出异常；
+如果设置为ignore，则会忽略非法字符；
+如果设置为replace，则会用?取代非法字符；
+
+2.将gbk2312替换为中文字符集更全面的gbk
+
+result = open(filename, 'r', encoding='gbk')
+

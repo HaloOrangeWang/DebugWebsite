@@ -1,0 +1,47 @@
+环境：
+ - Python3.7
+ - celery4.1.0
+ 进入python交互环境，导入celery模块正常，引用Celery的方法报错：
+
+liangkai-vm [/usr/bin] 04/11/19 10:38:41
+root@0 # python
+Python 3.7.2 (default, Jan 24 2019, 10:17:31) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-36)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import celery
+>>> from celery import Celery
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<frozen importlib._bootstrap>", line 1032, in _handle_fromlist
+  File "/usr/local/lib/python3.7/site-packages/celery/local.py", line 509, in __getattr__
+    module = __import__(self._object_origins[name], None, None, [name])
+  File "/usr/local/lib/python3.7/site-packages/celery/app/__init__.py", line 5, in <module>
+    from celery import _state
+  File "/usr/local/lib/python3.7/site-packages/celery/_state.py", line 15, in <module>
+    from celery.utils.threads import LocalStack
+  File "/usr/local/lib/python3.7/site-packages/celery/utils/__init__.py", line 10, in <module>
+    from .nodenames import worker_direct, nodename, nodesplit
+  File "/usr/local/lib/python3.7/site-packages/celery/utils/nodenames.py", line 7, in <module>
+    from kombu.entity import Exchange, Queue
+  File "/usr/local/lib/python3.7/site-packages/kombu/entity.py", line 6, in <module>
+    from .abstract import MaybeChannelBound, Object
+  File "/usr/local/lib/python3.7/site-packages/kombu/abstract.py", line 6, in <module>
+    from .connection import maybe_channel
+  File "/usr/local/lib/python3.7/site-packages/kombu/connection.py", line 893
+    return self.transport.implements.async
+                                         ^
+SyntaxError: invalid syntax
+>>> quit()
+
+问题原因：
+ python3.7 中 async 和 await 变成了Python语言中保留的关键字，我们自定义变量时不能再使用这个关键字。所以我们可以将python降级为python3.6或者升级celery模块版本。
+
+升级celery模块：
+
+root@0 # pip list|grep celery
+celery                    4.1.0  
+root@0 # pip uninstall celery
+root@0 # pip install celery==4.3.0
+
+如果当前环境有多个Python版本，确保python版本一致。
+

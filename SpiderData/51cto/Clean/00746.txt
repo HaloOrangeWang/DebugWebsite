@@ -1,0 +1,24 @@
+使用python3.9读取excel时报错AttributeError: 'ElementTree' object has no attribute 'getiterator'
+
+出现错误的原因
+
+解决方法
+
+出现错误的原因
+
+在新版python3.9中，linux中使用的更新删除了getiterator方法，所以我们老版本的xlrd库调用getiterator方法时会报错。AttributeError: 'ElementTree' object has no attribute 'getiterator'
+
+解决方法
+
+linux中找出目录~/.local/lib/python3.9/site-packages/xlrd下的xlsx.py文件，修改前先备份xlsx.py文件。
+
+修改两个地方的的getiterator()改成iter(),下面的两个地方，这里已经把getiterator()改成iter()了
+
+然后重新载入程序就解决了。
+
+————————————————
+
+版权声明：本文为CSDN博主「suhao0911」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+
+原文链接：https://blog.csdn.net/suhao0911/article/details/110950742
+

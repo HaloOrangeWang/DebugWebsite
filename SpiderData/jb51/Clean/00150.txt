@@ -1,0 +1,63 @@
+
+Pip 安装
+
+1、在python中提供了一个get-pip.py;下面是地址
+
+https://bootstrap.pypa.io/get-pip.py
+
+2、在Linux下执行curl https://bootstrap.pypa.io/get-pip.py | python 进行下载安装
+
+这样很方便了  想装什么包就装什么包
+
+Pip install xxx
+
+注意：升级完python版本注意，可能你的yum命令不能使用，因为yum命令使用python写的
+
+# vi /usr/bin/yum　　#打开yum命令文件，更改第一行脚本启动地址
+
+改成上面 步骤4中的  /usr/bin/python2.7   就ok
+
+
+linux pip升级报错
+
+环境:python2.7
+
+报错内容:
+
+Traceback (most recent call last):
+
+File "/usr/bin/pip", line 9, in <module>
+
+load_entry_point('pip==21.0', 'console_scripts', 'pip')()
+
+File "/usr/lib/python2.7/site-packages/pkg_resources.py", line 378, in load_entry_point
+
+return get_distribution(dist).load_entry_point(group, name)
+
+File "/usr/lib/python2.7/site-packages/pkg_resources.py", line 2566, in load_entry_point
+
+return ep.load()
+
+File "/usr/lib/python2.7/site-packages/pkg_resources.py", line 2260, in load
+
+entry = __import__(self.module_name, globals(),globals(), ['__name__'])
+
+File "/usr/lib/python2.7/site-packages/pip/_internal/cli/main.py", line 60
+
+sys.stderr.write(f"ERROR: {exc}")
+
+解决办法:
+
+yum remove python-pip
+ 
+cd /usr/local/src
+wget https://bootstrap.pypa.io/2.7/get-pip.py
+python get-pip.py
+ 
+pip -V
+
+
+总结
+
+到此这篇关于linux系统下pip升级报错解决方法的文章就介绍到这了,更多相关linux pip升级报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

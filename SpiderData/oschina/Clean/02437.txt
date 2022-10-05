@@ -1,0 +1,31 @@
+想在本地执行我的python文件，我本地搭建了一个Jenkins，使用了execute shell来运行我的脚本，发现报错
+
+[jmeter_test] $ sh -xe D:\tomcat\apache-tomcat-8.5.20\temp\jenkins4583980269774421650.sh
+The system cannot find the file specified
+FATAL: command execution failed
+java.io.IOException: CreateProcess error=2, 系统找不到指定的文件。
+    at java.lang.ProcessImpl.create(Native Method)
+    at java.lang.ProcessImpl.<init>(ProcessImpl.java:386)
+    at java.lang.ProcessImpl.start(ProcessImpl.java:137)
+    at java.lang.ProcessBuilder.start(ProcessBuilder.java:1029)
+Caused: java.io.IOException: Cannot run program "sh" (in directory "D:\Jenkins\Jenkins_home\workspace\jmeter_test"): CreateProcess error=2, 系统找不到指定的文件。
+    at java.lang.ProcessBuilder.start(ProcessBuilder.java:1048)
+    at hudson.Proc$LocalProc.<init>(Proc.java:249)
+    at hudson.Proc$LocalProc.<init>(Proc.java:218)
+    at hudson.Launcher$LocalLauncher.launch(Launcher.java:930)
+    at hudson.Launcher$ProcStarter.start(Launcher.java:450)
+    at hudson.tasks.CommandInterpreter.perform(CommandInterpreter.java:109)
+    at hudson.tasks.CommandInterpreter.perform(CommandInterpreter.java:66)
+    at hudson.tasks.BuildStepMonitor$1.perform(BuildStepMonitor.java:20)
+    at hudson.model.AbstractBuild$AbstractBuildExecution.perform(AbstractBuild.java:736)
+    at hudson.model.Build$BuildExecution.build(Build.java:206)
+    at hudson.model.Build$BuildExecution.doRun(Build.java:163)
+    at hudson.model.AbstractBuild$AbstractBuildExecution.run(AbstractBuild.java:496)
+    at hudson.model.Run.execute(Run.java:1737)
+    at hudson.model.FreeStyleBuild.run(FreeStyleBuild.java:43)
+    at hudson.model.ResourceController.execute(ResourceController.java:97)
+    at hudson.model.Executor.run(Executor.java:419)
+
+解决办法：
+windows的服务器执行文件，python文件或者其他，需要使用execute windows batch commend  。liunx 下使用execute shell
+

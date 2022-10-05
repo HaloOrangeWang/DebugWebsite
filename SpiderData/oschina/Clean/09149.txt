@@ -1,0 +1,38 @@
+问题：
+
+1、No such field found: field java.lang.String sh. Administrators can decide whether to approve or reject this signature.
+
+原因：
+
+　　执行sh文件时文件名称中不允许有变量
+
+def port=8500
+
+sh "ssh root@target_ip sh $app_home/kill$port.sh"
+
+类似的还有.git前不能是变量，否则报错
+
+解决：
+
+　　修改为下面这样就不会报错了
+
+def kill_port='kill8500.sh'
+ // 终止端口进程
+ sh "ssh root@$target_ip sh $app_home/$kill_port"
+
+问题2、
+
+　　拉取代码时提示
+
+　　
+
+没有识别定义的变量$url,但是明明定义了啊
+
+解决：
+
+　　将单引号改为双引号，将  '$url/e-auth.git' 改为 "$url/e-auth.git"
+
+　　
+
+git branch: 'V1.5.1-dev-e-auth-20190110', credentialsId: 'gitlab_account', url: "$url/e-auth.git"
+

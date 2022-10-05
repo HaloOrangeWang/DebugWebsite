@@ -1,0 +1,36 @@
+代码：
+
+import os
+
+import cPickle as pickle
+
+filename = '../dftest.pkl'
+
+if(os.path.exists(filename)):
+
+　　w=open(filename, 'rb')
+
+　　dfTest = pickle.load(w)
+
+w.close()
+
+结果报错：
+
+Traceback (most recent call last): File "", line 3, in ImportError: No module named managers
+
+非常bug。cpickle这种包都是顺风顺水的东西，从来不报错的。
+
+后来google，都没有找到这个问题的答案。这个问题比较小众。我查看源码后，终于找到了突破口。
+
+问题根本：
+
+保存的pkl文件是在ubuntu14.04下保存的，然后你导入的时候在ubuntu16.04下面了。
+
+module managers不是一个python模块，也不是apt-get install模块。
+
+好像是底层的一个包管理工具。报这个错是底层的文件读取代码模块不一致了。
+
+解决方案：
+
+把文件保存为 csv,或者h5或者其他对ubuntu版本兼容的吧。
+

@@ -1,0 +1,18 @@
+
+异常：'latin-1' codec can't encode characters in position 62-66: ordinal not in range(256)
+
+用Python通过pymysql往MySQL数据库中插入数据时，插入的字段含有中文，出现异常：
+
+'latin-1' codec can't encode characters in position 62-66: ordinal not in range(256)
+
+数据库连接语句：
+
+db=pymysql.connect(host="localhost",user="root",passwd="mysql",db="test_db")
+
+
+解决办法：
+
+把数据库连接语句改为：
+
+db=pymysql.connect(host="localhost",user="root",passwd="mysql",db="test_db",port=3306,charset='utf8')
+

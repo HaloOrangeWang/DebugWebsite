@@ -1,0 +1,65 @@
+Centos 7 默认安装的Python 的版本是2.7的，现在不少人用的是3.x上的版本，故而需要了解下如何从Python2.7升级到Python 3.6.
+
+在虚拟机安装时，网络不通会先遇到一个错误提示 “yum 错误：Cannot find a valid baseurl for repo: base/7/x86_6”，这时
+
+先
+
+cd /etc/sysconfig/network-scripts/
+找到类似于 ifcfg-exxx 类似的文件（各个机器文件名不一样，我本机是ifcfg-ens33），用 vi 编辑一下，把ONBOOT=no，改为ONBOOT=yes
+
+然后
+
+service network restart
+
+然后网络通了，yum命令也就好使了，接下来就开始升级Python
+
+1、切换到目录/usr/local/src，从Python官网到获取Python3的包，执行命令行： wget
+
+cd /usr/local/src 
+wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tgz
+2、解压
+
+tar -xzf Python3.6.3.tgz
+3、在/usr/local路径下创建目录--python3
+
+mkdir /usr/local/python3
+4、编译安装，分条逐行执行命令
+
+cd /usr/local/src/Python-3.6.3
+./configure --prefix=/usr/local/python3
+make all
+make install
+到最后一个命令执行后如果遇到错误：zipimport.ZipImportError: can't decompress data; zlib not available
+
+从报错信息中，我们可以看出系统已经安装了zlib软件包，之所以报错是因为在编译安装时找不到zlib的开发链接库。
+centos系统中，zlib的开发链接库软件包是“zlib-devel”，因此我们只需要通过yum安装上该软件包即可：
+
+sudo yum -y install zlib-devel
+然后再继续执行 make install
+
+5、进入安装的绝对路径，检查是否安装成功
+
+/usr/local/python3/bin/python3.6 -V 
+6、查看环境变量，启动python时默认按照PATH的顺序进行查找。
+执行命令： echo $PATH
+
+7、修改软连接，启动python时指向python3.6
+A.备份之前的python
+执行命令： mv /usr/bin/python /usr/bin/python2.7.5 （请先查询好自己的python版本）
+
+B.修改软连接
+执行命令： ln -s /usr/local/python3/bin/python3 /usr/bin/python
+
+C.查看python版本：执行命令: python
+
+或python -V， pip -V
+
+8、修改yum文件，因为升级了版本以后，yum就会报错：
+执行命令：sudo vim /usr/bin/yum
+
+9、在安装软件的时候又会报错误：修改文件
+
+vi /usr/libexec/urlgrabber-ext-down
+
+第一行改为:#!/usr/bin/python2.7  （2.7是版本，自己根据自己的版本改！）
+

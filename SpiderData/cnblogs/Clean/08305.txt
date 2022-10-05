@@ -1,0 +1,80 @@
+
+请坚持看完，再操作
+
+
+背景：
+
+要让opencv支持darknet，对opencv库进行修改和编译，根据这个教程
+
+
+报错：
+
+执行:make -j2 时报错如下：
+
+[100%] Built target opencv_perf_video
+[100%] Building CXX object modules/python3/CMakeFiles/opencv_python3.dir/__/src2/cv2.cpp.o
+/Imgfit/ImageReview-v3/ImageReview_SensitiveWordDetection/chi_ocr/make_cv/opencv-4.0.1/modules/python/src2/cv2.cpp:9:10: fatal error: Python.h: No such file or directory
+ #include <Python.h>
+          ^~~~~~~~~~
+compilation terminated.
+modules/python3/CMakeFiles/opencv_python3.dir/build.make:81: recipe for target 'modules/python3/CMakeFiles/opencv_python3.dir/__/src2/cv2.cpp.o' failed
+make[2]: *** [modules/python3/CMakeFiles/opencv_python3.dir/__/src2/cv2.cpp.o] Error 1
+CMakeFiles/Makefile2:2661: recipe for target 'modules/python3/CMakeFiles/opencv_python3.dir/all' failed
+make[1]: *** [modules/python3/CMakeFiles/opencv_python3.dir/all] Error 2
+Makefile:181: recipe for target 'all' failed
+make: *** [all] Error 2
+
+
+解决：
+
+
+first day：
+
+找了好多天，试了好多种方法，终于这个方法对我是有效的：点我
+
+具体就是删掉两个文件：
+
+CMakeVars.txt
+
+CMakeCache.txt
+
+再次make -j2，成功了
+
+
+second day：
+
+虽然编译通过，但我的程序依旧报错，所以我选择重新再编译一次。
+
+先把目标python环境的opencv全部卸载了，编译生成的文件也全部删掉，执行一下：make clean，从头开始。。。
+
+结果就是，不需要删除CMakeVars.txt，CMakeCache.txt也能编译成功
+
+接下来去测试编译好的opencv：（要测试的是cmake -d……时指定的python环境，即指定的是python3.6，就去测python3.6）：
+
+#python3.6 #启动python3.6
+>>> import cv2
+>>> not found cv2... ...
+
+无法import cv2原因是python找不到编译好的opencv，现在要确定编译好的opencv在哪。
+
+# find / -name cv2.cpython-36m-x86_64-linux-gnu.so
+/data/env/face_ai/lib/python3.6/site-packages/cv2/cv2.cpython-36m-x86_64-linux-gnu.so
+
+较高版本的opencv就去查找文件：cv2.cpython-36m-x86_64-linux-gnu.so，低版本的去查找：cv2.so
+
+现在确定了编译好的opencv路径是：/data/env/face_ai/lib/python3.6/site-packages/ （每个人都不同，要根据自己查找到的为准）
+
+再将opencv安装路径让python知道：
+
+# vim ~/.bashrc
+
+添加新行：
+
+export PYTHONPATH=$PYTHONPATH:/data/env/face_ai/lib/python3.6/site-packages/
+
+让其生效：
+
+# source ~/.bashrc
+
+再去测试python环境就会发现可以成功import cv2了
+

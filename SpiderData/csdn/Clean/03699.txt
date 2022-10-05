@@ -1,0 +1,22 @@
+这个问题是windwos系统的环境变量配置中出现的问题。本来小虎不想用windows做开发，但是实验室大伙用了并且工作站也配成win不好改。就很烦，没有租的Linux主机香啊。但是咋们还是先把这个问题解决下。
+
+
+错误报告
+
+错误的本身是说某个模块运行时找不到，但是conda已经安装了这个模块，我个人觉得它是去找C盘的包了，报错如下：
+
+S:\Anaconda3\envs\spl\lib\site-packages\torchvision\io\image.py:11: UserWarning: Failed to load image Python extension: [WinError 127] The specified procedure could not be found
+  warn(f"Failed to load image Python extension: {e}")
+
+虽然报错，但是似乎不影响程序运行，真是windows开发一生的痛。
+
+
+解决方案
+
+在c盘的user里面也装上这个报错的包，在我这里是torchvision，这接开cmd或conda prompt用pip3安装即可。
+
+pip3 install torchvision
+
+可选项：
+ 环境变量最好加上anaconda的路径，这样import查看时能够连接到conda环境下的包。环境变量位置例如：
+

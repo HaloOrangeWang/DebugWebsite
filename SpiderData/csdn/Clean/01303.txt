@@ -1,0 +1,8 @@
+今天要把mysql中的数据写入到sql文件中，写个python脚本，执行时报错 ‘gbk’ codec can’t encode character ‘\uff65’ in position 208642: illegal multibyte sequence
+ 原来是因为在windows下新文件的默认编码是gbk，所以想要向新文件里写数据需要改变新文件的编码：
+
+with open(path,'w+',encoding='utf-8') as fp:
+     fp.write(sql)
+
+修改后再执行，就可以了。
+

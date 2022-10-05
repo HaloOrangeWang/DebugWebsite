@@ -1,0 +1,134 @@
+关键词：brew anaconda no current thread
+
+关键词：brew anaconda no current thread
+
+问题描述：
+ 成功安装PaddlePaddle后，运行波士顿房价预测的代码，报错Fatal Python error: PyThreadState_Get: no current
+
+问题描述：
+ 成功安装PaddlePaddle后，运行波士顿房价预测的代码，报错Fatal Python error: PyThreadState_Get: no current
+
+报错输出：
+
+报错输出：
+
+Fatal Python error: PyThreadState_Get: no current thread
+
+复现方式：
+ 在Mac中同时存在brew安装的python2.7与anaconda版本python2.7，在anaconda版本的python下安装PaddlePaddle，安装成功，使用安装成功的PaddlePaddle执行房间预测模型报Fatal Python error: PyThreadState_Get: no current thread
+
+复现方式：
+ 在Mac中同时存在brew安装的python2.7与anaconda版本python2.7，在anaconda版本的python下安装PaddlePaddle，安装成功，使用安装成功的PaddlePaddle执行房间预测模型报Fatal Python error: PyThreadState_Get: no current thread
+
+解决方法：
+ 该问题是由于brew的python和anaconda的python冲突造成的，解决方法如下：
+
+解决方法：
+ 该问题是由于brew的python和anaconda的python冲突造成的，解决方法如下：
+
+执行 otool -L /anaconda2/lib/python2.7/site-packages/py_paddle/_swig_paddle.so
+
+会得到如下输出：
+
+/anaconda2/lib/python2.7/site-packages/py_paddle/_swig_paddle.so 
+/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 1445.12.0) 
+/System/Library/Frameworks/Security.framework/Versions/A/Security (compatibility version 1.0.0, current version 58286.20.16) 
+/usr/local/opt/python/Frameworks/Python.framework/Versions/2.7/Python (compatibility version 2.7.0, current version 2.7.0) 
+/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 400.9.0) 
+/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1252.0.0)
+
+可以发现，并没有/usr/local/opt/python/Frameworks/Python.framework/Versions/2.7/Python 这个路径。
+
+执行install_name_tool -change /usr/local/opt/python/Frameworks/Python.framework/Versions/2.7/Python /anaconda/lib/libpython2.7.dylib /anaconda/lib/python2.7/site-packages/py_paddle/_swig_paddle.so
+
+此时再通过PaddlePaddle运行波士顿房价预测的代码，不会再出现上述问题。
+
+问题分析：
+ PyThreadState_GET()方法是python内核中的方法，该方法主要用于python线程方面的操作，而线程其实涉及到了对系统资源的调用，当系统本地中有多种不同的python且没有做环境隔离，就可能会发生python版本冲突的问题，冲突问题的表现形式可能就是Fatal Python error: PyThreadState_Get: no current thread，因为是内核级的代码，我们通常无需去修改，也难以修改，成本太高，所以更建议的方法就是修改系统中的环境，如解决方法中所使用的方法，通过相应的配置，修改python的开发环境，避免python版本冲突的发生。
+
+问题分析：
+ PyThreadState_GET()方法是python内核中的方法，该方法主要用于python线程方面的操作，而线程其实涉及到了对系统资源的调用，当系统本地中有多种不同的python且没有做环境隔离，就可能会发生python版本冲突的问题，冲突问题的表现形式可能就是Fatal Python error: PyThreadState_Get: no current thread，因为是内核级的代码，我们通常无需去修改，也难以修改，成本太高，所以更建议的方法就是修改系统中的环境，如解决方法中所使用的方法，通过相应的配置，修改python的开发环境，避免python版本冲突的发生。
+
+问题拓展：
+ 通常而言，内核级的问题都是比较严重的问题，所以这种级别的问题是会被快速修复的，如果你使用的python稳定版本中，出现了这种级别的问题，通常都是环境问题，如版本冲突或系统资源限制等，要解决这个问题最好就是对python的版本进行控制，通常可以使用pyenv、virtualenv等工具，pyenv只支持linux与mac，使用这些工具为不同版本的python创建独立的虚拟开发环境，这些开发环境不会影响到本地环境，做了很好的隔离，当然对于具体的问题，如Fatal Python error: PyThreadState_Get: no current thread也可以使用具体的解决方法。
+
+问题拓展：
+ 通常而言，内核级的问题都是比较严重的问题，所以这种级别的问题是会被快速修复的，如果你使用的python稳定版本中，出现了这种级别的问题，通常都是环境问题，如版本冲突或系统资源限制等，要解决这个问题最好就是对python的版本进行控制，通常可以使用pyenv、virtualenv等工具，pyenv只支持linux与mac，使用这些工具为不同版本的python创建独立的虚拟开发环境，这些开发环境不会影响到本地环境，做了很好的隔离，当然对于具体的问题，如Fatal Python error: PyThreadState_Get: no current thread也可以使用具体的解决方法。
+
+问题研究：
+ PyThreadState_GET是python内核中的一个方法，其部分相关内核代码如下： void PyErr_Restore(PyObject *type, PyObject *value, PyObject *traceback)
+{
+     
+     
+     
+    PyThreadState *tstate = PyThreadState_GET();
+    PyObject *oldtype, *oldvalue, *oldtraceback;
+
+if (traceback != NULL && !PyTraceBack_Check(traceback)) {
+     
+     
+     
+        /* XXX Should never happen -- fatal error instead? */
+        /* Well, it could be None. */
+        Py_DECREF(traceback);
+        traceback = NULL;
+    }
+
+// 保存以前的异常信息
+    oldtype = tstate->curexc_type;
+    oldvalue = tstate->curexc_value;
+    oldtraceback = tstate->curexc_traceback;
+    // 设置当前的异常信息
+    tstate->curexc_type = type;
+    tstate->curexc_value = value;
+    tstate->curexc_traceback = traceback;
+    // 抛弃以前的异常信息
+    Py_XDECREF(oldtype);
+    Py_XDECREF(oldvalue);
+    Py_XDECREF(oldtraceback);
+}
+ python通过PyThreadState_GET()可以获得当前获得线程，并将异常信息存放到了线程状态对象中。 python内核级的代码通常是不会有什么报错的，但如果遇到了这个级别的错误，第一个要考虑的依旧是开发环境问题，针对Fatal Python error: PyThreadState_Get: no current thread而言，它通常出现在mac系统中，常见的原因就是mac中存在多个python环境，一个优雅的方式就是在mac上使用pyenv，这样就可以通过pyenv来隔绝系统原本代码的brew安装的python与其他自己后面安装的python相互隔离了。
+
+问题研究：
+ PyThreadState_GET是python内核中的一个方法，其部分相关内核代码如下：
+
+void PyErr_Restore(PyObject *type, PyObject *value, PyObject *traceback)
+{
+     
+     
+     
+    PyThreadState *tstate = PyThreadState_GET();
+    PyObject *oldtype, *oldvalue, *oldtraceback;
+
+if (traceback != NULL && !PyTraceBack_Check(traceback)) {
+     
+     
+     
+        /* XXX Should never happen -- fatal error instead? */
+        /* Well, it could be None. */
+        Py_DECREF(traceback);
+        traceback = NULL;
+    }
+
+// 保存以前的异常信息
+    oldtype = tstate->curexc_type;
+    oldvalue = tstate->curexc_value;
+    oldtraceback = tstate->curexc_traceback;
+    // 设置当前的异常信息
+    tstate->curexc_type = type;
+    tstate->curexc_value = value;
+    tstate->curexc_traceback = traceback;
+    // 抛弃以前的异常信息
+    Py_XDECREF(oldtype);
+    Py_XDECREF(oldvalue);
+    Py_XDECREF(oldtraceback);
+}
+
+python通过PyThreadState_GET()可以获得当前获得线程，并将异常信息存放到了线程状态对象中。
+
+python内核级的代码通常是不会有什么报错的，但如果遇到了这个级别的错误，第一个要考虑的依旧是开发环境问题，针对Fatal Python error: PyThreadState_Get: no current thread而言，它通常出现在mac系统中，常见的原因就是mac中存在多个python环境，一个优雅的方式就是在mac上使用pyenv，这样就可以通过pyenv来隔绝系统原本代码的brew安装的python与其他自己后面安装的python相互隔离了。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

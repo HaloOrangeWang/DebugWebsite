@@ -1,0 +1,61 @@
+
+前言
+
+我在使用pip install opencv-python 时报错
+
+
+Could not find a version that satisfies the requirement opencv (from versions: ) No matching distribution found for opencv
+
+树莓派的镜像是默认装的镜像，没怎么装过其他东西的。我查看了python的版本，python是2.7版本的，树莓派镜像默认是装好了python2。分析原因，python2版本过久，无法找到满足opencv需求的版本。然后我将python3后安装，发现opencv安装成功。
+
+
+具体操作
+
+1.执行 sudo apt-get install python3 命令安装python3
+
+sudo apt-get install python3
+
+2.执行 python3 -V 查看 python3是否安装成功
+
+python3 -V
+
+3.执行 pip3 install opencv-python
+
+pip3 install opencv-python
+
+安装好后如图
+
+4.执行 pip3 list 验证 pip3中是否安装了opencv-python
+
+pip3 list
+
+5.进入python3 执行 import cv2 as cv 查看opencv-python 是否成功安装进python3
+
+python3
+import cv2 as cv
+
+此时出现了个坑，报错：ImportError:libcblas.so.3:cannot open shared object file:No such file or directory
+这个报错的意思是没有安装libcblas的库，此时安装Blas 的依赖项就解决了。安装libcblas库的命令是：
+
+sudo apt-get install libatlas-base-dev
+
+或
+
+sudo apt-get install libgflags-dev
+
+sudo apt-get install libgoodle-glog-dev
+sudo apt-get install liblmdb-dev
+sudo apt-get install python
+sudo apt-get install python-dev
+sudo apt-get install python-numpy
+sudo apt-get install ipython
+sudo apt-get install ipython-notebook
+sudo apt-get install python-sklearn
+sudo apt-get install python-skimage
+sudo apt-get install python-protobuf
+
+这里演示 命令 sudo apt-get install libatlas-base-dev
+
+6.再次进入python3 执行 import cv2 as cv 查看opencv-python 是否成功安装进python3
+（若第五步遇到坑则执行第六步）
+

@@ -1,0 +1,21 @@
+问题描述，我按照网上的流程设置好了清华镜像源，但是在使用sudo apt-get install python3-pip命令安装pip的时候，报错。系统提示我使用sudo apt --fix-broken install命令，之后使用此命令，报错dpkg: warning: files list file for package。。。，然后我找到了一些案例方式，删除报错的文件，全部重新安装所有告警文件，之后都无法解决问题。之后无意又看到了一处清华镜像源，发现与我设置的地址略有不同，我于是重新设置镜像地址，问题得以解决。
+
+这是我最后设置的清华源镜像，deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse
+    deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse
+    deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse
+    deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse
+    deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse
+    deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse
+    deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restricted universe multiverse
+    deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restricted universe multiverse
+    deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse
+    deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse。
+
+设置镜像源方法，sudo gedit /etc/apt/sources.list，之后按提示输入自己的密码。将新的镜像源地址替换掉sources.list文件中的地址，保存退出。重新在命令行输入sudo apt-get update命令，周输入sudo apt-get upgrade，问题得以解决。
+
+在之后使用pip3更新下载Python包的时候，报错我没有setuptools模块，我分别用如下命令更新了setuptools模块，pip3得以正常使用。
+
+wget --no-check-certificate  https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz#md5=c607dd118eae682c44ed146367a17e26；tar -zxvf setuptools-19.6.tar.gz；cd setuptools-19.6 ；python3 setup.py build ；sudo python3 setup.py install。
+
+参考博文：https://blog.csdn.net/Test_tju/article/details/86562840。
+

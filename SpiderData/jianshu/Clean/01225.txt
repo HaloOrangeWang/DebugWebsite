@@ -1,0 +1,22 @@
+'Series' object has no attribute 'reshape'
+
+数据归一化时候的错误：
+
+data = pd.read_csv("G:/dataset/wine.csv")
+#获取数据的基本情况
+print(data["Alcohol"].describe())
+minMax = MinMaxScaler()
+#将数据进行归一化
+x_std = minMax.fit_transform(data["Alcohol"].values.reshape(-1,1))
+print(x_std)
+
+将
+
+minMax.fit_transform(data["Alcohol"])
+
+改为
+
+minMax.fit_transform(data["Alcohol"].values.reshape(-1,1))
+
+即可。
+

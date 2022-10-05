@@ -1,0 +1,51 @@
+pip install psycopg2出现错误：
+
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Collecting psycopg2
+ Using cached https://pypi.tuna.tsinghua.edu.cn/packages/84/d7/6a93c99b5ba4d4d22daa3928b983cec66df4536ca50b22ce5dcac65e4e71/psycopg2-2.8.4.tar.gz (377 kB)
+ ERROR: Command errored out with exit status 1:
+  command: /opt/AN/bin/python -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-lkf6b0y5/psycopg2/setup.py'"'"'; __file__='"'"'/tmp/pip-install-lkf6b0y5/psycopg2/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base /tmp/pip-install-lkf6b0y5/psycopg2/pip-egg-info
+   cwd: /tmp/pip-install-lkf6b0y5/psycopg2/
+ Complete output (23 lines):
+ running egg_info
+ creating /tmp/pip-install-lkf6b0y5/psycopg2/pip-egg-info/psycopg2.egg-info
+ writing /tmp/pip-install-lkf6b0y5/psycopg2/pip-egg-info/psycopg2.egg-info/PKG-INFO
+ writing dependency_links to /tmp/pip-install-lkf6b0y5/psycopg2/pip-egg-info/psycopg2.egg-info/dependency_links.txt
+ writing top-level names to /tmp/pip-install-lkf6b0y5/psycopg2/pip-egg-info/psycopg2.egg-info/top_level.txt
+ writing manifest file '/tmp/pip-install-lkf6b0y5/psycopg2/pip-egg-info/psycopg2.egg-info/SOURCES.txt'
+ 
+ Error: pg_config executable not found.
+ 
+ pg_config is required to build psycopg2 from source. Please add the directory
+ containing pg_config to the $PATH or specify the full executable path with the
+ option:
+ 
+  python setup.py build_ext --pg-config /path/to/pg_config build ...
+ 
+ or with the pg_config option in 'setup.cfg'.
+ 
+ If you prefer to avoid building psycopg2 from source, please install the PyPI
+ 'psycopg2-binary' package instead.
+ 
+ For further information please check the 'doc/src/install.rst' file (also at
+ <http://initd.org/psycopg/docs/install.html>).
+ 
+ ----------------------------------------
+ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+
+解决方法：
+
+yum install postgresql postgresql-devel python-devel python3-devel
+
+补充知识：anaconda 通过pip 安装python psycopg2
+
+1. 【不能在cmd里install】之前一直在 cmd 里conda install psycopg2 ，pip install psycopg2，虽然提示安装成功，但是import时还是会报错提示包不存在。
+
+2. 【在prompt里pip】正确的安装方法是，安装完成 anaconda，进入anaconda prompt，输入命令即可
+
+pip install psycopg2
+
+3. import psycopg2 未报错，安装成功。
+
+以上这篇解决pip install psycopg2出错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

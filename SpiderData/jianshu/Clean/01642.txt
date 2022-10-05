@@ -1,0 +1,11 @@
+如果使用urllib.request.urlopen()爬取https链接会报如下错误
+
+urllib.error.URLError:<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:833)>
+
+解决方案:
+
+添加以下代码即可
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+

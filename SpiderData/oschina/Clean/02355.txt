@@ -1,0 +1,45 @@
+👆对私有云感兴趣可以进入公众号回复“私有云”哦。
+
+环境中未安装Airtest库，导致找不到模块
+
+
+① 如何检查pycharm的运行环境中有没有安装Airtest库呢？
+
+
+② 虚拟环境问题
+
+未在脚本中连接设备
+
+在 AirtestIDE 中，我们可以在设备窗口中一键连接上我们的测试设备，然后再在脚本编辑窗口录制 Airtest 脚本即可。
+
+但是在 pycharm 编写 Airtest 脚本的时候，童鞋们往往忘记在初始化脚本的时候添加设备连接参数，导致运行 Airtest 脚本时出现各种设备未连接的报错，其中典型的报错有：
+
+下面举几个添加设备参数的例子：
+
+# 方法一：在auto_setup()接口添加设备
+auto_setup(__file__,devices=["Android://127.0.0.1:5037/SJE5T17B17"])
+
+# 方法二：用connect_device()方法连接设备
+dev = connect_device("Android://127.0.0.1:5037/SJE5T17B17")
+
+# 方法三：用init_device()方法连接设备
+init_device(platform="Android",uuid="SJE5T17B17")
+
+以上三种方法任选其一即可，另外这三个接口的详细使用方法，我们在往期推文 “用1行代码搞定自动化测试的设备连接问题” 中有详细介绍，有需要的童鞋可以认真看一下~
+
+对于使用了备选连接参数才可以正常连接上的设备，比如模拟器、MIUI11等，我们也需要在连接设备的字符串后面加上这些连接参数（以 auto_setup 接口为例）：
+
+auto_setup(__file__,devices=["Android://127.0.0.1:5037/79d03fa?cap_method=JAVACAP&&ori_method=ADBORI"])
+
+airtest的截图文件使用相对路径时，程序找不到
+
+
+在pycharm运行完脚本后不知道怎么看airtest的报告
+
+
+① 脚本报错导致最后的生成报告语句没有执行
+
+本文分享自微信公众号 - AirtestProject（AirtestProject）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

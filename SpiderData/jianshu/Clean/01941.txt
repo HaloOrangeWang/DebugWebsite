@@ -1,0 +1,47 @@
+
+报错信息:
+
+virtualenvwrapper.sh: There was a problem running the initialization hooks
+1 ./virtualenvwrapper.sh: line 230: : command not found
+2 virtualenvwrapper.sh: There was a problem running the initialization hooks.
+3
+4 If Python could not import the module virtualenvwrapper.hook_loader,
+5 check that virtualenvwrapper has been installed for6 VIRTUALENVWRAPPER_PYTHON= and that PATH is7 set properly.
+
+这是根据提示230行的语句：
+
+"$VIRTUALENVWRAPPER_PYTHON" -m 'virtualenvwrapper.hook_loader'
+
+错误原因：Ubuntu安装了2.7和3.x两个版本的python,在安装时使用的是sudo pip3 install virtualenvwrapper
+
+在我运行的时候默认使用的是python2.x,但在python2.x中不存在对应的模块。(virtualenvwrapper.sh文件内容如下:)：
+
+# Locate the global Python where virtualenvwrapper is installed.
+if [ "$VIRTUALENVWRAPPER_PYTHON" = "" ] then
+    VIRTUALENVWRAPPER_PYTHON="$(command \which python)"
+fi
+
+当不存在VIRTUALENVWRAPPER_PYTHON环境时,会默认选择使用which python(我这里默认是python2),所以需要增加此环境变量：
+
+解决方法一:
+
+$ sudo vim /usr/local/bin/virtualenvwrapper.sh
+
+# 修改 文件 /usr/local/bin/virtualenvwrapper.sh
+48 if [ "${VIRTUALENVWRAPPER_PYTHON:-}" = "" ]
+49 then
+50     VIRTUALENVWRAPPER_PYTHON="$(command \which python)"  # 改为 python3
+51 fi
+
+解决方法二:
+
+安装 虚拟环境时, 配置 ~/.bashrc 文件时, 记得 添加 这一行代码指定对应的 VIRTUALENVWRAPPER_PYTHON :
+
+VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+
+解决方法三:
+
+通过ln软链接
+将 python 默认 设置为 python3
+$ sudo ln -s /usr/bin/python3 /usr/bin/python
+

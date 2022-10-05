@@ -1,0 +1,89 @@
+背景：工作需要，将excel文件写入到oracel数据库中。
+
+目标：连接oracle，批量写入数据。
+
+
+1、连接oracle
+
+本次是window环境下直接写入，python连接oracle可以参考文章  Python连接oracle
+
+
+2、写入oracel
+
+参考网上的方法，逐条循环插入。可以直接写入。
+
+import pandas as pd
+import cx_Oracle
+
+def Input_to_db(data,table_name):
+  '''
+  1、根据传入的dataframe的列的长度与名称，自动生成插入SQL语句；
+  2、data = 需要插入的dataframe数据。 table_name = 需要插入的表名称
+  '''
+  conn = cx_Oracle.connect('res_gjcj/res_gjcj_asd@10.64.39.93:31521/rkqry')    
+  cursor = conn.cursor()
+
+columns_names = list(data.columns)
+  query = "INSERT INTO " + '"' + table_name  + '"'  + ' ' + str(list(data.columns)).replace("'",'').replace('[','(').replace(']',')') + " VALUES ('%s'" +  ", '%s'" * ( len(columns_names) - 1 ) + ')'
+
+for i in range(len(data)):
+      insert_list = data.iloc[[i],:].values.tolist()[0]  
+      try: 
+        cursor.execute(query % tuple(insert_list))
+      except:
+
+conn.commit()
+  # 关闭游标
+  cursor.close()
+  conn.close()
+
+
+3、pandas + sqlalchemy 直接写入
+
+按照以往的方式，想尝试使用sqlalchemy直接将整个df直接写入。
+
+import cx_Oracle
+from sqlalchemy import create_engine
+
+from sqlalchemy import create_engine
+conn = 'res_gjcj/res_gjcj_asd@10.64.39.93:31521/rkqry'
+engine = create_engine(conn , echo=False,encoding='utf-8')
+
+data.to_sql('table_name', con = engine , if_exists = 'replace' , index = False)
+
+然后报错：
+
+查询相关资料后发现是：因为cx_Oracle不会去读我们配置的tnsname.ora文件，而是通过传进去的参数来构造连接url。
+
+具体可以参考文章。
+
+def Input_to_db(data,table_name):
+    ip = '10.64.39.93'
+    port = '31521'
+    uname = 'res_gjcj' # 用户名
+    pwd = 'res_gjcj_asd' # 密码
+    tnsname = 'rkqry' # 实例名    
+    dsnStr = cx_Oracle.makedsn(ip, port, service_name=tnsname)
+    connect_str = "oracle://%s:%s@%s" %(uname, pwd, dsnStr)
+    engine = create_engine(connect_str, encoding='utf-8')    
+    conn = cx_Oracle.connect(uname, pwd, dsn=dsnStr)   
+  
+    data.to_sql(table_name, con=engine,if_exists='append',index=False,chunksize=100) #,dtype='utf-8'
+
+engine.close
+    conn.close()
+
+修改后就可以直接将dataframe写入了
+
+
+4、写入时间比较
+
+测试了两种方式，效果如下：
+
+实验后发现还是用sql 插入更快。
+
+当然也可能是我sqlalchemy + cx_Oracle 的使用方式有问题，这个以后会尝试解决。
+
+
+5、备注
+

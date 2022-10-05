@@ -1,0 +1,47 @@
+我在执行yum -y install nc命令的时候出现如下报错
+
+There was a problem importing one of the Python modules
+required to run yum. The error leading to this problem was:
+
+cannot import name partial
+
+Please install a package which provides this module, or
+verify that the module is installed correctly.
+
+It's possible that the above module doesn't match the
+current version of Python, which is:
+2.7.5 (default, May  3 2017, 07:55:04) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-14)]
+
+If you cannot solve this problem yourself, please go to 
+the yum faq at:
+  http://yum.baseurl.org/wiki/Faq
+
+ansible远程执行 ansible -i ./hosts all -m ping 的时候也有个报错
+
+10.4.38.129 | FAILED! => {
+
+"changed": false,
+
+"module_stderr": "Shared connection to 10.4.38.129 closed.\r\n",
+
+"module_stdout": "\r\nTraceback (most recent call last):\r\n  File \"/home/xtwh/.ansible/tmp/ansible-tmp-1552962762.09-256674951838735/AnsiballZ_command.py\", line 113, in <module>\r\n    _ansiballz_main()\r\n  File \"/home/xtwh/.ansible/tmp/ansible-tmp-1552962762.09-256674951838735/AnsiballZ_command.py\", line 105, in _ansiballz_main\r\n    invoke_module(zipped_mod, temp_path, ANSIBALLZ_PARAMS)\r\n  File \"/home/xtwh/.ansible/tmp/ansible-tmp-1552962762.09-256674951838735/AnsiballZ_command.py\", line 44, in invoke_module\r\n    from ansible.module_utils import basic\r\n  File \"/tmp/ansible_command_payload_ZJtc3_/ansible_command_payload.zip/ansible/module_utils/basic.py\", line 67, in <module>\r\n  File \"/usr/lib64/python2.7/locale.py\", line 19, in <module>\r\n    import functools\r\n  File \"/usr/lib64/python2.7/functools.py\", line 10, in <module>\r\n    from _functools import partial, reduce\r\nImportError: cannot import name partial\r\n",
+
+"msg": "MODULE FAILURE\nSee stdout/stderr for the exact error",
+
+"rc": 1
+
+}
+
+以上报错是同一台服务器，判断为python的函数库出问题
+
+解决方案
+
+#cat /etc/redhat-release 
+Red Hat Enterprise Linux Server release 7.4 (Maipo)
+
+#python -V
+Python 2.7.5
+
+将问题主机的/lib64/python2.7目录备份，找一台没问题的服务器，同目录下的所有文件拷贝过来，就解决问题了
+

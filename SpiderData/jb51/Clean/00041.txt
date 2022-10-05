@@ -1,0 +1,107 @@
+1 调试过程
+
+用Python3.6+Sciter+PyCharm写了一个py测试脚本helloworld.py，该脚本中只含有一条语句“import sciter”。在PyCharm中运行之，未报错。
+
+#helloworld.py
+import sciter
+
+然后将该脚本用PyInstaller打包成exe文件，打包程序pack.py如下：
+
+#pack.py
+from PyInstaller.__main__ import run
+if __name__ == '__main__':
+  opts = [
+      # 字符串前加“r”，防止字符转义
+      # r'--hidden-import=py4j.java_collections',\
+      # 要打包的Python文件
+      r'D:\work\python\my_editor\helloworld\helloworld.py',\
+      # -F, –onefile 打包一个单个文件，如果你的代码都写在一个.py文件的话，可以用这个，如果是多个.py文件就别用
+      # '-F',\
+      # -w：制作窗口程序，与之相对的-c意味制作命令行程序（默认）。--distpath指定打包的目的地路径
+      r'-w','--distpath=D:\work\python\my_editor\helloworld\dist',\
+      # --workpath 指定工作路径
+      r'--workpath=D:\work\python\my_editor\helloworld\out',\
+      # --specpath指定.spec文件保存路径
+      r'--specpath=D:\work\python\my_editor\helloworld\out',\
+      # --icon 指定exe文件的图标
+      r'--icon=D:\work\python\my_editor\ico\text.ico',\
+      # --upx-dir 使用upx压缩
+      r'--upx-dir','upx393w',\
+      # --add-data 指定要包含的资源文件。
+      # “C:\\Windows\\System32\\sciter.dll”为资源文件原本所在路径（source）。
+      # “.”为相对于exe文件的路径（destination），在这里“.”为同一目录的意思。
+      # source路径与destination路径以英文状态下分号“;”隔开。
+      # r'--add-data', 'C:\\Windows\\System32\\sciter.dll;.', \
+      # r'--add-data', 'D:\\work\\python\\my_editor\\helloworld\\pages\\word.html;pages'
+      ]
+  run(opts)
+
+打包过程未报错，但打包后执行exe文件就出现问题了，如下图，报错“Failed to execute script helloworld”。
+
+就这么一句话，没有其他任何的报错信息，很令人恼火。后来查了资料，发现在打包时，可以指定exe以命令行模式执行，就能看到报错信息，而非以当前的窗口模式执行。即将上述pack.py脚本中的opts选项列表里的“-w”改为“-c”。
+
+再次打包执行exe文件，发现了弹出了一个含有报错信息的窗口。但是窗口一闪即逝，根本看不清里面的报错信息。这是因为程序抛出异常退出了；即使不抛出异常，窗口也会因程序执行完成而消失。于是将主程序helloworld.py的代码改为如下：
+
+#helloworld.py
+import traceback
+
+#加上try-except语句，是为了防止程序在出现异常时奔溃退出。
+try:
+  import sciter
+except Exception as e:
+  #打印异常栈轨迹。
+  traceback.print_exc()
+  #使程序阻塞，防止程序执行完毕退出。
+  a = input()
+
+再次打包执行exe文件，能看到报错信息了，如下图。其中的核心信息是“ImportError: C:\Windows\System32\sciter.dll was not found in PATH”，即缺少sciter.dll文件。
+
+这就很奇怪了，在PyCharm中运行时没报这个错啊！查看PyInstaller官网，得知PyInstaller打包后的exe程序不能自动识别资源文件（如dll、html、png等文件）的路径，需要在spec文件中指定datas选项。比如下面的helloworld.spec片段，添加了sciter.dll文件到与exe文件同级的目录（.）中；添加了word.html到比exe文件所在目录更深一层的目录（pages）中（若是只报错缺少dll文件，可不指定html文件）。
+
+#helloworld.spec片段
+
+a = Analysis(['D:\\work\\python\\my_editor\\helloworld\\helloworld.py'],
+       pathex=['D:\\work\\python\\my_editor\\helloworld\\out'],
+       binaries=[],
+       datas=[('C:\\Windows\\System32\\sciter.dll', '.'), ('D:\\work\\python\\my_editor\\helloworld\\pages\\word.html', 'pages')],
+       hiddenimports=[],
+       hookspath=[],
+       runtime_hooks=[],
+       excludes=[],
+       win_no_prefer_redirects=False,
+       win_private_assemblies=False,
+       cipher=block_cipher,
+       noarchive=False)
+
+但每次执行完打包程序后，还要手动修改spec文件，很是麻烦。通过调试PyInstaller源代码，找到了另一种方法，即在pack.py打包程序中的opts选项列表里加上两个“--add-data选项”，如下：
+
+#helloworld.py片段
+
+opts = [
+    """
+    其他选项与上面的helloworld.py同，此处省略。
+    """
+    # --add-data 指定要包含的资源文件。
+    # “C:\\Windows\\System32\\sciter.dll”为资源文件原本所在路径（source）。
+    # “.”为相对于exe文件的路径（destination），在这里“.”为同一目录的意思。
+    # source路径与destination路径以英文状态下分号“;”隔开。
+    r'--add-data', 'C:\\Windows\\System32\\sciter.dll;.', \
+    r'--add-data', 'D:\\work\\python\\my_editor\\helloworld\\pages\\word.html;pages'
+    ]
+
+再次打包运行exe文件，执行成功！
+
+2 要点总结
+
+（1）调试打包时，指定PyInstaller打包程序参数为“-c”（命令行模式），方便阅读报错信息。等到调试完成正式上线后再改为“-w”。
+
+（2）通过捕捉异常和使程序阻塞，防止程序过早退出，以便于看清楚报错信息。
+
+（3）PyInstaller打包后的exe程序不能自动识别资源文件（如dll、html、png等文件）的路径，需要在spec文件中指定datas选项，或者在PyInstaller打包程序参数中指定一个或多个“--add-data”选项。
+
+总结
+
+以上所述是小编给大家介绍的Python3+PyInstall+Sciter解决报错缺少dll、html等文件问题 ,希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+
+如果你觉得本文对你有帮助，欢迎转载，烦请注明出处，谢谢！
+

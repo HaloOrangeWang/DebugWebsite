@@ -1,0 +1,119 @@
+本文实例讲述了Python3.5 win10环境下导入keras/tensorflow报错的解决方法。分享给大家供大家参考，具体如下：
+
+我在win10 Python3.5.2安装keras，然后导入时报错如下：
+
+Python 3.5.2 |Continuum Analytics, Inc.| (default, Jul 5 2016, 11:41:13) [MSC v.1900 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import keras
+Using TensorFlow backend.
+Traceback (most recent call last):
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 18, in swig_import_helper
+  return importlib.import_module(mname)
+ File "d:\Anaconda3\envs\tf\lib\importlib\__init__.py", line 126, in import_module
+  return _bootstrap._gcd_import(name[level:], package, level)
+ File "<frozen importlib._bootstrap>", line 986, in _gcd_import
+ File "<frozen importlib._bootstrap>", line 969, in _find_and_load
+ File "<frozen importlib._bootstrap>", line 958, in _find_and_load_unlocked
+ File "<frozen importlib._bootstrap>", line 666, in _load_unlocked
+ File "<frozen importlib._bootstrap>", line 577, in module_from_spec
+ File "<frozen importlib._bootstrap_external>", line 906, in create_module
+ File "<frozen importlib._bootstrap>", line 222, in _call_with_frames_removed
+ImportError: DLL load failed: The specified module could not be found.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\pywrap_tensorflow.py", line 41, in <module>
+  from tensorflow.python.pywrap_tensorflow_internal import *
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 21, in <module>
+  _pywrap_tensorflow_internal = swig_import_helper()
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 20, in swig_import_helper
+  return importlib.import_module('_pywrap_tensorflow_internal')
+ File "d:\Anaconda3\envs\tf\lib\importlib\__init__.py", line 126, in import_module
+  return _bootstrap._gcd_import(name[level:], package, level)
+ImportError: No module named '_pywrap_tensorflow_internal'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+ File "<stdin>", line 1, in <module>
+ File "d:\Anaconda3\envs\tf\lib\site-packages\keras\__init__.py", line 3, in <module>
+  from . import activations
+ File "d:\Anaconda3\envs\tf\lib\site-packages\keras\activations.py", line 4, in <module>
+  from . import backend as K
+ File "d:\Anaconda3\envs\tf\lib\site-packages\keras\backend\__init__.py", line 73, in <module>
+  from .tensorflow_backend import *
+ File "d:\Anaconda3\envs\tf\lib\site-packages\keras\backend\tensorflow_backend.py", line 1, in <module>
+  import tensorflow as tf
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\__init__.py", line 24, in <module>
+  from tensorflow.python import *
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\__init__.py", line 51, in <module>
+  from tensorflow.python import pywrap_tensorflow
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\pywrap_tensorflow.py", line 52, in <module>
+  raise ImportError(msg)
+ImportError: Traceback (most recent call last):
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 18, in swig_import_helper
+  return importlib.import_module(mname)
+ File "d:\Anaconda3\envs\tf\lib\importlib\__init__.py", line 126, in import_module
+  return _bootstrap._gcd_import(name[level:], package, level)
+ File "<frozen importlib._bootstrap>", line 986, in _gcd_import
+ File "<frozen importlib._bootstrap>", line 969, in _find_and_load
+ File "<frozen importlib._bootstrap>", line 958, in _find_and_load_unlocked
+ File "<frozen importlib._bootstrap>", line 666, in _load_unlocked
+ File "<frozen importlib._bootstrap>", line 577, in module_from_spec
+ File "<frozen importlib._bootstrap_external>", line 906, in create_module
+ File "<frozen importlib._bootstrap>", line 222, in _call_with_frames_removed
+ImportError: DLL load failed: The specified module could not be found.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\pywrap_tensorflow.py", line 41, in <module>
+  from tensorflow.python.pywrap_tensorflow_internal import *
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 21, in <module>
+  _pywrap_tensorflow_internal = swig_import_helper()
+ File "d:\Anaconda3\envs\tf\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 20, in swig_import_helper
+  return importlib.import_module('_pywrap_tensorflow_internal')
+ File "d:\Anaconda3\envs\tf\lib\importlib\__init__.py", line 126, in import_module
+  return _bootstrap._gcd_import(name[level:], package, level)
+ImportError: No module named '_pywrap_tensorflow_internal'
+
+Failed to load the native TensorFlow runtime.
+
+See https://www.tensorflow.org/install/install_sources#common_installation_problems
+
+for some common reasons and solutions. Include the entire stack trace
+above this error message when asking for help.
+
+又臭又长的问题说导入keras时先导入TensorFlow，然后出现导入失败，解决方法有两个：
+
+一.安装Microsoft Visual C++ 2015 Redistributable Update 3
+
+先在https://www.microsoft.com/en-us/download/details.aspx?id=53587
+
+下载Microsoft Visual C++ 2015 Redistributable Update 3。
+
+然后安装。
+
+接下来重启电脑，然后卸载tensorflow：
+
+pip uninstall tensorflow
+pip uninstall tensorflow-gpu
+
+然后再重装：
+
+pip install tensorflow
+pip install tensorflow-gpu
+
+再重新导入应该不会报错了。
+
+如果无法解决，看下面的方法：
+
+二.cmd下敲命令：
+
+pip install --upgrade --ignore-installed setuptools
+
+更多关于Python相关内容可查看本站专题：《Python数学运算技巧总结》、《Python图片操作技巧总结》、《Python数据结构与算法教程》、《Python函数使用技巧总结》、《Python字符串操作技巧汇总》及《Python入门与进阶经典教程》
+
+希望本文所述对大家Python程序设计有所帮助。
+

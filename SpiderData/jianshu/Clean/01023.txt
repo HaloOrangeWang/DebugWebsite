@@ -1,0 +1,43 @@
+
+问题描述
+
+MAC 上 安装 MySQL
+
+Python3 安装 MySQLdb 并 import，出现报错Library not loaded: libmysqlclient.21.dylib
+
+➜  ~ pip3 install mysql-connector-python
+➜  ~ pip3 install mysqlclient
+➜  ~ python3 -c 'import MySQLdb'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/local/lib/python3.7/site-packages/MySQLdb/__init__.py", line 18, in <module>
+    from . import _mysql
+ImportError: dlopen(/usr/local/lib/python3.7/site-packages/MySQLdb/_mysql.cpython-37m-darwin.so, 2): Library not loaded: @rpath/libmysqlclient.21.dylib
+  Referenced from: /usr/local/lib/python3.7/site-packages/MySQLdb/_mysql.cpython-37m-darwin.so
+  Reason: image not found
+
+
+问题解决
+
+找到mysql/lib/位置
+
+➜  lib git:(master) ✗ pwd
+/usr/local/mysql/lib
+➜  lib git:(master) ✗ ls
+libcrypto.1.1.dylib          libmysqlclient.dylib         libprotobuf.3.6.1.dylib      mecab
+libcrypto.dylib              libmysqlservices.a           libprotobuf.dylib            pkgconfig
+libmysqlclient.21.dylib      libprotobuf-lite.3.6.1.dylib libssl.1.1.dylib             plugin
+libmysqlclient.a             libprotobuf-lite.dylib       libssl.dylib
+
+向/usr/lib/添加连接
+
+➜  sudo ln -s /usr/local/mysql/lib/libmysqlclient.21.dylib /usr/lib/libmysqlclient.21.dylib 
+Password:
+➜  sudo ln -s /usr/local/mysql/lib/libssl.1.1.dylib /usr/lib/libssl.1.1.dylib
+➜  sudo ln -s /usr/local/mysql/lib/libcrypto.1.1.dylib /usr/lib/libcrypto.1.1.dylib
+
+执行```python3 -c 'import MySQLdb' 无报错，问题解决
+
+➜  ~ python3 -c "import MySQLdb"                                                     
+➜  ~
+

@@ -1,0 +1,32 @@
+当 jenkins使用root权限启动hybris时，因为权限的关系 ，solr启动会报错导致hybris启动失败。
+
+所以我们要修改jenkins的启动用户。
+
+另外在windows下如果 Solr启动不了，可以看看java的环境变量配置是否正确。
+
+如何修改运行jenkins进程的linux帐号？
+
+1、找的jenkins的配置文件，一般是/etc/sysconfig/jenkins
+
+2、修改下面的参数为相应的用户，比如JENKINS_USER="admin"
+
+## Type:        string
+## Default:     "jenkins"
+## ServiceRestart: jenkins
+#
+# Unix user account that runs the Jenkins daemon
+# Be careful when you change this, as you need to update
+# permissions of $JENKINS_HOME and /var/log/jenkins.
+#
+JENKINS_USER="jenkins"
+
+3、修改下来文件或目录的权限chown admin:admin file/chown -R admin:admin directory
+
+/var/lib/jenkins/
+/var/log/jenkins/
+/var/cache/jenkins/
+/usr/lib/jenkins/jenkins.war
+/etc/sysconfig/jenkins
+
+4、重启jenkins：service jenkins restart
+

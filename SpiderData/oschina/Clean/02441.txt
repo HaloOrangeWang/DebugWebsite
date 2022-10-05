@@ -1,0 +1,60 @@
+博客安装指导
+
+
+环境说明
+
+环境是Centos7+VirtualBox.使用三台虚拟机，一台作为控制器，一台作为Cinder存储，一台用于计算节点。
+
+
+平台及镜像
+
+Virtual Box + Centos7 镜像建立 三个VM.
+
+
+网络环境：
+
+1、controller： hostonly网卡+nat网卡+桥接网卡 2、compute: hostonly网卡+nat网卡+桥接网卡 3、cinder: hostonly网卡+nat网卡+桥接网卡 nat网卡用于上网（每个节点都是10.0.2.15。。。），桥接网卡是学校的dhcp服务器分配的ip，需要校园网认证，故只用于节点的地址绑定，hostonly网卡用于创建虚拟机时为虚拟机指定网络地址分配以及网关（如果用桥接网卡分配的ip，会导致compute节点网络down掉，不知道为啥）。
+
+
+问题1：安装完成之后，显示的状态为ERROR。
+
+错误信息： ERROR state.: NoValidHost_Remote
+
+2019-12-26 22:25:44.334 16815 WARNING nova.scheduler.utils [req-1d474ac4-0797-4422-91a8-ee3350fe1e7e 329adafcec65431fbe4486e9f8980f3d c37a78a544534cf7a10b4f5cac49ec61 - default default] [instance: 0adf4814-74dd-495e-a26d-3a20f78ed59d] Setting instance to ERROR state.: NoValidHost_Remote: \u627e\u4e0d\u5230\u6709\u6548\u4e3b\u673a\uff0c\u539f\u56e0\u662f \u3002
+
+跟着博客做完出现ERROR，首先进行各种检查，期间又发现了其他的一些错误（比如主机的cinder服务没有安装以及各个主机之间时间未同步），解决还是折腾了挺久的，最后还有问题是由于virtual box默认的vcpu是1，而我跟着博客做的话直接建立的flavor类型的vcpu是4，所以报错找不到合法的主机。
+
+
+解决方法
+
+创建vcpu为1，然后内存硬盘啥的也尽量小点。
+
+查看资源的命令：
+
+openstack hypervisor stats show
+
+
+问题2：
+
+Traceback (most recent call last): File "/usr/lib/python2.7/site-packages/nova/compute/manager.py", line 1863, in _do_build_and_run_instance filter_properties, request_spec)
+
+File "/usr/lib/python2.7/site-packages/nova/compute/manager.py", line 2141, in _build_and_run_instance bdms=block_device_mapping) File "/usr/lib/python2.7/site-
+
+packages/nova/rpc.py", line 225, in wrapped return f(*args, **kwargs) File "/usr/lib/python2.7/site-packages/nova/compute/utils.py", line 424, in notify_about_instance_creat
+
+fault, priority = _get_fault_and_priority_from_exc(exception) File "/usr/lib/python2.7/site-packages/nova/compute/utils.py", line 372, in _get_fault_and_priority_from_exc
+
+exception) File "/usr/lib/python2.7/site-packages/nova/notifications/objects/exception.py", line 52, in from_exception exception_message=six.text_type(fault))
+
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe6 in position 0: ordinal not in range(128)
+
+
+问题2解决
+
+以上错误经过百度，有建议说是字符编码，也有建议说是没有打开虚拟化，故先尝试了修改__init__.py文件，但是没有作用。
+
+之后打开了virtual box的虚拟化功能，创建实例成功。 virtual box中打开支持虚拟化：
+
+创建成功：
+
+

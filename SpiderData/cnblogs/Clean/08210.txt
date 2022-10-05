@@ -1,0 +1,68 @@
+小知识argv 运行某一个python文件   写一个程序 不知道怎么用 传一个  --help
+
+想要执行python 文件 python cc.py  user 想要这种的操作的时候直接让你输入用户
+
+怎么操作呢，
+
+python在操作的时候会考虑处理异常的情况
+
+测试时候异样报错，先看日志为什么导致的，还有就是捕获异常去打印日志
+
+python 的捕捉异常使用try
+
+# f = open('xxx','w')
+# try:
+#     f.write()
+# except:
+#     print('走这块')
+# else:
+#     print('xxx')
+# finally:
+#     f.close()
+
+如果你想更好的查看报错的信息
+
+import traceback
+
+def is_price(s):
+    try:
+        f = float(s)
+    except Exception as e:
+        # traceback.print_exc()
+        print('zijijiade .....',traceback.format_exc())
+        return False
+    else:
+        if f>0:
+            return True
+
+is_price('sdgsdf')
+#调用堆栈信息
+
+下面学习下python 如何进行发邮件的操作
+
+发邮件的前提要知道账号和密码 是不行的，必须需要一个授权码 ，yamail 有个Bugj就是你发附近的时候中文会乱码
+
+自己写了一个yamail 这是老牛写的   安装这个 模块
+
+import yamail #上传到了pip源
+
+# import yagmail #发附件的附件如果是中文名，是乱码
+
+# yagmail
+smtp = yamail.SMTP(
+                host='smtp.qq.com',#改成自己邮箱的邮箱的服务器即可
+             user='511402865@qq.com',
+             password='sdfsdf'#如果是163、qq等免费邮箱的话需要授权码，
+                    # 自己公司的邮箱，一般都使用密码
+)
+
+smtp.send(to=['511402865@qq.com'],#发送给谁
+          subject='你好，请查收附件',#邮件主题
+          cc=['623010336@qq.com',],#抄送，如果是多个人写list
+          contents='邮件正文',#邮件正文
+          attachments=['笔记.txt'] #附件，如果是多个附件，写list
+          )
+smtp.close()
+
+操作ext的操作
+

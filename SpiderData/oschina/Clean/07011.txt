@@ -1,0 +1,34 @@
+###1.使用断点工具并不能找出错误，最后仔细看了下报错信息
+
+###2.报错信息
+
+[LayoutConstraints] Unable to simultaneously satisfy constraints.
+	Probably at least one of the constraints in the following list is one you don't want. 
+	Try this: 
+		(1) look at each constraint and try to figure out which you don't expect; 
+		(2) find the code that added the unwanted constraint or constraints and fix it. 
+(
+    "<NSLayoutConstraint:0x608000098a60 UIView:0x7fcb7b428fe0.height == 50   (active)>",
+    "<NSLayoutConstraint:0x608000098060 V:|-(0)-[UIView:0x7fcb7b428fe0]   (active, names: '|':UITableViewCellContentView:0x7fcb7b42bd40 )>",
+    "<NSLayoutConstraint:0x608000097b60 V:[UIView:0x7fcb7b42ed00]-(0)-|   (active, names: '|':UITableViewCellContentView:0x7fcb7b42bd40 )>",
+    "<NSLayoutConstraint:0x608000097c00 V:[UIView:0x7fcb7b428fe0]-(0)-[UIView:0x7fcb7b42ed00]   (active)>",
+    "<NSLayoutConstraint:0x60000009bf80 'UIView-Encapsulated-Layout-Height' UITableViewCellContentView:0x7fcb7b42bd40.height == 49.5   (active)>"
+)
+
+Will attempt to recover by breaking constraint 
+<NSLayoutConstraint:0x608000098a60 UIView:0x7fcb7b428fe0.height == 50   (active)>
+
+Make a symbolic breakpoint at UIViewAlertForUnsatisfiableConstraints to catch this in the debugger.
+The methods in the UIConstraintBasedLayoutDebugging category on UIView listed in <UIKit/UIView.h> may also be helpful.
+
+###3.分析
+
+"<NSLayoutConstraint:0x608000098a60 UIView:0x7fcb7b428fe0.height == 50   (active)>",
+"<NSLayoutConstraint:0x60000009bf80 'UIView-Encapsulated-Layout-Height' UITableViewCellContentView:0x7fcb7b42bd40.height == 49.5   (active)>"
+
+第一句代码信息是视图中有个界面的高度为50; 第二句中意思是cell_contentView的高度为49.5; ###问题就来了 contentView没有我设置的自视图大，而且我对cell设置了clips to view = YES。 约束就存在了冲突，xcode报错提示。
+
+###把cell的高度调大或者view的高度调小解决
+
+###友情链接: ####技术博客         简书主页
+

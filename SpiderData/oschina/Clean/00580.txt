@@ -1,0 +1,25 @@
+最近在看《redis实战》，在写zadd时报错
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python36\lib\site-packages\redis\client.py", line 2263, in zadd
+    for pair in iteritems(mapping):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python36\lib\site-packages\redis\_compat.py", line 123, in iteritems
+    return iter(x.items())
+AttributeError: 'str' object has no attribute 'items'
+
+上网找了一些语法，也都报其他的错误。花了几天时间无果。突然看到提示信息里也是python的代码呀，于是按提示要开文件，原来是这个位置错误
+
+def iteritems(x):
+    return iter(x.items())
+
+就是说入参的第二个参数的类型不对，该类型有items属性，字典类型符合，于是将书中的代码修改为
+
+conn.zadd('score:',{article：curtime+VOTE_SCORE})
+conn.zadd('time:',{article：curtime})
+
+问题解决！
+
+python版本3.6.7
+redis版本3.2.100 64位
+

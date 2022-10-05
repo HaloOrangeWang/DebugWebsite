@@ -1,0 +1,69 @@
+
+1、为什么会报错 ？
+
+　　这里抱着错误是因为 babel 的版本冲突。
+
+　　多是因为你的 babel 依赖包不兼容。
+
+　　可以查看你的 package.json 的依赖列表
+
+　　即有 babel 7.0 版本的( @babel/core ， @babel/preset-react )
+
+　　也可命令查看 bebel-cli 的版本 （ babel -V ）
+
+　　也有 babel 6.0 版本的 ( babel-core@6.26.0 , babel-cli@6.26.0 , babel-preset-react@6.24.1 )
+
+　　
+
+　　如果在你的 package.json 依赖包中既有 babel 7.0 版本，又有 babel 6.0 版本，就会报这个错误
+
+　　很现实就是两个版本是不兼容的
+
+
+2、处理方法
+
+　　1、升级到 babel 7.0
+
+　　
+
+　　将所有有关 babel 的包都升级为 7.0 版本
+
+　　
+
+　　并且修改 .babelrc 文件
+
+　　对应的修改  presets 预设和 plugins 都改为 7.0 形式。
+
+　　
+
+　　2、降级到 babel 6.0 版本
+
+　　
+
+　　有时候我们看们的 package.json 里面都是 babel 6.0 版本的。
+
+　　如下：
+
+　　
+
+　　但是还是报错，为什么呢？
+
+　　你不妨把 node_modules 删掉，重新 install ，这样就可以处理一部分兼容问题
+
+　　如果上面的方法还是不行。
+
+　　你可以查看一下 babel-cli 的版本
+
+　　如果是 babel-cli 7.0 版本。
+
+　　
+
+　　那你就重新安装全局和本地的 babel-cli 版本为 6.0
+
+　　
+
+　　
+
+
+　　基本上面两个方法可以解决所有兼容问题。
+

@@ -1,0 +1,30 @@
+系统：deepin
+
+因为apt中找不到3.6.10版本，因此采用源码安装
+
+安装教程
+
+安装完后，使用pip时报错：
+
+参考百度教程：
+
+关于Ubuntu中运行python报错No module named _sysconfigdata_nd
+
+
+解决方案：
+
+复制系统自带的3.5版本的该文件
+
+sudo cp /usr/lib/python3.5/_sysconfigdata.py .
+
+成功！
+
+
+上面发现不能解决！
+
+只要使用完整路径即可，报错的原因是软链接错误！
+
+原先我是创建了一个软接到/usr/bin，改为将程序复制过去即可cp python /usr/bin/python36
+
+这个解决方法是通过看系统2.7的设置方法才想到，由此可见我对linux的理解还不够深入
+

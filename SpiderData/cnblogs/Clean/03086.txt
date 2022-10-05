@@ -1,0 +1,42 @@
+主要讲解 某个module中使用了相对引用，同时这个module的 __name__ 属性 又是 __main__ 会报错的问题
+
+1、问题复现
+
+文件结构很简单：
+
+|--------package
+
+|　　　　├── __init__.py
+|　　　　├── base.py
+|　　　　└── derived.py
+
+|--------main.py
+
+各个文件内容如下：
+
+然后 cd到 derived.py 所在目录，执行  python derived.py
+
+报错：
+
+ModuleNotFoundError: No module named '__main__.base'; '__main__' is not a package
+
+2、问题原因-----使用了相对引用的module的__name__ 属性是 __main__ 的时候，会导致错误
+
+这里使用了相对引用：主要是对于使用了相对引用的python文件，会利用 这个文件的 __name__ 属性 定位相对引用的package。
+
+如果 那个python文件 是 __main__(也就是说不包含任何package信息) ，那么相对引用会被解析成 top level module，而不关注 这个 module 是否存在于文件系统中
+
+此外 如果直接执行  python 文件名.py 的时候，这个文件名.py 对应的module __name__ 值就是  '__main__'
+
+3、解决办法
+
+包含相对引用的 module，不要直接利用  解释器执行，也就是说这个module的 __name__ 属性不要作为 __main__, 可以 加入一个 main.py 文件，作为入口，同时这个main.py 文件不包含相对引用
+
+4、引申一点 关于相对引用的集中情况
+
+################import可以引入一个 module，可以引入一个函数
+
+5、参考文献：
+
+https://medium.com/pyladies-taiwan/python-%E7%9A%84-import-%E9%99%B7%E9%98%B1-3538e74f57e3
+

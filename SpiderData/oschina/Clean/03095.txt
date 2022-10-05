@@ -1,0 +1,41 @@
+
+1、 F:\book\lib\site-packages\pymysql\cursors.py:170: Warning: (1366, "Incorrect string value: '\xD6\xD0\xB9\xFA\xB1\xEA...' for column 'VARIABLE_VALUE' at row 481")
+
+解决办法：
+
+# 之前的配置是这样的
+
+import pymysql
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://账号:密码@localhost/appname"
+
+现在使用mysql.connector来连接数据库
+
+# 安装 mysql-connector-python
+pip install mysql-connector-python
+
+# 使用
+
+import mysql.connector
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqlconnector://账号:密码@localhost/appname"
+
+这是msyql5.7的编码bug,用上面的方法可以妥善解决
+
+
+2、MySQL错误“Specified key was too long; max key length is 1000 bytes”的解决办法
+
+解决办法：
+
+检查创建数据库时使用的编码是utf8还是utf8mb4,字段设置有没有按照对应的编码设置
+
+
+3、ImportError: No module named 'MySQLdb'
+
+既然缺少 MySQLdb这个模块，按照正常的想法执行pip install MySQL-python应该能解决，但是却报错 ImportError: No module named 'ConfigParser'。查了一下，这是由于 MySQL-python 不支持 Python 3（MySQL-3.23 through 5.5 and Python-2.4 through 2.7 are currently supported）。
+
+然后安装pymsql问题就解决了
+
+pip install PyMySQL
+
+import pymysql
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://账号:密码@localhost/appname"
+

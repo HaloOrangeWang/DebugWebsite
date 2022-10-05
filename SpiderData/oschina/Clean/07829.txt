@@ -1,0 +1,28 @@
+今天碰到了个郁闷的问题，svn执行clean up命令时报错“Previous operation has not finished; run 'cleanup' if it was interrupted”。无论你到那个父层次的目录执行“clean up “，都是报一样的错。执行cleanup时候，提示要cleanup。看来是进入死循环了。
+
+可能是频繁做了一些改名，文件打开的时候更新或者提交操作，导致svn罢工了。这个也该算是svn的bug吧。类似的情况，其实之前也碰到过。之前都是图省事，把整个svn checkout的主目录都删掉，重新checkout来解决的。但是随着项目的深入开展，要更新的文件越来越多。这个问题迟早要解决的，试试看吧。问题的关键看来需要找到死锁的地方，解锁才行。网上查了下资料。Svn的operation是存放在“work queue’“里的。而“work queue’是在内嵌数据库wc.db的work_queue表中的。看看work_queue表中放了些什么，再做处理。
+
+1.    内嵌数据库一般是用sqlite进行轻量级管理的。网上可以下到sqlite-shell-win32-x86: sqlite3.exe
+
+2.    为了方便命令行执行，将sqlite3.exe放到svn 项目的主目录下，和.svn目录同级下。
+
+3.    执行  sqlite3 .svn/wc.db "select * from work_queue".看到有4条记录。就是刚才我执行的一些操作。
+
+226539|(sync-file-flags 93目录名 文件名)
+
+226540|(file-remove 21 .svn/tmp/svn-7B43C232)
+
+226541|(sync-file-flags 目录名 文件名)
+
+226542|(file-remove 21 .svn/tmp/svn-7B48224E)
+
+4.    执行  sqlite3 .svn/wc.db "delete from work_queue". 把队列清空。
+
+5.    执行 sqlite3 .svn/wc.db "select * from work_queue". 确认一下是否已经清空队列，发现已经没有记录显示，说明已经清空了。
+
+6.    最后再试一下，看是否可以  clean up了。果然成功了。
+
+另外还有一种方法别人也推荐，但因为这个成功了就没再试。就是使用命令行工具svn.exe 执行cleanup svn项目目录。因为默认安装的时候，这个命令行工具是不被安装的，所以需要启动安装程序，选择”修改“，选上”命令行工具“才行。估计这个命令的实际效果和上面一种方法是类似的。不过应该比图形界面的右键菜单的更强大些吧。有兴趣可以试试。
+
+顺便补充一下， sqlite是一个非常常用的嵌入式数据库，就是一个db文件。像手机qq等这些软件都会内置一个这样的数据库进行多条数据的管理。
+

@@ -1,0 +1,4 @@
+因为在使用Crossentropyloss作为损失函数时，output=net(input)的output应该是[batchsize, channel, height, weight]，而label则是[batchsize, height, weight]，label是单通道灰度图，而在BCELoss中，两者都是[batchsize, channel, height, weight]。
+
+我报错是因为label本应该是一维的，我在保存的时候处理成了3维。
+

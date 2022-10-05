@@ -1,0 +1,55 @@
+写在前面：大家好！我是【AI 菌】，一枚爱弹吉他的程序员。我热爱AI、热爱分享、热爱开源！ 这博客是我对学习的一点总结与记录。如果您也对 深度学习、机器视觉、算法、Python、C++ 感兴趣，可以关注我的动态，我们一起学习，一起进步~
+ 我的博客地址为：【AI 菌】的博客
+ 我的Github项目地址是：【AI 菌】的Github
+
+
+一、问题描述
+
+使用目标检测开源工具MMDetection时，出现如下报错：
+
+ModuleNotFoundError: No module named 'mmcv._ext'
+
+
+二、问题分析
+
+很有可能是你在开始安装mmcv-full的时候，没有指定版本，选择直接安装，如下：
+
+pip install mmcv-full
+
+采用这样默认安装mmcv-full的方式，如果与你环境里的cuda和torch版本不匹配，就容易出现上面报错
+
+
+三、解决方案
+
+(1) 卸载掉原来的mmcv
+
+pip uninstall mmcv-full
+
+(2) 重新安装正确版本的mmcv-full
+
+其中，{cu_version}、{torch_version}分别对应cuda和torch的版本号
+
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
+
+例如，我安装的是cuda10.2、pytorch1.8.0，所以应该输入命令：
+
+pip install mmcv-full==1.2.4 -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.8.0/index.html
+
+注意：mmcv-full我这里推荐用1.2.4版本的。
+
+由于水平有限，博客中难免会有一些错误，有纰漏之处恳请各位大佬不吝赐教！
+
+关注下方公众号【AI 修炼之路】，回复【综述】，获得一系列综述文章，包括：深度学习模型压缩与加速综述、3D目标检测综述、语义分割综述、相机与点云融合综述等！更多精彩内容，等你来拿！
+
+推荐文章
+
+【C++21天养成计划】不聊学习只谈干货（Day1）
+
+【人生苦短，我学 Python】序言——不学点Python你就out了？
+
+TF2.0深度学习实战（一）：分类问题之手写数字识别
+
+本文同步分享在 博客“AI 菌”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

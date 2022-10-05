@@ -1,0 +1,25 @@
+录制socket协议，回放脚本报错：
+
+基本的问题调试思路：出错了，自己先琢磨下，问题可能在哪，培养自己的排错思维能力
+
+1、加断点，运行调试
+
+2、打开cmd运行，netstat -ano，查看到端口为0.0.0.0:60000
+
+3、觉得IP有问，百度0.0.0.0是什么意思
+
+4、查看help帮助文档，查看该函数怎么用，经查看，改"RemoteHost=IP:端口"，回放终于报错，解决该问题
+
+lrs_create_socket("socket1", "TCP", "RemoteHost=192.168.1.106:60000",  LrsLastArg); 5、参数化、关联脚本，参数化之后怎么关联脚本？按F12，查看socket关联函数：lrs_save_param();lrs_save_searched_string ();lrs_save_param_ex();看了半天选第一个参数简单点的，查看lrs_save_param()的例子是怎么关联，去尝试关联…
+
+6、关联、参数化终于成功，回放不报错，以为成功了，万事大吉，心里窃喜，设置下迭代跑下，报10022
+
+7、嗯，初步猜想脚本跑太快，socket0()没有来得急关闭就被启动了，加下思考时间跑下…报错，把端口参数化下，每次迭代跑一个不一样的端口…报错
+
+8、无奈，百度：
+
+Error : socket0 - Invalid argument. Error code : 10022.
+ 没有关闭套接字：lrs_close_socket("脚本录制中所创建的套接字");
+
+9、查看脚本，Action最后面加上lrs_close_socket("socket0");迭代回放，不报错了，log打印日记都正确，解决
+

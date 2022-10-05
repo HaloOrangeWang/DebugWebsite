@@ -1,0 +1,29 @@
+
+安装词云
+
+pip install wordcloud
+
+
+pip 安装numpy时出错
+
+出现错误：pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host=‘files.pythonhosted.org’,
+ 原因分析： 我觉得还是玩网络的原因。有一个本地服务器，网速很慢，下载老是出错，出现在下载python库的时候，由于国内网络原因，python包的下载速度非常慢，查看pip 文档，只要在 pip的时候控制超时即可, 具体参数为 --default-timeout=100， 后面的时间可以自己指定。
+ 解决： pip install --default-timeout=1000 wordcloud
+ 在原命令中加一下 --default-timeout=1000
+
+
+pip安装matplotlib出错
+
+出现错误：pip._vendor.urllib3.ERROR: THESE PACKAGES DO NOT MATCH THE HASHES FROM THE REQUIREMENTS FILE. If you have updated the package versions, please update the hashes. Otherwise, examine the package contents carefully; someone may have tampered with them.
+ 原因分析： 初步看应该是使用pip安装的次数太多了，重新安装应该就没啥问题。执行1后出现上一个问题再重新试一下。
+ 解决：
+
+1$ pip install --upgrade matplotlib
+2$ pip install --default-timeout=1000 matplotlib
+
+
+再加个random的用法注意
+
+import random
+random.random()
+

@@ -1,0 +1,90 @@
+1.ModuleNotFoundError: No module named ‘xxxx’
+
+这是在导入模块时出错，找不到该模块。
+
+解决方法：安装对应模块
+
+2.IndentationError: unexpected indent
+
+这个错误是因为错误的缩进导致的，检查代码行的缩进是否正确。
+
+3.TabError: inconsistent use of tabs and spaces in indentation
+
+这个报错是因为混用了tab和4个空格造成的，检查代码，要不全部用tab，要不全部用4个空格。
+
+在复制某段代码的时候，经常遇到这个错误。最笨的办法就是，不要复制，重新写一遍。
+
+4.TypeError: ‘method’ object is not iterable
+
+通常是写方法的时候缺少括号，或者方法名写错了。
+
+5.关于 ASCLL 编码的错误？SyntaxError: Non-ASCII character ‘\xe6’ in file /study/…
+
+将其编码格式改成 utf-8就可以了，通常在文件中如果有中文的话会出现这种错误。
+
+在文件的第一行输入：# –– coding:utf-8 ––
+
+6 UnicodeDecodeError: ‘utf-8’ codec can’t decode byte 0xb2 in position 94: invalid start byte报错
+
+解决方法：因为utf-8无法读取该文件，需要指定编码格式：
+
+with open(data_filepath, encoding=”GB18030″) as f:
+
+7 Boost.Python.ArgumentError: Python argument types in
+
+SementicRoleLabeller.label(SementicRoleLabeller, list, list, VectorOfParseResult)
+
+did not match C++ signature: 报错
+
+解决方法：labeller.label()传递参数类型与函数声明中不一致，少传了命名实体识别的结果，正确调用为 roles =
+
+8 TypeError: ‘module’ object is not callable 报错
+
+Python导入模块的方法有两种，import module 和 from module import，区别是前者所有导入的东西使用时需加上模块名的限定，而后者不要。
+
+解决方法：
+
+import Queue
+
+que = Queue.Queue()
+
+... or
+
+from queue import Queue
+
+que = Queue()
+
+9 报错 ERROR (UnicodeEncodeError): ‘ascii’ codec can’t encode character u’\uff08’ in position 9: ordinal not in range(128)
+
+解决方法：
+
+python在安装时，默认的编码是ascii，当程序中出现非ascii编码时，python的处理常常会报这样的错，python没办法处理非ascii编码的，此时需要自己设置将python的默认编码，一般设置为utf8的编码格式。
+
+在py文件中添加如下代码：
+
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding('utf8')
+
+10 报错：ValueError: too many values to unpack (expected 2)
+
+原因，调用函数的时候，接受返回值的变量个数不够
+
+#函数中：
+
+def getAclInfor(dataset):
+
+...
+
+return dict_id2author, dict_id2venue, authors
+
+​
+
+#调用时：
+
+dict_id2venue, authors = dpp.getAclInfor(total_aclmetadata)
+
+已解决。
+

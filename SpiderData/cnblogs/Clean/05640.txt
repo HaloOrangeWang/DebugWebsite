@@ -1,0 +1,22 @@
+如果在运行爬虫时报此错：requests.exceptions.SSLError: HTTPSConnectionPool(host='www.baidu.com', port=443): Max retries exceeded with url: / (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.",))并且在python命令行中引用import ssl ，报错ModuleNotFoundError: No module named '_ssl'采用以下方法：
+
+解决方法：
+步骤：
+1、安装依赖：yum install openssl-devel bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel gcc gcc-c++ openssl-devel
+
+2、修改python配置文件，并重新编译安装：
+（1）vi Setup.dist
+
+修改内容：如下图红线内内容全部将“#”去掉，谨记
+
+（2）重新编译安装Python3
+
+然后：
+
+make ## 编译
+make install 安装
+
+3、测试：此时import ssl不报错
+
+原文链接：https://blog.csdn.net/qq_23889009/article/details/100887640
+

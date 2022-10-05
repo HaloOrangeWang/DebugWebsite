@@ -1,0 +1,103 @@
+最近电脑更新到了Windows 11，安装 node.js 的时候发现官网推荐的版本已经从 14.x 变为 16.x ，心想 node.js 版本间兼容性应该不会有太大问题，于是便安装了 node.js 16.x 的版本，然而一切并没有想象中顺利。
+
+安装完 node 之后便是克隆项目，npm i 安装依赖，这时候报错了：
+
+npm ERR! code 1
+
+npm ERR! path C:\icsd\software\tent-admin\node_modules\node-sass
+
+npm ERR! command failed
+
+npm ERR! command C:\Windows\system32\cmd.exe /d /s /c node-gyp rebuild
+
+npm ERR! gyp info it worked if it ends with ok
+
+npm ERR! gyp info using node-gyp@3.8.0
+
+npm ERR! gyp info using node@16.13.0 | win32 | x64
+
+npm ERR! gyp ERR! configure error
+
+npm ERR! gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.
+
+从报错的字面内容来看，是在安装 node-sass 时出的错，而且原因是 Can't find Python executable "python" （没有Python环境？）
+
+之前安装依赖只要执行 npm i 就行呀，为啥node的项目需要Python环境了呢？
+
+搜索之后了解到，如果 npm 请求 node-sass 文件失败，会尝试本地编译安装 node-sass ，这时候需要执行 npm install -g windows-build-tools 安装 windows-build-tools 。然而，更换了淘宝 npm 镜像，安装windows-build-tools 之后依旧报一样的错误。
+
+根据 node-sass 官网的说法，不同的 node.js 版本需要安装不同的 node-sass 版本，并且 node-sass 已经废弃，推荐使用 Dart Sass 代替，Dart Sass 在 npm 中的包名为 sass .
+
+查看 package.json 发现原项目的 node-sass 版本为 4.14.1 , sass-loader 版本为 8.0.2 于是卸载了 node-sass 和 sass-loader ，并重新安装：
+
+# 卸载
+npm uninstall node-sass sass-loader
+
+#重新安装 
+npm i sass-loader sass -S -D
+
+然而，还是出现报错：
+
+npm ERR! code ERESOLVE
+
+npm ERR! ERESOLVE could not resolve
+
+npm ERR!
+
+npm ERR! While resolving: tent-admin@1.8.3
+
+npm ERR! Found: webpack@4.46.0
+
+npm ERR! node_modules/webpack
+
+npm ERR!   peer webpack@"^4.0.0" from @intervolga/optimize-cssnano-plugin@1.0.6
+
+...
+
+npm ERR! Could not resolve dependency:
+
+npm ERR! dev sass-loader@"" from the root project
+
+npm ERR!
+
+npm ERR! Conflicting peer dependency: webpack@5.62.1
+
+npm ERR! node_modules/webpack
+
+npm ERR!   peer webpack@"^5.0.0" from sass-loader@12.3.0
+
+npm ERR!   node_modules/sass-loader
+
+npm ERR!     dev sass-loader@"" from the root project
+
+从上面的报错信息来看，最新的 sass-loader@12.3.0 要求 webpack@"^5.0.0"，然而 vue 项目中 webpack 版本为 4.46.0 ，因此出现冲突。考虑到 vue 项目是通过 vue-cli 创建的，并非自行配置的 webpack ，因此考虑通过升级 vue-cli 来更新 webpack.
+
+# 全局安装 vue/cli
+npm install -g @vue/cli
+# 更新项目中的vue-cli依赖
+vue upgrade
+
+更新后发现，最新的 vue-cli@4.5.15 依旧是基于 webpack@4.x 版本，那么只能考虑降一下 sass-loader 的版本了，根据 vue-cli 的文档：
+
+Note on webpack 4
+
+When using webpack version 4, the default in Vue CLI 4, you need to make sure your loaders are compatible with it. Otherwise you will get errors about confliciting peer dependencies. In this case you can use an older version of the loader that is still compatible with webpack 4.
+
+# Sass
+npm install -D sass-loader@^10 sass
+
+按照官方的说法，安装 10.x 版本的 sass-loader 后，所有依赖成功安装，项目可以正常运行。
+
+本来以为只是升级一下 node 版本，没想到花了这么长时间踩坑。看到网上大部分解决方案都是降级回 node.js 14，所有在这里把采坑全经过写下来，希望对大家有所帮助。
+
+
+Reference
+
+node.js - npm - "Can't find Python executable "python", you can set the PYTHON env variable." - Stack Overflow
+
+sass/node-sass: Node.js bindings to libsass
+
+Installation | Vue CLI
+
+Working with CSS | Vue CLI
+

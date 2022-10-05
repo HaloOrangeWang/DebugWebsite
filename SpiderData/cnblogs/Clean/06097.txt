@@ -1,0 +1,33 @@
+因为pyspider源码版本缘故，超过3.5的版本的python解释器是各种不兼容，各种采坑~~~~~
+
+建议使用3.5.x的版本的python
+
+我用的是3.5.4（百度云盘链接：https://pan.baidu.com/s/1VlhyF6G8m6P3JA61YOgrdw 提取码：f7ke）
+
+我按照3.5.4版本的启动时依旧是报错如下：
+
+ValueError: Invalid configuration: - Deprecated option 'domaincontroller': use 'http_authenticator
+
+报错的原因是WsgiDAV发布了版本 pre-release 3.x导致的，所以只要把版本降下来就好了。
+将wsgidav替换为2.4.1
+
+python -m pip  uninstall wsgidav     # 卸载
+python -m pip install werkzeug==2.4.1     #安装2.4.1版本
+
+安装成功后，重启启动pyspider依旧报错：
+
+run
+    from werkzeug.wsgi import DispatcherMiddleware
+ImportError: cannot import name 'DispatcherMiddleware'
+
+转辗反侧，终究找到还是版本的原因，werkzeug的版本为1.0.0，这个版本中没有DispatcherMiddleware方法，所以还是降低版本。
+
+注意降低版本不能低于0.15版本，因为我们的pyspider要求大于0.15版本以上
+
+python -m pip  uninstall werkzeug # 卸载
+python -m pip install werkzeug==0.16.1   #安装0.16.1版本
+
+再次启动终于成功！！！
+
+浏览器访问127.0.0.1:5000
+

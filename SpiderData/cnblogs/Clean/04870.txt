@@ -1,0 +1,8 @@
+在update使用Like模糊查询时出现报错:
+
+sqlalchemy.exc.InvalidRequestError: Could not evaluate current criteria in Python: "Can't evaluate criteria against alternate class <class 'sqlalchemy.ext.automap.walmart_rank_tool_job_detail'>". Specify 'fetch' or False for the synchronize_session parameter.
+
+解决办法，在后面加 synchronize_session=False 即可：
+
+.update({"a":"1"},synchronize_session=False)　　
+

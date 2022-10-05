@@ -1,0 +1,32 @@
+
+Python 小问题汇总
+
+requests模块proxies调用报错  SSL: WRONG_VERSION_NUMBER：
+
+报错提示: requests.exceptions.SSLError: HTTPSConnectionPool, Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1056)')))
+
+原因： 由 urllib3 的最新版本引起的问题（当前 urllib3 版本1.26.7， OpenSSL版本1.1.0j），卸装当前urllib3版本重新安装旧的匹配版本1.23。可解决，依旧不行，重新对比 ssl 和 urllib3 的匹配版本
+
+# 重装
+pip uninstall urllib3
+pip install urllib3==1.23
+
+selenium 打开Chrome浏览器出现多余重置设置
+
+问题: 启动chrome时同时打开两个标签页，且页面停留在chrome的设置页面
+
+方法一：通过配置参数禁止data;的出现，添加如下代码。（chrome版本问题，会报错）
+
+// 通过配置参数禁止data;的出现
+options.add_arguments("--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default")
+// 通过配置参数删除“您使用的是不受支持的命令行标记：--ignore-certificate-errors。稳定性和安全性会有所下降。”提示
+options.add_arguments("--start-maximized", "allow-running-insecure-content", "--test-type")
+// 禁止data;的出现目录，python环境运行的目录
+options.add_argument('user-data-dir=C:\Users\Administrator\Envs\spider_env\Scripts')
+
+// add_argument函数弃用， 使用其他来取消报错日志
+options = webdriver.ChromeOptions()
+options.add_experimental_option('excludeSwitches', ['enable-logging'])
+
+方法二：注册表删除 HKEY_CURRENT_USER\Software\Google\Chrome\TriggeredReset
+

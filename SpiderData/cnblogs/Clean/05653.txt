@@ -1,0 +1,26 @@
+问题：在调用keras_retinanet 的时候提示上面错误
+
+解决思路：
+
+1、把keras_retinanet放入site-packages里面，未能解决问题
+
+参考：成功解决ModuleNotFoundError: No module named 'keras_retinanet.utils.compute_overlap'
+
+2、提示没有，但是确实又存在该文件，找到报错点对应的py文件，看看是否文件路径有问题。
+
+from .. 这里导入有问题，改写成相对路径
+
+还是报错，
+
+原因是需要导入的compute_overlap文件格式是.pyx结尾的，
+
+pyx文件说明：
+
+pyx文件是python的c扩展文件，不能直接被python 解释器直接调用。需要进行转化.
+
+参考
+
+这里的setup.py文件即可进行转换，地址：https://github.com/fizyr/keras-retinanet
+
+简单点，把上面的项目全部拉到本地，然后到对应setup.py 路径下，执行python setup.py build_ext --inplace  即可解决
+

@@ -1,0 +1,30 @@
+1.背景
+
+ubuntu16.04的系统,使用pip命令时提示
+
+DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020.
+Please upgrade your Python as Python 2.7 won't be maintained after that date. 
+A future version of pip will drop support for Python 2.7.
+Requirement already satisfied: lolcat in /usr/local/lib/python2.7/dist-packages (0.44)
+
+于是就升级python的版本到3.5,升级完成后,也将系统默认的python改为python3.5版本的,一切OK之后
+
+重新使用pip安装文件,就报错
+
+Traceback (most recent call last):
+   File "/usr/local/bin/pip", line 7, in <module>
+     from pip._internal import main
+ImportError: No module named 'pip'
+
+2.解决
+
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+
+由于我将升级的3.5版本的python作为默认版本,所以直接使用了python这个命令
+
+python get-pip.py --force-reinstall
+
+如果默认的python版本为python2版本,使用以下命令
+
+python3.5 get-pip.py --force-reinstall
+

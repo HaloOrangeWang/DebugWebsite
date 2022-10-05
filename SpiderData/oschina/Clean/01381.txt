@@ -1,0 +1,45 @@
+在做 企业向微信用户个人付款  功能时，调用第三方sdk，在 进行 requests 的post请求时，
+
+代码如下
+
+req = requests.post(url, data=data,cert(api_client_cert_path, api_client_key_path),)
+
+报错如下：
+
+Traceback (most recent call last):
+  File "G:\FastWorkStateServer\test\wx_withdarw.py", line 44, in <module>
+    wx_withdr()
+  File "G:\FastWorkStateServer\test\wx_withdarw.py", line 34, in wx_withdr
+    partner_trade_no=123456789,  # 商户订单号
+  File "G:\FastWorkStateServer\sdk\wx_withdraw.py", line 393, in enterprise_payment
+    raw = self.fetch_with_ssl(url, data, api_cert_path, api_key_path)
+  File "G:\FastWorkStateServer\sdk\wx_withdraw.py", line 95, in fetch_with_ssl
+    cert=(api_client_cert_path, api_client_key_path),
+  File "C:\Users\ASUS\kuaigong3.6.5\lib\site-packages\requests\api.py", line 112, in post
+    return request('post', url, data=data, json=json, **kwargs)
+  File "C:\Users\ASUS\kuaigong3.6.5\lib\site-packages\requests\api.py", line 58, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "C:\Users\ASUS\kuaigong3.6.5\lib\site-packages\requests\sessions.py", line 508, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\ASUS\kuaigong3.6.5\lib\site-packages\requests\sessions.py", line 618, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Users\ASUS\kuaigong3.6.5\lib\site-packages\requests\adapters.py", line 440, in send
+    timeout=timeout
+  File "C:\Users\ASUS\kuaigong3.6.5\lib\site-packages\urllib3\connectionpool.py", line 601, in urlopen
+    chunked=chunked)
+  File "C:\Users\ASUS\kuaigong3.6.5\lib\site-packages\urllib3\connectionpool.py", line 357, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "D:\python3.6.5\lib\http\client.py", line 1239, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "D:\python3.6.5\lib\http\client.py", line 1284, in _send_request
+    body = _encode(body, 'body')
+  File "D:\python3.6.5\lib\http\client.py", line 161, in _encode
+    (name.title(), data[err.start:err.end], name)) from None
+UnicodeEncodeError: 'latin-1' codec can't encode characters in position 100-103: Body ('汉字报错') is not valid Latin-1. Use body.encode('utf-8') if you want to send it encoded in UTF-8.
+
+Process finished with exit code 1
+
+主要原因是 请求body里面有 汉字，没有进行untf-8编码导致，解决方法，对data进行 encode()编码 即可
+
+req = requests.post(url, data=data.encode(),cert=(api_client_cert_path, api_client_key_path),)
+

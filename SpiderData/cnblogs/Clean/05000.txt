@@ -1,0 +1,29 @@
+报错：
+
+ERROR: Could not find a version that satisfies the requirement tensorflow (from versions: none)
+ERROR: No matching distribution found for tensorflow
+
+可能是因为python版本、tensorflow版本不一样导致的，但如果仔仔细细检查完了没有任何错误
+
+那么可能是因为pip安装的whl包的名字不满足系统条件，
+
+关于什么是满足的可以进入python后输入：
+
+tensorflow-1.14.0-cp27-cp27mu-manylinux1_x86_64.whl
+
+修改成
+
+tensorflow-1.14.0-cp27-none-linux_x86_64.whl
+
+就可以安装了
+
+如果出现这个undefined symbol: PyUnicodeUCS4_FromString错误
+
+说明tensorflow是用UCS4编译的，而python是UCS2编译的:
+
+重新编译时设置unicode为ucs4
+
+./configure --prefix=/.................../--enable-unicode=ucs4
+
+./configure --prefix=/.................../--enable-unicode=ucs4
+

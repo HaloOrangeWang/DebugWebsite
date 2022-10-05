@@ -1,0 +1,17 @@
+GeckoDriver的安装，Python调用selenium报错：
+
+Traceback (most recent call last):
+   File "D:\demo\python\firbox_demo.py", line 2, in <module>
+     browser = webdriver.Firefox()
+   File "C:\Python36\lib\site-packages\selenium\webdriver\firefox\webdriver.py", line 159, in __init__
+     log_path=log_path)
+   File "C:\Python36\lib\site-packages\selenium\webdriver\firefox\service.py", line 44, in __init__
+     log_file = open(log_path, "a+") if log_path is not None and log_path != "" else None
+ PermissionError: [Errno 13] Permission denied: 'geckodriver.log'
+
+原因：没有权限访问geckodriver.log
+
+解决方法：
+
+1、在文件中指定log的输入文件路径 如：browser = webdriver.Firefox(log_path=r'd:/spider/webdriver.log')
+

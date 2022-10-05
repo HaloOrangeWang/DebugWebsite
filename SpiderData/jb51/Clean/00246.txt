@@ -1,0 +1,27 @@
+Python3.4版本
+
+当我把新增加的用户信息填写完成后，点击保存，然后出现了这样的错误：
+
+IntegrityError at /admin/users/userprofile/add/
+
+(1452, 'Cannot add or update a child row: a foreign key constraint fails (`mxonline`.`django_admin_log`, CONSTRAINT `django_admin_log_user_id_c564eba6_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`))')
+
+外键约束。大概意思是：插入数据的时候，外键的值不是对应的主键的值。但是这时候表里是没有数据的，所以可能有主键值；插入数据时它的根节点可能不存在，所以插入失败。建议查询“外键”相关知识。两张表不是并列关系，而是父子关系。
+
+配置数据库如下：
+
+DATABASES = { 
+'default': {  
+ 'ENGINE': 'django.db.backends.mysql',  
+ 'NAME': 'mxproject',  
+ 'USER':'root',  
+ 'PASSWORD':'123456',  
+ 'HOST':'127.0.0.1',  
+ 'PORT':'3306',  
+ 'OPTIONS':{  
+ "init_command":"SET foreign_key_checks = 0;",
+  }
+ }
+
+以上这篇解决django 新增加用户信息出现错误的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

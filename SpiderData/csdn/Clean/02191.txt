@@ -1,0 +1,14 @@
+运行python项目时报错：ImportError: cannot import name 'SKIP_ADMIN_LOG' from 'import_export.admin'
+
+如下：
+
+打开报错文件，发现直接红色提示了。
+
+分析步骤：
+
+1.打开 import_export/admin.py，搜索“SKIP_ADMIN_LOG”，发现确实没有SKIP_ADMIN_LOG 变量，只有一个方法 get_skip_admin_log(self) ，此方法返回了skip_admin_log，而这个方法是在ImportMixin 类中定义的。
+
+所以猜测，由于版本原因，旧版本中admin.py 是有SKIP_ADMIN_LOG的，新版本中放在了类中。而git上的项目用的是旧版包，我们拉取到本地之后下载的是新包，所以无法引用。
+
+2.此时修改报错文件的代码，引入需要的类，用类调用方法，以此获取变量：
+

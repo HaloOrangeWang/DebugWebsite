@@ -1,0 +1,112 @@
+博客核心内容：
+
+1.常见的异常类型 
+ 2.异常处理机制 
+ 3.异常处理方法 
+ 4.try………catch到底什么时候用
+
+（一）Python中常见的异常类型
+
+AttributeError 试图访问一个对象没有的树形，比如foo.x，但是foo没有属性x
+IOError 输入/输出异常；基本上是无法打开文件
+ImportError 无法引入模块或包；基本上是路径问题或名称错误
+IndentationError 语法错误（的子类） ；代码没有正确对齐
+IndexError 下标索引超出序列边界，比如当x只有三个元素，却试图访问x[5]
+KeyError 试图访问字典里不存在的键
+KeyboardInterrupt Ctrl+C被按下
+NameError 使用一个还未被赋予对象的变量
+SyntaxError Python代码非法，代码不能编译(个人认为这是语法错误，写错了）
+TypeError 传入对象类型与要求的不符合
+UnboundLocalError 试图访问一个还未被设置的局部变量，基本上是由于另有一个同名的全局变量，
+导致你以为正在访问它
+ValueError 传入一个调用者不期望的值，即使值的类型是正确的
+
+示例程序1：
+
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+try:
+    msg = input(">>")
+    int(msg)
+except Exception as e:
+    print("异常的类型是:%s"%type(e))
+    print("异常对象的内容是:%s"%e)
+
+运行结果：
+
+>>python
+异常的类型是:<class 'ValueError'>
+异常对象的内容是:invalid literal for int() with base 10: 'python'
+
+Process finished with exit code 0
+
+示例程序2：
+
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+try:
+    1 + "python"
+except Exception as e:
+    print("异常的类型是:%s"%type(e))
+    print("异常对象的内容是:%s"%e)
+
+运行结果：
+
+异常的类型是:<class 'TypeError'>
+异常对象的内容是:unsupported operand type(s) for +: 'int' and 'str'
+
+Process finished with exit code 0
+
+（二）Python中的异常处理机制 
+ 在Python当中，若一个程序在运行的时候出错，Python解释器会自动的在出错的地方生成一个异常对象，而后Python解释器会自动的在出错地方的附近寻找有没有对这个异常对象处理的代码，所谓异常处理代码就是try……except语句，如果没有，Python解释器会自动的将这个异常对象抛给其调用函数，就这样层层抛出，如果在main当中也没有对这个异常对象处理的代码，Python解释器（实际上是操作系统）最后会做一个简单粗暴的处理，将整个程序给终止掉，并将错误的信息在显示屏上输出。 
+ （三）Python中的异常处理方法
+
+try:
+    可能出现异常的代码块
+except Exception as e:
+    print("异常的类型是:%s"%type(e))
+    print("异常的内容是:%s"%e)
+else:
+    print('如果代码块不抛出异常会执行此行代码!')
+finally:
+    print('不管代码块是否抛出异常都会执行此行代码!')
+
+示例程序1：
+
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+try:
+    msg = input(">>")
+    print(int(msg))
+except Exception as e:
+    print("异常的类型是:%s"%type(e))
+    print("异常的内容是:%s"%e)
+else:
+    print('如果代码块不抛出异常会执行此行代码!')
+finally:
+    print('不管代码块是否抛出异常都会执行此行代码!')
+
+运行结果：
+
+>>34
+34
+如果代码块不抛出异常会执行此行代码!
+不管代码块是否抛出异常都会执行此行代码!
+
+（四）异常使用场景 
+ 1、异常并不一定使程序的逻辑更加清晰，有的时候会导致程序的逻辑更加混乱，常用于服务器端无法预知客户端的错误场景 
+ 2、能用if就用if吧 
+ 代码示例：
+
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+msg = input(">>")
+if msg.isdecimal():
+    print(int(msg))
+else:
+    print("您输入的内容有误,请输入数字！")
+

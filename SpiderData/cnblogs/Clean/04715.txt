@@ -1,0 +1,38 @@
+
+django正常运行却报错的处理方法
+
+出处 : https://www.infvie.com/ops-notes/django-normal-operation-error
+
+报错一：self._sock.sendall(b) ConnectionAbortedError: [WinError 10053] 您的主机中的软件中止了一个已建立的连接。
+解决方法：找到python/Lib/socketserver.py文件，修改SocketWriter类的write方法，具体如下：
+
+
+报错一：self._sock.sendall(b) ConnectionAbortedError: [WinError 10053] 您的主机中的软件中止了一个已建立的连接。
+
+解决方法：找到python/Lib/socketserver.py文件，修改SocketWriter类的write方法，具体如下：
+
+
+报错二：return self.environ[‘SERVER_PROTOCOL’].upper() != 'HTTP/0.9 TypeError: ‘NoneType’ object is not subscriptable
+
+解决方法：打开python\lib\wsgiref\handlers.py文件，修改client_is_modern函数，具体如下：
+
+
+报错三：self.status.split(’ ',1)[0], self.bytes_sent AttributeError: ‘NoneType’ object has no attribute 'split
+
+解决方法：打开python\lib\wsgiref\simple_server.py文件，修改ServerHandler类，具体如下：
+
+class ServerHandler(SimpleHandler):
+    server_software = software_version
+
+
+报错四：“GET /favicon.ico HTTP/1.1” 404 3163
+
+解决方法：在static文件下的image文件添加一个favicon.ico图片，然后在页面头部加入
+
+注：具体路径看自己定义的内容，或有差异.
+
+
+报错五：GET /c_hello?asker=backuper HTTP/1.1" 404 3166 Not Found: /c_hello
+
+解决方法：暂时未找到！！！有懂得解决的希望分享一下，或者我后续找到了再更新一下。
+

@@ -1,0 +1,56 @@
+Ubuntu下系统自带Python2.7，在不删除python2.7情况下已经成功安装Python3.5和pip，这就有了两个不同python版本。使用python3.5的pygame却显示无法安装。
+
+1.查看本机是否安装pygame
+
+打开终端命令框
+
+输入python3回车
+输入import pygame
+
+显示ImportError: No module named ‘pygame’
+#报错了，说明本机python3上无法输出pygame
+
+2.下载pygame
+
+https://packages.ubuntu.com/focal/python3-pygame
+
+下载完python3的pygame
+
+将pygame解压(我是手动解压放置桌面的)
+
+3.使用命令安装
+
+python3 pygame
+
+这里，系统报错su认证失败，报这个错误的原因是root用户默认是被锁定了的，系统无法获取权限，只要使用passwd命令重新设置下root密码即可。
+
+问题如下：
+
+1 me@ubuntu:~$ su 
+2 密码：<--- 输入安装时root用户的密码
+3 su：认证失败
+
+解决方法：
+
+me@ubuntu:~$ sudo passwd 
+2 密码：<--- 输入安装时那个用户的密码
+3 输入新的 UNIX 密码：<--- 新的Root用户密码
+4 重新输入新的 UNIX 密码：<--- 重复新的Root用户密码
+5 passwd：已成功更新密码 
+6 me@ubuntu:~$ su 
+7 密码：<--输入重置的新密码 
+8 root@ubuntu:/home/me#         #已经进入root用户
+
+重新尝试安装pygame
+
+python3 pygame
+
+4.验证是否安装成功
+
+$ python3
+　　>>> import pygame
+
+返回显示的信息(安装成功)
+
+Hello from the pygame community. https://www.pygame.org/contribute.html
+

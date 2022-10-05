@@ -1,0 +1,26 @@
+使用numpy.load(‘xxx.npy’)数据时，报错UnicodeError: Unpickling a python object failed: UnicodeDecodeError
+
+
+解决办法
+
+由于默认编码问题，造成无法对数据解包：
+
+encoding must be 'ASCII', 'latin1', or 'bytes'
+
+所以在使用np.load()时需要加入编码选项：
+
+data = np.load('mynpy.npy',encoding='latin1')
+
+即可顺利载入。
+
+
+原因
+
+如果使用python3读取python2生成的npy就有可能产生编码错误，在numpy的源码里有说明：
+
+ref:
+
+numpy:https://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html
+
+https://blog.csdn.net/qq_36718092/article/details/87983922
+

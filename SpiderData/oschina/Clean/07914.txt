@@ -1,0 +1,52 @@
+
+npm 安装vue脚手架报错
+
+
+报错详情
+
+npm ERR! Unexpected end of JSON input while parsing near '...TuHxXJaknDulF3AdSBoul'
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     C:\Users\xxx\AppData\Roaming\npm-cache\_logs\2019-12-22T03_12_06_342Z-debug.log
+
+
+最后解决方法
+
+npm cache clean --force
+npm i -g npm
+
+
+不行再试一遍这些
+
+npm ls --depth 0 -g // 看看哪些失效了
+npm prune -g // 修剪下全局包
+npm rebuild -g // 重建下全局包
+npm update -g // 更新下全局包的版本
+npm cache clear --force -g // 删除全局包的缓存（慎重）
+
+
+对了重装是没有用得（我试过了）
+
+
+再次安装
+
+C:\Users\xxx>npm install vue-cli -g
+npm WARN deprecated vue-cli@2.9.6: This package has been deprecated in favour of @vue/cli
+npm WARN deprecated coffee-script@1.12.7: CoffeeScript on NPM has moved to "coffeescript" (no hyphen)
+C:\Users\xxx\AppData\Roaming\npm\vue -> C:\Users\xxx\AppData\Roaming\npm\node_modules\vue-cli\bin\vue
+C:\Users\xxx\AppData\Roaming\npm\vue-init -> C:\Users\xxx\AppData\Roaming\npm\node_modules\vue-cli\bin\vue-init
+C:\Users\xxx\AppData\Roaming\npm\vue-list -> C:\Users\xxx\AppData\Roaming\npm\node_modules\vue-cli\bin\vue-list
++ vue-cli@2.9.6
+added 241 packages from 206 contributors in 170.007s
+
+C:\Users\xxx>vue -V
+2.9.6
+
+C:\Users\xxx>
+
+
+有点坑.....
+
+
+希望能帮到同样问题得朋友
+

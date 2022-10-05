@@ -1,0 +1,18 @@
+今天尝试用twisted来连接一下mysql，参考了官方的文档，结果一直报找不到模块MySQLdb。
+
+原来python3必须要使用mysqlclient，无奈无法安装。
+
+后面搜到可以使用pymysql来连接。
+
+import pymysql
+
+发现还是没反应。
+
+最后 原来是少了一句声明
+
+pymysql.install_as_MySQLdb()
+
+这样使用如下代码连接mysql 就不会报错了。
+
+dbpool = adbapi.ConnectionPool("MySQLdb",db="test",user="root",passwd="<yourpassword>")
+

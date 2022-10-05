@@ -1,0 +1,27 @@
+学习Django框架时,创建一个引擎及索引时报错,具体报错如下:
+
+执行命令:
+
+python3 manage.py rebuild_index
+
+报如下错误:
+
+......(前面一堆报错)
+File "/home/python/Django/test6/test6/urls.py", line 20, in <module>
+  url(r'^admin/', include(admin.site.urls)),
+ File "/home/python/.virtualenvs/py_django/lib/python3.6/site-packages/django/urls/conf.py", line 27, in include
+  'provide the namespace argument to include() instead.' % len(arg)
+django.core.exceptions.ImproperlyConfigured: Passing a 3-tuple to include() is not supported. Pass a 2-tuple containing the list of patterns and app_name, and provide the namespace argument to include() instead.
+
+可以看到以上报错中第2行代码:
+
+url(r'^admin/', include(admin.site.urls)),
+
+网上查询后,将项目路径下的urls.py文件的这一行代码改为:
+
+url(r'^admin/', admin.site.urls),
+
+再次执行python3 manage.py rebuild_index,不再报错.
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

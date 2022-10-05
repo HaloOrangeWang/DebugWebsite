@@ -1,0 +1,23 @@
+我们做接口测试时经常用到xlrd和xlwt两个模块，这里的xlrd还比较好弄直接安装就好，
+
+但是xlwt安装会失败，网上自己下载xlwt3模块后然后通过python setup.py install指令来
+
+安装。当我们导入这个模块并使用的时候会碰到以下两种情况：
+
+1、	报错ValueError: cannot use LOCALE flag with a str pattern
+
+解决方案：
+进入python3安装目录下的Lib，找到ser_parse.py文件，修改第832行代码
+
+注释这行，改为：
+
+再运行就不会报错了。
+2、	报错ValueError: 'init' in slots conflicts with class variable
+
+解决方案：
+进入python3安装目录下的Lib\site-packages\xlwt3\  找到formula.py文件，修改第7行
+
+修改为(去掉__init__)：
+
+再运行就不会报错了。
+

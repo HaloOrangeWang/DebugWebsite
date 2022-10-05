@@ -1,0 +1,96 @@
+目录异常模块为什么要自定义异常模块常见的几种异常情况异常模块源码分析自定义 drf 异常处理
+
+目录
+
+异常模块为什么要自定义异常模块常见的几种异常情况异常模块源码分析自定义 drf 异常处理
+
+为什么要自定义异常模块
+
+常见的几种异常情况
+
+异常模块源码分析
+
+自定义 drf 异常处理
+
+
+异常模块
+
+
+为什么要自定义异常模块
+
+所有经过 drf APIView 视图类产生的异常，都可以提供异常处理方案（没有继承 APIVIew 的视图函数不会触发）
+
+drf 默认提供了异常处理方案（rest_framework.views.exception_handler），但是处理范围有限
+
+drf 提供的处理方案有两种
+
+有对应处理，处理了返回异常信息
+没有对应处理（处理范围之外），返回 None，直接服务器抛异常给前台
+
+有对应处理，处理了返回异常信息
+
+没有对应处理（处理范围之外），返回 None，直接服务器抛异常给前台
+
+自定义异常的目的就是解决 drf 没有处理的异常，让前台得到合理的异常信息返回，后台记录异常具体的信息（方便事后排查）
+
+如果程序报错了，我们应该尽可能的隐藏后台的错误，返回给前台就是服务器错误（你返回给用户用户也看不懂呀，如果是黑客，那可能还会利用报错袭击服务器）
+
+
+常见的几种异常情况
+
+像这种就比较可怕了，甚至连代码文件位置都暴露了
+
+drf 异常处理模块处理后的异常
+
+drf 异常处理模块处理后的异常
+
+异常信息经汉化后的报错（django 配置了国际化后）
+
+
+异常模块源码分析
+
+视图函数执行出现异常会自动触发 handle_exception 函数
+
+每个请求都会经历这么一个过程，走到 dispatch 函数
+
+E:/python3-6-4/Lib/site-packages/rest_framework/views.py 源码
+
+handle_exception 源码
+
+如何获取异常类？
+
+get_exception_handler_context 源码，异常处理类是从配置中拿来的
+
+E:/python3-6-4/Lib/site-packages/rest_framework/settings.py
+
+获取到异常类如何处理？
+
+返回 None 就会触发 handle_exception 源码中的报错
+
+E:/python3-6-4/Lib/site-packages/rest_framework/views.py drf 自带的异常处理类
+
+
+自定义 drf 异常处理
+
+自定义异常处理模块就是提供 exception_handler 异常处理函数，处理的目的就是让 response 一定有值
+
+显而易见，我们只需要自定义一个异常处理方法，先调用系统自带的那个异常处理函数，然后把 drf 自带那个异常函数没有处理的情况处理了就好了（处理后返回一个 Response 对象即可，一定要有返回值，否则没多大意义）
+
+歩鄹
+
+先将异常处理交给 rest_framework.views 的 exception_handler 去处理
+
+判断处理的结果（返回值）response，有值代表 drf 已经处理了，None 需要自己处理
+
+可以根据 exc 的类型再细化处理 if isinstance(exc, '哪个异常'): # 再怎么处理
+
+可以根据 exc 的类型再细化处理 if isinstance(exc, '哪个异常'): # 再怎么处理
+
+api/exception.py
+
+记得自己把报错信息记到日志里面去
+
+配置上，让其生效
+
+dg_proj/settings.py
+

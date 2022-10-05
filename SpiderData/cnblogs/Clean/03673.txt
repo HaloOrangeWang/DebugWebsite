@@ -1,0 +1,61 @@
+测试例子时出现报错如下，在最下面会写出安装流程。
+
+-------------------------------------报错----1-------------------------------------
+
+protoc --cpp_out=. --java_out=. --python_out=. addressbook.proto
+make: protoc: Command not found
+make: *** [protoc_middleman] Error 127
+
+-------------------------------------解决办法-------------------------------------
+
+export PATH=$PATH:/usr/local/protobuf/bin              （这个路径也可以是 /home/protobuf-2.5.0  因为这两个路径都有 protoc,如果不知道自己的路径，可以用 find -name protoc 来找生成路径）
+
+-------------------------------------报错----2-------------------------------------
+
+-------------------------------------报错----2-------------------------------------
+
+-------------------------------------解决办法-------------------------------------
+
+export PKG_CONFIG_PATH=/home/protobuf-2.5.0        （解释报错原因是环境变量路径中找不到文件 protobuf.pc  所以要指定路径。）
+
+1.下载安装包，找了网上好多例子，protobuf-2.5.0 版本zip或者tar.gz都行
+
+地址：https://github.com/protocolbuffers/protobuf/releases?after=v3.0.0-alpha-4
+
+2.解压安装（我是直接放到路径 /home ）
+
+unzip protobuf-2.5.0.zip   或者    tar -zxvf protobuf-2.5.0.tar.gz
+
+cd protobuf-2.5.0
+
+./configure --prefix=$INSTALL_DIR
+
+make                                                                               //生成 protoc
+
+make check
+
+make install
+
+3.设置编译器protoc路径
+
+cp src/protoc ../examples/                                              //拷贝到测试路径
+
+设置动态库搜索路径
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/protobuf-2.5.0/src
+
+设置编译器路径
+
+export PATH=$PATH:/usr/local/protobuf/bin
+
+4.根据 message.proto 文件生成 .h .cc
+./protoc -I=. --cpp_out=. ./addressbook.proto                 //对测试文件进行生成   .h  .cc
+
+./protoc -I=. --cpp_out=. ./addressbook.proto                 //对测试文件进行生成   .h  .cc
+
+5.生成  可执行文件
+
+make
+
+生成了：add_person_cpp       list_people_cpp
+

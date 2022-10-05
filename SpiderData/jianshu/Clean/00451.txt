@@ -1,0 +1,100 @@
+
+问题：ld: framework not found AFNetworking
+
+https://stackoverflow.com/questions/33809736/ld-framework-not-found-afnetworking
+
+1、把 pods 上的Build Active Architecture Only 改成NO
+
+2、libstdc++.6.0.9.tbd   重启Xcode
+
+3、XCode  File——WorkSpace Setting——Build System(Legacy Build System (Deprecated))——底部勾上Do not show a diagnostic issue about build system deprecation
+
+4、bitcode——NO
+
+
+问题： CocoaHTTPServer2.3 Implicit declaration of function 'LOG_OBJC_MAYBE' is invalid in C99
+
+CocoaHTTPServer 缺少维护，可以自己为 CocoaHTTPServer 添加 DD_LEGACY_MACROS 宏定义，用来访问 CocoaLumberjack 库中内容。
+
+可以在你的 podfile 最后添加如下内容：
+
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      if target.name == "CocoaHTTPServer"
+        target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', 'DD_LEGACY_MACROS=1']
+        end
+      end
+    end
+  end
+
+
+问题：iOS上传包一直卡着 Transporter-could not download
+
+https://www.jianshu.com/p/2e9bed14e607
+
+com.apple.amp.itmstransporter 清理
+
+删除这个文件
+
+/Users/hualande/Library/Caches/com.apple.amp.itmstransporter
+
+iTMSTransporter 点击安装
+
+/Applications/Xcode.app/Contents/SharedFrameworks/ContentDeliveryServices.framework/Versions/A/itms/bin/iTMSTransporter
+
+双击
+
+下载组件
+
+这个步骤不需要做任何事情
+
+重新上传包
+
+
+问题：Xcode12报错missing one or more architectures required by this target: x86_64
+
+https://khushwanttanwar.medium.com/xcode-12-compilation-errors-while-running-with-ios-14-simulators-5731c91326e9
+
+删除 VALID_ARCHS
+
+模拟器排除架构arm64
+
+工程中Project——>Build Settings——>Excluded Architecture添加Any iOS Simulator SDK设置为arm64
+
+Pod中Project——>Build Settings同上设置
+
+post_install do |installer|
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+  end
+end
+
+清理Xcode缓存 Build Clean
+
+rm -rf ~/Library/Developer/Xcode/DerivedData/
+
+pod deintegrate
+
+pod update
+
+
+问题：Xcode show “Failed to prepare device for development.” error handling
+
+This operation can fail if the version of the OS on the device is incompatible with the installed version of Xcode. You may also need to restart your mac and device in order to correctly detect compatibility.
+
+1.重启手机，再次运行，如仍失败继续下面步骤。
+
+2.重启Xcode，再次运行，如仍失败继续下面步骤。
+
+3.重启电脑，再次运行，如仍失败重复上述步骤。
+
+
+问题：如何查找ipa包中是否包含某个字符串
+
+排查违规字符时，可以利用Xcode很方便的查到自己所写代码中的某些字符串，但是第三方SDK中的我们无法直接搜索到，场景如审核被拒原因写明包含某个权限或者违规字符时，由于framework已经打包好，如何查询呢？
+
+拷贝一份打包好的xxx.ipa包，直接修改后缀名ipa为zip，解压后找到Payload文件下xxx.app，
+
+右键查看xxx.app包内容，找到类似项目名称的终端文件xxx，输入strings 后空格，再拖入文件路径，回车。
+

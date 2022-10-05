@@ -1,0 +1,10 @@
+pytorch转onnx时的报错：
+
+Converting a tensor to a Python integer might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs
+
+解决方案：
+
+这是因为将pytorch变量转程python引起的，如何你这个变量没有用于梯度传到过程中，就可以忽略。
+
+如果用于梯度误差传播，应该可以用pytorch声明成变量。具体没有尝试过。
+

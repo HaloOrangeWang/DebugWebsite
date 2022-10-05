@@ -1,0 +1,91 @@
+最近由于项目的需要，经常需要使用opencv读视频操作，会经常遇到一个问题，就是视频读完之后会出现报错的情况，虽然不影响代码结果，但是对于吹毛求疵的我实在忍受不了。
+
+会报错的程序：
+
+# -*-coding:utf-8-*-
+"""
+File Name: read_video.py
+Program IDE: PyCharm
+Create File By Author: Hong
+"""
+import cv2
+
+def read_video(video_path: str):
+    """
+    OpenCV读视频小工具，解决视频读完报错的问题
+    :param video_path: 输入需要读取的视频文件路径
+    :return: 没有返回值
+    """
+    print('视频路径：', video_path)
+    cap = cv2.VideoCapture(video_path)
+    while cap.isOpened():
+        # get a frame
+        ret, frame = cap.read()
+
+cv2.imshow("capture", frame)
+
+if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    print('视频读完！')
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    path = r'D:\multi_insect_videos\multi_object00.mp4'
+    read_video(path)
+
+可以把视频正常读完，但是结果会输出错误
+
+Traceback (most recent call last):
+  File "E:/PyCharmDocument/create_ST_image/multi_insect_processing/crop_video_to_images.py", line 76, in <module>
+    read_video(path)
+  File "E:/PyCharmDocument/create_ST_image/multi_insect_processing/crop_video_to_images.py", line 65, in read_video
+    cv2.imshow("capture", frame)
+cv2.error: OpenCV(4.5.3) C:\Users\runneradmin\AppData\Local\Temp\pip-req-build-uzca7qz1\opencv\modules\imgproc\src\color.cpp:182: error: (-215:Assertion failed) !_src.empty() in function 'cv::cvtColor'
+
+原因是视频结束后，opencv的imshow()函数读不了帧就出错了。解决方法：在imshow()之前加入判断，只有当有帧时才读，没有帧时直接退出循环。
+
+不会报错的代码：
+
+# -*-coding:utf-8-*-
+"""
+File Name: read_video.py
+Program IDE: PyCharm
+Create File By Author: Hong
+"""
+import cv2
+
+def read_video(video_path: str):
+    """
+    OpenCV读视频小工具，解决视频读完报错的问题
+    :param video_path: 输入需要读取的视频文件路径
+    :return: 没有返回值
+    """
+    print('视频路径：', video_path)
+    cap = cv2.VideoCapture(video_path)
+    while cap.isOpened():
+        # get a frame
+        ret, frame = cap.read()
+        if not ret:
+            break
+        cv2.imshow("capture", frame)
+
+if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    print('视频读完！')
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    path = r'D:\multi_insect_videos\multi_object00.mp4'
+    read_video(path)
+
+程序输出结果：
+
+视频路径： D:\multi_insect_videos\multi_object00.mp4
+视频读完！
+
+Process finished with exit code 0
+
+到此这篇关于Python OpenCV读取视频报错的问题解决的文章就介绍到这了,更多相关Python OpenCV读取视频报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

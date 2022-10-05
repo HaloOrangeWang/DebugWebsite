@@ -1,0 +1,28 @@
+背景故事：
+
+今天发现把latex翻译成office open xml的服务一直在报错，细察之下发现有人在latex里面写了html表签！！！
+
+(2)<tex>a</tex>b<tex>C_{70<answer id="0"></answer>}</tex>分子<tex>a</tex>bbbb<answer id="1"></answer>中的五边形和六边形各有多少
+
+于是写了个正则，用于删除<tex>标签里面的<answer>表签，其他位置的<answer>标签保留。
+
+于是写了正则：
+
+(?<=<tex>(?:(?!</tex>).)*)<answer\s+id="\d+"></answer>
+
+　　
+
+debug了一下，性能不错。但是放到preg_replace()里运行的时候发现报错：
+
+lookbehind assertion is not fixed length
+
+意思是lookbehind中的匹配必须是固定长度
+
+于是变成
+
+(?<=<tex>)((?:(?!</tex>).)*)<answer\s+id="\d+"></answer>
+
+最后，这个正则的核心在于（任意个前瞻不是"</tex>"的字符）：
+
+(?:(?!</tex>).)*
+

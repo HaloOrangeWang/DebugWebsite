@@ -1,0 +1,272 @@
+异常处理
+
+内容概要
+
+异常的概念
+
+捕获异常
+
+异常的传递
+
+抛出异常
+
+01.异常的概念
+
+程序在运行的时候，遇到错误导致程序停止运行时，这就是异常。
+
+程序停止运行，并且提示错误信息这个动作，我们称为：抛出(raise)异常。
+
+程序开发的时候，很难一次性考虑到所有的特殊情况，通过异常捕获可以对突发事件做集中处理，从而保证程序的稳定性和健壮性
+
+02.捕获异常
+
+2.1 简单的捕获异常
+
+语法如下：
+
+try:
+
+执行的代码
+
+except:
+
+出现错误的处理
+
+try尝试，下方编写需要执行的代码，不确定是否能够正常执行
+
+except如果不是，下方编写尝试失败的代码
+
+异常处理实战演练----要求用户输入整数
+
+try:
+
+input_num = int(input("请输入一个数字："))
+
+except:
+
+print("您输入的是非数字！")
+
+2.1 错误类型捕获
+
+在执行程序的时候，可能会遇到不同错误类型的代码，例如：分母不能为0，文件找不到等不同错误类型。这个时候就需要对不同的错误类型做出不同的性响应。
+
+语法如下：
+
+try:
+
+# 尝试执行的代码
+
+pass
+
+except 错误类型1：
+
+# 针对错误类型1，对应的代码处理
+
+pass
+
+except 错误类型2,错误类型3：
+
+# 针对错误类型2和3，对应的代码处理
+
+pass
+
+except Exception as result:
+
+print("未知错误 %s" % result)
+
+异常类型捕获实战演练-----要求用户输入整数
+
+try:
+
+input_num = int(input("请输入一个数字："))
+
+result = 10 / input_num
+
+print(result)
+
+except ValueError:
+
+print("请输入正确的数字！")
+
+except ZeroDivisionError:
+
+print("分母不能为0，请输入非0数字")
+
+except Exception as result:
+
+print("未知错误：%s " % result)
+
+最后的except是一个兜底的异常处理，无论程序出现什么错误，都不会因为Python解释器抛出异常而终止
+
+2.3 异常处理的完整语法
+
+try:
+
+# 尝试执行的代码
+
+pass
+
+except 错误类型1:
+
+# 针对错误类型1，对应的代码处理
+
+pass
+
+except 错误类型2:
+
+# 针对错误类型2，对应的代码处理
+
+pass
+
+except (错误类型3, 错误类型4):
+
+# 针对错误类型3 和 4，对应的代码处理
+
+pass
+
+except Exception as result:
+
+# 打印错误信息
+
+print(result)
+
+else:
+
+# 没有异常才会执行的代码
+
+pass
+
+finally:
+
+# 无论是否有异常，都会执行的代码
+
+print("无论是否有异常，都会执行的代码")
+
+其中,else表示没有异常时才会执行的代码，finally表示无论有没有异常，都会执行代码
+
+基于2.2中的代码进一步改造后的代码如下：
+
+try:
+
+input_num = int(input("请输入一个数字："))
+
+result = 10 / input_num
+
+print(result)
+
+except ValueError:
+
+print("请输入正确的数字！")
+
+except ZeroDivisionError:
+
+print("分母不能为0，请输入非0数字")
+
+except Exception as result:
+
+print("未知错误：%s " % result)
+
+else:
+
+print("万幸啊！此次运行无异常。")
+
+finally:
+
+print("我只知道程序执行完了，至于执行的对不对我就不知道了！")
+
+03.异常的传递
+
+异常的传递：当方法/函数执行出现异常，会将异常传递给函数/方法的调用一方
+
+最终传递到主程序,仍然没有异常处理，那么程序终止。
+
+小提示
+
+在开发中，可以在主函数增加异常捕获,这样就不需要在代码中，增加大量的异常捕获，能够保持代码整洁。
+
+实例演练
+
+定义函数 demo1() 提示用户输入一个整数并且返回
+
+定义函数 demo2() 调用 demo1()
+
+在主程序中调用 demo2()
+
+def demo1():
+
+return int(input("请输入一个整数："))
+
+def demo2():
+
+return demo1()
+
+try:
+
+print(demo2())
+
+except ValueError:
+
+print("请输入正确的整数")
+
+except Exception as result:
+
+print("未知错误 %s" % result)
+
+04.抛出异常
+
+在实际的应用场景中，除了代码出错Python解释器会抛出异常之外，我们还可以根据自己的业务需求自定义异常并主动抛出
+
+抛出异常的2个步骤：
+
+1)创建一个Exception对象
+
+2) 使用raise关键字抛出异常对象
+
+实战演练----输入的密码少于6位
+
+需求：
+
+定义一个函数input_pwd,提示用户输入密码
+
+如果用户输入的密码少于6位，抛出异常
+
+如果用户输入的密码大于等于6位，则返回输入的密码
+
+def input_pwd():
+
+# 1.提示用户输入密码
+
+pwd = input("请输入密码：")
+
+# 2.判断密码长度，如果长度 >= 6，返回用户输入的密码
+
+if len(pwd) > 6:
+
+return pwd
+
+# 3.密码长度小于6位，则需要抛出异常
+
+# 创建异常对象
+
+ex = Exception("密码长度小于6位")
+
+# 抛出异常对象
+
+raise ex
+
+# 调用函数
+
+try:
+
+user_pwd = input_pwd()
+
+print(user_pwd)
+
+except Exception as e:
+
+print(e)
+
+执行结果如下：
+
+原文：https://www.cnblogs.com/OliverQin/p/12222619.html
+

@@ -1,0 +1,52 @@
+
+1.ResourceManager启动失败
+
+错误如下
+
+2019-03-24 19:57:00,607 - Error while executing command 'start':
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/site-packages/resource_management/libraries/script/script.py", line 214, in execute
+    method(env)
+  File "/var/lib/ambari-agent/cache/common-services/YARN/2.1.0.2.0/package/scripts/resourcemanager.py", line 60, in start
+    action='start'
+  File "/var/lib/ambari-agent/cache/common-services/YARN/2.1.0.2.0/package/scripts/service.py", line 59, in service
+    initial_wait=5
+  File "/usr/lib/python2.6/site-packages/resource_management/core/base.py", line 148, in __init__
+    self.env.run()
+  File "/usr/lib/python2.6/site-packages/resource_management/core/environment.py", line 152, in run
+    self.run_action(resource, action)
+  File "/usr/lib/python2.6/site-packages/resource_management/core/environment.py", line 118, in run_action
+    provider_action()
+  File "/usr/lib/python2.6/site-packages/resource_management/core/providers/system.py", line 274, in action_run
+    raise ex
+Fail: Execution of 'ls /var/run/hadoop-yarn/yarn/yarn-yarn-resourcemanager.pid >/dev/null 2>&1 && ps -p `cat /var/run/hadoop-yarn/yarn/yarn-yarn-resourcemanager.pid` >/dev/null 2>&1' returned 1.
+
+解决办法： 修改/etc/hadoop/conf.empty/capacity-scheduler.xml，将以下两个参数的值改为：1
+
+<property>
+      <name>yarn.scheduler.capacity.root.accessible-node-labels.default.capacity</name>
+      <value>1</value>
+    </property>
+    <property>
+      <name>yarn.scheduler.capacity.root.accessible-node-labels.default.maximum-capacity</name>
+      <value>1</value>
+    </property>
+
+
+重启resource manager 即可。
+
+
+2.解除连接被拒绝的警告
+
+Connection failed: [Errno 111] Connection refused to cluster
+
+需要取消linux代理 Linux 设置/取消代理 export http_proxy=118.210.42.251:44367 或： export https_proxy=118.210.42.251:44367
+
+要取消该设置： unset http_proxy 或： unset https_proxy
+
+###3.kylin执行check-env报错
+
+mkdir: Permission denied: user=root, access=WRITE, inode="/":hdfs:hdfs:drwxr-xr-x
+
+权限问题，解决方案 sudo -u hdfs hadoop fs -chown -R root:root /
+

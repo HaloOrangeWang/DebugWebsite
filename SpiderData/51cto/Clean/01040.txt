@@ -1,0 +1,284 @@
+
+Windows10 Python-3.6 安装PyCrypto(pycrypto 2.6.1)出现错误以及解决方法
+
+五个大坑每个都没有绕开，留爪记录
+
+1.安装过程中显示unable to find vcvarsall.bat
+
+这是window环境下安装模块比较常见的问题，这时候你百度的话大部分文章就会告诉你下载vs，python2的话安装vs2010，python3的话安装vs2013
+
+重点！！！！！！！！
+
+不要着急去安装vs，这东西一安装就是好几个小时，在这里我对vs装了卸，卸了装浪费了一天半的时间。
+
+python有个深坑！不同的python版本对应不同的vs版本，如果你跟我一样是python3.6的话应该这里是14，之前就是看到其他的博客，没有查看这里的版本号就装，先是装了vs2010，然后装2013，再卸了装了对应版本号的vs2015，其中vs的版本号对应关系如下：
+
+msvs2005版本号为8.0，对应环境变量VS80COMNTOOLS
+
+msvs2008版本号为9.0，对应环境变量VS90COMNTOOLS
+
+msvs2010版本号为10.0，对应环境变量VS100COMNTOOLS
+
+msvs2012版本号为11.0，对应环境变量VS110COMNTOOLS
+
+msvs2013版本号为12.0，对应环境变量VS120COMNTOOLS
+
+msvs2015版本号为14.0，对应环境变量VS140COMNTOOLS
+
+2.安装对应版本的msvs(Microsoft Visual Studio)
+
+如果是Visual Studio 2015，提供个百度经验上百度网盘给大家
+
+http://pan.baidu.com/s/1eSueWLG
+
+如果不需要用vs进行开发的话，装community免费版就可以了，没必要纠结专业版啥的
+
+安装过程中要注意，建议安装的时候选自定义（截图来自百度经验，因为已经安装了打开之后有点不太一样）
+
+记得勾选VC++2015和Python Tools。Web Deveolper Tools的话最好也勾上吧。
+
+但我的安装过程没这么顺利，泪奔~
+
+安装部分模块失败，然后我重新安装。因为主要的vs2015安装是成功的，所以只勾选
+
+VC++2015
+
+Python Tools
+
+Web Deveolper Tools
+
+这三个模块，500M左右，重新安装就提示全部成功了
+
+很多人说装完之后要改环境变量，
+
+python2：set VS90COMNTOOLS=%VS140COMNTOOLS%
+
+python3：set VS100COMNTOOLS=%VS140COMNTOOLS%
+
+可能python3.6版本高了不需要这样，不过也记录一下给各位看官仅供参考。反正我是不需要改，因为接下来我踩了另一个坑
+
+再次进入pycryto的解压文件夹python setup.py install 仍然显示
+
+building ‘Crypto.Random.OSRNG.winrandom‘ extension
+
+running install
+
+running build
+
+running build_py
+
+running build_ext
+
+warning: GMP or MPIR library not found; Not building Crypto.PublicKey._fastmath.
+
+building ‘Crypto.Random.OSRNG.winrandom‘ extension
+
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\x86_amd64\cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -Isrc/ -Isrc/inc-msvc/ -IC:\Python36\include -IC:\Python36\include
+
+winrand.c
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(26): error C2061: syntax error: identifier ‘intmax_t‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(27): error C2061: syntax error: identifier ‘rem‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(27): error C2059: syntax error: ‘;‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(28): error C2059: syntax error: ‘}‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(30): error C2061: syntax error: identifier ‘imaxdiv_t‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(30): error C2059: syntax error: ‘;‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(40): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(41): error C2146: syntax error: missing ‘)‘ before identifier ‘_Number‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(41): error C2061: syntax error: identifier ‘_Number‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(41): error C2059: syntax error: ‘;‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(42): error C2059: syntax error: ‘)‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(45): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2146: syntax error: missing ‘)‘ before identifier ‘_Numerator‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2061: syntax error: identifier ‘_Numerator‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2059: syntax error: ‘;‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2059: syntax error: ‘,‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(48): error C2059: syntax error: ‘)‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(50): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(56): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(63): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(69): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(76): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(82): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(89): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(95): error C2143: syntax error: missing ‘{‘ before ‘__cdecl‘
+
+error: command ‘C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\BIN\\x86_amd64\\cl.exe‘ failed with exit status 2
+
+3.解决building ‘Crypto.Random.OSRNG.winrandom‘ extension
+
+————————————————
+
+Windows系统上基于python3.6安装一个pycrypto 2.6.1模块，很不幸的报了一堆错误，如下所示：
+
+running install
+
+running build
+
+running build_py
+
+running build_ext
+
+warning: GMP or MPIR library not found; Not building Crypto.PublicKey._fastmath.
+
+building 'Crypto.Random.OSRNG.winrandom' extension
+
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\x86_amd64\cl.exe /c /nologo /Ox /W3 /GL /DNDEBUG /MD -Isrc/ -Isrc/inc-msvc/ -IC:\Python36\include -IC:\Python36\include
+
+winrand.c
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(26): error C2061: syntax error: identifier 'intmax_t'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(27): error C2061: syntax error: identifier 'rem'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(27): error C2059: syntax error: ';'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(28): error C2059: syntax error: '}'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(30): error C2061: syntax error: identifier 'imaxdiv_t'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(30): error C2059: syntax error: ';'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(40): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(41): error C2146: syntax error: missing ')' before identifier '_Number'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(41): error C2061: syntax error: identifier '_Number'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(41): error C2059: syntax error: ';'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(42): error C2059: syntax error: ')'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(45): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2146: syntax error: missing ')' before identifier '_Numerator'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2061: syntax error: identifier '_Numerator'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2059: syntax error: ';'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(46): error C2059: syntax error: ','
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(48): error C2059: syntax error: ')'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(50): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(56): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(63): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(69): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(76): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(82): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(89): error C2143: syntax error: missing '{' before '__cdecl'
+
+C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt\inttypes.h(95): error C2143: syntax error: missing '{' before '__cdecl'
+
+error: command 'C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\BIN\\x86_amd64\\cl.exe' failed with exit status 2
+
+经过一番百度和Google以及尝试终于成功安装pycrypto 2.6.1，具体解决方法如下：
+
+设置Microsoft Visual Studio 14.0的环境变量，如图：
+​​​​
+
+打开cmd，执行如下命令（划重点，不是有些blog上面的“/”,也不是"\\",我试成功的是"\",另外“-”是需要的，不要问我为啥，我也是试出来的）：set CL=-FI"%VCINSTALLDIR%\include\stdint.h"
+
+​​​​
+
+重新安装pycrypto 2.6.1
+通过cmd进入pycrypto 2.6.1目录，执行python setup.py install
+​​​​
+
+结果如下所示：
+​​​​成功安装pycrypto 2.6.1。。。。。。。
+
+---------------
+
+
+4,​​win10 安装"pip install orange3" 出现LINK : fatal error LNK1158: cannot run 'rc.exe' 错误的解决办法​​
+
+
+解决办法：
+
+从（本例使用的是64位的python3.6 注意：如果python的版本是32位，则使用x86；如果是64位，则使用x64;）
+
+复制一下两个文件
+
+到
+
+5.注意是Crypto还是crypto,区分大小写
+
+我这里安装成功之后代码alt+enter自动关联的是
+
+from crypto.Cipher import AES
+
+1
+
+然后代码运行报错，点进去AES里面import的是
+
+from Crypto.Cipher import _AES
+
+可以手动进入python\Lib下，我的路径是
+
+C:\Python36\Lib\site-packages
+
+然后把文件夹crypto改成Crypto。把小写改成大写，刷新下，Finally
+
+————————————————
+
+
+解决办法：
+
+从（本例使用的是64位的python3.6 注意：如果python的版本是32位，则使用x86；如果是64位，则使用x64;）
+
+复制一下两个文件
+
+到
+
+5.注意是Crypto还是crypto,区分大小写
+
+我这里安装成功之后代码alt+enter自动关联的是
+
+from crypto.Cipher import AES
+
+1
+
+然后代码运行报错，点进去AES里面import的是
+
+from Crypto.Cipher import _AES
+
+可以手动进入python\Lib下，我的路径是
+
+C:\Python36\Lib\site-packages
+
+然后把文件夹crypto改成Crypto。把小写改成大写，刷新下，Finally
+
+————————————————
+

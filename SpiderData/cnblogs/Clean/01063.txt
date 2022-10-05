@@ -1,0 +1,44 @@
+　　CentOS 6.x自带的Python版本是2.6，CentOS 7.x上自带的是2.7，我们要自己安装Python3.X，配置环境，不过一般安装过程不会一帆风顺，往往有些报错，在CentOS以及其他的Linux系统中遇到安装包安装错误的原因，大多数都是因为缺少依赖包导致的，需要自己处理一下，下面就是在安装Python3一般会遇到的问题：
+
+
+一、问题1：
+
+checking MACHDEP... linux
+
+checking for --without-gcc... no
+
+checking for --with-icc... no
+
+checking for gcc... no
+
+checking for cc... no
+
+checking for cl.exe... no
+
+configure: error: in `/usr/local/Python3/Python-3.6.5':
+
+configure: error: no acceptable C compiler found in $PATH
+
+See `config.log' for more details
+
+　　遇到上面报错提示提示说明本机中缺少gcc编译环境，2种解决方式
+
+　　1、通过yum安装gcc编译环境：yum install -y gcc
+
+　　2、本机没有安装yum功能，可下载gcc安装包：https://gcc.gnu.org/
+
+　　完成后重新执行命令 添加配置：./configure --prefix=/usr/local/Pthon3
+
+　　然后再执行命令：make
+
+
+二、问题2：
+
+　　执行命令：make可能出现下面错误提示：zipimport.ZipImportError: can't decompress data; zlib not available make: *** [install] 错误 1   说明系统缺少zlib 的相关工具包导致的，知道了问题所在，那么我们只需要安装相关依赖包即可，
+
+　　解决办法：打开终端，输入一下命令安装zlib相关依赖包　
+
+　　yum -y install zlib*
+
+　　完成后继续执行命令：make install进行安装。
+

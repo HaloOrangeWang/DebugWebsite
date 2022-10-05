@@ -1,0 +1,58 @@
+起因
+
+我在某国外网站找到了一个Python脚本以实施Exploit，但是用Python运行时会提示找不到模块
+
+>>> import 模块名
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named '模块名'
+
+如何解决我提供两种方法
+
+解法 1
+
+其实你无包，打开终端
+
+pip install 模块名 #安装对应的模块
+#或者
+pip3 install 模块名 #安装对应的模块
+
+重启一下（软件或计算机），问题解决。
+
+解法 2
+
+打开终端
+ pip install 模块名 #安装
+
+pip install 模块名 #安装
+Requirement already satisfied: 模块名 in /usr/lib/python3/dist-packages (2.6.1)
+
+这时你启动Python，如果2和3都有就都重复一遍以下步骤。
+
+Python 2.7.18 (default, Apr 20 2020, 20:30:41) 
+[GCC 9.3.0] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sys
+>>> sys.path
+['', '/usr/share/offsec-awae-wheels/pyOpenSSL-19.1.0-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/enum34-1.1.10-py2-none-any.whl', '/usr/share/offsec-awae-wheels/requests-2.23.0-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/soupsieve-1.9.5-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/six-1.15.0-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/idna-2.9-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/chardet-3.0.4-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/pycparser-2.20-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/colorama-0.4.3-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/ipaddress-1.0.23-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/urllib3-1.25.9-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/ply-3.11-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/certifi-2020.4.5.1-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/backports.functools_lru_cache-1.6.1-py2.py3-none-any.whl', '/usr/share/offsec-awae-wheels/PySocks-1.7.1-py27-none-any.whl', '/usr/share/offsec-awae-wheels/beautifulsoup4-4.9.1-py2-none-any.whl', '/usr/share/cffi-wheels/py-1.8.1-py2.py3-none-any.whl', '/usr/share/cffi-wheels/setuptools-44.1.0-py2.py3-none-any.whl', '/usr/lib/python2.7', '/usr/lib/python2.7/plat-x86_64-linux-gnu', '/usr/lib/python2.7/lib-tk', '/usr/lib/python2.7/lib-old', '/usr/lib/python2.7/lib-dynload', '/usr/local/lib/python2.7/dist-packages', '/usr/lib/python2.7/dist-packages', '/usr/lib/python2.7/dist-packages']
+
+打开Python3
+
+Python 3.9.1 (default, Dec  8 2020, 07:51:42) 
+[GCC 10.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sys
+>>> sys.path
+['', '/usr/lib/python39.zip', '/usr/lib/python3.9', '/usr/lib/python3.9/lib-dynload', '/home/mhy/.local/lib/python3.9/site-packages', '/media/mhy/kdiskk/linux_vsocde/PY/src/paramiko', '/usr/local/lib/python3.9/dist-packages', '/usr/lib/python3/dist-packages', '/usr/lib/python3.9/dist-packages']
+
+这时重启一遍就解决了。
+
+如果遇到Statements must be separated by newlines or semicolons，那请看我上一篇文章。
+
+解法 3
+
+如果这几个方法都没有解决你的问题，那么可以参考一下这位大佬的文章
+ 明明已经安装了某个模块，python报错：ImportError: No module named ***
+
+完毕
+

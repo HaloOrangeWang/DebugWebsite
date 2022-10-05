@@ -1,0 +1,30 @@
+pytho的使用和分发完全是免费的，它是一种面向对象的语言，它的。它的类模块支持多态，操作符重载和多重继承等高级概念，并且以python特有的简洁的语法和类型，OOP十分易于使用。python内置了众多预编译并可移植的功能模块，这些功能模块叫做标准库（standard library）。python可以调用C和C++的库，可以被C和C++的程序调用，可以与java组件集成，可以和COM和.Net等框架进行通信，并且可以通过SOAP、XML-RPC和CORBA等接口与网络进行交互，所以，python绝不仅仅是一个独立的工具。
+
+本来是想打算使用eval函数对变量进行赋值的，没想到出现了invalid syntax错误。源代码如下
+
+In [2]: eval('a = 1')
+ File "<string>", line 1
+ a = 1
+  ^
+SyntaxError: invalid syntax
+
+　　百度没百度到结果，最后在stackoverflow上找到了好的答案.
+
+　　作者的意思是，eval函数只负责对表达式进行处理，并没有赋值的功能，也就是说，eval函数只负责对你的输入进行输出，True还是False又或者是什么东西。但它本身是没有影响当前代码环境的能力的。如果我们想用来进行赋值，那么应该使用exec()函数。看代码：
+
+In [3]: exec('a = 1')
+In [4]: a
+Out[4]: 1
+
+　　问题的解决方案已经供出了，那么我们现在再看看官方文档对这两个函数怎么说。
+
+eval(expression, global=None, local=None)
+
+参数是字符串和可选的global和local。global应当为一个字典文件，local应为一个映射对象。
+
+　　expression参数将被处理为一个python的表达式（严格来说，是一串条件语句），global和local参数将被用来当做全局和局部的命名空间。
+
+exec(object[,global,[locals])
+
+　　这个函数能够为python提供动态的代码执行功能。
+

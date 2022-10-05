@@ -1,0 +1,32 @@
+在使用python+Django写项目时，需要用到定时任务apscheduler，但服务在长时间运行时，定时任务会报错pymysql.err.OperationalError: (2006, "MySQL server has gone away (BrokenPipeError(32, 'Broken pipe'))")
+
+如下图所示，此时，我们可以通过如下方法解决，一共有三个地方。
+
+这个报错出现的原因：操作MySQL数据库的时候，连接超时或者连接的session已经被MySQL抛弃，因为使用了定时任务apscheduler，方式是持久层的框架sqlalchemy，所以，通过3方面来解决。
+
+第一、MySQL，MySQL默认的wait_timeout时间28800秒，即8小时，超过8小时，MySQL就会放弃连接。可以看一下自己的MySQL设置的时间是多少，运行show variables like '%timeout%';这个SQL即可查看到，时间根据自己业务而定，我在这里就保持8小时不变。
+
+第二、需要修改apscheduler持久层连接时间，设置时间小于8小时，即，还没有到MySQL放弃session的时间，apscheduler就主动回收了连接，这样在使用的时候，可以解决由于超时，MySQL主动抛弃session导致的MySQL server has gone away错误。如下图所示，设置连接时间为7小时。并且pool_pre_ping为True，即每次从连接池中取连接的时候，都会验证一下与数据库是否连接正常，如果没有连接，那么该连接会被回收。
+
+第三、在Django中操作数据库时，有两种情况，一种是使用Django的ORM方式操作数据库，即Model.objects.filter()这种方式，我们在报错之前，即操作数据库之前，先关闭连接，再重连数据库，即可解决这种方式的报错情况，引入
+
+from django.db import close_old_connections
+
+在操作数据库之前，加上close_old_connections()，如下图所示。
+
+第四、另外一种方式是自定义执行SQL，原理一样，只需要在操作数据库前，关闭连接即可，引入
+
+from django.db import connection
+
+在操作数据库前，加上connection.close()，如下图所示。
+
+至此，通过上面的修改：
+
+1、MySQL超时时间设置；
+
+2、定时任务持久层设置；
+
+3、Django的ORM形式与自定义SQL两种方式操作前关闭连接；
+
+就彻底解决了MySQL server has gone away这个报错。
+

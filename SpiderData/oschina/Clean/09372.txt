@@ -1,0 +1,255 @@
+现象，在命令行curl https://index.docker.io/v1/search?q=registry会有数据，在浏览器地址栏输入https://index.docker.io/v1/search?q=registry也有数据，唯独docker search registry报错。
+
+docker search registry
+
+[root@aleiye ~]# docker search registry
+
+FATA[0020] Error response from daemon: Get https://index.docker.io/v1/search?q=registry: dial tcp: lookup index.docker.io: Temporary failure in name resolution
+
+改了/etc/resolv.conf，重启网络（service network restart）也不起作用，会被覆盖，还是之前的值
+
+需要改/etc/sysconfig/network-scripts/ifcfg-eth0
+
+PEERDNS改为no
+
+PEERDNS=no
+
+增加
+
+DNS1=202.101.110.55
+
+DNS2=202.96.209.133
+
+重启网络
+
+service network restart
+
+就可以在/etc/resolv.conf中看到202.101.110.55和202.96.209.133了
+
+然并卵，执行docker search registry还是报错
+
+reboot重启系统就好了
+
+估计是本centos虚拟机改为桥接的缘故。（之前非桥接）
+
+在页面输入：
+
+https://index.docker.io/v1/search?q=registry
+
+在控制台输入：
+
+curl https://index.docker.io/v1/search?q=registry
+
+下面是格式化的：
+
+{
+    "num_pages": 25, 
+    "num_results": 610, 
+    "results": [
+        {
+            "is_automated": false, 
+            "name": "registry", 
+            "is_trusted": false, 
+            "is_official": true, 
+            "star_count": 348, 
+            "description": "Containerized docker registry"
+        }, 
+        {
+            "is_automated": true, 
+            "name": "pallet/registry-swift", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 3, 
+            "description": "Add swift storage support to the official docker registry image"
+        }, 
+        {
+            "is_automated": true, 
+            "name": "konradkleine/docker-registry-frontend", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 42, 
+            "description": "Browse and modify your Docker registry in a browser."
+        }, 
+        {
+            "is_automated": true, 
+            "name": "kampka/registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": "A docker registry image based on kampka/archlinux"
+        }, 
+        {
+            "is_automated": true, 
+            "name": "distribution/registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 8, 
+            "description": ""
+        }, 
+        {
+            "is_automated": true, 
+            "name": "marvambass/nginx-registry-proxy", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 21, 
+            "description": "Docker Registry Reverse Proxy with Basic Auth Nginx Server - ready for production"
+        }, 
+        {
+            "is_automated": true, 
+            "name": "atcol/docker-registry-ui", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 54, 
+            "description": "A web UI for easy private/local Docker Registry integration. Allows you to browse, delete and search for images through
+one-to-many registries. Formally \"docker-registry-web\"."
+        }, 
+        {
+            "is_automated": true, 
+            "name": "devsli/cifs-registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 1, 
+            "description": "Docker Registry on CIFS (Samba)"
+        }, 
+        {
+            "is_automated": true, 
+            "name": "webhippie/registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": "Docker images for registry"
+        }, 
+        {
+            "is_automated": true, 
+            "name": "samalba/docker-registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 36, 
+            "description": ""
+        }, 
+        {
+            "is_automated": true, 
+            "name": "envygeeks/node-registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": "Node (Docker registry) image."
+        }, 
+        {
+            "is_automated": true, 
+            "name": "h3nrik/registry-ldap-auth", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 3, 
+            "description": "LDAP and Active Directory authentication proxy for a private Docker registry."
+        }, 
+        {
+            "is_automated": true, 
+            "name": "silintl/registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 1, 
+            "description": "Docker Registry 2.0, data stored in S3."
+        }, 
+        {
+            "is_automated": true, 
+            "name": "andthensome/registry-swift", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": ""
+        }, 
+        {
+            "is_automated": true, 
+            "name": "voxxit/registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": ""
+        }, 
+        {
+            "is_automated": true, 
+            "name": "ganomede/registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": ""
+        }, 
+        {
+            "is_automated": true, 
+            "name": "fedora/registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 19, 
+            "description": ""
+        }, 
+        {
+            "is_automated": true, 
+            "name": "expert360/registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": ""
+        }, 
+        {
+            "is_automated": true, 
+            "name": "rhasselbaum/docker-registry-ldap-proxy", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 1, 
+            "description": "Docker registry proxy with user-level LDAP authorization for changes."
+        }, 
+        {
+            "is_automated": true, 
+            "name": "h3nrik/simple-registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 1, 
+            "description": "Simple pre-configured local Docker registry."
+        }, 
+        {
+            "is_automated": true, 
+            "name": "misakai/registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": "Containerized docker registry that can be used to deploy a custom docker repository."
+        }, 
+        {
+            "is_automated": true, 
+            "name": "burkostya/npm-registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 3, 
+            "description": ""
+        }, 
+        {
+            "is_automated": true, 
+            "name": "silintl/registry-proxy", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": "A reverse proxy for the Docker Registry 2.0"
+        }, 
+        {
+            "is_automated": true, 
+            "name": "h3nrik/simple-registry-mirror", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 1, 
+            "description": "Simple pre-configured registry mirror of Docker Hub."
+        }, 
+        {
+            "is_automated": true, 
+            "name": "cgswong/confluent-schema-registry", 
+            "is_trusted": true, 
+            "is_official": false, 
+            "star_count": 0, 
+            "description": "Confluent Platform Schema Registry (~403 MB)"
+        }
+    ], 
+    "page_size": 25, 
+    "query": "registry", 
+    "page": 1
+}
+

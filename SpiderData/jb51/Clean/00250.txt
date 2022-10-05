@@ -1,0 +1,74 @@
+一、连接语句
+
+from PyQt5.QtSql import QSqlDatabase
+
+db=QSqlDatabase.addDatabase('QMYSQL')
+db.setHostName('localhost')
+db.setDatabaseName('dbwork')
+db.setUserName('users')
+db.setPassword('ZDSYS')
+db.setPort(3306)
+db.open()
+
+二、错误解决
+
+1、提示1：QMYSQL driver not loaded
+
+a、问题分析
+
+python的PyQt5中需要对应版本位数（32/64）的libmysql.dll（MySQL中）。
+
+即：python 32对MySQL 32，python 64对MySQL 64。
+
+b、解决方案
+
+例：
+
+将文件
+
+C:\Program Files\mysql-5.7.26-win32\lib\libmysql.dll
+
+放入文件夹
+
+C:\Users\Administrator\AppData\Local\Programs\Python\Python37\Lib\site-packages\PyQt5\Qt\bin
+
+如安装的MySQL版本位数与python不一致无对应libmysql.dll文件，请下载：
+
+32位：https://cdn.mysql.com/archives/mysql-connector-c/mysql-connector-c-6.1.11-win32.msi
+
+64位：https://cdn.mysql.com/archives/mysql-connector-c/mysql-connector-c-6.1.11-winx64.msi
+
+对应的libmysql.dll目录。
+
+32位：C:\Program Files\MySQL\MySQL Connector C 6.1\lib\libmysql.dll
+
+64位：C:\Program Files（×84）\MySQL\MySQL Connector C 6.1\lib\libmysql.dll
+
+注：只能安装一个。
+
+2、提示2：available drivers: QSQLITE QMYSQL QMYSQL3 QODBC QODBC3 QPSQL QPSQL7
+
+问题分析
+
+注意该提示中有无QMYSQL，如果有，按提示1解决，如果没有则是因为PyQt5缺少组件qsqlmysql.dll。
+
+解决方案
+
+卸载现有PyQt5安装固定版本。
+
+pip uninstall PyQt5
+pip install PyQt5==5.12.1 #python终端中
+pip install --user PyQt5==5.12.1 #anaconda终端中
+
+3、PyQt5文件位置
+
+python3.7：
+
+C:\Users\Administrator\AppData\Local\Programs\Python\Python37\Lib\site-packages\PyQt5\Qt\plugins\sqldrivers\qsqlmysql.dll
+
+anaconda：
+
+C:\Users\Administrator\AppData\Roaming\Python\Python37\site-packages\PyQt5\Qt\plugins\sqldrivers
+
+到此这篇关于PyQt5连接MySQL及QMYSQL driver not loaded错误解决的文章就介绍到这了,更多相关PyQt5连接MySQL内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

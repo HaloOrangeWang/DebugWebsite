@@ -1,0 +1,16 @@
+
+一、问题描述
+
+    python安装好frida框架后，在安卓端启动了frida-server，启动要hook的应用，在cmd中执行python脚本，报错frida.InvalidArgumentError: device not found，报错详细截图如下：
+
+
+二、解决记录
+
+    详细看来一下报错，发现报错出现在process = frida.get_remote_device().attach('应用包名')这句代码中，报错信息显示未找到设备。。。
+
+    未找到设备，怀疑是frida版本错误，仔细检查后，发现版本正确：python使用的是3.7版本，测试机型为arm32位，frida-server下载的安卓32位并赋权限777以root权限启动，没问题。。。
+
+    于是去百度，发现get_usb_device函数有一个参数timeout，默认为0，改为1000即可（设置超时时间为1秒），改之，无效。。。
+
+    最后在看雪论坛一篇帖子的答复中看见还有一个函数get_remote_device函数，于是弃用get_usb_device函数，使用get_remote_device函数成功HOOK！！！截图如下：
+

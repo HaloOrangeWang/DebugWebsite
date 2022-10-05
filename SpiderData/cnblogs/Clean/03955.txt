@@ -1,0 +1,22 @@
+在Django进行数据迁移时，难免会误将models文件中的字段名敲错，结果导致数据迁移后无法正常使用，在解决这个问题时，整理了数据迁移的逻辑如下：
+
+角色：models.py、initial.py、database
+
+命令：python manage.py makemigrations
+
+　　　python manage.py migrate
+
+流程：通过编写models.py，执行python manage.py makemigrations命令，生成initial.py文件（0001_initial.py），执行python manage.py migrate命令，将数据迁移至database中。
+
+问题：当数据迁移完成后，如果对models.py的表名进行了修改，那么就需要再次进行数据迁移，再次执行python manage.py makemigrations命令，会提示是否要重命名，点击Y确认。
+
+确认后，Django会自动生成一个逻辑文件（0002_auto_date_num.py），这个文件阐明了所要修改的内容。
+
+再执行python manage.py migrate命令，数据即迁移到database中，完成。
+
+此时，0001_initial.py中并未记录修改后的内容，所以Django自动生成的这个逻辑文件就是辅助initial.py的，一旦将其删除，如果再次要对models.py进行类似表名的修改操作时，执行以上步骤时（执行到python manage.py migrate），就会出现“no such table:xxx_xxx_xxx”这样的报错。
+
+如果将这个逻辑文件删除了，那么就需要在initial.py文件中找到修改前的那个表名，将其修改成与database中对应的table名一致，然后再进行python manage.py migrate命令即可。
+
+总结就是，models.py文件与initial.py文件是相关联的，而initial.py和database是相关联的，想把数据同步过去，就需要initial文件左右逢源。
+

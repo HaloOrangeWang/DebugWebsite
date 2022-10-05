@@ -1,0 +1,32 @@
+在Mac上打包electron应用的时候，遇到一个提示：
+
+cannot unpack electron zip file, will be re-downloaded error=zip: not a valid zip file
+
+然后就开始download
+
+downloading url=https://github.com/electron/electron/releases/download/v11.1.0/electron-v11.1.0-mas-x64.zip size=77 MB parts=8
+
+显然这个地址在国内下载速度极慢，打包完全卡住的样子。
+
+还有类似报错：
+
+Unpacking electron zip zipPath=undefined [build:release ] ⨯ cannot resolve https://npm.taobao.org/mirrors/electron/12.0.6/electron-v12.0.6-darwin-x64.zip: status code 404
+
+
+产生的原因：
+
+这个问题是在我升级了Electron版本后发生的，我将项目中的Electron版本从V6.1.9升级到了V11.1.0，打包时，需要全局环境的Electron也升级到11.1.0，而全局环境中的Electron虽然升级到了11.1.0（或者还未升级），但是缓存文件夹中没有这个zip，打包时就会去下载这个包。因此，我们只要手动下载这个包放到缓存文件夹即可。
+
+
+解决方式：
+
+下面仅介绍Mac环境下的解决方式，Windows下目录有所不同，需要再去查一下。
+
+去Electron的镜像站下载zip包，比如：http://npm.taobao.org/mirrors/electron/
+
+选择自己版本的包，如果是11.1.0，Mac下就要去下载electron-v11.1.0-darwin-x64.zip和electron-v11.1.0-mas-x64.zip，注意同时要下载 SHASUMS256.txt
+
+将下载到的这两个zip包和SHASUMS256.txt，放入 ~/Library/Caches/electron 这个文件夹
+
+进行打包
+

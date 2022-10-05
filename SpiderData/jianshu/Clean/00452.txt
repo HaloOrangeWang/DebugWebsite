@@ -1,0 +1,46 @@
+记录一个realloc 函数 报 invaild next size 问题。
+
+问题伪代码
+
+uint32_t mlen= 1392;
+uint8_t *message = malloc(mlen);
+...
+mlen = mlen + 1392;
+calloc(message, mlen);
+mlen = mlen + 1392;
+calloc(message, mlen);
+
+重新分配内存的时候，需要的内存大小还是相对比较大的。mlen经过几次增加，最大会达到4000+。当程序执行到calloc改行时候，报错invaild next size.
+
+realloc 函数分析
+
+realloc 函数原型如下，ptr为要重新分配内存的地址，size为要重新分配内存的大小。要注意的是，该函数的返回值是指向新内存的指针。
+
+void* realloc (void* ptr, size_t size);
+
+realloc 函数重新分配内存的时候，存在一下两种情况（扩大内存的情况）：
+
+ptr指针后续仍有足够空间分配size大小的内存
+
+此时，realloc函数会在ptr的尾部开辟size大小的内存。
+
+ptr指针后续没有足够空间分配size大小的内存
+
+此时，realloc函数会在其它内存位置分配一个size大小的内存空间，并将原有大小的数据复制到新地址。此时新空间的地址发生了变化。
+
+问题解决
+
+当分析玩realloc函数原理，大体的问题原因已经可以猜测到了，空间位置发生了变化。
+
+解决办法
+
+uint32_t mlen= 1392;
+uint8_t *message = malloc(mlen);
+...
+mlen = mlen + 1392;
+message = calloc(message, mlen);
+mlen = mlen + 1392;
+message = calloc(message, mlen);
+
+每次都用返回值作为ptr的新地址，保证不会出问题。
+

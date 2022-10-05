@@ -1,0 +1,19 @@
+
+报错内容
+
+Undefined symbols for architecture arm64:
+  "_iconv", referenced from:
+      BDS_TTS::doConvert(unsigned char const*, int, unsigned char*, int, void*) in libBaiduSpeechSDK.a(bds_character_coding_iconv.o)
+  "_iconv_open", referenced from:
+      BDS_TTS::convertCharacterEncoding(unsigned char const*, int, BDS_TTS::BDS_CHARSETS_T, unsigned char**, BDS_TTS::BDS_CHARSETS_T) in libBaiduSpeechSDK.a(bds_character_coding_iconv.o)
+  "_iconv_close", referenced from:
+      BDS_TTS::convertCharacterEncoding(unsigned char const*, int, BDS_TTS::BDS_CHARSETS_T, unsigned char**, BDS_TTS::BDS_CHARSETS_T) in libBaiduSpeechSDK.a(bds_character_coding_iconv.o)
+      BDS_TTS::doConvert(unsigned char const*, int, unsigned char*, int, void*) in libBaiduSpeechSDK.a(bds_character_coding_iconv.o)
+ld: symbol(s) not found for architecture arm64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
+
+解决办法
+
+添加依赖库libiconv.2.4.0.tbd
+

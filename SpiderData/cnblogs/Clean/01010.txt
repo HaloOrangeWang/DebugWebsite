@@ -1,0 +1,14 @@
+[本文出自天外归云的博客园]
+
+在使用python的pytho-memcache库时出现了一个问题，在调用get方法获取键值的时候报错：Unknown flags on get: 20
+
+在网上查了，发现一个人也遇到了同样的问题但没解决：Python 'Unknown flags on get' error while querying memcached
+
+通过排查源码逻辑，我发现并不是获取不到key的value，而是源码中对flags的相关处理逻辑导致没有返回memcache服务器的返回值。
+
+通过调试源码，定位问题出在memcache.py文件 > _recv_value方法 > 最后的else分支 只抛出了异常而没有指定返回值val导致，修改方法如下：
+
+问题就这样解决了。
+
+相关问题：https://github.com/linsomniac/python-memcached/issues/144
+

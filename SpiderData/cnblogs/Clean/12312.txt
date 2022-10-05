@@ -1,0 +1,22 @@
+
+问题
+
+使用主机迁移服务迁移windows server 2008出现问题 2.按照教程安装Windows Agent(Python2)下载后，在源主机上运行agent-start.exe，输入ak后，提示LookupError: unknown encoding: cp65001的python脚本错误；在尝试chcp 1252 和set PYTHONIOENCODING=UTF-8等命令后仍报错`
+
+
+处理方法
+
+win键+R，输入regedit，确定
+
+按顺序找到HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Command Processor。
+
+windows系统修改cmd窗口utf-8编码格式
+
+命名为“autorun”, 点击右击修改，数值数据填写“chcp 65001”，确定。
+
+windows系统修改cmd窗口utf-8编码格式
+
+7
+
+这时候打开cmd命令窗口就会看到，和之前临时修改的窗口一样，编码已经修改成UTF-8了，而且每次打开cmd都是UTF-8编码。
+

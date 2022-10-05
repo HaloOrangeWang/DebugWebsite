@@ -1,0 +1,123 @@
+
+前言
+
+在测试过程中，注意力往往都在功能上，如果功能正常，是基本不会查看日志的，反之会查看日志定位问题。但是表面上的功能正常不能确保日志没有报错，不能确保其他功能点没有问题，这时我们就需要日志的监控，一旦有报错就触发报警机制（报警机制可以有邮件报警、钉钉微信发消息报警等），我选择的是发邮件报警。
+
+
+实现思路
+
+1、在测试过程中，日志时时在刷，时时监控难度太大
+
+2、转换思路，每分钟对日志进行扫描一次，发现报错即报警
+
+a.获取当前时间前一分钟的日志，并将日志全部写入一个文件中，每次写入前会将该文件清空
+
+b.获取前一分钟文件时，方法是获取前一分钟日志的第一行的行号和最后一行的行号，然后将这两个行号间的所有内容输出到一个文件中（这样做相比于直接根据时间过滤的好处就是会包含报错内容，因为java日志中报错信息前面是没有时间的，根据时间过滤就会漏掉报错信息）
+
+c.在前一分钟日志中进行java关键词报错过滤，并将查询到的报错信息的前后20行（具体多少行根据实际情况而定）内容都输出到另一个文件中
+
+d.发邮件之前判断上一步生成的文件大小，如果大于0（说明有报错）就触发邮件，如果等于0就不触发邮件报警
+
+3.脚本写好后，放入crond定时任务中，每分钟执行一次，即可进行监控
+
+
+实现代码
+
+仅供参考
+
+#!/bin/sh
+#日志路径
+mall_c_log_path='/data/admin/log/mall-c/1.0.0/qa/base/1/mall-c.log'
+mall_mg_log_path='/data/admin/log/mall-mg/1.0.0/qa/base/1/mall-mg.log'
+#当前时间前一分钟，精确到分
+curdate=`date -d "1 minute ago" +"%Y-%m-%d %H:%M"`
+echo ${curdate}
+#获取mall_c要截取日期日志的开始和结束行号
+c_start_line=`cat -n $mall_c_log_path | grep "${curdate}" | head -1 | cut -f1`
+c_end_line=`cat -n $mall_c_log_path | grep "${curdate}" | tail -1 | cut -f1`
+#获取mall_mg要截取日期日志的开始和结束行号
+mg_start_line=`cat -n $mall_mg_log_path | grep "${curdate}" | head -1 | cut -f1`
+mg_end_line=`cat -n $mall_mg_log_path | grep "${curdate}" | tail -1 | cut -f1`
+sed -n "$c_start_line,${c_end_line}p" $mall_c_log_path > /data/admin/log_err/mall_c_now.log
+sed -n "$mg_start_line,${mg_end_line}p" $mall_mg_log_path > /data/admin/log_err/mall_mg_now.log
+#清空错误日志文件
+> /data/admin/log_err/mall-c_err.txt
+> /data/admin/log_err/mall-mg_err.txt
+#将报错信息写入文件
+err_list=(ArithmeticExecption NullPointerException ClassCastException NegativeArrayException ArrayIndexOutOfBoundsException SecturityException EOFException FileNotFoundException NumberFormatException SQLException IOException NoSuchMethodException SocketTimeoutException)
+for i in ${err_list[*]}; do
+cat /data/admin/log_err/mall_c_now.log | grep -C 20 "${i}" >> /data/admin/log_err/mall-c_err.txt
+cat /data/admin/log_err/mall_mg_now.log | grep -C 20 "${i}" >> /data/admin/log_err/mall-mg_err.txt
+done
+
+# -*- coding: UTF-8 -*-
+import smtplib,os
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
+def send_mail_attch():
+    #发送邮箱
+    # sender='18706710668@163.com'
+    sender='815618406@qq.com'
+    #接收邮箱
+    receiver='815618406@qq.com'
+    #发送邮箱服务器
+    # smtpserver='smtp.163.com'
+    smtpserver='smtp.qq.com'
+    #用户名  口令
+    # username='18706710668@163.com'
+    username='815618406@qq.com'
+    password='vwrfpqwbwgsybdah'
+    #中文需参数‘utf8'，单字节字符不需要
+    # 发送邮件主题
+    subject = '互动赢家QA环境日志监控报警'
+    msg = MIMEMultipart('mixed')
+    msg['Subject'] = Header(subject, 'utf-8')
+    #邮件正文
+    text = "Dear all!\n 附件是后端日志报错内容，请查收~"
+    zw = MIMEText(text,'plain','utf-8')
+    msg.attach(zw)
+    #邮件附件1
+    size_mall_c = os.path.getsize('/data/admin/log_err/mall-c_err.txt')
+    if size_mall_c != 0:
+        mall_c_log = open('/data/admin/log_err/mall-c_err.txt',"rb")
+        send_mall_c_log = mall_c_log.read()
+        mall_c_log.close()
+        att_1 = MIMEText(send_mall_c_log, 'base64', 'utf-8')
+        att_1["Content-Type"] = "application/octet-stream"
+        att_1["Content-Disposition"] = "attachment;filename = 'mall_c_err.txt'"
+        msg.attach(att_1)
+    #邮件附件2
+    size_mall_mg = os.path.getsize('/data/admin/log_err/mall-mg_err.txt')
+    if size_mall_mg != 0:
+        mall_mg_log = open('/data/admin/log_err/mall-mg_err.txt',"rb")
+        send_mall_mg_log = mall_mg_log.read()
+        mall_mg_log.close()
+        att_2 = MIMEText(send_mall_mg_log, 'base64', 'utf-8')
+        att_2["Content-Type"] = "application/octet-stream"
+        att_2["Content-Disposition"] = "attachment;filename = 'mall_mg_err.txt'"
+        msg.attach(att_2)
+    msg['to']='815618406@qq.com'
+    msg['from']='815618406@qq.com'
+    smtp=smtplib.SMTP_SSL('smtp.qq.com',port=465)
+    #smtp=smtplib.SMTP()
+    #smtp.connect('smtp.qq.com')
+    #smtp.set_debuglevel(1)
+    smtp.login(username,password)
+    smtp.sendmail(sender,receiver,msg.as_string())
+    smtp.quit()
+if __name__ == '__main__':
+    size_mall_c = os.path.getsize('/data/admin/log_err/mall-c_err.txt')
+    size_mall_mg = os.path.getsize('/data/admin/log_err/mall-mg_err.txt')
+    if (size_mall_c != 0) or (size_mall_mg != 0):
+        send_mail_attch()
+
+#!/bin/sh
+#执行收集报错的脚本
+sh /data/admin/log_err/monitor_log_err.sh
+sleep 10
+#执行发送邮件脚本
+/usr/bin/python /data/admin/log_err/send_email.py
+
+以上就是python监控日志中的报错并进行邮件报警的详细内容，更多关于python监控日志报错邮件报警的资料请关注脚本之家其它相关文章！希望能帮到你~
+

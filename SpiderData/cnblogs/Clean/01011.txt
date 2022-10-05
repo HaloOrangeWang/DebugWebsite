@@ -1,0 +1,40 @@
+最近在玩faiss,运行这段代码的时候报错了：
+
+res = faiss.StandardGpuResources()
+flat_config = 0
+index = faiss.GpuIndexFlatL2(res,d,flat_config)
+
+报错内容见上：
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "swigfaiss_gpu.py", line 2958, in __init__
+    this = _swigfaiss_gpu.new_GpuIndexFlatL2(*args)
+NotImplementedError: Wrong number or type of arguments for overloaded function 'new_GpuIndexFlatL2'.
+  Possible C/C++ prototypes are:
+    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,faiss::IndexFlatL2 *,faiss::gpu::GpuIndexFlatConfig)
+    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,faiss::IndexFlatL2 *)
+    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,int,faiss::gpu::GpuIndexFlatConfig)
+    faiss::gpu::GpuIndexFlatL2::GpuIndexFlatL2(faiss::gpu::GpuResources *,int)
+
+一开始怀疑是因为之前用conda安装过 faiss,索性conda uninstall faiss-gpu。卸载后还是报错。
+
+找了半天也没找到资料。最后看了底层代码才解决。
+
+既然解决了就分享给大家：
+
+解决的方法是：
+
+flat_config = faiss.GpuIndexFlatConfig()
+flat_config.device = 0
+
+index = faiss.GpuIndexFlatL2(res, d, flat_config)
+
+原因是API接口有了变动，指定GPU卡号的方式不一样了。
+
+另外：
+
+安装faiss只要下载源码安装即可。不需要conda 安装Python版本。
+
+安装的时候需要提前安装swig。
+

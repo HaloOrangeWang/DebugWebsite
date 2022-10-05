@@ -1,0 +1,111 @@
+
+报错：
+
+sqlalchemy.exc.InvalidRequestError: Object '<Model at 0x7fe27328e898>' is already attached to session '2' (this is '3')
+
+
+问题：
+
+
+session交叉混用
+
+
+分析：
+
+
+1、我的项目中项目采用了维护单一db的方式；
+
+
+2、既然是session混用说明又创建了一个db,执行了db.session；
+
+
+3、我的项目中只在app.py中维护了一个db，视图函数中from app import db，所以可以推测是在当前发生session混用的视图函数中产生了新db，并执行了db.session；
+
+
+4、而哪里执行了SQLAlchemy()，哪里就产生了新db
+
+
+5、但是发生混用的视图函数并没有找到SQLAlchemy()，
+
+
+6、视图函数
+
+1   req = request.args
+ 2   id = int(req.get('id',0))
+ 3   model = Model.query.filter_by(id=id).first()
+ 4   model.name = name
+ 5   model.updated_time = now()
+ 6   db.session.add(model)
+ 7   db.session.commit()
+
+
+7、读到line7  Model采用了sqlacodegen生成模型文件
+
+使用命令生成ORM模型
+
+flask-sqlacodegen 'mysql://root:123456@127.0.0.1/haha' --tables model --outfile "common/models/model.py" --flask
+
+生成模型文件model.py如下:
+
+1  # coding: utf-8
+  2  from sqlalchemy import Column, DateTime, Integer, String
+  3  from sqlalchemy.schema import FetchedValue
+  4  from flask_sqlalchemy import SQLAlchemy
+  5  from app import app
+  6
+  7  db = SQLAlchemy()
+  8
+  9  class Model(db.Model):
+ 10   __tablename__ = 'model'
+ 11
+ 12   id = db.Column(db.Integer, primary_key=True, unique=True)
+ 13   name = db.Column(db.String(50), nullable=False, server_default=db.FetchedValue())
+
+
+8、问题基本明了，是生成的类文件中自带了一句db = SQLAlchemy()
+
+
+解决办法：
+
+1、
+
+6   db.session.add(model)
+ 7   db.session.commit()
+```更换为```
+ 6   db.session.query(Model).filter_by(id=id).update({'name': model.name})
+
+2、
+
+1   req = request.args
+ 2   id = int(req.get('id',0))
+ 3   '''追加一句'''
+ 4   from model.Model import db 
+ 5   model = Model.query.filter_by(id=id).first()
+ 6   model.name = name
+ 7   model.updated_time = now()
+ 8   db.session.add(model)
+ 9   db.session.commit()
+
+
+以上俩种办法是可以修改数据正常运行，但是并不符合我项目需求，根本问题没有解决。1可以解决维护一个db的问题，但是操作起来不方便。2操作简单但是不符合单一db的要求。
+
+3、
+
+修改orm模型如下：
+
+5  from app import app
+  6
+  7  db = SQLAlchemy()
+
+1  # coding: utf-8
+  2  from sqlalchemy import Column, DateTime, Integer, String
+  3  from sqlalchemy.schema import FetchedValue
+  4  from flask_sqlalchemy import SQLAlchemy
+  5  from app import db,app
+  6
+  7  class Model(db.Model):
+  8   __tablename__ = 'model'
+  9
+ 10   id = db.Column(db.Integer, primary_key=True, unique=True)
+ 11   name = db.Column(db.String(50), nullable=False, server_default=db.FetchedValue())
+

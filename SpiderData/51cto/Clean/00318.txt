@@ -1,0 +1,32 @@
+开发环境
+
+MySQL 10.1.38-MariaDB-1~bionic
+
+Python3.7.8
+
+开发工具
+
+PyCharm2018.1
+
+SmartGit18.1
+
+Navicat15.0.28
+
+
+问题描述
+
+最近在用python的pandas库导Excel表，遇到数据量太大，导出时候直接抛出异常
+
+ValueError: This sheet is too large! Your sheet size is: 1286685, 19 Max sheet size is: 1048576, 16384
+
+原本的代码实现是：
+
+
+解决方法
+
+尝试修改引擎为​​openpyxl​​，也是会抛出异常
+
+因为单个excel文件有输出长度65535的限制，所以尝试修改文件格式为csv可以临时解决问题，修改一下代码，如：
+
+总结：对于数据量很大的Excel导出，可以尝试进行数据SQL的改写，过滤不必要的业务数据，或者使用程序分成多个Excel也是可以的，上面的方法都不想采用，可以临时用csv文件导出，csv文件可以可以支持大文件
+

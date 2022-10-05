@@ -1,0 +1,16 @@
+Python 3 写以下代码的时候报错：
+
+write() argument must be str, not bytes
+
+with open('data1.pk', 'r') as f:
+    all_dick, idf_dict = pickle.load(f)
+
+产生原因：Python3给open函数添加了名为encoding的新参数，而这个新参数的默认值却是‘utf-8’。这样在文件句柄上进行read和write操作时，系统就要求开发者必须传入包含Unicode字符的实例，而不接受包含二进制数据的bytes实例。
+
+解决思路：使用二进制写入模式（‘wb’）来开启待操作文件（而不是采用字符写入模式（‘w’））。
+
+具体操作：将'r' 修改为'rb'，或者'w' 修改为'wb'，就不会报错啦！
+
+with open('data1.pk', 'rb') as f:
+    all_dick, idf_dict = pickle.load(f)
+

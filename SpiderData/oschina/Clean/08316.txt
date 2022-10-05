@@ -1,0 +1,15 @@
+报这种错误是因为没有设置白名单或者黑名单。在使用fill填充时，需要设置白/黑名单.
+
+$model->fill($params);
+return $model->save();
+
+找到对应的model，设置白名单，类似如下代码就可以了：
+
+protected $fillable = ['name', 'phone', 'comment'];
+
+有白名单，自然就有黑名单:
+
+protected $guarded = ['id', 'user_id','created_at', 'updated_at'];
+
+在字段非常多时，使用黑名单还是很方便的。
+

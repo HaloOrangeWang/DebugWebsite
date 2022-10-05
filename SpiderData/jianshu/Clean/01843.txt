@@ -1,0 +1,92 @@
+
+需求
+
+  由于现在所单细胞scanpy分析的时候，想使用loom文件作为输入，loom文件是一种十分重要的数据存储方法，占用储存小，便于分享，![loompy]http://loompy.org/)是python中读取输出loom文件的常用模块。但是我的python下没有安装loompy模块，因此需要安装loompy模块，以下是安排命名：
+
+pip install loompy
+
+  遗憾的是出现以下报错：
+
+
+尝试解决方案
+
+  因此我是自己在集群安装的conda，因此首先是想到自己用conda的方式解决此方案：
+
+conda install loopy
+
+  结果还是出现报上述的错误，然后我在查报错的时候，发现不少loompy包的错误，而是在numpy-groupies包的时候出错，因此想着单独安装numpy-groupies就能解决此问题，结果还是不行，包错如下：
+
+pip install numpy-groupies
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Collecting numpy-groupies
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/96/7a/2196465530e72084c6bb97cd49bf8ccdc83919cc94755727aa148effbc0f/numpy_groupies-0.9.9.tar.gz (43kB)
+     |████████████████████████████████| 51kB 2.2MB/s 
+    ERROR: Complete output from command python setup.py egg_info:
+    ERROR: Traceback (most recent call last):
+      File "/annoroad/data1/bioinfo/PMO/yaomengcheng/Anaconda3/lib/python3.7/configparser.py", line 788, in get
+        value = d[option]
+      File "/annoroad/data1/bioinfo/PMO/yaomengcheng/Anaconda3/lib/python3.7/collections/__init__.py", line 914, in __getitem__
+        return self.__missing__(key)            # support subclasses that define __missing__
+      File "/annoroad/data1/bioinfo/PMO/yaomengcheng/Anaconda3/lib/python3.7/collections/__init__.py", line 906, in __missing__
+        raise KeyError(key)
+    KeyError: 'VCS'
+    
+    During handling of the above exception, another exception occurred:
+    
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-install-jwt_ehr1/numpy-groupies/setup.py", line 55, in <module>
+        version=versioneer.get_version(),
+      File "/tmp/pip-install-jwt_ehr1/numpy-groupies/versioneer.py", line 1480, in get_version
+        return get_versions()["version"]
+      File "/tmp/pip-install-jwt_ehr1/numpy-groupies/versioneer.py", line 1412, in get_versions
+        cfg = get_config_from_root(root)
+      File "/tmp/pip-install-jwt_ehr1/numpy-groupies/versioneer.py", line 345, in get_config_from_root
+        VCS = parser.get("versioneer", "VCS")  # mandatory
+      File "/annoroad/data1/bioinfo/PMO/yaomengcheng/Anaconda3/lib/python3.7/configparser.py", line 791, in get
+        raise NoOptionError(option, section)
+    configparser.NoOptionError: No option 'VCS' in section: 'versioneer'
+    ----------------------------------------
+ERROR: Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-install-jwt_ehr1/numpy-groupies/
+
+  通过上述报错，我们可以知道的确是numpy-groupies包的错误，但是还是没有解决问题。
+
+
+最终解决方案
+
+  后面想着可能离线下载包安装就就不会出现此问题，后面离线下载，结果还是出现问题，不过在看报错的时候，发现是说 configparser.NoOptionError: No option 'VCS' in section: 'versioneer'，这个明显是configparser读取配置文件时候出现的错误，而且是配置文件versioneer模块没有VCS参数，哦，原来如此，看到这里才想起来是我自己改过configparser包的问题。
+
+  configparser包在读取配置文件的时候，配置文件的参数是不区分大小写，但是我们通常用的是时候需要区分大小写，因此我就自己手动改了一下这个包的函数，使得区分大小写，而这里默认安装的时候用的了大写的VCS，那么这里一定有个配置文件关于versioneer模块的，果不其然，发现安装包下有个配置文件，有个versioneer模块的vcs参数，然后我这里加上VCS参数就解决了此问题。下面是配置文件：
+
+cat setup.cfg
+[metadata]
+description-file = README.md
+
+[aliases]
+test = pytest
+
+[versioneer]
+vcs = git
+VCS= git
+style = pep440
+versionfile_source = numpy_groupies/_version.py
+versionfile_build = numpy_groupies/_version.py
+tag_prefix = v
+
+[egg_info]
+tag_build = 
+tag_date = 0
+
+  configparser区分大小写修改包的方法：
+
+#修改文件路径
+#/annoroad/data1/bioinfo/PMO/yaomengcheng/Anaconda3/lib/python3.7/configparser.py
+#原函数为：
+def optionxform(self, optionstr):
+    return optionstr.lower()
+#修改后函数为：
+def optionxform(self, optionstr):
+    return optionstr
+
+  上述可能有点啰嗦，不过就当自己记录平时报错、解决报错的笔记，以后找比较方便，希望大家以后少入一个坑。
+

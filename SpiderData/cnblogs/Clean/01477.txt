@@ -1,0 +1,82 @@
+
+前日学习python实现单例模式，我安装环境是python3.6.2,代码如下：
+
+[python] view plain copy
+
+前日学习python实现单例模式，我安装环境是python3.6.2,代码如下：
+
+[python] view plain copy
+
+[python] view plain copy
+
+class Singleton(object):
+
+_inst = None
+
+def __new__(cls, *args,  **kwargs):
+
+if not cls._inst :
+
+cls._inst = super(Singleton, cls).__new__(cls, *args,  **kwargs)
+
+return cls._inst
+
+[python] view plain copy
+
+[python] view plain copy
+
+class Test(Singleton):
+
+def __init__(self, name):
+
+self.name = name
+
+def output(self):
+
+print('[name:%s] [id:%s]' % (self.name, id(self)))
+
+if __name__ == '__main__':
+
+t1 = Test('albert1')
+
+t1.output()
+
+t2 = Test('albert2')
+
+t2.output()
+
+TypeError: object() takes no parameters
+
+我首先百度了，好多回答都是以下两种原因：
+
+1、 init方法左右的下划线只写了一个
+
+2、 init方法写成int了。
+
+我仔细检查了自己的方法，发现还是都没有这两种错误；最后我又单独安装python2.7,结果运行出了结果：
+
+[name:albert1] [id:58899704]
+[name:albert2] [id:58899704]
+
+那么在python3.6中应该如何修改呢，代码应该修改如下（注意红色地方）：
+
+[python] view plain copy
+
+[python] view plain copy
+
+# python3.6.2
+
+class Singleton(object):
+
+_inst = None
+
+def __new__(cls, *args,  **kwargs):
+
+if not cls._inst :
+
+cls._inst = super(Singleton, cls)<span style="color:#ff0000;">.__new__(cls)</span>
+
+return cls._inst
+
+已经验证对于结果没有影响，所以大家以后在用的时候要注意
+

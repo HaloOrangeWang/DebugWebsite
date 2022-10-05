@@ -1,0 +1,19 @@
+python2要对中文做处理的话，文件头加上：
+
+#coding=utf-8    python源代码文件的编码格式
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf-8')     sys.defaultencoding设置解码方式，默认为ANSCII,有时候会报错
+
+使用
+
+f1 = open(file_chinese, encoding = 'UTF-8',errors="ignore")
+
+读取的文件中有时候会出现"\ufeff"非法字符，这个时候需要改变编码方式'UTF-8'为'UTF-8-sig'：
+
+f1 = open(file_chinese, encoding = 'UTF-8-sig',errors="ignore")
+
+"UTF-8"的字节顺序在所有系统中都是一様的，没有字节序的问题，它不需要BOM(“ByteOrder Mark”)。
+
+"UTF-8-sig"即UTF-8 with BOM需要提供BOM。
+

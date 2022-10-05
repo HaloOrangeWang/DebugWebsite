@@ -1,0 +1,31 @@
+贴出报错信息便于搜索：
+
+
+Xcode：
+
+Incorrect Architecture. The application bundle 'XXX.app' must have an arm64-only executable. With error code STATE_ERROR.VALIDATION_ERROR.90533 for id 45072061-3cdd-4dd5-9a58-a23abc86fcb0
+
+
+Transporter:
+
+ERROR ITMS-90533: "Incorrect Architecture. The application bundle 'XXX.app' must have an arm64-only executable."
+
+
+原因：
+
+由于content blocker只能运行在64-bit 并且不低于Apple A7处理器的机器上，包括：iPhone 5s、iPhone 6、iPhone 6 Plus、iPad Air 2、iPad Air、iPad mini 2、iPad mini 3、iPod touch 6。
+
+
+处理方案：
+
+所以必须设置Architectures。选择Target > Build settings > Architecture.
+
+修改Architecture下的Architecture：$(ARCHS_STANDARD_64_BIT)
+
+
+注意：打包的时候会提示是否保存当前Architectures，不保存会持续报错；
+
+参考
+
+原文链接：https://blog.csdn.net/lyqfly07/article/details/49181897
+

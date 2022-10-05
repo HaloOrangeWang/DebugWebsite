@@ -1,0 +1,122 @@
+背景：需要使用python分析结果后，以图表的形式生成。
+
+目标：安装pyecharts，输出可视化图表。
+
+Pyecharts中文官方文档
+
+
+一、安装pyecharts
+
+直接上手安装pyecharts的最新版本
+
+pip install pyecharts
+
+
+二、导入pyecharts
+
+
+1、导入报错
+
+网上很多文章会让你直接开始绘图。
+
+from pyecharts import Bar
+from pyecharts import Map
+
+如果你下载的pyecharts版本高于0.1.9.4，那么会报错
+
+cannot import name 'Bar' from 'pyecharts'
+
+
+2、问题分析
+
+查询后发现，因为用下面语句安装pyecharts时，默认会安装最新版本的pyecharts。
+
+python解释器版本更新的速度慢很多，现在的python解释器默认的是与0.1.9.4版本的pyecharts配合，你安装最新的，python解释器不能识别，所以会报错。
+
+
+3、解决方式
+
+由于是解释器版本原因，那么有两种解决方式。
+
+1：更换至0.1.9.4版本
+
+2：使用新版本的方式使用pyecharts。
+
+
+-----3.1更换版本
+
+#安装wheel
+pip install wheel
+
+#安装0.1.9.4版本
+pip install pyecharts==0.1.9.4
+
+更换后，就可以按照网上教程进行操作了。
+
+
+-----3.2新导入方式
+
+既然有新版本的话，建议还是参考官方文档中的方式来使用pyecharts。
+
+from pyecharts.charts import Bar
+
+
+四、快速开始
+
+
+-----4.1生成一个图表
+
+#导入柱状图-Bar
+from pyecharts.charts import Bar
+from pyecharts import options as opts
+#导入pyecharts的主题（如果不使用可以跳过）
+from pyecharts.globals import ThemeTyp
+
+#设置主题&颜色
+bar = Bar(init_opts=opts.InitOpts(theme=ThemeType.PURPLE_PASSION))
+#（如果不使用主题则） bar = Bar（）
+
+#添加X轴与Y轴
+bar.add_xaxis(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
+bar.add_yaxis("区域A", [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3])
+bar.add_yaxis("区域B", [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3])
+
+#添加主标题与副标题
+bar.set_global_opts(title_opts={"text": "柱状图", "subtext": "一年的降雨量与蒸发量"})
+
+#保存至选取路径
+bar.render(r'C:\Users\Administrator\Desktop\echarts\one_tset.html')
+
+查看生成的html
+
+
+-----4.2其他主题配置
+
+pyecharts 内置提供了 10+ 种不同的风格，另外也提供了便捷的定制主题的方法。
+
+bar = Bar(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))
+
+改变theme=ThemeType.LIGHT，则可以修改主题。
+
+
+四、pyecharts链式调用
+
+使用 options 配置项，在 pyecharts 中，一切皆 Options。
+
+V1 版本开始支持链式调用
+
+from pyecharts.charts import Bar
+from pyecharts import options as opts
+from pyecharts.globals import ThemeTyp
+
+bar = (
+    Bar(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))
+    .add_xaxis(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
+    .add_yaxis("区域A", [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3])
+    .add_yaxis("区域B", [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3])
+    .set_global_opts(title_opts=opts.TitleOpts(title="柱状图", subtitle="一年的降雨量与蒸发量"))
+    # 或者直接使用字典参数
+    # .set_global_opts(title_opts={"text": "主标题", "subtext": "副标题"})
+)
+bar.render(r'C:\Users\Administrator\Desktop\echarts\two_tset.html')
+

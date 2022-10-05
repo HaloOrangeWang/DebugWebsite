@@ -1,0 +1,18 @@
+首先R6034这个报错都是因为安装conda环境引起的。我在Pycharm和Airtest中都遇到了这个问题，根据下面的操作解决了。
+
+以下转自：https://blog.csdn.net/polyhedronx/article/details/98181692
+
+在Stack Overflow上找到了一个可以解决这个问题的方法，所以在这里分享一下，原文请点这里。
+
+Step1：下载Process Explorer，然后打开里面的procexp.exe。
+
+Step2：在软件界面的菜单里选择 view -> lower pane view -> DLLs，然后找到pycharm目录下的python.exe并点击，底部窗格应显示为应用程序加载的DLL列表。
+
+Step3：在DLL列表里找到 “msvcr??.dll”，注意看后面的路径，只要不是在“C:\Windows\WinSxS”这个路径下的，都要将其删除或重命名后缀。比如在上面这个图里面，有一个 msvcr90.dll 是在 D:\Anaconda3\envs\python27\msvcr90.dll这个目录下的，找到它并将其重命名为 “msvcr90.dll-bak”。
+
+Step4：重启pycharm就ok了。
+
+--------------------------------------------------------------------------------
+
+关注微信公众号(测试工程师小站)即可在手机上查阅，并可接收更多测试分享，发送【测试资料】更可获取百G测试教程~
+

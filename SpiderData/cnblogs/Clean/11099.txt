@@ -1,0 +1,58 @@
+
+一、二维码识别模块 pyzbar报错
+
+
+1.1 模块安装报错
+
+参考：https://blog.csdn.net/pythonlaodi/article/details/112783132
+
+项目识别二维码需要安装pyzbar,安装完，启动项目出现如下报错！
+FileNotFoundError: Could not find module '你的路径\Python\Python38\site-packages\pyzbar\libzbar-64.dll' (or one of its dependencies). Try using the full path with constructor syntax
+
+解决方法：
+
+没事，这个坑我已经踩过。这个报错的原因是没有安装 Visual C++ 的依赖库
+
+没事，这个坑我已经踩过。这个报错的原因是没有安装 Visual C++ 的依赖库
+
+下载地址：Visual C++ Redistributable Packages for Visual Studio 2013
+
+下载地址：Visual C++ Redistributable Packages for Visual Studio 2013
+
+进入之后，拉到下面可以看到下载的按钮，下载完之后安装即可！：
+
+进入之后，拉到下面可以看到下载的按钮，下载完之后安装即可！：
+
+
+
+1.2 pyinstaller打包后 Failed to load dynlib/dll 'libiconv.dll'
+
+项目在没打包前运行没问题，识别正常，打包后就有以下报错，这是因为该模块的dll加载失败造成的
+
+解决方法：
+
+第一种方法：在自己的虚拟环境中找到该模块的dll,手动复制粘贴到打包后目录即可：
+
+第二种方法：修改spec文件的时候设置好导入位置，打包时会自动识别
+
+
+二、某些模块无法用pipenv安装，或者安装后可以使用，打包后出错
+
+详见以下文章第五步：
+
+pyinstaller打包完整python项目 pyinstaller如何给打包后的文件添加文件版本信息
+
+
+三、打包后无法正常运行，闪退
+
+我遇到这个情况，不打包运行的好好的，打包后一运行就闪退，
+
+不要用双击模式运行，可以用cmd或者powershell运行exe，这样闪退后打印出报错信息
+
+报错缺少模块，这种情况很可能是没有在虚拟环境内部进行打包，详见以下文章描述，严格执行打包流程再来一次可能就好了
+
+pyinstaller打包完整python项目 pyinstaller如何给打包后的文件添加文件版本信息
+
+
+四 pipenv graph 执行报错 IndexError: list index out of range pipenv安装模块出错
+

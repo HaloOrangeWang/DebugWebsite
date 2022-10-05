@@ -1,0 +1,45 @@
+1.在node后端使用express中的multer中间件来实现文件上传时报错
+
+　　node multer 报错Unexpected field
+
+1 var express=require('express');
+2 
+3 var router=express.Router();
+4
+5 var upload=require('...')
+
+router.post('/upload',upload.single('fileid'));
+
+　　原因&&解决：upload.single()里面的参数fileid需要和前端from表单中input输入框的name属性的值保持一致
+
+2.使用Robo 3T连接MongoDB数据库时报错:
+
+　　network is unreachable mongodb
+
+　　原因&&解决：数据库服务未启动，启动一下数据库就好    命令   mongod --dbpath  数据库存储的路径
+
+3.使用nodeJS设置返回头时报错
+
+　　Error: Can't set headers after they are sent
+
+　　原因：对返回头的设置放在在res.write（）后面，造成了在信息返回后在去设置返回头
+
+　　解决：将返回头的设置放到res.write()前面就OK
+
+4.JS报错 Uncaught SyntaxError: Invalid shorthand property initializer
+
+　　
+
+var p = {
+        value ='p对象',
+        info:function () {
+            alert(this.value);
+        }
+    }
+
+　　原因&解决：定义对象的key值时，没有用：而是用了=
+
+5.JSON.parse()解析    "[{'id:1'}]" 报错
+
+　　因为JSON的key和value必须用双引号包裹
+

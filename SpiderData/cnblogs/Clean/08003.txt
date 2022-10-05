@@ -1,0 +1,56 @@
+欢迎关注各平台通用账号：一个有趣的灵魂W
+
+这个问题爆的有点莫名其妙，代码~环境基本没什么大的变化，好端端就报错了，原先的代码运行了很久才发现，没有结果？摸排了好久都没发现问题。直到pycharm和spyder更新后，总算是发现了报错信息：
+ 
+之前安装好python+GDAL+‘python gdal’后，利用python调用cmd运行gdal的裁剪~转换~等功能都很正常。直到最近，不正常了，先上报错：
+
+ERROR 1: PROJ: proj_create_from_database: Cannot find proj.db
+ERROR 1: Failed to process SRS definition: EPSG:4326
+
+这个问题爆的有点莫名其妙，代码~环境基本没什么大的变化，好端端就报错了，原先的代码运行了很久才发现，没有结果？摸排了好久都没发现问题。直到pycharm和spyder更新后，总算是发现了报错信息：
+
+之前安装好python+GDAL+‘python gdal’后，利用python调用cmd运行gdal的裁剪~转换~等功能都很正常。直到最近，不正常了，先上报错：
+
+ERROR 1: PROJ: proj_create_from_database: Cannot find proj.db
+ERROR 1: Failed to process SRS definition: EPSG:4326
+
+就在python中出问题，不论是使用os还是subprocess.call，都无法正常运行。
+
+一开始我重装了gdal2.4，突然可以运行重投影。但是第二天又报错了，又重装，无果，尝试更换3.7.8python和3.8的python，无果（插一句，发现3.8更新里多进程可以实现内存共享了，下次看看多3.8进程的威力吧）。后来我试着用python2.7，可以运行，但是不想用。
+
+问题一步一步排除之后，查找问题，在stack overflow上发现有人解决了：
+
+https://stackoverflow.com/questions/56472933/pyinstaller-executable-fails​
+
+stackoverflow.com
+
+有兴趣的可以去看看，解决的办法也是很粗暴。但并没有把核心问题解决，我估计下次还会出错。
+
+题主真是个自问自答的小可爱！
+
+我试着，也顺利解决了：
+
+看来问题出在os上
+
+import os
+import sys
+os.environ['PROJ_LIB'] = os.path.dirname(sys.argv[0])
+
+附录：
+
+spyder更新了，越来越接近pycharm的样式了，用的不是很习惯，但还是慢慢接受新鲜事物吧。
+
+唯一困难的就是第三方库之间的迁移，因为换成了python3.8，所以之前3.7.3的库并不能直接copy。又担心硬复制回头会出问题，还是乖乖的一个一个conda install吧。
+
+往期可以来点~
+
+Python-gdal离线文档下载​
+
+百度网盘下载很慢吧，Pandownload之后的新工具-亿寻​
+
+PyCharm2019亲测破解方式​
+
+中国范围2019年道路网数据分享​
+
+分享一套中国区域的矢量图层（到县级）-更新​
+

@@ -1,0 +1,12 @@
+hello，大家新年好~~~~~新年复工后运行python文件，使用configparser读取绝对路径的.ini配置文件时，发现读不到section和报SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape错。其实引起这个错误的原因就是转义的问题。
+
+附上原代码：
+
+原因分析：在windows系统当中读取文件路径可以使用\,但是在python字符串中\有转义的含义，如\t可代表TAB，\n代表换行，所以我们需要采取一些方式使得\不被解读为转义字符。目前有3个解决方案
+
+1、在路径前面加r，即保持字符原始值的意思。
+
+2、替换为双反斜杠
+
+3、替换为正斜杠
+

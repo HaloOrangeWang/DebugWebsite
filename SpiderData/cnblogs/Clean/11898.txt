@@ -1,0 +1,57 @@
+
+场景
+
+安装好python之后，导入ssl模块报错： ImportError: No module named _ssl
+
+
+解决方法
+
+查看openssl、openssl-devel是否安装
+
+rpm -qa|grep openssl
+
+openssl-devel-1.0.1e-30.el6.x86_64
+openssl-1.0.1e-30.el6.x86_64
+
+下载rpm包
+
+https://archive.kernel.org/centos-vault/6.6/os/x86_64/Packages/
+
+或
+
+链接：https://pan.baidu.com/s/1mP8SEghDekrSJesP7ZjB1g 
+提取码：nce2
+
+
+安装
+
+rpm -ivh openssl-devel-1.0.1e-30.el6.x86_64.rpm
+
+注：按照提示安装依赖包
+
+或
+
+强制安装、忽略依赖关系
+
+rpm -ivh 包名 --force --nodeps
+
+
+修改python文件
+
+安装完rpm包之后，修改python文件
+
+vi Modules/Setup.dist
+
+修改为
+
+重新安装python
+
+./configure --prefix=/usr/local/
+make
+make install
+
+
+运行
+
+运行测试，正常。
+

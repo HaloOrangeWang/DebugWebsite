@@ -1,0 +1,45 @@
+
+Python3.7使用Django1.11.7创建Django项目报以下错误时:
+
+
+在使用Pycharm创建Django项目报以下错误时:
+
+Traceback (most recent call last):
+  File "manage.py", line 22, in <module>
+    execute_from_command_line(sys.argv)
+  File "F:\Python_Envs\sass\lib\site-packages\django\core\management\__init__.py", line 364, in execute_from_command_line
+    utility.execute()
+  File "F:\Python_Envs\sass\lib\site-packages\django\core\management\__init__.py", line 338, in execute
+    django.setup()
+  File "F:\Python_Envs\sass\lib\site-packages\django\__init__.py", line 27, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "F:\Python_Envs\sass\lib\site-packages\django\apps\registry.py", line 85, in populate
+    app_config = AppConfig.create(entry)
+  File "F:\Python_Envs\sass\lib\site-packages\django\apps\config.py", line 94, in create
+    module = import_module(entry)
+  File "f:\python376\lib\importlib\__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "F:\Python_Envs\sass\lib\site-packages\django\contrib\admin\__init__.py", line 4, in <module>
+    from django.contrib.admin.filters import (
+  File "F:\Python_Envs\sass\lib\site-packages\django\contrib\admin\filters.py", line 10, in <module>
+    from django.contrib.admin.options import IncorrectLookupParameters
+  File "F:\Python_Envs\sass\lib\site-packages\django\contrib\admin\options.py", line 12, in <module>
+    from django.contrib.admin import helpers, widgets
+  File "F:\Python_Envs\sass\lib\site-packages\django\contrib\admin\widgets.py", line 151
+    '%s=%s' % (k, v) for k, v in params.items(),
+    ^
+SyntaxError: Generator expression must be parenthesized
+
+
+解决办法:
+
+可以发现最后一行提示说是语法错误，说是生成器表达式有问题，那具体的报错行内容是 '%s=%s' % (k, v) for k, v in params.items(), 将最后一行的 ' ，‘去除即可
+
+ps：如果是pycharm中修改的话，由于这个文件是源码，还要注意提示框中选择 I want to edit this file anyway 。
+

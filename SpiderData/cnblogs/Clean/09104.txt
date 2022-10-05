@@ -1,0 +1,28 @@
+运行一段代码之后发现jupyter内核离奇死亡，anaconda中凡是创建的虚拟环境无一幸免（anaconda自带的倒是能正常运行），然后开启补救之路，第一次内核死亡报错Bad file descriptor (D:\bld\zeromq_1605919615529\work\src\epoll.cpp:100)
+
+搜了很多别人的经验，总结一下：
+
+1、重装jupyter
+
+　　1）正常装卸
+
+　　pip uninstall jupyter
+
+　　pip install jupyter　
+
+　　2）pip install --upgrade --force-reinstall --no-cache-dir jupyter
+
+2、命令行输入jupyter kernelspec list查看安装的内核和位置，进入安装内核目录打开kernel.jason文件，查看Python编译器的路径，如果不正确修改为正确的安装路径，重启 jupyter notebook
+
+3、更新jupyter notebook、ipython、ipythonkernel 这三个包
+
+4、用命令行升级conda
+
+5、重装anaconda
+
+然而上述方法都没解决我的问题，新创建环境的内核仍然无法启动，无法连接到服务器，仍报错Bad file。卸载anaconda后会有一些文档残留，由于是jupyter出的问题，我找到了jupyter使用的相关文件夹，C:\Users\用户名\AppData\Roaming\jupyter，找到这个文件夹,然后删除，再重装anaconda运行就不会报错了
+
+后来再次运行那段代码又引起内核死亡，发现其中一个引入句有问题，import d2lzh_pytorch，d2lzh_pytorch这个文件是深度学习实例中的，关于这个文件搜集到的问题就只有少tqdm、torchtext这俩包或者文件应该放哪（直接conda install或者pip install就行，文件放在相应虚拟环境中的Lib\site-packages下）装上这俩包再次运行import d2lzh_pytorch内核直接死亡，jupyter无法使用，但是命令行很正常，我就在命令行运行import d2lzh_pytorch发现少了一个matplotlib的包，安装之后再运行，正常运行！
+
+关于少matplotlib包jupyter不报错直接死亡这个问题 还是很迷
+

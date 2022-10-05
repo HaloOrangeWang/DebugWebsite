@@ -1,0 +1,30 @@
+用错误码来表示是否出错十分不便，因为函数本身应该返回的正常结果和错误码混在一起，造成调用者必须用大量的代码来判断是否出错：
+
+def foo():
+  r = some_function()
+  if r==(-1):
+    return (-1)
+  # do something
+  return r
+
+def bar():
+  r = foo()
+  if r==(-1):
+    print 'Error'
+  else:
+    pass
+
+但是Go就是这么干的，哈哈！
+
+python 中还是用try … except….finally这种方式来处理的。
+
+try:
+  print 'try...'
+  r = 10 / 0
+  print 'result:', r
+except ZeroDivisionError, e:
+  print 'except:', e
+finally:
+  print 'finally...'
+print 'END'
+

@@ -1,0 +1,34 @@
+转自：https://blog.csdn.net/June7_/article/details/99991680
+
+
+问题描述
+
+使用Django框架，在使用model操作数据库的时候，出现 Django "OverflowError: Python int too large to convert to C long" 错误。
+
+以下参照https://blog.csdn.net/June7_/article/details/99991680 解决该问题。
+
+注意：该错误出现原因不仅是model数据库操作导致的，可能还有其他原因，这里只针对数据库操作时报的错误。
+
+
+解决问题
+
+PS：如果不想看流程的，可以直接跳到文章末尾看解决方法。
+
+今天学习Django的时候遇到这个问题，
+
+谷歌，百度了一下，连StackOverflow都没有详细的问题描述和解法，都是和Python解释器相关的问题或者是numpy等等。
+
+就是找不到和Django相关的东西，而且翻看相关错误信息也都是解释器的包的问题，各种系统文件什么的，唯一一处自己写的文件的问题就是return的response，但是这个看不出什么问题啊。QWQ
+
+索性就慢慢看源代码和报错信息试试能不能找到问题和解法。
+
+翻到最底下会发现有这一段：
+
+可以注意到这里面和datetime相关，然后我尝试注释掉 models.py里面的 date相关的那一行，然后重新初始化数据库，结果界面访问正常，所以这里就已经锁定问题源了，就是 date这一行的问题。
+
+这里我一开始写的是DateField，
+
+转到数据库，可以发现这里添加时间是精确时间，即 年-月-日 时-分-秒。因为 DateField是日期项，没法精确到时分秒。所以这里出现溢出错误。将 DateField改为 DateTimeField，重新初始化数据库以后问题就消失了，能够正常访问。
+
+Ok，问题解决！
+

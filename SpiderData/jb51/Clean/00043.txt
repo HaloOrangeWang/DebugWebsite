@@ -1,0 +1,59 @@
+一、问题描述
+
+一段 Python 代码在本地的 IDE 上运行正常，部署到服务器运行后，出现了 ModuleNotFoundError: No module named ‘xxx' 错误。
+
+二、问题原因
+
+在代码中引入了其他文件的包（自己写的包，非 pip 安装的），问题出在 import 那行语句。
+
+错误的原因是因为路径的原因，服务器端的路径和我们本地的路径不一样显示。
+
+三、解决示例
+
+要解决这个问题，可以在自己代码的顶端加入以下代码：
+
+import sys
+import os
+sys.path.append(os.path.dirname(sys.path[0]))
+
+或者
+
+import sys
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE_DIR)
+
+以上代码可以保证在任何时候都切换到当前执行脚本所在目录中，具体根据自己脚本所在的目录结构进行调整。
+
+四、sys.path.append() 和 sys.path.insert()
+
+Python 程序中使用 import xxx 时，Python 解析器会在当前目录、已安装和第三方模块中搜索 xxx，如果都搜索不到就会报错。
+
+sys.path 模块可以动态的修改系统路径，这种方法导入的路径会在 Python 程序退出后失效。
+
+sys.path 本身是个列表，所以在里面添加目录是很容易的，添加完后，新目录即时起效，以后的每次 import 操作都可能会检查这个目录。
+
+1. sys.path.append()
+
+在 sys.path 列表的末尾临时添加搜索路径，方便更简洁的 import 其他包和模块。这种方法导入的路径会在 Python 程序退出后失效。
+
+示例：
+
+import sys
+sys.path.append('..') # 表示导入当前文件的上层目录到搜索路径中
+sys.path.append('/home/model') # 绝对路径
+
+from folderA.folderB.fileA import functionA
+
+2. sys.path.insert()
+
+可以定义搜索优先顺序，序号从 0 开始，表示最大优先级，sys.path.insert() 加入的也是临时搜索路径，程序退出后失效。
+
+示例：
+
+import sys
+sys.path.insert(1, "./model")
+
+以上就是python 服务器运行代码报错ModuleNotFoundError的解决办法的详细内容，更多关于python 代码报错的资料请关注脚本之家其它相关文章！
+

@@ -1,0 +1,14 @@
+在Windows10下，Git clone https://github.com/ultralytics/yolov5.git
+
+然后运行：
+
+pip install -r requirements.txt
+
+问题原因：win10下特有的问题，win10的默认编码方式是utf-8，而Python读入文本文件的默认编码方式是gbk
+
+解决方式：找到read()函数，显示指定编码方式。根据报错信息，read()在dist.py文件的406行，所以打开该文件，加入“encoding="utf-8”，如下图所示：
+
+我的1080Ti 算力为6.1，从下面的三个表可以分析，还可以跟着PyTorch升级再战几年！
+
+YOLOv5的当前(3月28日)PyTorch版本：YOLOv5 🚀  torch 1.10.0+cu102 CUDA:0 (Tesla V100 Volta构架-SXM2-16GB, 16160MiB)，看来跟我的1080Ti + torch1.10.0 + cu102差不多
+

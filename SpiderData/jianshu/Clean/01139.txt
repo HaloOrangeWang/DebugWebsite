@@ -1,0 +1,35 @@
+版本：django==1.7.3；python==2.7
+
+系统：centos 7
+
+报错：
+
+RROR: Command errored out with exit status 1:
+     command: /data/env/pa-ips/bin/python -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-BrJcJT/MySQL-python/setup.py'"'"'; __file__='"'"'/tmp/pip-install-BrJcJT/MySQL-python/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base pip-egg-info
+         cwd: /tmp/pip-install-BrJcJT/MySQL-python/
+    Complete output (10 lines):
+    sh: mysql_config: 未找到命令
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-install-BrJcJT/MySQL-python/setup.py", line 17, in <module>
+        metadata, options = get_config()
+      File "setup_posix.py", line 43, in get_config
+        libs = mysql_config("libs_r")
+      File "setup_posix.py", line 25, in mysql_config
+        raise EnvironmentError("%s not found" % (mysql_config.path,))
+
+解决方案：安装python依赖：
+
+(1)For MacOS 最快的临时解决方法：
+
+export PATH=$PATH:/usr/local/mysql/bin
+
+(2)For CentOS
+
+yum install python-devel mysql-devel
+
+(3)For Ubuntu
+
+sudo apt-get install python-dev
+sudo apt-get install python-MySQLdb
+

@@ -1,0 +1,16 @@
+使用Navicat Premium链接mysql数据库，报错2059 Authentication plugin 'caching_sha2_password' cannot be loaded
+
+登录sql,执行alter user 'root'@'127.0.0.1' identified with mysql_native_password by '123456'
+
+如果报如下错
+
+ERROR 1396 (HY000): Operation ALTER USER failed for 'root'@'127.0.0.1
+
+输入mysql> use mysql;
+
+mysql> select user,host from user
+
+将127.0.0.1改成localhost，执行 alter user 'root'@'localhost' identified with mysql_native_password by '123456';
+
+再连接
+

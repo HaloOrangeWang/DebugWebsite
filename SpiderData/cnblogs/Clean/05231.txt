@@ -1,0 +1,20 @@
+Django新增一个content字段时，报错：
+
+django.db.utils.OperationalError: (1054, "Unknown column 'autotest_node.content' in 'field list'")
+
+暴力破解：
+
+1、删除app下migrations下除__init_.py外的所有文件
+
+2、删除相关的表（之前增加的数据会丢失）
+
+3、删除django_migrations表中app=“autotest”对应的记录
+
+重新执行：
+
+python manage.py makemigrations
+
+python manage.py migrate
+
+即可
+

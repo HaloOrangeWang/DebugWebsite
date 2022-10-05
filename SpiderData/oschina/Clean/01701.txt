@@ -1,0 +1,73 @@
+
+现象
+
+今天在升级一个 Python 虚拟环境的时候，出现了这种错误 OSError - setuptools pip wheel failed with error code -11。我的操作步骤是这样的，先删除虚拟环境rm -rf env，再创建 virtualenv env --python=python3，没什么问题。看到退出码 11，查了下毫无头绪。在外部 python3 的环境下执行了下 pip3 list, 报如下错误：
+
+
+分析调试
+
+看到错误Segmentation fault，很明显这是一个段错误。考虑将 pip，卸载重新安装。
+
+python3 -m pip uninstall pip
+wget https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py
+
+但在安装的时候，直接就报错误Segmentation fault，便退出了。那便调试下吧，看看具体是哪里的问题。
+
+段错误 (segmentation fault) 一般是由于 C 模块试图访问无法访问的内存引起的。我们都知道 Python 很多模块底层都调用 C 语言的接口，也就不难理解为什么会出现段错误了。但是仅适用 Python 的调试器的话，是无法调试该种错误的，它像上边一样只返回 Segmentation fault字样，并不会返回具体的错误信息和调用栈。此时我们需要调试工具gdb，gdb是gcc的调试工具，一般用来调试 c/c++程序，该工具是支持 python 的，可以调试 python 到 c 的整个调用栈。
+
+gdb可通过yum install gdb安装 , 在 bash 窗口输入gdb 启动gdb调试窗口，可以通过run 命令来运行我们的 py 文件。
+
+使用 gdb 调试查看得到如下信息：
+
+
+解决
+
+python3.7 的 ssl 对 openssl 版本有要求，必须用 openssl 并且版本必须大于等于 1.02 或者 libressl2.64。
+
+之前安装的 openssl-1.1.0，这次安装 libressl 试试。操作如下：
+
+# 安装libressl-2.8.0
+wget https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-2.8.0.tar.gz
+tar zxvf libressl-2.8.0.tar.gz
+cd libressl-2.8.0/
+./configure --prefix=/usr/local/ssllib
+make
+make install
+
+# 创建配置文件
+cd /etc/ld.so.conf.d
+vim libressl-2.8.0.conf
+
+# 将以下行加入文件，并保存
+/usr/local/ssllib
+
+ldconfig -v #重新加载库文件
+
+# 把原来的命令建立新的硬连接
+mv /usr/bin/openssl /usr/bin/openssl.bak
+mv /usr/include/openssl /usr/include/openssl.bak
+ln -s /usr/local/ssllib/bin/openssl /usr/bin/openssl
+ln -s /usr/local/ssllib/include/openssl /usr/include/openssl
+
+# 运行命令看是否成功
+openssl version
+libressl-2.8.0
+
+重新编译 Python3.7.3，安装解决。
+
+./configure --with-ensurepip=install
+make && make install
+
+
+总结
+
+在 Python 中段错误一般出现在编译安装模块时，解决它的思路是：先考虑升级出现段错误的模块包。如果未解决问题，可通过gdb来调试定位问题，根据具体问题具体解决。
+
+
+扩展阅读
+
+本文分享自微信公众号 - 码农吴先生（CoderMrWu）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

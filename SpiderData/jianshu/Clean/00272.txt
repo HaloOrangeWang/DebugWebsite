@@ -1,0 +1,46 @@
+应用访问，登陆界面报错
+
+应用工程日志报错
+
+2022-04-11 10:18:31.093 [qtp1977310713-21] ERROR com.xxx.xxx.console.aop.ApiControllerAdvice - 异常
+net.xxx.requests.exception.RequestsException: java.net.SocketException: Connection reset
+
+工程所在服务器上命令行测试
+
+$  echo  > /dev/tcp/www.baidu.com/443
+OK
+
+$  curl   http://www.baidu.com 
+curl: (56) Recv failure: Connection reset by peer
+
+端口测试，连通性ok；curl 测试，返回报错，Connection reset by peer。
+
+该java异常在客户端和服务器端都有可能发生，引起该异常的原因有两个：
+
+1，如果一端的Socket被关闭（或主动关闭，或因为异常退出而 引起的关闭），另一端仍发送数据，发送的第一个数据包引发该异常(Connect reset by peer)。
+
+2，一端退出，但退出时并未关闭该连接，另一端如果在从连接中读数据则抛出该异常（Connection reset），简单的说就是在连接断开后的读和写操作引起的。
+
+经排查，是服务器外网访问权限到期了，被防火墙拦截了，临时放行就可以了。
+
+最终需修改工程代码，配置上网代理，请求外网的时候调用代理配置地址，实现通过代理访问外网。
+
+
+参考
+
+java.net.SocketException: Connection reset 解决方法
+
+https://blog.csdn.net/baidu_30882221/article/details/113308593
+
+java.net.SocketException：Connection reset 原因分析与故障重现
+
+https://ld246.com/article/1572277642298
+
+关于TCP连接中，Connection reset by peer和Connection reset原因分析
+
+https://www.jianshu.com/p/48ace9661c2d
+
+java.net.SocketException: Connection reset 解决方法
+
+https://www.jb51.net/article/34888.htm
+

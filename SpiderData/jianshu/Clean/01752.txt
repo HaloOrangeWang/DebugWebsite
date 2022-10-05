@@ -1,0 +1,72 @@
+当我们使用pip  list 可以显示默认的两个库，然而仍然无法下载第三方库，
+
+书写命令：pip install schedule -i http://mirrors.aliyun.com/pypi/simple/   #阿里云的镜像，后面
+
+出现如下报错
+
+warning: the repository located at mirrors.aliyun.com is not a trusted or secure host and is being ignored. if this repository is available via https we recommend you use https instead, otherwise you may silence this warning and allow it anyway with '--trusted-host mirrors.aliyun.com'.
+
+那么我们可能需要配置查找并配置pip.ini 源文件目录
+
+默认的pip配置文件路径可以通过  pip -v config list  来查看 ， 输出如下：
+
+C:\Users\yk>pip -v config list
+
+For variant 'global', will try loading 'C:\ProgramData\pip\pip.ini'
+
+For variant 'user', will try loading 'C:\Users\yk\pip\pip.ini'
+
+For variant 'user', will try loading 'C:\Users\yk\AppData\Roaming\pip\pip.ini'
+
+注：类似于上述输出，均是c盘开头
+
+pip使用配置文件的搜索路径优先级是按照上述 list 的 “从下往上” 进行的，因此默认会使用  :
+
+env:.config-file='F:\\Python38\\Scripts\\confs_yk\\pip.ini'  这个文件。
+
+window
+
+在我使用的过程中，没有找到 F:\\Python38\\Scripts\\confs_yk\\pip.ini 故需要自己手动创建文件pip.ini
+
+首先列举国内镜像原网站：
+
+清华：https://pypi.tuna.tsinghua.edu.cn/simple
+
+阿里云：http://mirrors.aliyun.com/pypi/simple/
+
+中国科技大学https://pypi.mirrors.ustc.edu.cn/simple/
+
+华中理工大学：http://pypi.hustunique.com/
+
+山东理工大学：http://pypi.sdutlinux.org/
+
+豆瓣：http://pypi.douban.com/simple/
+
+notes：新版ubuntu要求使用https源，要注意。
+
+常用的是阿里云和豆瓣
+
+·临时使用
+
+可以在使用pip的时候加参数-i https://pypi.tuna.tsinghua.edu.cn/simple
+
+例如：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyspider，这样就会从清华这边的镜像去安装pyspider库。
+
+·永久修改
+
+配置pip.ini
+
+里面直接写
+
+[global]
+
+index-url = http://mirrors.aliyun.com/pypi/simple/  #阿里云路径
+
+trusted-host = mirrors.aliyun.com       #信任网址
+
+disable-pip-version-check = true         #版本向下兼容
+
+timeout = 120
+
+如果有错误，谢谢指正补充！
+

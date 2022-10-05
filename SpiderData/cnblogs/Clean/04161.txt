@@ -1,0 +1,37 @@
+在安装pip3 install virtualenv时报了SSL异常
+
+如图
+
+pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+Collecting virtualenv
+  Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/virtualenv/
+  Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/virtualenv/
+  Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/virtualenv/
+  Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/virtualenv/
+  Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/virtualenv/
+  Could not fetch URL https://pypi.org/simple/virtualenv/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='pypi.org', port=443): Max retries exceeded with url: /simple/virtualenv/ (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.")) - skipping
+  Could not find a version that satisfies the requirement virtualenv (from versions: )
+No matching distribution found for virtualenv
+pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+Could not fetch URL https://pypi.org/simple/pip/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='pypi.org', port=443): Max retries exceeded with url: /simple/pip/ (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.")) - skipping
+
+是因为在./configure过程中，如果没有加上–with-ssl参数，默认安装的软件涉及到ssl的功能不可用，刚好pip3过程需要ssl模块，而由于没有指定，所以该功能不可用。
+
+解決办法，安装 openssl-devel：yum -y install openssl-devel
+
+再次安装，还是报错
+
+重新编译python，到准备的python的安装包目录
+
+[root@localhost Python-3.7.0]# ./configure --with-ssl
+
+[root@localhost Python-3.7.0]# make && make install
+
+再次执行安装：pip3 install virtualenv
+
+timeout异常
+
+pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+在下载python库的时候，由于国内网络原因，python包的下载速度非常慢，查看pip 文档，只要在 pip的时候控制超时即可, 具体参数为 --default-timeout=100， 后面的时间可以自己指定。
+

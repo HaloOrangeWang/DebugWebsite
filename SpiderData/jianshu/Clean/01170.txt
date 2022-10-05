@@ -1,0 +1,57 @@
+报错场景
+
+使用xlrd读取Excel数据，xlutils复制表格数据保留格式
+测试数据：test1.xlsx
+
+报错场景
+
+使用xlrd读取Excel数据，xlutils复制表格数据保留格式
+
+测试数据：test1.xlsx
+
+报错代码
+
+报错代码
+
+import xlrd
+
+wbook = xlrd.open_workbook('test1.xlsx', formatting_info=True)
+
+xsheet = wbook.sheet_by_index(0)
+
+print(xsheet.row_values(0))
+
+# 取值报错
+Traceback (most recent call last):
+  File "C:/Users/MI/Desktop/hah.py", line 4, in <module>
+    wbook = xlrd.open_workbook('test1.xlsx', formatting_info=True)
+  File "C:\Users\MI\AppData\Local\Programs\Python\Python37\lib\site-packages\xlrd\__init__.py", line 138, in open_workbook
+    ragged_rows=ragged_rows,
+  File "C:\Users\MI\AppData\Local\Programs\Python\Python37\lib\site-packages\xlrd\xlsx.py", line 798, in open_workbook_2007_xml
+    raise NotImplementedError("formatting_info=True not yet implemented")
+NotImplementedError: formatting_info=True not yet implemented
+
+报错原因
+
+经查找资料发现是由于formatting_info不兼容xlsx格式文件导致的
+初步解决办法：修改文件名为：test1.xls，但是仍是报错
+
+最终解决办法：通过正规途径修改文件类型后，解决问题
+
+经查找资料发现是由于formatting_info不兼容xlsx格式文件导致的
+
+初步解决办法：修改文件名为：test1.xls，但是仍是报错
+
+最终解决办法：通过正规途径修改文件类型后，解决问题
+
+最终解决办法：通过正规途径修改文件类型后，解决问题
+
+小结
+
+由于xlrd 最新版本移步兼容xlsx文件，建议使用xlrd时，使用xls文件；
+可知修改文件后缀名可能会导致文件损坏，也有可能导致持续报相同的错误，最好使用另存为修改文件类型。
+
+由于xlrd 最新版本移步兼容xlsx文件，建议使用xlrd时，使用xls文件；
+
+可知修改文件后缀名可能会导致文件损坏，也有可能导致持续报相同的错误，最好使用另存为修改文件类型。
+

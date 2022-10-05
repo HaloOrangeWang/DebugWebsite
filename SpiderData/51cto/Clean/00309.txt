@@ -1,0 +1,36 @@
+
+1. python代码
+
+#!/usr/bin/python3
+ 
+import pymysql
+ 
+# 打开数据库连接
+db = pymysql.connect("localhost","testuser","test123","TESTDB" )
+ 
+# 使用 cursor() 方法创建一个游标对象 cursor
+cursor = db.cursor()
+ 
+# 使用 execute()  方法执行 SQL 查询 
+cursor.execute("SELECT VERSION()")
+ 
+# 使用 fetchone() 方法获取单条数据.
+data = cursor.fetchone()
+ 
+print ("Database version : %s " % data)
+ 
+# 关闭数据库连接
+db.close()
+
+报错：
+pymysql.err.OperationalError: (2003, “Can’t connect to MySQL server on ‘localhost’ ([Errno 111] Connection refused)”)
+
+原因：
+pymysql 只是一个连接mysql数据库的python实现
+
+
+解决方案
+
+安装mysql数据库并启动。
+
+

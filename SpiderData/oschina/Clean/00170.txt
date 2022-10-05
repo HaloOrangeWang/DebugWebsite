@@ -1,0 +1,39 @@
+pip安装报错：is not a supported wheel on this platform
+
+可能的原因1：安装的不是对应python版本的库，下载的库名中cp35代表python3.5,其它同理。
+
+可能的原因2：这个是我遇到的情况（下载的是对应版本的库，然后仍然提示不支持当前平台）
+
+我下载到的Twisted库文件名：
+
+Twisted-17.5.0-cp35-cp35m-win_amd64.whl
+
+使用pip安装(在命令行中):
+
+pip install Twisted-17.5.0-cp35-cp35m-win_amd64.whl
+
+报错：* is not a supported wheel on this platform，通过在stackoverflow上的一个帖子成功解决问题。
+
+方法：在shell中输入
+
+import pip
+print(pip.pep425tags.get_supported())
+
+可以获取到pip支持的文件名还有版本，我这里如下：
+
+>>import pip; print(pip.pep425tags.get_supported())
+[('cp35', 'none', 'win_amd64'), ('py3', 'none', 'win_amd64'), ('cp35', 'none', '
+any'), ('cp3', 'none', 'any'), ('cp34', 'none', 'any'), ('cp33', 'none', 'any'),
+ ('cp32', 'none', 'any'), ('cp31', 'none', 'any'), ('cp30', 'none', 'any'), ('py
+35', 'none', 'any'), ('py3', 'none', 'any'), ('py34', 'none', 'any'), ('py33', '
+none', 'any'), ('py32', 'none', 'any'), ('py31', 'none', 'any'), ('py30', 'none'
+, 'any')]
+
+通过这里可以发现上面下载的文件名格式是不支持的，修改为：Twisted-17.5.0-cp35-none-win_amd64.whl即可成功安装。
+
+其它的库也同理可以成功安装，不过也请注意库的依赖。
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

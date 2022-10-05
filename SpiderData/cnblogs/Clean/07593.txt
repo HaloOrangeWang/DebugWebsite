@@ -1,0 +1,26 @@
+报错信息：
+
+monitor_mssql.py:10: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3,and in 3.9 it will stop working
+  import pymssql
+
+这种 warning 就是快过期的不向后兼容的语法做了个警告。
+
+解决办法
+1. 更新 pymssql 这个警告的库, 一般有人维护的话, 作者会因为这 issue 更新版本。
+
+2. 注释掉这个告警模块,一般不建议。
+
+3. 调整导入包的写法。
+
+# from collections import Iterable   ---这是会报警告的用法
+from collections.abc import Iterable ---这是不会报警告的用法
+print(isinstance('abc', Iterable))
+
+4. 直接屏蔽这个提示。在前面加两行代码：import warnings ...
+
+import warnings
+warnings.simplefilter('ignore', DeprecationWarning)
+import pymssql
+
+　　
+

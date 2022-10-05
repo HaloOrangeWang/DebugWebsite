@@ -1,0 +1,20 @@
+Python_报错：
+
+D:\Python36\python.exe D:/test_excel/excel_001.py
+Traceback (most recent call last):
+  File "D:/test_excel/excel_001.py", line 14, in <module>
+    wb.save("e:\\sample.xlsx")
+  File "D:\Python36\lib\site-packages\openpyxl\workbook\workbook.py", line 367, in save
+    save_workbook(self, filename)
+  File "D:\Python36\lib\site-packages\openpyxl\writer\excel.py", line 282, in save_workbook
+    archive = ZipFile(filename, 'w', ZIP_DEFLATED, allowZip64=True)
+  File "D:\Python36\lib\zipfile.py", line 1090, in __init__
+    self.fp = io.open(file, filemode)
+PermissionError: [Errno 13] Permission denied: 'e:\\sample.xlsx'
+
+源码：
+
+原因：excel文件是打开的，资源被占用，在进行操作时，关闭写入的文件即可
+
+运行结果：
+

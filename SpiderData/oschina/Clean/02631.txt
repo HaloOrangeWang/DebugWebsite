@@ -1,0 +1,34 @@
+访问superset localhost:8088   securety->list Role
+
+报错
+
+xxxxxxxxxxxxxxxxxxxxxxx
+
+xxxxxxxxxxxxxxxxxxxxxxx
+
+xxxxxxxxxxxxxxxxxxxxxxx
+
+xxxxxxxxxxxxxxxxxxxxxxx
+
+xxxxxxxxxxxxxxxxxxxxxxx
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 43-49: ordinal not in range(128)
+
+错误分析：
+
+此错误一般出现在用python2.7 安装的版本中，由于编码格式不正确，导致这个错误，所以避免这个错误的最佳办法是：python3安装
+
+pip3 install superset
+
+　　但是如果我们已经用python2安装了superset，并且已经有了很多报表在里面，那么。。。。。覆水难收，尝试下面办法
+
+#新建一个.py文件
+vim /usr/lib64/python2.7/site-packages/sitecustomize.py
+
+#写入以下代码
+import sys
+reload(sys)
+sys.setdefaultencoding('UTF-8')
+
+　　以上就这两个办法了。
+

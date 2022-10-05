@@ -1,0 +1,102 @@
+在编写Python代码或开发实际应用的项目时，程序报出异常或错误是在所难免的，那么我们应该怎样处理这些异常呢？下面来说一下方法。
+
+1.使用try...except捕捉异常try:
+
+s=1/0
+
+except IndexError:
+
+print ('except')
+
+except KeyError:
+
+print ('Keyerror')
+
+except ZeroDivisionError:
+
+print ('ZeroDivisionError')
+
+或try:
+
+s=1/0
+
+except:
+
+print ('出现异常')
+
+或有多个异常名称的格式
+
+try:
+
+s = 1/0
+
+except(IndexError,KeyError,ZeroDivisionError),e:
+
+print (e)
+
+2.使用try ...except...else语句捕捉异常
+
+当try块中的代码没有异常时，则跳过except块中的代码，执行else块中的代码
+
+工作原理：
+
+1).如果try代码块语句执行发生异常，Python就跳回try，执行第一个匹配该异常的except块中的代码
+
+2).如果异常发生在try代码块内，没有匹配的except子句，name异常就会向上传递到程序中之前进入的try中，或者转到这个进程的顶层(这会使python终止当前程序并打印默认的错误消息)
+
+3).如果try块中的代码执行没有异常发生，则python将执行else块中的代码
+
+3.使用try...finally捕捉异常
+
+当try块中包含了finally语句，则python一定会在执行完try块中的代码之后在执行finally块中的代码(无论try块中的代码是否发生异常都将执行finally块中的代码)
+
+工作原理：
+
+1).如果执行try块中的代码时没有发生异常，则Python会跳转至finally语句并执行该代码块，然后继续执行程序中finally语句之后的代码
+
+2).如果执行try块中的代码时发生异常，则Python依然会执行finally语句中的代码块，但是接着会将异常向上传递到上层的try语句或顶层的默认处理器，程序不会继续执行导致发生异常的语句之后的try块中的代码。也就是说，即使发生了异常，finally代码块还是会被执行，和except不同的是，finally不会终止异常，而是在finally代码块执行后，一直处于发生状态
+
+4.使用raise抛出异常(手工引发异常)
+
+raise
+
+‘异常对象’表示将引发异常的异常名称，且异常名称标识了具体的异常类。raise语句还可指定对异常对象进行初始化的参数，为此需要在异常类的名称后添加一个逗号以及指定参数(或者由参数构成的一个元组 )。一旦执行了raise语句，raise语句后的代码将不能被执行
+
+raise，
+
+例子：try:
+
+raise NameError
+
+except NameError:
+
+print ('抛出一个异常')
+
+5.自定义异常
+
+格式class MyError(Exception):def __init__(self,value):
+
+self.value=value
+
+def __str__(self):
+
+return repr(self.value)
+
+try:
+
+raise MyError(2*2)
+
+except MyError as e:
+
+print('My exceotion occurred,value:',e.value)
+
+6.使用assert语句
+
+用于检测某个条件表达式是否为真。又称断言语句，即assert认为检测的表达式永远为真，断言失败就会引发AssertionError异常
+
+语法格式：assertusername = 'admin'
+
+password='123456'
+
+assert username =='admin' and password == 'admin','密码错误！'
+

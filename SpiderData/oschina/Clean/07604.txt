@@ -1,0 +1,289 @@
+1.Caused by: com.mysql.jdbc.PacketTooBigException: Packet for query is too large (4310456 > 4194304). You can change this value on the server by setting the max_allowed_packet' variable.
+
+2.mysql没有my.ini但是有 my-default.ini原因以及解决办法
+
+3.1467 - Failed to read auto-increment value from storage engine
+
+4.SSM mybatis 控制台不显示sql
+
+5.mybatis  Cause: org.xml.sax.SAXParseException; lineNumber: 39; columnNumber: 97; 元素内容必须由格式正确的字符数据或标记组成。
+
+6.数据库时区错误
+
+7.首次启动SQL Developer配置java.exe出错（Could not find jvm.cfg! ）
+
+java.sql.SQLException: The server time zone value 'ÖÐ¹ú±ê×¼Ê±¼ä' is unrecognized or represents more than one time zone. You must configure either the server or JDBC driver (via the serverTimezone configuration property) to use a more specifc time zone value if you want to utilize time zone support.
+
+1.Caused by: com.mysql.jdbc.PacketTooBigException: Packet for query is too large (4310456 > 4194304). You can change this value on the server by setting the max_allowed_packet' variable.
+
+写入MySQL报错超出 max_allowed_packet 的问题。
+
+MySQL会根据配置文件会限制server接受的数据包的大小。如果写入大数据时，因为默认的配置太小，插入和更新操作会因为 max_allowed_packet 参数限制，而导致失败。
+
+查看当前配置：
+
+show variables like 'max_allowed_packet';
+
+或者
+
+select @@max_allowed_packet;
+
+max_allowed_packet 如果不设置，默认值在不同的 MySQL 版本表现不同，有的版本默认1M，有的版本默认4M。
+
+修改方法1(配置文件持久化修改)：
+vim /etc/my.cnf
+[mysqld]
+max_allowed_packet = 100M
+
+注意：修改配置文件以后，需要重启mysql服务才能生效。
+
+修改方法2(命令行临时修改，重启服务后会不见，重新登陆后生效)：
+
+mysql> set global max_allowed_packet = 100 * 1024 * 1024;
+mysql> exit
+[root@localhost opt]# 
+[root@localhost opt]# mysql -uroot
+mysql> 
+mysql> select @@max_allowed_packet;
++----------------------+
+| @@max_allowed_packet |
++----------------------+
+|            104857600 |
++----------------------+
+1 row in set (0.00 sec)
+
+mysql>
+
+注意：
+
+1.命令行修改时，不能用M、G，只能这算成字节数设置。配置文件修改才允许设置M、G单位。
+
+2.命令行修改之后，需要退出当前回话(关闭当前mysql server链接)，然后重新登录才能查看修改后的值。通过命令行修改只能临时生效，下次数据库重启后又复原了。
+
+3.max_allowed_packet 最大值是1G(1073741824)，如果设置超过1G，查看最终生效结果也只有1G。
+
+[mysqld]
+max_allowed_packet = 1G
+
+mysql> show variables like '%max_allowed_pack%';
++--------------------+------------+
+| Variable_name      | Value      |
++--------------------+------------+
+| max_allowed_packet | 1073741824 |
++--------------------+------------+
+1 row in set (0.00 sec)
+
+2.mysql没有my.ini但是有 my-default.ini原因以及解决办法
+
+1）.mysql 数据库的安装可以分为两种方式：解压方式 、安装方式。
+
+两者的区别在于：
+
+安装方式，通常会运行一个 向导 程序，当按照向导，一步步完成安装，mysql 会安装完成，并在安装目录下生成 一个my.ini文件
+
+解压 方式，解压完成后，安装目录下会有一个缺省的配置文件my-default.ini，如下图：
+
+2）.如何添加my.ini（Linux系统下为cfg后缀）
+这就很简单了，把my-default.ini复制一份，粘贴到安装目录改名为my.ini就可以了
+
+3.1467 - Failed to read auto-increment value from storage engine
+
+这是一个Mysql Bug（版本号5.6.12此问题依旧存在），解决方法：
+
+1）把涉及数据表的自增字段的自增选项去掉，保存一下
+
+2）重新将这个字段设置为自增字段
+
+4.SSM mybatis 控制台不显示sql：
+
+方法1：
+
+（1）依然新建“mybatis-config.xml”配置文件，如下：
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings> 
+        <!-- 打印查询语句 -->
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+    </settings>
+</configuration>
+
+但是如果是Spring整合MyBatis的情况下，我们通常会写一个spring-mybatis.xml的配置文件
+
+此时，如果是这样的写法，这个配置文件暂时不会生效，因为没有在这个spring-mybatis.xml注册，Spring就不会扫描这个配置文件
+
+此时，修改spring-mybatis.xml中id为：sqlSessionFactory的bean，修改如下写法：
+
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"> 
+    <property name="dataSource" ref="dataSource" /> 
+    <property name="mapperLocations" value="classpath:com/lzc/dao/*.xml"></property>
+     <!-- 自动扫描mapping.xml文件 -->
+    <property name="configLocation" value="classpath:conf/mybatis-config.xml"></property>
+</bean>
+
+方法2：
+
+使用slf4j输出
+
+因此要先添加slf4j的依赖
+
+<dependency>
+   <groupId>org.slf4j</groupId>
+   <artifactId>slf4j-log4j12</artifactId>
+   <version>1.7.6</version>
+</dependency>
+
+log4j配置文件：
+
+log4j.logger.com.ibatis=DEBUG
+log4j.logger.com.ibatis.common.jdbc.SimpleDataSource=DEBUG
+log4j.logger.com.ibatis.common.jdbc.ScriptRunner=DEBUG
+log4j.logger.com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate=DEBUG
+log4j.logger.java.sql.Connection=DEBUG
+log4j.logger.java.sql.Statement=DEBUG
+log4j.logger.java.sql.PreparedStatement=DEBUG
+
+方法3.
+
+log4j2
+
+配置如下
+
+引入Maven依赖
+
+<!-- log4j2 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.8.2</version>
+        </dependency>
+         <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+            <version>2.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+
+<loggers>
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <logger name="org.springframework" level="INFO"></logger>
+        <logger name="org.mybatis" level="INFO"></logger>     
+     
+     
+            <root level="all">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+        </root>
+    </loggers>
+
+5.mybatis  Cause: org.xml.sax.SAXParseException; lineNumber: 39; columnNumber: 97; 元素内容必须由格式正确的字符数据或标记组成。
+
+第一种方法：
+
+用了转义字符把>和<替换掉，然后就没有问题了。
+
+SELECT * FROM test WHERE 1 = 1 AND start_date  &lt;= CURRENT_DATE AND end_date &gt;= CURRENT_DATE
+
+附：XML转义字符
+
+　　　　　　&lt;         <  　　　　小于号
+
+&gt;　　>     　　  大于号
+
+&amp;　　&　　  和
+
+&apos;　　’　　单引号
+
+&quot;　　 "　　 双引号
+
+第二种方法：
+
+因为这个是xml格式的，所以不允许出现类似“>”这样的字符，但是都可以使用<![CDATA[ ]]>符号进行说明，将此类符号不进行解析 
+你的可以写成这个：
+
+mapper文件示例代码
+<![CDATA[ when min(starttime)<='12:00' and max(endtime)<='12:00' ]]>
+
+6.数据库时区错误
+
+java.sql.SQLException: The server time zone value 'ÖÐ¹ú±ê×¼Ê±¼ä' is unrecognized or represents more than one time zone. You must configure either the server or JDBC driver (via the serverTimezone configuration property) to use a more specifc time zone value if you want to utilize time zone support.
+
+详见：https://www.cnblogs.com/baby123/p/10436095.html
+
+使用spring boot整合MySQL时一直报
+
+java.sql.SQLException: The server time zone value 'ÖÐ¹ú±ê×¼Ê±¼ä' is unrecognized or represents more than one time zone
+
+报错信息
+
+系统时区的错误
+
+查看mysql时区
+
+show VARIABLES like "%time_zone%"
+
+解决方法：
+
+　　1.在原来的参数“url”后面，拼上这个字符串：?serverTimezone=GMT%2B8，
+
+　　　　如：jdbc:mysql://localhost:3306/test?serverTimezone=GMT%2B8
+
+　　　　　　东八区的表示：
+
+　　　　　　　　GMT%2B8，即GMT+8，北京时间东八区
+
+　　　　　　　　Asia/Shangha，上海时间
+
+　　　　　　为何没有asia/beijing时区？
+
+　　2.设置mysql的时区
+
+　　　　MySQL默认的时区是UTC时区
+
+　　　　（1）永久的修改：修改mysql的配置文件，添加：default-time-zone='+08:00'，重启mysql生效
+
+（2）临时的修改：执行mysql命令 set global time_zone='+08:00'，立即生效，重启mysql后失效
+
+Navicat 需要重新断开连接再打开查询
+
+
+7.首次启动SQL Developer配置java.exe出错（Could not find jvm.cfg! ）
+
+
+1.环境
+
+win7/8/8.1  x64，oracle 11g r2，jdk8 x64
+
+
+2.问题
+
+第一次启动Oracle SQL Developer的时候会让我们填写java.exe的路径，我在jdk安装目录下的bin中找到了java.exe，但是填写以后报如下错误：
+
+WARNING: Could not find jvm.cfg! in 'D:\app\Administrator\product\11.2.0\dbhome_1\jdk\jre\lib\jvm.cfg'
+
+
+3.原因
+
+oracle 11g中安装的Oracle SQL Developer是32位的，而我们现在给他指定的java.exe却是64位的，所以会出现这种错误。
+
+
+4.解决方法
+
+1）从网上下载Oracle SQL Developer x64，然后替换原目录：D:\app\oracle\product\11.1.0\db_1\sqldeveloper下的32位的Oracle SQL Developer。这样重新启动Oracle SQL Developer 并制定java.exe的路径就可以了。
+
+2）安装JDK6 x86，也就是32位的JDK，虽然我们的系统是64位的，但是也兼容32位的JDK。
+
+上述两种方法均试过，都可以正常运行。
+
+也可以修改 {ORACLE_HOME}\sqldeveloper\sqldeveloper\bin\sqldeveloper.conf 文件的 SetJavaHome，重新定向到 32位jdk。
+

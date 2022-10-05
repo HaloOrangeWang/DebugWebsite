@@ -1,0 +1,60 @@
+1、IndentationError:expected an indented block
+
+原因：Python对缩进非常敏感
+
+解决：在出现此问题的哪一行进行缩进就好，注意tab不能与空格混用，有冒号的下一句一般要缩进
+
+2、TypeError: unorderable types: str() >= int()
+
+原因：input返回的是字符串，所以输入数字返回的也是字符串
+
+解决：强制类型转换,int(input())
+
+3、can't assign to function call
+
+原因：圆括号()表示函数调用，方括号[]表示列表值的引用
+
+解决：改为[]
+
+def normalize(name):
+
+l=list(name)
+
+l[0]=l[0].upper()
+
+for i in range(1,len(name)):
+
+l[i]=l[i].lower()
+
+l=''.join(l)
+
+return l
+
+l1=['adam','LISA','barT']
+
+l2=list(map(normalize,l1))
+
+print(l2)
+
+4、descriptor 'lower' of 'str' object needs an argument
+
+原因：调用的是函数的返回值，但是调用函数时没有传参
+
+解决：此处正确的是调用函数本身，即不带括号的函数调用
+
+5、ValueError: invalid literal for int() with base 2: '16'
+
+原因：int('16',2)意思是按照二进制将字符串‘16’转化成十进制，不是将16十进制转化成二进制，所以base=2时应该只有0，1，超出0，1范围就会报错
+
+int('16',8) ——>1*8+6=14
+
+int('16',16) ——>1*16+6=22
+
+扩展：十进制转化为二进制：bin(x)
+
+十进制转化为八进制：oct(x)
+
+十进制转化为十六进制：hex(x)
+
+返回值均为字符串，并且带有0b,0o,0x，可以采用replace去掉：bin(x).replace('0b','');可以再套一个int转化为十进制整数：int(int('1111',2))
+

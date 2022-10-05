@@ -1,0 +1,26 @@
+个人博客,欢迎来撩 fangzengye.com
+
+错误信息
+
+删除打包产生的文件:dist文件夹,build文件夹,还有spec文件
+
+先安装pip install pywin32
+
+python用pyinstaller打包后，运行程序报错"pkg_resources.DistributionNotFound"的解决办法…
+
+这里明明已经打包好了exe文件，也没有报错。但是运行exe时候，却弹出这个界面一闪而过。
+
+之后再查阅了pyinstaller的官方文档后，找到了解决办法。
+
+在目标文件目录下创建一个hook-ctypes.macholib.py文件：
+ 里面的内容如下：
+
+from PyInstaller.utils.hooks import copy_metadata
+
+datas = copy_metadata('prettytable')
+
+这样修改以后，打包出来的exe文件就能够正常使用了。
+ 希望碰到同样的问题的小伙伴，可以从这里找到一些帮助。
+
+refers
+

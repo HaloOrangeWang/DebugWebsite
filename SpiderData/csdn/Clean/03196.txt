@@ -1,0 +1,32 @@
+本菜鸟今天学到时间记录，于是尝试使用time.clock()函数记录时间：
+
+原代码如下：
+
+import time
+t = time.clock()
+while True
+    t0 = time.clock() - t
+    print ("\r{:.2f}".format(t0),end="")
+    time.sleep(0.5)
+
+但是显示出错了！错误提示如下， 表示time库中并没有clock属性
+
+AttributeError: module 'time' has no attribute 'clock'
+
+于是到外面去查找，发现time库在更新中已经抛弃了time.clock()
+
+改为time.perf_counter() 取代它的功能。
+
+所以更改代码如下，只要替换掉原来的名字就好了：
+
+import time
+t = time.perf_counter()
+while True:
+    t0 = time.perf_counter() - t
+    print ("\r{:.2f}".format(t0),end="")
+    time.sleep(0.5)
+
+就能实现单行刷新的0.5秒为间隔的计时效果啦
+
+在网站上暂时没有找到相关的信息，所以分享给大家！
+

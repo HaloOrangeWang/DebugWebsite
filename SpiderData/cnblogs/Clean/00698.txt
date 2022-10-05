@@ -1,0 +1,27 @@
+问题：linux下安装PHP时，运行./configure 后，再运行make报错：没有指明目标并且找不到makefile。 停止
+
+解决方法：这个是configure没有成功，看看报的错，然后将每个错误一次解决，再重新configure后，问题便能解决
+
+然后在查看PHP安装时候，发现报错
+
+configure: error: xml2-config not found. Please check your libxml2 installation
+
+检查是否安装了libxm包
+
+[root@XKWB3403 php-5.3.8]# rpm -qa |grep  libxml2
+libxml2-2.6.26-2.1.12
+libxml2-python-2.6.26-2.1.12
+
+重新安装libxml2和libxml2-devel包
+
+yum install libxml2
+
+yum install libxml2-devel -y
+
+安装完之后查找xml2-config文件是否存在
+
+[root@XKWB3403 php-5.3.8]# find / -name "xml2-config"
+/usr/bin/xml2-config
+
+如果存在的话重新安装php
+

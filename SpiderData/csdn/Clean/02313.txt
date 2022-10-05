@@ -1,0 +1,44 @@
+Pycharm中import torch报错
+
+问题描述：
+
+今天在跑GitHub上一个深度学习的模型，需要引入一个torch包，在pycharm中用pip命令安装时报错：
+
+于是我上网寻求解决方案，试了很多都失败了，最后在：Anne琪琪的博客中找到了答案，下面记录一下解决问题的步骤：
+
+1、打开Anaconda prompt执行下面命令：
+
+conda install pytorch-cpu torchvision-cpu -c pytorch 等待运行结束。
+
+2、 测试torch是否安装成功
+
+import torch
+
+print(torch.__version__)
+
+如果输出了torch版本号，那么恭喜你，torch安装成功！
+
+3、更改python解释器
+
+我们刚刚用Anaconda下载了torch包，接下来只需要将Pycharm中python的解释器换成Anaconda的python路径即可，具体步骤：
+
+File–Settings–Project:xxx–Project Interpreter–show all–点击“+”添加–System Interpreter–D:\develop\Anaconda3 \python.exe(划线部分换成你自己Anaconda的安装路径即可)，到此成功解决Pycharm中import torch的问题。
+
+如果有任何问题，希望各位大佬指正。
+
+在看下另一个朋友分享的解决方案
+
+Pycharm中import torch报错
+
+以下是我分析及解决问题过程
+
+1.没有安装Pytorch：(我的环境是Python3.6+win7+无cuda+Anaconda3)在Pytorch的官网上找到相应的安装方法，即打开Anaconda Prompt命令行，输入命令conda install pytorch-cpu torchvision-cpu -c pytorch，运行等待安装完成，在cmd命令行中测试不报错。
+
+2.在Pycharm中import torch报错，原因项目的解释器路径是Python的安装路径，改为Anaconda的Python的路径即可，具体步骤为，File--Settings--Project:xxx--Project Interpreter--show all--点击“+”添加--System Interpreter--C:\Users\Administrator\Anaconda3\python.exe
+
+问题得到解决。
+
+总结
+
+到此这篇关于Pycharm中import torch报错的快速解决方法的文章就介绍到这了,更多相关Pycharm import torch报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

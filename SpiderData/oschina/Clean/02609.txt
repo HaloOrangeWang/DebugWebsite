@@ -1,0 +1,30 @@
+anacoda安装的jupyter，使用nginx进行了转发，远程访问可以进去，但是创建文件和创建目录都会报错
+
+浏览器页面报错：
+
+
+第一次使用jupyter创建python时错误：Creating Notebook Failed An error occurred while creating a new notebook.
+
+后台日志报错：
+
+[W 11:06:56.582 NotebookApp] Blocking Cross Origin API request for /api/contents. Origin: http://xx/xx/xx/xx:123546, Host: 172.20.25.164
+[W 11:06:56.597 NotebookApp] 404 POST /api/contents (127.0.0.1) 16.26ms referer=http://xx/xx/xx/xx:8088/tree?
+
+现状：
+
+能访问到，但是无法创建
+
+尝试：
+
+1.授权anacoda下的jupter文件为777权限，工作目录为777权限，不能解决问题
+
+2.重装anacoda，不能解决问题
+
+3.pip卸载重装jupyter，不能解决问题
+
+解决
+
+打开jupyter_notebook_config.py文件
+找到c.NotebookApp.allow_origin = ' '将' '改为‘*’
+保存退出 重新启动jupyter 成功
+

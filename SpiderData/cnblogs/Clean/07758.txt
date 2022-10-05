@@ -1,0 +1,44 @@
+卸载mysql5.1，安装mysql5.7
+
+1.先卸载mysql5.1
+
+rpm -qa | grep mysql | xargs rpm -e --nodeps
+
+2.再安装mysql5.7
+
+rpm -ivh mysql-5.7*
+
+卸载mysql5.7，安装mysql5.1
+
+1.先卸载mysql5.7
+
+rpm -qa | grep mysql | xargs rpm -e --nodeps
+
+2、再安装mysql5.7
+
+yum install mysql mysql-libs mysql-server mysql-devel -y
+
+一定要安装mysql-devel，否则python程序使用mysql时会报错。
+
+启动python程序时报错：
+
+ImportError: libmysqlclient.so.20: cannot open shared object file: No such file or directory
+
+怀疑是没装mysql-python，但实际是装了的，我想可能是卸载mysql的时候导致了问题。
+
+于是重新安装mysql-python
+
+执行python setup.py install，发现又报错：
+
+_mysql.c:44:23: fatal error: my_config.h: No such file or directory
+
+网上查找，发现是没有装mysql-devel，于是安装：
+
+yum install mysql-devel -y
+
+再安装mysql-python，此次安装成功。
+
+再次启动python程序时，就正常了。
+
+解决方法：（1）安装mysql-devel（2）重装mysql-python
+

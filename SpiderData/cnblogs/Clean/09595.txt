@@ -1,0 +1,29 @@
+
+相关组件
+
+python 3.6.8
+
+elasticsearch 7.10.2
+
+elasticsearch-py 7.1.0
+
+
+解决方案
+
+把 python 包从 elasticsearch-py 7.1.0 改成 elasticsearch-py 7.6.0 即可。
+
+用其他版本可能也行，但我没试过。
+
+
+问题描述
+
+调用 es.bulk 写 es，报错：
+
+之所以想到可能是版本问题，是因为：
+
+1、相同的代码，灌 es6 是没问题的；
+
+2、查资料 _version not supported in elasticsearch 6.1 onwards #295 发现，版本确实可能会导致这个问题。但是粗看下来，跟我遇到的问题关系不大；
+
+3、一个干扰：相同的数据，直接用 python 脚本 bulk 是没问题的，但是用自己写的 spark 脚本 bulk 就会报错。后来才想起来，spark 脚本使用的包版本和 python 脚本使用的包版本并不相同。而 python 脚本用的是 7.6.0。
+

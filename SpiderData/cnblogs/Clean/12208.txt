@@ -1,0 +1,98 @@
+再长的路，一步步也能走完；再短的路，不迈出第一步也无法到达，想要体验MindSpore，一定是从安装开始。
+
+今天小Mi为大家整理安装过程中常出现的环境配置和依赖相关问题。
+
+1. 无论是什么方式和平台安装MindSpore，请务必确认所有规定的依赖及版本。
+
+2. Ubuntu 18.0404自带环境与MindSpore要求不同，需要手动调整。
+
+3. gcc安装失败/如何安装/装不起来等问题，可参考以下两位的经验：
+
+张小白教你如何在Ubuntu 18.04上源码安装MindSpore V1.0
+
+mindspore1.3.0的编译环境之GCC7.3.0的安装
+
+4. 选择CUDA不同版本，对应的cuDNN版本也不同。CUDA 10.1对应cuDNN 7.6.x，而CUDA 11.1配套的cuDNN 8.0.x。
+
+5. CUDA安装请确认是否安装相应的cuDNN，一般需要自己手动安装。可以参考张小白博客内容：https://bbs.huaweicloud.com/blogs/309891
+
+6. 使用pip安装时报错: ERROR: mindspore_{VERSION}.whl is not a supported wheel on this platform。
+
+A：pip会通过wheel安装包的文件名来判断该安装包是否与当前Python环境兼容，例如安装mindspore_ascend-1.2.0-cp37-cp37m-linux_aarch64.whl时，pip会检查:
+
+当前python环境为7.x版本
+
+当前操作系统为Linux
+
+操作系统架构为arm64
+
+因此，如果出现is not a supported wheel on this platform问题，请检查当前环境是否满足MindSpore安装要求，以及该MindSpore安装包版本是否正确。
+
+7. 使用pip安装依赖库时提示No matching distribution found for XXX错误，应该怎么办？
+
+A:请执行pip config list，查看当前软件库索引路径index-url。某些情况下，软件库索引会出现更新滞后，可尝试设置其它软件库索引路径。
+
+8. Ascend硬件平台，在个人的Conda环境中，有时候出现报错RuntimeError: json.exception.parse_error.101 parse error at line 1, column 1: syntax error while parsing value - invalid literal; last read: ‘T’，该怎么处理？
+
+A:出现这种类型的报错，大概率是run包更新后个人的Conda环境中没有更新te或topi或hccl工具包，可以将当前Conda环境中的上述几个工具包卸载，然后使用如下命令再重新安装: pip install /usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64/{te/topi/hccl}-{version}-py3-none-any.whl。
+
+9. 在ARM架构的环境上使用pip安装MindSpore时报错: Could not find a version that satisfies the requirement应该怎么办？
+
+A:大概率是因为pip版本低于19.3，无法识别manylinux2014标签，导致pip install阶段下载了错误版本的numpy或scipy等python软件包，进而引发了无法找到构建依赖的问题，请执行pip install --upgrade pip将环境中的pip升级到19.3以上，重新安装MindSpore。
+
+10. 如何改变第三方依赖库安装路径？
+
+A:第三方依赖库的包默认安装在build/mindspore/.mslib目录下，可以设置环境变量MSLIBS_CACHE_PATH来改变安装目录，比如 export MSLIBS_CACHE_PATH = ~/.mslib。
+
+11. 环境上安装了Python3.7.5，环境变量设置正确，编译MindSpore时仍然报错Python3 not found，应该怎么办？
+
+A:可能是因为当前环境上的Python未包含动态库。编译MindSpore需要动态链接Python库，因此需要使用开启动态库编译选项的Python3.7.5，即在源码编译Python时使用./configure --enable-shared命令。
+
+12. 一些常用的环境变量设置，在新启动的终端窗口中需要重新设置，容易忘记应该怎么办？
+
+A:常用的环境变量设置写入到~/.bash_profile 或 ~/.bashrc中，可让环境变量设置在新启动的终端窗口中立即生效。
+
+13. 使用GPU版本MindSpore时，如何设置DEVICE_ID环境变量?
+
+A:MindSpore GPU模式一般无需设置DEVICE_ID环境变量，MindSpore会根据cuda环境变量CUDA_VISIBLE_DEVICES，自动选择可见的GPU设备。设置CUDA_VISIBLE_DEVICES环境变量后，则DEVICE_ID环境变量代表可见GPU设备的下标:执行export CUDA_VISIBLE_DEVICES=1,3,5后，DEVICE_ID应当被设置为0，1或2，若设置为3及以上，MindSpore会由于设备ID不合法而运行失败。
+
+14. 编译应用时报错/usr/bin/ld: warning: libxxx.so, needed by libmindspore.so, not found怎么办？
+
+A:寻找缺少的动态库文件所在目录，添加该路径到环境变量LD_LIBRARY_PATH中，环境变量设置参考Ascend 310 AI处理器上使用MindIR模型进行推理#编译推理代码。
+
+15. 运行应用时出现ModuleNotFoundError: No module named 'te'怎么办？
+
+首先确认环境安装是否正确，te、topi等whl包是否正确安装。如果用户环境中有多个Python版本，如Conda虚拟环境中，需ldd name_of_your_executable_app确认应用所链接的libpython3.so是否与当前Python路径一致，如果不一致需要调整环境变量LD_LIBRARY_PATH顺序，例：export LD_LIBRARY_PATH=`python -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))"`:$LD_LIBRARY_PATH
+
+将当前的python命令对应程序的运行库路径加入到LD_LIBRARY_PATH的最前面。
+
+
+优秀用户经验分享
+
+[深夜上线]MindSpore的CPU在win10x64下安装（超详细，小白可懂）
+
+保姆式教程教你如何一步步在window10系统下安装mindspore框架+pycharm导入python遇到的问题解决
+
+MindSpore GPU版本安装指导
+
+pip方式安装MindSpore Ascend 910版本
+
+Windows上体验源码编译安装MindSpore
+
+
+解决路径
+
+非注意事项提到的问题可以通过查询论坛 问题求助-安装或官网 FAQ-安装
+
+来查询同类问题的解决方式。
+
+如果您遇到了问题并成功解决，也可以分享相关经验到论坛 技术干货-安装经验
+
+《手把手安装教程》系列视频看这里。
+
+如果上述方式都没有解决您的问题，欢迎到论坛问题求助板块发帖求助，我们的技术支撑将在第一时间给您回复。
+
+欢迎补充本篇遗漏内容~
+
+看到这里，准备好say Hello World了么？
+

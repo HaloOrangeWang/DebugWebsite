@@ -1,0 +1,110 @@
+1. 先描述一下昨天遇到的问题
+
+　　（1）装了Django REST framework，运行django时，出现错误提示：
+
+　　　　ImportError: cannot import name 'six' from 'django.utils'
+
+　　（2）于是我import six，发觉有，猜想会不会是因为没有放在django.utils下的缘故，于是复制了一份过去，还是出现了错误，好在不是上面的错误了：
+
+　　　　ImportError: cannot import name 'moves' from 'django.utils'
+
+　　　　  于是我如法炮制，也把moves复制了一份到django.utils里面
+
+　　（3）结果更奇葩的出现了，这次是没有builtins。我心想，这个怎么可能没有，但还是按照上面的做了。果然也没有再报错了，但又出现了其他的：
+
+　　　　NameError: name 'python_2_unicode_compatible' is not defined
+
+　　　　　Ctrl+Enter点进去看了一下，是个装饰器。不知道干嘛用的，但从名字猜，估计是把python2的__unicode__变成python3的__str__。既然我已经装的python3了，用不着这个，于是注释掉了。
+
+　　（4）接下来的错误是：
+
+　　　　TypeError: 'ellipsis' object is not iterable
+
+　　　　   这次不知道怎么办了，于是放弃了。
+
+2. 今天突然想到，会不会是因为版本不兼容的问题
+
+　　于是把Django 3.0.dev卸载了，重装了Django 2.2.2，然后再装了Django REST framework，果然OK了。下面把整个装载配置过程重述一遍：
+
+　　（1）安装Django 2.2.2
+
+　　　　pip install Django==2.2.2
+
+　　（2）运行自己的django项目，如果报错：
+
+　　　　mysqlclient 1.3.13 or newer is required; you have 0.9.3
+
+　　　　这并不说明你的mysqlclient版本过低，因为我pip install mysqlclient了一下，提示自己的是1.4.2。点击报错文件，把下面代码注释掉：
+
+　　　　if version < (1, 3, 3):
+
+　　　　　　raise ImproperlyConfigured("mysqlclient 1.3.3 or newer is required; you have %s" % Database.__version__)
+
+　　（3）接下来，如果报错：
+
+　　　　query = query.decode(errors='replace') AttributeError: 'str' object has no attribute 'decode'
+
+　　　　点击报错文件，把下面代码注释掉：
+
+　　　　if query is not None:
+
+　　　　　　query = query.decode(errors='replace')
+
+　　　　接下来就可以正常运行了。
+
+3. 安装和配置rest_framework
+
+　　（1）安装
+
+　　　　pip install djangorestframework
+
+　　　　pip install markdown
+
+　　　　pip install django-filter
+
+　　（2）settings.py
+
+　　　　INSTALLED_APP里面添加：'rest_framework'
+
+　　（3）项目urls.py
+
+　　　　urlpatterns里面添加：url(r'^api/', include('app01.urls'))，其中app01改为你自己的app名
+
+　　（4）app01下的urls.py
+
+　　　　from django.contrib.auth.models import User
+
+　　　　from rest_framework import routers, serializers, viewsets
+
+　　　　# Serializers define the API representation.
+
+　　　　class UserSerializer(serializers.HyperlinkedModelSerializer):
+
+　　　　　　class Meta:
+
+　　　　　　　　model = User
+
+　　　　　　　　fields = ('url', 'username', 'email', 'is_staff')
+
+　　　　# ViewSets define the view behavior.
+
+　　　　class UserViewSet(viewsets.ModelViewSet):
+
+　　　　　　queryset = User.objects.all()
+
+　　　　　　serializer_class = UserSerializer
+
+　　　　# Routers provide an easy way of automatically determining the URL conf.
+
+　　　　router = routers.DefaultRouter()
+
+　　　　router.register(r'users', UserViewSet)
+
+　　　　urlpatterns = [
+
+　　　　　　url(r'^', include(router.urls)),
+
+　　　　]
+
+　　（5）url栏输入http://127.0.0.1:8001/api/，ip和port改成你自己设置的。
+

@@ -1,0 +1,162 @@
+实现用户登录并且输入错误三次后锁定该用户
+
+我的测试环境，win7，python3.5.1
+
+提示输入用户名，和密码
+
+判断是否被锁定
+
+判断用户名和密码是否匹配
+
+输入错误三次，账号被锁定
+
+思路
+
+代码块
+
+name = 'alex'   #正确的用户名
+passwd = '123456'  #正确的密码
+lock_usr = []   #锁定账号列表
+
+for i in range(0,3):
+ usr_name = input("用户名：")
+ usr_passwd = input("密码：")
+ if usr_name == name and usr_passwd == passwd:
+  print("玩命加载中...")
+  break
+ elif name != usr_name or passwd != usr_passwd:
+  if i < 2:
+   print("用户名密码错误，请重新输入！")
+  else:
+   lock_usr.append(usr_name)     #将输入错误三次的的账号添加到锁定列表中
+   print("对不起！机会只有三次，您的账号密码被锁定")
+ elif usr_name in lock_usr:
+  print("该账号已锁定，请解锁后登陆")
+
+PS：下面在通过c#实现密码输入三次错误后锁定用户功能
+
+#region 密码输入三次错误后锁定用户功能
+  #region 增加错误次数的方法
+  ///<summary>
+  ///增加错误次数的方法
+  ///</summary>
+  private void IncErrorTime()
+  {
+   string ConnStr = ConfigurationManager.ConnectionStrings["ConnStr"].ConnectionString;
+   using (SqlConnection conn = new SqlConnection(ConnStr))
+   {
+    using (SqlCommand updateCmd = conn.CreateCommand())
+    {
+     updateCmd.CommandText = "update T_Admin set errortime=errortime+1 whereUsername=@username";
+     updateCmd.Parameters.Add(new SqlParameter("username", cmbuserName.Text));
+     conn.Open();
+     updateCmd.ExecuteNonQuery();
+    }
+   }
+  } 
+  #endregion
+  #region 错误次数清0
+  ///<summary>
+  ///错误次数清0
+  ///</summary>
+  private void NotErrorTime()
+  {
+   string ConnStr = ConfigurationManager.ConnectionStrings["ConnStr"].ConnectionString;
+   using (SqlConnection conn = new SqlConnection(ConnStr))
+   {
+    using (SqlCommand updateCmd = conn.CreateCommand())
+    {
+     updateCmd.CommandText = "update T_Admin set errortime=0 whereUsername=@username";
+     updateCmd.Parameters.Add(new SqlParameter("username", cmbuserName.Text));
+     conn.Open();
+     updateCmd.ExecuteNonQuery();
+    }
+   }
+  } 
+  #endregion
+  #region 密码错误3次,记录当前时间加30分钟
+  ///<summary>
+  ///密码错误3次,记录当前时间加30分钟
+  ///</summary>
+  private void IncLoginTime()
+  {
+   string ConnStr = ConfigurationManager.ConnectionStrings["ConnStr"].ConnectionString;
+   using (SqlConnection conn = new SqlConnection(ConnStr))
+   {
+    using (SqlCommand updateCmd = conn.CreateCommand())
+    {
+     updateCmd.CommandText = "update T_Admin set logintime=@logintime whereUsername=@username";
+     DateTime logintime = DateTime.Now.AddMinutes(30);
+     updateCmd.Parameters.Add(new SqlParameter("username", cmbuserName.Text));
+     updateCmd.Parameters.Add(new SqlParameter("logintime", logintime.ToString()));
+     conn.Open();
+     updateCmd.ExecuteNonQuery();
+    }
+   }
+  } 
+  #endregion
+  #region 按钮事件判断用户登录3次失效后锁定用户30分钟
+  private void BtnClike()
+  {
+   string username = cmbuserName.Text;
+   string password = txtPwd.Text;
+   string ConnStr = ConfigurationManager.ConnectionStrings["ConnStr"].ConnectionString;
+   using (SqlConnection conn = new SqlConnection(ConnStr))
+   {
+    using (SqlCommand cmd = conn.CreateCommand())
+    {
+     cmd.CommandText = "select * from T_Admin whereusername=@username";
+     cmd.Parameters.Add(new SqlParameter("username", username));
+     conn.Open();
+     using (SqlDataReader reader = cmd.ExecuteReader())
+     {
+      if (reader.Read())
+      {
+       //用户存在
+       string dbpassword = reader.GetString(reader.GetOrdinal("password"));
+       DateTime logintime = reader.GetDateTime(reader.GetOrdinal("logintime"));
+       //判断当前时间是是服务器允许登录时间
+       if (logintime > DateTime.Now)
+       {
+        MessageBox.Show("一定时间内禁止登录");
+        return;
+       }
+       //如果密码正确
+       if (dbpassword == txtPwd.Text)
+       {
+        NotErrorTime();
+        MessageBox.Show("登录成功!");
+       }
+       //如果密码错误
+       else
+       {
+        int errortime = reader.GetInt32(reader.GetOrdinal("errortime"));
+        if (errortime >= 2)
+        {
+         MessageBox.Show("密码错误次数太多!");
+         IncLoginTime();
+         NotErrorTime();
+         return;
+        }
+        MessageBox.Show("密码错误!");
+        IncErrorTime();//密码错误,次数加1
+       }
+      }
+      else//用户名不存在
+      {
+       MessageBox.Show("用户名不存在!");
+       return;
+      }
+     }
+    }
+   }
+  }
+  #endregion
+  #endregion
+
+总结
+
+以上所述是小编给大家介绍的Python实现用户登录并且输入错误三次后锁定该用户，希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+
+如果你觉得本文对你有帮助，欢迎转载，烦请注明出处，谢谢！
+

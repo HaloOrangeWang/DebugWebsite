@@ -1,0 +1,17 @@
+
+定义__del__()析构函数关闭浏览器报如下错误：ImportError: sys.meta_path is None, Python is likely shutting down
+
+
+解决方法
+
+从报错可看出在python安装目录\site-packages\selenium\webdriver\common\service.py文件152行理捕捉的异常是TypeError类型错误，但是selenuim运行报错是ImportError错误，所把except中的TypeError异常类型更改为ImportError或者Exception异常类型，然后再运行用例，调用成功
+
+
+__del__方法(析构函数)和垃圾回收机制
+
+del__方法称为"析构方法"，用于实现对象被销毁时所需的操作，比如:释放对象占用的资源，例如打卡的文件资源、网络连接等;
+
+Python实现自动的垃圾回收，当对象没有被引用时(引用计数为0),由垃圾回收器调用__del__方法；
+
+定义了__del()的实例无法被Python的循环垃圾收集器收集，所以尽量不要定义__del__(),一般情况下,del()不会破坏垃圾处理器；
+

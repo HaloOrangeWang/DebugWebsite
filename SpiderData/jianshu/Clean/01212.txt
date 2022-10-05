@@ -1,0 +1,16 @@
+lldb执行script命令得到错误:
+
+/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Resources/Python3/lldb/__init__.py ModuleNotFoundError: No module named 'six'
+
+在init.py中打印sys.path获取lldb使用的python路径:
+
+/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.7/lib/python3.7
+
+为python3.7安装pip:
+
+export curpypath=/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.7/bin/python3.7
+$curpypath -m ensurepip --user
+$curpypath -m pip install six --user
+
+此时lldb执行script命令不再报错
+

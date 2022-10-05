@@ -1,0 +1,82 @@
+本机电脑 win10
+
+已安装python3.5
+
+1.    直接在命令行运行 pip install ipython[all] 安装 ipython
+
+安装完成后
+
+在命令行输入 jupyter notebook 即可看到浏览器中的ipython notebook 界面
+
+2. 然后在sunlime3的preferences < key building<中的user 编辑界面中设置了ipython shell的快捷键
+
+{
+
+"keys": ["f6"],
+
+"caption": "SublimeREPL: Python - IPython",
+
+"command": "run_existing_window_command","args":
+
+{"id": "repl_python_ipython",
+
+"file":"config/python/Main.sublime-menu"}
+
+}
+
+保存后。按F6，出现类似如下报错：IPython 4.0
+
+>C:\Anaconda\lib\site-packages\IPython\config.py:13: ShimWarning:
+
+The`IPython.config` package has been deprecated. You should import from
+
+traitlets.config instead.
+
+"You should import from traitlets.config instead.", ShimWarning)
+
+C:\Anaconda\lib\site-packages\IPython\terminal\console.py:13: ShimWarning:
+
+The `IPython.terminal.console` package has been deprecated. You should
+
+import from jupyter_console instead.
+
+"You should import from jupyter_console instead.", ShimWarning)
+
+C:\Anaconda\lib\site-packages\IPython\frontend.py:21: ShimWarning: The top-
+
+level `frontend` package has been deprecated. All its subpackages have been
+
+moved to the top `IPython` level.
+
+"All its subpackages have been moved to the top `IPython` level.",
+
+ShimWarning)...
+
+于是根据stackoverflow
+
+https://stackoverflow.com/questions/32719352/ipython-4-shell-does-not-work-with-sublime-repl上的步骤
+
+及链接
+
+https://gist.githubusercontent.com/MattDMo/6cb1dfbe8a124e1ca5af/raw/a511e86dde7b3a70bdbd63b7ac3c98c32cd74277/ipy_repl.py
+
+3.  安装jupyter  pip install -U ipython jupyter
+
+4. 更改文件C:...\Sublime Text 3\Packages\SublimeREPL\config\Python\ipy_repl.py中的代码，保存后，按F6.
+
+又出现了类似如下报错：
+
+于是按照https://www.zhihu.com/question/54388483中的步骤将
+
+5. C:...\Sublime Text 3\Packages\SublimeREPL\config\Python\Main.sublime-menu中的代码部分做了修改
+
+修改其中id为“repl_python_ipython”的配置项，将"windows"项由
+
+"windows":["python", "-u", "${packages}/SublimeREPL/config/Python/ipy_repl.py"]
+
+改为你的ipython程序路径，具体如下：
+
+"windows": ["C:.../Python/Python35/Scripts/ipython.exe"]
+
+如此保存后，再按F6，就成功在sublime中调出ipython的shell了
+

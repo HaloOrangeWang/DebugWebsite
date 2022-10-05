@@ -1,0 +1,166 @@
+tips:
+
+1、pyinstaller -D -c main.py 可以打开win的控制台，查找错误pyinstaller -D -w  start.spec
+
+2、错误基本是文件夹错误，或者代码误引用外部文件，或者路径问题
+
+3、gui界面打开多个页面是线程问题：
+
+在main.py里面增加如下代码：
+
+import multiprocessing
+
+multiprocessing.freeze_support()# 使界面唯一
+
+0-------------------------------------------------------0
+
+1，使用到的程序
+
+1，python
+
+2，pyinstaller
+
+2，安装 pyinstaller
+
+pip install pyinstaller
+
+3，安装可能出现的问题与报错
+
+1：AttributeError: module 'setuptools.build_meta' has no attribute 'legacy'，解决如下
+
+pip install --upgrade setuptools
+
+2：error: invalid command 'bdist_wheel'，解决如下
+
+pip install wheel
+
+4，打包软件，首先进入到程序的根路径，假设程序的主入口文件为 main.py
+
+1，打包为单 exe 程序
+
+pyinstaller -w -F main.py
+
+2，打包为一个文件夹(推荐)
+
+pyinstaller -w -D main.py
+
+4，如果想设置程序图标，可以添加 -i 参数，假设图标放在 ./icon.png
+
+pyinstaller -w -D -i ./icon.png main.py
+
+5，打包以及运行的时候 可能出现的错误
+
+1，failed to execute pyi_rth_pkgres，这个有可能是 pyinstaller 安装错误导致的，可以尝试卸载从 git 的地址安装
+
+2，No module named 'win32con' 这个是缺乏 pypiwin32 导致的
+
+pip install pypiwin32
+
+3，在 Python 中使用了 exit 退出程序时报： name 'exit' is not defined
+
+至于为什么出现这种情况，暂时未知，解决办法就是导入 sys，代码如下
+
+import sys
+
+sys.exit()
+
+如果其它系统函数出现该错误，应该都可以参考该方法解决
+
+4，关于静态资源文件
+
+正常情况下，打包时忽略静态资源文件的，打包后需要将静态资源文件拷贝到相应的路径
+
+6，程序调试
+
+1，常见错误：当程序运行时报 failed to execute script main 错，一般是程序执行出错导致的，这时我们就需要通过调试来确定是什么问题
+
+2，我们修改入口文件，通过 try 和 input 捕捉异常和阻塞程序，防止程序一闪而逝，如下面
+
+try:
+
+from source.window import Window
+
+window = Window()
+
+window.show()
+
+except Exception as ex:
+
+print(ex)
+
+input("请检查异常")
+
+3，打一个带控制台的可执行程序，这样如果有报错你就可以看到错误信息去一一解决了
+
+pyinstaller -F -c main.py
+
+7，附参数如下
+
+参数
+
+描述
+
+-F, –onefile
+
+打包一个单个文件，如果你的代码都写在一个.py文件的话，可以用这个，如果是多个.py文件就别用
+
+-D, –onedir
+
+打包多个文件，在dist中生成很多依赖文件，适合以框架形式编写工具代码，我个人比较推荐这样，代码易于维护
+
+-K, –tk
+
+在部署时包含 TCL/TK
+
+-a, –ascii
+
+不包含编码.在支持Unicode的python版本上默认包含所有的编码
+
+-d, –debug
+
+产生debug版本的可执行文件
+
+-w,–windowed,–noconsole
+
+使用Windows子系统执行.当程序启动的时候不会打开命令行(只对Windows有效)
+
+-c,–nowindowed,–console
+
+使用控制台子系统执行(默认)(只对Windows有效)
+
+-s,–strip
+
+可执行文件和共享库将run through strip.注意Cygwin的strip往往使普通的win32 Dll无法使用
+
+-X, –upx
+
+如果有UPX安装(执行Configure.py时检测),会压缩执行文件(Windows系统中的DLL也会)(参见note)
+
+-o DIR, –out=DIR
+
+指定spec文件的生成目录,如果没有指定,而且当前目录是PyInstaller的根目录,会自动创建一个用于输出(spec和生成的可执行文件)的目录.如果没有指定,而当前目录不是PyInstaller的根目录,则会输出到当前的目录下
+
+-p DIR, –path=DIR
+
+设置导入路径(和使用PYTHONPATH效果相似).可以用路径分割符(Windows使用分号,Linux使用冒号)分割,指定多个目录.也可以使用多个-p参数来设置多个导入路径，让pyinstaller自己去找程序需要的资源
+
+–icon=
+
+将file.ico添加为可执行文件的资源(只对Windows系统有效)，改变程序的图标 pyinstaller -i ico路径 xxxxx.py
+
+–icon=
+
+将file.exe的第n个图标添加为可执行文件的资源(只对Windows系统有效)
+
+-v FILE, –version=FILE
+
+将verfile作为可执行文件的版本资源(只对Windows系统有效)
+
+-n NAME, –name=NAME
+
+可选的项目(产生的spec的)名字.如果省略,第一个脚本的主文件名将作为spec的名字
+
+————————————————
+版权声明：本文为CSDN博主「weixin_39714528」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_39714528/article/details/111449518
+

@@ -1,0 +1,73 @@
+在跑别人写好的算法模型时，经常会遇到报错"ModuleNotFoundError"这个错误，这里介绍一个通用的万能方法处理这个报错。
+
+首先给定下面这个项目结构:
+
+testPython
+├── model1
+│   ├── m1.py
+│   └── submodel1
+│       └── subm1.py
+├── model2
+│   ├── m2.py
+│   └── submodel2
+│       └── subm2.py
+├── model3
+│   └── model3_test.py
+└── out_test.py
+
+其中out_test.py的内容如下:
+
+# out_test.py
+import sys
+
+#print(sys.path)
+
+from model1.submodel1.subm1 import *
+from model2.submodel2.subm2 import *
+
+subm1_func()
+subm2_func()
+
+model3/model3_test.py中的内容如下:
+
+# model3/model3_test.py
+import sys
+
+# sys.path.append("/home/wushukun/programHome/testPython")
+
+#print(sys.path)
+
+from model1.submodel1.subm1 import *
+from model2.submodel2.subm2 import *
+
+subm1_func()
+subm2_func()
+
+这里如果我们在项目目录下执行python out_test.py和python model3/model3_test.py运行两个文件，可以发现
+
+python out_test.py运行成功，而python model3/model3_test.py则报错如下（这是我们经常碰到的情况）
+
+这里出错的原因是，当我们运行python model3/model3_test.py时，环境变量中没有包含项目文件夹根目录，从而导致我们无法使用相对于项目根目录的相对路径来import相关库和函数.
+
+这里我们可以打印一下python model3/model3_test.py报错时所含有的环境变量(使用print(sys.path)):
+
+可以看到系统并未包含项目文件根目录testPython
+
+这里我们使用两种方法将项目文件根目录加载进来:
+
+
+方法一：sys.append()
+
+使用sys.append()将项目文件根目录直接加载进来:
+
+sys.path.append("/home/XXX/programHome/testPython")
+
+
+方法二: export PYTHONPATH
+
+python会将PYTHONPATH变量中的路径加载到程序的环境变量中，所以我们可以再运行python指令python model3/model3_test.py前设置PYTHONPATH变量的值
+
+export PYTHONPATH=/home/XXX/programHome/testPython
+
+使用上面两种方法之一后，运行python model3/model3_test.py不再报错
+

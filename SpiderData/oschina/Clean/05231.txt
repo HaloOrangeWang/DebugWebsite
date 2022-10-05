@@ -1,0 +1,28 @@
+问题描述：
+
+笔者意图删除nginx-file的镜像文件，但通过命令删除镜像时出现报错信息，提示存在多个引用（即一个IMAGE可被多个REPOSITORY引用，故删除会出现失败），如下：
+
+[root@kazihuo ~]# docker images
+
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+kazihuo/nginx       v1                60c22883bb42        6 minutes ago       372 MB
+nginx-file          v1                60c22883bb42        6 minutes ago       372 MB
+
+[root@kazihuo ~]# docker rmi 60c22883bb42
+
+Error response from daemon: conflict: unable to delete 60c22883bb42 (must be forced) - image is referenced in multiple repositories
+
+解决方案：
+
+当指定IMAGE ID删除报错时，可直接通过REPOSITORY:TAG的方式删除；
+
+[root@kazihuo ~]# docker rmi nginx-file:v1
+
+Untagged: nginx-file:v1
+
+[root@kazihuo ~]# docker images
+
+REPOSITORY       TAG                 IMAGE ID            CREATED             SIZE
+
+kazihuo/nginx    v1                  60c22883bb42       11 minutes ago      372 MB
+

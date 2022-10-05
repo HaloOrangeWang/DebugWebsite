@@ -1,0 +1,101 @@
+
+1.无法模拟 点击 事件
+
+机型：小米max
+
+self.driver.find_element_by_Id("id").click()     无效
+
+
+解决办法：在开发者选项中，开启     USB调试（安全设置）   选项  或者没有开启允许点击设置
+
+
+2.appium无法向Android输入中文字符
+
+在desired_caps连接手机代码中加入一下代码：
+
+desired_caps['unicodeKeyboard']=True
+
+desired_caps['resetKeyboard']=True
+
+完整代码如下：
+
+def  get_driver(self):
+
+desired_caps={}
+
+desired_caps['platformName'] ='android'
+
+desired_caps['platformVersion'] ='4.4.2'
+
+desired_caps['deviceName'] ='Android Emulator'
+
+desired_caps['appPackage'] =appPackage   #(你的app包名)
+
+desired_caps['appActivity'] =appActivity          #（你的appActivity名）
+
+desired_caps['unicodeKeyboard']=True
+
+desired_caps['resetKeyboard']=True
+
+self.driver=webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
+
+return   self.driver
+
+
+但是在安卓7.0上会报错：
+
+
+Attempt to re-install io.appium.android.ime without first uninstalling
+
+
+1. 解决办法：
+
+取消重新安装IME.APK
+
+找到该目录下js文件： Appium\node_modules\appium\lib\devices\android\android-common.js
+
+androidCommon.pushUnicodeIME=function(cb){
+
+cb()                 （添加这个方法）
+
+
+/*  logger.debug("Pushing unicode ime to device...");
+
+
+var imePath = path.resolve(__dirname, "..", "..", "..", "build",      "unicode_ime_apk", "UnicodeIME-debug.apk");
+
+
+fs.stat(imePath, function (err) {
+
+
+if (err) {
+
+
+cb(new Error("Could not find Unicode IME apk; please run " +                   "'reset.sh --android' to build it."));
+
+
+} else {      this.adb.install(imePath, false, cb);
+
+
+}
+
+
+}.bind(this));
+
+
+*/
+
+
+（注释以上代码）
+
+};
+
+
+重启appium
+
+
+3.python报错：Could not find a connected Android device
+
+
+连接手机时，可能没有选择文件传输方式，而是充电模式，选择到传输文件模式即可。
+

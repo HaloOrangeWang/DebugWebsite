@@ -1,0 +1,31 @@
+参照我之前的一篇博文Kafka学习之（二）Centos下安装Kafka安装了kafka并启动，状况并不像我之前最初的预期，报错了，并且我在当前Linux环境下安装的Java版本、Kafka版本都是和之前博文一样的，第一感觉难道是因为Linux(Centos)的版本不一致？？？
+
+抛开猜测，直接百度 ERROR Processor got uncaught exception，网上各种各样的说法，有的是需要多次重启，有的还说是java版本号问题....发现这些并不是...
+
+正常的流程是先启动zookeeper，然后再启动kafka，我在公司开发机多次反复操作，出现了很多报错，比如出现了连接超时 Unable to connect to zookeeper server within timeout: 6000（这个原因是因为我的zookeeper不知不觉自己关掉了），百度来百度去..浪费了很多时间，不过还是有收获的。
+
+现在解决这个问题，其实只需要给/etc/hosts添加一行配置即可。
+
+关键就是这个UnkownHostException:node122
+
+先把所有的服务干掉
+
+ps -ef |grep kafka |grep -v grep |awk '{print $2}'  | xargs kill -9
+
+然后启动zookeeper
+
+./bin/zookeeper-server-start.sh ./config/zookeeper.properties
+
+ps -ef |grep kafka        ## 查看kafka的进程
+netstat -ntlp |grep 9092  ##9092kafka的监听端口
+
+然后修改你的/etc/hosts文件，增加一行
+
+172.16.170.122 node122   //node122就是关键地方，这里可别写错，前面就是你的ip
+
+然后正常启动kafka
+
+/usr/local/kafka/bin/kafka-server-start.sh ./config/server.properties &
+
+OK，终于成功了
+

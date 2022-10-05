@@ -1,0 +1,85 @@
+
+Python读取中文Excel问题解决
+
+为什么读取中文Excel会出错
+
+两个难题
+
+试验结果
+
+
+为什么读取中文Excel会出错
+
+在计算机中，一个字节(byte)有8个比特，即可以表达2^8次方即256个字符，一个英文字母或符号占一个字节，即ASCII码。ASCII码有意只编了128个。
+
+但是这个表达对于其他语言是不够用的，特别是东亚文字。于是上世纪八九十年代出现了很多并行的编码表，将2个字节对应为日文、韩文、简体或繁体汉字。Windows官方使用cp936的编码表，相当于gb18030. 所以在Windows系统里，不论是文本内容，还是文件名，都是以它来解码的。
+
+这样就造成了两种错误，一是如果以ASCII码去读，会发生错误（因为还有128种字节不被ASCII定义），这就逼的程序去指定编码表。但是依然会发生编码表错误，即错误解码，例如原来是日文的编码错解成gb18030就会出错，形成乱码。
+
+后来又出现了UTF-8，用1-3个字节将所有的语言的字符都包括进来，1-3个字节是为了兼容ASCII，实际可以只用2个字节，而2个字节的是unicode，规定内存中使用。
+
+这样，尽管在内存中字节是通用的unicode，但是永久存储却有多种编码，即便都是中文，也有cp936, gb2312, gbk, gb18030和utf-8几种. 我忘了cp936是对应哪种gb了，但是一个割裂的后果是微软体系只要安装时指定简体中文，都用cp936，而后来流行的网页，Linux及新兴语言，特别是Python都默认utf-8.
+
+
+两个难题
+
+如上，一个是在Windows系统中运行，如果碰上中文文件名，必须用cp936或gb18030去解码它。如果你写了一个中文的文件名，而python根据utf-8规则去把它翻译成字节，就会在底层的文件名上不匹配，因为该中文在cp936的规则下翻译成另外的字节。报错是找不到该文件。
+
+我参照了很多网上内容，有以下三种解决方法，前两种类似，是用unicode：
+
+u'中文.xlsx'
+r'中文.xlsx'
+'中文.xlsx'.encode('cp936')
+
+而最后一种直接指定解码出字节。最后一种经常是失效的，而前两种在所有的库中都可以调用，应该是被python底层支持了。
+
+第二个难题是读取文件内容时正确指定编码。如果直接用Excel编辑，或者c#之类的插件生成的一般里面的文字是cp936的，而python的各excel库偏偏喜欢默认编码为utf-8
+
+一个非常简单粗暴的办法是在加载了相应库之后，把Excel文件对象的encoding属性强行从utf-8更改：
+ xlrd改文件内容编码
+
+xlrd.Book.encoding = "gbk"
+
+这样即使库没有提供改编码接口，也实际改了。当然xlrd还提供了接口。
+ 如果cp936的内容强行用utf-8去解，会发生报错
+
+UnicodeDecodeError: ‘utf-8’ codec can’t decode byte 0xce in position 64: invalid continuation byte
+
+
+试验结果
+
+xlrd和openpyxl可以同时解决以上两个问题, 下面是xlrd的一段代码。
+
+import xlrd, xlwt
+xlrd.Book.encoding = "cp936" 
+exl = xlrd.open_workbook(u'上海代码.xlsx')
+print("首行为\n ", exl.sheets()[0].row_values(0) )
+
+openpyxl也可以，但是它的语法过于复杂：
+
+# a trial to see if openpyxl works
+import openpyxl
+openpyxl.Workbook.encoding="cp936"
+book = openpyxl.load_workbook(u'上海代码.xlsx')
+print(book.sheetnames)
+sheet = book.active
+print(sheet['A1'].value)
+
+然后直接在cmd窗口进到相应目录运行它（注意用vscode可能被vscode自己默认的utf-8或工作路径污染出错），两个难题同时解决了
+
+Microsoft Windows [版本 6.1.7601]
+版权所有 (c) 2009 Microsoft Corporation。保留所有权利。
+
+C:\Users\Y>d:
+
+D:\>python openpyxl_.py
+C:\Python37-32\lib\site-packages\openpyxl\styles\stylesheet.py:214: UserWarning:
+ Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+['Sheet0']
+证券代码
+
+D:\>
+
+下一篇会讲写excel。我看到通用的视频是讲xlwt或openpyxl，其实这两个都不实用。这些培训真是误人子弟。具体如何，下期再见。
+

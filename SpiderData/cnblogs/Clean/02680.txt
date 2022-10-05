@@ -1,0 +1,24 @@
+　　先说一下情况，一个python写的采集程序，做成windows服务在windows上运行。
+
+　　这个问题出现的挺奇特，本来一套采集程序，一个采集文件的时候没问题，两个采集文件的时候也没问题，当三个采集文件的时候，就报错了。
+
+错误：IOError: (9, 'Bad file descriptor')
+
+我还以为是代码有问题了，最终调试了下，发现是print的问题，
+
+　　
+
+　　把print去掉后，重新运行就没问题了。那么问题来了，为啥加上print有问题了？
+
+　　　当我们在 Python 中打印对象调用 print obj 时候，事实上是调用了 sys.stdout.write(obj+'\n')
+
+print 将你需要的内容打印到了控制台，然后追加了一个换行符
+
+print 会调用 sys.stdout 的 write 方法
+
+
+　　 python的print与sys.stdout
+
+
+sys.stdout.flush() Python的作用
+

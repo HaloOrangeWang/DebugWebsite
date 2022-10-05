@@ -1,0 +1,103 @@
+前言：
+ ✌ 作者简介：渴望力量的哈士奇 ✌，大家可以叫我 🐶哈士奇🐶 ，一位致力于 TFS 赋能的博主 ✌
+ 🏆 CSDN博客专家认证、新星计划第三季全栈赛道 top_1 、华为云享专家、阿里云专家博主 🏆 
+ 📫 如果文章知识点有错误的地方，请指正！和大家一起学习，一起进步👀
+ 💬 人生格言：优于别人,并不高贵,真正的高贵应该是优于过去的自己。💬
+ 🔥 如果感觉博主的文章还不错的话，还请👍关注、点赞、收藏三连支持👍一下博主哦
+
+
+文章目录
+
+🐳 背景🐳 原因分析🐳 解决方案
+
+🐳 背景
+
+🐳 原因分析
+
+🐳 解决方案
+
+
+🐳 背景
+
+最近写博客的时候，尝试在自己的本地 Mac 上搭建一个自动化测试的集成环境，在所有的前置条件都准备好的情况下，进行构建的时候出现了下面这个错误 。
+
+ModuleNotFoundError: No module named 'selenium'
+
+构建任务命令如下：
+
+报错内容如下：
+
+
+🐳 原因分析
+
+造成这个错误的原因，其实已经给出了，就是缺少相关依赖，没有找到 selenium 这个模块。（讲道理，这个破问题，真的是折腾了我一晚上，我也不想在这上面浪费过多的语言了，我直接说一下我的解决方案吧。）
+
+
+🐳 解决方案
+
+第一步：将python的路径设为环境变量，其实我们在安装python的时候已经会自动配置环境变量了。一般就是在 /usr/local/bin 路径下可以查到对应的软连接。
+
+这一步可以忽略，有点题外话了。
+
+第二步：查看当前 python 的安装路径。我这里安装的是 python3.8 ，通过 where python3.8 、which python3.8 ，可以查看到 python3.8的安装路径 /Library/Frameworks/Python.framework/Versions/3.8/bin/python3.8 。（这是安装包安装的python的默认安装路径，Mac自带的 python2.7 不在这个路径下）
+
+接下来，就需要将这个 python3.8 的路径添加至环境变量中去。
+
+Mac系统的环境变量，加载顺序为：
+
+1：/etc/profile
+
+2： /etc/paths
+
+3：~/.bash_profile
+
+4： ~/.bash_login
+
+5： ~/.profile
+
+6： ~/.bashrc
+
+其中 1 和 2 是系统级别环境变量的，系统启动就会加载，其余是用户级别的（即使用用户的user）。 3、4、5 按照从前往后的顺序读取，如果 ~/.bash_profile 的文件存在，则后面的几个文件就会被忽略不读了，以此类推。~/.bashrc 没有上述规则，它是bash shell打开的时候载入的。这里建议在 ~/.bash_profile 中添加环境变量，以下也是以在c中添加环境变量来演示的。
+
+第三步：修改 ~/.bash_profile 文件，将环境变量添加进去。
+终端输入： vim ~/.bash_profile ，进入编辑模式后输入以下内容
+
+# python3.8.10 环境变量
+export PATH=“/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}”
+ alias python=“/Library/Frameworks/Python.framework/Versions/3.8/bin/python3.8”
+# pip3 环境变量
+export PATH=“/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}”
+ alias pip=“/Library/Frameworks/Python.framework/Versions/3.8/bin/pip3”
+
+ps：需要注意的是，这里的路径是我mac上安装 python 的路径，具体视真实环境的路径而定，不要照抄哈。(这里我顺带这把 "pip" 也设置好了)；如此设置之后，在终端输入 python 其实使用的就是 python3.8.10 ，输入 pip 其实使用的就是 pip3。(具体如何使用，看心情就好。)
+
+以上编辑完，保存退出之后，还需要执行 source ~/.bash_profile 重启一下环境变量。（最好终端窗口也重启一下。）
+
+第三步：修改 ~/.bash_profile 文件，将环境变量添加进去。
+
+终端输入： vim ~/.bash_profile ，进入编辑模式后输入以下内容
+
+# python3.8.10 环境变量
+
+export PATH=“/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}”
+ alias python=“/Library/Frameworks/Python.framework/Versions/3.8/bin/python3.8”
+
+# pip3 环境变量
+
+export PATH=“/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}”
+ alias pip=“/Library/Frameworks/Python.framework/Versions/3.8/bin/pip3”
+
+ps：需要注意的是，这里的路径是我mac上安装 python 的路径，具体视真实环境的路径而定，不要照抄哈。(这里我顺带这把 "pip" 也设置好了)；如此设置之后，在终端输入 python 其实使用的就是 python3.8.10 ，输入 pip 其实使用的就是 pip3。(具体如何使用，看心情就好。)
+
+以上编辑完，保存退出之后，还需要执行 source ~/.bash_profile 重启一下环境变量。（最好终端窗口也重启一下。）
+
+在终端界面输入 python --version 与 pip --version 验证版本是否与指定的环境变量的路径一至。
+
+然后通过 pip 安装 selenium ，pip install selenium ，然后执行 pip list 查看 selenium 是否安装成功 。
+
+第四步：重新运行 构建任务，报错呢依旧存在。但是我们可以通过终端，在终端以命令行的形式正常的执行任务。原因是：Jenkins需要配置环境变量，否则只会在当前的任务目录寻找依赖。于是修改jenkins配置如下：（系统管理 —> 系统配置 —> 全局属性 —> 环境变量）
+
+第四步：重新运行 构建任务，报错呢依旧存在。但是我们可以通过终端，在终端以命令行的形式正常的执行任务。原因是：Jenkins需要配置环境变量，否则只会在当前的任务目录寻找依赖。于是修改jenkins配置如下：（系统管理 —> 系统配置 —> 全局属性 —> 环境变量）
+
+重新构建，输出正常。(其实仍然是不正常，不过这个不正常的原因是我的脚本有问题造成的，和环境没关系。)
+

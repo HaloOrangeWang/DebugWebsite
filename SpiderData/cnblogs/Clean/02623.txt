@@ -1,0 +1,42 @@
+
+windows在执行如下命令，安装scrapy的过程中会报错：
+
+报错分析：
+
+windows环境下，会出现如下错误：
+
+1、提示的错误是编译环境的问题，字面意思看需要安装Microsoft Visual C++ 14.0 ，但是这个东西安装起来很麻烦，可以自己看一下电脑，即便已经安装Microsoft Visual C++ 14.0，也可能会报这个错误。所以，我们一般就考虑python编译文件.whl文件的方式安装。
+
+2、这个错误提示我们缺少一个win32api的模块，我们下面安装这个模块即可（这个报错并不一定出现）
+
+
+1、确认自己安装的python版本
+
+
+命令行输入python
+
+例如：可以看出下面的python版本为python3.6 64位
+
+
+2、排除错误，安装scrapy
+
+经过上面的分析，我们知道需要先安装Twisted和pywin32 这两个模块不能直接使用pip安装，因为windows会安装报错
+
+1、下载
+
+下载Twisted （按上面查到的python版本下载：http://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml）
+
+下载pywin32（按上面查到的python版本下载：http://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml）
+
+建议上面下载whl文件的网站，长期收藏备用。
+
+文件的选择  Twisted-18.4.0-cp<Python版本>-cp36m-win<Python是32位还是64位>.whl
+
+2、安装  pip install [文件所在路径]
+
+例如：如在当前路径打开，直接跟文件名即可
+
+3、安装scrapy
+
+大功告成，windows就可以顺利安装scrapy了。
+

@@ -1,0 +1,109 @@
+在/etc/profile里面加上
+
+export CRATE_HEAP_SIZE=4g
+
+crate.yml文件配置：
+
+# 本配置文件适用crate 2.0.3版本，低版本配置略有不同
+# 节点名称
+node.name: node1
+# 集群名称，使用同一个名称表示在同一个集群中
+cluster.name: einvoice
+gateway.expected_nodes: 3
+gateway.recover_after_nodes: 2
+gateway.recover_after_time: 5m
+# 高可用配置，集群最小存活节点数
+discovery.zen.minimum_master_nodes: 2
+# 集群互ping地址
+discovery.zen.ping.unicast.hosts:
+  - node1:4300
+  - node2:4300
+  - node3:4300
+bootstrap.memory_lock : true
+path:
+  conf: /home/hadmin/crate/config
+  logs: /home/hadmin/data/crate/logs
+  data: /home/hadmin/data/crate
+
+blobs.path: /home/hadmin/data/crate/crate_blob_data/disk
+
+# 这个是crate 快照备份的地址，暂时没有配置
+# Paths where Repositories of type fs may be created:
+#path.repo: /path/to/shared/fs,/other/shared/fs
+
+# 网络绑定地址，默认绑定localhost，最好是绑定主机名
+network.host: node1
+
+# 开启crate jdbc支持及访问端口
+psql.enabled: true
+psql.port: 5432
+
+然后启动
+
+./crate -d
+
+日志报错
+
+[2017-07-06T14:23:30,424][ERROR][o.e.b.BootstrapProxy     ] [node1] node validation exception
+bootstrap checks failed
+max file descriptors [4096] for crate process is too low, increase to at least [65536]
+max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+
+启动出错，文件描述符太低
+
+修改这个参数需要使用root登陆，查看当前该参数设置：
+
+[root@dscn1 logs]#  ulimit -Hn
+4096
+[root@dscn1 logs]#
+
+执行修改
+
+vim /etc/security/limits.conf
+
+添加对hadmin用户的设置，因为我要使用hadmin用户启动crate
+
+hadmin soft nofile 65536
+hadmin hard nofile 65536
+# 或者可以直接设置为全部
+*   soft nofile 65536
+*   hard nofile 65536
+
+有人说，root的nofile要大于等于其它用户的nofile，这个我不是很肯定，那如果这样的话，修改任一用户的nofile后，都需要将root的nofile至少要大于等于这个值
+
+保存，退出用户重新登录，使配置生效，切换到hadmin用户查看
+
+[hadmin@dscn1 logs]$ ulimit -Hn
+65536
+[hadmin@dscn1 logs]$
+
+已经修改完毕
+
+下一个异常
+
+max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+
+修改文件
+
+vi /etc/sysctl.conf
+
+添加下列配置，我理解这个配置相当于设置jvm Xms=256m
+
+vm.max_map_count=262144
+
+并执行命令使之生效
+
+sysctl -p
+
+可能还会有这个异常
+
+[2017-07-06T16:23:40,745][WARN ][o.e.b.JNANatives         ] Unable to lock JVM Memory: error=12, reason=无法分配内存
+[2017-07-06T16:23:40,748][WARN ][o.e.b.JNANatives         ] This can result in part of the JVM being swapped out.
+[2017-07-06T16:23:40,748][WARN ][o.e.b.JNANatives         ] Increase RLIMIT_MEMLOCK, soft limit: 65536, hard limit: 65536
+[2017-07-06T16:23:40,748][WARN ][o.e.b.JNANatives         ] These can be adjusted by modifying /etc/security/limits.conf, for example:
+        # allow user 'hadmin' mlockall
+        hadmin soft memlock unlimited
+        hadmin hard memlock unlimited
+
+在/etc/security/limits.conf添加以上内容即可
+

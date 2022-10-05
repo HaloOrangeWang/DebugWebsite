@@ -1,0 +1,73 @@
+
+1、报错现象：
+
+执行某个python脚本的时候，出现下图的报错
+
+
+2、解决方法
+
+# wget https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
+--2018-03-24 23:04:03--  https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
+正在解析主机 pypi.python.org (pypi.python.org)... 151.101.228.223, 2a04:4e42:36::223
+正在连接 pypi.python.org (pypi.python.org)|151.101.228.223|:443... 已连接。
+已发出 HTTP 请求，正在等待回应... 200 OK
+长度：24784 (24K) [application/octet-stream]
+正在保存至: “prettytable-0.7.2.tar.gz”
+
+100%[===============================================================>] 24,784      --.-K/s 用时 0.1s  
+2018-03-24 23:04:05 (208 KB/s) - 已保存 “prettytable-0.7.2.tar.gz” [24784/24784])
+# tar -xf prettytable-0.7.2.tar.gz 
+# cd prettytable-0.7.2
+# python setup.py build
+running build
+running build_py
+creating build
+creating build/lib
+copying prettytable.py -> build/lib
+# python setup.py install
+running install
+running bdist_egg
+running egg_info
+writing prettytable.egg-info/PKG-INFO
+writing top-level names to prettytable.egg-info/top_level.txt
+writing dependency_links to prettytable.egg-info/dependency_links.txt
+reading manifest file 'prettytable.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'prettytable.egg-info/SOURCES.txt'
+installing library code to build/bdist.linux-x86_64/egg
+running install_lib
+running build_py
+creating build/bdist.linux-x86_64
+creating build/bdist.linux-x86_64/egg
+copying build/lib/prettytable.py -> build/bdist.linux-x86_64/egg
+byte-compiling build/bdist.linux-x86_64/egg/prettytable.py to prettytable.pyc
+creating build/bdist.linux-x86_64/egg/EGG-INFO
+copying prettytable.egg-info/PKG-INFO -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying prettytable.egg-info/SOURCES.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying prettytable.egg-info/dependency_links.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying prettytable.egg-info/top_level.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+zip_safe flag not set; analyzing archive contents...
+creating dist
+creating 'dist/prettytable-0.7.2-py2.7.egg' and adding 'build/bdist.linux-x86_64/egg' to it
+removing 'build/bdist.linux-x86_64/egg' (and everything under it)
+Processing prettytable-0.7.2-py2.7.egg
+Copying prettytable-0.7.2-py2.7.egg to /usr/lib/python2.7/site-packages
+Adding prettytable 0.7.2 to easy-install.pth file
+
+Installed /usr/lib/python2.7/site-packages/prettytable-0.7.2-py2.7.egg
+Processing dependencies for prettytable==0.7.2
+Finished processing dependencies for prettytable==0.7.2
+
+
+3、验证
+
+# python getosdcpu.py t
+thread
++-------------+----+----+
+|   OSD\CPU   | 0  | 1  |
++-------------+----+----+
+|   Core ID   | 0  | 0  |
+| Physical ID | 0  | 1  |
+| ----------- | -- | -- |
++-------------+----+----+
+

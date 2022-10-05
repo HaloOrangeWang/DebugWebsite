@@ -1,0 +1,68 @@
+1、应用程序报错如下：Redis is configured to save RDB snapshots, but it is currently not able to persist on disk.
+
+1）有些建议修改redis的配置文件，将stop-writes-on-bgsave-error 设置为no ，但是这样只能跳过错误，不能解决根本问题。
+
+2）能确定是因为redis造成的错误，修改redis的配置文件redis.conf中的logfile参数，将日志文件保存在本机。
+
+重新启动redis后，查看日志，会看到一个警告信息：
+
+“WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.”
+
+这个警告已经给出了解决方案：
+
+在/etc/sysctl.conf文件中加入vm.overcommit_memory = 1，然后保存退出，重启或执行“sysctl vm.overcommit_memory=1”
+
+2、redis启动日志
+
+“WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled”
+
+你使用的是透明大页，可能导致redis延迟和内存使用问题。警告中也给出了解决方案：
+
+用root身份执行echo never > /sys/kernel/mm/transparent_hugepage/enabled，并且在/etc/rc.local中也做设置，具体如下：
+
+if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+
+echo never > /sys/kernel/mm/transparent_hugepage/enabled
+
+fi
+
+3、redis启动日志
+
+# WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+
+/proc/sys/net/core/somaxconn里面的参数设置128太小，将设置为大点的数值1024或者2048
+
+echo 1024 > /proc/sys/net/core/somaxconn
+
+vim /etc/sysctl.conf
+
+net.core.somaxconn = 1024
+
+4、redis 连接问题
+
+ERR max number of clients reached
+
+意思是太多的客户端连接数，造成这个错的原因有两个：
+
+1）客户端连接多了。
+
+netstat -auntlp | grep 6379，看看连接数有多少，如果确实不够，可以在redis配置中设置最大连接数 maxclients XXX
+
+2) 系统文件最大描述符太小。
+
+　　ulimit -a 查看系统最大文件数设置
+
+　　找到redis进程号，查看redis 能打开的最大文件数：ps -ef | grep redis --->进程号:3672
+
+　　查看redis能打开的最大文件数：cat /proc/3672/limits ，这个参数默认是1000多，小了可以自己修改
+
+　　vim /etc/security/limits.conf
+
+　　在limits.conf加上
+　　*        soft    noproc  10240
+　　*        hard    noproc  10240
+　　*        soft    nofile  10240
+　　*        hard    nofile  10240
+
+　　也可以用ulimit 命令直接设置，如：ulimit -n 51200，之后用ulimit -a 查看是否生效。
+

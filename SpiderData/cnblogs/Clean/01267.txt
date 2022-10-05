@@ -1,0 +1,125 @@
+
+2017年09月05日 21:16:39
+阅读数：2274
+
+2017年09月05日 21:16:39
+阅读数：2274
+
+阅读数：2274
+
+转载来自:http://www.jianshu.com/p/a538125371d4
+ 
+Centos7 安装python3详细教程，解决升级后不兼容问题
+
+作者 单单丹丹
+ 
+2017.06.04 21:52* 字数 940
+
+
+转载来自:http://www.jianshu.com/p/a538125371d4
+
+
+
+Centos7 安装python3详细教程，解决升级后不兼容问题
+
+作者 单单丹丹
+ 
+2017.06.04 21:52* 字数 940
+
+作者 单单丹丹
+ 
+2017.06.04 21:52* 字数 940
+
+2017.06.04 21:52* 字数 940
+
+
+一、确实当前python版本
+
+以上输出Python 2.7.5表示当前版本，因为yum使用的是Python2.7因此不能删除，所以只能重新安装一个替换版本。
+输入以下命令查看目前系统使用的Python以及安装目录，接下来将要对该目录下的Python进行修改
+
+
+二、下载安装
+
+官网下载需要的Python版本，通过 WinSCP(安装使用教程)将下载的Python文件上传到服务器目录
+
+解压Python安装包
+tar -zxvf Python-3.6.1.tgz
+
+解压后进到Python根目录查看README文件，里面介绍了安装方法，这里跳过test步骤
+
+Paste_Image.png
+
+根据文档介绍执行第一步./configure –prefix=/usr/local/python3，后面添加参数为Python安装目录，默认安装目录为/usr/local/，如果出现以下错误提示则表示系统没有安装gcc
+configure: error: no acceptable C compiler found in $PATH
+安装gcc重新执行./configure –prefix=/usr/local/python3即可
+
+./configure –prefix=/usr/local/python3运行成功后继续下面的命令，跳过test
+make #编译
+make install #安装
+安装成功后在/usr/local/python3/bin目录下执行python3.6，出现如下输出证明Python已经安装成功可以用了
+
+
+三、替换旧Python
+
+第一步已经确认当前使用Python为2.7.5并且在/usr/bin目录下，接下来需要做的就是替换/usr/bin/python，并更改yum使用的解释器，不然yum将无法使用
+1 重命名当前Python，结果如下
+
+Paste_Image.png
+
+2 新建Python3.6的软连接到/usr/bin/python，建好后查看已经存在，并指向正确
+
+3 直接输入Python查看版本，此时已是3.6.1
+
+Paste_Image.png
+
+
+四、解决升级Python后yum，Firewall等不能用的问题
+
+1、 升级Python后运行yum会报错
+
+Paste_Image.png
+
+vi /user/bin/yum 编辑yum的执行文件，更改首行的/usr/bin/python 为上面重命名的名字或/usr/bin/目录下指向Python2.7的名字，之后再运行yum就正常了
+
+Paste_Image.png
+
+Paste_Image.png
+
+2、 运行yum安装其他软件可能出现以下错误，这也是因为Python版本问题，
+vi /usr/libexec/urlgrabber-ext-down 修改第一行的Python为重命名的名字（指向python2.7的）
+
+3、防火墙无法启动
+
+Paste_Image.png
+
+出现以上情况根据提示修改/usr/bin/firewall-cmd文件，顺便将同目录下的firewall-offline-cmd文件进行修改，修改后执行启动防火墙命令，会发现依然无法使用
+
+根据提示执行systemctl status firewalld.service命令查看状态，根据显示中红色部分可以看到，在执行/usr/sbin/firewalld文件时出现问题，因为查看改文件
+
+Paste_Image.png
+
+可以看到这个文件也是用Python编译的，所以也要修改
+vi /usr/sbin/firewalld
+
+修改完成后再次执行启动命令就可以正常启动了，神清气爽啊，哈哈哈
+
+除此之外还有一些其他文件使用的Python，可以使用grep命令查看哪些文件使用了Python解释器，根据具体情况修改。例如查看/usr/bin目录下的文件
+
+
+五、make install过程中出现报错解决
+
+出现以下问题：
+FAIL: test_with_pip (test.test_venv.EnsurePipTest)
+zipimport.ZipImportError: can't decompress data; zlib not available
+
+Paste_Image.png
+
+Paste_Image.png
+
+解决办法：出现这种错误一般因为Python的安装环境没有安装好，安装以下软件
+yum install openssl-devel
+如果还是有报错则安装Development tools
+yum groupinstall Development tools
+安装成功后make clean以下，再次重复 上面操作
+

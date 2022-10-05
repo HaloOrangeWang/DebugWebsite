@@ -1,0 +1,77 @@
+问题一：TypeError: 'Response' object is not subscriptable
+
+解决办法：
+
+self.req_result = RequestMethod().get(self.url, self.param, self.headers)
+
+接口请求中，返回数据需要以json格式返回，更改代码为：
+
+self.req_result = RequestMethod().get(self.url, self.param, self.headers).json()
+
+问题二：json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+解决办法：
+
+这种报错一般是接口请求地址不对，或者测试接口环境没有启动，检查环境和接口地址后更改再试试
+
+问题三：requests.exceptions.ConnectionError: HTTPConnectionPool(host='******************', port=80): Max retries exceeded with url: /****/******/*********(Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000012EDFCDC5F8>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed',))
+
+解决办法：
+
+这种情况一般也是地址不对/不完整导致的，比如地址原本是：/ea/name/buy/goods；却被我们不小心写漏了一个“/”号，变成了：ea/name/buy/goods
+
+问题四：{'data': None, 'message': 'goods_id is missing', 'code': 10003, 'result': False, 'created_at': 1575274851}
+
+解决办法：
+
+一般如果报字段**** is missing，先检查下该字段是否有传，如果传参无误再检查下接口请求中的请求头：headers；查看是否包含：'Content-Type': 'application/json;charset=utf-8'，如果包含则将其去掉，问题解决。
+
+备注：（重要）
+
+1、原因是传'Content-Type': 'application/json;charset=utf-8' ，就是告诉服务器请求的主题内容是json格式的字符串，服务器端会对json字符串进行解析。而get请求传参一般拼接在接口请求中，不需要将其转换成json格式，否则就会出现上面的报错。
+
+2、params在get请求中使用，data、json在post请求中使用。所以一般get请求参数定义为：params=data；post请求参数定义为：data=data 或 json=data
+
+问题五：{'data': None, 'message': 'q is invalid, q[identity_num] is missing, q[identity_num] is invalid, q[employee_id] is missing, q[employee_id] is invalid', 'code': 10003, 'result': False, 'created_at': 1585907682}
+
+解决办法：
+
+这种用[ ]括起来说找不到字段的一般是传的格式不对，在保证像上面问题四种说的请求传参格式正确的情况下，data中的字段格式需要调整。
+
+比如之前格式是：
+
+data={
+        "q": {
+            "num": "",
+            "id": ""
+        }
+}
+
+需要调整成：
+
+data={
+         "q[num]":"",
+         "q[id]": ""
+}
+
+问题六：分别执行class类下的def方法，执行结果却返回了所有def方法中的执行结果
+
+
+问题六：分别执行class类下的def方法，执行结果却返回了所有def方法中的执行结果
+
+解决办法：
+
+原来是自己将py文件创建在了中文文件的目录下才导致了这个问题，所以这里再强调一遍：。py项目所有的文件目录都要用英文
+
+解决办法：
+
+原来是自己将py文件创建在了中文文件的目录下才导致了这个问题，所以这里再强调一遍：。py项目所有的文件目录都要用英文
+
+问题七：Pycharm设置pytest运行程序
+
+
+问题七：Pycharm设置pytest运行程序
+
+
+后面继续补充
+

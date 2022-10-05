@@ -1,0 +1,24 @@
+> 由于最近要更新插件,突然发现没法使用pip来安装升级插件,查了一圈才找到解决办法,特记录在此,便于其它人查询.
+
+报错信息如下:
+
+Fatal error in launcher: Unable to create process using '"d:\program files (x86)\python36-32\python.exe"  "D:\Program Files (x86)\Python36-32\Scripts\pip.exe" python
+
+解决办法:
+
+注:请注意自行更换你自己相应的目录,也基于环境变量都设置正确的情况下.
+
+1.更改d:\python27下的python.exe为python2.exe,并把d:\python27\Scripts下的pip.exe更改为pip2.exe
+
+2.更改d:\program files (x86)\python36-32\python.exe为python3.exe
+
+3.更改"D:\Program Files (x86)\Python36-32\Scripts\下的guessit-script.py和getsub-script.py等以.py结尾的文件开头行内容为
+
+#!"d:\program files (x86)\python36-32\python3.exe"(其实只需要把最后的python.exe改为python3.exe即可)
+
+4.这是最关键的一步,执行pip强制更新命令.(也有朋友说可以跳过以上步骤,直接执行此步,就可以解决,本人未做尝试.想偷懒的童鞋,可以试一下.)
+
+python3 -m pip install --upgrade pip --force-reinstall
+
+5.最后,pip默认就是python3.x的pip了,想用python2.7的pip就通过pip2来调用了.(也可以修改相应目录下的pip.exe的名称来达到设置默认pip版本)
+

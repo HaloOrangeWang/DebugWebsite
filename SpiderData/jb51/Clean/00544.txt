@@ -1,0 +1,212 @@
+在日常的学习Python过程中，由于本身的编程水平受限，时不时的给我抛出一个异常让我真的很难受；在学习的过程中发现Python中的错误分为语法错误和异常两种。
+
+
+1、语法错误
+
+Python中的语法错误通常是最为明显的错误了，由于不按照要求书写代码，往往就容易出现语法错误
+
+示例代码：
+
+>>> print("hello world)
+  File "<stdin>", line 1
+    print("hello world)
+                      ^
+SyntaxError: EOL while scanning string literal
+>>> while True print("hello world")
+  File "<stdin>", line 1
+    while True print("hello world")
+                   ^
+SyntaxError: invalid syntax
+
+Python的语法解释器会找出最先出现错误的位置，并在其下面标记一个小小的箭头
+
+
+2、异常
+
+什么是异常？异常就是一个事件，该事件会在程序的运行过程中发生，影响程序的正常执行；因为Python中万物皆对象，所以异常也是一个对象，就表示一个错误；一般情况下即使Python语法是正确的，在运行它的时候，也有可能发生错误，运行期检测到的错误被称为异常。
+
+示例：
+
+>>> print(1 / 0)   # 0 不能作为除数，触发异常
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ZeroDivisionError: division by zero
+>>> print(my_name)  # # my_name 未定义，触发异常
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'my_name' is not defined
+>>> print("5" + 5)  # # int 不能与 str 相加，触发异常
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: can only concatenate str (not "int") to str
+
+不同的异常就会提示不同的错误信息，错误信息的前面部分显示了异常发生的上下文，并以调用栈的形式显示具体信息。
+
+
+3、异常处理
+
+当Python脚本发生异常时我们没有及时捕获处理它，程序会终止执行。python中使用try/except语句就可以很好的来处理异常。
+
+示例代码：
+
+try:
+    print(my_name)  # 没有定义my_nama变量，就会发生异常
+    print("我是正常执行的结果")  # 如果程序正常就会执行此代码
+except NameError:
+    print("如果发生异常，就会执行我")  # 如果发生错误就会执行此段代码
+
+执行流程：
+
+执行执行 try 子句（在关键字 try 和关键字 except 之间的语句）
+
+没有找到变量，引发NameError错误
+
+异常类型正好和except后面的语句相符合，应的 except 子句将被执行
+
+注意：如果异常与之不符合，还是会抛出异常
+
+如果想要一个except子句可以同时处理多个异常，这些异常将被放在一个括号里成为一个元组，
+
+例如:
+
+try:
+    pass
+except (RuntimeError, TypeError, NameError):
+    pass
+
+一个try语句也可以包含多个except子句，分别来处理不同的特定的异常。最多只有一个分支会被执行。
+
+最后一个except子句可以忽略异常的名称，它将被当作通配符使用。可以通过raise将异常抛出
+
+示例代码;
+
+while True:
+    try:
+        a = int(input("请输入被除数："))
+        b = int(input("请输入被除数："))
+        c = a / b
+        print("结果为：", c)
+        break  # 跳出循环
+    except ValueError:
+        print("输入的不是一个数字，请重新输入")
+    except:
+        print("未知异常")
+        raise  # 如果不是ValueError，会打印上一条语句并抛出异常
+
+执行流程:
+
+
+4、try/except...else
+
+try/except 语句还有一个可选的 else 子句，想要使用这个子句，就必须放在所有的 except 子句之后。
+
+else 子句将在 try 子句没有发生任何异常的时候执行。
+
+执行流程:
+
+示例代码：
+
+while True:
+    try:
+        a = int(input("请输入被除数："))
+        b = int(input("请输入被除数："))
+    except ValueError:
+        print("输入的不是一个数字，请重新输入")
+    except ZeroDivisionError:
+        print("被除数为0")
+    else:
+        c = a / b
+        print("结果为：", c)
+        print('计算完毕')
+        break
+
+这里出现了一个小问题，如果在一个死循环的语句中，try中有break关键字，就不会执行else语句
+
+使用 else 子句比把所有的语句都放在 try 子句里面要好，这样可以避免一些意想不到，而 except 又无法捕获的异常。
+
+
+5、try-finally 语句
+
+try-finally 语句无论是否发生异常都将执行最后的代码。
+
+while True:
+    try:
+        a = int(input("请输入被除数："))
+        b = int(input("请输入被除数："))
+    except ValueError:
+        print("输入的不是一个数字，请重新输入")
+    except ZeroDivisionError:
+        print("被除数为0")
+    else:
+        c = a / b
+        print("结果为：", c)
+        print('计算完毕')
+        break
+    finally:
+        print("程序执行完毕")  # 这句话，无论异常是否发生都会执行
+
+
+6、抛出异常
+
+Python 使用 raise 语句抛出一个指定的异常
+
+语法结构:
+
+raise [Exception [, args [, traceback]]]
+
+Exception是异常的类型（例如，NameError）参数标准异常中任一种
+
+args 是自已提供的异常参数（可选）。
+
+tracebackargs 是跟踪异常对象（可选）。
+
+示例代码:
+
+x = int(input())  # 获取一个数字
+if x == 0:
+    # 如果等于0就抛出Exception异常 
+    raise Exception('x等于0。')  # Exception: x等于0。
+
+之前的代码有个bug，被除数为0时就直接抛出异常，一个通过这种方法解决
+
+while True:
+    try:
+        a = int(input("请输入被除数："))
+        b = int(input("请输入被除数："))
+        if b == 0:
+            raise ZeroDivisionError('被除数等于0。')
+    except ValueError as e:  # 将异常信息传递给e
+        print(e)  # 将异常信息打印出来
+        print("输入的不是一个数字，请重新输入")
+    except ZeroDivisionError:
+        print("被除数为0")
+    else:
+        c = a / b
+        print("结果为：", c)
+        print('计算完毕')
+        break
+    finally:
+        print("程序执行完毕")  # 这句话，无论异常是否发生都会执行
+
+dxcept...as...可以将异常信息传递出来
+
+
+7、用户自定义异常
+
+可以通过创建一个新的异常类来拥有自己的异常。异常类继承自 Exception 类，可以直接继承，或者间接继承
+
+示例代码:
+
+# 自定义一个异常类
+class MyError(Exception):  # 异常类继承自 Exception 类
+    """
+    自己定义的一个异常类
+    """
+
+def __init__(self, message):
+        self.message = message
+
+raise MyError("自己定义的一个异常类")
+
+到此这篇关于Python常遇到的错误和异常的文章就介绍到这了,更多相关Python错误和异常内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

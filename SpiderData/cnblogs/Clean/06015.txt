@@ -1,0 +1,45 @@
+报错: UnboundLocalError: local variable 'total_page' referenced before assignment
+
+报错： 使用前 未定义 total_page
+
+原因： 赋值 current_page和 total_page 在try中，如果失败将不会赋值 所以提前在代码前定义变量  total_page = 1 current_page = 1 可以解决报错
+
+报错:ERROR in views [C:\Users\93263\myproject\information27\info\modules\profile\views.py:33]:
+'AppenderBaseQuery' object has no attribute 'pagnate'
+
+报错： 没有对象pagnae
+
+原因： 在view 33行 返回的错误日志，未找到对象方法pagnate
+
+报错：'<' not supported between instances of 'bool' and 'module'
+
+ERROR:info:'<' not supported between instances of 'str' and 'int'
+
+原：
+paginate = user.collection_news.paginate(page, constants，USER_COLLECTION_MAX_NEWS, False)
+修改：paginate = user.collection_news.paginate(page, constants.USER_COLLECTION_MAX_NEWS, False)
+
+报错： 参数不支持 bool类型和module类型进行比较 、 不支持str类型和 int类型进行比较
+
+原因： 调用方法时候 输入参数错误
+
+报错：ImportError: cannot import name 'db'
+
+报错：循环导入
+
+原因：在创建前使用或者导入了db 通过逐步排查 解决问题
+
+报错：TypeError: page_not_found() takes 0 positional arguments but 1 was given
+
+报错：需要给你page_not_found一个参数
+
+原因：当使用errorhandler(404) 装饰器的时候 会返回一个404参数 需要方法去接收e  ，ps: errorhandler(错误码) 返回页面
+
+报错：前端页面：Failed to load resource: the server responded with a status of 405 (METHOD NOT ALLOWED)
+
+　　　后端页面：AttributeError: 'NoneType' object has no attribute 'get'
+
+报错： 没有get这个参数
+
+原因： 视图没有增加methods =["POST"]
+

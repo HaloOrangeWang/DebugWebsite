@@ -1,0 +1,650 @@
+
+1.root权限修改文件，提示Warning: Changing a readonly file
+
+在linux上编辑文件的时候，明明是使用的root登录的，可是这种至高无上的权限在按下i的时候被那串红色错误亵渎了W10: Warning: Changing a readonly file。
+
+困扰两天后,终于灵光一闪,奇迹的解决了这个问题,那就是:
+
+修改完成后使用:wq! 强制保存退出!!!!
+
+
+2.pd.read_csv(文件)读取文件，中文乱码
+
+使用python的pandas包，加载csv文件，csv文件数据里有中文存在
+
+加载代码如下：
+
+import pandas as pd
+
+data = pd.read_csv("C:\\Users\\Administrator\\Desktop\\work\\data\\user20191206.csv", encoding='utf-8', header=None, index_col=False, names=['user_id', 'registe_type', 'nickname'
+, 'phone', 'sex', 'behavior_labels', 'last_login_source', 'wechat_tags', 'createtime', 'last_login_time', 'is_subject', 'black', 'is_indemnify', 'ban_speaking',
+'sale_false', 'is_new', 'is_audit', 'is_evil', 'is_forbid','is_subscribe', 'last_msg_id', 'user_type', 'black_room'])
+
+print(data.head())
+
+第一次执行，没有给encoding报错，后来给了encoding=utf-8，又报错，百度说把utf-8改成ISO-8859-1，改后果然
+
+不报错了，但是出现了中文乱码的问题。
+
+其实问题是出现在文件本身，它本身不是utf-8编码的，所以就去把csv文件通过notepad++方式打开，并且把编码转
+
+换成utf-8，并且把代码的encoding改回utf-8，重新运行代码，结果正常了。
+
+
+3.读取csv文件，报错pandas.errors.ParserError: Error tokenizing data. C error: Expected 40 fields in line 1389, saw 41
+
+在括号里添加 sep='\t'的参数问题得到解决：
+
+line = pd.read_csv(file_path, sep='\t')
+
+
+4.python读取csv文件，中文读成了字节
+
+原因：代码里设置了rb模式
+
+with open(infile, 'rb') as fd:
+
+解决：
+
+1.将csv用notepad++将编码转码成utf-8
+
+2.rb改为r
+
+
+5.python写入csv文件，中文写成了字节
+
+原因：代码里设置encoding参数为'GBK'
+
+解决办法：encoding改为utf-8
+
+ofile = open(out_path, 'w', encoding='utf-8')
+
+
+6.redis 异常 redis.clients.jedis.exceptions.JedisDataException: MISCONF Redis is configured to
+
+在linux Centos环境下，Java连接redis发出的异常信息如下：
+
+redis.clients.jedis.exceptions.JedisDataException: MISCONF Redis is configured to save RDB snapshots,
+
+but is currently not able to persist on disk. Commands that may modify the data set are disabled. Please check
+
+Redis logs for details about the error.
+
+解决办法：
+
+redis 安装目录下 找到  redis-cli.EXE  连接到服务器后执行以下命令：
+
+config set stop-writes-on-bgsave-error no
+
+执行结果：
+
+ok.
+
+
+7.遍历List时做remove操作异常java.lang.UnsupportedOperationException
+
+原代码：
+
+List<String> req_itemids= Arrays.asList(items.split("_"));
+for (int i = 1; i < req_itemids.size(); i++) {
+                  Float score = Float.parseFloat(req_itemids.get(i).split(":")[1]);
+                    guiyi_sum+=Math.pow(score,2);
+                    if(score<0.5){
+                        req_itemids.remove(i--);
+                    }
+}
+
+报错原因：
+
+调用Arrays.asList()生产的List的add、remove方法时报异常，这是由Arrays.asList() 返回的市Arrays的内部类ArrayList， 而不是java.util.ArrayList。Arrays的内部类ArrayList和java.util.ArrayList都是继承AbstractList，remove、add等方法AbstractList中是默认throw UnsupportedOperationException而且不作任何操作。java.util.ArrayList重新了这些方法而Arrays的内部类ArrayList没有重写，所以会抛出异常。解决方法如下：
+
+List<String> list = Arrays.asList(items.split("_"));
+req_itemids = new ArrayList<>(list);
+for (int i = 1; i < req_itemids.size(); i++) {
+                    Float score = Float.parseFloat(req_itemids.get(i).split(":")[1]);
+                    guiyi_sum+=Math.pow(score,2);
+                    if(score<0.5){
+                        req_itemids.remove(i--);
+                    }
+}
+
+
+8.使用比较器对list的对象排序报错java.lang.IllegalArgumentException: Comparison method violates its general contract!
+
+报错原因：
+
+被排序的实现了Comparable接口的对象，在重写compareTo方法中，比较大小时，只返回1和-1，没有返回0.
+
+原代码：
+
+@Override
+        public int compareTo(IS is) {
+            Double cha = is.score - this.score;
+            if(cha>0){
+                return 1;
+            }else {
+                return -1;
+            }
+        }
+
+纠正后代码：
+
+@Override
+        public int compareTo(IS is) {
+            Double cha = is.score - this.score;
+            if(cha>0){
+                return 1;
+            }else if(cha==0) {
+                return 0;
+            }else {
+                return -1;
+            }
+        }
+
+
+9.在c++的接口代码中执行./server进行编译报错
+
+操作及报错如下图：
+
+在其中添加export LD_LIBRARY_PATH=/usr/local/lib
+
+source .bashrc  （使生效）
+
+
+10.用spawn-fcgi工具托管自主开发的cgi demo报错：spawn-fcgi: child exited with: 127
+
+开发好了cgi的test文件后，编译成功，但是将文件加入cgi托管工具却报错，报错如下图所示：
+
+解决办法：
+
+从最初执行./test的问题找起，发现执行./test命令就报错：
+
+发现报错和上一个错误一模一样，于是用上一个报错问题的解决办法：
+
+export LD_LIBRARY_PATH=/usr/local/lib
+
+这样就可以执行bin文件了，再次加入cgi托管，发现也没有报错了
+
+
+11.执行jar包报错：无法加载类，或者运行出现invalid or corrupt jarfile，或者找不到依赖的类。
+
+解决方法：
+
+Java使用idea新建maven项目打jar包并执行方法
+
+1.新建maven项目
+
+打开idea，直接从file新创建一个maven项目，傻瓜式的创建，按默认步骤完成，我的新建项目如下图：
+
+2.打jar的配置：
+
+在pom文件中加入以下配置：
+
+<build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <useUniqueVersions>false</useUniqueVersions>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>cn.mymaven.test.TestMain</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+其中<mainClass>可填可不填，填的话写自己的Java文件包名。
+
+3.打jar包：
+
+直接在idea工具下双击package即可生成jar包，如下图：
+
+4.执行，直接打开命令行，在jar包当前目录下执行命令：java -jar XXX.jar，或者输入命令：java -cp XXX.jar 包名.类名即可执行。
+
+5.但是，这样的配置还不满足第三方依赖包的接入，所以需要进一步修改pom配置文件，修改很容易，只需要增加几行配置即可，配置如下：
+
+<plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>cn.mymaven.test.Producer</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+
+配置完成后，idea的maven窗口会出现如下图所示插件：
+
+双击上面的红框插件即可完成打包
+
+这样，项目所依赖的包就会被打进来，可以直接使用第4步骤的命令执行。
+
+
+12.执行python文件报错：AttributeError: 'module' object has no attribute 'SSLContext'
+
+报错详细如下图所示：
+
+解决办法：
+
+之前安装pika的命令是python -m pip install pika --upgrade，现在执行pip install pika==0.11.0，安装这个低版本的rabbitmq就不报错了，可能是因为之前安装最新版本的库和python2.7版本不相容的缘故。
+
+
+13.python安装库报错：ERROR: Package 'more-itertools' requires a different Python: 2.7.13 not in '>=3.5'
+
+报错如下图所示：
+
+安装到最后一步，却报错说more-itertools安装需要的python版本需要大于或等于3.5
+
+解决办法：
+
+对问题信息对症下药，更换一个低一些的more-itertools库的版本，更换安装命令：
+
+]# pip install more-itertools==5.0.0
+
+安装成功，继续回到前面的安装，再次执行安装命令，成功。
+
+
+14.执行start-hbase.start命令启动hbase进入终端执行status报错：ERROR: Can't get master address from ZooKeeper; znode data == null
+
+背景：先启动Hadoop，再启动zookeeper后jps查看进程都没有问题，最后启动Hbase，发现master节点的HBASE进程有时候启动有，有时候启动后又没有，slave1和slave2都有HRegionServer的进程，并且发现访问http://master:60010/master-status
+
+也访问不了。
+
+解决办法，进入/usr/local/src/hbase-0.98.6-hadoop2/logs目录下，执行命令
+
+]# cat hbase-root-master-master.log
+
+发现了问题，报错如下：
+
+
+15.Linux解决Device eth0 does not seem to be present,delaying initialization问题,并且配置桥接模式的网络
+
+问题描述
+
+在VirtualBox中克隆Linux服务器，如下，由CentOS6.5_Base克隆得到Hadoop01服务器，采用的是完全克隆的方式，克隆时重新初始化MAC地址。
+
+原服务器Centos6.5_Base的IP地址是192.168.137.10，原本打算是：将克隆得到的服务器Hadoop01的IP地址设置成192.168.1.110。
+
+那么很自然的，当我启动Hadoop01之后，想到的就是要去修改/etc/sysconfig/network-script目录下的网络接口配置文件ifcfg-ethXXX，将文件中的IP修改为192.168.1.110。
+
+修改如下：
+
+接着使用service network restart命令重启网络报错如下：
+
+解决方法：
+
+使用ifconfig -a命令。
+
+重启网络服务，成功，如下图：
+
+DEVICE=eth2
+TYPE=Ethernet
+ONBOOT=yes
+BOOTPROTO=static
+IPADDR=192.168.8.110
+NETMASK=255.255.255.0
+GATEWAY=192.168.8.1
+
+编写完成，重启网卡：service network restart
+
+5.关闭防火墙：
+
+service iptables stop
+
+service ip6tables stop
+
+service iptables status
+
+service ip6tables status
+
+chkconfig iptables off
+
+chkconfig ip6tablesoff
+
+vi /etc/selinux/config
+
+SELINUX=disabled
+
+在win7的控制面板中，关闭windows的防火墙！如果不关闭防火墙的话，就怕，可能win7和虚拟机直接无法ping通！
+
+6.编写DNS配置文件，以便能访问网络
+
+]# vi /etc/resolv.conf
+
+nameserver 8.8.8.8
+
+6.测试：curl www.baidu.com，测试结果如下：
+
+
+16.在单机的centos上自带zookeeper的kafka，启动kafka报错：The Cluster ID doesn't match stored clusterId Some...
+
+解决办法，根据日志提示，两个cluster.id不一致。
+
+修改vim config/server.properties：
+
+将cluster.id改为日志上说不匹配的id，修改完后再次启动kafka，成功！
+
+
+17.idea中的maven项目pom文件的依赖包报错：Dependency XXX not found
+
+如下图所示：
+
+这个jar包在maven的仓库中可以找到的，但还是报找不到包的错误，经过一段时间的了解后，主要和几个文件有关：
+
+（1）maven的settings.xml文件
+
+<mirror>  
+      <id>alimaven</id>  
+      <name>aliyun maven</name>  
+      <url>http://maven.aliyun.com/nexus/content/groups/public/</url>  
+      <mirrorOf>*</mirrorOf>      //最好不要*，这就表示所有的仓库只使用aliyun的镜像，实际是aliyun只镜像了central，所以这里写成central
+</mirror>
+
+（2）以我们上面的为例，scala-library在maven repository可以查到，但查找的结果如下所示（注意红框，它表示这个jar在哪个仓库中）：
+
+上面明确表示，这个jar包在Central的仓库，而不是在常见的maven2中
+
+（3）解决方法
+
+原因都知道了，就好办了。一种是在settings.xml中添加对应的仓库，另一种是在pom.xml直接添加额外的仓库。推荐第二种，如下（在</project>之前添加）：
+
+<repositories>
+    <repository>
+        <id>JBoss repository</id>
+        <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+    </repository>
+</repositories>
+
+
+18.yum安装ntp报错
+
+在master节点执行安装命令，yum install ntp -y安装成功，在slave节点安装却失败，报错结果如下：
+
+解决办法：依次分别执行：
+
+yum clean all
+
+yum distro-sync
+
+yum update
+
+再次安装，成功。
+
+
+19.maven打包报错java.lang.StackOverflowError解决方法
+
+在maven项目打包的时候报错,java.lang.StackOverflowError
+
+解决方法在setting->maven->runner->VM Options中添加 -Xss4096k 如下图所示
+
+
+20.hive作业运行内存溢出
+
+is running beyond physical memory limits. Current usage: 1.1 GB of 1 GB physical memory used; 8.9 GB of 2.1 GB virtual memory used. Killing container.
+
+解决办法：
+
+1.修改hive配置：增加hive-site.xml的内存配置
+
+<property>
+      <name>mapred.child.java.opts</name>
+      <value>-Xmx7006m</value>
+</property>
+
+修改Hadoop配置：mapreduc-site.xml设置mapreduce的内存分配大小
+
+当运行中出现Container is running beyond physical memory这个问题出现主要是因为物理内存不足导致的，在执行mapreduce的时候，每个map和reduce都有自己分配到内存的最大值，当map函数需要的内存大于这个值就会报这个错误，解决方法：
+
+<property>
+      <name>mapreduce.map.memory.mb</name>
+      <value>2048</value>
+</property>
+
+修改Hadoop配置：yarn-site.xml设置内存
+
+当运行中提示running beyond virtual memory limits. Current usage: 32.1mb of 1.0gb physical memory used; 6.2gb of 2.1gb virtual memory used. Killing container。
+
+该错误是YARN的虚拟内存计算方式导致，上例中用户程序申请的内存为1Gb，YARN根据此值乘以一个比例（默认为2.1）得出申请的虚拟内存的 值，当YARN计算的用户程序所需虚拟内存值大于计算出来的值时，就会报出以上错误。调节比例值可以解决该问题。具体参数为：yarn-site.xml 中的yarn.nodemanayger.vmem-check-enabled
+
+<property>
+<name>yarn.nodemanager.vmem-check-enabled</name>
+<value>false</value>
+</property>
+
+
+21.hive元数据服务启动失败
+
+解决办法：
+
+分析，/usr/local/src/hive/lib中的jar有问题，版本低导致
+
+下载disruptor-3.4.1.jar，替换掉原来的disruptor-3.3.0.jar 即可正常启动元数据服务。
+
+
+22.cloudera-scm-server启动失败
+
+cloudera-scm-server安装完成后启动server：
+
+systemctl start cloudera-scm-server
+
+没有生成日志，通过状态查看：
+
+systemctl status cloudera-scm-server
+
+报错如下：
+
+[root@master cloudera]# systemctl status cloudera-scm-server
+● cloudera-scm-server.service - Cloudera CM Server Service
+   Loaded: loaded (/usr/lib/systemd/system/cloudera-scm-server.service; enabled; vendor preset: disabled)
+   Active: failed (Result: start-limit) since 五 2022-03-18 12:14:18 CST; 5min ago
+  Process: 5415 ExecStart=/opt/cloudera/cm/bin/cm-server (code=exited, status=1/FAILURE)
+  Process: 5412 ExecStartPre=/opt/cloudera/cm/bin/cm-server-pre (code=exited, status=0/SUCCESS)
+ Main PID: 5415 (code=exited, status=1/FAILURE)
+
+3月 18 12:14:18 master systemd[1]: start request repeated too quickly for cloudera-scm-server.service
+3月 18 12:14:18 master systemd[1]: Failed to start Cloudera CM Server Service.
+3月 18 12:14:18 master systemd[1]: Unit cloudera-scm-server.service entered failed state.
+3月 18 12:14:18 master systemd[1]: cloudera-scm-server.service failed.
+3月 18 12:14:45 master systemd[1]: start request repeated too quickly for cloudera-scm-server.service
+3月 18 12:14:45 master systemd[1]: Failed to start Cloudera CM Server Service.
+3月 18 12:14:45 master systemd[1]: cloudera-scm-server.service failed.
+3月 18 12:15:48 master systemd[1]: start request repeated too quickly for cloudera-scm-server.service
+3月 18 12:15:48 master systemd[1]: Failed to start Cloudera CM Server Service.
+3月 18 12:15:48 master systemd[1]: cloudera-scm-server.service failed.
+
+解决办法：
+
+[root@master cloudera]# mkdir -p /usr/java
+[root@master cloudera]# echo $JAVA_HOME
+/usr/local/src/jdk1.8.0_144
+[root@master cloudera]# ln -s /usr/local/src/jdk1.8.0_144 /usr/java/default
+
+再次启动server，启动成功，日志打印正常：
+
+[root@master java]# systemctl status cloudera-scm-server
+● cloudera-scm-server.service - Cloudera CM Server Service
+   Loaded: loaded (/usr/lib/systemd/system/cloudera-scm-server.service; enabled; vendor preset: disabled)
+   Active: active (running) since 五 2022-03-18 12:24:03 CST; 5min ago
+  Process: 5510 ExecStartPre=/opt/cloudera/cm/bin/cm-server-pre (code=exited, status=0/SUCCESS)
+ Main PID: 5512 (java)
+   CGroup: /system.slice/cloudera-scm-server.service
+           └─5512 /usr/java/default/bin/java -cp .:/usr/share/java/mysql-connector-java.jar:/usr/share/java/oracle-connector-java.jar:/usr/share/java/postgresql-connector-java.jar:lib/* -serv...
+
+3月 18 12:24:03 master systemd[1]: Starting Cloudera CM Server Service...
+3月 18 12:24:03 master systemd[1]: Started Cloudera CM Server Service.
+3月 18 12:24:03 master cm-server[5512]: JAVA_HOME=/usr/java/default
+3月 18 12:24:03 master cm-server[5512]: Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in 8.0
+3月 18 12:24:07 master cm-server[5512]: ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console. Set system proper...tion logging.
+3月 18 12:24:17 master cm-server[5512]: 12:24:17.894 [main] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - Table 'scm.CM_VERSION' doesn't exist
+Hint: Some lines were ellipsized, use -l to show in full.
+
+日志：
+
+[root@master cloudera]# tail -f /var/log/cloudera-scm-server/cloudera-scm-server.log
+2022-03-18 12:24:46,099 INFO main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Built CSD-based test descriptor FAILED_DATA_DIRS with scope KUDU-KUDU_TSERVER
+2022-03-18 12:24:46,099 WARN main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Duplicate health test KUDU-6.1.0-FAILED_DATA_DIRS from CSD KUDU6_1-6.3.1.
+2022-03-18 12:24:46,100 INFO main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Registered all CSD-based health tests for KUDU from CSD KUDU6_1-6.3.1
+2022-03-18 12:24:46,100 INFO main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Built CSD-based test descriptor FULL_DATA_DIRS with scope KUDU-KUDU_MASTER
+2022-03-18 12:24:46,100 INFO main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Built CSD-based test descriptor FAILED_DATA_DIRS with scope KUDU-KUDU_MASTER
+2022-03-18 12:24:46,100 INFO main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Built CSD-based test descriptor FULL_DATA_DIRS with scope KUDU-KUDU_TSERVER
+2022-03-18 12:24:46,100 WARN main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Duplicate health test KUDU-6.2.0-FULL_DATA_DIRS from CSD KUDU6_2-6.3.1.
+2022-03-18 12:24:46,101 INFO main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Built CSD-based test descriptor FAILED_DATA_DIRS with scope KUDU-KUDU_TSERVER
+2022-03-18 12:24:46,101 WARN main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Duplicate health test KUDU-6.2.0-FAILED_DATA_DIRS from CSD KUDU6_2-6.3.1.
+2022-03-18 12:24:46,101 INFO main:com.cloudera.cmon.kaiser.csd.CsdInfoBasedHealthTestDescriptors: Registered all CSD-based health tests for KUDU from CSD KUDU6_2-6.3.1
+2022-03-18 12:24:46,581 INFO main:com.cloudera.server.cmf.HeartbeatRequester: Eager heartbeat initialized
+
+
+23.flink作业在standalone提交运行报错
+
+异常信息：
+
+2022-03-20 00:41:23
+org.apache.flink.core.fs.UnsupportedFileSystemSchemeException: Could not find a file system implementation for scheme 'hdfs'. The scheme is not directly supported by Flink and no Hadoop file system to support this scheme could be loaded. For a full list of supported file systems, please see https://ci.apache.org/projects/flink/flink-docs-stable/ops/filesystems/.
+    at org.apache.flink.core.fs.FileSystem.getUnguardedFileSystem(FileSystem.java:491)
+    at org.apache.flink.core.fs.FileSystem.get(FileSystem.java:389)
+    at org.apache.flink.core.fs.Path.getFileSystem(Path.java:292)
+    at org.apache.flink.runtime.state.filesystem.FsCheckpointStorageAccess.<init>(FsCheckpointStorageAccess.java:64)
+    at org.apache.flink.runtime.state.filesystem.FsStateBackend.createCheckpointStorage(FsStateBackend.java:501)
+    at org.apache.flink.streaming.runtime.tasks.StreamTask.<init>(StreamTask.java:302)
+    at org.apache.flink.streaming.runtime.tasks.StreamTask.<init>(StreamTask.java:277)
+    at org.apache.flink.streaming.runtime.tasks.StreamTask.<init>(StreamTask.java:257)
+    at org.apache.flink.streaming.runtime.tasks.StreamTask.<init>(StreamTask.java:250)
+    at org.apache.flink.streaming.runtime.tasks.StreamTask.<init>(StreamTask.java:240)
+    at org.apache.flink.streaming.runtime.tasks.OneInputStreamTask.<init>(OneInputStreamTask.java:65)
+    at sun.reflect.GeneratedConstructorAccessor13.newInstance(Unknown Source)
+    at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+    at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+    at org.apache.flink.runtime.taskmanager.Task.loadAndInstantiateInvokable(Task.java:1373)
+    at org.apache.flink.runtime.taskmanager.Task.doRun(Task.java:700)
+    at org.apache.flink.runtime.taskmanager.Task.run(Task.java:547)
+    at java.lang.Thread.run(Thread.java:748)
+Caused by: org.apache.flink.core.fs.UnsupportedFileSystemSchemeException: Hadoop is not in the classpath/dependencies.
+    at org.apache.flink.core.fs.UnsupportedSchemeFactory.create(UnsupportedSchemeFactory.java:58)
+    at org.apache.flink.core.fs.FileSystem.getUnguardedFileSystem(FileSystem.java:487)
+    ... 17 more
+
+解决方法：
+
+将主节点的Hadoop依赖jar包：flink-shaded-hadoop-2-uber-2.7.5-10.0.jar
+
+分发到从节点中，重启start-cluster.sh，再次提交jar任务正常运行。
+
+
+24.执行Hadoop的mapreduce的jar包报错
+
+运行命令：
+
+[root@bigdata101 hadoop]# hadoop jar /usr/local/src/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount  /input /output1
+
+报错显示：
+
+2022-03-22 14:39:47,825 INFO mapreduce.Job:  map 0% reduce 0%
+2022-03-22 14:39:47,862 INFO mapreduce.Job: Job job_1647930942134_0004 failed with state FAILED due to: Application application_1647930942134_0004 failed 2 times due to AM Container for appattempt_1647930942134_0004_000002 exited with  exitCode: 1
+Failing this attempt.Diagnostics: [2022-03-22 14:39:47.108]Exception from container-launch.
+Container id: container_1647930942134_0004_02_000001
+Exit code: 1
+
+[2022-03-22 14:39:47.112]Container exited with a non-zero exit code 1. Error file: prelaunch.err.
+Last 4096 bytes of prelaunch.err :
+Last 4096 bytes of stderr :
+错误: 找不到或无法加载主类 org.apache.hadoop.mapreduce.v2.app.MRAppMaster
+
+[2022-03-22 14:39:47.113]Container exited with a non-zero exit code 1. Error file: prelaunch.err.
+Last 4096 bytes of prelaunch.err :
+Last 4096 bytes of stderr :
+错误: 找不到或无法加载主类 org.apache.hadoop.mapreduce.v2.app.MRAppMaster
+
+For more detailed output, check the application tracking page: http://bigdata101:8088/cluster/app/application_1647930942134_0004 Then click on links to logs of each attempt.
+. Failing the application.
+2022-03-22 14:39:47,905 INFO mapreduce.Job: Counters: 0
+
+解决办法：
+
+在主机中运行:
+
+hadoop classpath
+
+记下返回的结果
+
+vi $HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+添加一个配置
+
+<property>
+        <name>yarn.application.classpath</name>
+        <value>hadoop classpath返回信息</value>
+</property>
+
+重启yarn
+
+
+25.执行Hadoop的mapreduce的jar包出现 name node is in safe mode 问题
+
+解决方法：
+
+1.进入hadoop安装根目录
+
+执行
+
+cd /usr/local/hadoop
+
+bin/hadoop dfsadmin -safemode leave
+
+
+26.启动flume消费kafka数据传入hdfs jar包冲突问题
+
+启动命令：
+
+[root@bigdata102 lib]# /usr/local/src/apache-flume-1.9.0-bin/bin/flume-ng agent --conf-file /usr/local/src/apache-flume-1.9.0-bin/conf/kafka-flume-hdfs.conf --name a1 -Dflume.root.logger=INFO,LOGFILE
+
+报错异常：
+
+java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;)V
+        at org.apache.hadoop.conf.Configuration.set(Configuration.java:1357)
+        at org.apache.hadoop.conf.Configuration.set(Configuration.java:1338)
+        at org.apache.hadoop.conf.Configuration.setBoolean(Configuration.java:1679)
+        at org.apache.flume.sink.hdfs.BucketWriter.open(BucketWriter.java:221)
+        at org.apache.flume.sink.hdfs.BucketWriter.append(BucketWriter.java:572)
+        at org.apache.flume.sink.hdfs.HDFSEventSink.process(HDFSEventSink.java:412)
+        at org.apache.flume.sink.DefaultSinkProcessor.process(DefaultSinkProcessor.java:67)
+        at org.apache.flume.SinkRunner$PollingRunner.run(SinkRunner.java:145)
+        at java.lang.Thread.run(Thread.java:748)
+Exception in thread "SinkRunner-PollingRunner-DefaultSinkProcessor" java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;)V
+        at org.apache.hadoop.conf.Configuration.set(Configuration.java:1357)
+        at org.apache.hadoop.conf.Configuration.set(Configuration.java:1338)
+        at org.apache.hadoop.conf.Configuration.setBoolean(Configuration.java:1679)
+        at org.apache.flume.sink.hdfs.BucketWriter.open(BucketWriter.java:221)
+        at org.apache.flume.sink.hdfs.BucketWriter.append(BucketWriter.java:572)
+        at org.apache.flume.sink.hdfs.HDFSEventSink.process(HDFSEventSink.java:412)
+        at org.apache.flume.sink.DefaultSinkProcessor.process(DefaultSinkProcessor.java:67)
+        at org.apache.flume.SinkRunner$PollingRunner.run(SinkRunner.java:145)
+        at java.lang.Thread.run(Thread.java:748)
+
+报错原因：
+
+Hadoop中的guava-27.0-jre.jar和flume下的guava jar包发生了冲突。
+
+解决办法：
+
+移除flume下的guava jar包，将Hadoop下的guava jar拷贝过来即可
+
+[root@bigdata102 lib]# cp /usr/local/src/hadoop-3.1.3/share/hadoop/hdfs/lib/guava-27.0-jre.jar ./
+

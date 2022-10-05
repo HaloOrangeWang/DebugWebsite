@@ -1,0 +1,44 @@
+1、执行
+
+>>> from selenium.webdriver import Chrome
+
+#添加path后执行
+
+>>> driver = Chrome()
+
+或>>> from selenium.webdriver import Chrome
+
+#驱动位置驱动
+
+>>> Chrome(executable_path='/usr/local/bin/chromedriver')
+
+报错:
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "/Users/cdtanghui3/Library/Python/2.7/lib/python/site-packages/selenium/webdriver/chrome/webdriver.py", line 62, in __init__
+
+self.service.start()
+
+File "/Users/cdtanghui3/Library/Python/2.7/lib/python/site-packages/selenium/webdriver/common/service.py", line 92, in start
+
+raise WebDriverException("Can not connect to the Service %s" % self.path)
+
+selenium.common.exceptions.WebDriverException: Message: Can not connect to the Service chromedriver
+
+解决办法：加hosts：127.0.0.1 localhost
+
+$ vi /etc/hosts
+
+添加127.0.0.1 localhosts
+
+执行：
+
+>>> from selenium.webdriver import Chrome
+
+>>> Chrome(executable_path='/usr/local/bin/chromedriver')
+
+打开chrome浏览器成功
+

@@ -1,0 +1,30 @@
+
+python2 中 dictionary 类型中的 value 数据类型为 float，取值时精度错误
+
+
+python2 取值精度错误
+
+import json
+import re
+
+data = {'key': 12345678900.123}
+print('---->dict: ', data['key'])
+
+# 将字典转化为字符串, 再通过正则取值
+str_dict = json.dumps(data)
+v = re.findall('key": (.*?)}', str_dict)[0]
+print('---->str: ', data['key'])
+
+# -----------输出结果----------
+# ---->dict: 12345678900.1
+# ---->str: 12345678900.123
+
+
+python3 取值正常
+
+data = {'key': 12345678900.123}
+print(data['key'])
+
+# -----------输出结果----------
+# 12345678900.123
+

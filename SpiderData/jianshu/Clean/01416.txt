@@ -1,0 +1,22 @@
+今天在python3环境下执行pandas库的导入时候，出现了如下的警告报错：
+
+出现这种情况需要通过以下步骤来解决：
+
+1.安装xz
+
+网上有其他安装方法，比如Linux环境下先yum install xz-devel安装xz-devel包，再yum install python-backport-lzma，但是我是Mac的环境只有brew工具，并且这些包已经都集成到一个xz包里了，所以只用执行brew intall xz即可
+
+2.安装backport.lzma
+
+使用pip管理工具安装
+
+3.修改/Users/yunfeixi/.pyenv/versions/3.8.1/lib/python3.8/lzma.py(根据实际目录环境)
+
+原文件是这样的：
+
+修改成：
+
+目的是要在异常ImportError的时候改为从backports.lzma库中导入所需模块
+
+再重新进入python交互界面就不会报错了
+

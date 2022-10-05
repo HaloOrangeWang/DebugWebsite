@@ -1,0 +1,12 @@
+1、问题症结
+
+最初是因为教程中学习到PyYAML这个模块，自己是win8的机器，安装对应Python 3.6.3 64位版本，要装这个PyYAML模块，遇到各种报错，反正就是装不上，查遍网上的说法，总结起来就是windows平台要装C写的库，需要编译一下源代码再安装，偏偏windows没有自带编译的那个东东，所以直接python setup.py install不行。
+
+2、解决方法
+
+windows没有编译的东东嘛，那就装一个，网上两种方法，一是MinGW，一个是visual studio。
+
+MinGW：MinGW装完以后，安装我要的那个package，就会报“不能比较NoneType 和 str”，找到那个文件后会发现，它实际是在比较版本号（version >=''2.10.0”之类的写法），很正常的写法，就是走不下去。放弃了。
+
+visual studio：一开始找了vs2017社区版，装完以后再装package，报“找不到vcvarsall.bat”，这个报错网上写了一堆，有人说改环境变量，有人改path，但是我在电脑里搜这个文件，根本就没搜到，说明安装vs有问题，2017版的也没说这个文件在哪里，后来改装vs2015社区版，安装C++环境和python支持包，这下有vcvarsall.bat文件了，但是，vs自动把我的python给删了，再重装了一边python3.6.3，这下可以了。
+

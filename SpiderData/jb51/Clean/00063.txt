@@ -1,0 +1,101 @@
+报错信息：
+
+Traceback (most recent call last):
+
+File “D:/flaskProject/test.py”, line 35, in test
+
+pool.apply(self.out, args=(i,))
+
+File “Python37-32\lib\multiprocessing\pool.py", line 261, in apply
+
+return self.apply_async(func, args, kwds).get()
+
+File "\lib\multiprocessing\pool.py”, line 657, in get
+
+raise self._value
+
+File “\Python37-32\lib\multiprocessing\pool.py", line 431, in _handle_tasks
+
+put(task)
+
+File "\Python37-32\lib\multiprocessing\connection.py”, line 206, in send
+
+self._send_bytes(_ForkingPickler.dumps(obj))
+
+File “*\Python37-32\lib\multiprocessing\reduction.py”, line 51, in dumps
+
+cls(buf, protocol).dump(obj)
+
+TypeError: can't pickle _thread._local objects
+
+原类的构造函数：
+
+class threadtest:
+
+def __init__(self, ipList, user, password):
+ self.ipList = ipList
+ self.httpAuth = HTTPDigestAuth(user, password)
+ return
+
+def out(self, i):
+ url = "http://" + i + "/name"
+ response = requests.get(url, self.httpAuth)
+ print(response.text)
+ return
+
+def test(self):
+ pool = Pool(processes=2)
+ for i in self.ipList:
+ pool.apply(self.out, args=(i,))
+ pool.close()
+ pool.join()
+ return
+
+if name == ‘main':
+ipList = [‘192.168.2.1', ‘192.168.2.2', ‘192.168.2.3', ‘192.168.2.4', ‘192.168.2.5', ]
+a = threadtest(ipList, ‘admin', ‘admin')
+a.test()
+
+原因：
+
+在class中对属性进行初始化使用了其它类返回的句柄进行初始化导致，HTTPDigestAuth的返回值不能进行序列化，也就是不能作为cls(buf, protocol).dump(obj)的参数进行序列化。
+
+将self.httpAuth = HTTPDigestAuth(httpUser, httpPassword)修改为：
+
+self.httpUser
+
+self.httpPassword
+
+并将函数HTTPDigestAuth放到类的方法中
+
+修改后：
+
+class threadtest:
+
+def __init__(self, ipList, user, password):
+ self.ipList = ipList
+ self.user = user
+ self.password = password
+ return
+
+def out(self, i):
+ url = "http://" + i + "/name"
+ response = requests.get(url, HTTPDigestAuth(self.user, self.password))
+ print(response.text)
+ return
+
+def test(self):
+ pool = Pool(processes=2)
+ for i in self.ipList:
+ pool.apply(self.out, args=(i,))
+ pool.close()
+ pool.join()
+ return
+
+if name == ‘main':
+ipList = [‘192.168.2.1', ‘192.168.2.2', ‘192.168.2.3', ‘192.168.2.4', ‘192.168.2.5', ]
+a = threadtest(ipList, ‘admin', ‘admin')
+a.test()
+
+以上这篇解决python多线程报错:AttributeError: Can't pickle local object问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

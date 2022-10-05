@@ -1,0 +1,60 @@
+在网上找了很多， 大多数说是必须要给 SQLALCHEMY_TRACK_MODIFICATIONS 一个默认值，尝试修改alchemy 源码，，但是还是不起作用
+
+最后阅读源码 ，
+
+self.app = app = db.get_app()
+
+track_modifications = app.config['SQLALCHEMY_TRACK_MODIFICATIONS']
+
+源码就是这句报错，，说key没有，，那好，我直接给你设置一个值行了吧。。
+于是我再上面加了一句，
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True ..
+启动，然兵乱， 还是报错，不过是另一个错误。。
+
+看这意思是我没有初始化 sqlAlchemy ..
+
+然后我的代码 sqlconfig.py
+
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@192.168.99.100/activiti_api'
+app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+没问题啊，我初始化了啊 。。‘’
+
+看了半天， 我去，，原来是我在启动的地方重新定义了一个app .
+
+文件 app.py
+
+import flask
+from mysql.sqlconfig import Ip,db
+app=flask.Flask(__name__)  这是一个新的app, 所以报key 错误，其实是我根本就没有初始化app.config .
+
+@app.route('/')
+def index():
+    ips = Ip.query.all()
+    return flask.render_template('index.html')
+
+if __name__ == '__main__':
+    app.debug=True
+    app.run()
+
+所以把
+
+app=flask.Flask(__name__) 这句去掉并引入mysqlconfig 中db 就好了 。。 
+最后吐槽一下python 对跨文件夹的 极其不友好，是不是python 不适合大型项目开发，因为我不能把所有文件都放到一个文件夹下。。
+比如上面
+
+flask.render_template('index.html') ， index.html 原来我是放到和 app.py 同级 templates包中。。但是现在必须要挪到和 mysqlconfig.py 的对应目录。。
+
+。 
+其次吐槽一下python编程中友好提示，简直就是灾难，完全没有提示，调用一个方法，我完全看不出来他要我传什么参数，只有请求了才知道对错， 作为一个从java过来的程序猿，真心累。
+
+初学者，希望大神能解解答我上面的两个疑问： 文件夹支持和编程体验 、
+

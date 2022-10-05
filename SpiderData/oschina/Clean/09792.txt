@@ -1,0 +1,54 @@
+
+背景
+
+集群状态报错，如下：
+
+# ceph -s
+    cluster 1d64ac80-21be-430e-98a8-b4d8aeb18560
+     health HEALTH_WARN		<-- 报错的地方
+            too many PGs per OSD (912 > max 300)
+     monmap e1: 1 mons at {node1=109.105.115.67:6789/0}
+            election epoch 4, quorum 0 node1
+     osdmap e49: 2 osds: 2 up, 2 in
+            flags sortbitwise,require_jewel_osds
+      pgmap v1256: 912 pgs, 23 pools, 4503 bytes data, 175 objects
+            13636 MB used, 497 GB / 537 GB avail
+                 912 active+clean
+
+
+分析
+
+问题原因是集群osd 数量较少，在我的测试过程中，由于搭建rgw网关、和OpenStack集成等，创建了大量的pool，每个pool要占用一些pg ，ceph集群默认每块磁盘都有默认值，好像每个osd 为300个pgs，不过这个默认值是可以调整的，但调整得过大或者过小都会对集群的性能产生一定影响。因为我们这个是测试环境，只要能消除掉报错即可。查询当前每个osd下最大的pg报警值：
+
+$ ceph --show-config  | grep mon_pg_warn_max_per_osd
+
+mon_pg_warn_max_per_osd = 300
+
+
+解决方案
+
+在配置文件中，调大集群的此选项的告警阀值；方法如下，在mon节点的ceph.conf（/etc/ceph/ceph.conf）配置文件中添加:
+
+$ vi /etc/ceph/ceph.conf
+[global]
+.......
+mon_pg_warn_max_per_osd = 1000
+
+重启monitor服务：
+
+$ systemctl restart ceph-mon.target
+
+再次查看ceph集群状态。
+
+$ ceph -s
+
+cluster 1d64ac80-21be-430e-98a8-b4d8aeb18560
+ health HEALTH_OK
+ monmap e1: 1 mons at {node1=109.105.115.67:6789/0}
+        election epoch 6, quorum 0 node1
+ osdmap e49: 2 osds: 2 up, 2 in
+        flags sortbitwise,require_jewel_osds
+  pgmap v1273: 912 pgs, 23 pools, 4503 bytes data, 175 objects
+        13636 MB used, 497 GB / 537 GB avail
+             912 active+clean
+

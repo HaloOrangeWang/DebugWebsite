@@ -1,0 +1,45 @@
+转载：http://www.cnblogs.com/vilyLei/articles/2087040.html
+
+http://7731023.blog.51cto.com/7721023/1293668
+
+
+python的一些弱智错误
+
+File "C:\Python27\lib\socket.py", line 224, in meth     return getattr(self._sock,name)(*args)
+
+报这个错误的原因是ip不对或者端口不能访问, 我的问题是我写了一个错误的ip,真是弱智的郁闷
+
+2.No module named chilkat 错误
+
+我想使用python第三方module chilkat 但是我将_chilkat.pyd和chilkat.py放到C:\Python27\Lib\site-packages目录下的时候 无法导入这个模块
+
+因为我按照官方的方法做的呀，总是报 No module named chilkat 这个错误信息。我研究了半天原来我在命令行窗口运行的python是python2.6.5，而不是
+
+2.7版本的。我下载的是2.7版本的 chilkat 模块。为什么是python 2.6.5呢?因为我安装的panda 3d的时候默认使用这个东东自带的编译环境python 2.6.5
+
+所以老是报错。哈哈，真是弱智哦。我重新下载了chilkat 2.6.5将其_chilkat.pyd和chilkat.py放到C:\Panda3D-1.7.2\python\Lib\site-packages,再测试就没 问题了
+
+3.ImportError: No module named zope.interface
+
+zope.interface模块
+
+在http://pypi.python.org/pypi/zope.interface 下载即可。
+
+我选择下载:zope.interface-3.6.4-py2.7-win32.egg,将他放在:C:\Python27\Scripts\下
+
+我再下载:http://peak.telecommunity.com/dist/ez_setup.py,放在:C:\Python27\Scripts\
+
+接着在python2.7.1中运行:ez__setup.py zope.interface-3.6.4-py2.7-win32.egg
+
+运行成功后, 测试: import zope.interface
+
+只要不报错就正确了
+
+4.AttributeError: 'module' object has no attribute 'AF_INET'
+
+今天测试了下python, socket模块的使用，不想一开始就报这个错误。后来发现问题出在我起的文件名上,我的文件名是socket.py,
+
+而socket.pyt是socket模块源文件的名字，影响了import socket的导入，因此改下文件名，便可解决。
+
+今后也要注意，所起的文件名称不要跟引用的库模块名字冲突，以免发生不明不白的错误。
+

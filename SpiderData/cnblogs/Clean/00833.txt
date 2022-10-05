@@ -1,0 +1,38 @@
+CentOS6 系统下升级python后yum命令使用时报错，如下：
+
+[root@xxxxxxx]#yum
+File"/usr/bin/yum",line30
+exceptKeyboardInterrupt,e:
+^
+SyntaxError:invalidsyntax
+
+[root@localhostbin]#
+
+我在网上看了好多网友们的解决方法，现在我就将这些方法总结下：
+
+第一种方法：
+
+编辑：vim /usr/bin/yum
+
+修改：#!/usr/bin/python  为 #!/usr/bin/python2.6
+
+报存退出。然后在命令行使用yum命令。
+
+第二种方法：
+
+直接在命令行指定python版本运行yum命令：[root@xxxxx]# python2.6 yum install xxxxx
+
+以上两种方法都是基于没有卸载系统原本python版本的情况下哦！要是有网友不小心卸载了系统自带的python版本，然后装了python3+的版本，那么就请你重新再装上系统自带的python的版本吧。
+
+以上就是网友给的主要的两种解决办法。不过我自己的情况并不适合这两种方法，因为我按照上面的两种方法并没有解决我的问题。后来还是自己摸索了快一个小时才解决的，说来惭愧呀。接下来就说说我的方法吧。
+
+我的方法：
+
+使用第一种方法修改python的版本号，然后报存退出；
+
+接着在命令行运行yum命令时使用绝对路径。[root@xxxxx]# /usr/bin/yum list all | grep ^mysql
+
+好了，我这样运行命令就可以了，不报错了。
+
+ps: /usr/bin/yum命令调用的是python2.x 的版本。而/usr/bin/yum里面第一行写的#!/usr/bin/python代码中的python就是系统自带的python2.x，只不过用ln -s将python2.x软连接成了python。
+

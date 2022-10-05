@@ -1,0 +1,20 @@
+1."error":"element not interactable"——元素不可交互
+
+2."error":"element click intercepted"——元素点击被截获
+
+分析：大概是因为这个按钮上面还有别的东西覆盖，直接点击无法点击到，
+
+修改后：
+
+div = self.driver.find_element_by_xpath('//div[text()="自动化"]')
+
+self.driver.execute_script("arguments[0].click();", div)
+
+3.ValueError: Invalid format string——无效的格式字符串
+
+报错代码：now_time = datetime.datetime.now().strftime("%-H")
+
+修改后：now_time = datetime.datetime.now().strftime("%H")
+
+参考链接：https://www.runoob.com/python/att-time-strftime.html，应该是时间久远，写法改变了
+

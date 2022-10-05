@@ -1,0 +1,25 @@
+python对于跨包调用函数时，经常会提示模块不存在的问题，主要是python程序执行时，搜索路径导致的，python程序执行的路径依次是：
+
+如下图所示，明明test1文件是存在的，但是跨包调用时，就出现test1不存在的问题，原因是当test2模块去调用test1中的模块时，会先去pack2目录下查找，pack2下没有要调用的模块和函数，所以很可能就停止了查找，弹出错误提示；
+
+解决的办法是，可以把调用文件的主目录加到环境变量中
+
+操作步骤：
+
+import os
+import sys
+
+#步骤1：当前处于pack2d的test2文件目录，路径为dir1
+dir1=os.path.dirname(__file__)
+print '当前文件目录：',dir1
+
+#步骤2：pack2的主目录是day6，路径为：dir2
+dir2=os.path.dirname(os.path.dirname(__file__))
+print '当前文件的主目录：',dir2
+
+执行结果如下：
+
+test1中函数内容是：
+
+如果，上面的方法不管用的话，可以在file-setting-project-project Sources，把包放入到Sources中，就OK了，有时候第一种方法不管用，就用第二种，有时候第二种不管用，就用第一种
+

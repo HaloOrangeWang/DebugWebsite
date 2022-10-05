@@ -1,0 +1,23 @@
+vs2019 使用c++调用python中numpy，matplotlib等库出错
+ 错误如下：
+
+C:\ProgramData\Anaconda3\lib\site-packages\numpy\__init__.py:140: UserWarning: mkl-service package failed to import, therefore Intel(R) MKL initialization ensuring its correct out-of-the box operation under condition when Gnu OpenMP had already been loaded by Python process is not assured. Please install mkl-service package, see http://github.com/IntelPython/mkl-service from . import _distributor_init
+ 需要修改vs2019中python的系统路径
+ 如果在cmd中运行py文件能够正常导入，则对比二者的系统路径
+
+在py文件中在import之前修改
+ 以下内容为对比cmd中路径得到，因为anaconda的路径出问题（为什么出问题不是很清楚），所以使用这种方法。
+ 应该有更普适的方法。。。。
+
+import sys
+sys.path.remove("C:\\ProgramData\\Anaconda3\\Lib")
+sys.path.remove("C:\\ProgramData\\Anaconda3\\DLLs")
+sys.path.remove("C:\\ProgramData\\Anaconda3")
+sys.path.remove("C:\\ProgramData\\Anaconda3\\lib\\site-packages")
+sys.path.remove("C:\\ProgramData\\Anaconda3\\lib\\site-packages\\win32")
+sys.path.remove("C:\\ProgramData\\Anaconda3\\lib\\site-packages\\win32\\lib")
+sys.path.remove("C:\\ProgramData\\Anaconda3\\lib\\site-packages\\Pythonwin")
+sys.path.append("C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\lib")
+sys.path.append("C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37")
+sys.path.append("C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\lib\\site-packages"）
+

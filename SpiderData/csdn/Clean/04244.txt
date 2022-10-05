@@ -1,0 +1,14 @@
+在python3中使用open(filename)打开文件的时候，可能会提示如下的错误。
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xd4 in position 0: invalid continuation byte
+
+当然这种错误通常出现在二进制文件的打开中，例如.pcap文件，图片文件，视频文件等等。从提示可得知 position 0位置为0xd4，无法使用utf8解码该字节。熟悉utf8编码规则应该知道，不熟悉的见这里。由于该文件是以d4c3开头，转化为二进制对应的就是11010100 11000011，而以110开头的UTF8编码只允许出现110xxxxx 10xxxxxx，因此系统会提示上述的错误。
+
+当然还有一个潜在的问题你可能也注意到了，那就是python3在使用open函数读取文件的时候，是按照文本文件方式进行读取，也就是将字节转化成为字符串形式，因此会使用utf8规则将字节流进行解码，然后转换成为unicode编号的值。在python3中，默认输入都是按照文本文件处理的，同时python3内部使用str类存储字符串（存储的是unicode编号），当然python3作为一门优秀的语言，其内部对于字符串本身和其编码是做了严格区分的，python3是如何处理字符串(unicdeo编号)和编码(utf8,utf16,utf32)的，详见这里。
+
+解决该问题的方式很简单，就是将文件打开形式转换为open(filename, ‘rb’)即可，以二进制形式打开文件，就不会存在上述的转换。
+
+当然python2中open(filename)的形式在python2中时没有问题的，因为python2的默认文件就是以二进制形式进行读取。这也是ptyhon2和python3的区别之处。因此在python3中对于二进制文件的处理，包括.pcap文件.cer文件，都是需要以二进制形式进行读写的。
+
+本文为CSDN村中少年原创文章，转载记得加上小尾巴偶，博主链接这里。
+

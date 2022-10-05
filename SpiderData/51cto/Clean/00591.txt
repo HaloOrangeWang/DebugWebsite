@@ -1,0 +1,31 @@
+学习测试框架，读取配置文件使用到了configparser库，但是读取server.ini配置文件，运行时报错：
+
+Traceback (most recent call last):
+  File "E:/project/接口自动化测试实战/Util/handle_init.py", line 42, in <module>
+    print(hi.get_value("host"))
+  File "E:/project/接口自动化测试实战/Util/handle_init.py", line 32, in get_value
+    data = cf.get(node, key)
+  File "D:\Python3.8\lib\configparser.py", line 781, in get
+    d = self._unify_values(section, vars)
+  File "D:\Python3.8\lib\configparser.py", line 1149, in _unify_values
+    raise NoSectionError(section) from None
+configparser.NoSectionError: No section: 'section'
+
+导致的原因是因为路径读取的问题。
+我使用的是
+
+base_path = os.path.dirname(os.getcwd())
+
+然后获取文件路径为
+
+file_path = base_path + "Config/server.ini"
+
+导致读取不到server.ini的路径，这里应该使用绝对路径。修改如下
+纠正后代码如下：
+
+base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+file_path = os.path.join(base_path, 'Config/server.ini')
+
+file也使用join方法去连接，这样路径问题就解决了
+成功读取到配置文件中的信息
+

@@ -1,0 +1,74 @@
+当遇到无法导入某个python模块时，可能会是没有安装某个模块，也有可能是某模块在加载过程中失败，也有可能是陷入了循环导入的问题。本文详细解释了这个问题。
+
+1. 模块未安装或者路径不对
+
+ImportError: No mudule named myModule
+
+有两种可能，一是该模块没有安装，一般可以用
+
+pip install %module_name%
+
+来解决。注意有时候模块安装包名并不等于要导入的模块名。这种情况下可以通过pip search | list命令来尝试找到正确的包。
+
+另一种情况就是包虽然安装了，但当前运行的程序加载的路径有错。python运行时将从以下位置尝试加载python modules:
+
+* 当前目录
+
+* 环境变量$PYTHONPATH所指示的值，这是一个由“：”分隔的字符串，各个子字符串都是文件系统的一个路径。
+
+* 标准库目录，如dist-site-packages下的模块。
+
+* 在.pth文件中指定的路径，如果存在.pth文件的话。
+
+可以使用以下方式来查看python运行时的包含路径：
+
+在运行出错的脚本装头部加上这一段代码，然后在控制台中查看打印出来的python类库路径，检查安装包是否已包含在上述路径中。
+
+***可以通过下面的方式将未包含在路径中的模块临时包含进来：***
+
+sys.path.append("path/to/module")
+
+另外，还可以在shell窗口中查看当前的python包含路径：
+
+echo $PYTHONPATH
+
+2. 无法导入已存在的模块
+
+如果要导入的模块包含了native代码，并且native代码加载(初始化)失败时，就会导致这种错误。使用ssl, gevent等涉及native的模块时，如果对应的native程序并未安装，则会出现这样的错误。
+
+另一种错误情况是，使用相对路径导入时，父模块还未导入成功。见下面的代码：
+
+mymodule.py如下所示：
+
+以及myothermodule代码如下所示：
+
+如果执行mypackage/myothermodule，则会报以下错误：
+
+Traceback (most recent call last):
+
+File "myothermodule.py", line 3, in
+
+from .mymodule import as_int
+
+SystemError: Parent module '' not loaded, cannot perform relative import
+
+[这篇文章](#Relative imports in Python 3)给出了更详细的解答。
+
+3. 循环导入
+
+这种错误称之为"circular (or cyclic) imports"。是python独有的一种导入错误，在象java这样的语言中就不存在。
+
+假设有如下两个文件，a.py和b.py：
+
+以及:
+
+执行python a.py，将得到以下结果：
+
+出现这种情况的原因是产生了循环导入。循环导入，以及在导入过程中python进行了加锁操作，最终导致在模块b未导入完成时就引用了其中的名字。
+
+判断导入错误是否是因为循环导入引起的，主要看堆栈中是否出现两次重复的导入。比如上述堆栈中a.py出现两次，因此可以判断是这个文件引起的循环导入。
+
+要解决这个问题，可以把模块看成一种资源，对所有要引入的模块进行编号，再按静态资源排序法顺次导入，就可以避免循环导入。
+
+原文链接：https://zhuanlan.zhihu.com/p/28897221
+

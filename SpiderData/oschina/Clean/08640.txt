@@ -1,0 +1,16 @@
+数据表插入中文数据报错
+
+Warning Code : 1366 Incorrect string value: '\xE5\x9C\xA8' for column 'name' at row 1
+
+原因是表中列的编码是默认 latin1 要改成utf8
+
+ALTER TABLE student CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci
+
+把student表列编码改成utf8
+
+SHOW FULL COLUMNS FROM student
+
+完了以后可以查看列编码就变成 utf8_general_ci
+
+再试试插入中文就可以了
+

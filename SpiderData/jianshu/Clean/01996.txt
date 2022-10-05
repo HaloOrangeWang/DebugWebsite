@@ -1,0 +1,58 @@
+
+anki上有很多十分好用的插件，word query是其中一个。最近才接触anki和这个插件，使用过程中发现这个插件有很大的几率会报错。
+
+错误
+
+有一个错误发生了.请在按住shift键的同时启动Anki，这样可以临时的忽略掉你已经安装的插件。
+
+如果仅仅是因为插件引起的问题，请选择工具>插件菜单项来将出错的的插件设置成失效，然后重启Anki，重复以上的步骤直到你发现了具体是哪个插件引起的问题。
+
+当你已经发现是因为插件引起的问题，请在我们的支持网站上 add-ons section 上报告问题。
+
+调试信息
+
+Anki 2.1.11 (3cf770c7) Python 3.6.1 Qt 5.9.7 PyQt 5.9
+
+Platform: Windows 10
+
+Flags: frz=True ao=True sv=1
+
+Caught exception:
+
+File "C:\Users\admin\AppData\Roaming\Anki2\addons21\775418273\query.py", line 324, in run
+
+result = self.query(service_field, word)
+
+File "C:\Users\admin\AppData\Roaming\Anki2\addons21\775418273\query.py", line 337, in query
+
+return self.service.active(service_field, word)
+
+File "C:\Users\admin\AppData\Roaming\Anki2\addons21\775418273\service\base.py", line 189, in active
+
+result = each1
+
+File "C:\Users\admin\AppData\Roaming\Anki2\addons21\775418273\service\base.py", line 69, in _deco
+
+res = fld_func(cls, *args, *kwargs)
+
+File "C:\Users\admin\AppData\Roaming\Anki2\addons21\775418273\service\minidict.py", line 51, in fld_phonetic
+
+return self.cache_result('phonetic') if self.cached('phonetic') else self.get_token_phonetic()[1]
+
+File "C:\Users\admin\AppData\Roaming\Anki2\addons21\775418273\service\minidict.py", line 39, in get_token_phonetic
+
+mt = re.search('<script>var dict_pagetoken="(.?)";</script>', result)
+
+File "C:\Users\dae\AppData\Local\Programs\Python\Python36-32\lib\re.py", line 182, in search
+
+<class 'TypeError'>: cannot use a string pattern on a bytes-like object
+
+错误信息如上，在网上一直没有找到合适的解决方法。
+
+
+尝试之后发现是因为部分网络字典不能正常导入，遍历一遍之后发现：
+
+百词斩的所有字段均可使用，有道词典小部分不可使用，朗文词典小部分不可使用。
+
+具体原因暂时还不清楚，不过大家如果要用的话可以参考一下，或者去下载本地的词典文件使用。
+

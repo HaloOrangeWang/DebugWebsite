@@ -1,0 +1,132 @@
+Python 有两种错误很容易辨认：语法错误和异常
+
+assert用于判断一个表达式，在表达式条件为 false 的时候触发异常：
+
+assert 1 == 1
+assert 1 == 2
+
+结果会报错：
+
+assert 1 == 2
+AssertionError
+
+语法错误，或者称之为解析错
+
+比如：
+
+print('大湘菜']
+
+结果会报错：
+
+print('大湘菜']
+               ^
+SyntaxError: closing parenthesis ']' does not match opening parenthesis '('
+
+异常
+
+即便 Python 程序的语法是正确的，在运行它的时候，也有可能发生错误。运行期检测到的错误被称为异常
+
+比如：
+
+print('大湘菜' + 1)
+
+结果会报错：
+
+print('大湘菜' + 1)
+TypeError: can only concatenate str (not "int") to str
+
+异常捕捉可以使用try/except语句，一般形式为：
+
+try:
+
+　　statement
+
+except:
+
+　　statement
+
+try 语句按照如下方式工作：
+
+首先，执行 try 子句
+
+如果没有异常发生，忽略 except 子句，try 子句执行后结束
+
+如果在执行 try 子句的过程中发生了异常，那么 try 子句余下的部分将被忽略。如果异常的类型和 except 之后的名称相符，那么对应的 except 子句将被执行
+
+如果一个异常没有与任何的 except 匹配，那么这个异常将会传递给上层的 try 中
+
+一个except子句可以同时处理多个异常，这些异常将被放在一个括号里成为一个元组：
+
+结果为：
+
+出错了
+
+最后一个except子句可以忽略异常的名称，它将被当作通配符使用：
+
+结果为：
+
+there is an unexpected error
+
+try/except语句有一个可选的else子句，基本形式为：
+
+try:
+
+　　statement
+
+except:
+
+　　statement（发生异常时执行的代码）
+
+else:
+
+　　statement（没有异常时执行的代码）
+
+try-finally语句无论是否发生异常都将执行最后的代码，它定义了无论在任何情况下都会执行的清理行为，基本形式为：
+
+try:
+
+　　statement
+
+except:
+
+　　statement（发生异常时执行的代码）
+
+else:
+
+　　statement（没有异常时执行的代码）
+
+finally:
+
+　　statement（不管有无异常都会执行的代码）
+
+如果一个异常在try子句里（或者在 except 和 else 子句里）被抛出，而又没有任何的 except 把它截住，那么这个异常会在finally子句执行后被抛出
+
+一些对象预定义了标准的清理行为，无论系统是否成功的使用了它，一旦不需要它了，那么这个标准的清理行为就会执行，比如用open()方法打开文件后，如果没有使用close()方法关闭，那么文件会保持打开状态。关键字with语句就可以保证诸如文件之类的对象在使用完之后一定会正确的执行清理方法（比如关闭文件）：
+
+with open('chat.txt') as f:
+    for line in f:
+        print(line)
+
+结果为：
+
+today is a nice day
+
+how do you do?
+
+raise语句用于抛出指定的异常，唯一的一个参数指定了要被抛出的异常。它必须是一个异常的实例或者是异常的类（也就是 Exception 的子类）：
+
+x = -1
+if x <= 0:
+    raise Exception('x should be a positive number')
+
+结果会报错：
+
+raise Exception('x should be a positive number')
+Exception: x should be a positive number
+
+一个简单的raise语句就可以把异常再次抛出：
+
+结果会报错：
+
+用户可以自定义异常类，这个在python面向对象会仔细介绍
+

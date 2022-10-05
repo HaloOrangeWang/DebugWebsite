@@ -1,0 +1,49 @@
+Python搜索模块的路径： 
+ 1)、程序的主目录 
+ 2)、PTYHONPATH目录（如果已经进行了设置） 
+ 3)、标准连接库目录（一般在/usr/local/lib/python2.X/） 
+ 4)、任何的.pth文件的内容（如果存在的话）.新功能，允许用户把有效果的目录添加到模块搜索路径中去 
+ .pth后缀的文本文件中一行一行的地列出目录。 
+ 这四个组建组合起来就变成了sys.path了，
+
+关于 python ImportError: No module named ‘xxx’的问题? 
+ 解决方法如下： 
+ 1. 使用PYTHONPATH环境变量，在这个环境变量中输入相关的路径，不同的路径之间用逗号 
+ （英文的！)分开，如果PYTHONPATH 变量还不存在，可以创建它！ 
+ 这里的路径会自动加入到sys.path中，永久存在于sys.path中而且可以在不同的python版本 
+ 中共享，应该是一样较为方便的方法。 
+ C:\Users\Administrator\Desktop\test\module1.py: 
+ def func1(): 
+ print(“func1”)
+
+将C:\Users\Administrator\Desktop\test添加到PYTHONPATH即可直接import module1,然后 
+ 调用：module1.func1()即可。
+
+将自己做的py文件放到 site_packages 目录下
+
+将自己做的py文件放到 site_packages 目录下
+
+使用pth文件，在 site-packages 文件中创建 .pth文件，将模块的路径写进去，一行一 
+ 个路径，以下是一个示例，pth文件也可以使用注释： .pth file for the my project(这行是注释)，命名为xxx.pth文件 
+ C:\Users\Administrator\Desktop\test 
+ 这个不失为一个好的方法，但存在管理上的问题，而且不能在不同的python版本中共享。
+
+使用pth文件，在 site-packages 文件中创建 .pth文件，将模块的路径写进去，一行一 
+ 个路径，以下是一个示例，pth文件也可以使用注释：
+
+.pth file for the my project(这行是注释)，命名为xxx.pth文件 
+ C:\Users\Administrator\Desktop\test 
+ 这个不失为一个好的方法，但存在管理上的问题，而且不能在不同的python版本中共享。
+
+在调用文件中添加sys.path.append(“模块文件目录”)；
+
+在调用文件中添加sys.path.append(“模块文件目录”)；
+
+直接把模块文件拷贝到$python_dir/Lib目录下。
+
+直接把模块文件拷贝到$python_dir/Lib目录下。
+
+通过以上5个方法就可以直接使用import module_name了
+
+参考：http://blog.csdn.net/damotiansheng/article/details/43916881
+

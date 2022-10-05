@@ -1,0 +1,93 @@
+最近把工程的gradle build tools从3.5.0升级到了4.1.0，结果使用vasdolly打渠道包的时候报错了
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:channelRelease'.
+> Could not get unknown property 'apkVariantData' for object of type com.android.build.gradle.internal.api.ApplicationVariantImpl.
+
+粗略一看报错信息，应该是新版本的gradle build tools中去掉了variant的apkVariantData这个属性导致的问题，gradle版本更新经常干这样的事情。
+
+网上搜了一下，大家果然早就纷纷出现了这种问题，然而官网迟迟不更新，实在是不应该。
+
+https://github.com/Tencent/VasDolly/issues/102
+ https://github.com/Tencent/VasDolly/issues/104
+ https://github.com/Tencent/VasDolly/issues/111
+
+项目中的gradle插件已经升级上去了，万没有退回去的道理，既然官方不解决，只有自己动手了，好在是开源项目，那就有办法了。
+
+上官网上下载好代码 https://github.com/Tencent/VasDolly， 查看了下项目结构，发现plugin模块就是我们需要修改的插件模块，app模块可以作为测试工程。
+
+当前app模块使用的是gradle plugin 3.2.0版本，自然是没问题的，我们先将其改为4.1.0版本，同时gradle wrapper也需要相应修改为6.5版本，对应的compileSdkVersion和buildToolsVersion最好也相应的改为29和29.0.2。 change commit
+
+执行 ./gradlew :app:channelRelease, 果然报错了
+
+现在我们需要来调试vasdolly打包插件，既plugin模块，那么如何调试呢
+
+查看app模块，发现其尝试引用本地路径file:///Users/litao/localMaven的com.leon.channel:plugin:2.0.3插件，不过由于本地不存在，所以会引用到远程的，那么我们先发布plugin模块到本地仓库，并让app引用上，以便于调试。注意repository的url改为你自己本机的某路径即可。
+
+相关改动可参考 change commit
+
+执行 ./gradlew :plugin:uploadArchives 发布plugin插件到本地，这样app模块就引用上了我们本地的plugin插件。
+
+再来解决插件报错 Could not get unknown property 'apkVariantData' 的问题，查看代码，发现是获取sigingConfig的时候，由于新版本修改了api，导致报错 https://github.com/Tencent/VasDolly/blob/master/plugin/src/main/groovy/com/leon/plugin/task/ApkChannelPackageTask.groovy#L150
+
+SigningConfig config = null
+try{
+    config = mVariant.variantData.variantConfiguration.signingConfig
+} catch (Throwable e){
+    config = mVariant.apkVariantData.variantConfiguration.signingConfig
+    //  e.printStackTrace()
+}
+
+查看相关的文档，新版本可直接使用 mVariant.signingConfig 来访问了，那么做好旧版本和新版本的兼容，把这块逻辑改掉就行了。
+
+优化后参考代码如下 change commit
+
+SigningConfig config = null
+if (mVariant.hasProperty("signingConfig") && mVariant.signingConfig != null) {
+    config = mVariant.signingConfig
+} else if (mVariant.hasProperty("variantData") &&
+        mVariant.variantData.hasProperty("variantConfiguration") &&
+        mVariant.variantData.variantConfiguration.hasProperty("signingConfig") &&
+        mVariant.variantData.variantConfiguration.signingConfig != null) {
+    config = mVariant.variantData.variantConfiguration.signingConfig
+} else if (mVariant.hasProperty("apkVariantData") &&
+        mVariant.apkVariantData.hasProperty("variantConfiguration") &&
+        mVariant.apkVariantData.variantConfiguration.hasProperty("signingConfig") &&
+        mVariant.apkVariantData.variantConfiguration.signingConfig != null) {
+    config = mVariant.apkVariantData.variantConfiguration.signingConfig
+}
+
+代码写的看起来比较复杂，其实直接用3个try-catch也可以，不过个人习惯不太喜欢try-catch，觉得不太优雅。
+
+测试了一下gradle plugin 3.0.0和4.1.0，都能适配。问题是解决了，不过还是需要官方发布更新才行，在官方更新之前我们可以暂时自己打包本地引用。
+
+参考改动 change commit，大致步骤如下
+
+下载 localMaven.zip
+
+解压到你的工程的根目录
+
+修改工程根目录下的 build.gradle 文件，在repositories的最前面加上如下配置
+
+maven {
+    url "${rootProject.projectDir}/localMaven"
+}
+
+修改完成之后根目录的build.gradle中代码类似这样
+
+buildscript {
+    apply from: "${androidProjectCommon}"
+
+repositories {
+        maven {
+            url "${rootProject.projectDir}/localMaven"
+        }
+        google()
+        jcenter()
+    }
+}
+
+这样就能先用着了，然后等哪天官方更新了之后，再把这些改动去掉，升级官方的版本号就行了
+

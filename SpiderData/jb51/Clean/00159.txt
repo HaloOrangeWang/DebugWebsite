@@ -1,0 +1,132 @@
+
+问题场景：
+
+在SparkSQL中，因为需要用到自定义的UDAF函数，所以用pyspark自定义了一个，但是遇到了一个问题，就是自定义的UDAF函数一直报
+
+AttributeError: 'NoneType' object has no attribute '_jvm'
+
+在此将解决过程记录下来
+
+
+问题描述
+
+在新建的py文件中，先自定义了一个UDAF函数，然后在 if __name__ == '__main__': 中调用，死活跑不起来，一遍又一遍的对源码，看起来自定义的函数也没错：过程如下:
+
+import decimal
+import os
+import pandas as pd
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+os.environ['SPARK_HOME'] = '/export/server/spark'
+os.environ["PYSPARK_PYTHON"] = "/root/anaconda3/bin/python"
+os.environ["PYSPARK_DRIVER_PYTHON"] = "/root/anaconda3/bin/python"
+@F.pandas_udf('decimal(17,12)')
+def udaf_lx(qx: pd.Series, lx: pd.Series) -> decimal:
+    # 初始值 也一定是decimal类型
+    tmp_qx = decimal.Decimal(0)
+    tmp_lx = decimal.Decimal(0)
+    for index in range(0, qx.size):
+        if index == 0:
+            tmp_qx = decimal.Decimal(qx[index])
+            tmp_lx = decimal.Decimal(lx[index])
+        else:
+            # 计算lx: 计算后，保证数据小数位为12位，与返回类型的设置小数位保持一致
+            tmp_lx = (tmp_lx * (1 - tmp_qx)).quantize(decimal.Decimal('0.000000000000'))
+            tmp_qx = decimal.Decimal(qx[index])
+    return tmp_lx
+if __name__ == '__main__':
+    # 1) 创建 SparkSession 对象，此对象连接 hive
+    spark = SparkSession.builder.master('local[*]') \
+        .appName('insurance_main') \
+        .config('spark.sql.shuffle.partitions', 4) \
+        .config('spark.sql.warehouse.dir', 'hdfs://node1:8020/user/hive/warehouse') \
+        .config('hive.metastore.uris', 'thrift://node1:9083') \
+        .enableHiveSupport() \
+        .getOrCreate()
+    # 注册UDAF 支持在SQL中使用
+    spark.udf.register('udaf_lx', udaf_lx)
+    # 2) 编写SQL 执行
+    excuteSQLFile(spark, '_04_insurance_dw_prem_std.sql')
+
+然后跑起来就报了以下错误：
+
+Traceback (most recent call last):
+  File "/root/anaconda3/lib/python3.8/site-packages/pyspark/sql/types.py", line 835, in _parse_datatype_string
+    return from_ddl_datatype(s)
+  File "/root/anaconda3/lib/python3.8/site-packages/pyspark/sql/types.py", line 827, in from_ddl_datatype
+    sc._jvm.org.apache.spark.sql.api.python.PythonSQLUtils.parseDataType(type_str).json())
+AttributeError: 'NoneType' object has no attribute '_jvm'
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/root/anaconda3/lib/python3.8/site-packages/pyspark/sql/types.py", line 839, in _parse_datatype_string
+    return from_ddl_datatype("struct<%s>" % s.strip())
+  File "/root/anaconda3/lib/python3.8/site-packages/pyspark/sql/types.py", line 827, in from_ddl_datatype
+    sc._jvm.org.apache.spark.sql.api.python.PythonSQLUtils.parseDataType(type_str).json())
+AttributeError: 'NoneType' object has no attribute '_jvm'
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/root/anaconda3/lib/python3.8/site-packages/pyspark/sql/types.py", line 841, in _parse_datatype_string
+    raise e
+  File "/root/anaconda3/lib/python3.8/site-packages/pyspark/sql/types.py", line 831, in _parse_datatype_string
+    return from_ddl_schema(s)
+  File "/root/anaconda3/lib/python3.8/site-packages/pyspark/sql/types.py", line 823, in from_ddl_schema
+    sc._jvm.org.apache.spark.sql.types.StructType.fromDDL(type_str).json())
+AttributeError: 'NoneType' object has no attribute '_jvm'
+
+我左思右想，百思不得骑姐，嗐，跑去看 types.py里面的type类型，以为我的 udaf_lx 函数的装饰器里面的 ‘decimal(17,12)’ 类型错了，但是一看，好家伙，types.py 里面的774行
+
+_FIXED_DECIMAL = re.compile(r"decimal\(\s*(\d+)\s*,\s*(-?\d+)\s*\)")
+
+这是能匹配上的，没道理啊！
+
+
+原因分析及解决方案：
+
+然后再往回看报错的信息的最后一行：
+
+AttributeError: 'NoneType' object has no attribute '_jvm'
+
+竟然是空对象没有_jvm这个属性！
+
+一拍脑瓜子，得了，pyspark的SQL 在执行的时候，需要用到 JVM ，而运行pyspark的时候，需要先要为spark提供环境，也就说，内存中要有SparkSession对象，而python在执行的时候，是从上往下，将方法加载到内存中，在加载自定义的UDAF函数时，由于有装饰器@F.pandas_udf的存在 , F 则是pyspark.sql.functions, 此时加载自定义的UDAF到内存中，需要有SparkSession的环境提供JVM，而此时的内存中尚未有SparkSession环境！因此，将自定义的UDAF 函数挪到 if __name__ == '__main__': 创建完SparkSession的后面，如下:
+
+import decimal
+import os
+import pandas as pd
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+os.environ['SPARK_HOME'] = '/export/server/spark'
+os.environ["PYSPARK_PYTHON"] = "/root/anaconda3/bin/python"
+os.environ["PYSPARK_DRIVER_PYTHON"] = "/root/anaconda3/bin/python"
+if __name__ == '__main__':
+    # 1) 创建 SparkSession 对象，此对象连接 hive
+    spark = SparkSession.builder.master('local[*]') \
+        .appName('insurance_main') \
+        .config('spark.sql.shuffle.partitions', 4) \
+        .config('spark.sql.warehouse.dir', 'hdfs://node1:8020/user/hive/warehouse') \
+        .config('hive.metastore.uris', 'thrift://node1:9083') \
+        .enableHiveSupport() \
+        .getOrCreate()
+    @F.pandas_udf('decimal(17,12)')
+    def udaf_lx(qx: pd.Series, lx: pd.Series) -> decimal:
+        # 初始值 也一定是decimal类型
+        tmp_qx = decimal.Decimal(0)
+        tmp_lx = decimal.Decimal(0)
+        for index in range(0, qx.size):
+            if index == 0:
+                tmp_qx = decimal.Decimal(qx[index])
+                tmp_lx = decimal.Decimal(lx[index])
+            else:
+                # 计算lx: 计算后，保证数据小数位为12位，与返回类型的设置小数位保持一致
+                tmp_lx = (tmp_lx * (1 - tmp_qx)).quantize(decimal.Decimal('0.000000000000'))
+                tmp_qx = decimal.Decimal(qx[index])
+        return tmp_lx
+    # 注册UDAF 支持在SQL中使用
+    spark.udf.register('udaf_lx', udaf_lx)
+    # 2) 编写SQL 执行
+    excuteSQLFile(spark, '_04_insurance_dw_prem_std.sql')
+
+运行结果如图：
+
+至此，完美解决！更多关于pyspark自定义UDAF函数报错的资料请关注脚本之家其它相关文章！
+

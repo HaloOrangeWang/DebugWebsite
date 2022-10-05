@@ -1,0 +1,40 @@
+在为Python安装第三方工具pandas出现了若干问题。
+
+当我在cmd命令环境输入pip install pandas准备安装pandas时，出现了错误提示：Microsoft Visual C++ 9.0 is required.从网上查询资料有如下解决方案：
+
+1.下载安装Visual Studio,并设置环境变量，不同的VS版本需要设置不同的环境变量值
+
+Visual Studio 2010 (VS10)设置 VS90COMNTOOLS=%VS100COMNTOOLS%
+
+Visual Studio 2012 (VS11)设置 VS90COMNTOOLS=%VS110COMNTOOLS%
+
+Visual Studio 2013 (VS12)设置 VS90COMNTOOLS=%VS120COMNTOOLS%
+
+如果是Python2.7版本建议安装vs2008.
+
+由于第一种方法需要配置环境变量，显得很麻烦。所以我选择了如下第二种方案：
+
+2.在网址：http://www.microsoft.com/en-us/download/details.aspx?id=44266 直接下载 Microsoft Visual C++ Compiler for python2.7安装即可。注意：在安装pandas的过程中可能会等待很长一段时间，大家耐心等待即可。千万不要以为是安装过程出现了错误，去卸载numpy之类的。等待7,8分钟之后就会提示pandas安装成功，此时可以成功的导入pandas库：
+
+3.直接从网上下载pandas的exe文件安装即可，安装成功后在cmd 命令环境中输入pip install pandas 命令即可成功安装pandas
+
+4.从网站：http://www.lfd.uci.edu/~gohlke/pythonlibs/ 上下载对应你的Python版本的二进制安装文件（以whl为后缀的文件，32位和64位的都有），下载之后再cmd命令环境中执行 pip install whl文件的完全路径（例如：pip install F:\install\python\numpy-1.9.2+mkl-cp27-none-win_amd64.whl）  命令即可安装pandas。但是用这种方法安装pandas之后可能还需要安装其他与pandas相关联的第三方库，直接使用pip工具安装即可。
+
+5.安装pandas包后出现问题。安装成功后，import pandas,出现如下错误ValueError: numpy.dtype has the wrong size, try recompiling. Expected 52, got 56
+
+这个需要升级你的numpy包，我直接升级，easy_install --upgrade numpy出错，试验了两次都是失败。然后我先卸载numpy,再重新安装numpy.
+
+pip uninstall numpy
+
+pip intsall numpy
+
+等等，就安装成功了。
+
+6.继续测试，import pandas,又出现
+
+AttributeError: 'unicode' object has no attribute 'version'
+
+在stackoverflow中查了下，说是我的matplotlib的版本问题，于是我升级到最新的matplotlib,pip intsall -U matplotlib,升级成功后，再import pandas，就成功了。
+
+以上总结的几种方法基本上也适用于Python其他第三方库的安装。希望对大家有所帮助，也希望大家多多支持脚本之家。
+

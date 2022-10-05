@@ -1,0 +1,72 @@
+PyCharm中运行firefox webdriver访问邮箱添加通讯录的时候报错-WebDriverException: Message: can't access dead object
+
+调了半天，发现是因为在登录操作后没有从frame中切换出来导致的，因为在登录的时候需要先切换到frame中，登录之后要切换出来才能继续其他操作。
+
+下面是我运行的代码，driver.switch_to.default_content()这一行被我注释掉了，结果就报这个错
+
+代码：
+driver=webdriver.Firefox(executable_path='c:\\geckodriver')
+driver.get('http://mail.126.com')
+try:
+    wait=WebDriverWait(driver,10,0.2)#显示等待
+    driver.switch_to.frame(driver.find_element_by_xpath("//iframe[@id='x-URS-iframe']"))#切换到用户名和密码输入框所在的frame元素
+
+name=wait.until(lambda x:x.find_element_by_xpath("//input[@placeholder='邮箱帐号或手机号' and @name='email']"))
+    name.send_keys('xiaxiaoxu1987')
+    password=wait.until(lambda x:x.find_element_by_xpath("//input[@placeholder='密码']"))
+    password.send_keys('gloryroad')
+    submit=wait.until(lambda x:x.find_element_by_xpath("//a[@id='dologin']"))
+    submit.click()
+    #driver.switch_to.default_content()#在pycharm里用switch_to_default_content()会被加删除线，out了
+
+address_book_link=wait.until(lambda x:x.find_element_by_xpath("//div[text()='通讯录']"))
+    address_book_link.click()
+
+运行报错：
+
+C:\Python27\python.exe D:/test/dataDrivenTestPractice1/PageObject/test.py
+Traceback (most recent call last):
+  File "D:/test/dataDrivenTestPractice1/PageObject/test.py", line 27, in <module>
+    address_book_link=wait.until(lambda x:x.find_element_by_xpath("//div[text()='通讯录']"))
+  File "C:\Python27\lib\site-packages\selenium\webdriver\support\wait.py", line 71, in until
+    value = method(self._driver)
+  File "D:/test/dataDrivenTestPractice1/PageObject/test.py", line 27, in <lambda>
+    address_book_link=wait.until(lambda x:x.find_element_by_xpath("//div[text()='通讯录']"))
+  File "C:\Python27\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 387, in find_element_by_xpath
+    return self.find_element(by=By.XPATH, value=xpath)
+  File "C:\Python27\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 957, in find_element
+    'value': value})['value']
+  File "C:\Python27\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 314, in execute
+None
+    self.error_handler.check_response(response)
+  File "C:\Python27\lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+WebDriverException: Message: can't access dead object
+
+Process finished with exit code 0
+
+把注释去掉：
+
+driver=webdriver.Firefox(executable_path='c:\\geckodriver')
+driver.get('http://mail.126.com')
+try:
+    wait=WebDriverWait(driver,10,0.2)#显示等待
+    driver.switch_to.frame(driver.find_element_by_xpath("//iframe[@id='x-URS-iframe']"))#切换到用户名和密码输入框所在的frame元素
+
+name=wait.until(lambda x:x.find_element_by_xpath("//input[@placeholder='邮箱帐号或手机号' and @name='email']"))
+    name.send_keys('xiaxiaoxu1987')
+    password=wait.until(lambda x:x.find_element_by_xpath("//input[@placeholder='密码']"))
+    password.send_keys('gloryroad')
+    submit=wait.until(lambda x:x.find_element_by_xpath("//a[@id='dologin']"))
+    submit.click()
+    driver.switch_to.default_content()#在pycharm里用switch_to_default_content()会被加删除线，out了
+
+address_book_link=wait.until(lambda x:x.find_element_by_xpath("//div[text()='通讯录']"))
+    address_book_link.click()
+
+结果：没有报错
+
+C:\Python27\python.exe D:/test/dataDrivenTestPractice1/PageObject/test.py
+
+Process finished with exit code 0
+

@@ -1,0 +1,49 @@
+具体错误：
+
+UnicodeEncodeError: 'latin-1' codec can't encode characters in position 73-74: Body ('测试') is not valid Latin-1. Use body.encode('utf-8') if you want to send it encoded in UTF-8.
+
+解决：
+
+对请求参数进行编码处理：
+
+示例代码：
+
+import requests
+import json
+import re
+import pymysql
+from tool.Mysql_connect import Mysql_operation
+from tool.get_token import Crm_token
+
+class test_demo(object):
+  def __init__(self):
+    self.op_mysql=Mysql_operation()
+    self.token=Crm_token()
+  def create_yixiang(self):
+    url='http://xxx/customerAdjunctAdd'
+    token=self.token.get_token()
+    headers={"Content-Type":'application/x-www-form-urlencoded',
+    "token":token}
+    try:
+      tel_num=self.op_mysql.sql_select('''select max(tel) from nc_customer_adjunct''')[0]['max(tel)'] #结果为str
+    except Exception as error:
+      print(error)
+    a=1
+    while a<3:
+      tel_num=int(tel_num)+1
+      a+=1
+      data='customer_type=1&source=1&course_name_id=41&tel=%d&customer_name=测试3.1&sex=0&school=测试1&intro_id=0'%(tel_num)
+      try:
+        request1=requests.request("POST",url=url,headers=headers,data=data.encode()) #encode对请求编码处理：不处理接口会返回数据解析错误
+        # print(data)
+        response1=request1.json()
+        print(headers)
+        print(response1)
+      except Exception as error:
+        print(error)
+if __name__=="__main__":
+  Tm=test_demo()
+  Tm.create_yixiang()
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

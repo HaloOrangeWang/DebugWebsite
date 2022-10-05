@@ -1,0 +1,39 @@
+通过spark-submit或者idea中提交jar包报错
+
+18/09/28 09:41:52 ERROR TaskSchedulerImpl:Exiting due to error from cluster scheduler: All masters are unresponsive! Giving up.
+
+问题原因
+
+服务器上版本号和本地版本号不对应，导致进行序列化的UID不一致:
+
+class incompatible: stream classdesc serialVersionUID 8789839749593513237, local class serialVersionUID = -4145741279224749316
+
+解决方法
+
+如果是通过submit提交的程序报错，则是本地编译spark程序的scala版本和spark版本和服务器上的版本是否一致
+
+如果检查完版本对应，则需要再次确认编译spark的scala版本号是否对应Spark通过maven进行build时，默认scala版本为2.10。若要为Scala 2.11进行编译,如果不一致也需要调整本地编译scala的版本号
+
+总结来说都是版本不兼容在作怪
+
+代码示例
+
+服务器上scala版本号是2.11.12，当时本地是2.11,在将本地版本号修改为2.11.12后解决
+
+name := "run-spark"
+
+version := "0.1"
+
+scalaVersion := "2.11.12"
+
+libraryDependencies ++= Seq(
+  "org.apache.spark"  %%  "spark-core"    % "2.2.0",
+  "org.apache.spark"  %%  "spark-sql"     % "2.2.0",
+  "org.apache.spark"  %% "spark-yarn"     % "2.2.0",
+  "com.typesafe.scala-logging" % "scala-logging-slf4j_2.11" % "latest.integration"
+)
+
+参考链接
+
+解决在编程方式下无法访问 Spark Master 问题
+

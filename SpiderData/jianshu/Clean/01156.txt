@@ -1,0 +1,35 @@
+
+1、python print()报错
+
+python print()时出现UnicodeEncodeError: 'gbk' codec can't encode character '\uff61' in position 6080: illegal multibyte sequence类型的错误
+
+
+错误原因
+
+这类错误的主要原因时print()的默认编码错误。
+
+
+解决方法：
+
+
+方法一
+
+把需要输出的内容，写入一个.txt文件中，查看输出结果
+
+
+方法二
+
+在系统中修改print()的默认编码，修改默认编码为gb18030
+
+import io，sys
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='gb18030')
+
+
+2、print没有内容打印
+
+问题描述：使用print打印内容时，没有任何显示
+
+问题原因：print输出时缓存没有刷新，因此，要等到缓存刷新，才能显示
+
+解决方法：print()中加入flush=True，既强制刷新缓存 print(‘ad’,flush=True)
+

@@ -1,0 +1,30 @@
+　　最近在跟着院内大神学习python的过程中，发现使用urllib.request.urlopen(url)请求服务器是报错：
+
+　　在园子里找原因，发现原因为：
+
+只会收到一个单纯的对于该页面访问的请求,但是服务器并不知道发送这个请求使用的浏览器,操作系统,
+
+硬件平台等信息,而缺失这些信息的请求往往都是非正常的访问,例如爬虫.
+
+　　解决的方法：
+
+　　在请求中添加UserAgent的信息
+
+具体如下：
+
+　　这还没完，这个user-Agent是怎么获取的呢？知道吗？
+
+经过实测找到如下途径：
+
+1.针对chrome:
+
+可以在地址栏输入：about:version   回车即可找到userAgent信息
+
+2.针对其他浏览器：
+
+在地址栏中输入：javascript:alert(navigator.userAgent) 　　回车即可找到userAgent信息
+
+实测有效。
+
+　　Get one tips, again.
+

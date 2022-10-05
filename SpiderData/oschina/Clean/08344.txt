@@ -1,0 +1,26 @@
+#报错现象
+
+#创建Oracle数据库11g默认标准块大小8K，直接分配32g报错
+
+create tablespace ceshi datafile '+data' size 32g
+
+*
+
+ERROR at line 1:
+
+ORA-01144: File size (4194304 blocks) exceeds maximum of 4194303 blocks
+
+#经过测算，4194304块的数量=32G，报错提示块的数量32g-1个块数量
+
+#以前了解到的知识，默认表空间类型small小表空间类型，单个数据文件最大32G，但是此时创建一个32g的表空间报错
+
+#查询MOS  与Oracle能管理的数据块数量有关，是一种现象，接受即可。 因此，创建表空间size 32g--  会直接报错
+
+104280.1
+
+#
+
+块的数量收到限制： 2^22-1
+
+#如果是2Kb的small类型表空间，单个数据文件最大是8G-2Kb
+

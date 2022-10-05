@@ -1,0 +1,37 @@
+
+错误描述：
+
+[root@eshop-cache01 local]# gem install redis
+ERROR:  Loading command: install (LoadError)
+	cannot load such file -- zlib
+ERROR:  While executing gem ... (NoMethodError)
+    undefined method `invoke_with_build_args' for nil:NilClass
+
+
+解决方案：
+
+报错原因
+
+缺少zlib库依赖
+
+解决报错
+
+1 首先安装zlib库
+
+yum install zlib-devel
+
+2 集成zlib库到Ruby环境
+
+# cd ruby-2.3.8/ext/zlib
+# ruby extconf.rb
+checking for deflateReset() in -lz... yes
+checking for zlib.h... yes
+checking for crc32_combine() in zlib.h... yes
+checking for adler32_combine() in zlib.h... yes
+checking for z_crc_t in zlib.h... yes
+creating Makefile
+# make
+linking shared-object zlib.so
+# make install
+/bin/install -c -m 0755 zlib.so /usr/local/ruby/lib/ruby/site_ruby/2.3.0/x86_64-linux
+

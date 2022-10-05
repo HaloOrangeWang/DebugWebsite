@@ -1,0 +1,34 @@
+线上报警 5xx 错误，查看日志发现报这个错，
+
+TypeError: The view function did not return a valid response. The function either returned None or ended without a return statement.
+
+这个方法没有有效的返回结果
+
+页面报这个错误
+
+
+Internal Server Error
+
+The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+
+服务器遇到内部错误，无法完成您的请求。服务器过载或应用程序出错。
+
+# flask 请求不可以没有返回值
+# The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+import flask
+
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/func')
+# 展示数据
+def func():
+  return  # 这块有问题
+# TypeError: The view function did not return a valid response. The function either returned None or ended without a return statement.
+
+if __name__ == "__main__":
+    app.run(host='127.0.0.1',port='9090')
+
+修改方法，加个返回值就好了。
+

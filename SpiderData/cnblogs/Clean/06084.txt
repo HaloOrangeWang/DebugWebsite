@@ -1,0 +1,26 @@
+在使用Django2.0 并配置了mysql作为数据库时，启动报错：
+
+
+报错1：找不到mysqlclient
+
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module. Did you install mysqlclient?
+
+解决方法
+
+项目（settings.py同级)目录中__init__.py中添加
+
+
+报错2：版本检查出错
+
+raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.version)
+
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+解决方法：
+
+找到Python安装路劲下的/Users/MAC/env/MxShop/lib/python3.6/site-packages/django/db/backends/mysql/base.py文件
+
+将文件中的如下代码注释
+
+重新在项目manage.py路劲下执行如下命令即可
+

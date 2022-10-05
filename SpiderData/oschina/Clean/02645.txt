@@ -1,0 +1,133 @@
+关键字：加载图像数据 Fluid版
+
+关键字：加载图像数据 Fluid版
+
+问题描述：使用Fluid版的PaddlePaddle搭建图像分类模型，运行时报错，错误为Aborted at 1520823806 (unix time) try "date -d @1520823806" if you are using GNU date *** PC: @ 0x0 (unknown)，自己观察报错代码段是图像数据处理那块，所以感觉应该是PaddlePaddle在加载图像时出现了错误。
+
+问题描述：使用Fluid版的PaddlePaddle搭建图像分类模型，运行时报错，错误为Aborted at 1520823806 (unix time) try "date -d @1520823806" if you are using GNU date *** PC: @ 0x0 (unknown)，自己观察报错代码段是图像数据处理那块，所以感觉应该是PaddlePaddle在加载图像时出现了错误。
+
+报错代码段：
+
+报错代码段：
+
+# 读入数据
+img = Image.open(image_file)
+img = img.resize((32, 32), Image.ANTIALIAS)
+test_data = np.array(img).astype("float32")
+test_data = test_data[np.newaxis, :] / 255
+
+报错输出：
+
+*** Aborted at 1520823806 (unix time) try "date -d @1520823806" if you are using GNU date ***
+PC: @                0x0 (unknown)
+*** SIGSEGV (@0x50) received by PID 35 (TID 0x7ffc9cc40700) from PID 80; stack trace: ***
+    @     0x7ffc9c7f1390 (unknown)
+    @     0x7ffc9ca0c73c (unknown)
+    @     0x7ffc9ca15851 (unknown)
+    @     0x7ffc9ca10564 (unknown)
+    @     0x7ffc9ca14da9 (unknown)
+    @     0x7ffc9c55356d (unknown)
+    @     0x7ffc9ca10564 (unknown)
+    @     0x7ffc9c553624 __libc_dlopen_mode
+    @     0x7ffc9c525a45 (unknown)
+    @     0x7ffc9c7eea99 __pthread_once_slow
+    @     0x7ffc9c525b64 backtrace
+    @     0x7ffc92fb8519 paddle::platform::EnforceNotMet::EnforceNotMet()
+    @     0x7ffc9354bb48 paddle::operators::ConvOp::InferShape()
+    @     0x7ffc936adc63 paddle::framework::OperatorWithKernel::RunImpl()
+    @     0x7ffc936ab4d8 paddle::framework::OperatorBase::Run()
+    @     0x7ffc930567e2 paddle::framework::Executor::Run()
+    @     0x7ffc92fd52d3 _ZZN8pybind1112cpp_function10initializeIZNS0_C4IvN6paddle9framework8ExecutorEIRKNS4_11ProgramDescEPNS4_5ScopeEibbEINS_4nameENS_9is_methodENS_7siblingEEEEMT0_FT_DpT1_EDpRKT2_EUlPS5_S8_SA_ibbE_vISO_S8_SA_ibbEISB_SC_SD_EEEvOSF_PFSE_SH_ESN_ENUlRNS_6detail13function_callEE1_4_FUNESV_
+    @     0x7ffc92fd1fa4 pybind11::cpp_function::dispatcher()
+    @           0x4cad00 PyEval_EvalFrameEx
+    @           0x4c2705 PyEval_EvalCodeEx
+    @           0x4ca088 PyEval_EvalFrameEx
+    @           0x4c9d7f PyEval_EvalFrameEx
+    @           0x4c2705 PyEval_EvalCodeEx
+    @           0x4c24a9 PyEval_EvalCode
+    @           0x4f19ef (unknown)
+    @           0x4ec372 PyRun_FileExFlags
+    @           0x4eaaf1 PyRun_SimpleFileExFlags
+    @           0x49e208 Py_Main
+    @     0x7ffc9c430830 __libc_start_main
+    @           0x49da59 _start
+    @                0x0 (unknown)
+Segmentation fault (core dumped)
+
+复现方式：
+ 读入自定义数据时，使用上面报错代码段代码，使得读入数据的格式为
+
+[[[[0.654902   0.7764706  1.        ]
+   [0.6666667  0.78431374 0.99607843]
+   [0.6784314  0.79607844 1.        ]
+   ...
+   [0.6901961  0.8156863  1.        ]
+   [0.6862745  0.80784315 1.        ]
+   [0.6784314  0.8        1.        ]]
+   ...
+   [[0.63529414 0.75686276 0.9843137 ]
+   [0.6431373  0.7647059  0.98039216]
+   [0.65882355 0.7764706  0.9882353 ]
+   ...
+   [0.6745098  0.8        0.9843137 ]
+   [0.6666667  0.7921569  0.9882353 ]
+   [0.6627451  0.78039217 0.9882353 ]]]]
+
+随后就会出现如上报错
+
+解决方案：
+ 报错的原因是读入数据的格式有问题，从复现方式输出的数据格式可以知道，图像数据的宽为3，但通道channel却有多个，这是因为图像数据的读入使用了PIL中的Image模块，PIL打开图片存储顺序为H(高度)，W(宽度)，C(通道)，这与Fluid版PaddlePaddle要求的格式有差异，Fluid版PaddlePaddle要求输入数据里的channel在最前面，PaddlePaddle要求数据顺序为CHW，所以需要转换顺序， 读入数据的代码段修改成如下形式： img = Image.open(image_file)
+img = img.resize((32, 32), Image.ANTIALIAS)
+test_data = np.array(img).astype("float32")
+#transpose矩阵转置，高维数组需要使用一个由轴编号组成的元组
+test_data = np.transpose(test_data, (2, 0, 1))
+test_data = test_data[np.newaxis, :] / 255
+
+解决方案：
+ 报错的原因是读入数据的格式有问题，从复现方式输出的数据格式可以知道，图像数据的宽为3，但通道channel却有多个，这是因为图像数据的读入使用了PIL中的Image模块，PIL打开图片存储顺序为H(高度)，W(宽度)，C(通道)，这与Fluid版PaddlePaddle要求的格式有差异，Fluid版PaddlePaddle要求输入数据里的channel在最前面，PaddlePaddle要求数据顺序为CHW，所以需要转换顺序，
+
+读入数据的代码段修改成如下形式：
+
+img = Image.open(image_file)
+img = img.resize((32, 32), Image.ANTIALIAS)
+test_data = np.array(img).astype("float32")
+#transpose矩阵转置，高维数组需要使用一个由轴编号组成的元组
+test_data = np.transpose(test_data, (2, 0, 1))
+test_data = test_data[np.newaxis, :] / 255
+
++ 问题分析：
+图像数据读入后其实就是一个三维矩阵，不同的读入方式会造成该矩阵的不同维度表示不同含义，此时如果没有理解矩阵中不同维度所代表的含义而直接将这些数据交由PaddlePaddle进行训练建模，就难以获得好的模型或者直接因使用错误而导致报错，这里的报错时因为使用了PIL的Image模块来读入图像，却没有注意PIL读入图像后不同维度所代表的含义，所以导致报错，使用numpy的transpose()方法对矩阵进行转置变换后，获得预期的矩阵则可。
+
++ 问题拓展：
+在深度学习建立图像模型的过程中，通常都不可避免的要处理图像数据，为了避免类似问题，这里简单讨论一下常见的读入图像数据的方法以.
+
+PIL读入图像数据，代码如下：
+
+```python
+from PIL import Image
+img  = Image.open(imgpath) #读入
+img.show() #展示
+
+读入后，图像矩阵对应维度的意义为H(高度)、W(宽度)、C(通道)，且PIL.Image 数据是 uinit8 型的，范围是0-255
+
+OpenCV读入图像数据，代码如下：
+
+import cv2
+img = cv2.imread(imgpath)
+
+通过OpenCV读入RGB图像后，其颜色通道顺序是B,G,R。
+
+采用 matplotlib.image 读入图片数据，代码如下：
+
+import matplotlib.image as mpimg
+lena = mpimg.imread('lena.png')
+
+通过matplotlib的mpimg方法读入图像数据，其中的数据是 float32 型的，范围是0-1。
+
+问题研究：
+ 对自己要训练的数据进行相应的预处理操作是建立深度学习模型常见的步骤，如果对自己要处理的数据结构不是特别熟悉，可以先尝试将数据预处理的代码单独写出来，然后用少量数据来验证这部分代码，除此之外，还可以使用numpy、cPickle等工具，单独的写数据处理的代码，将处理后的数据通过numpy、cPickle等工具持久化，即保存为二进制的文件，在使用PaddlePaddle训练模型时，直接以相应的方式读入这些二进制文件，此时读入的数据就是要处理数据相应的矩阵了，不必再关心数据预处理的方面的逻辑，而且也方便他人再次使用该数据进行模型的复现。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

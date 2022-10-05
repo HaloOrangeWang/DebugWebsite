@@ -1,0 +1,44 @@
+安装jpype时发生报错：
+
+安装jpype时发生报错：
+
+按照提示去装了Microsoft visual C++，结果重新安装还是报错，根据https://blog.csdn.net/qq_38934189/article/details/79460085这篇文章的指导最终完成了安装，具体步骤如下：
+
+1.从Python Extension Packages for Windows中选择jpype（直接页面Ctrl+F搜索jpype）并下载相应版本，如：JPype1‑0.6.3‑cp36‑cp36m‑win_amd64.whl
+
+2.利用terminal安装wheel，输入pip install wheel即可
+
+3.安装完wheel后，再安装之前下载的jpype文件（注意要加上路径）
+
+4.这样jpype就安装成功了，但是实际使用时会发生报错（另附测试代码），显示缺少numpy包，所以接下来要安装numpy，pip install numpy,安装完成后重新运行测试代码，即可正常运行
+
+测试代码：
+
+# _*_ coding:utf-8 _*_
+
+# _*_ coding:utf-8 _*_
+
+import jpype
+
+import jpype
+
+jvmPath = jpype.getDefaultJVMPath()       # 默认的JVM路径
+
+jvmPath = jpype.getDefaultJVMPath()       # 默认的JVM路径
+
+print(jvmPath)
+
+print(jvmPath)
+
+jpype.startJVM(jvmPath)
+
+jpype.startJVM(jvmPath)
+
+jpype.java.lang.System.out.println("hello world!")
+
+jpype.java.lang.System.out.println("hello world!")
+
+jpype.shutdownJVM()
+
+jpype.shutdownJVM()
+

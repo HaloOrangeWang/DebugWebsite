@@ -1,0 +1,52 @@
+今天在运行一个R脚本时遇到一个报错：
+
+不存在叫‘stringi’这个名字的程辑包
+
+既然不存在这个包，那咱就给安装一个吧！
+
+install.packages("stringi")
+
+居然还是报错：
+
+下载的程序包在
+
+‘/tmp/RtmpmKcGmX/downloaded_packages’里
+
+更新'.Library'里的HTML程序包列表
+
+Making 'packages.html' ... 做完了。
+
+Warning message:
+
+In install.packages("stringi") : 安装程序包‘stringi’时退出狀態的值不是0
+
+也就是没有安装成功的意思喽！
+
+在详细的报错信息里边找到：
+
+ERROR:   moving to final location failed
+
+/* removing ‘/home/xxx/software/R.3.6/bin/lib64/R/library/stringi’
+
+/* removing ‘/home/xxx/software/R.3.6/bin/lib64/R/library/00LOCK-stringi’
+
+可能是应为之前安装过，文件冲突了。所以删掉上边两个文件，再重新安装：
+
+rm -r /home/xxx/software/R.3.6/bin/lib64/R/library/stringi
+
+rm -r removing ‘/home/xxx/software/R.3.6/bin/lib64/R/library/00LOCK-stringi
+
+install.packages("stringi")     #重新安装
+
+这样就安装好了：
+
+下载的程序包在
+
+‘/tmp/RtmpmKcGmX/downloaded_packages’里
+
+更新'.Library'里的HTML程序包列表
+
+Making 'packages.html' ... 做完了。
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------I'm a line ! Thanks !---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+

@@ -1,0 +1,60 @@
+Exception:
+
+Traceback (most recent call last):
+
+File "/Library/Python/2.7/site-packages/pip-9.0.1-py2.7.egg/pip/basecommand.py", line 215, in main
+
+status = self.run(options, args)
+
+File "/Library/Python/2.7/site-packages/pip-9.0.1-py2.7.egg/pip/commands/install.py", line 342, in run
+
+prefix=options.prefix_path,
+
+File "/Library/Python/2.7/site-packages/pip-9.0.1-py2.7.egg/pip/req/req_set.py", line 778, in install
+
+requirement.uninstall(auto_confirm=True)
+
+File "/Library/Python/2.7/site-packages/pip-9.0.1-py2.7.egg/pip/req/req_install.py", line 754, in uninstall
+
+paths_to_remove.remove(auto_confirm)
+
+File "/Library/Python/2.7/site-packages/pip-9.0.1-py2.7.egg/pip/req/req_uninstall.py", line 115, in remove
+
+renames(path, new_path)
+
+File "/Library/Python/2.7/site-packages/pip-9.0.1-py2.7.egg/pip/utils/__init__.py", line 267, in renames
+
+shutil.move(old, new)
+
+File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py", line 300, in move
+
+rmtree(src)
+
+File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py", line 247, in rmtree
+
+rmtree(fullname, ignore_errors, onerror)
+
+File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py", line 252, in rmtree
+
+onerror(os.remove, fullname, sys.exc_info())
+
+File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py", line 250, in rmtree
+
+os.remove(fullname)
+
+OSError: [Errno 13] Permission denied: '/Library/Python/2.7/site-packages/pip-9.0.1-py2.7.egg/EGG-INFO/PKG-INFO'
+
+You are using pip version 9.0.1, however version 19.1.1 is available.
+
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+在Mac下使用pip更新一个Python库时提示pip版本过低，底部命令行中显示需要升级，升级命令为：You should consider upgrading via the 'pip install --upgrade pip' command.
+
+安装给出的命令输入：pip install --upgrade pip；结果执行后，还是报同样的错误。
+
+重试N次后，发现还是执行失败。
+
+最后上网查找后，才发现是权限问题，修改执行命令为：sudo pip install --upgrade pip
+
+结果执行成功啦，普天同庆哦~
+

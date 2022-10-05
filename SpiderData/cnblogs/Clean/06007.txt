@@ -1,0 +1,49 @@
+win10,python3.7。
+
+自己使用Flask编写了一个python web Demo。在使用idle运行的时候报错了：
+
+代码：
+
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+import subprocess
+import flask,json
+
+#flask 开发接口
+
+#python自带的idle运行会报错，cmd下运行可以
+
+#1.定义server
+server=flask.Flask(__name__)
+#2第一个参数就是路径,第二个参数支持的请求方式，不写的话默认是get
+@server.route('/index',methods=['get','post'])
+def index():
+    res={'msg':'这是我开发的第一个借口','msg_code':0}
+    return json.dumps(res,ensure_ascii=False)
+#3执行
+server.run(port=5001,debug=True,host='0.0.0.0')
+
+运行:
+
+File "D:/my/py/flask_test.py", line 14, in <module>
+    server.run(port=5001,debug=True,host='0.0.0.0')
+  File "C:\Python37\lib\site-packages\flask\app.py", line 985, in run
+    cli.show_server_banner(self.env, self.debug, self.name, False)
+  File "C:\Python37\lib\site-packages\flask\cli.py", line 670, in show_server_banner
+    click.echo(message)
+  File "C:\Python37\lib\site-packages\click\utils.py", line 218, in echo
+    file = _default_text_stdout()
+  File "C:\Python37\lib\site-packages\click\_compat.py", line 675, in func
+    rv = wrapper_func()
+  File "C:\Python37\lib\site-packages\click\_compat.py", line 436, in get_text_stdout
+    rv = _get_windows_console_stream(sys.stdout, encoding, errors)
+  File "C:\Python37\lib\site-packages\click\_winconsole.py", line 295, in _get_windows_console_stream
+    func = _stream_factories.get(f.fileno())
+io.UnsupportedOperation: fileno
+
+原因:应为使用idle引起的。
+
+所以换成了win10自带的powershell来运行  python app.py。就没有了这个错误。
+
+cmd-输入powershell进入：
+

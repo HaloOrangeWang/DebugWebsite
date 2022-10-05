@@ -1,0 +1,35 @@
+版本及系统信息：
+
+PyInstaller: 4.1
+
+Python: 3.6.4
+
+Platform: Windows-7-6.1.7601-SP1
+
+打包过程中的异常提示 “has no attribute InfFlag”
+
+打包过程中的异常提示 “has no attribute InfFlag”
+
+如图中圈出来的信息所示，enum这个模块出问题了；查询了一下这个包是Tensorflow 的依赖项，如果你不用Tensorflow 无所谓，用的时候会提示你缺少再装也不迟。
+
+
+解决方法：
+
+pip uninstall enum34
+
+卸载该模块后，再次重新打包，应该就不会报错了
+
+打包完成后，点击运行exe闪退，报错
+
+用PyInstaller打包exe，点击exe程序运行的时候，提示
+
+Py_Initialize: unable to load the file system codec
+LookupError:unknow encoding:utf-8
+
+一般上述这两个问题都是连着出现的，原因是啥呢，年轻不能猴急
+
+
+解决方法：
+
+卸载上述模块之后，需要关闭当前打包的控制台窗口，并删除原有的打包文件。重新打开控制台窗口执行打包命令，之后问题就可以解决了
+

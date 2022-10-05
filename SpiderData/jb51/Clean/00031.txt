@@ -1,0 +1,54 @@
+
+问题描述：
+
+我一直用python处理气象数据，之前写过一个处理气象数据的程序，一直都可以用的，可是昨天我再想处理数据的时候提示我如下错误
+
+Traceback (most recent call last):
+ ...中间忽略
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37-32\lib\site-packages\xarray\backends\file_manager.py", line 205, in _acquire_with_cache_info
+    file = self._opener(*self._args, **kwargs)
+  File "src\netCDF4\_netCDF4.pyx", line 2330, in netCDF4._netCDF4.Dataset.__init__
+  File "src\netCDF4\_netCDF4.pyx", line 1948, in netCDF4._netCDF4._ensure_nc_success
+PermissionError: [Errno 13] Permission denied: b'E:\\meteo\\metee\\longbasaba_19900530-19900930.nc'
+
+从最后一行可以看出，好像就是拒绝我导出数据，而且错误的地方就是在导出数据的位置
+
+ds.to_netcdf(r'E:\meteo\metee\longbasaba_19900530-19900930.nc')
+
+然后就是上网查资料，查了很多对于该问题描述的都不是很清晰，弄来弄去从昨晚到今天中午啥也没做，真的是坑死了，时间都浪费在这上面。为了让大家避坑我必须把这个问题的解决方法写出来。
+
+
+解决方案
+
+其实在我昨天查问题的时候也不是一点收获没有，有一些就是说没有管理员权限什么的，让以管理员身份运行。大家可以试试以管理员身份运行你的python文件，看看能不能起作用。即使是能起作用也不能每次都以管理员身份运行对不对。所以，下面是我给出的解决方法。
+
+第一步：找到你python文件所在的文件夹，右键属性查看属性状态
+
+我的这个文件夹被设置为只读，坑死老子了，也不知道为啥自己就变成只读！！！
+
+第二步：取消勾选只读，然后确定即可
+
+然后再去直接运行你的文件试试，会有奇迹发生。
+
+当然还可能是一些更小白的问题，比如你想写入的文件正在打开或者你的代码需要你自己先创建文件，这也可能会返回这个错误。
+
+
+附另一种解决方案
+
+解决方案如下：
+
+1.检查对应路径下的文件是否存在，且被占用。如果文件不存在，就找到对应文件即可；如果文件存在，被占用，将占用程序暂时关闭。
+
+2.修改cmd的权限，以管理员身份运行。
+
+3.检查是否是打开了文件夹。
+
+最后，希望大家能避免这些错误，给自己节省一点宝贵的时间。
+
+我是一名浪费了很多时间的研究生。
+
+
+总结
+
+到此这篇关于Python报错:PermissionError: [Errno 13] Permission denied的解决办法的文章就介绍到这了,更多相关Python报错:PermissionError: [Errno 13] Permission denied内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

@@ -1,0 +1,45 @@
+最近想玩玩python的图形处理模块来进行数据图形显示相关的开发，目的是把服务器中的数据资源生成图形（docker资源利用率展示不符合需求）。而matplotlib是python绘图这方面的权威，它能让使用者很轻松地将数据图形化，并且提供多样化的输出格式，于是决定对其进行试用!
+
+
+matplotlib的安装
+
+使用pip命令安装：
+
+pip install –i https://pypi.tuna.tsinghua.edu.cn/simple  matplotlib
+
+为了提高安装效率这里，使用清华镜像。
+
+本人python环境： win10 ，python 3.7.4
+
+
+遇到的运行问题
+
+Matplotlib成功安装后，在网上随便找了段代码来运行
+
+import matplotlib.pyplot as plt
+
+plt.plot([3,4,5])
+
+plt.ylabel('numbers')
+
+plt.show()
+
+报错如下：
+
+UserWarning: Matplotlib is currently usingagg, which is a non-GUI backend, so cannot show the figure. plt.show()
+
+
+问题的解决方案
+
+网上有很多解决方案，里面也有很多坑，最后汇总，通过以下两点可以轻松运行matplotlib实例
+
+1.   check 在安装python时，是否勾选了tcl/tk，如果没有，请勾选上（此处浪费了我大量时间debug）
+
+2.加入如下代码
+
+import matplotlib
+
+matplotlib.use('TkAgg')
+
+再次运行，成功！如下图所示：
+

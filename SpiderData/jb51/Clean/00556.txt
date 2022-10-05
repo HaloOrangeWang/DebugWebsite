@@ -1,0 +1,89 @@
+
+import模块时有错误红线的解决
+
+
+前情提要
+
+概念：
+
+在一个文件中代码越长越不容易维护，为了编写可维护的代码，我们把很多函数分组，分别放到不同的文件里，这样每个文件包含的代码就相对较少，很多编程语言都采用这种组织代码的方式。在python中，一个py文件就称之为一个模块（Module）
+
+好处：
+
+1、最大的好处是提高了代码的可维护性
+
+2、编写代码不必从零开始。当一个模块编写完毕，就可以在其他地方调用
+
+分类：
+
+1、python’标准库 2、第三方模块 3、应用程序自定义
+
+使用软件为pycharm。在python项目执行的时候，会出现导入模块错误（代码上表示出红色曲线）
+
+
+原因及解决办法
+
+1、常见的为本模块没有安装，所以要去网上搜索该模块的安装方法。（很多可以通过pip解决）
+
+2、若该模块为自己编写，则需看他是否跟执行文件是否在一个文件夹下。
+
+例1：
+
+bin.py是执行文件，想在bin.py中导入cal.py运行它中的run（）函数。
+
+如果只写import会报错，因为两个文件存在于两个文件夹中
+
+所以这种情况在导入模块的时候要写成from 文件夹名 import 文件名
+
+即from module1 import cal
+
+例2：
+
+bin.py是执行文件，想在bin.py中导入main.py，在main中再导入cal.py运行cal.py的run（）函数。简单点说就是在1中调用2在从2中调用3
+
+这时，bin中的代码是：
+
+注：这样导入的是正确的，但是有的时候pycharm也会给它标红线如下图。直接执行就好不用管（除非你导入本身有问题）
+
+from module1 import main
+main.run()
+
+main中的代码是：
+
+import cal
+def run():
+    print(cal.add(3,7))
+    print('这里是main')
+
+cal中的代码是：
+
+def add(a,b):
+    print('这里是cal,%d+%d=%d'%(a,b,a+b))
+
+注意：
+
+这样执行是有错误的：
+
+Traceback (most recent call last):
+  File "E:/python_workspace/test/bin.py", line 1, in <module>
+    from module1 import main
+  File "E:\python_workspace\test\module1\main.py", line 1, in <module>
+    import cal
+ModuleNotFoundError: No module named 'cal'
+
+这时，我们要格外注意，在main中导入cal模块时写的是import cal。这样是错误的。
+
+原因及解决：
+
+我们的执行文件是bin那么在执行的的时候所有的导入路径都是基于执行文件的。所以尽管bin和main在同一文件夹下，依然要写成from module import cal。（改完你会发现以下现象，不用管，这是软件问题，保证导入路径没错就可以执行）
+
+
+import红线但是能运行
+
+
+解决方法
+
+包右键-Mark Directory as-Sources Root
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

@@ -1,0 +1,45 @@
+先安装 pip install pipreqs
+
+首先执行E:\code\Hainan\RubberMeteor\webserver> pipreqs --use-local ./
+
+报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0xbf in position 2: illegal multibyte sequence
+
+需要上--encoding=utf8 如下
+
+E:\code\Hainan\RubberMeteor\webserver> pipreqs --use-local --encoding=utf8 --force .
+
+如果已经存在requirements.txt，需要加上 --force 覆盖之
+
+遇到代码开头结尾编码问题
+
+ERROR: Failed on file: ./app.py
+  File "d:\python37\lib\runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+  File "d:\python37\lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "D:\Python37\Scripts\pipreqs.exe\__main__.py", line 7, in <module>
+  File "d:\python37\lib\site-packages\pipreqs\pipreqs.py", line 470, in main
+    init(args)
+  File "d:\python37\lib\site-packages\pipreqs\pipreqs.py", line 409, in init
+    follow_links=follow_links)
+  File "d:\python37\lib\site-packages\pipreqs\pipreqs.py", line 138, in get_all_imports
+    raise exc
+  File "d:\python37\lib\site-packages\pipreqs\pipreqs.py", line 124, in get_all_imports
+    tree = ast.parse(contents)
+  File "d:\python37\lib\ast.py", line 35, in parse
+    return compile(source, filename, mode, PyCF_ONLY_AST)
+  File "<unknown>", line 1
+    ﻿# -*- coding: utf-8 -*-
+    ^
+SyntaxError: invalid character in identifier
+
+重新创建一个代码文件，把代码拷贝进去，错误消失，代码分析如下：
+
+错误代码：
+
+hex分析
+
+正确代码
+
+hex分析
+

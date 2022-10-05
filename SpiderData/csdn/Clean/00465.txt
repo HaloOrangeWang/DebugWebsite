@@ -1,0 +1,34 @@
+
+有关python引用win32api出错的解决办法
+
+1、安装不上：
+ pip install win32aip出错，出现如下错误
+
+E:\python>pip install win32api
+ ERROR: Could not find a version that satisfies the requirement win32api (from versions: none)
+ ERROR: No matching distribution found for win32api
+
+使用pip install pypiwin32 安装成功
+ E:\python>pip install pypiwin32
+ Requirement already satisfied: pypiwin32 in c:\users\admin\appdata\local\program
+ s\python\python38\lib\site-packages (223)
+ Requirement already satisfied: pywin32>=223 in c:\users\admin\appdata\local\prog
+ rams\python\python38\lib\site-packages (from pypiwin32) (227)
+
+2、在.py中运行正常，生成exe文件运行出错，
+ 
+ 先以管理员身份打开cmd
+ 找到python.exe的目录，在其中“SCRIPTS”目录中有一个文件叫作“pywin32_postinstall.py”，直接以管理员身份在CMD窗口中执行：
+ python pywin32_postinstall.py -install
+ 安装成功后。
+
+再重新生成新的exe文件
+ pyinstaller -F mypy.py
+
+在dist下生成的mypy.exe运行和在.py下运行一致。成功！！！
+
+续：
+ 这只是生成.exe文件不出错了，但拷贝到另一台电脑上，运行文件还是不行，只有生成目录了。
+ 即pyinstaller mypy.py 这样在dist下有个mypy目录，把目录内容全拷贝到别的电脑上运行。
+ 等能找到更好的办法，再来修改这个博客。
+

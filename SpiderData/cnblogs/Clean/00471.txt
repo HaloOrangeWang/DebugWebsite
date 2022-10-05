@@ -1,0 +1,12 @@
+在开头加上 
+import sys 
+reload(sys) 
+sys.setdefaultencoding( “utf-8” )
+
+Python自然调用ascii编码解码程序去处理字符流，当字符流不属于ascii范围内，就会抛出异常（ordinal not in range(128)）。所以解决方法就是修改默认编码，需要注意的是需要先调用reload方法。
+
+有时Jenkins执行会报错，而Python执行时不报错，也是在开头加上 
+import sys 
+reload(sys) 
+sys.setdefaultencoding( “utf-8” )
+

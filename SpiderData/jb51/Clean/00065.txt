@@ -1,0 +1,100 @@
+今天用python 使用pyinstaller打包exe出现错误
+
+环境pyqt5 + python3.6 32位
+
+在导入pyqt5包之前加上如下代码
+
+import sys
+import os
+if hasattr(sys, 'frozen'):
+ os.environ['PATH'] = sys._MEIPASS + ";" + os.environ['PATH']
+
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from pyqt_ui.MainWindow import MainWin
+
+if __name__ == '__main__':
+ app = QApplication(sys.argv)
+ mainWindow = QMainWindow()
+ main_dialog = MainWin(mainWindow)
+ mainWindow.show()
+ sys.exit(app.exec_())
+
+运行
+
+pyinstaller -F main2.py
+INFO: PyInstaller: 3.5
+INFO: Python: 3.6.4
+INFO: Platform: Windows-7-6.1.7601-SP1
+INFO: wrote E:\workspace\devTest\main2.spec
+INFO: UPX is not available.
+INFO: Extending PYTHONPATH with paths
+['E:\\workspace\\devTest', 'E:\\workspace\\devTest']
+INFO: checking Analysis
+INFO: Building because E:\workspace\devTest\main2.py changed
+INFO: Initializing module dependency graph...
+INFO: Initializing module graph hooks...
+INFO: Analyzing base_library.zip ...
+INFO: running Analysis Analysis-00.toc
+INFO: Adding Microsoft.Windows.Common-Controls to dependent assemblies of final executable
+ required by d:\mytool\env\env36-32\scripts\python.exe
+INFO: Caching module hooks...
+INFO: Analyzing E:\workspace\devTest\main2.py
+INFO: Processing pre-find module path hook distutils
+INFO: distutils: retargeting to non-venv dir 'C:\\Program Files (x86)\\Python36-32\\Lib\\distutils\\__init__.py'
+INFO: Processing pre-safe import module hook win32com
+INFO: Loading module hooks...
+INFO: Loading module hook "hook-encodings.py"...
+INFO: Loading module hook "hook-pydoc.py"...
+INFO: Loading module hook "hook-PyQt5.py"...
+WARNING: Hidden import "sip" not found!
+INFO: Loading module hook "hook-PyQt5.QtCore.py"...
+INFO: Loading module hook "hook-PyQt5.QtGui.py"...
+INFO: Loading module hook "hook-PyQt5.QtWidgets.py"...
+INFO: Loading module hook "hook-pythoncom.py"...
+INFO: Loading module hook "hook-pywintypes.py"...
+INFO: Loading module hook "hook-win32com.py"...
+INFO: Loading module hook "hook-xml.py"...
+INFO: Looking for ctypes DLLs
+INFO: Analyzing run-time hooks ...
+INFO: Including run-time hook 'pyi_rth_pyqt5.py'
+INFO: Including run-time hook 'pyi_rth_win32comgenpy.py'
+INFO: Looking for dynamic libraries
+INFO: Looking for eggs
+INFO: Using Python library d:\mytool\env\env36-32\scripts\python36.dll
+INFO: Found binding redirects:
+[]
+INFO: Warnings written to E:\workspace\devTest\build\main2\warn-main2.txt
+INFO: Graph cross-reference written to E:\workspace\devTest\build\main2\xref-main2.html
+INFO: checking PYZ
+INFO: Building because toc changed
+INFO: Building PYZ (ZlibArchive) E:\workspace\devTest\build\main2\PYZ-00.pyz
+INFO: Building PYZ (ZlibArchive) E:\workspace\devTest\build\main2\PYZ-00.pyz completed successfully.
+INFO: checking PKG
+INFO: Building because toc changed
+INFO: Building PKG (CArchive) PKG-00.pkg
+WARNING: One binary added with two internal names.
+WARNING: ('libGLESv2.dll',
+ 'D:\\mytool\\env\\env36-32\\lib\\site-packages\\PyQt5\\Qt\\bin\\libGLESv2.dll',
+ 'BINARY')
+WARNING: was placed previously at
+WARNING: ('PyQt5\\Qt\\bin\\libGLESv2.dll',
+ 'D:\\mytool\\env\\env36-32\\lib\\site-packages\\PyQt5\\Qt\\bin\\libGLESv2.dll',
+ 'BINARY')
+INFO: Building PKG (CArchive) PKG-00.pkg completed successfully.
+INFO: Bootloader d:\mytool\env\env36-32\lib\site-packages\PyInstaller\bootloader\Windows-32bit\run.exe
+INFO: checking EXE
+INFO: Building because toc changed
+INFO: Building EXE from EXE-00.toc
+INFO: Appending archive to EXE E:\workspace\devTest\dist\main2.exe
+INFO: Building EXE from EXE-00.toc completed successfully.
+
+打包成功
+
+运行出现正常界面
+
+注：为避免重复将main.py 更改为main2.py了
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作具有一定的参考学习价值，谢谢大家对脚本之家的支持。
+

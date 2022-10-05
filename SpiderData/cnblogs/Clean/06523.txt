@@ -1,0 +1,18 @@
+我自己新建了一个python包，名字：base，在其他的文件中想要使用这个包，就得像下面这样import进来
+
+from base.base_driver import base_driver
+
+但是当我这样做的时候，报错：ModuleNotFoundError: No module named 'base'，没这个模块，大体是因为python解释器在寻找模块的时候没有在我当前项目路径下找，所以没有找到。
+
+解决办法：
+
+在你的from base.base_driver import base_driver
+
+这句话上面加上：
+
+import os, sys
+
+sys.path.append(os.getcwd())
+
+即可。
+

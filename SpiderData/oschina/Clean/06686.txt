@@ -1,0 +1,50 @@
+
+1、报错信息
+
+Cannot add or update a child row: a foreign key constraint fails
+
+
+2、原因分析
+
+
+【1】字段的数据类型
+
+父表：
+
+子表：
+
+以上，父表和的对应字段数据类型一致，排除 添加的外键列与另一个表的唯一索引列（一般是主键）的数据类型不同 这一因素。
+
+
+【2】表的引擎
+
+USE information_schema;
+SELECT
+    table_catalog,
+    table_schema,
+    table_name,
+ENGINE 
+FROM
+TABLES 
+WHERE
+    table_schema ='net_management' 
+    AND table_name ='cap_kpi_base';
+
+父表：
+
+子表：
+
+以上，父表和子表的引擎都是InnoDB，排除 引擎 因素。
+
+
+【3】数据问题
+
+以上都排除了，只剩下数据影响了，多半是因为 子表里面的外键列，在父表里面 并没有相应的值，以下，用SQL联表验证一下：
+
+
+3、解决办法
+
+【1】删除子表里面 关联不了 父表主键 的数据
+
+【2】将子表里面，外键列 设置为null
+

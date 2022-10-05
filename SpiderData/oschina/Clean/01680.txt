@@ -1,0 +1,327 @@
+题注: 在win10下训练实在是有太多坑了,在此感谢网上的前辈和大神,虽然有的还会把你引向另一个坑~~.
+
+最近，用faster rcnn跑一些自己的数据，数据集为某遥感图像数据集——RSOD，标注格式跟pascal_voc差不多，但由于是学生团队标注，中间有一些标注错误，也为后面训练埋了很多坑。下面是用自己的数据集跑时遇到的一些问题，一定一定要注意：在确定程序完全调通前，务必把迭代次数设一个较小的值（比如100），节省调试时间。
+
+错误目录：
+
+1 ./tools/train_faster_rcnn_alt_opt.py is not found
+
+2 assert (boxes[:, 2] >= boxes[:, 0]).all()
+
+3 'module' object has no attribute 'text_format'
+
+4 Typeerror：Slice indices must be integers or None or have __index__ method
+
+5 TypeError: 'numpy.float64' object cannot be interpreted as an index
+
+6 error=cudaSuccess(2 vs. 0) out of memory？
+
+7 loss_bbox = nan，result: Mean AP＝0.000
+
+8 AttributeError: 'NoneType' object has no attribute 'astype'
+
+错误1: 执行sudo ./train_faster_rcnn_alt_opt.sh 0 ZF pascal_voc，报错：./tools/train_faster_rcnn_alt_opt.py is not found
+
+解决方法：执行sh文件位置错误，应退回到py-faster-rcnn目录下，执行sudo ./experiments/scripts/train_faster_rcnn_alt_opt.sh 0 ZF pascal_voc
+
+错误2：在调用append_flipped_images函数时出现： assert (boxes[:, 2] >= boxes[:, 0]).all()
+
+网上查资料说：出现这个问题主要是自己的数据集标注出错。由于我们使用自己的数据集，可能出现x坐标为0的情况，而pascal_voc数据标注都是从1开始计数的，所以faster rcnn代码里会转化成0-based形式，对Xmin，Xmax，Ymin，Ymax进行-1操作，从而会出现溢出，如果x=0，减1后溢出为65535。更有甚者，标记坐标为负数或者超出图像范围。主要解决方法有：
+
+（1）修改lib/datasets/imdb.py，在boxes[:, 2] = widths[i] - oldx1 - 1后插入：
+
+for b in range(len(boxes)):
+
+if boxes[b][2]< boxes[b][0]:
+
+boxes[b][0] = 0
+
+for b in range(len(boxes)):
+    if boxes[b][2]< boxes[b][0]:
+        boxes[b][0] = 0
+
+这种方法其实头痛医头，且认为溢出只有可能是 boxes[b][0] ，但后面事实告诉我， boxes[b][2] 也有可能溢出。不推荐。
+
+（2）修改lib/datasets/pascal_voc.py中_load_pascal_annotation函数，该函数是读取pascal_voc格式标注文件的，下面几句中的-1全部去掉（pascal_voc标注是1-based,所以需要-1转化成0-based,如果我们的数据标注是0-based,再-1就可能溢出，所以要去掉）。如果只是0-based的问题（而没有标注为负数或超出图像边界的坐标），这里就应该解决问题了。
+
+x1 = float(bbox.find('xmin').text)#-1
+
+y1 = float(bbox.find('ymin').text)#-1
+
+x2 = float(bbox.find('xmax').text)#-1
+
+y2 = float(bbox.find('ymax').text)#-1
+
+x1 = float(bbox.find('xmin').text)#-1
+y1 = float(bbox.find('ymin').text)#-1
+x2 = float(bbox.find('xmax').text)#-1
+y2 = float(bbox.find('ymax').text)#-1
+
+（3）标注文件矩形越界
+
+我执行了上面两步，运行stage 1 RPN, init from ImageNet Model时还是报错。说明可能不仅仅是遇到x=0的情况了，有可能标注本身有错误，比如groundtruth的x1<0或x2>imageWidth。决定先看看到底是那张图像的问题。在lib/datasets/imdb.py的
+
+assert (boxes[:, 2] >= boxes[:, 0]).all()
+
+assert (boxes[:, 2] >= boxes[:, 0]).all()
+
+这句前面加上:
+
+print self.image_index[i]
+
+print self.image_index[i]
+
+打印当前处理的图像名，运行之后报错前最后一个打印的图像名就是出问题的图像啦，检测Annotation中该图像的标注是不是有矩形越界的情况。经查，还真有一个目标的x1被标注成了-2。
+
+更正这个标注错误后，正当我觉得终于大功告成之时，依然报错……咬着牙对自己说“我有耐心”。这次报错出现在“Stage 1 Fast R-CNN using RPN proposals, init from ImageNet model”这个阶段，也就是说此时调用append_flipped_images函数处理的是rpn产生的proposals而非标注文件中的groundtruth。不科学啊，groundtruth既然没问题，proposals怎么会溢出呢？结论：没删缓存！把py-faster-rcnn/data/cache中的文件和 py-faster-rcnn/data/VOCdevkit2007/annotations_cache中的文件统统删除。是这篇博客给我的启发。在此之前，我花了些功夫执迷于找标注错误，如果只是想解决问题就没有必要往下看了，但作为分析问题的思路，可以记录一下：
+
+首先我决定看看到底哪个proposal的问题。还是看看是哪张图像的问题，在lib/datasets/imdb.py的
+
+assert (boxes[:, 2] >= boxes[:, 0]).all()
+
+assert (boxes[:, 2] >= boxes[:, 0]).all()
+
+这句前面加上：
+
+print ("num_image:%d"%(i))
+
+print ("num_image:%d"%(i))
+
+然后运行，打印图像在训练集中的索引（这次不需要知道图像名），找到告警前最后打印的那个索引，比如我找到的告警前索引为320，下一步就是看看这个图片上所有的proposal是不是正常，同样地，在告警语句前插入：
+
+if i==320:
+
+print self.image_index[i]
+
+for z in xrange(len(boxes)):
+
+print ('x2:%d  x1:%d'%(boxes[z][2],boxes[z][0]))
+
+if boxes[z][2]<boxes[z][0]:
+
+print"here is the bad point!!!"
+
+if i==320:
+                print self.image_index[i]
+                for z in xrange(len(boxes)):
+                    print ('x2:%d  x1:%d'%(boxes[z][2],boxes[z][0]))
+                    if boxes[z][2]<boxes[z][0]:
+	                print"here is the bad point!!!"
+
+再次运行后看日志，发现here is the bad point!!!出现在一组“x2=-64491  x1=1011”后，因为我的图像宽度是1044，而1044-65535=-64491，所以其实是x2越界了，因boxes[:, 2] = widths[i] - oldx1 - 1，其实也就是图像反转前对应的oldx1=65534溢出，为什么rpn产生的proposal也会溢出呢？正常情况下，rpn产生的proposal是绝不会超过图像范围的，除非——标准的groundtruth就超出了！而groundtruth如果有问题，stage 1 RPN, init from ImageNet Model这个阶段就应该报错了，所以是一定是缓存的问题。
+
+错误3：pb2.text_format(...)这里报错'module' object has no attribute 'text_format'。
+
+解决方法：在./lib/fast_rcnn/train.py文件里import google.protobuf.text_format。网上有人说把protobuf版本回退到2.5.0，但这样会是caffe编译出现新问题——“cannot import name symbol database”，还需要去github上下对应的缺失文件，所以不建议。
+
+错误4：执行到lib/proposal_target_layer.py时报错Typeerror：Slice indices must be integers or None or have __index__ method
+
+解决方法：这个错误的原因是，numpy1.12.0之后不在支持float型的index。网上很多人说numpy版本要降到1.11.0，但我这样做了之后又有新的报错：ImportError: numpy.core.multiarray failed to import。正确的解决办法是：numpy不要降版本（如果已经降了版本，直接更新到最新版本就好），只用修改lib/proposal_target_layer.py两处：(PS:我就在这里耽误了好久)
+
+在126行后加上：
+
+start=int(start)
+
+end=int(end)
+
+start=int(start)
+end=int(end)
+
+在166行后加上：
+
+fg_rois_per_this_image=int(fg_rois_per_this_image)
+
+fg_rois_per_this_image=int(fg_rois_per_this_image)
+
+错误5：py-faster-rcnn/tools/../lib/roi_data_layer/minibatch.py的_sample_rois函数中报错TypeError: 'numpy.float64' object cannot be interpreted as an index
+
+解决方法：这与错误（4）其实是一个问题，都是numpy版本导致的。一样地，不支持网上很多答案说的降低版本的方法，更稳妥的办法是修改工程代码。这里给出的解决方案。修改minibatch.py文件：
+
+第26行：
+
+fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image)
+
+fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image)
+
+改为：
+
+fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image).astype(np.int)
+
+fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image).astype(np.int)
+
+第173行：
+
+cls = clss[ind]
+
+cls = clss[ind]
+
+改为：
+
+cls = int(clss[ind])
+
+cls = int(clss[ind])
+
+另外还有3处需要加上.astype(np.int),分别是：
+
+#lib/datasets/ds_utils.py line 12 :
+
+hashes = np.round(boxes * scale).dot(v)
+
+#lib/fast_rcnn/test.py line 129：
+
+hashes = np.round(blobs['rois'] * cfg.DEDUP_BOXES).dot(v)
+
+#lib/rpn/proposal_target_layer.py line 60 :
+
+fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image)
+
+#lib/datasets/ds_utils.py line 12 :
+hashes = np.round(boxes * scale).dot(v)
+#lib/fast_rcnn/test.py line 129：
+hashes = np.round(blobs['rois'] * cfg.DEDUP_BOXES).dot(v)
+#lib/rpn/proposal_target_layer.py line 60 : 
+fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image)
+
+错误6：error=cudaSuccess(2 vs. 0) out of memory？
+
+GPU内存不足，有两种可能：（1）batchsize太大；（2）GPU被其他进程占用过多。
+
+解决方法：先看GPU占用情况：watch -n 1 nvidia-smi，实时显示GPU占用情况，运行训练程序看占用变化。如果确定GPU被其他程序大量占用，可以关掉其他进程 kill -9 PID。如果是我们的训练程序占用太多，则考虑将batchsize减少。
+
+错误7：在lib/fast_rcnn/bbox_transform.py文件时RuntimeWarning: invalid value encountered in log targets_dw = np.log(gt_widths / ex_widths)，然后loss_bbox = nan，最终的Mean AP＝0.000
+
+网上很多人说要降低学习率，其实这是指标不治本，不过是把报错的时间推迟罢了，而且学习率过低，本身就有很大的风险陷入局部最优。
+
+经过分析调试，发现这个问题还是自己的数据集标注越界的问题！！！越界有6种形式：x1<0;  x2>width;  x2<x1;  y1<0;  y2>height;  y2<y1。不巧的是，源代码作者是针对pascal_voc数据写的，压根就没有考虑标注出错的可能性。发布的代码中只在append_flipped_images函数里 assert (boxes[:, 2] >= boxes[:, 0]).all()，也就是只断言了水平翻转后的坐标x2>=x1，这个地方报错可能是x的标注错误，参考前面的错误2。但是，对于y的标注错误，根本没有检查。
+
+分析过程：先找的报warning的 lib/fast_rcnn/bbox_transform.py，函数bbox_transform，函数注释参考这里。在
+
+targets_dw = np.log(gt_widths / ex_widths)
+
+targets_dw = np.log(gt_widths / ex_widths)
+
+前面加上：
+
+print(gt_widths)
+
+print(ex_widths)
+
+print(gt_heights)
+
+print(ex_heights)
+
+assert(gt_widths>0).all()
+
+assert(gt_heights>0).all()
+
+assert(ex_widths>0).all()
+
+assert(ex_heights>0).all()
+
+print(gt_widths)
+    print(ex_widths)
+    print(gt_heights)
+    print(ex_heights)
+    assert(gt_widths>0).all()
+    assert(gt_heights>0).all()
+    assert(ex_widths>0).all()
+    assert(ex_heights>0).all()
+
+然后运行，我发现AssertError出现在assert(ex_heights>0).all()，也就是说存在anchor高度为负数的，而height跟标注数据y方向对应，所以考虑是标注数据y的错误。类似于错误2，我回到lib/datasets/imdb.py，append_flipped_images函数中加入对y标注的检查。直接粘贴代码吧:
+
+#源代码中没有获取图像高度信息的函数，补充上
+
+def _get_heights(self):
+
+return [PIL.Image.open(self.image_path_at(i)).size[1]
+
+for i in xrange(self.num_images)]
+
+def append_flipped_images(self):
+
+num_images = self.num_images
+
+widths = self._get_widths()
+
+heights = self._get_heights()#add to get image height
+
+for i in xrange(num_images):
+
+boxes = self.roidb[i]['boxes'].copy()
+
+oldx1 = boxes[:, 0].copy()
+
+oldx2 = boxes[:, 2].copy()
+
+print self.image_index[i]#print image name
+
+assert (boxes[:,1]<=boxes[:,3]).all()#assert that ymin<=ymax
+
+assert (boxes[:,1]>=0).all()#assert ymin>=0,for 0-based
+
+assert (boxes[:,3]<heights[i]).all()#assert ymax<height[i],for 0-based
+
+assert (oldx2<widths[i]).all()#assert xmax<withd[i],for 0-based
+
+assert (oldx1>=0).all()#assert xmin>=0, for 0-based
+
+assert (oldx2 >= oldx1).all()#assert xmax>=xmin, for 0-based
+
+boxes[:, 0] = widths[i] - oldx2 - 1
+
+boxes[:, 2] = widths[i] - oldx1 - 1
+
+#print ("num_image:%d"%(i))
+
+assert (boxes[:, 2] >= boxes[:, 0]).all()
+
+entry = {'boxes' : boxes,
+
+'gt_overlaps' : self.roidb[i]['gt_overlaps'],
+
+'gt_classes' : self.roidb[i]['gt_classes'],
+
+'flipped' : True}
+
+self.roidb.append(entry)
+
+self._image_index = self._image_index * 2
+
+#源代码中没有获取图像高度信息的函数，补充上
+    def _get_heights(self):
+      return [PIL.Image.open(self.image_path_at(i)).size[1]
+              for i in xrange(self.num_images)]
+    def append_flipped_images(self):
+        num_images = self.num_images
+        widths = self._get_widths()
+        heights = self._get_heights()#add to get image height
+        for i in xrange(num_images):
+            boxes = self.roidb[i]['boxes'].copy()
+            oldx1 = boxes[:, 0].copy()
+            oldx2 = boxes[:, 2].copy()
+            print self.image_index[i]#print image name
+            assert (boxes[:,1]<=boxes[:,3]).all()#assert that ymin<=ymax
+            assert (boxes[:,1]>=0).all()#assert ymin>=0,for 0-based
+            assert (boxes[:,3]<heights[i]).all()#assert ymax<height[i],for 0-based
+            assert (oldx2<widths[i]).all()#assert xmax<withd[i],for 0-based
+            assert (oldx1>=0).all()#assert xmin>=0, for 0-based
+            assert (oldx2 >= oldx1).all()#assert xmax>=xmin, for 0-based
+            boxes[:, 0] = widths[i] - oldx2 - 1
+            boxes[:, 2] = widths[i] - oldx1 - 1
+            #print ("num_image:%d"%(i))
+            assert (boxes[:, 2] >= boxes[:, 0]).all()
+            entry = {'boxes' : boxes,
+                     'gt_overlaps' : self.roidb[i]['gt_overlaps'],
+                     'gt_classes' : self.roidb[i]['gt_classes'],
+                     'flipped' : True}
+            self.roidb.append(entry)
+        self._image_index = self._image_index * 2
+
+然后运行，遇到y有标注错误的地方就会报AssertError，然后看日志上最后一个打印的图像名，到对应的Annotation上查看错误标记，改过来后不要忘记删除py-faster-rcnn/data/cache缓存。然后再运行，遇到AssertError再改对应图像的标准，再删缓存……重复直到所有的标注错误都找出来。然后就大功告成了，MAP不再等于0.000了！
+
+错误8：训练大功告成，mAP=0.66，可以测试一下了。具体的这个博客写的很清楚。在执行demo.py文件时报错：im_orig = im.astype(np.float32, copy=True)，AttributeError: 'NoneType' object has no attribute 'astype'。
+
+解决方法：仔细检查路径和文件名，查看demo.py里路径相关的文件。
+
+以上。
+

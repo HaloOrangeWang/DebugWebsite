@@ -1,0 +1,47 @@
+在输入conda create -n tf2 python=3.6时报以下错误：
+
+
+一、报错1
+
+原文链接：https://blog.csdn.net/XD_Cauthy/article/details/94168746
+
+File "E:anaconda3\lib\site-packages\conda\core\package_cache_data.py", line 422, in <listcomp>
+        self._urls_data = [line.strip().decode('utf-8') for line in fh]
+ UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb1 in position 11: invalid start byte
+
+发现是由于核心文件中package_cache_data.py的第422行采用utf-8解码方式无法解码0xb1的值，使用sublimetext或notepad打开文件，更改
+
+self._urls_data = [line.strip().decode('utf-8') for line in fh]
+为
+
+self._urls_data = [line.strip().decode('cp936') for line in fh]
+
+
+二、报错2
+
+OSError: (10054, 'WSAECONNRESET')
+
+原因：网络问题
+
+方法一：将命令修改为：conda create -n tf2 python=3.6 --offline（可能后期会有别的问题出现）
+
+方法二：复制base 环境
+conda create -n  tf2 --clone base
+
+
+三、anaconda环境下执行pip install时报错：
+
+
+No module named pip
+
+解决方法：到anaconda虚拟环境的scripts目录下执行easy_install pip，如E:\programs2\Anaconda3\envs\tensorflow2.0\Scripts
+
+执行：.\easy_install.exe pip
+
+
+四、python -m pip install --upgrade pip报错
+
+Could not install packages due to anEnvironmentError: [WinError 5] 拒绝访问
+
+解决方法：在install后面增加--user，即 python -m pip install --user --upgrade pip
+

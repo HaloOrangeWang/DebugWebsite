@@ -1,0 +1,36 @@
+1. 在执行python程序时遇到 ‘ModuleNotFoundError: No module named 'xxxxx'’ :
+
+例如：
+
+图片中以导入第三方的 'requests' 模块为例，此报错提示找不到requests模块。在python中，有的
+
+模块是内置的（直接导入就能使用）有的模块是第三方的，则需要安装完成后才能导入使用，若未
+
+安装直接导入使用就会出现上述报错！这里介绍最快的解决方法：
+
+1）通过 pip (python软件包工具) 来安装所需要使用的第三方模块：
+
+打开cmd输入 'pip list' 先查看安装了哪些模块：
+
+这里并没有安装所需要的requests模块，接着输入：
+
+pip install requests 命令安装requests模块：
+
+但是因为pip默认会从Python官网去下载这些库，所以下载速度会很慢，而且还有可能会出现连接超时导致下载失败等问题
+
+所以我们可以在后面加上国内的源去进行下载，这里以豆瓣网的源为例，命令如下
+
+pip install requests -i https://pypi.douban.com/simple
+
+这样下载的速度会提升的非常明显
+
+再次使用 pip list 命令查看是否安装成功:
+
+可以看到列表里面已经出现了我们刚刚安装的requests模块
+
+再次运行程序，即可正常使用requests模块：
+
+搬运请注明原作者，即是对原创的尊重，也是一个程序员最基本的修养
+
+添加博主QQ，有空一起聊聊技术
+

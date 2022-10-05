@@ -1,0 +1,30 @@
+
+常见报错
+
+OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to github.com:443
+
+LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to bitbucket.org:443
+
+
+终极解决方案
+
+step1: 检查是否开了网络代理，如果有先关闭
+
+step1: 检查是否开了网络代理，如果有先关闭
+
+step2:在命令行输入如下命令；
+
+step2:在命令行输入如下命令；
+
+git config --global http.sslVerifyfalse
+
+git config --global --unset http.proxy
+
+git config --global --unset https.proxy
+
+git config --global http.sslBackend "openssl"
+
+step3: 以上命令都完成了之后就重启命令行窗口，愉快的执行你的curl或者其他指令了。
+
+PS: 以上仅针对mac系统。
+

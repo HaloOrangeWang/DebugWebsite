@@ -1,0 +1,77 @@
+如果系统升级了或是Xcode升级13.2  在使用CocoaPods中遇到 Unknown object version这个问题不用着急，你可能是：xcode版本和现在CocoaPods 的版本问题不匹配 ， 比如你用xcode13 你的cocoaPods 版本是1.0.8  就有可能出现此类问题。因为xcode13 需要cocoaPods1.1.0.
+
+执行  pod init
+
+报错如下:
+
+### Command
+
+/usr/local/bin/pod init
+
+### Report
+
+* What did you do?
+
+* What did you expect to happen?
+
+* What happened instead?
+
+### Stack
+   CocoaPods : 1.8.3
+        Ruby : ruby 2.6.8p205 (2021-07-07 revision 67951) [universal.x86_64-darwin21]
+    RubyGems : 3.0.3.1
+        Host : macOS 12.2.1 (21D62)
+       Xcode : 13.3 (13E113)
+         Git : git version 2.32.0 (Apple Git-132)
+Ruby lib dir : /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib
+Repositories : master - git - https://github.com/CocoaPods/Specs.git @ d709c5a34fbb7ee9ee519dce4e123868be8d9324
+               trunk - CDN - https://cdn.cocoapods.org/
+### Plugins
+cocoapods-deintegrate : 1.0.4
+cocoapods-plugins     : 1.0.0
+cocoapods-search      : 1.0.0
+cocoapods-stats       : 1.1.0
+cocoapods-trunk       : 1.4.1
+cocoapods-try         : 1.1.0
+
+### Error
+
+RuntimeError - [Xcodeproj] Unknown object version.
+/Library/Ruby/Gems/2.6.0/gems/xcodeproj-1.12.0/lib/xcodeproj/project.rb:227:in `initialize_from_file'
+
+解决方法：只需要在终端执行这个命令 gem install cocoapods --pre 即可，那么你的CocoaPods就可以正常使用了。
+
+
+问题二
+
+用mac使用gem命令遇到这样的问题:
+
+ERROR: While executing gem ... (Gem::FilePermissionError)
+
+You don't have write permissions for the /usr/bin directory.
+
+执行的命令是
+
+sudo gem install fastlane -NV
+
+
+问题三
+
+由于公司集成极光库用到了 libjpush-ios-4.6.0.a与 JVerificationSDK与
+
+都依赖了 JCore
+
+在pod install时出现了如下错误
+
+[!] The 'Pods-xxxproject' target has transitive dependencies that include statically linked binaries: (/Users/imac/Desktop/CloudDiskproject/Pods/JCore/libjcore-ios-3.2.0.a)
+
+看了下原因
+
+在podfile中使用 use_frameworks! 造成的 但是主项目中使用了 swift 必须要设置 use_frameworks!
+
+因此在xxx.podspec
+
+s.static_framework = true
+
+如果是OC 项目 直接将 Podfile 文件中的 use_frameworks! 注释 重新pod install 即可。
+

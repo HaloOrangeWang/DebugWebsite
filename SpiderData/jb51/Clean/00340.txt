@@ -1,0 +1,22 @@
+Python 爬虫之超链接 url中含有中文出错及解决办法
+
+python3.5 爬虫错误：
+
+UnicodeEncodeError: 'ascii' codec can't encode characters
+
+这个错误是由于超链接中含有中文引起的，超链接默认是用ascii编码的，所以不能直接出现中文，若要出现中文，
+
+解决方法如下：
+
+import urllib 
+from urllib.request import urlopen
+
+link="http://list.jd.com/list.html?cat=9987,653,655&ev=exbrand%5F9420&trans=1&JL=3_品牌_金立（Gionee）"  #含有中文的超链接
+
+# 需要用 urllib.parse.quote 转换
+link=urllib.parse.quote(link)
+
+html=urlopen(link).read() #就可以访问了，不会报异常
+
+以上就是 Python 爬虫出现错误解决办法的详解，如有疑问请留言或者到本站的社区交流讨论，感谢阅读，希望能帮助到大家，谢谢大家对本站的支持！
+

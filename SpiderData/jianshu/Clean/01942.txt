@@ -1,0 +1,24 @@
+
+1.安装中的报错
+
+
+1.1.安装完基本的依赖环境和python包后，运行python setup.py install报如下错误
+
+./c-concoct/c_vbgmm_fit.c:12:28: fatal error: gsl/gsl_vector.h: No such file or directory
+
+
+解决办法：
+
+
+第一，在自己的home目录下查找是否存在gsl
+
+find -name gsl_vector.h #假设返回结果的路径为 $PATH/gsl/gsl_vector.h
+export C_INCLUDE_PATH=$PATH:$C_INCLUDE_PATH #注意：上一行命令得到的路径为相对路径，在本命令中要将其补全为绝对路径
+
+上述修改是由于，C/C++程序在linux下被编译和连接时，GCC/G++会查找系统默认的include和link的路径，以及自己在编译命令中指定的路径。之所以会出现找不到gsl的报错，就是由于系统在查找include路径时没有包含gsl的路径，所以要将包含gsl的路径添加到系统include路径。以上修改可以直接命令行输入（一次性），可以在/etc/profile中完成（对所有用户生效），也可以在用户home目录下的.bashrc或.bash_profile中添加（针对某个用户生效），修改完后重新登录即生效。
+
+
+第二，如果没有安装了gsl，就用conda进行安装，再进行上述操作，命令如下：
+
+conda install -c https://conda.binstar.org/trent gsl
+

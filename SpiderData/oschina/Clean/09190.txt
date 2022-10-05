@@ -1,0 +1,46 @@
+flink 版本 1.10.1
+
+
+flink 报错信息如下
+
+Exception in thread "main" org.apache.flink.table.sqlexec.SqlConversionException: Computed columns for DDL is not supported yet!
+	at org.apache.flink.table.sqlexec.SqlToOperationConverter.createTableSchema(SqlToOperationConverter.java:456)
+	at org.apache.flink.table.sqlexec.SqlToOperationConverter.convertCreateTable(SqlToOperationConverter.java:183)
+	at org.apache.flink.table.sqlexec.SqlToOperationConverter.convert(SqlToOperationConverter.java:127)
+	at org.apache.flink.table.planner.ParserImpl.parse(ParserImpl.java:66)
+	at org.apache.flink.table.api.internal.TableEnvironmentImpl.sqlUpdate(TableEnvironmentImpl.java:484)
+	at com.lty.KafkaWindowTest$.main(KafkaWindowTest.scala:45)
+	at com.lty.KafkaWindowTest.main(KafkaWindowTest.scala)
+
+原因是我flink sql ddl 创建表的时候使用了内部函数 proctime（），但是flink Table api 不支持这样做
+
+
+解决办法：
+
+使用blink Table Api
+
+注意pom 需要引入依赖：
+
+<dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-planner_2.12</artifactId>
+            <version>1.10.1</version>
+        </dependency>
+
+<dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-planner-blink_2.12</artifactId>
+            <version>1.10.1</version>
+        </dependency>
+
+<dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-api-java-bridge_2.11</artifactId>
+            <version>1.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-api-scala-bridge_2.12</artifactId>
+            <version>1.10.1</version>
+        </dependency>
+

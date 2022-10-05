@@ -1,0 +1,37 @@
+如下：
+
+在使用read_csv() API读取CSV文件时求取某一列数据比较大小时，
+
+df=pd.read_csv(output_file,encoding='gb2312',names=['a','b','c'])
+df.b>20
+
+报错
+
+TypeError:'>'not supported between instances of 'str' and 'int'
+
+从返回的错误信息可知应该是数据类型错误，读回来的是‘str'
+
+in : df.dtypes
+out:
+ a object
+ b object
+ c object
+ dtype: object
+
+由此可知 df.b 类型是 object
+
+查阅read_csv()文档 配置：
+
+dtype : Type name or dict of column -> type, default None
+Data type for data or columns. E.g. {'a': np.float64, 'b': np.int32} (unsupported with engine='python'). Use str or object to preserve and not interpret dtype.
+
+New in version 0.20.0: support for the Python parser.
+
+可知默认使用‘str'或‘object'保存
+
+因此在读取时只需要修改 'dtype' 配置就可以
+
+df=pd.read_csv(output_file,encoding='gb2312',names=['a','b','c']，dtype={'b':np.folat64})
+
+以上这篇解决pandas使用read_csv()读取文件遇到的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

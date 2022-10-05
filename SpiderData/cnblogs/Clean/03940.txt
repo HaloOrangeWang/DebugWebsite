@@ -1,0 +1,9 @@
+今天调用pandas读取csv文件时，突然报错“
+
+
+OSError: Initializing from file failed
+
+”，我是有点奇怪的，以前用的好好的，read_csv(path)方法不是只要放入完整的路径参数就可以使用了吗？这么今天一直报错，在僵持十分钟无果后，被逼百度了一下，原来Python调用pandas的read_csv()方法时默认使用C engine作为解析引擎，当文件路径包含了中文时，是有可能出错的！所以解决办法就是在调用方法时，指定解析引擎为‘python’就可以了。
+
+---------->  参数设为    engine='python'
+

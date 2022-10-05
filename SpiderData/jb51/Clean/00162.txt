@@ -1,0 +1,144 @@
+最近打算开始研究一下机器学习，今天在windows上装tensorflow花了点功夫，其实前面的步骤不难，只要依次装好python3.5，numpy，tensorflow就行了，有一点要注意的是目前只有python3.5能装tensorflow，最新版的python3.6都不行。
+
+装好tensorflow后，我建议大家不要直接用测试用例进行测试（如果没装好的话出现的错误一般都是：module ‘tensorflow' has no attribute ‘constant'）。第一次测试时可以在python shell里面输入：
+
+import tensorflow
+
+如果没有报错，恭喜你，十有八九是装好了，这时可以再用简单的测试用例测试一下。但我估计没报错的话你也不会看到这篇博客了。。。
+
+事实上，我第一次安装的时候出现了如下错误：
+
+Traceback (most recent call last):
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py”, line 18, in swig_import_helper
+
+return importlib.import_module(mname)
+
+File “D:\Python\Python35\lib\importlib__init__.py”, line 126, in import_module
+
+return _bootstrap._gcd_import(name[level:], package, level)
+
+File “frozen importlib._bootstrap”, line 986, in _gcd_import
+
+File “frozen importlib._bootstrap”, line 969, in _find_and_load
+
+File “frozen importlib._bootstrap”, line 958, in _find_and_load_unlocked
+
+File “frozen importlib._bootstrap”, line 666, in _load_unlocked
+
+File “frozen importlib._bootstrap”, line 577, in module_from_spec
+
+File “frozen importlib._bootstrap_external”, line 906, in create_module
+
+File “frozen importlib._bootstrap”, line 222, in _call_with_frames_removed
+
+ImportError: DLL load failed: 找不到指定的模块。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow.py”, line 41, in module
+
+from tensorflow.python.pywrap_tensorflow_internal import *
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py”, line 21, in module
+
+_pywrap_tensorflow_internal = swig_import_helper()
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py”, line 20, in swig_import_helper
+
+return importlib.import_module(‘_pywrap_tensorflow_internal')
+
+File “D:\Python\Python35\lib\importlib__init__.py”, line 126, in import_module
+
+return _bootstrap._gcd_import(name[level:], package, level)
+
+ImportError: No module named ‘_pywrap_tensorflow_internal'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File “pyshell#0”, line 1, in module
+
+import tensorflow
+
+File “D:\Python\Python35\lib\site-packages\tensorflow__init__.py”, line 24, in module
+
+from tensorflow.python import *
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python__init__.py”, line 51, in module
+
+from tensorflow.python import pywrap_tensorflow
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow.py”, line 52, in module
+
+raise ImportError(msg)
+
+ImportError: Traceback (most recent call last):
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py”, line 18, in swig_import_helper
+
+return importlib.import_module(mname)
+
+File “D:\Python\Python35\lib\importlib__init__.py”, line 126, in import_module
+
+return _bootstrap._gcd_import(name[level:], package, level)
+
+File “frozen importlib._bootstrap”, line 986, in _gcd_import
+
+File “frozen importlib._bootstrap”, line 969, in _find_and_load
+
+File “frozen importlib._bootstrap”, line 958, in _find_and_load_unlocked
+
+File “frozen importlib._bootstrap”, line 666, in _load_unlocked
+
+File “frozen importlib._bootstrap”, line 577, in module_from_spec
+
+File “frozen importlib._bootstrap_external”, line 906, in create_module
+
+File “frozen importlib._bootstrap”, line 222, in _call_with_frames_removed
+
+ImportError: DLL load failed: 找不到指定的模块。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow.py”, line 41, in module
+
+from tensorflow.python.pywrap_tensorflow_internal import *
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py”, line 21, in module
+
+_pywrap_tensorflow_internal = swig_import_helper()
+
+File “D:\Python\Python35\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py”, line 20, in swig_import_helper
+
+return importlib.import_module(‘_pywrap_tensorflow_internal')
+
+File “D:\Python\Python35\lib\importlib__init__.py”, line 126, in import_module
+
+return _bootstrap._gcd_import(name[level:], package, level)
+
+ImportError: No module named ‘_pywrap_tensorflow_internal'
+
+Failed to load the native TensorFlow runtime.
+
+Seehttps://www.tensorflow.org/install/install_sources
+
+for some common reasons and solutions. Include the entire stack trace
+
+above this error message when asking for help.
+
+之前在网上查安装方法时，大多数都说要装一个Anaconda，但我是直接装的python3.5，所以没装Anaconda，我相信问题不在这里。后来看到有人说装了visual studio2017解决了这个错误，我想不至于吧，装个tensorflow还要装个visual studio2017？事实上只是visual studio2017中刚好有运行tensorflow必须的运行时环境。所以，只要安装一下缺少的运行时环境就可以了，可以在如下网站中按照它的install instructions进行安装，非常简单，只要注意选对32位和64位的版本就行了。
+
+https://www.microsoft.com/en-us/download/details.aspx?id=53587
+
+装好后tensorflow就可以正常使用了~
+
+总结
+
+到此这篇关于解决windows上安装tensorflow时报错,“DLL load failed: 找不到指定的模块”的问题的文章就介绍到这了,更多相关windows上安装tensorflow报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

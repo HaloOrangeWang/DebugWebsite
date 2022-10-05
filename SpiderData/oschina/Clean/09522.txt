@@ -1,0 +1,277 @@
+
+报错背景：
+
+CDH断电重启后，cloudera-scm-server启动报错，
+
+cloudera-scm-server 已死，但 pid 文件仍存
+
+由于没有成熟的解决方案，于是我就重新安装了MySQL数据库，
+
+并且重新赋予了各种权限。
+
+这个时候cloudera-scm-server可以启动成功，cloudera-scm-agent也可以启动成功。
+
+
+报错现象：
+
+此时cloudera-scm-server和cloudera-scm-agent都能启动成功，
+
+但是jps一下，没有服务
+
+明明启动了agent，但是下面的服务都起不来。
+
+
+报错原因：
+
+这个时候就要看一下日志文件cloudera-scm-agent.log
+
+tail -n 100 /opt/cm-5.15.1/log/cloudera-scm-agent/cloudera-scm-agent.log
+
+看到一行报错
+
+[root@master opt]# tail -n 100 /opt/cm-5.15.1/log/cloudera-scm-agent/cloudera-scm-agent.log
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '4754', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/lib/hadoop-0.20-mapreduce/sbin/Linux/task-controller']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/ssl/server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/ssl/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/ssl/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/ssl/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https/conf/ssl/ssl-server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https/conf/ssl/ssl-server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https/conf/ssl/ssl-server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https/conf/ssl/ssl-server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/hadoop-httpfs/tomcat-conf.dist/conf/server.xml httpfs httpfs
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'httpfs:httpfs', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/hadoop-httpfs/tomcat-conf.dist/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/hadoop-httpfs/tomcat-conf.dist/conf/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/hadoop-httpfs/tomcat-conf.dist/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https.mr1/conf/ssl/ssl-server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https.mr1/conf/ssl/ssl-server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https.mr1/conf/ssl/ssl-server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https.mr1/conf/ssl/ssl-server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/ssl/server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/ssl/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/ssl/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/ssl/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/ssl/ssl-server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/ssl/ssl-server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/ssl/ssl-server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http/conf/ssl/ssl-server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/sqoop2/tomcat-conf.mr1/conf/server.xml sqoop2 sqoop
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'sqoop2:sqoop', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/sqoop2/tomcat-conf.mr1/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/sqoop2/tomcat-conf.mr1/conf/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/sqoop2/tomcat-conf.mr1/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/lib/hue/desktop hue hue
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'hue:hue', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/lib/hue/desktop']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/lib/hue/desktop 0755
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0755', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/lib/hue/desktop']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/hadoop-httpfs/tomcat-conf.https/conf/server.xml httpfs httpfs
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'httpfs:httpfs', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/hadoop-httpfs/tomcat-conf.https/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/hadoop-httpfs/tomcat-conf.https/conf/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/hadoop-httpfs/tomcat-conf.https/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https/conf/ssl/server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https/conf/ssl/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https/conf/ssl/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https/conf/ssl/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https.mr1/conf/server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https.mr1/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https.mr1/conf/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.https.mr1/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/solr/tomcat-conf.https/conf/server.xml solr solr
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'solr:solr', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/solr/tomcat-conf.https/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/solr/tomcat-conf.https/conf/server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/solr/tomcat-conf.https/conf/server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chown: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/ssl/ssl-server.xml oozie oozie
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chown', 'oozie:oozie', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/ssl/ssl-server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     chmod: /opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/ssl/ssl-server.xml 0750
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['chmod', '0750', u'/opt/cloudera/parcels/CDH-5.15.1-1.cdh5.15.1.p0.4/etc/oozie/tomcat-conf.http.mr1/conf/ssl/ssl-server.xml']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Ensuring users/groups exist for new parcel KAFKA-3.1.1-1.3.1.1.p0.2.
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'kafka']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'kafka']
+[29/Apr/2019 10:35:14 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/useradd', '-r', '-m', '-g', 'kafka', '-K', 'UMASK=022', '--home', '/var/lib/kafka', '--comment', 'Kafka', '--shell', '/sbin/nologin', 'kafka']
+[29/Apr/2019 10:35:15 +0000] 2754 MainThread parcel       INFO     Ensuring correct file permissions for new parcel KAFKA-3.1.1-1.3.1.1.p0.2.
+[29/Apr/2019 10:35:15 +0000] 2754 MainThread parcel_cache INFO     Using /opt/cloudera/parcel-cache for parcel cache
+[29/Apr/2019 10:35:16 +0000] 2754 MainThread client_configs INFO     Loaded client config: <hbase-conf,/etc/hbase/conf.cloudera.hbase> <90,8014743985700882227>
+[29/Apr/2019 10:35:16 +0000] 2754 MainThread client_configs INFO     Loaded client config: <hadoop-conf,/etc/hadoop/conf.cloudera.yarn> <92,-2128374979962437415>
+[29/Apr/2019 10:35:16 +0000] 2754 MainThread client_configs INFO     Loaded client config: <kafka-conf,/etc/kafka/conf.cloudera.kafka> <50,-352371731053066898>
+[29/Apr/2019 10:35:16 +0000] 2754 MainThread client_configs INFO     Loaded client config: <hive-conf,/etc/hive/conf.cloudera.hive> <90,-3132036662857147630>
+[29/Apr/2019 10:35:16 +0000] 2754 MainThread client_configs INFO     Loaded client config: <hadoop-conf,/etc/hadoop/conf.cloudera.hdfs> <90,-8675592532172053281>
+[29/Apr/2019 10:35:16 +0000] 2754 MainThread agent        ERROR    Error, CM server guid updated, expected f4ec230a-2f55-460f-b132-cb45a16c3a1b, received 4760feb5-8e8c-416c-8337-2910fef890a0
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread agent        INFO     CM server guid: f4ec230a-2f55-460f-b132-cb45a16c3a1b
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread agent        INFO     Using parcels directory from server provided value: /opt/cloudera/parcels
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread agent        WARNING  Expected user root for /opt/cloudera/parcels but was cloudera-scm
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread agent        WARNING  Expected group root for /opt/cloudera/parcels but was cloudera-scm
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Agent does create users/groups and apply file permissions
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Loading parcel manifest for: CDH-5.15.1-1.cdh5.15.1.p0.4
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Loading parcel manifest for: KAFKA-3.1.1-1.3.1.1.p0.2
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Ensuring users/groups exist for new parcel CDH-5.15.1-1.cdh5.15.1.p0.4.
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'hadoop']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'flume']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'hdfs']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'solr']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'zookeeper']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'llama']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'httpfs']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'mapred']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'sqoop']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'yarn']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'kms']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'hive']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'sqoop2']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'oozie']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'kudu']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'hbase']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'sentry']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'impala']
+[29/Apr/2019 10:35:18 +0000] 2754 MainThread parcel       INFO     Executing command ['/usr/sbin/groupadd', '-r', 'spark']
+
+意思就是：CM服务器guid更新，期望f4ec230a-2f55-460f-b132-cb45a16c3a1b，收到4760feb5-8e8c-416c-8337-2910fef890a0
+
+一看就是和CM的guid有关系，所以就从这方面着手解决问题。
+
+
+报错解决：
+
+[root@master var]# find / -name cm_guid　　　　　# 找到cm_guid这个文件所在的目录
+
+/opt/cm-5.15.1/lib/cloudera-scm-agent/cm_guid
+
+[root@master var]# rm -rf /opt/cm-5.15.1/lib/cloudera-scm-agent/cm_guid　　# 删除这个目录（所有节点）
+
+[root@master var]# /opt/cm-5.15.1/etc/init.d/cloudera-scm-agent restart　　   # 重启
+
+但是重启之后，jps还是没有各个服务进程
+
+再次查看报错日志
+
+tail -n 100 /opt/cm-5.15.1/log/cloudera-scm-agent/cloudera-scm-agent.log
+
+[29/Apr/2019 11:25:16 +0000] 31741 MainThread parcel       INFO     Executing command ['/opt/cm-5.15.1/lib64/cmf/service/common/alternatives.sh', 'deactivate', 'kafka-topics', '/usr/bi-topics', 'bin/kafka-topics', '10', 'False']
+[29/Apr/2019 11:25:16 +0000] 31741 MainThread parcel       INFO     Executing command ['/opt/cm-5.15.1/lib64/cmf/service/common/alternatives.sh', 'deactivate', 'kafka-consumer-perf-tessr/bin/kafka-consumer-perf-test', 'bin/kafka-consumer-perf-test', '10', 'False']
+[29/Apr/2019 11:25:16 +0000] 31741 MainThread parcel       INFO     Executing command ['/opt/cm-5.15.1/lib64/cmf/service/common/alternatives.sh', 'deactivate', 'kafka-config', '/usr/bi-config', 'bin/kafka-config', '10', 'False']
+[29/Apr/2019 11:25:16 +0000] 31741 MainThread parcel       INFO     Executing command ['/opt/cm-5.15.1/lib64/cmf/service/common/alternatives.sh', 'deactivate', 'kafka-consumer-offset-c, '/usr/bin/kafka-consumer-offset-checker', 'bin/kafka-consumer-offset-checker', '10', 'False']
+[29/Apr/2019 11:25:16 +0000] 31741 MainThread parcel       INFO     Executing command ['/opt/cm-5.15.1/lib64/cmf/service/common/alternatives.sh', 'deactivate', 'kafka-preferred-replicaon', '/usr/bin/kafka-preferred-replica-election', 'bin/kafka-preferred-replica-election', '10', 'False']
+[29/Apr/2019 11:25:16 +0000] 31741 MainThread parcel       INFO     Executing command ['/opt/cm-5.15.1/lib64/cmf/service/common/alternatives.sh', 'deactivate', 'kafka-producer-perf-tessr/bin/kafka-producer-perf-test', 'bin/kafka-producer-perf-test', '10', 'False']
+[29/Apr/2019 11:25:16 +0000] 31741 MainThread parcel       INFO     Executing command ['/opt/cm-5.15.1/lib64/cmf/service/common/alternatives.sh', 'deactivate', 'kafka-console-producer'/bin/kafka-console-producer', 'bin/kafka-console-producer', '10', 'False']
+[29/Apr/2019 11:25:16 +0000] 31741 MainThread agent        INFO     Active parcel list updated; recalculating component info.
+[29/Apr/2019 11:25:16 +0000] 31741 MainThread throttling_logger WARNING  CMF_AGENT_JAVA_HOME environment variable host override will be deprecated in future. JAVA_HOME setting configur CM server takes precedence over host agent override. Configure JAVA_HOME setting from CM server.
+[29/Apr/2019 11:25:17 +0000] 31741 MainThread throttling_logger INFO     Identified java component java8 with full version java version "1.8.0_191" Java(TM) SE Runtime Environment (bui0_191-b12) Java HotSpot(TM) 64-Bit Server VM (build 25.191-b12, mixed mode)  for requested version .
+[29/Apr/2019 11:25:17 +0000] 31741 MainThread parcel_cache INFO     Deleting unmanaged parcel CDH-5.15.1-1.cdh5.15.1.p0.4
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread parcel_cache INFO     Deleting unmanaged parcel KAFKA-3.1.1-1.3.1.1.p0.2
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread client_configs INFO     Client configs to delete: set([<hadoop-conf,/etc/hadoop/conf.cloudera.yarn>, <hbase-conf,/etc/hbase/conf.cloudera. <kafka-conf,/etc/kafka/conf.cloudera.kafka>, <hive-conf,/etc/hive/conf.cloudera.hive>, <hadoop-conf,/etc/hadoop/conf.cloudera.hdfs>])
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread client_configs INFO     Client configs to deploy: set([])
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread client_configs INFO     Client configs to update: set([])
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread client_configs INFO     Removing alternative: kafka-conf, /etc/kafka/conf.cloudera.kafka
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread client_configs INFO     Removing alternative: hadoop-conf, /etc/hadoop/conf.cloudera.yarn
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread client_configs INFO     Removing alternative: hbase-conf, /etc/hbase/conf.cloudera.hbase
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread client_configs INFO     Removing alternative: hive-conf, /etc/hive/conf.cloudera.hive
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread client_configs INFO     Removing alternative: hadoop-conf, /etc/hadoop/conf.cloudera.hdfs
+[29/Apr/2019 11:25:19 +0000] 31741 MainThread agent        WARNING  Long HB processing time: 8.13849806786
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread agent        INFO     Stopping agent...
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread agent        INFO     No extant cgroups; unmounting any cgroup roots
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread agent        INFO     2 processes are being managed; Supervisor will continue to run.
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE Bus STOPPING
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('master', 9000)) shut down
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE Stopped thread '_TimeoutMonitor'.
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE Bus STOPPED
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE Bus STOPPING
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('master', 9000)) already shut down
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE No thread running for None.
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE Bus STOPPED
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE Bus EXITING
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread _cplogging   INFO     [29/Apr/2019:11:27:22] ENGINE Bus EXITED
+[29/Apr/2019 11:27:22 +0000] 31741 MainThread agent        INFO     Agent exiting; caught signal 15
+[29/Apr/2019 11:27:22 +0000] 31741 Dummy-14 daemonize    WARNING  Stopping daemon.
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread __init__     INFO     Agent UUID file was last modified at 2019-04-01 08:40:41.829000
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     ================================================================================
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     SCM Agent Version: 5.15.1
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Agent Protocol Version: 4
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Using Host ID: 956d89c6-e7df-48c2-916b-f2eefd5a058f
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Using directory: /opt/cm-5.15.1/run/cloudera-scm-agent
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Using supervisor binary path: /opt/cm-5.15.1/lib64/cmf/agent/build/env/bin/supervisord
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Neither verify_cert_file nor verify_cert_dir are configured. Not performing validation of server certificates in HTTunication. These options can be configured in this agent's config.ini file to enable certificate validation.
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Agent Logging Level: INFO
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     No command line vars
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Missing database jar: /usr/share/java/mysql-connector-java.jar (normal, if you're not using this database type)
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Missing database jar: /usr/share/java/oracle-connector-java.jar (normal, if you're not using this database type)
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Found database jar: /opt/cm-5.15.1/share/cmf/lib/postgresql-42.1.4.jre7.jar
+[29/Apr/2019 11:27:23 +0000] 15811 MainThread agent        INFO     Agent starting as pid 15811 user root(0) group root(0).
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Re-using pre-existing directory: /opt/cm-5.15.1/run/cloudera-scm-agent/cgroups
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread cgroups      INFO     Found existing subsystem blkio at /sys/fs/cgroup/blkio
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread cgroups      INFO     Found existing subsystem cpuacct at /sys/fs/cgroup/cpu,cpuacct
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread cgroups      INFO     Found existing subsystem cpu at /sys/fs/cgroup/cpu,cpuacct
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread cgroups      INFO     Found existing subsystem memory at /sys/fs/cgroup/memory
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread cgroups      INFO     Found cgroups subsystem: cpu
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread cgroups      INFO     Found cgroups subsystem: cpuacct
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread cgroups      INFO     Found cgroups subsystem: memory
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread cgroups      INFO     Found cgroups subsystem: blkio
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Found cgroups capabilities: {'has_memory': True, 'default_memory_limit_in_bytes': 8796093022207, 'default_memory_sof_in_bytes': 8796093022207, 'writable_cgroup_dot_procs': True, 'default_cpu_rt_runtime_us': 950000, 'has_cpu': True, 'default_blkio_weight': 1000, 'default_cpu_shares': 1024, 'has_cpuacue, 'has_blkio': True}
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Setting up supervisord event monitor.
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread filesystem_map INFO     Monitored nodev filesystem types: ['nfs', 'nfs4', 'tmpfs']
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread filesystem_map INFO     Using timeout of 2.000000
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread filesystem_map INFO     Using join timeout of 0.100000
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread filesystem_map INFO     Using tolerance of 60.000000
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread filesystem_map INFO     Local filesystem types whitelist: ['ext2', 'ext3', 'ext4', 'xfs']
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread kt_renewer   INFO     Agent wide credential cache set to /opt/cm-5.15.1/run/cloudera-scm-agent/krb5cc_cm_agent_0
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Using metrics_url_timeout_seconds of 30.000000
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Using task_metrics_timeout_seconds of 5.000000
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Using max_collection_wait_seconds of 10.000000
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread metrics      INFO     Importing tasktracker metric schema from file /opt/cm-5.15.1/lib64/cmf/agent/build/env/lib/python2.7/site-packages/c.1-py2.7.egg/cmf/monitor/tasktracker/schema.json
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread ntp_monitor  INFO     Using timeout of 2.000000
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread dns_names    INFO     Using timeout of 30.000000
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread __init__     INFO     Created DNS monitor.
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread stacks_collection_manager INFO     Using max_uncompressed_file_size_bytes: 5242880
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread __init__     INFO     Importing metric schema from file /opt/cm-5.15.1/lib64/cmf/agent/build/env/lib/python2.7/site-packages/cmf-5.15.1-py/cmf/monitor/schema.json
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Supervised processes will add the following to their environment (in addition to the supervisor's env): {'CDH_PARQUE: '/usr/lib/parquet', 'JSVC_HOME': '/usr/libexec/bigtop-utils', 'CMF_PACKAGE_DIR': '/opt/cm-5.15.1/lib64/cmf/service', 'CDH_HADOOP_BIN': '/usr/bin/hadoop', 'MGMT_HOME': '/opt/cm-5.15.1cmf', 'CDH_IMPALA_HOME': '/usr/lib/impala', 'CDH_YARN_HOME': '/usr/lib/hadoop-yarn', 'CDH_HDFS_HOME': '/usr/lib/hadoop-hdfs', 'PATH': '/sbin:/usr/sbin:/bin:/usr/bin', 'CDH_HUE_PLUGINS_'/usr/lib/hadoop', 'CM_STATUS_CODES': u'STATUS_NONE HDFS_DFS_DIR_NOT_EMPTY HBASE_TABLE_DISABLED HBASE_TABLE_ENABLED JOBTRACKER_IN_STANDBY_MODE YARN_RM_IN_STANDBY_MODE', 'KEYTRUSTEE_KP_'/usr/share/keytrustee-keyprovider', 'CLOUDERA_ORACLE_CONNECTOR_JAR': '/usr/share/java/oracle-connector-java.jar', 'CDH_SQOOP2_HOME': '/usr/lib/sqoop2', 'KEYTRUSTEE_SERVER_HOME': '/usrytrustee-server', 'CDH_MR2_HOME': '/usr/lib/hadoop-mapreduce', 'HIVE_DEFAULT_XML': '/etc/hive/conf.dist/hive-default.xml', 'CLOUDERA_POSTGRESQL_JDBC_JAR': '/opt/cm-5.15.1/share/cmf/libesql-42.1.4.jre7.jar', 'CDH_KMS_HOME': '/usr/lib/hadoop-kms', 'CDH_HBASE_HOME': '/usr/lib/hbase', 'CDH_SQOOP_HOME': '/usr/lib/sqoop', 'WEBHCAT_DEFAULT_XML': '/etc/hive-webhcat/conf.disat-default.xml', 'CDH_OOZIE_HOME': '/usr/lib/oozie', 'CDH_ZOOKEEPER_HOME': '/usr/lib/zookeeper', 'CDH_HUE_HOME': '/usr/lib/hue', 'CLOUDERA_MYSQL_CONNECTOR_JAR': '/usr/share/java/mysql-or-java.jar', 'CDH_HBASE_INDEXER_HOME': '/usr/lib/hbase-solr', 'CDH_MR1_HOME': '/usr/lib/hadoop-0.20-mapreduce', 'CDH_SOLR_HOME': '/usr/lib/solr', 'CDH_PIG_HOME': '/usr/lib/pig', 'CDH_HOME': '/usr/lib/sentry', 'CDH_CRUNCH_HOME': '/usr/lib/crunch', 'CDH_LLAMA_HOME': '/usr/lib/llama/', 'CDH_HTTPFS_HOME': '/usr/lib/hadoop-httpfs', 'ROOT': '/opt/cm-5.15.1/lib64/cmf', 'COP_HOME': '/usr/lib/hadoop', 'CDH_HIVE_HOME': '/usr/lib/hive', 'ORACLE_HOME': '/usr/share/oracle/instantclient', 'CDH_HCAT_HOME': '/usr/lib/hive-hcatalog', 'CDH_KAFKA_HOME': '/usr/lib/ 'CDH_SPARK_HOME': '/usr/lib/spark', 'TOMCAT_HOME': '/usr/lib/bigtop-tomcat', 'CDH_FLUME_HOME': '/usr/lib/flume-ng'}
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     To override these variables, use /etc/cloudera-scm-agent/config.ini. Environment variables for CDH locations are nothen CDH is installed from parcels.
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Re-using pre-existing directory: /opt/cm-5.15.1/run/cloudera-scm-agent/process
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Re-using pre-existing directory: /opt/cm-5.15.1/run/cloudera-scm-agent/supervisor
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Re-using pre-existing directory: /opt/cm-5.15.1/run/cloudera-scm-agent/flood
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Re-using pre-existing directory: /opt/cm-5.15.1/run/cloudera-scm-agent/supervisor/include
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Supervisor version: 3.0, pid: 3341
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Connecting to previous supervisor: agent-2721-1556504529.
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread status_server INFO     Using maximum impala profile bundle size of 1073741824 bytes.
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread status_server INFO     Using maximum stacks log bundle size of 1073741824 bytes.
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread _cplogging   INFO     [29/Apr/2019:11:27:25] ENGINE Bus STARTING
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread _cplogging   INFO     [29/Apr/2019:11:27:25] ENGINE Started monitor thread '_TimeoutMonitor'.
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread _cplogging   INFO     [29/Apr/2019:11:27:25] ENGINE Serving on master:9000
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread _cplogging   INFO     [29/Apr/2019:11:27:25] ENGINE Bus STARTED
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread __init__     INFO     New monitor: (<cmf.monitor.host.HostMonitor object at 0x7ffb5aa8add0>,)
+[29/Apr/2019 11:27:25 +0000] 15811 MonitorDaemon-Scheduler __init__     INFO     Monitor ready to report: ('HostMonitor',)
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Setting default socket timeout to 45
+[29/Apr/2019 11:27:25 +0000] 15811 Monitor-HostMonitor network_interfaces INFO     NIC iface eth0 doesn't support ETHTOOL (95)
+[29/Apr/2019 11:27:25 +0000] 15811 Monitor-HostMonitor throttling_logger ERROR    Error getting directory attributes for /opt/cm-5.15.1/log/cloudera-scm-agent
+Traceback (most recent call last):
+  File "/opt/cm-5.15.1/lib64/cmf/agent/build/env/lib/python2.7/site-packages/cmf-5.15.1-py2.7.egg/cmf/monitor/dir_monitor.py", line 90, in _get_directory_attributes
+    name = pwd.getpwuid(uid)[0]
+KeyError: 'getpwuid(): uid not found: 1106'
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread heartbeat_tracker INFO     HB stats (seconds): num:1 LIFE_MIN:0.03 min:0.03 mean:0.03 max:0.03 LIFE_MAX:0.03
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     CM server guid: 4760feb5-8e8c-416c-8337-2910fef890a0
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        INFO     Using parcels directory from server provided value: /opt/cloudera/parcels
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        WARNING  Expected user root for /opt/cloudera/parcels but was cloudera-scm
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread agent        WARNING  Expected group root for /opt/cloudera/parcels but was cloudera-scm
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread parcel       INFO     Agent does create users/groups and apply file permissions
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread downloader   INFO     Downloader path: /opt/cloudera/parcel-cache
+[29/Apr/2019 11:27:25 +0000] 15811 MainThread parcel_cache INFO     Using /opt/cloudera/parcel-cache for parcel cache
+[29/Apr/2019 11:27:26 +0000] 15811 MainThread agent        INFO     Flood daemon (re)start attempt
+[29/Apr/2019 11:27:27 +0000] 15811 MainThread agent        INFO     Triggering supervisord update.
+[29/Apr/2019 11:27:28 +0000] 15811 MainThread agent        INFO     Active parcel list updated; recalculating component info.
+[29/Apr/2019 11:27:28 +0000] 15811 MainThread throttling_logger WARNING  CMF_AGENT_JAVA_HOME environment variable host override will be deprecated in future. JAVA_HOME setting configur CM server takes precedence over host agent override. Configure JAVA_HOME setting from CM server.
+[29/Apr/2019 11:27:29 +0000] 15811 MainThread throttling_logger INFO     Identified java component java8 with full version java version "1.8.0_191" Java(TM) SE Runtime Environment (bui0_191-b12) Java HotSpot(TM) 64-Bit Server VM (build 25.191-b12, mixed mode)  for requested version .
+
+报错信息：ERROR    Error getting directory attributes for /opt/cm-5.15.1/log/cloudera-scm-agent
+
+日志翻译：错误获取/opt/cm-5.15.1/log/cloudera-scm-agent的目录属性时出错
+
+这个报错我找了很多资料也没有解决。
+
+但是我发现一个现象，就是进到CDH的Web界面之后，由于uuid的改变，原来的界面都没有了，需要重新安装各种服务。
+
+我看到这里就崩溃了，重装的CDH。
+

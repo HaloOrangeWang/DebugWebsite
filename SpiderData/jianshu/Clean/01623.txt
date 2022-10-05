@@ -1,0 +1,66 @@
+错误1:
+
+pip install lxml==3.8.0
+
+In file included from src/lxml/lxml.etree.c:515:0:
+
+src/lxml/includes/etree_defs.h:14:31: fatal error: libxml/xmlversion.h: No such file or directory
+
+#include "libxml/xmlversion.h"
+
+^
+
+compilation terminated.
+
+Compile failed: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+
+creating tmp
+
+cc -I/usr/include/libxml2 -c /tmp/xmlXPathInitm54_fbr8.c -o tmp/xmlXPathInitm54_fbr8.o
+
+/tmp/xmlXPathInitm54_fbr8.c:1:26: fatal error: libxml/xpath.h: No such file or directory
+
+#include "libxml/xpath.h"
+
+^
+
+compilation terminated.
+
+error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+
+*********************************************************************************
+
+Could not find function xmlCheckVersion in library libxml2. Is libxml2 installed?
+
+*********************************************************************************
+
+解决办法：
+
+apt-get install libxml2-dev libxslt1-dev
+
+错误2:
+
+pip install pymssql==2.1.3
+
+building '_mssql' extension
+
+creating build
+
+creating build/temp.linux-x86_64-3.4
+
+x86_64-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -g -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -fPIC -I/usr/local/include -I/root/pos_server/venv/include -I/usr/include/python3.4m -c _mssql.c -o build/temp.linux-x86_64-3.4/_mssql.o -DMSDBLIB
+
+_mssql.c:266:22: fatal error: sqlfront.h: No such file or directory
+
+#include "sqlfront.h"
+
+^
+
+compilation terminated.
+
+error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+
+解决办法：
+
+apt-get install freetds-dev
+

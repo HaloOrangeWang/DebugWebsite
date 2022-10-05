@@ -1,0 +1,8 @@
+首先声明，我是一个Python小白，想了个蠢办法，但觉得很实用。哈哈哈！！！
+
+Python使用phantomJS循环for爬取页面时，phantomJS占用的内存会越来越大，直接报错“ConnectionResetError: [WinError 10054]远程主机强迫关闭了一个现有的连接”，在网上查过很多办法都没有解决，现在有个简单的办法解决并让程序持续运行。
+
+办法是：在抛出异常时，先关闭phantomJS，再新建一个phantomJS，把报错的这一次执行一遍（因为报错，这个爬取的内容不会执行存储下来，所以再执行这一次）。
+
+from selenium import webdriver
+

@@ -1,0 +1,147 @@
+ambari在agent端使用metrics进行agent机器上的信息收集，
+
+但是在agent上启动metrics时会报错：
+
+Monitor out at: /var/log/ambari-metrics-monitor/ambari-metrics-monitor.out
+
+stdout:
+
+2017-12-07 18:49:13,633 - Using hadoop conf dir: /usr/hdp/current/hadoop-client/conf
+
+2017-12-07 18:49:13,775 - Stack Feature Version Info: stack_version=2.6, version=2.6.0.3-8, current_cluster_version=2.6.0.3-8 -> 2.6.0.3-8
+
+2017-12-07 18:49:13,785 - Using hadoop conf dir: /usr/hdp/current/hadoop-client/conf
+
+User Group mapping (user_group) is missing in the hostLevelParams
+
+2017-12-07 18:49:13,786 - Group['hadoop'] {}
+
+2017-12-07 18:49:13,787 - Group['users'] {}
+
+2017-12-07 18:49:13,788 - User['accumulo'] {'gid': 'hadoop', 'fetch_nonlocal_groups': True, 'groups': [u'hadoop']}
+
+2017-12-07 18:49:13,789 - User['zookeeper'] {'gid': 'hadoop', 'fetch_nonlocal_groups': True, 'groups': [u'hadoop']}
+
+2017-12-07 18:49:13,789 - User['ams'] {'gid': 'hadoop', 'fetch_nonlocal_groups': True, 'groups': [u'hadoop']}
+
+2017-12-07 18:49:13,790 - User['ambari-qa'] {'gid': 'hadoop', 'fetch_nonlocal_groups': True, 'groups': [u'users']}
+
+2017-12-07 18:49:13,790 - User['hdfs'] {'gid': 'hadoop', 'fetch_nonlocal_groups': True, 'groups': [u'hadoop']}
+
+2017-12-07 18:49:13,791 - User['yarn'] {'gid': 'hadoop', 'fetch_nonlocal_groups': True, 'groups': [u'hadoop']}
+
+2017-12-07 18:49:13,792 - User['mapred'] {'gid': 'hadoop', 'fetch_nonlocal_groups': True, 'groups': [u'hadoop']}
+
+2017-12-07 18:49:13,792 - File['/var/lib/ambari-agent/tmp/changeUid.sh'] {'content': StaticFile('changeToSecureUid.sh'), 'mode': 0555}
+
+2017-12-07 18:49:13,793 - Execute['/var/lib/ambari-agent/tmp/changeUid.sh ambari-qa /tmp/hadoop-ambari-qa,/tmp/hsperfdata_ambari-qa,/home/ambari-qa,/tmp/ambari-qa,/tmp/sqoop-ambari-qa'] {'not_if': '(test $(id -u ambari-qa) -gt 1000) || (false)'}
+
+2017-12-07 18:49:13,802 - Skipping Execute['/var/lib/ambari-agent/tmp/changeUid.sh ambari-qa /tmp/hadoop-ambari-qa,/tmp/hsperfdata_ambari-qa,/home/ambari-qa,/tmp/ambari-qa,/tmp/sqoop-ambari-qa'] due to not_if
+
+2017-12-07 18:49:13,803 - Group['hdfs'] {}
+
+2017-12-07 18:49:13,803 - User['hdfs'] {'fetch_nonlocal_groups': True, 'groups': [u'hadoop', u'hdfs']}
+
+2017-12-07 18:49:13,804 - FS Type:
+
+2017-12-07 18:49:13,804 - Directory['/etc/hadoop'] {'mode': 0755}
+
+2017-12-07 18:49:13,830 - File['/usr/hdp/current/hadoop-client/conf/hadoop-env.sh'] {'content': InlineTemplate(...), 'owner': 'hdfs', 'group': 'hadoop'}
+
+2017-12-07 18:49:13,831 - Directory['/var/lib/ambari-agent/tmp/hadoop_java_io_tmpdir'] {'owner': 'hdfs', 'group': 'hadoop', 'mode': 01777}
+
+2017-12-07 18:49:13,850 - Execute[('setenforce', '0')] {'not_if': '(! which getenforce ) || (which getenforce && getenforce | grep -q Disabled)', 'sudo': True, 'only_if': 'test -f /selinux/enforce'}
+
+2017-12-07 18:49:13,856 - Skipping Execute[('setenforce', '0')] due to not_if
+
+2017-12-07 18:49:13,857 - Directory['/var/log/hadoop'] {'owner': 'root', 'create_parents': True, 'group': 'hadoop', 'mode': 0775, 'cd_access': 'a'}
+
+2017-12-07 18:49:13,860 - Directory['/var/run/hadoop'] {'owner': 'root', 'create_parents': True, 'group': 'root', 'cd_access': 'a'}
+
+2017-12-07 18:49:13,860 - Directory['/tmp/hadoop-hdfs'] {'owner': 'hdfs', 'create_parents': True, 'cd_access': 'a'}
+
+2017-12-07 18:49:13,866 - File['/usr/hdp/current/hadoop-client/conf/commons-logging.properties'] {'content': Template('commons-logging.properties.j2'), 'owner': 'hdfs'}
+
+2017-12-07 18:49:13,868 - File['/usr/hdp/current/hadoop-client/conf/health_check'] {'content': Template('health_check.j2'), 'owner': 'hdfs'}
+
+2017-12-07 18:49:13,876 - File['/usr/hdp/current/hadoop-client/conf/log4j.properties'] {'content': InlineTemplate(...), 'owner': 'hdfs', 'group': 'hadoop', 'mode': 0644}
+
+2017-12-07 18:49:13,889 - File['/usr/hdp/current/hadoop-client/conf/hadoop-metrics2.properties'] {'content': InlineTemplate(...), 'owner': 'hdfs', 'group': 'hadoop'}
+
+2017-12-07 18:49:13,890 - File['/usr/hdp/current/hadoop-client/conf/task-log4j.properties'] {'content': StaticFile('task-log4j.properties'), 'mode': 0755}
+
+2017-12-07 18:49:13,890 - File['/usr/hdp/current/hadoop-client/conf/configuration.xsl'] {'owner': 'hdfs', 'group': 'hadoop'}
+
+2017-12-07 18:49:13,895 - File['/etc/hadoop/conf/topology_mappings.data'] {'owner': 'hdfs', 'content': Template('topology_mappings.data.j2'), 'only_if': 'test -d /etc/hadoop/conf', 'group': 'hadoop'}
+
+2017-12-07 18:49:13,901 - File['/etc/hadoop/conf/topology_script.py'] {'content': StaticFile('topology_script.py'), 'only_if': 'test -d /etc/hadoop/conf', 'mode': 0755}
+
+2017-12-07 18:49:14,097 - Using hadoop conf dir: /usr/hdp/current/hadoop-client/conf
+
+2017-12-07 18:49:14,101 - checked_call['hostid'] {}
+
+2017-12-07 18:49:14,106 - checked_call returned (0, 'a8c0657a')
+
+2017-12-07 18:49:14,109 - Directory['/etc/ambari-metrics-monitor/conf'] {'owner': 'ams', 'group': 'hadoop', 'create_parents': True}
+
+2017-12-07 18:49:14,110 - Directory['/var/log/ambari-metrics-monitor'] {'owner': 'ams', 'group': 'hadoop', 'create_parents': True, 'mode': 0755}
+
+2017-12-07 18:49:14,111 - Execute['ambari-sudo.sh chown -R ams:hadoop /var/log/ambari-metrics-monitor'] {}
+
+2017-12-07 18:49:14,120 - Directory['/var/run/ambari-metrics-monitor'] {'owner': 'ams', 'group': 'hadoop', 'create_parents': True, 'mode': 0755, 'cd_access': 'a'}
+
+2017-12-07 18:49:14,121 - Directory['/usr/lib/python2.7/dist-packages/resource_monitoring/psutil/build'] {'owner': 'ams', 'group': 'hadoop', 'create_parents': True, 'cd_access': 'a'}
+
+2017-12-07 18:49:14,122 - Execute['ambari-sudo.sh chown -R ams:hadoop /usr/lib/python2.7/dist-packages/resource_monitoring'] {}
+
+2017-12-07 18:49:14,131 - TemplateConfig['/etc/ambari-metrics-monitor/conf/metric_monitor.ini'] {'owner': 'ams', 'template_tag': None, 'group': 'hadoop'}
+
+2017-12-07 18:49:14,141 - File['/etc/ambari-metrics-monitor/conf/metric_monitor.ini'] {'content': Template('metric_monitor.ini.j2'), 'owner': 'ams', 'group': 'hadoop', 'mode': None}
+
+2017-12-07 18:49:14,142 - TemplateConfig['/etc/ambari-metrics-monitor/conf/metric_groups.conf'] {'owner': 'ams', 'template_tag': None, 'group': 'hadoop'}
+
+2017-12-07 18:49:14,144 - File['/etc/ambari-metrics-monitor/conf/metric_groups.conf'] {'content': Template('metric_groups.conf.j2'), 'owner': 'ams', 'group': 'hadoop', 'mode': None}
+
+2017-12-07 18:49:14,150 - File['/etc/ambari-metrics-monitor/conf/ams-env.sh'] {'content': InlineTemplate(...), 'owner': 'ams'}
+
+2017-12-07 18:49:14,151 - Execute['/usr/sbin/ambari-metrics-monitor --config /etc/ambari-metrics-monitor/conf start'] {'user': 'ams'}
+
+2017-12-07 18:49:16,294 - Execute['find /var/log/ambari-metrics-monitor -maxdepth 1 -type f -name '*' -exec echo '==> {} <==' ; -exec tail -n 40 {} ;'] {'logoutput': True, 'ignore_failures': True, 'user': 'ams'}
+
+==> /var/log/ambari-metrics-monitor/ambari-metrics-monitor.out <==
+
+Traceback (most recent call last):
+
+File "/usr/lib/python2.6/site-packages/resource_monitoring/main.py", line 27, in <module>
+
+from core.controller import Controller
+
+File "/usr/lib/python2.6/site-packages/resource_monitoring/core/init.py", line 29, in <module>
+
+for dir in os.walk(path).next()[1]:
+
+StopIteration
+
+Traceback (most recent call last):
+
+File "/usr/lib/python2.6/site-packages/resource_monitoring/main.py", line 27, in <module>
+
+from core.controller import Controller
+
+File "/usr/lib/python2.6/site-packages/resource_monitoring/core/init.py", line 29, in <module>
+
+for dir in os.walk(path).next()[1]:
+
+StopIteration
+
+Command failed after 1 tries
+
+很奇怪的事情，Ubuntu14+和Centos上的python最低是2.7的，为什么会有2.6呢？
+
+因为metrics编译的时候就是这样设定的，但这并不意味着需要重新编译。（安装有make就可以）
+
+cd /usr/lib/python2.6/site-packages/resource_monitoring/psutil
+make install
+
+重新尝试启动就行了。
+

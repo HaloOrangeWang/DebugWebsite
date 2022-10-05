@@ -1,0 +1,38 @@
+在使用Python加载图像时需要使用imread命令,但是：
+
+from scipy.misc import imread,imresize时提示  cannot import name imread
+
+看了很多人给的建议是：
+
+sudo pip3 install pillow
+
+但是我尝试了，结果发现本机内已经安装了pillow，你需要查看pillow的安装路径，我的之前装在/usr/lib下：
+
+你再查看一下scipy的安装路径，如若没有安装，使用以下命令安装：
+
+sudo pip install scipy
+
+对比一下发现scipy的安装路径在/usr/local下，所以出现ImportError: cannot import name imread的原因是他们俩的安装路径不统一
+
+于是卸载pillow:
+
+sudo pip3 uninstall pillow
+
+再重新安装：
+
+sudo pip3 install pillow
+
+这时发现pillow的安装路径正确了
+
+再执行以下代码发现没有error了
+
+from scipy.misc import imread, imresize, imsave
+img = imread('/home/qianyu/Desktop/cat.jpg')
+img_tinted = img * [1, 0.95, 0.9]
+
+# Resize the tinted image to be 300 by 300 pixels.
+img_tinted = imresize(img_tinted, (300, 300))
+
+# Write the tinted image back to disk
+imsave('/home/qianyu/Desktop/cat2.jpg', img_tinted)
+

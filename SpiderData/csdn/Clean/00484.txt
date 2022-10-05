@@ -1,0 +1,40 @@
+【摘要】python可以用来做很多事情，如何统计python词频?如何用python统计目录名错误的事情?这是我每次面试的时候都会问的一个问题，那么python目录名错误怎么解决？这几种方案才是你需要学会的，所以你知道python目录名错误怎么解决？这几种方案才是你需要学会的。
+
+1、python目录名错误怎么解决——解决方案：
+
+这个目录名无效困扰我很久，明明目录路径没问题啊，文件也有，为什么报错呢?
+
+原来这个问题是因为只需要path信息，不要写到文件。
+
+print(“获取当前文件路径——” + os.path.realpath(file)) # 获取当前文件路径
+
+parent = os.path.dirname(os.path.realpath(file))
+
+print(“获取其父目录——” + parent) # 从当前文件路径中获取目录
+
+garder = os.path.dirname(parent)
+
+print(“获取父目录的父目录——” + garder)
+
+print(“获取文件名” + os.path.basename(os.path.realpath(file))) # 获取文件名
+
+2、python目录名错误怎么解决——前文件的路径
+
+pwd = os.getcwd()
+
+print(“当前运行文件路径” + pwd)
+
+3、python目录名错误怎么解决——当前文件的父路径
+
+father_path = os.path.abspath(os.path.dirname(pwd) + os.path.sep + “.”)
+
+print(“运行文件父路径” + father_path)
+
+4、python目录名错误怎么解决——当前文件的前两级目录
+
+grader_father = os.path.abspath(os.path.dirname(pwd) + os.path.sep + “…”)
+
+print(“运行文件父路径的父路径” + grader_father)
+
+以上就是《python目录名错误怎么解决？这几种方案才是你需要学会的》的全部内容，python可以用来做很多事情，如何统计python词频?如何用python统计目录名错误的事情?这是我每次面试的时候都会问的一个问题，如果你想知道更多的python的相关方法，可以点击下方资料下载链接。
+

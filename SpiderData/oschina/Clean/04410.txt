@@ -1,0 +1,24 @@
+在eclipse安装的路径下plugins文件夹下搜索org.eclipse.m2e.lifecyclemapping.defaults
+
+如：F:\eclipse\plugins下的org.eclipse.m2e.lifecyclemapping.defaults_1.6.2.20150902-0002.jar
+
+lifecycle-mapping-metadata.xml修改这个文件在里面添加
+
+<pluginExecution>
+  		<pluginExecutionFilter>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-compiler-plugin</artifactId>
+  			<versionRange>[3.1,)</versionRange>
+  			<goals>
+  				<goal>testCompile</goal>
+  				</goals>
+  		</pluginExecutionFilter>
+  		<action>
+  			<ignore></ignore>
+  		</action>
+  	</pluginExecution>
+
+2、有时候因为网络原因jar包下载失败。删除repo下的 .lastUpdated 文件重新下载。
+
+3、有时候下载失败可以pom没报错。但是资源jar确实没下载完成，删除掉repo下的.jar.part文件重新下载。
+

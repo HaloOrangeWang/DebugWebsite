@@ -1,0 +1,39 @@
+网页数据中包含&amp;, &gt;, &lt;, &nbsp;等转义字符，想要将他们变成&<> 原字符
+
+例如：
+
+html = '&lt;content&gt;
+
+python处理方式
+
+import HTMLParser
+html_parser = HTMLParser.HTMLParser()
+txt = html_parser.unescape(html) #这样就得到了txt = '<content>'
+
+转回转义字符
+
+import cgi
+html = cgi.escape(txt) # 这样又回到了 html = '&lt;content&gt'
+
+当我们pip安装HTMLParser并且按照上述方式写到代码里时，会报错
+
+ModuleNotFoundError: No module named 'markupbase
+
+OK，那我们继续pip安装markupbase，哎，提示不行啊，于是官网下载https://pypi.org/project/micropython-_markupbase/#description
+
+两次解压后得到文件夹micropython-_markupbase-3.3.3-1，然后在python的路径中找到site-packages这个文件夹，将micropython-_markupbase-3.3.3-1这个包中_markupbase.py文件改名为markupbase.py并放到site-packages文件夹中。！！！只放一个.py文件其他不要，不然会报错。
+
+重新运行程序，果不其然依然报错啊！
+
+ModuleNotFoundError: No module named 'htmlentitydefs'
+
+然后将导包的方式换一下：
+
+from HTMLParser import HTMLParser #python2
+from html.parser import HTMLParser #python3
+
+html_parser = HTMLParser()
+txt = html_parser.unescape(html) #这样就得到了txt = '<content>'
+
+大功告成！
+

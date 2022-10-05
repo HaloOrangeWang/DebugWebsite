@@ -1,0 +1,58 @@
+2020.08.24更新：似乎产生这个的原因，就是因为Python 2和Python 3默认的编码格式不一样。
+
+Python 2是GBK，而Python 3是UTF-8。所以有些老旧的包在安装时，会产生编码的问题。
+
+因为Pycharm最近老是弹出RELP COMMUNICATIONS，非常影响代码运行的效率。
+
+REPL（Read-Eval-Print Loop），翻译过来就是“读取-求值-输出”循环，是一个简单的交互式的编程环境。
+
+听起来似乎挺有用，所以想直接在Pycharm中pip这个REPL。
+
+结果报错：
+
+ERROR: Command errored out with exit status 1:
+
+主要错误显示在最后几行：
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xa6 in position 1246: illegal multibyte sequence
+     ----------------------------------------
+ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+
+
+定位问题：
+
+UnicodeDecodeError，表明是编码的问题。
+
+具体就是在setup.py文件中的第10行和第17行，读取文件的编码方式为GBK，而并非UTF-8，因此报错使得无法安装。
+
+
+更新成功解决的方法：
+
+由于不能使用 Pycharm 里的 Project Interpreter。
+
+解决思路：下载源码的包，进行代码改动之后install。
+
+1、找到原始package的文件，找到报错的那一行。
+
+REPL的官方地址是：https://github.com/mbr/repl。查看报错的setup文件的源码。
+
+定位问题：源码中没有指定open时的编码方式，使得默认为gbk编码。
+
+报错的源码：
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+2、下载原始包文件后，解压找到setup.py文件，修改文件里的这一行，即加上encoding='utf-8'，保存后打包为新的安装包。
+
+修改后的代码：
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname),encoding='utf-8').read()
+
+3、输入 pip install repl-1.0.tar.gz，用新的安装包来进行install。成功！
+
+这个问题困扰了我一周，后来发现其实解决方法非常简单！
+
+解决问题最重要的是要定位报错产生的原因，然后根据原因一步步找到解决的方法。
+

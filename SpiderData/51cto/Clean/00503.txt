@@ -1,0 +1,41 @@
+最近在鼓捣python画复杂网络图，用起来貌似不错，做了下环境迁移， 然后就出现代码不兼容问题了。网上的说法众说纷纭，实践了下，然后总结如下。以供参考：
+
+
+问题：
+
+报错：
+
+环境迁移前是在win10环境上， 迁移到 centos7上的anaconda环境。
+
+看了下主要软件版本不一致：
+
+scipy-1.5.2-py38h14eb087_0
+
+networkx-2.5-py_0
+
+切换环境后就报错了：
+
+AttributeError: module ‘scipy.sparse’ has no attribute ‘coo_array’
+
+
+原因以及依据：
+
+显示是​​scipy​​.sparse的函数下面没有coo_array方法造成的。
+
+​​参考这个issue​​
+
+主要是这个：
+
+Scipy introduced the coo aray in version 1.8.So if you use a version of python with NetwortX 2.7 and Scipy 1.8 you should be fie,andif you have NetworoX before2.and SciPy before 1.8 you should be fine.But if you mix the new NetworkX with an older Scipy it will run into this issue.
+
+Scipy 在 1.8 版中引入了 coo aray。因此，如果您使用带有 NetwortX 2.7 和 Scipy 1.8 的 Python 版本，您应该可以，如果您之前有 NetworoX 2.和 1.8 之前的 SciPy，您应该没问题。但是如果您混合使用新的 NetworkX 使用较旧的 Scipy 会遇到此问题。
+
+
+解决办法：
+
+解决版本 回滚到之前的版本：
+
+解决版本 回滚到之前的版本：
+
+然后再次运行就正常了（补张图装个x）
+

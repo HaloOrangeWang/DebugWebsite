@@ -1,0 +1,66 @@
+　　在centos7 中安装Python3中遇到的问题
+
+　　wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
+
+　　tar -xvf Python-3.6.4.tgz
+
+　　cd Python-3.6.4
+
+　　./configure
+
+　　报错：
+
+　　configure: error: no acceptable C compiler found in $PATH
+
+　　See `config.log' for more details
+
+　　解决办法：安装GCC
+
+　　yum install gcc
+
+　　完成后再次安装
+
+./configure
+
+make
+
+make altinstall
+
+　　在make install 命令后出现错误：
+
+　　zipimport.ZipImportError: can't decompress data; zlib not available
+
+　　make: *** [install] Error 1
+
+　　解决方法：
+
+　　yum install -y zlib*
+
+cd Modules/zlib
+
+./configure
+
+make install
+
+cd -
+
+make install
+
+　　如果安装完成后pip3 出现：
+
+　　pip is configured with locations that require TLS/SSL
+
+　　安装openssl & openssl-devel
+
+　　yum -y install openssl
+
+　　yum -y install openssl-devel
+
+　　重新安装Python3
+
+./configure --with-ssl
+
+make
+
+sudo make install
+

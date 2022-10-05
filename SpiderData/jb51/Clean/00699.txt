@@ -1,0 +1,52 @@
+如下所示：
+
+在需要导入的那个文件夹里面新建一个 __init__.py文件,哪怕这个文件是空的文件也可以.
+
+补充知识：python中import其他目录下的文件出现问题的解决方法
+
+在使用python进行编程的时候，import其他文件路径下的.py文件时报错
+
+Traceback (most recent call last):
+
+File "download_and_convert_data.py", line 44, in <module>
+
+from .datasets import download_and_convert_cifar10
+
+ModuleNotFoundError: No module named '__main__.datasets'; '__main__' is not a package
+
+文件的路径如下：
+
+D:\Pyproject\models-master\research\slim\datasets\download_and_convert_cifar10.py
+
+将from后面的相对路径
+
+from .datasets import download_and_convert_cifar10
+
+改为绝对路径
+
+from research.slim.datasets import download_and_convert_cifar10
+
+后仍然报错
+
+Traceback (most recent call last):
+
+File "download_and_convert_data.py", line 44, in <module>
+
+from research.slim.datasets import download_and_convert_cifar10
+
+ModuleNotFoundError: No module named 'research'
+
+意思是找不到research包，查阅解决方法后发现加一句
+
+import os
+
+import sys
+
+ROOT_DIR = os.path.abspath('D:\Pyproject\models-master')
+
+sys.path.append(ROOT_DIR)
+
+即可解决该问题
+
+以上这篇解决python中import文件夹下面py文件报错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

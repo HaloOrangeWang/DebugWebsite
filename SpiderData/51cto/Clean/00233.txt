@@ -1,0 +1,20 @@
+报错如下:
+
+requests.exceptions.SSLError: HTTPSConnectionPool(host=‘www.baidu.com’, port=443): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, u’[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:581)’),))
+
+错误提示就是上面这样的。首先我找了很多的资料，有很多人说关闭证书验证（verify=False））可以解决这个问题或者说是在进行GET时,指定SSL证书.
+
+response = requests.get(‘http://www.baidu.com/’, headers = header, verify=False)
+
+但我用以上两种方法都没有完美解决此问题，而且有些还有后续错误比如InsecureRequestWarning
+
+正确的做法参考文档资料
+
+​​
+
+​​
+
+​​
+
+只要安装一下几个requests依赖包就可以解决此问题
+

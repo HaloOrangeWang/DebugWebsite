@@ -1,0 +1,14 @@
+编码问题可能导致python读取中文路径时出错
+
+解决方法一：路径拆分单独编码
+
+import os
+
+root_path = 'E:\\project\\sk_man-master\\SK\\static\\sk\\new_clothes\\'+u'裤子'
+    for file in os.listdir(root_path):
+	print file.decode('gbk')
+
+方法二：对全部路径用unicode格式编码
+
+root_path = unicode('E:\\project\\sk_man-master\\SK\\static\\sk\\new_clothes\\裤子','utf-8')
+

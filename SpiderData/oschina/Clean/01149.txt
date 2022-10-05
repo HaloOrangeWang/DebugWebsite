@@ -1,0 +1,71 @@
+
+异常记录
+
+在安装graphlab 的过程中，发现如下错误
+
+Could not find a version that satisfies the requirement graphlab-create>=2.1 (from GraphLab-Create-License==2.1) (from versions: )
+No matching distribution found for graphlab-create>=2.1 (from GraphLab-Create-License==2.1)
+
+
+异常原因
+
+翻阅官方文档找到这么一句话
+
+Option 2: Install in Python environment using virtualenv
+
+The below instructions assume an existing Python 2.7.x (64-bit) environment and virtualenv is already installed on your machine. GraphLab Create installation requires pip version >= 7. IPython Notebook is recommended for getting the most out our code samples.
+
+好了，知道问题所在了
+
+graphlab要求python 2.7的环境。
+
+解决办法，如果你安装的是 anaconda
+
+重新设置一下python2.7
+
+打开你邮箱中的那封安装邮件，然后按照流程安装即可
+
+Step 1: Download Anaconda2 v4.0.0
+
+Step 2: Install Anaconda
+
+# Run Anaconda2 v4.0.0 installer.
+# Double-click the .exe file to install Anaconda and follow the instructions on the screen.
+Step 3: Create conda environment
+
+# Create a new conda environment with Python 2.7.x
+conda create -n gl-env python=2.7 anaconda=4.0.0
+
+# Activate the conda environment
+activate gl-env
+Step 4: Ensure pip version >= 7
+
+# Ensure pip is updated to the latest version
+# miniconda users may need to install pip first, using 'conda install pip'
+conda update pip
+Step 5: Install GraphLab Create
+
+# Install your licensed copy of GraphLab Create
+pip install --upgrade --no-cache-dir https://get.graphlab.com/GraphLab-Create/2.1/你的邮箱/邮箱收到的安装码/GraphLab-Create-License.tar.gz
+Step 4: Ensure installation of IPython and IPython Notebook
+
+# Install or update IPython and IPython Notebook
+conda install ipython-notebook
+
+上述命令中，也可以在软件直接操作，记得切换一下python环境 activate gl-env
+
+然后使用pip进行安装
+
+安装完毕，运行jupyter之后，如果导入报错
+
+
+ACTION REQUIRED: Dependencies libstdc+±6.dll and libgcc_s_seh-1.dll not found.
+
+使用这个命令
+
+graphlab.get_dependencies()
+
+本文分享 CSDN - 梦想橡皮擦。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

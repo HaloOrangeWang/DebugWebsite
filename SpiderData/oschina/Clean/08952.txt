@@ -1,0 +1,32 @@
+在项目中的""和;经常会报错，真的很纠结，今天看到一个解决方法，可以不用卸载删除
+
+在项目根目录中，新建一个.prettierrc文件，来移除分号，和替换为单引号。
+
+{
+   "semi": false,
+   "singleQuote": true
+}
+
+这样就可以了，格式化也不会变为""了。
+
+也可以禁用语法规则，修改.eslintrc.js文件：把报错的项禁用
+
+module.exports = {
+  root: true,
+  env: {
+    node: true
+  },
+  'extends': [
+    'plugin:vue/essential',
+    '@vue/standard'
+  ],
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'space-before-function-paren': 0 //禁用这个规则
+  },
+  parserOptions: {
+    parser: 'babel-eslint'
+  }
+}
+

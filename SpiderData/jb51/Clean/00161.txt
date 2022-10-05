@@ -1,0 +1,64 @@
+代码
+
+return JsonResponse({"name": "tom"})
+
+报错：
+
+TYPEERROR: In order to allow non-dict objects to be serialized
+
+set the safe parmeter to False
+
+解决：
+
+return JsonResponse({"name": "tom"}, safe=False)
+
+增加safe=false，使其接受列表
+
+补充知识：python 里面 JsonResponse (book_list,safe=False)
+
+代码为：
+
+# 查询所有图书 、 增加图书
+def get(self,request):
+
+queryset = BookInfo.objects.all()
+  book_list = []
+
+for book in queryset:
+    book_list.append({
+      'id':book.id,
+      'bread':book.bread
+
+})
+  return JsonResponse (book_list,safe=False)
+
+遇到问题：
+
+JsonResponse (book_list,safe=False)
+
+safe=False 这是什么鬼 ？
+
+解决方案：
+
+down 下源码后 ：
+
+def __init__(self, data, encoder=DjangoJSONEncoder, safe=True,
+       json_dumps_params=None, **kwargs):
+  if safe and not isinstance(data, dict):
+    raise TypeError(
+      'In order to allow non-dict objects to be serialized set the '
+      'safe parameter to False.'
+    )
+ 
+ if json_dumps_params is None:
+    json_dumps_params = {}
+  kwargs.setdefault('content_type', 'application/json')
+  data = json.dumps(data, cls=encoder, **json_dumps_params)
+  super(JsonResponse, self).__init__(content=data, **kwargs)
+
+最终答案：
+
+'In order to allow non-dict objects to be serialized set the ' 'safe parameter to False.'
+
+以上这篇解决Django响应JsonResponse返回json格式数据报错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

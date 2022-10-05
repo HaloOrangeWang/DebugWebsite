@@ -1,0 +1,47 @@
+Python：2.7
+
+IDE：Pycharm5.0.3
+
+今天遇到一个问题，就是在使用json.load()时，中文字符被转化为Unicode码的问题，解决方案找了半天，无解。全部代码贴出，很简单的一个入门程序，抓的是有道翻译的，跟着小甲鱼的视频做的，但是他的版本是python3.4，所以有些地方还需要自己改，不多说，程序如下：
+
+import urllib#python2.7才需要两个urllib
+
+url="http://fanyi.youdao.com/translate?smartresult=dict&smartresult=rule&smartresult=ugc&sessionFrom=null"
+data={}
+data['type']='AUTO'
+data['i']='i love FishC.com'
+data['doctype']='json'#轻量级数据结构
+data['xmlVersion']='1.8'
+data['keyfrom']='fanyi.web'
+data['ue']='UTF-8'
+data['action']='FY_BY_ENTER'
+data['typoResult']='true'
+data = urllib.urlencode(data).encode('utf-8')
+
+req = urllib2.Request(url, data)
+response = urllib2.urlopen(req)
+html = response.read().decode('utf-8')
+print(html)
+
+个人建议就是放在Python Console中执行；当贴完上述代码后，跟着步骤来：
+
+import json
+target = json.loads(html)
+target#这里先试一下target类型，返回的应该是字典，并且已经被转换成Unicode码了，注意前面的u，待会贴图
+want=target['translateResult'][0][0]['tgt']
+type(want)#看一下分割后类型，应该是Unicode
+
+上面几步完事之后，不出所料应该是显示这样
+
+u'\u6211\u7231FishC.com'
+
+然后，关键的来了，我一直在寻找一种将Unicode转化成中文的方式，其实，在python2.7中，直接print就可以了，勿喷，我是新手。。。。
+
+print want
+
+又学到一个小知识，Unicode码形式的中文直接可以print显示中文呢，见笑见笑哈。
+
+BTW 至于程序怎么来的，详见图和小甲鱼视频54讲。我只是解决2.7出现的问题。
+
+以上这篇解决Python下json.loads()中文字符出错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

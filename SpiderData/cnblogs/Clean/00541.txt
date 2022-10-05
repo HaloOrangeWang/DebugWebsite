@@ -1,0 +1,11 @@
+春节期间通过接口爬取携程数据的时候，返回的json字符串通过json.loads加载时报错"ValueError: Invalid control character at: line 1 column 8363 (char 8362)"
+
+出现错误的原因是字符串中包含了'\t' (tab), '\n', '\r' and '\0'.
+解决方法：
+
+使用关键字strict:
+
+json.loads(json_data, strict=False)
+
+strict默认是True,严格控制内部字符串，将其设置为False,便可以允许'\t' (tab), '\n', '\r' and '\0'。
+

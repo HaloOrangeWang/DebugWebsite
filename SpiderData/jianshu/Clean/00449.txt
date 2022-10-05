@@ -1,0 +1,22 @@
+git push提交代码的时候突然报错：
+
+fatal: unable to access 'https://git.xxxx.git/': Failed to connect to 127.0.0.1 port xxxx: Connection refused
+
+解决办法：
+
+1、查代理
+
+git config --global http.proxy
+
+2、取消代理
+
+git config --global --unset http.proxy
+
+3、提交代码
+
+git push
+
+成功
+
+可能产生该问题的原因：测试阶段开着抓包工具，可能自动设置了代理，但是关闭工具的时候并不能取消代理。
+

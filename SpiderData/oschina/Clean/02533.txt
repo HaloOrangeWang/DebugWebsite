@@ -1,0 +1,105 @@
+
+问题描述:
+
+　　公司的Linux服务器是内网，今天要实现某个功能，会用到python控制ssh，需要安装一个Paramkio库，和上一篇一样，仅仅依靠Pypi上下载下来的离线.whl安装包是不行的，linux服务器都是远程连接和操作的，对于使用python的同志们就非常不友好了，因为有众多的第三方库需要联网下载并安装的，如果有网就能够解决非常多的问题，少花费很多时间了，经过长时间的查阅资料和研究，刚刚解决了一个这类的问题，感觉这类的回答蛮少的，也不太具体，特此记录，希望能帮到有遇到同样情况的朋友们(一般是有各种上网限制策略的公司会碰到)。
+
+　　另:适用于公司电脑网速下载三方库很慢，但是自己电脑网速很快(开热点，VPN，FanQ等各种手段)，可以在自己电脑上下号离线包后，拷贝过去的情况
+
+
+需要准备的工具/条件:
+
+　　1. 公司电脑---用于接收离线安装包(无法联网/只能浏览器上网(如果去网上下离线包，你就会碰到令人绝望的依赖包问题)，但是诸如pycharm，cmd等都无法联网的电脑，*笔者就是如此),但是可以通过U盘、其他三方工具(如FileZilla等传文件到数据库)，传输数据到该电脑的条件***必备条件，如果任何数据都不能拷贝到这台电脑上，那要它有何用？反正总有一种方法能够传输。
+
+　　2.自己的电脑/任何可以联网的电脑、服务器等设备，网速快，分分钟下好的那种
+
+
+解决步骤:
+
+
+　　1. 发现问题:
+
+　　　　1)执行任务的服务器安装了很多个版本的python，2.7的有好几个，3.7的也有，很混乱，之前的一些功能也已经在其中了，我本次做的任务需要基于其中一个2.7环境，所以不能使用虚拟环境(因为不是重新开始),代码写好后，上传到服务器上进行测试执行，报错
+
+1 Traceback (most recent call last):
+2   File "<stdin>", line 1, in <module>
+3   File "build/bdist.linux-x86_64/egg/paramiko/__init__.py", line 69, in <module>
+4   File "build/bdist.linux-x86_64/egg/paramiko/transport.py", line 26, in <module>
+5   File "/usr/local/lib/python2.7/struct.py", line 1, in <module>
+6     from _struct import *
+7 ImportError: /usr/local/lib/python2.7/lib-dynload/_struct.so: undefined symbol: PyUnicodeUCS2_AsEncodedString
+
+　　　　然而，pip list|grep paramiko 中明显可以看到 paramiko (2.1.2)，这就很尴尬了，明明已经安装了这个包，为什么还是导入不了？
+　　　　参考链接:1.https://blog.csdn.net/u012955491/article/details/19782539;
+
+　　　　　　　　2.https://blog.csdn.net/qq_36376711/article/details/86292199
+　　　　我的问题类似于:环境改变/有多个python环境，pip list 显示出的是另外一个环境中的三方库，然而我不能使用那个环境的路径来执行我的代码(两个环境的库很多不同)
+
+　　　　2)离线安装包命令:pip install <包名> 同Windos环境中报错:　　　　　　
+
+　　　　依旧需要先安装依赖包的样子，有了上一篇的经验，直接转向自己的电脑谋求解决方案
+
+
+　　2.另谋出路：
+
+　　　　1)打开自己电脑和公司服务器相同版本的虚拟机(Centos7)
+
+　　　　2)将所需要的库及其依赖的库给下载下来，并放在我们指定的目录。如下:
+
+pip download 你的包名 -d "你的文件夹路径"
+
+* 笔者虚拟机自带的python2.7版本:
+
+pip download paramiko==2.1.2(此处为你的包名即指定的版本) -d "/home/wang/paramiko" （此处为你的文件夹位置，我是在当前路径下建立的，注意你的路径位置，如果不是你想要的路径，可能就下到命令行的当前路径去了，自己切换一下）
+
+　　　　3）结果依旧有8个依赖包，加上自己有9个，还是挺多的。
+
+　　　　4）接下来就好说了，压缩打包，名字随意起，如：paramiko.zip，传输到公司电脑上，unzip解压，进入该文件夹
+
+　　　　5)  这里碰到了一个更坑的问题，就算我指定了要安装环境的python解释器路径，依旧不能使用pip install 给安装上去，和上次不同，上次是每个环境都没有安装过需要安装的包，然而这个paramiko在另外一个环境中是安装过的，所以会显示已经安装过了的提示，故:请教了一番同事后，发现只能用tar.gz的安装方式了。
+　　　　6) 然额，貌似没有一种命令是能够默认下载tar.gz格式的三方库的。。。只能手动去下载，这里推荐国内镜像源:https://pypi.tuna.tsinghua.edu.cn/simple/
+　　　　7)统统下载完成后，再次打包、上传、解压、cd 进入到每个依赖包中，顺序如上图箭头，使用命令:
+
+/指定解释器/***/python setup.py install(好在每个包都一样，直接按向上的箭头即可)
+
+
+　　3.展示效果:
+
+enum34 1.1.6 is already the active version in easy-install.pth
+
+Using /cpic/deploy/grpcworker/grpcworker/Python/2.7.12/lib/python2.7/site-packages/enum34-1.1.6-py2.7.egg
+Searching for cffi==1.12.3
+Best match: cffi 1.12.3
+Processing cffi-1.12.3-py2.7-linux-x86_64.egg
+cffi 1.12.3 is already the active version in easy-install.pth
+
+Using /cpic/deploy/grpcworker/grpcworker/Python/2.7.12/lib/python2.7/site-packages/cffi-1.12.3-py2.7-linux-x86_64.egg
+Searching for six==1.12.0
+Best match: six 1.12.0
+Processing six-1.12.0-py2.7.egg
+six 1.12.0 is already the active version in easy-install.pth
+
+Using /cpic/deploy/grpcworker/grpcworker/Python/2.7.12/lib/python2.7/site-packages/six-1.12.0-py2.7.egg
+Searching for asn1crypto==0.24.0
+Best match: asn1crypto 0.24.0
+Processing asn1crypto-0.24.0-py2.7.egg
+asn1crypto 0.24.0 is already the active version in easy-install.pth
+
+Using /cpic/deploy/grpcworker/grpcworker/Python/2.7.12/lib/python2.7/site-packages/asn1crypto-0.24.0-py2.7.egg
+Searching for pycparser==2.19
+Best match: pycparser 2.19
+Adding pycparser 2.19 to easy-install.pth file
+
+Using /cpic/deploy/grpcworker/grpcworker/Python/2.7.12/lib/python2.7/site-packages
+Finished processing dependencies for paramiko==2.1.2
+[deploy@Cloud System!! DT~/grpcworker/grpcworker/tttt/test_gvcent_gssh/paramiko-2.1.2]$
+[deploy@Cloud System!! DT~/grpcworker/grpcworker/tttt/test_gvcent_gssh/paramiko-2.1.2]$
+[deploy@Cloud System!! DT~/grpcworker/grpcworker/tttt/test_gvcent_gssh/paramiko-2.1.2]$
+[deploy@Cloud System!! DT~/grpcworker/grpcworker/tttt/test_gvcent_gssh/paramiko-2.1.2]$cd ..
+[deploy@Cloud System!! DT~/grpcworker/grpcworker/tttt/test_gvcent_gssh]$/cpic/deploy/grpcworker/grpcworker/Python/2.7.12/bin/python2.7
+Python 2.7.12 (default, Sep  4 2016, 17:47:30) 
+[GCC 4.1.2 20080704 (Red Hat 4.1.2-55)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import paramiko
+
+　　paramiko，导入完成，问题解决完毕！
+

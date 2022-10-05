@@ -1,0 +1,98 @@
+
+1. yum 安装包时，报错“Loaded plugins: fastestmirror, langpacks， Repository base is listed more than once in the configuration”
+
+解决办法：删除/etc/yum.repos.d文件夹下所有的repo,重新安装yum源
+
+操作步骤为：（https://blog.csdn.net/weixin_45564548/article/details/111573664）
+
+（1）删除原来的仓库文件
+
+（2）卸载yum包
+
+rpm -ivh yum*
+
+　　
+
+（3） 下载最新的rpm包（下载地址为：http://mirrors.163.com/centos/7/os/x86_64/Packages/）
+
+也可通过以下命令下载，需要下载的rpm包命名为：
+
+# wget 'rpm包地址'
+
+（4）安装yum
+
+rpm -ivh yum*
+
+　(5)查看是否安装成功
+
+rpm -qa yum
+
+　
+
+
+2. yum安装成功后，yum命令，报错“File "/usr/bin/yum", line 30     except KeyboardInterrupt, e:”
+
+yum makecache
+
+　
+
+错误产生原因 为，yum需要用python作为命令解释器，系统 自带为python2.7,而有python3的解释器，解析时语法错误。
+
+解决办法：在/usr/bin文件夹下
+
+运行yum命令时出现“ File "/usr/libexec/urlgrabber-ext-down", line 28     except OSError, e:^ SyntaxE”，解决办法：
+
+进入/usr/libexec 文件夹下，vim urlgrabber-ext-down文件，将第一行python改为python2.7
+
+
+3 yum添加阿里源或网易163源
+
+https://www.cnblogs.com/guoxiangyue/p/9204584.html
+
+
+4 linux下设置代理，或者关闭代理
+
+（https://www.cnblogs.com/a-du/p/8964048.html?ivk_sa=1024320u）
+全局代理：
+
+vi /etc/profile
+
+添加内容：
+
+yum代理：
+
+vi /etc/yum.conf
+
+添加：
+
+proxy = http://username:password@yourproxy:8080/
+
+wget代理
+
+vi /etc/wgetrc
+
+添加：
+
+http_proxy=http://username:password@proxy_ip:port/
+ftp_proxy=http://username:password@proxy_ip:port/
+
+3 “ERROR: The requested URL could not be retrieved”,
+
+问题发生的背景是，将docker镜像导入到离线的linux服务器（Ubuntu内核）中，启动镜像后，验证镜像中的接口能否运行成功时，使用curl 127.0.0.1命令，调用接口，报错如上文中的内容。
+
+经查找，发现问题产生的原因是，离线的linux服务器中设置了代理，因此，调用IP或127.0.0.1时地址进行了转发，从而报错。
+
+解决办法：
+
+（1）查找所有的代理
+
+env|grep -i proxy
+
+（2）unset http_proxy
+
+unset https_proxy
+
+之后访问 curl 127.0.0.1时，页面能正常响应。
+
+　
+

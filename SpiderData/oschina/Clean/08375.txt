@@ -1,0 +1,58 @@
+
+NGINX PHP "No input file specified"
+
+修改php.ini 	cgi.fix_pathinfo=1;
+
+cgi.fix_pathinfo=1;
+
+修改nginx.conf，中的fastcgi_param SCRIPT_FILENAME参数，(有的可能在引入的其他文件里面)。 	fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+服务器中执行命令，重启php nginx 	/etc/init.d/php-fpm restart
+	nginx -t
+	nginx -s reload
+
+/etc/init.d/php-fpm restart
+	nginx -t
+	nginx -s reload
+
+
+NGINX PHP "file not found"
+
+问题出现过程，访问php页面显示file not found，查看error.log日志文件提示"Primary script unknown" while reading response header from upstream"
+
+查看nginx和php用户，要两个的用户是一样的 	ps -ef | grep php-fpm和ps -ef | grep nginx
+
+查看nginx和php用户，要两个的用户是一样的
+
+ps -ef | grep php-fpm和ps -ef | grep nginx
+
+如果不一样则修改php-fpm.conf,nginx.conf中的参数 user = www
+group = www
+     user www www;
+
+如果不一样则修改php-fpm.conf,nginx.conf中的参数
+
+user = www
+group = www
+
+user www www;
+
+
+NGINX PHP "403 Forbidden"
+
+问题排查过程 访问页面报错403 Forbidden，查看nginx_error.log提示 "is forbidden (13: Permission denied)"
+
+查看nginx.conf配置文件中访问server_name域名时，指定的index是否存在对应的root指定的索引文件不存在。
+
+查看nginx.conf配置文件中访问server_name域名时，指定的index是否存在对应的root指定的索引文件不存在。
+
+web目录权限问题：nginx的启动用户可能是www root nginx或者 nobody。所以没有权限访问该web目录。给web目录最高权限即可解决，但是不建议通过这种 chmod -R 777 /dirName  的暴力方式解决。可以给nginx用户root权限。如下     chown -R -v www:root /home
+    // 把home目录分配给www组，给root权限
+
+web目录权限问题：nginx的启动用户可能是www root nginx或者 nobody。所以没有权限访问该web目录。给web目录最高权限即可解决，但是不建议通过这种 chmod -R 777 /dirName  的暴力方式解决。可以给nginx用户root权限。如下
+
+chown -R -v www:root /home
+    // 把home目录分配给www组，给root权限
+

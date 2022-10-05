@@ -1,0 +1,33 @@
+
+前言
+
+简单说一下python的多进程包multiprocessing。借助这个包，可以轻松完成从单进程到并发执行的转换。multiprocessing支持子进程、通信和共享数据、执行不同形式的同步，提供了Process、Queue、Pipe、Lock等组件。
+
+创建进程的类：Process([group [, target [, name [, args [, kwargs]]]]])，target表示调用对象，args表示调用对象的位置参数元组。kwargs表示调用对象的字典。name为别名。group实质上不使用。
+        方法：is_alive()、join([timeout])、run()、start()、terminate()。其中，Process以start()启动某个进程。
+
+属性：authkey、daemon（要通过start()设置）、exitcode(进程在运行时为None、如果为–N，表示被信号N结束）、name、pid。其中daemon是父进程终止后自动终止，且自己不能产生新进程，必须在start()之前设置。
+
+1.当我们希望使用python创建一个多进程运行时，碰到下面的报错提示：
+
+2.解决的方法很简单，只需要将你的代码放到 if __name__ == "__main__"下面，如下图：
+
+3.下面是测试多进程运行的程序。
+
+import time
+import random
+from multiprocessing import Process
+
+def run(name):
+    print(f' 开始运行 {name} 进程...')
+    # 睡眠一个1~5的随机数，做进程对比
+    time.sleep(random.randrange(1,5))
+    print(f' {name} 进程运行结束。')
+
+if __name__ == "__main__":
+    p1 = Process(target=run, args=('my_jcy',))   # 必须加,号
+    p2 = Process(target=run, args=('my_mm',))    # 必须加,号
+    p1.start()
+    p2.start()
+    print('这里是主进程，已结束！')
+

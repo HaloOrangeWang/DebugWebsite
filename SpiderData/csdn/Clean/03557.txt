@@ -1,0 +1,20 @@
+异常信息的获取对于程序的调试非常重要，可以有助于快速定位有错误程序语句的位置。
+
+下面介绍几种 Python 中获取异常信息的方法，这里获取异常(Exception)信息采用 try…except… 程序结构。
+
+如下所示： 1234 try:  print(x)except Exception as e:  print(e)
+
+1. str(e) 返回字符串类型，只给出异常信息，不包括异常信息的类型，
+
+如： 1234 try:  print(x)except Exception as e:  print(str(e))  打印结果： 1 name 'x' is not defined
+
+2. repr(e) 给出较全的异常信息，包括异常信息的类型，
+
+如： 1234 try:  print(x)except Exception as e:  print(repr(e))  打印结果： 1 NameError("name 'x' is not defined",)  一般情况下，当我们知道异常信息类型后，可以对异常进行更精确的捕获，
+
+如： 123456 try:  print(x)except NameError:  print('Exception Type: NameError')except Exception as e:  print(str(e))
+
+3. 采用 traceback 模块 需要导入 traceback 模块，此时获取的信息最全，与 Python 命令行运行程序出现错误信息一致。
+
+用法：使用 traceback.print_exc() 或 traceback.format_exc() 打印错误。 区别：tra
+

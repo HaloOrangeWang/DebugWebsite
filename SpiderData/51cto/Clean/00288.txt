@@ -1,0 +1,20 @@
+我们常用except Exception as e捕获异常 e，但往往不能达到我们想要的效果，那就是知道具体哪行代码出现问题了。我们通过 traceback.format_exc() 就能把详细的报错内容打印出来了。
+
+# 日志模块
+import logging
+import traceback
+
+# 引入日志
+logging.basicConfig(filename='log_record.txt', level=logging.DEBUG, filemode='w', format='【%(asctime)s】 【%(levelname)s】 >>>  %(message)s', datefmt = '%Y-%m-%d %H:%M')
+
+try:
+	...   # 主要代码
+except Exception as e:
+    logging.error("主程序抛错：")
+    logging.error(e)
+    logging.error("\n" + traceback.format_exc())
+
+效果图如下：
+
+喜欢的点个赞❤吧！
+

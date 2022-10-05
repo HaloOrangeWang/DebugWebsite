@@ -1,0 +1,38 @@
+如下所示：
+
+import torch.nn.functional as F
+import numpy as np
+a = torch.Tensor([1,2,3,4])
+a = a.masked_fill(mask = torch.ByteTensor([1,1,0,0]), value=-np.inf)
+ 
+print(a)
+b = F.softmax(a)
+
+print(b)
+
+tensor([-inf, -inf, 3., 4.])
+
+d:/pycharmdaima/star-transformer/ceshi.py:8: UserWarning: Implicit dimension choice for softmax has been deprecated. Change
+
+the call to include dim=X as an argument.
+
+b = F.softmax(a)
+
+tensor([0.0000, 0.0000, 0.2689, 0.7311])
+
+容易报错：
+
+Expected object of scalar type Byte but got scalar type Long for argument #2 'mask'
+
+原因，
+
+mask = torch.LongTensor()
+
+解决方法：
+
+mask = torch.ByteTensor()
+
+在mask值为1的位置处用value填充。mask的元素个数需和本tensor相同，但尺寸可以不同
+
+以上这篇pytorch masked_fill报错的解决就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

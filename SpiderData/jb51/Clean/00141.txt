@@ -1,0 +1,63 @@
+
+问题介绍
+
+在安装torch之后，命令行（Anaconda Powershell Prompt）运行这三行代码：
+
+python # python
+import torch
+torch.cuda.is_available()
+
+返回结果始终为False。
+
+
+出错原因
+
+原因有多个，可以参考文章最后的链接【1】
+
+他的很清晰，如果按我的没有解决可以看一下。
+
+主要就是以下两个：
+
+CUDA、cudnn、torch版本不对应。（解决方法参考链接【1】)
+
+一个坑：是通过清华源下载的！
+检查是不是清华源下载导致的问题：
+
+conda list
+
+看到Pytorch的Build是pyxxx_cpu_0，就说明下的pytorch是cpu版本的。这样就会导致输出False。
+
+导致的原因可能是清华源没有对应cuda版本的pytorch，所以会装cpu版的。参考链接【2】
+
+我的问题就是通过清华源下载导致的。下面是解决方案
+
+
+解决方案
+
+上官网下载：https://pytorch.org/get-started/previous-versions/
+找到你的CUDA版本支持的pytorch（我的是CUDA10.1）
+
+然后复制对应的pip语句
+
+——重点！复制pip语句，而不是下图这种conda语句，因为你已经切换了清华源
+
+然后在命令行（或Anaconda Prompt中运行）
+
+记得不要科学上网，否则可能会报错 ValueError: check_hostname requires server_hostname
+
+等待，安装就可以啦
+
+要是下载速度很慢，可以参考链接【1】。
+
+
+参考内容：
+
+【1】torch.cuda.is_available()返回false——解决办法
+
+【2】完美解决torch.cuda.is_available()一直返回False的玄学方法
+
+
+总结
+
+到此这篇关于安装pytorch报错torch.cuda.is_available()=false问题解决的文章就介绍到这了,更多相关pytorch报错torch.cuda.is_available()=false内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

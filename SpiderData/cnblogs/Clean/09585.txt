@@ -1,0 +1,152 @@
+
+1. 解决pycharm终端/cmd运行python脚本报错“ImportError/ModuleNotFoundError：No Module named ...”
+
+
+问题
+
+项目结构如下：
+
+整个项目名为project
+
+整个项目名为project
+
+package1和package2是项目文件夹下的两个文件夹，即两个包（package）
+
+package1和package2是项目文件夹下的两个文件夹，即两个包（package）
+
+两个包中分别有init.py 和 module1.py / module2.py文件，其中module1.py和module2.py文件为两个模块（module）
+
+两个包中分别有init.py 和 module1.py / module2.py文件，其中module1.py和module2.py文件为两个模块（module）
+
+（在python中一个*文件*可以被看成一个*独立模块*，而*包*对应着*文件夹*。区别包和文件夹的重要特征就是包文件夹内每一层目录都有初始化文件__init__.py）
+
+
+原因：（不想看可直接跳到解决方法）
+
+Python在启动解释器（Interpreter）时不光会导入环境变量中sys.path发现的模块，还会导入当前工作目录下的模块。
+
+什么是环境变量中sys.path发现的模块和当前工作目录下的模块？
+
+当你在IDE中启动解释器时，当前的工作目录就是项目目录，能顺利调用同项目中的模块；但是当你通过命令行启动时，当前工作目录为你启动解释器时所在的目录，如果当时的位置不是项目目录，那么项目目录中的模块就不会被找到，因此运行的时候报错:ModuleNotFoundError: No Module named ...（在例子中我的当前目录是.../package2是项目目录底下的一个文件夹，不是项目目录，所以报错）
+
+
+解决方法： 方法很简单，就是把模块路径提供给解释器：
+
+
+（推荐） 把模块路径放到环境变量中作为全局变量（sys.path能扫描到）。
+
+在module2.py开头加入sys.path.append('../')：
+
+sys.path.append()中添加的正是这个项目的项目目录（*'../'表示当前目录的父目录，也即这个项目的项目目录*）
+
+
+2. NameError: name 'url' is not defined
+
+尝试导入：
+
+从django.contrib中导入管理 从django.urls导入路径 从django.conf.urls入口导入
+
+
+3. ValueError: attempted relative import beyond top-level package
+
+备注：使用命令行创建
+
+
+4.添加路径
+
+
+5. 实用 | 安装python模块socket.timeout: The read operation timed out解决方案
+
+1、使用pip安装第三方库过慢导致超时无法安装：　
+
+出现异常：
+
+2、 原因：
+
+　　　　pip下载的时国外的资源，速度过慢，应该切换至国内镜像
+
+3、解决方法: 　　　　更换 pip 源自国内镜像，在 pip install 后面添加 -i https://pypi.tuna.tsinghua.edu.cn/simple  　　　　上面蓝色部分是镜像地址,网上可以查到，这里提供两个速度快的：
+
+　　　　　　　　豆瓣：http://pypi.douban.com/simple/ 　　　　　　　　清华：https://pypi.tuna.tsinghua.edu.cn/simple
+
+4、解决方法：　
+
+
+6. 关于报错：TemplateDoesNotExist （Django 3.1.2 Python 3.7）
+
+提供几个其他解决方法：
+
+配置如下：
+
+如果pycharm报错TemplateDoesNotExist ，问题则出现在
+
+这一句的设置中，这一句话是指到“BASE_DIR/templates”文件夹中去取模板。通过debug跑到settings这句话可以发现BASE_DIR指定的其实是第一层的Hello World文件夹，而templates在第二层Hello World文件夹，所以一直提示错误。注意BASE_DIR是manage.py文件的所在路径.
+
+正确选择如下：
+
+
+7.创建app
+
+
+Django 规定，如果要使用模型，必须要创建一个 app。我们使用以下命令创建一个 TestModel 的 app:
+
+在命令行中运行：
+
+
+8. django 创建超级用户
+
+
+9. 一个 Contact 类可以有多个 Tag:
+
+关联 contact 外键时会报错：TypeError: init() missing 1 required positional argument: 'on_delete'
+
+解决办法：
+
+Django 在根据 models 生成数据库表时报 init() missing 1 required positional argument: 'on_delete' 错误
+
+原因：
+
+在 django2.0 后，定义外键和一对一关系的时候需要加 on_delete 选项，此参数为了避免两个表里的数据不一致问题，不然会报错：TypeError: init() missing 1 required positional argument: 'on_delete'。
+
+举例说明：
+
+需要改成：
+
+说明：on_delete 有 CASCADE、PROTECT、SET_NULL、SET_DEFAULT、SET() 五个可选择的值。
+
+CASCADE：此值设置，是级联删除。
+
+CASCADE：此值设置，是级联删除。
+
+PROTECT：此值设置，是会报完整性错误。
+
+PROTECT：此值设置，是会报完整性错误。
+
+SET_NULL：此值设置，会把外键设置为 null，前提是允许为 null。
+
+SET_NULL：此值设置，会把外键设置为 null，前提是允许为 null。
+
+SET_DEFAULT：此值设置，会把设置为外键的默认值。
+
+SET_DEFAULT：此值设置，会把设置为外键的默认值。
+
+SET()：此值设置，会调用外面的值，可以是一个函数。一般情况下使用 CASCADE 就可以了。
+
+SET()：此值设置，会调用外面的值，可以是一个函数。一般情况下使用 CASCADE 就可以了。
+
+
+10. 安装 uwsgi 失败
+
+
+安装 uwsgi 如果失败，有可能是缺少Python的头文件和静态库，需要安装开发版本：
+
+For apt (Ubuntu, Debian...):
+
+For yum (CentOS, RHEL...):
+
+For dnf (Fedora...):
+
+For zypper (openSUSE...):
+
+非多站模式时 vhost = true 和 no-site = true 需要注释掉，否则后续 nginx 配置文件中设置的入口文件则不生效，服务器会回应 Internal Server error：
+

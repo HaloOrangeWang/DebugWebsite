@@ -1,0 +1,6 @@
+最近有使用到cx_oracle(5.3)模块，这里记录下出现的问题
+
+由于我的项目一直在是windows上测试，最近把项目更新到linux下后，再去跑代码，发现代码报出ORA-28040: No matching authentication protocol，原代码在用到cx_oracle模块的时候全都无法运行
+
+下面的部分Python代码查询了数据库角色，上网查询了一下，有这样的做法，修改$ORACLE_HOME/network/admin/sqlnet.ora文件，添加了一行 SQLNET.ALLOWED_LOGON_VERSION=8，允许外部连接。我这里改完后再次执行代码后会报出cx_Oracle.DatabaseError: ORA-01017: invalid username/password; logon denied，可是我的用户名密码都是正确的啊，于是我尝试着修改密码，密码依旧是之前登陆的密码，这么做类似于刷新了一下，其实实际密码并没有改变，改完之后在运行代码就没有报错了
+

@@ -1,0 +1,29 @@
+本文首发于 我的博客站点 大江小浪 - Shell 函数带中横线问题排查 ，欢迎大家访问原文查看。
+
+Shell 中编写的函数，如果函数名中带了中横线，在使用 /bin/sh 执行时会报错。
+
+根据 POSIX 的标准，函数名要符合以下的规范。
+
+3.231 Name
+
+In the shell command language, a word consisting solely of underscores, digits, and alphabetics from the portable character set. The first character of a name is not a digit.
+
+可以看到，中横线不在标准支持的范围内。因此使用 /bin/sh 执行时，会看到我们上面列出的错误。
+
+但是 bash 和 zsh 却可以支持函数中的中横线。
+
+因此，如果我们希望我们的 Shell 脚本具有更好的可移植性，那就尽量避免在函数命名时使用中横线。
+
+Python 使用 subprocess.Popen 执行 shell 时，若选择了 shell=True 选项，则会默认使用 /bin/sh。因此在遇到使用了中横线的 shell 函数时，也会报错。如果希望使用 /bin/bash 则需要设置 executable 参数，示例如下：
+
+如果这个方法不生效，还可以使用下面的方案。
+
+
+参考资料
+
+Python subprocess.Popen documentation
+
+How to use the bash shell with Python's subprocess module install of /bin/sh
+
+Are there problems with hyphens in functions, aliases, and executables?
+

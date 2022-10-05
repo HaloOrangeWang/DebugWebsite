@@ -1,0 +1,6 @@
+文件最前面添加：import pip._internal as pip_new
+
+然后对两个函数 do_install 和 do_uninstall 进行修改，将原有的 return 语句注释掉(有就直接注释，没有就直接替换)，以以下语句分别进行替换：
+
+1. return pip_new.main(['install'] + pkgs)                             2.return pip_new.main(['uninstall', '-y'] + pkgs)
+

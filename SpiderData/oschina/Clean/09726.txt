@@ -1,0 +1,40 @@
+有人用vmware安装minimal centos报错/etc/rc5.d/s99local : line:25 : eject : command not found 。我们看下完整报错内容：
+
+原因分析：从上面的报错信息其中一行“/etc/rc5.d/S99local: line 25: eject: command not found”，我们就可以知道vmware报错的原因了。我们明明是用minimal centos(即最小安装)，所以肯定是没有桌面的程序的，minimal centos正常启动的应该是等级3来运行的。而报错信息显示minimal centos居然以 等级5 启动，等级5表示进入到桌面，minimal centos 没有安装桌面程序，自然提示找不到 rc5.d中脚本要启动的程序，所以就会在系统启动的时候报错，导致系统不能正常启动。 知识点：
+
+Linux下有7个运行级别：
+
+0 系统停机模式，系统默认运行级别不能设置为0，否则不能正常启动，机器关闭。
+
+1 单用户模式，root权限，用于系统维护，禁止远程登陆，就像Windows下的安全模式登录。
+
+2 多用户模式，没有NFS网络支持。
+
+3 完整的多用户文本模式，有NFS，登陆后进入控制台命令行模式。
+
+4 系统未使用，保留一般不用，在一些特殊情况下可以用它来做一些事情。例如在笔记本电脑的电池用尽时，可以切换到这个模式来做一些设置。
+
+5 图形化模式，登陆后进入图形GUI模式，X Window系统。
+
+6 重启模式，默认运行级别不能设为6，否则不能正常启动。运行init 6机器就会重启。
+
+为何vmware设置minimal centos 以 等级5来运行呢？出现这个问题的原因不是minimal centos的原因，而是vmware的原因。vmware自以为“聪明”，将minimal centos 的iso系统安装镜像 当作完整的centos系统镜像，所以使用了 vmware 自带的“简易安装”方法来安装mininal centos。从而导致直接以等级5来启动 minimal centos。额，vmware 明明分不清 minimal centos和full centos，偏偏还装做分得清。解决办法：
+
+建立虚拟机 -> 选择ISO -> 开始安装
+
+
+一、建立虚拟机
+
+I will install the operating system later.
+
+安装的时候先不设置iso文件，先建立虚拟机。
+
+
+二、选择ISO
+
+建立虚拟机之后再选择ISO路劲，然后开始安装。
+
+=============================================
+
+教程完！
+

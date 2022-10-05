@@ -1,0 +1,31 @@
+报错原因:
+
+空指针
+
+在out.write(name);时，name不能为null,哪怕你随便给name赋值为xxoo啥的都可以，不要为null
+
+改正：String name = "fail";
+
+注意，如果你是在前端看报错信息的话，我这个问题前端报错是：java.io.filenotfoundexception,很明显我服务器开的网址上面打不开，那就是后端找问题喽，后端一般会告诉你哪个文件哪一行有问题的。
+
+在调试数据库的时候发现无论如何前端传的值后端判断都是错误，好奇怪！
+
+然后我就去Tomcat里面在获取的前端数据后面输出获取到的值，好哇！原来获取到的值有问题，跑到前端一看，大家注意在前端传值时不要为了美观多添加一个没必要的空格！
+
+这就是我后端获取的前端数据输出
+
+看到获取的账号信息居然是null????
+
+然后我就看前端代码：
+
+protected String doInBackground(String[] params) {
+        String param = "id=" + params[0] + "&password=" + params[1];
+        return this.sendPost("http://服务器ip地址:你的端口号/Login/login",param);
+    }
+
+这是我修正后的代码，修改前为param = "id = " + ......
+
+就是在id = 字符串内部多添加了一个空格！把空格去掉就好啦~
+
+所以看到我后端输出也就没问题，获取成功啦~
+

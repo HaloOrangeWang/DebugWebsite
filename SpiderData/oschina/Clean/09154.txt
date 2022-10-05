@@ -1,0 +1,37 @@
+
+报错背景：
+
+CDH集群中，将kafka和Flume整合，将kafka的数据发送给Flume消费。
+
+启动kafka的时候正常，但是启动Flume的时候出现了报错现象。
+
+但是我检查了Flume，Flume的状态很正常，于是我又查看了zookeeper的日志（/var/log/zookeeper/），发现了报错。
+
+
+报错现象：
+
+2019-05-15 15:03:25,981 INFO org.apache.zookeeper.server.NIOServerCnxnFactory: Accepted socket connection from /192.168.52.26:36948
+2019-05-15 15:03:25,982 INFO org.apache.zookeeper.server.ZooKeeperServer: Client attempting to establish new session at /192.168.52.26:36948
+2019-05-15 15:03:25,984 INFO org.apache.zookeeper.server.ZooKeeperServer: Established session 0x36ab52d38c20b20 with negotiated timeout 30000 for client /192.168.52.26:36948
+2019-05-15 15:03:26,042 WARN org.apache.zookeeper.server.NIOServerCnxn: caught end of stream exception
+EndOfStreamException: Unable to read additional data from client sessionid 0x36ab52d38c20b20, likely client has closed socket
+    at org.apache.zookeeper.server.NIOServerCnxn.doIO(NIOServerCnxn.java:231)
+    at org.apache.zookeeper.server.NIOServerCnxnFactory.run(NIOServerCnxnFactory.java:208)
+    at java.lang.Thread.run(Thread.java:748)
+2019-05-15 15:03:26,043 INFO org.apache.zookeeper.server.NIOServerCnxn: Closed socket connection for client /192.168.52.26:36948 which had sessionid 0x36ab52d38c20b20
+2019-05-15 15:04:11,075 INFO org.apache.zookeeper.server.NIOServerCnxnFactory: Accepted socket connection from /192.168.52.26:41510
+
+
+报错原因：
+
+原因不明。
+
+但是这个报错肯定和kafka报错有关系。
+
+网上的报错解决办法都是加长zookeeper对kafka的心跳检测时间，但是这并不能解决问题。可能是因为kafka的broker已经死掉了，所以心跳检测会失败。
+
+
+报错解决：
+
+这个报错其实不算是一个严重报错，它是由zookeeper管理的其它组件报错引起的，只要把对应报错组件的报错解决，此报错就会消失。（以上内容全为个人推测）
+

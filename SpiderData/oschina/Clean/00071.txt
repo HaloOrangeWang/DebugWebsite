@@ -1,0 +1,50 @@
+
+python 3.5版本使用pip install bezier安装bezier报错 ，在python 3.6安装成功。可能是python版本原因。
+
+
+以下提供两种方法供参考。博主使用方法二安装成功。
+
+方法一：
+ 环境要求： numpy>=1.18.1
+ step1.下载 bezier-2020.2.3-cp36-cp36m-win_amd64.whl
+ step2.改名为 bezier-2020.2.3-cp35-cp35m-win_amd64.whl
+ step3.pip install bezier-2020.2.3-cp35-cp35m-win_amd64.whl
+ 此时，运行import bezier, 报错 f"A degree {self._degree} curve should have "
+ step4.在安装环境下Anaconda/envs/**/Lib/site-packages/bezier/找到 curve.py 和 triangle.py
+ step5.
+ curve.py ，160行，
+ msg = (
+ # f"A degree {self._degree} curve should have "
+ # f"{expected_nodes} nodes, not {num_nodes}."
+ “A degree{} curve should have”.format(self._degree),
+ “{}nodes, not{}”.format(expected_nodes, num_nodes)
+ )
+ triangle.py，269行
+ msg = (
+ # f"A degree {self._degree} triangle should have "
+ # f"{0.5 * twice_expected_nodes:g} nodes, not {num_nodes}."
+ “A degree{} triangle should have”.format(self._degree),
+ “{}nodes, not{}”.format(0.5 * twice_expected_nodes, num_nodes)
+ )
+
+方法二：
+ 环境要求： numpy>=1.18.1
+ step1.pip install bezier==2020.1.14
+ 此时，运行import bezier, 报错 f"A degree {self._degree} curve should have "
+ step2.在安装环境下Anaconda/envs/**/Lib/site-packages/bezier/找到 curve.py 和 triangle.py
+ step3.
+ curve.py ，160行，
+ msg = (
+ # f"A degree {self._degree} curve should have "
+ # f"{expected_nodes} nodes, not {num_nodes}."
+ “A degree{} curve should have”.format(self._degree),
+ “{}nodes, not{}”.format(expected_nodes, num_nodes)
+ )
+ triangle.py，269行
+ msg = (
+ # f"A degree {self._degree} triangle should have "
+ # f"{0.5 * twice_expected_nodes:g} nodes, not {num_nodes}."
+ “A degree{} triangle should have”.format(self._degree),
+ “{}nodes, not{}”.format(0.5 * twice_expected_nodes, num_nodes)
+ )
+

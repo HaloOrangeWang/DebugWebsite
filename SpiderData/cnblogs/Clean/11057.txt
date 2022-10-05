@@ -1,0 +1,32 @@
+想赶上机器学习ML深度学习的热潮不容易，光是显卡就是一笔不小的投入。网上搜索了一下，见A卡也可以勉强用于ML，遂想用手头有的一张A卡（RX470）进行学习，过程不易，记录之。
+
+一、试用WSL2，失败。
+
+到AMD ROCM官网查看，不支持windows平台，基本上推荐Ubuntu，心想正好在windows10上安装WSL2，最新版已经升到20.04，过程不赘述。安装好anaconda和ROCM后，rocminfo查看，报告找不到GPU，网上搜索后，确定wsl暂时（据微软说，解决方案正在研发中）不支持直接访问硬件，所以本方法失败。
+
+二、物理机安装ubuntu20.04
+
+按照教程安装rocm和anaconda 后， 安装tensorflow-rocm。安装很顺利，一切就绪，进入python，import tensorflow，报错！
+
+又经过一番艰苦卓绝的搜索：），终于发现正确解决方案，竟然只是安装 rocm-libs！
+
+suso apt install rocm-libs
+
+但是由于rocm-libs的库文件都安装在/opt/rocm-4.3.0下面的多个子路径中，因此需要条件到LD路径中。
+
+我这里采用的时在/etc/ld.so.conf.d下面创建一个新的独立配置文件 rocm_4.3.0_libs.conf
+
+再次进入python导入tensorflow，终于Ok了！
+
+但是，不要高兴得太早，随便写段代码：
+
+结果有报错了：
+
+2021-09-26 09:42:15.973798: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libamdhip64.so
+"hipErrorNoBinaryForGpu: Unable to find code object for all current devices!"
+已放弃 (核心已转储)
+
+经搜索，gf803系列显卡（RX 470/480/570/580/590)竟然已经不在AMD得ROCM3.7版本以后得支持名单中！！让我哭一会儿:(
+
+不过，据说按照这个网址的办法可以解决，但是我按照步骤依次安装（除了pytorch的两个）之后，tensorflow倒是可以引入使用了，但tensorflow还是没有找到GPU，用的还是CPU！我放弃了，你们哪位TX试试吧，如果试好了，请一定告诉我。
+

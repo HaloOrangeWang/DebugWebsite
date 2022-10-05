@@ -1,0 +1,643 @@
+2：文件的打开与关闭
+
+3：文件的读写
+
+4：文件及文件夹的相关操作 |
+
+| 异常处理 | 1：异常介绍
+
+2：捕获异常
+
+3：异常的传递
+
+4：抛出自定义的异常
+
+5：异常处理中抛出异常 |
+
+
+一、文件的介绍
+
+
+1 ：什么是文件？
+
+如下图展示数据
+
+
+2 文件的作用
+
+使用文件的目的：保存数据存放在磁盘
+
+把一些存储存放起来，可以让程序下一次执行的时候直接使用，而不必重新制作一份，省时省力
+
+
+二、文件的打开与关闭
+
+思考:如果想用word编写一份简历，应该有哪些流程呢？
+
+步骤：新建--写入数据--关闭
+
+打开word软件，新建一个word文件
+写入个人简历信息
+保存文件
+关闭word软件
+
+同样，在操作文件的整体过程与使用word编写一份简历的过程是很相似的
+
+结论
+
+打开文件，或者新建立一个文件
+读/写数据
+关闭文件
+
+
+2.1 打开文件
+
+在python，使用open函数，可以打开一个已经存在的文件，或者创建一个新文件open(文件名，访问模式)
+
+格式
+
+f = open(‘文件’, 'w')或者f = open('文件', 'r')
+
+如下图所示:不同的打开文件的方式
+
+常见的文件操作有：写，读，追加
+
+
+2.1.1 写数据(write)
+
+格式
+
+对象 = open("文件",w)
+对象.write（"写入数据"）
+对象.close
+
+案例:以写的方式打开文件，写入数据
+
+f = open('test.txt', 'w')
+f.write('hello world, i am here!')
+f.close()
+
+继续写入数据
+
+f = open('test.txt', 'w')
+f.write('I love you')
+f.close()
+
+总结:
+
+如果文件不存在那么创建，如果存在那么就先清空，然后写入数据
+
+
+2.1.2 读数据（read）
+
+案例:以读的方式打开文件，读取数据
+
+格式
+
+对象 = open("文件",r)
+变量 = 对象.read()
+print(变量)
+
+案例:读取文件（test.txt）
+
+f = open('test.txt', 'r')
+content = f.read()
+print(content)
+
+总结:
+
+如果用open打开文件时，如果使用的"r"，那么可以省略，即只写 open('test.txt')
+如果没有文件，打开报错，存在该文件才能操作
+如果文件中存在中文显示，会出现乱码需要添加encoding='utf-8'
+open(‘test.txt’,”r”, encoding='utf-8')
+
+思考：如果只想读取几个字怎么操作?
+
+案例:读取指定长度的数据(单位是字节)
+
+f = open('test.txt', 'r')
+content = f.read(5)  # 最多读取5个数据
+print(content)
+
+注意：
+
+使用read(num)可以从文件中读取数据，num表示要从文件中读取的数据的长度（单位是字节），如果没有传入num，那么就表示读取文件中所有的数据
+
+
+2.1.3 读数据（readlines）
+
+就像read没有参数时一样，readlines可以按照行的方式把整个文件中的内容进行一次性读取，并且返回的是一个列表，其中每一行的数据为一个元素
+
+格式
+
+对象 = open("文件",r)
+变量 = 对象.readlines()
+print(变量)
+
+案例:读取文件（test.txt）
+
+f = open('test.txt', 'r')
+content = f.readlines()
+print(content)
+print(type(content))
+
+
+2.1.4 读数据（readline）
+
+readline可以按照行的方式把整个文件中的内容进行一行一行的读取
+
+格式
+
+对象 = open("文件",r)
+变量 = 对象.readline()
+print(变量)
+
+案例，一行一行读取
+
+f = open('a.txt', 'r', encoding='utf-8')
+while True:
+        content = f.readline()
+        if content:
+            print(content)
+        else:
+            break
+
+
+2.1.5 可写（a）
+
+格式
+
+对象 = open("",a)
+对象.write（"写入数据"）
+对象.close
+
+案例，在文件中写入数据
+
+f = open("test.txt",a)
+f.write（"新的数据"）
+对象.close
+
+总结:
+
+（可写）形式打开文件，如果文件不存在则创建并从头添加写入的内容，存在则原有数据后追加数据
+
+
+2.1.6 读数据（rb）
+
+格式1
+
+对象 = open("二进制文件",rb)
+变量= 对象.read（）
+print(变量)
+
+格式2
+
+with open("二进制文件","rb") as 对象:
+    变量 = 对象.read()
+    print(变量)
+
+案例:使用尽可能多的方式实现读取图片
+
+f = open('33.jpg', 'rb')
+content = f.read()
+print(content)
+
+with open("33.jpg","rb") as rf:
+    res = rf.read()
+    print(res)
+
+使用习惯：格式2中不需要手动关闭文件，所以经常被使用
+
+总结
+
+如果没有文件，打开报错，存在该文件才能操作
+
+
+2.1.7 写数据（wb）
+
+格式
+
+with open("二进制文件","wb") as 对象:
+    变量 = 对象.write()
+    print(变量)
+
+案例:备份图片
+
+with open("1.jpg","rb") as rf:
+    res = rf.read()
+    with open("textjpg.jpg", "wb") as wf:
+        res = wf.write(res)
+    print(res)
+
+
+2.2 关闭文件
+
+格式
+
+close( )
+
+
+2.3 思考题
+
+如果一个文件很大，比如5G，试想应该怎样把文件的数据读取到内存然后进行处理呢？
+
+调用read()会一次性读取文件的全部内容，如果文件有10G，内存就爆了，所以，要保险起见，可以反复调用read(size)方法�每次最多读取size个字节的内容。另外，调用readline()可以每次读取一行内容，调用readlines()一次读取所有内容并按行返回list�因此，要根据需要决定怎么调用。如果文件很小，read()一次性读取最方便；如果不能确定文件大小，反复调用read(size)比较保险；如果是配置文件，调用readlines()最方便
+
+
+三、文件和文件夹的操作
+
+
+文件的相关操作
+
+有些时候，需要对文件进行重命名、删除等一些操作，python的os模块中都有这么功能
+
+
+3.1 文件重命名
+
+os模块中的rename()可以完成对文件的重命名操作
+
+格式
+
+import os
+os.rename("需要修改的文件名","新文件名")
+
+案例:
+
+import os
+os.rename("test.txt","new.txt")
+
+
+3.2 删除文件
+
+os模块中的remove()可以完成对文件的重命名操作
+
+格式
+
+import os
+os.remove("文件名")
+
+案例:
+
+import os
+os.rename("new.txt")
+
+
+文件夹的相关操作
+
+
+2.1 创建文件夹
+
+os模块中的mkdir()可以完成对文件的重命名操作
+
+
+2.2 获取当前目录
+
+os模块中的getcwd()可以获取当前目录
+
+
+四、异常
+
+
+1：什么是异常？
+
+异常即是一个事件，该事件会在程序执行过程中发生，影响了程序的正常执行。
+
+一般情况下，在Python无法正常处理程序时就会发生一个异常。
+
+异常是Python对象，表示一个错误。
+
+当Python脚本发生异常时我们需要捕获处理它，否则程序会终止执行。
+
+演示异常
+
+f = open("123.txt","r")     #FileNotFoundError: [Errno 2] No such file or directory: '123.txt'
+
+list =[1,2,3]
+print(list[4])               #IndexError: list index out of range
+
+str="jack"
+str.index("v")                 ValueError: substring not found
+
+c= 5/0
+print(c)                #ZeroDivisionError: division by zero
+
+
+2 异常处理
+
+
+2.1 作用
+
+捕捉异常可以使用try/except语句。
+try/except语句用来检测try语句块中的错误，从而让except语句捕获异常信息并处理。
+如果你不想在异常发生时结束你的程序，只需在try里捕获它。
+
+
+2.2 语法
+
+以下为简单的try....except...else的语法
+
+try:
+<语句>        #运行别的代码
+except <名字>：
+<语句>        #如果在try部份引发了'name'异常
+else:
+<语句>        #如果没有异常发生
+
+代码
+
+try:
+    open("qwe.txt","r")
+    print("123")
+except FileNotFoundError:
+    print("异常处理")
+else:
+    print("没有异常")
+
+try:
+    open("qwe.txt","r")
+    print("123")
+except FileNotFoundError as result:
+    print("异常处理",result)
+else:
+    print("没有异常")
+
+
+2.3：使用except而不带任何异常类型
+
+你可以不带任何异常类型使用except，如下实例
+
+语法
+
+try:
+    正常的操作
+except :
+    发生异常，执行这块代码
+else:
+    如果没有异常执行这块代码
+
+代码
+
+try:
+    open("qwe.txt","r")
+    print("123")
+except :
+    print("异常处理")
+else:
+    print("没有异常")
+
+注意：以上方式try-except语句捕获所有发生的异常。但这不是一个很好的方式，我们不能通过该程序识别出具体的异常信息。因为它捕获所有的异常。
+
+
+2.4：使用except而带多种异常类型
+
+语法
+
+try:
+    异常的操作
+except(Exception1[, Exception2[,...ExceptionN]]]):
+   发生以上多个异常中的一个，执行这块代码
+   ......................
+else:
+    如果没有异常执行这块代码
+
+代码
+
+list = [1,2,3,4]
+try:
+    open("qwe.txt", "r")
+    list[7]
+except (NameError,FileNotFoundError) as rese:
+    print("出现异常")
+else:
+    print("没有异常")
+
+
+2.5：try-finally 语句
+
+try-finally 语句无论是否发生异常都将执行最后的代码
+
+语法
+
+try:
+<语句>
+finally:
+<语句>    #退出try时总会执行
+
+案例
+
+try:
+    fh = open("test.txt", "r")
+    fh.readlines()
+    fh.close()
+finally:
+    print("Error: 没有找到文件或读取文件失败")
+
+注意：当在try块中抛出一个异常，立即执行finally块代码。
+
+finally块中的所有语句执行后，异常被再次触发，并执行except块代码。
+
+参数的内容不同于异常
+
+
+2.6 异常的传递
+
+代码
+
+def func1():
+    print("---func1--1---")
+    print(num)
+    print("---func1--2---")
+# def func2():
+#     print("--func2--1---")
+#     func1()
+#     print("--func2--2---")
+def func3():
+    try:
+        print("---func3--1---")
+        func1()
+        print("--func3--2----")
+    except Exception as result:
+        print(result)
+        print("--func3---3---")
+func3()
+#func2()
+
+
+2.7:触发异常
+
+可以使用raise语句自己触发异常
+
+案例:输入考生的成绩(0~100)
+
+def functionName( score ):
+    if score < 0 or score >100:
+        raise Exception("Invalid score!", score)
+        # 触发异常后，后面的代码就不会再执行
+functionName(200)
+
+
+2.8:用户自定义异常
+
+定义
+
+通过创建一个新的异常类，程序可以命名它们自己的异常。异常应该是典型的继承自Exception类，通过直接或间接的方式
+
+代码：长度不低于3为
+
+class ShortInputException(Exception):
+    def __init__(self, length, atleast):
+        self.length = length
+        self.atleast = atleast
+def main():
+    try:
+        s = input('请输入 --> ')
+        if len(s) < 3:
+            # raise引发一个你定义的异常
+            raise ShortInputException(len(s), 3)
+    except ShortInputException as result:#x这个变量被绑定到了错误的实例
+        print('ShortInputException: 输入的长度是 %d,长度至少应是 %d'% (result.length, result.atleast))
+    else:
+        print('没有异常发生')
+main()
+
+
+五、模块
+
+Python 模块(Module)，是一个Python文件，以.py 结尾，包含了Python 对象定义和Python语句
+
+下例是个简单的模块 aa.py：
+
+def test1():
+    print("我是模块1")
+def test2():
+    print("我是模块2")
+
+
+5.1:模块的引入
+
+
+5.1.1：import
+
+模块定义好后，我们可以使用 import 语句来引入模块，语法如下
+
+import module1[, module2[,... moduleN]]
+
+test.py 文件代码
+
+import aa
+aa.test1()
+aa.test2()
+#我是模块1
+#我是模块2
+
+导入python中的模块os/math
+
+代码:开平方根
+
+import math
+print(math.sqrt(4))
+#2
+
+注意:一个模块只会被导入一次，不管你执行了多少次。这样可以防止导入模块被一遍又一遍地执行。
+
+
+5.1.2:from…import 语句
+
+Python 的 from 语句让你从模块中导入一个指定的部分到当前命名空间中，语法如下
+
+from modname import name1[, name2[, ... nameN]]
+
+test.py 文件代码
+
+from aa import test1
+test1()
+#我是模块1
+
+注意：只能调用导入的模块中的部分，如果想使用test2,需要如下操作
+
+from aa import test1,test2
+test1()
+test2()
+#我是模块1
+#我是模块2
+
+思考：如果需要导入模块中的部分有很多，怎么操作?
+
+
+5.1.3:from…import * 语句
+
+把一个模块的所有内容全都导入到当前的命名空间也是可行的，只需使用如下声明：
+
+from modname import *
+
+test.py 文件代码
+
+from aa import *
+test1()
+test2()
+#我是模块1
+#我是模块2
+
+扩展
+
+使用__all__魔幻方法
+当被引入的包中有__all__=(),里面指定的才能被调用，调用的时候使用from模块名 import*
+
+aa.py
+
+__all__=('test1','test2')
+def test1():
+    print("我是模块1")
+def test2():
+    print("我是模块2")
+def test3():
+    print("我是模块2")
+
+test.py
+
+from aa import *
+test1()
+test2()
+
+
+六、Python中的包
+
+包是一个分层次的文件目录结构，它定义了一个由模块及子包，和子包下的子包等组成的 Python 的应用环境。
+
+简单来说，包就是文件夹，但该文件夹下必须存在 init.py 文件, 该文件的内容可以为空。init.py 用于标识当前文件夹是一个包。
+
+考虑一个在 day 目录下的 runoob1.py、runoob2.py、init.py 文件，test.py 为测试调用包的代码，目录结构如下
+
+test.py
+day
+|-- __init__.py
+|-- runoob1.py
+|-- runoob2.py
+
+源代码如下：
+
+day/runoob1.py
+
+def runoob1():
+   print "I'm in runoob1"
+
+day/runoob2.py
+
+def runoob2():
+   print "I'm in runoob2"
+
+然后我们在 day 同级目录下创建 test.py 来调用 day 包
+
+# 导入 Phone 包
+from day.runoob1 import runoob1
+from day.runoob2 import runoob2
+runoob1()
+runoob2()
+
+结果
+
+I'm in runoob1
+I'm in runoob2
+
+补充python常用模块
+

@@ -1,0 +1,17 @@
+今天在运行File类createNewFile方法时，提示IOException错误，经过查找，发现是File的createNewFile方法要在Windows系统上和Linux都能够创建成功，所以需要加以下代码。
+
+File file = new File(dir, filename);
+      if(!file.getParentFile().exists()){
+          file.getParentFile().mkdirs();
+      }
+      if(!file.exists()){
+          try {
+            //生成文件
+            file.createNewFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+      }
+
+这样就不会报错了
+

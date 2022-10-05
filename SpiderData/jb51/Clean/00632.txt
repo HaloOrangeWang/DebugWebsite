@@ -1,0 +1,45 @@
+centos6.x默认安装的python为2.6版本，今天换成了3.5版本
+
+这里不再讲如何升级python版本
+
+在安装完新的版本后，之前安装的插件都不能使用了，再用pip进行安装提示已经安装过，但是运行程序依旧在import出报错。
+
+执行升级命令
+
+python -m pip install -U pip
+
+升级成功，但依旧在运行程序时报找不到import的插件
+
+于是用python -V确认一下版本。
+
+确实是python3.5没问题，所以应该是pip指向的问题
+
+查看/usr/local/bin目录下面的pip:
+
+[root@dev1 bin]# ll /usr/local/bin |grep pip
+
+发现有3个版本
+
+[root@VM_9_69_centos test]# ll /usr/local/bin |grep pip
+-rwxr-xr-x 1 root root 205 Jun 25 16:16 pip
+-rwxr-xr-x 1 root root 205 Jun 25 16:16 pip3
+-rwxr-xr-x 1 root root 205 Jun 25 16:16 pip3.5
+
+尝试用pip3.5执行install命令：
+
+pip3.5 install requests；
+
+安装成功，运行程序也不再报找不到requests了，于是继续用pip3.5 install 其余的插件，全部安装成功后程序正常。
+
+所以，在安装完新的python版本后，
+
+检查当前python -V 是否为新版本，
+
+然后python -m pip install -U pip，
+
+查看一下当前的pip版本们： ll /usr/local/bin |grep pip
+
+最后用新版本执行安装操作。
+
+以上这篇解决python升级引起的pip执行错误的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

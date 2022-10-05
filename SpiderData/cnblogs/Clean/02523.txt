@@ -1,0 +1,31 @@
+
+一、json.loads(json_data) 报错
+
+json.decoder.JSONDecodeError: Invalid control character at: line 2 column 18 (char 19)
+
+原因：json默认使用的是严谨格式，当跨语言传递数据时，就容易报出这个错误。
+
+解决方法：加上参数 strict
+
+json.loads(json_data, strict=False)
+
+
+二、json.dumps(data) 将汉字转为unicode编码
+
+原因：json默认会进行字符转换
+
+解决方法： 添加 ensure_ascii 参数
+
+json.dumps(data, ensure_ascii=False)
+
+
+三、语法错误
+
+json.loads(json_data) 报错：json.decoder.JSONDecodeError: Invalid \escape: line 1 column 89 (char 88)
+
+错误原因：语法错误
+
+解决办法
+
+　　检查json_data 数据，是否包含非法字符，如反斜线‘\’, 将‘\’ 换为‘\\’
+

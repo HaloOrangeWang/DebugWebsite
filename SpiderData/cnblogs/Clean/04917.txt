@@ -1,0 +1,74 @@
+安装 pip
+
+python 2.7.9 之后的版本默认包含pip包维护工具
+
+安装 pip
+
+python 2.7.9 之后的版本默认包含pip包维护工具
+
+安装辅助工具
+
+刚在机器上windows环境下装上pip方便以后安装包的时候使用，谁知道第一次使用pip安装asyncio的时候就报错。
+
+在Windows7x64下使用pip安装包的时候提示报错：Microsoft
+Visual C++ 9.0 is required  (Unable to find
+vcvarsall.bat)
+
+环境：windows7 x64
+，python2.7 ，VS2012
+
+原因：windows下使用pip安装包的时候需要机器装有vs2008，VS2012还不行，如果不想装VS2008的话，可以安装一个Micorsoft
+Visual C++ Compiler for Python 2.7的包
+
+来自 <http://www.cnblogs.com/ldm1989/p/4210743.html>
+
+使用PIP安装其他安装包
+
+pip install numpy
+
+easy_install scipy
+
+pip install atlas
+
+easy_install Lapack
+
+算了，使用PIP进行安装是从源代码编译安装，还是直接到网站上下载二进制代码安装好了。错误太多，原因不明（没有重启？）
+
+在windows平台上使用二进制源码进行包安装
+
+依次点击各个.exe即可
+
+在LV中使用“执行系统命令”来调用python代码
+
+使用
+LabPython 来调用 python 代码
+
+Python27.dll 地址
+
+C:\Windows\System32\python27.dll（by python default）
+
+C:\Windows\SysWOW64\python27.dll（by  canopy）
+
+卸载 Canopy之后就没了
+
+注意事项
+
+在更新python包的过程中，python项目的解决方案文件无法正常打开，是因为依赖的python环境出了问题，这个解决方案文件可以放弃，直接打开python项目文件即可，然后保存新的解决方案文件。注意到项目属性和工具-选项中进行python环境设置。
+
+LV使用labpython第三包插件进行python代码运行，注意设置python.dll的路径，那个VI只需要执行一次即可，即设置当前版本python解释器的位置
+
+如果发现程序无法执行，先执行OPENG插件所给的样例程序，如果还是不能运行，那么需要修复LV程序。到控制面板中-NI软件-修复LV2014。
+
+这个方法可能有效，不过我的机子上后来又出现了不能正常执行的问题。
+
+打开VI之后弹出debuging window ，里面显示“cannot load
+      library:.\.\lvpython.dll”，然后应用程序无响应。
+
+尝试解决此问题，可以重新安装python packages，重新安装LV，等。
+
+应该在别的电脑上不存在此问题。
+
+问题原因已经清楚，程序在LV2010中可以正确运行。
+
+但是我在LV2014上面也成功运行过。
+

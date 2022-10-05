@@ -1,0 +1,84 @@
+问题描述：
+
+在python3.5环境中导入cv2报错，在python2.7中正常。注：命令行的前缀RL_2018HW是python3.5的环境。
+
+(RL_2018HW) gordon@gordon-5577:$ python
+Python 3.5.2 (default, Nov 23 2017, 16:37:01) 
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import cv2
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+ImportError: /opt/ros/kinetic/lib/python2.7/dist-packages/cv2.so: undefined symbol: PyCObject_Type
+
+gordon@gordon-5577:$ python 
+Python 2.7.12 (default, Dec 4 2017, 14:50:18) 
+[GCC 5.4.0 20160609] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import cv2
+
+从报错可以看出，在python3.5虚拟环境中，程序试图从 /opt/ros/kinetic/lib/python2.7/dist-packages/ 路径下导入cv2.so库文件。然而，该路径下的库文件是属于python2.7（普通环境）的，python3.5的cv2.so文件安装在虚拟环境对应的路径之下。
+
+(RL_2018HW) gordon@gordon-5577:$ pip show opencv-python
+Name: opencv-python
+Version: 3.4.1.15
+Summary: Wrapper package for OpenCV python bindings.
+Home-page: https://github.com/skvark/opencv-python
+Author: None
+Author-email: None
+License: MIT
+Location: /home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/site-packages
+Requires: numpy
+Required-by: baselines
+
+因此，虚拟环境中，程序得从 /home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/site-packages 路径下导入cv2.so文件。
+
+解决方法：
+
+如何修改python程序读取库文件的路径呢？
+
+首先介绍2种方法，用于查看python读取库文件路径（以python3.5的环境为例）
+
+1. 读取环境变量$PYTHONPATH
+
+(RL_2018HW) gordon@gordon-5577:~$ echo $PYTHONPATH 
+/home/gordon/python-virtual-environments/RL_2018HW/gym-gazebo:/home/gordon/ros_ws/devel/lib/python2.7/dist-packages:/opt/ros/kinetic/lib/python2.7/dist-packages:/opt/movidius/caffe/python
+
+2. 在python控制台中查看
+
+(RL_2018HW) gordon@gordon-5577:~$ python
+Python 3.5.2 (default, Nov 23 2017, 16:37:01) 
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sys
+>>> sys.path
+['', '/home/gordon/python-virtual-environments/RL_2018HW/gym-gazebo', '/home/gordon/ros_ws/devel/lib/python2.7/dist-packages', '/opt/ros/kinetic/lib/python2.7/dist-packages', '/opt/movidius/caffe/python', '/home/gordon/python-virtual-environments/RL_2018HW/lib/python35.zip', '/home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5', '/home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/plat-x86_64-linux-gnu', '/home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/lib-dynload', '/usr/lib/python3.5', '/usr/lib/python3.5/plat-x86_64-linux-gnu', '/home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/site-packages', '/home/gordon/python-virtual-environments/RL_2018HW/baselines', '/home/gordon/python-virtual-environments/RL_2018HW/pybox2d/library']
+
+可以发现，两种方式出现了路径 /opt/ros/kinetic/lib/python2.7/dist-packages ，且其优先级比路径 /home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/site-packages 高。
+
+我们希望程序优先读取python3.5的库路径，对应有两种方式！
+
+1. 修改环境变量$PYTHONPATH
+
+修改当前终端的环境变量
+
+export PYTHONPATH=/home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/site-packages
+
+修改当前用户的环境变量
+
+当使用命令激活ROS时，即运行 source /opt/ros/kinetic/setup.bash ，ROS会添加 /opt/ros/kinetic/lib/python2.7/dist-packages 到python路径。因此，需要在 .bashrc 文件中注释掉该命令行，并再次source读取环境变量。
+
+2. 在python控制台中移除错误路径
+
+(RL_2018HW) gordon@gordon-5577:~$ python
+Python 3.5.2 (default, Nov 23 2017, 16:37:01) 
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import cv2
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: /opt/ros/kinetic/lib/python2.7/dist-packages/cv2.so: undefined symbol: PyCObject_Type
+>>> import sys
+>>> sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
+>>> import cv2
+

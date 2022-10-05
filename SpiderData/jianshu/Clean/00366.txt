@@ -1,0 +1,48 @@
+一、问题：
+
+使用英伟达或电脑编译PCL时，报错c++: internal compile error: Killed（program cc1plus）
+
+c++: internal compiler error: Killed (program cc1plus)
+Please submit a full bug report,
+with preprocessed source if appropriate.
+See <file:///usr/share/doc/gcc-7/README.Bugs> for instructions.
+sample_consensus/CMakeFiles/pcl_sample_consensus.dir/build.make:158: recipe for target 'sample_consensus/CMakeFiles/pcl_sample_consensus.dir/src/sac_model_cone.cpp.o' failed
+make[2]: *** [sample_consensus/CMakeFiles/pcl_sample_consensus.dir/src/sac_model_cone.cpp.o] Error 4
+make[2]: *** Waiting for unfinished jobs.
+
+二、原因：
+
+编译PCL内存不足导致，英伟达nano主板(jetson nano) 内存只有4G，swap默认2GB，编译PCL时内存不足导致报错；
+
+三、解决方案：
+
+增加swap临时分区，之前是内存4G+2G swap，再创建2G swap
+
+查看交换空间：
+
+free -m
+
+备注：另外建议编译采用make -j2或make，make -j4容易导致内存不足
+
+步骤：
+
+
+1、创建swap分区文件 swapfile，其中bs代表块大小，swap空间=bs * count，推荐bs设为64M，测试发现2M编译速度比较慢
+
+sudo dd if=/dev/zero of=/root/swapfile bs=2M count=1024
+
+
+2、将swapfile格式化为交换分区文件
+
+sudo mkswap /root/swapfile
+
+
+3、启用swapfile
+
+sudo swapon /root/swapfile
+
+
+4、关闭交换空间
+
+sudo swapoff /root/swapfile
+

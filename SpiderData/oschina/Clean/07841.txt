@@ -1,0 +1,68 @@
+从新拉了份代码。npm install 、npm run dev 都没有问题，但是npm run build 就报上面的错误了
+
+查了好多资料，都没有解决上面的问题，也不知道是哪里出了问题，但是可以肯定就是打包文件出错了
+
+后面才知道是 ParallelUglifyPlugin 加速打包 出错了 。还是要分析报错的原因
+
+1、`warnings` is not a supported option   意思是：不支持“警告”选项。
+
+上面报错的截图，就有一段黄色的警告代码
+
+那就查询 build文件下打包的配置文件，哪里有‘warning’。
+
+1、webpack.dll.conf.js文件
+
+new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    })
+
+但是 我在执行 npm run dll 的时候，并没有报错，那么出现问题的是在于 webpack.prod.conf.js文件里面的‘warning’
+
+2、webpack.prod.conf.js
+
+new ParallelUglifyPlugin({
+      cacheDir: '.cache/',   // 设置缓存路径，不改动的调用缓存，第二次及后面build时提速
+      uglifyJS:{
+        output: {
+          comments: false
+        },
+        compress: {
+          //是否在UglifyJS删除没有用到的代码时输出警告信息，默认为输出，可以设置为false关闭这些作用
+          //  不大的警告
+          warnings: false  
+          
+        }
+      }
+    }),
+
+那么问题怎么改呢？我们看  ParallelUglifyPlugin 官方文档
+
+将：
+
+compress: {
+warnings: false
+}
+改为：
+warnings: false
+
+new ParallelUglifyPlugin({
+      cacheDir: '.cache/',   // 设置缓存路径，不改动的调用缓存，第二次及后面build时提速
+      uglifyJS:{
+        output: {
+          comments: false
+        },
+        warnings: false
+        // compress: {
+        //   warnings: false
+        // }
+      }
+    }),
+
+再次npm run build 就成功了。
+
+总结："webpack": "2.7.0", "webpack-parallel-uglify-plugin": "1.1.0"。
+
+之前的打包是没有问题的，删除 node_modules 重新下载再打包，一次打包报错了，之后打包就一直报错，并且我是锁定了 package.json 中的包版本，npm install不会更新 package.json 中的包版本，我想是不是他们所依赖的某个包更新或者弃用了。
+

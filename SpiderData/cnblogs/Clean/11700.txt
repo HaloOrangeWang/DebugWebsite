@@ -1,0 +1,26 @@
+一、swig链接c++的动态库问题
+
+用swig封装c++的python接口，底层c++文件编译成index、drv、rt等动态库。
+
+makefile中设置动态库头文件路径和动态库位置:
+
+INCLUDE_HOME=/usr/local/
+LDFLAGS     += -L$(INCLUDE_HOME)/lib64 -Wl,--no-as-needed -lindex  -lrt -ldrv -Wl,--as-needed
+
+# Also silently generates swigfaiss.py.
+swigfaiss.cpp: swigfaiss.swig ../libfaiss.a
+    $(SWIG) -python -c++ -Doverride= -I../ $(SWIGFLAGS) -o $@ $<
+
+swigfaiss_avx2.cpp: swigfaiss.swig ../libfaiss.a
+    $(SWIG) -python -c++ -Doverride= -module swigfaiss_avx2 -I../ $(SWIGFLAGS) -o $@ $<
+
+%.o: %.cpp
+    $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) $(PYTHONCFLAGS) $(LDFLAGS)\
+               -I../ -c $< -o $@
+
+这里使用了强制链接，否则系统编译时虽然能编译过，编译出来的.so文件内部也是有 index/drv/rt 等库的实现，但是在swig中调用.so时会报错。
+
+--no-as-needed  *** --as-needed
+
+参考：[https://stackoverflow.com/questions/8140494/why-am-i-getting-a-gcc-undefined-reference-error-trying-to-create-shared-objec/8140599#8140599]
+

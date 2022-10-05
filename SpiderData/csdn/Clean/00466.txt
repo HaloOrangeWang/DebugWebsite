@@ -1,0 +1,68 @@
+一. python命令找不到
+
+安装python之后经常会出现下面的问题 ， python命令找不到, 这是因为Windows的环境变量中没有定义python的安装路径
+
+这个时候我们先找到python的安装路径(或者在Python的IDE图标上点击右键 ， 选择打开文件所在的位置)
+
+右键点击地址栏 => 将地址复制为文本
+
+=> 右键此电脑(或者右键文件管理资源管理器的空白处) => 点击属性 => 在系统中选择高级系统设置
+
+=> 点击环境变量
+
+=> 在下面的系统变量框中双击Path => 选择新建 => 将之前复制的 python启动文件的路径粘贴到环境变量中
+
+=>  一路确定
+
+接下来重新打开黑窗口(命令提示符)执行 python, 会看到能够运行python
+
+二.  pip 命令找不到
+
+pip命令是安装python后自动安装的命令, 同上面一样把pip的安装路径加入到环境变量中, 这里pip的安装路径一般在 python 启动文件的同级目录下的 Scripts文件中
+
+同样的复制安装路径到环境变量中去
+
+接下来在黑窗口(命令提示符)中执行 pip 命令, 发现报错
+
+Unable to create process using '"h:\python\python.exe"  "G:\PYTHON\Scripts\pip.exe" '
+
+解决方法：
+
+1.切换到pip的安装目录, 比如我安装的目录 G:\PYTHON\Scripts
+
+2.在空白处 Shift + 右键 => 选择 在此处打开Powershell窗口
+
+3.执行 python pip.exe install SomePackage 进行安装
+
+4.安装成功后执行pip仍报错，提示pip要升级
+
+5.执行python -m pip install --upgrade pip
+
+6.升级成功后，再次执行pip，OK了
+
+三.  补充一下Windows下为pip配置清华源
+
+未配置清华源之前下载python模块包的时候下载速度慢并且经常报错, 比如
+
+解决方法:
+
+1. 在资源管理器的地址栏输入%appdata%后回车, 打开appdata文件夹
+
+2. 新建一个pip文件夹，在pip文件夹里面新建一个配置文件pip.ini：
+
+3. 在配置文件中写入如下内容后保存即可：
+
+[global]
+
+timeout = 6000
+
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+
+trusted-host = pypi.tuna.tsinghua.edu.cn
+
+再次使用pip，即会使用新源。
+
+标签：Windows,路径,python,右键,pip,安装,环境变量
+
+来源： https://www.cnblogs.com/banbosuiyue/p/12562322.html
+

@@ -1,0 +1,34 @@
+原因：yum版本和python版本兼容性问题
+
+问题解决：
+
+1、查看当前版本：python -V
+
+2、安装新的python版本
+
+wget http://www.python.org/ftp/python/2.7.12/Python-2.7.12.tar.xz
+
+tar -xvf Python-2.7.12.tar.xz
+
+cd Python-2.7.12
+
+./configure --prefix=/usr/local
+
+make && make altinstall
+
+3、移动旧版本Python（备份）
+
+mv /usr/bin/python /usr/bin/python2.6.6
+
+4、新版本python建立软链接
+
+ln -s /usr/local/bin/python2.7 /usr/bin/python
+
+5、安装结束 查看版本
+
+python -V
+
+6、修改yum文件
+
+将首行原来的#!usr/bin/python改为：#!/usr/bin/python2.6.6
+

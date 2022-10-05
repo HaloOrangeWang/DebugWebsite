@@ -1,0 +1,83 @@
+　　最近想做一个脚本小工具，方便写一些操作说明文档，它的功能很简单，就是把脚本打开之后，鼠标进行操作点击时，会在点击后进行截图，并在图上标记出点击的位置，有点类似于录屏软件的图片版，这样的话，如果要想用文档说明某些系统的操作步骤，就打开脚本一顿操作，操作完之后，每次步骤就自动记录下来了，带来方便。最后工具是做成了，但是中间的探索过程并不顺利，所以在这里记录一下思路和解决问题的过程。
+
+　　大体思路：鼠标左键点击，能够获取点击的坐标，并在点击之后进行屏幕截图操作，之后再用图片处理库给鼠标点击位置加上某种标记，思路很简单，开始考虑实施。
+
+　　首先这种记录工具，我第一想到的是，python+selenium 因为selenium有方便的截图功能，而且之前接触也比较多，所以可能用气来方便些，遂开始了。遇到的第一个问题，就是鼠标点击如何获取点击的位置坐标，才发现原来selenium是用代码来控制浏览器的行为，而不能监控浏览器中发生的行为，这不是它设计的初衷，所陷入困难。后来想到虽然selenium不能监控浏览器中发生的事件，但是js代码可以，所以找到了解决方案，即写一段js去监控鼠标点击的操作，之后把返回值用一个div的自定义属性在页面上保存起来，然后不断在selenium中去找这个div的属性值，直到坐标更新，再进行后续的处理。一顿调试之后，代码终于能正常返回坐标值，又处理了一些特殊情况，比如点开新的选项卡，关闭选项卡等一系列操作，用try except 捕获异常处理，最后终于能够比较健壮的返回点击的坐标。
+
+　　有了坐标，接着研究图片处理，用PIL库，思路就是，打开截图，在截图上的坐标位置画一个透明圆，重新保存，思路还是比较简单，但是画透明圆的时候遇到一点困难--明明用的是半透明的颜色，当画到图片上保存的时候，圆就不再透明了，研究了一下，最后用Image.composite()方法解决，终于能够贴出比较完美的带透明圆的图。
+
+　　后续在调试过程中，又发现了selenium的一个不起眼的函数，driver.execute_async_script()，因为一般执行js脚本的话用driver.execute_script()执行了,后来查了一下driver.execute_async_script()的用法，发现它是异步执行的，即，能收到执行的js的返回值，且接收到返回值时才继续往下执行，否则等待30s之后报错，这样的话，我就能直接用js获取坐标传值给selenium的webdriver了，所以我去掉了中间传值用的div，精简了代码，但原来的也留了一版，以便比较性能。
+
+　　之后就开始正式测试小工具啦，从我们的后台操作开始----也是新问题的开端。登录的界面很正常，但是登进系统之后，点击界面的导航部分能够正常返回坐标，但点击屏幕主体区域并不能返回坐标值，后来研究发现，是因为页面里有iframe，而webdriver没有切换到iframe中，所以获取不到iframe中的点击坐标，但如果我切换到iframe中，又不能返回导航部分的坐标了，这个问题确实比较麻烦，想了一下看能不能用两个线程去做这件事情，即一个监控主区域的坐标，另一个进程监控iframe中的坐标？又是一顿修改，并处理同步问题，最后以失败告终，因为一个打开的浏览器驱动只对应于一个webdriver，即使有两个线程，其中一个切换到iframe上的话，另一个因为引用的同一个webdriver，所以也会去监控iframe，所以这个方法行不通。
+
+　　再后来，想到也许我应该换个思路，用selenium的话页面越复杂，代码也会越来越复杂，所以就转换了一种思路，抛弃了selenium，直接在系统层面监控鼠标的点击，后边的图片处理可以复用，顺着这个思路去查找python相关的包，发现pyHook可以实现鼠标监控，但看了下安装略复杂，心想一定有替代品，最后找到了pynput，可以完美实现鼠标监控，之后再找截图工具这个比较多，看了别人的博客比较之后发现pyautogui是不错的，所以装了这个，使用时还有个小插曲，发现pyautogui的截图功能总是报错，网上也没有相关解答，后来观察源代码发现，引入某个依赖包时报错了，导致功能不能实现，为什么报错没有深究（发现可能是因为引入包时生成的路径最后一个斜杆是反的），但自己把那段代码粘出来手动引用一次就正常了。在这个过程中又发现，原来pyautogui的截图功能完全依赖于另一个不起眼的包 pyscreeze，pyautogui的功能很强大，可以说是系统层面的selenium，能实现各种点击、输入操作，但是目前我是用到的只是它的快速截图功能，所以我不再使用pyautogui，而直接用pyscreeze去截图，结果也很完美又精简，最后一顿拼接调试，终于完成了这个截图工具的demo，代码就贴出来记录一下，用的版本是python3.5.2。
+
+import time
+from PIL import Image, ImageDraw
+import os
+from pynput import mouse
+from pynput.mouse import Button
+import pyscreeze
+# import pyautogui
+# from pyscreeze import (center, grab, locate, locateAll, locateAllOnScreen,
+#         locateCenterOnScreen, locateOnScreen, pixel, pixelMatchesColor,
+#         screenshot)
+
+def picture_draw(path, locate):
+    oriImg = pyscreeze.screenshot()
+    # Img.save(path)
+    # oriImg = Image.open(path)
+    maskImg = Image.new('RGBA', oriImg.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(maskImg)
+    draw.ellipse(locate, fill=(255, 255, 0, 100))
+
+final = Image.composite(maskImg, oriImg, maskImg)
+    final.save(path)
+
+def on_move(x, y):
+    pass
+    # print('Pointer moved to {o}'.format((x,y)))
+
+i = 1
+def on_click(x, y, button, pressed):
+    global i
+    # button_name = ''
+    # print(button)
+    if button == Button.left:
+        button_name = 'Left Button'
+    elif button == Button.middle:
+        button_name = 'Middle Button'
+    elif button == Button.right:
+        button_name = 'Right Button'
+    else:
+        button_name = 'Unknown'
+    if pressed:
+        if button == Button.left:
+            button_name = 'Left Button'
+            picture_path = os.path.abspath('.') + '\\picture%s.png' % str(i)
+            picture_draw(picture_path, (int(x) - 25, int(y) - 25, int(x) + 25, int(y) + 25))
+            i += 1
+        print('{0} Pressed at {1} at {2}'.format(button_name, x, y))
+    else:
+        # print('{0} Released at {1} at {2}'.format(button_name, x, y))
+        pass
+    if not pressed:
+        return False
+
+def on_scroll(x, y, dx, dy):
+    # print('scrolled {0} at {1}'.format(
+    #     'down' if dy < 0 else 'up',
+    #     (x, y)))
+    pass
+
+while True:
+    with mouse.Listener(no_move=on_move, on_click=on_click, on_scroll=on_scroll, suppress=False) as listener:
+        listener.join()
+
+还有很多冗余和不完善代码，先留着吧，以后可能用的到，尤其是pyautogui的强大功能。 感谢大神们的博客，这段代码的主体依旧保留了你们的风格。　　
+
+　　最后总结一下，这个小工具是自己在看书的时候想到的，就想来实现一下，实现过程中有很多体会，有以下3点：
+1、只有熟练用好js才能使selenium的功能得到最大的发挥，那将使selenium几乎无所不能，所以如果要写自动化代码，多用一下js，既能练习一下js，又能让代码更健壮。
+2、之后就是python世界的奇妙了，只要你想到的功能，都会有对应的库来支持，而且不止一个，我们要挑选那些最简单实用最多的库(pynput)，而不是博客上写的最多的（pyHook）。
+3、最后最大的一个感想，做这个功能，开始走了弯路，用selenium去解决，但也因此深刻体会到了“失败是成功之母”，我不是走了弯路，而是排除了一个错误选项，从而使我离真相更近，所以以后遇到问题，先不用过多的考虑哪个方案更能完美，或者担心走了弯路浪费了时间，其实浪费也不会浪费多少，尽管做就是了，不只是写程序哦。
+

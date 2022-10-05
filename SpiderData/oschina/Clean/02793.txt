@@ -1,0 +1,21 @@
+使用shell进入Python的交互环境，测试fastdfs是否连接成功时，报错raise DataError(errmsg + '(uploading)')：
+
+>>> from fdfs_client.client import Fdfs_client, get_tracker_conf
+>>> tracker_path = get_tracker_conf('meiduo_mall/utils/fastdfs/client.conf')
+>>> client = Fdfs_client(tracker_path)
+>>> ret = client.upload_by_filename('/Users/LONG/Desktop/01.jpeg')
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+  File "D:\pythonWorkEnvs\meiduo_mall\lib\site-packages\fdfs_client\client.py", line 84, in upload_by_filename
+    raise DataError(errmsg + '(uploading)')
+fdfs_client.exceptions.DataError: [-] Error: /Users/LONG/Desktop/01.jpeg is not a file.(uploading)
+
+修改--->ret = client.upload_by_filename('/Users/LONG/Desktop/01.jpeg')
+
+--------> ret = client.upload_by_filename(r'C:\Users\LONG\Desktop\01.jpeg')
+
+>>> ret = client.upload_by_filename(r'C:\Users\LONG\Desktop\01.jpeg')
+>>> ret
+{'Group name': b'group1', 'Remote file_id': b'group1/M00/00/00/wKgBCV-bqleAf1QBAAC4j90Tziw85.jpeg', 'Status': 'Upload successed.', 'Local file name': 'C:\\Users\\LONG\\Desktop\\01.jpeg
+', 'Uploaded size': '46.14KB', 'Storage IP': b'192.168.1.9'}
+

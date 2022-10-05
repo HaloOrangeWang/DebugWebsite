@@ -1,0 +1,65 @@
+在python2下执行是没有问题，切到pyhon3下报如下错误
+
+File "/home/test/lib/yingzt_crypt.py", line 217, in rc4_crypt
+
+enc = rc4cipher.new(key)
+
+File "/home/test/lib/python3.6/site-packages/Crypto/Cipher/ARC4.py", line 132, in new
+
+return ARC4Cipher(key, *args, **kwargs)
+
+File "/home/test/lib/python3.6/site-packages/Crypto/Cipher/ARC4.py", line 60, in __init__
+
+result = _raw_arc4_lib.ARC4_stream_init(c_uint8_ptr(key),
+
+File "/home/test/lib/python3.6/ctypes/__init__.py", line 361, in __getattr__
+
+func = self.__getitem__(name)
+
+File "/home/test/lib/python3.6/ctypes/__init__.py", line 366, in __getitem__
+
+func = self._FuncPtr((name_or_ordinal, self))
+
+AttributeError: /home/test/lib/python3.6/site-packages/Crypto/Util/../Cipher/_ARC4.cpython-36m-x86_64-linux-gnu.so: undefined symbol: ARC4_stream_init
+
+发现一个python的一个小而快速的arc4（rc4）密码实现。
+
+非常注重性能；整个源代码都是用C编写的
+
+易于安装；没有依赖关系的单个文件
+
+
+基准
+
+下面是针对3个主要RC4实现的基准度量
+
+arc4比实际的​​PyCrypto​​库快67%。 而且，比纯python​​rc4​​库快1889%。
+
+arc4
+
+0.332659006119
+
+PyCrypto
+
+0.544879198074
+
+rc4
+
+6.60579204559
+
+整个基准代码都在./benchmark.py中
+
+
+安装
+
+从pypi安装：
+
+或者克隆repo并安装：
+
+
+用法
+
+因为rc4是一个流密码，所以必须在每个操作的开始初始化rc4对象。
+
+作者：云敬轩，转载请注明原文链接​
+

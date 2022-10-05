@@ -1,0 +1,100 @@
+问题描述：运行Fluid编写的模型时，输出Enforce failed. Expected w_dims[0] == frame_size
+
+报错输出：
+
+报错输出：
+
+Traceback (most recent call last):
+  File "train.py", line 173, in <module>
+    train()
+  File "train.py", line 63, in train
+    max_length=args.max_length)
+  File "/Users/jizhi/Desktop/Paddle/models/fluid/PaddleNLP/neural_machine_translation/rnn_search/attention_model.py", line 81, in seq_to_seq_net
+    input_seq=src_embedding, gate_size=encoder_size)
+  File "/Users/jizhi/Desktop/Paddle/models/fluid/PaddleNLP/neural_machine_translation/rnn_search/attention_model.py", line 59, in bi_lstm_encoder
+    size=gate_size, use_peepholes=False)
+  File "/Users/jizhi/anaconda3/envs/paddle/lib/python3.5/site-packages/paddle/fluid/layers/nn.py", line 452, in dynamic_lstm
+    'candidate_activation': candidate_activation
+  File "/Users/jizhi/anaconda3/envs/paddle/lib/python3.5/site-packages/paddle/fluid/layer_helper.py", line 50, in append_op
+    return self.main_program.current_block().append_op(*args, **kwargs)
+  File "/Users/jizhi/anaconda3/envs/paddle/lib/python3.5/site-packages/paddle/fluid/framework.py", line 1207, in append_op
+    op = Operator(block=self, desc=op_desc, *args, **kwargs)
+  File "/Users/jizhi/anaconda3/envs/paddle/lib/python3.5/site-packages/paddle/fluid/framework.py", line 656, in __init__
+    self.desc.infer_shape(self.block.desc)
+paddle.fluid.core.EnforceNotMet: Enforce failed. Expected w_dims[0] == frame_size, but received w_dims[0]:128 != frame_size:512.
+The first dimension of Input(Weight) should be 512. at [/Users/paddle/minqiyang/Paddle/paddle/fluid/operators/lstm_op.cc:63]
+PaddlePaddle Call Stacks:
+0          0x10cf18a68p paddle::platform::EnforceNotMet::EnforceNotMet(std::exception_ptr, char const*, int) + 760
+1          0x10da71c6cp paddle::operators::LSTMOp::InferShape(paddle::framework::InferShapeContext*) const + 6892
+2          0x10cfd5e68p paddle::framework::OpDesc::InferShape(paddle::framework::BlockDesc const&) const + 1496
+3          0x10cf9f479p _ZZN8pybind1112cpp_function10initializeIZNS0_C1IvN6paddle9framework6OpDescEJRKNS4_9BlockDescEEJNS_4nameENS_9is_methodENS_7siblingEEEEMT0_KFT_DpT1_EDpRKT2_EUlPKS5_S8_E_vJSN_S8_EJS9_SA_SB_EEEvOSD_PFSC_SF_ESL_ENKUlRNS_6detail13function_callEE_clESU_ + 185
+4          0x10cf233aap pybind11::cpp_function::dispatcher(_object*, _object*, _object*) + 5786
+5          0x1001a959fp PyCFunction_Call + 127
+6          0x1002747e7p PyEval_EvalFrameEx + 33207
+7          0x10026afafp _PyEval_EvalCodeWithName + 335
+8          0x1001766aap function_call + 106
+9          0x100132b35p PyObject_Call + 69
+10         0x100155694p method_call + 148
+11         0x100132b35p PyObject_Call + 69
+12         0x1001cf415p slot_tp_init + 117
+13         0x1001d3ac1p type_call + 209
+14         0x100132b35p PyObject_Call + 69
+15         0x100271c9bp PyEval_EvalFrameEx + 22123
+16         0x10026afafp _PyEval_EvalCodeWithName + 335
+17         0x1001766aap function_call + 106
+18         0x100132b35p PyObject_Call + 69
+19         0x100271c9bp PyEval_EvalFrameEx + 22123
+20         0x10026afafp _PyEval_EvalCodeWithName + 335
+21         0x1002712a7p PyEval_EvalFrameEx + 19575
+22         0x10026afafp _PyEval_EvalCodeWithName + 335
+23         0x1002712a7p PyEval_EvalFrameEx + 19575
+24         0x10026afafp _PyEval_EvalCodeWithName + 335
+25         0x1002712a7p PyEval_EvalFrameEx + 19575
+26         0x10026afafp _PyEval_EvalCodeWithName + 335
+27         0x1002712a7p PyEval_EvalFrameEx + 19575
+28         0x10026afafp _PyEval_EvalCodeWithName + 335
+29         0x1002712a7p PyEval_EvalFrameEx + 19575
+30         0x10026afafp _PyEval_EvalCodeWithName + 335
+31         0x1002bd758p PyRun_FileExFlags + 248
+32         0x1002bceeep PyRun_SimpleFileExFlags + 382
+33         0x1002e1d86p Py_Main + 3622
+34         0x100123861p main + 497
+35      0x7fff5f4da015p start + 1
+36                 0x2p
+
+相关代码：
+
+forward, _ = fluid.layers.dynamic_lstm(
+    input=input_forward_proj,
+    size=gate_size * 4, use_peepholes=False)
+input_reversed_proj = fluid.layers.fc(input=input_seq,
+                                      size=gate_size * 4,
+                                      act='tanh',
+                                      bias_attr=False)
+reversed, _ = fluid.layers.dynamic_lstm(
+    input=input_reversed_proj,
+    size=gate_size,
+    is_reverse=True,
+    use_peepholes=False)
+return forward, reversed
+
+解决方法：
+
+forward, _ = fluid.layers.dynamic_lstm(
+            input=input_forward_proj,
+            size=gate_size * 4, use_peepholes=False)
+input_reversed_proj = fluid.layers.fc(input=input_seq,
+                                      size=gate_size * 4,
+                                      act='tanh',
+                                      bias_attr=False)
+reversed, _ = fluid.layers.dynamic_lstm(
+    input=input_reversed_proj,
+    size=gate_size * 4,
+    is_reverse=True,
+    use_peepholes=False)
+return forward, reversed
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

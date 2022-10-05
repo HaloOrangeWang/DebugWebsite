@@ -1,0 +1,69 @@
+由于实验室研究方向变更，本文不再更新~
+
+本文是对《机器学习实战》进行学习时遇到问题记录。
+
+由于书中代码使用Python2.X，而本机使用Python3.X，导致运行时有部分程序出现错误。
+
+
+问题1：
+
+问题位置：
+
+3.2 在Python中使用Matplotlib注解绘制树形图（P45）——程序清单3-6 获取叶节点的数目和树的层数
+
+问题：
+
+TypeError: 'dict_keys' object does not support indexing
+
+分析：（参考文献：机器学习（四）—决策树）
+
+在2.7中，找到key所对应的第一个元素为：firstStr = myTree.keys()[0]，这在3.4中运行会报错：‘dict_keys‘ object does not support indexing，这是因为python3改变了dict.keys,返回的是dict_keys对象,支持iterable 但不支持indexable，我们可以将其明确的转化成list
+
+解决方案：
+
+1 firstStr = myTree.keys()[0]
+
+改为
+
+1 firstSides = list(myTree.keys()) 
+2 firstStr = firstSides[0]  #找到输入的第一个元素
+
+
+问题2：
+
+问题位置：
+
+3.3.2 使用算法：决策树的存储（P50）——程序清单3-9 使用pickle模块存储决策树
+
+问题2.1：
+
+TypeError: write() argument must be str, not bytes
+
+分析：
+
+由于pickle存储方式默认是二进制方式，所以要将文件的打开方式改为二进制方式，即必须带‘b’
+
+解决方案：
+
+1 fw = open(filename, 'w')
+
+改为
+
+1 fw = open(filename, 'wb')
+
+问题2.2：
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 0: illegal multibyte sequence
+
+分析：（理由同上）
+
+由于pickle存储方式默认是二进制方式，所以要将文件的打开方式改为二进制方式，即必须带‘b’
+
+解决方案：
+
+1 fr = open(filename)
+
+改为
+
+1 fr = open(filename, 'rb')
+

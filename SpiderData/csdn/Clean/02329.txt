@@ -1,0 +1,16 @@
+
+一、场景
+
+urllib.request.urlopen('https://..........')
+
+请求时会验证证书，没有证书或证书有误会报错：
+ urllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl)>
+
+
+二、解决方法
+
+跳过验证证书，添加以下代码：
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+

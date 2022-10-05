@@ -1,0 +1,158 @@
+今天开始CV方向的学习，然而刚拿到基础代码的时候发现
+ 
+ from skimage.color import rgb2gray 和 import cv2标红（这里是因为我已经配置成功了，所以没有红标），我以为是单纯两个库没有下载，去pycharm中下载skimage.color 和cv2没有，后来通过百度明白：cv2是opencv库中的，而skimage是scikit_image库中的。
+
+
+先是opencv下载遇到的问题：（以下失败的地方均可尝试）
+
+
+尝试一：
+
+通过pycharm中下载opencv或者opencv3始终失败：
+
+
+尝试二：
+
+后来尝试在anaconda中进行下载：
+
+conda install opencv
+
+或
+
+pip install opencv
+
+失败
+
+
+尝试三：
+
+在anaconda中输入：
+
+conda install --channel https://conda.anaconda.org/menpo opencv3
+
+失败
+ 
+ 图中说：opencv3->python 2.7,3.4,3.5,而我的python版本是3.9（其实和在pycharm中下载错误原因一致）
+ 说明是版本不对。
+ 百度发现目前的自带的安装方法仅适合python3.5版本及以下的。
+
+
+尝试四：
+
+尝试采用在anaconda中新建立一个python版本3.5的库
+
+conda create --name pytorch python=3.5
+
+失败
+
+
+真正成功的阶段：
+
+
+尝试五：
+
+步骤一：
+ 接下来尝试采用安装包：用pip安装OpenCV（使用.whl文件安装）
+ opencv的下载地址：
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/
+
+在上面链接下载对应的opencv版本，特别注意
+ 
+ 一定要找对应的版本：cp39说明对应的是python3.9版本，win_amd64是指64位机
+ 然后打开cmd命令行窗口，使用cd命令进入上一步下载好opencv_xxx.whl文件所在目录
+ 输入如下代码安装该文件：
+
+pip install opencv_python‑3.4.14.51‑cp39‑cp39m‑win_amd64.whl
+
+结果：
+ 失败，提示我pip需要更新
+ （其实这中间我看到了将这个opencv.whl文件放到python中文件夹下载，但是这就不在anconda和我想要的pytorch框架下了，放弃）
+
+步骤二：
+ 由于尝试五的时候，提示我pip需要更新。
+ 通过cmd进入命令框：
+
+python -m pip install --upgrade pip
+
+（这里其实我走了弯路，我在命令框中cd进入python中的pip所在文件，然后pip install --upgrade pip）
+ 结果 ：
+ Could not install packages due to an EnvironmentError: [WinError 5] 拒绝访问
+
+步骤三：
+ 通过百度发现：（在后面加一个user）
+
+python -m pip install --upgrade pip --user
+
+结果：
+ Traceback (most recent call last): File “d:\python3.9\lib\runpy.py“,
+ 无论输入什么都是：No module named 'pip’
+ 后来我明白：有时候在执行pip更新失败后，再次执行pip命令时会提示ModuleNotFoundError: No module named 'pip’错误，导致pip命令无法使用。
+
+步骤四：
+ 重新打开一个cmd命令窗口，选择使用管理员权限打开：
+ 执行第一条命令：
+
+python -m ensurepip
+
+successfully
+ 再输入第二条命令：
+
+python -m pip install --upgrade pip
+
+successfully
+ (这个时候pip已经成功更新了)
+
+步骤五：
+ 安装： wheel 包
+ 在cmd 的Python 安装路径Scripts下输入 pip install wheel 即可，按回车键，会自动安装。
+ 结果：successfully
+
+步骤六：
+ 打开anaconda的命令行,激活你想安装的框架（我是pytorch）
+ 然后输入：
+
+pip install C:\Users\opencv_python‑3.4.14.51‑cp39‑cp39m‑win_amd64.whl
+
+（就是 pip install opencv.whl文件的完整地址）
+ （注意：这里用的是pip install 如果anconda install 有可能出错）
+ 结果：
+ successfully
+ 返回pycharm可以发现
+ 
+ 已经可以用了
+
+
+接下来是skimage库的下载
+
+skimage库现在隶属于scikit_image库中，只需要下载scikit_image库就行，然而利用pycharm下载scikit_image库
+ 失败
+ 后来我发现scikit_image库需要numpy和scipy两个库（之后发现scipy在scikit_image库中）
+ 我之前有numpy，尝试下载scipy
+ 失败
+ 提示原因：
+ warning conda.gateways.disk.delete:unlink_or_rename_to_trash(139): could not remove or rename d:\anaconda\pkgs\pytorch-1.2.0-py3.6_cuda100_cudnn7_1\lib\site-packages\torch\lib\torch.dll. please remove this file manually (you may need to reboot to free file handles)
+ InvalidArchiveError(‘Error with archive D:\anaconda\pytorch-1.2.0-py3.9
+ 解决办法：
+ 这是anaconda文件夹权限问题，可能安装在默认C盘路径就不会出现问题。将anaconda的权限全部改成完全控制
+ 
+ 最后，进入anaconda命令框中（我觉得在pycharm中还是可能失败）
+ 输入：
+
+conda install scikit-image
+
+结果：
+ 失败（所以我觉得pycharm中还是可能失败，但是我没尝试）
+ 输入：
+
+pip install scikit-image
+
+结果：
+ 成功
+ （在scikit-image下载的过程中会发现scipy库也在其中，不需要另外下载）
+ 再返回pycharm中
+ 
+ 已经可以成功运行了
+
+本文看了大量的网上经验，如有侵权请第一时间联系我
+

@@ -1,0 +1,39 @@
+
+
+Python报错module 'scipy.misc' has no attribute 'imresize'
+
+解决办法：
+
+安装Pillow包，命令如下：
+
+pip install Pillow
+
+然后重启python环境
+
+
+Python报错module 'scipy.misc' has no attribute 'imread'
+
+解决办法：
+
+大部分解决办法都是说没有安装PIL第三方库，库名现在为Pillow，推荐直接使用命令pip install Pillow进行安装，但是我的问题并没有因此得到解决，还是继续报错AttributeError: module 'scipy.misc' has no attribute 'imread'。
+经过查询和尝试，发现是scipy的版本问题， 降级到scipy==1.2.1就可以完美解决了。
+命令如下：
+
+pip install scipy==1.2.1
+
+原因探究：
+
+如果您查看的scipy.misc.imresize许多最新版本的文档scipy，则会在顶部找到以下内容：
+
+imresize不推荐使用！
+
+imresize在SciPy 1.0.0中已弃用，在1.3.0中将被删除。
+
+改为使用枕头：numpy.array(Image.fromarray(arr).resize())。
+
+1.3.0发行版是昨天发行的，因此，如果scipy今天在系统上下载，您可能已经获得了新版本，该新版本将无法再使用该功能。
+
+我在上面引用的文档提出了一个代码片段（使用numpy和PIL），它可以替代。
+
+所以出现以上类似问题的根本原因还是scipy版本的问题
+

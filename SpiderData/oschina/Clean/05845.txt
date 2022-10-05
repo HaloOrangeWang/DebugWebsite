@@ -1,0 +1,94 @@
+关键字：数据类型，张量
+
+关键字：数据类型，张量
+
+问题描述：使用一个训练好的模型进行预测，在使用数据字典把单词转换成整数编码之后，使用这谢整数列表进行预测，出现错误数据类型错误。
+
+问题描述：使用一个训练好的模型进行预测，在使用数据字典把单词转换成整数编码之后，使用这谢整数列表进行预测，出现错误数据类型错误。
+
+报错信息：
+
+报错信息：
+
+<ipython-input-33-340d192d6a07> in infer(use_cuda, inference_program, params_dirname)
+     15         lod.append([word_dict.get(words.encode('utf-8'), UNK) for words in c])
+     16     print(lod)
+---> 17     results = inferencer.infer({'words': lod})
+     18 
+     19     for i, r in enumerate(results[0]):
+
+/opt/conda/envs/py35-paddle1.0.0/lib/python3.5/site-packages/paddle/fluid/contrib/inferencer.py in infer(self, inputs, return_numpy)
+    102             results = self.exe.run(feed=inputs,
+    103                                    fetch_list=[self.predict_var.name],
+--> 104                                    return_numpy=return_numpy)
+    105 
+    106         return results
+
+/opt/conda/envs/py35-paddle1.0.0/lib/python3.5/site-packages/paddle/fluid/executor.py in run(self, program, feed, fetch_list, feed_var_name, fetch_var_name, scope, return_numpy, use_program_cache)
+    467                 fetch_var_name=fetch_var_name)
+    468 
+--> 469         self._feed_data(program, feed, feed_var_name, scope)
+    470         self.executor.run(program.desc, scope, 0, True, True)
+    471         outs = self._fetch_data(fetch_list, fetch_var_name, scope)
+
+/opt/conda/envs/py35-paddle1.0.0/lib/python3.5/site-packages/paddle/fluid/executor.py in _feed_data(self, program, feed, feed_var_name, scope)
+    341                 cur_feed = feed[feed_target_name]
+    342                 if not isinstance(cur_feed, core.LoDTensor):
+--> 343                     cur_feed = _as_lodtensor(cur_feed, self.place)
+    344                 idx = op.desc.attr('col')
+    345                 core.set_feed_variable(scope, cur_feed, feed_var_name, idx)
+
+/opt/conda/envs/py35-paddle1.0.0/lib/python3.5/site-packages/paddle/fluid/executor.py in _as_lodtensor(data, place)
+    247                 ndarray to LoDTensor. Please convert data to LoDTensor \
+    248                 directly before feeding the data.\
+--> 249                 ")
+    250     # single tensor case
+    251     tensor = core.LoDTensor()
+
+RuntimeError: Some of your feed data hold LoD information.                 They can not be completely cast from a list of Python                 ndarray to LoDTensor. Please convert data to LoDTensor                 directly before feeding the data.
+
+问题复现：使用时列表，通过lod.append([word_dict.get(words.encode('utf-8'), UNK) for words in c])把句子转换成整数列表，使用这个整数列表进行预测，在执行预测的时候就会报以上的错误。错误代码如下：
+
+inferencer = Inferencer(
+    infer_func=partial(inference_program, word_dict),
+    param_path=params_dirname,
+    place=place)
+reviews_str = ['paddlepaddle from baidu', 'this is a great movie', 'this is very bad fack']
+reviews = [c.split() for c in reviews_str]
+UNK = word_dict['<unk>']
+print(reviews)
+lod = []
+for c in reviews:
+    lod.append([word_dict.get(words.encode('utf-8'), UNK) for words in c])
+print(lod)
+results = inferencer.infer({
+   
+   
+   'words': lod})
+
+解决问题：PaddlePaddle虽然是支持整型数据，但是在使用使用数据预测时，需要把数据转换成PaddlePaddle的张量，使用的接口是fluid.create_lod_tensor。
+
+inferencer = Inferencer(
+    infer_func=partial(inference_program, word_dict),
+    param_path=params_dirname,
+    place=place)
+reviews_str = ['paddlepaddle from baidu', 'this is a great movie', 'this is very bad fack']
+reviews = [c.split() for c in reviews_str]
+UNK = word_dict['<unk>']
+print(reviews)
+lod = []
+for c in reviews:
+    lod.append([word_dict.get(words.encode('utf-8'), UNK) for words in c])
+print(lod)
+base_shape = [[len(c) for c in lod]]
+print(base_shape)
+tensor_words = fluid.create_lod_tensor(lod, base_shape, place)
+results = inferencer.infer({
+   
+   
+   'words': tensor_words})
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

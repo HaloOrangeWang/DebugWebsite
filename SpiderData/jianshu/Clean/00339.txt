@@ -1,0 +1,28 @@
+最近动手写了个小程序，希望能搜索excel内容，引用了NPOI这个DLL，结果在运行到XSSFWorkbook xssfworkbook = new XSSFWorkbook(fs);的时候报错：未能加载文件或程序集"ICSharpCode.SharpZipLib.dll"...
+
+百度了很多帖子，尝试删除C盘C:/WINDOWS/Microsoft.NET/Framework目录中的某些文件，但结果都不好使。
+
+一篇到GitHub下载源码，通过编译源码的解决办法解决了我的问题，我转载下使用NPOI时ICSharpCode.SharpZipLib版本冲突问题解决 - 五行缺木 - 博客园 (cnblogs.com)，如有侵权请联系我马上删掉
+
+以下是我的操作过程
+
+1.下载NPOI源码：nissl-lab/npoi at 2.3.0 (github.com)，下载的2.3.0的历史版本
+
+2.要替换里面的    ICSharpCode.SharpZipLib.dll    成0.84版，NPOI源码里的是0.86版，所以下下载    ICSharpCode.SharpZipLib    的源码：icsharpcode/SharpZipLib at 0.84.0.0 (github.com)，下载的0.84的历史版本
+
+3.下面先编译 ICSharpCode.SharpZipLib ，源码里没有sln文件，读Readme知道有两种方法
+
+4.我这里用的第一个方法，用    Nant    的软件，并附有下载地址：http://nant.sourceforge.net，在CMD里运行
+
+5.将    ICSharpCode.SharpZipLib.dll    替换    NPOI    源码工程里的    DLL，修改两处代码，
+
+6.选择release 4.0模式编译，生成    DLL    文件，在现在的项目中引用这几个 DLL ，运行的时候报错：程序集""标记为 AllowPartiallyTrustedCallersAttribute 并且使用 2 级安全透明模型。此问题是    framework2.0    升级到    framework4.0时的安全界别问题，在AssemblyInfo.cs文件中添加此语句来强制转换： [assembly: SecurityRules(SecurityRuleSet.Level1)]
+
+7.重新编译，生成    DLL    文件，在现在的项目中引用这几个 DLL ，运行成功！
+
+8.将所有下载源代码和工具整理上传网盘
+
+链接：https://pan.baidu.com/s/1IXHjTKlfVzbF2DLGH08xjw
+
+提取码：ou3t
+

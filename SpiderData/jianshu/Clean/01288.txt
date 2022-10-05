@@ -1,0 +1,52 @@
+转载自：https://blog.csdn.net/xovee/article/details/101077022
+
+[报错] [Ubuntu] [Python] MemoryError: Unable to allocate array with shape (x, x) and data type float64
+
+
+错误信息
+
+MemoryError: Unable to allocate array with shape (430949, 430949) and data type float64
+
+
+系统环境
+
+Ubuntu 18.04 LTS
+
+Python 3.6
+
+
+原因分析
+
+据传 [1] 是因为触发了系统的 overcommit handing 模式。
+
+事情是这样的，我打算生成一个形状为[430949, 430949]的稀疏矩阵，结果就报了上述错误。大致是因为这个矩阵似乎要占用的空间太大，所以系统就提前禁止创建了。实际上是用不了那么多内存的（稀疏矩阵）。
+
+
+解决办法
+
+首先检查系统的内存过载处理模式
+
+sudo passwd root
+
+然后输入当前用户密码，再给 root 设定一个新密码，再切换到 root：
+
+变成了#
+
+现在我们拥有了 root 权限，输入下面的命令将内存过载处理模式更改为1：
+
+$ echo 1 > /proc/sys/vm/overcommit_memory
+
+然后不出意外的话，就可以成功创建该矩阵啦！
+
+Reference
+
+Iguananaut. (August 15, 2019). Unable to allocate array with shape and data type. Retrieved from https://stackoverflow.com/questions/57507832/unable-to-allocate-array-with-shape-and-data-type
+
+BigCabbageFy. (March 9, 2018). ubuntu下无法在根目录创建文件夹；permission denied 权限不足问题解决方法. Retrieved from https://blog.csdn.net/bigcabbagefy/article/details/79500090
+
+————————————————
+
+版权声明：本文为CSDN博主「Xovee」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+
+原文链接：https://blog.csdn.net/xovee/article/details/101077022
+

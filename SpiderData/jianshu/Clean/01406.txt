@@ -1,0 +1,184 @@
+python3.7.2使用web.py报错解决办法
+
+首先请确保使用
+
+pip install web.py==0.40-dev1
+
+1
+
+安装web.py。
+
+运行官网实例：
+
+import web
+
+urls = (
+
+'/(.*)', 'hello'
+
+)
+
+app = web.application(urls, globals())
+
+class hello:
+
+def GET(self, name):
+
+if not name:
+
+name = 'World'
+
+return 'Hello, ' + name + '!'
+
+if __name__ == "__main__":
+
+app.run()
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+却出现报错，如下：
+
+Traceback (most recent call last):
+
+File "D:\Program Files\Python\Python37\lib\site-packages\web\utils.py", line 526, in take
+
+yield next(seq)
+
+StopIteration
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+
+File "D:\Python\hello.py", line 6, in <module>
+
+app = web.application(urls, globals(),True)
+
+File "D:\Program Files\Python\Python37\lib\site-packages\web\application.py", line 62, in __init__
+
+self.init_mapping(mapping)
+
+File "D:\Program Files\Python\Python37\lib\site-packages\web\application.py", line 130, in init_mapping
+
+self.mapping = list(utils.group(mapping, 2))
+
+File "D:\Program Files\Python\Python37\lib\site-packages\web\utils.py", line 531, in group
+
+x = list(take(seq, size))
+
+RuntimeError: generator raised StopIteration
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+修改Lib\site-packages\web 下的utils.py文件。
+
+将第526行的
+
+yield next(seq)
+
+1
+
+修改为
+
+try:
+
+yield next(seq)
+
+except StopIteration:
+
+return
+
+1
+
+2
+
+3
+
+4
+
+重新运行实例代码将正常运行，输出如下：
+
+http://0.0.0.0:8080/
+
+1
+
+在浏览器中访问
+
+http://127.0.0.1:8080/
+
+1
+
+显示
+
+Hello, World!
+
+---------------------
+
+作者：FishTailStudio
+
+来源：CSDN
+
+原文：https://blog.csdn.net/gibiguvuggu/article/details/86223332
+
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

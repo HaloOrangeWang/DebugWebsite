@@ -1,0 +1,50 @@
+问题：
+
+在Jupyter Notebook中使用args传递参数时出现错误：
+
+原始代码：args = parser.parse_args()
+
+usage: ipykernel_launcher.py [-h] [--x_dim XDIM] [--h_dim HDIM] [--z_dim ZDIM]
+        [--ratio RATIO] [--seed SEED]
+ipykernel_launcher.py: error: unrecognized arguments: -f C:\Users\MSI-NBOOK\AppData\Roaming\jupyter\runtime\kernel-f881e2bc-0a12-4207-b4cf-1cf484ec88f2.json
+An exception has occurred, use %tb to see the full traceback.
+
+SystemExit: 2
+
+F:\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py:2971: UserWarning: To exit: use 'exit', 'quit', or Ctrl-D.
+ warn("To exit: use 'exit', 'quit', or Ctrl-D.", stacklevel=1)
+
+解决办法：
+
+将原始代码进行修改，修改后为：
+
+args = parser.parse_args(args=[])
+
+修改后即可使用。
+
+补充知识：argarse.ArgumentParser.parse_known_args()解析
+
+大致意思就是：有时间一个脚本只需要解析所有命令行参数中的一小部分，剩下的命令行参数给两一个脚本或者程序。在这种情况下，parse_known_args()就很有用。它很像parse_args()，但是它在接受到多余的命令行参数时不报错。相反的，返回一个tuple类型的命名空间和一个保存着余下的命令行字符的list。
+
+举个栗子，新建一个test.py文件，在文件中写入如下代码
+
+import argparse 
+parser = argparse.ArgumentParser() 
+parser.add_argument( 
+ '--flag_int', 
+ type=float, 
+ default=0.01, 
+ help='flag_int.' 
+) 
+FLAGS, unparsed = parser.parse_known_args() 
+print(FLAGS) 
+print(unparsed)
+
+结果如下：
+
+$ python prog.py --flag_int 0.02 --double 0.03 a 1
+Namespace(flag_int=0.02)
+['--double', '0.03', 'a', '1']
+
+以上这篇解决Jupyter Notebook使用parser.parse_args出现错误问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

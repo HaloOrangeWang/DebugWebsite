@@ -1,0 +1,62 @@
+
+如下所示：
+
+两个时间相差一整天，结果却是相差时间为零 ！！！！
+
+这里是使用错误， .seconds只会计算 小时分钟秒 部分之间的差值
+
+在这里使用total_seconds() 才是计算两个时间戳之间的相差时间
+
+补充：Python 时间字符串、时间戳之间的转换，时间的加减
+
+
+1、字符串转时间戳
+
+import time 
+str_time = "20200713203740"
+time_temp = time.strptime(str_time, "%Y%m%d%H%M%S") # 字符串格式化成时间格式
+time_stamp = time.mktime(time_temp)         # 格式化后的时间转换成时间戳
+ 
+print(time_temp)
+print(time_stamp)
+
+结果如下：
+
+time.struct_time(tm_year=2020, tm_mon=7, tm_mday=13, tm_hour=20, tm_min=37, tm_sec=40, tm_wday=0, tm_yday=195, tm_isdst=-1) 1594643860.0
+
+
+2、时间戳转时间字符串
+
+from datetime import datetime 
+x = 1594643860 
+y_m_d = datetime.fromtimestamp(x).strftime('%Y%m%d')
+h_s_m = datetime.fromtimestamp(x).strftime('%H:%S:%M')
+print(y_m_d)
+print(h_s_m)
+
+20200713
+
+20:40:37
+
+
+3、时间加天数
+
+import datetime 
+# 将时间字符串转换成格式化的时间格式
+time = "20190617 00:00:00"
+time = datetime.datetime.strptime(time, "%Y%m%d %H:%M:%S")
+ 
+# 在原来的时间上加6天
+time = time + datetime.timedelta(days=6)
+print(time)
+ 
+# 将格式化的时间格式，转换成时间字符串
+timestr = datetime.datetime.strftime(time, "%Y%m%d %H:%M:%S")
+print(timestr)
+
+2019-06-23 00:00:00
+
+20190623 00:00:00
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

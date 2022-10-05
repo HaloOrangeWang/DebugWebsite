@@ -1,0 +1,77 @@
+在CMD中运行python代码时，我们会发现，即使在代码中加入# -*- coding:utf-8 -*- 这段代码，中文仍然会乱码。如下：
+
+# -*- coding:utf-8 -*-
+content = "我是中文"
+print content
+
+1
+
+2
+
+3
+
+运行结果： 
+ 
+有够乱的吧！~~ 
+网上搜索的方法中说，把CMD的编码格式改为UTF-8格式，命令介绍：
+
+chcp 65001       #转换为utf-8代码页
+chcp 936           #转换为默认的gbk
+
+1
+
+2
+
+一般CMD默认gbk，在CMD窗口中输入chcp 65001 修改为utf-8 
+ 
+修改之后就是这样的，OK，我们再次运行代码，看看会不会乱码： 
+ 
+很遗憾，还是乱码，这样的话，只能从代码入手了，因为CMD默认gbk编码，所以只能把代码中的中文进行gbk编码了。 
+utf-8通过解码转化为unicode，然后将unicode编码转化为gbk 
+代码：
+
+# -*- coding:utf-8 -*-
+content = "我是中文"
+content_unicode = content.decode("utf-8")
+content_gbk = content_unicode.encode("gbk") print content_gbk
+
+1
+
+2
+
+3
+
+4
+
+5
+
+中文就显示成功了，记得将CMD调回gbk编码再运行程序。
+
+
+python3.x
+
+python3.x中在CMD中中文输出不会乱码。
+
+# -*- coding:utf-8 -*-
+content = "我是中文"
+print(content)
+
+1
+
+2
+
+3
+
+
+python2.x和python3.x产生差别的原因：
+
+主要是二者对于字符串的编码不同 
+python 2.x： 
+ 
+python 2.x的字符串是有编码的，默认为ascii，但如果在其中写中文的话，解释器一般会报错，所以都在代码第一行或者第二行规定编码格式： 
+# -*- coding:utf-8 -*- 
+想要转换为其他编码，就要进行先解码为unicode再编码的过程。 
+python 3.x 
+ 
+python 3.x的字符串类似python 2.x的unicode，是没有经过编码的，因此python 3.x的字符串没有decode属性，只有encode属性，调用这个方法后将产生bytes类型的字符串（有点像python 2.x中的字符串），而bytes类型支持解码操作。
+

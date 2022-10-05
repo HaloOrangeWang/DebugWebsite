@@ -1,0 +1,23 @@
+编码问题一直不怎么讨人喜欢，处理文本时经常遇到各种编码问题，这不，今天又遇见一个。
+
+>>> print('\xa0')
+ 
+>>>
+
+知道了'\xa0'是什么,问题就不难解决了。
+
+info = info.strip('\xa0')
+
+去掉了这个字符，按理说没什么问题了。
+
+如果还不行，那么查看一下要读取的文件的编码，一般来讲，他是一个UTF-8编码的，那么把他改成ansi编码的，按正常方法读取即可。
+
+...> python unique.py
+write it successfully.
+
+成功写入。
+
+另附好帖：
+
+python 读取文件时报错UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 205: illegal multibyte sequence
+

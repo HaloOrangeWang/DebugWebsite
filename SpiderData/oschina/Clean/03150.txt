@@ -1,0 +1,64 @@
+
+错误原因：pickle模块存储的是二进制字节码，需要以二进制的方式进行读写
+
+
+1. 报错一：TypeError: write() argument must be str, not bytes
+
+将决策树写入磁盘的代码如下：
+
+1 def storeTree(inputTree, filename):
+2     import pickle
+3     fw = open(filename, 'w')
+4     pickle.dump(inputTree, fw)
+5     fw.close()
+
+改正后代码： fw = open(filename, 'wb')
+
+
+2. 报错二：UnicodeDecodeError: 'utf-8' codec can't decode byte 0x80 in position 0: invalid start byte
+
+读取存储的决策树文件代码如下：
+
+1 def grabTree(filename):
+2     import pickle
+3     fr = open(filename,'r')
+4     return pickle.load(fr)
+
+改正后代码： fr = open(filename,'rb')
+
+
+一、open()函数
+
+在读取或写入一个文件之前，你必须使用 Python 内置open()函数来打开它。 该函数创建一个文件对象，这将被用来调用与它相关的其他支持方式。
+
+
+1. 语法
+
+file object = open(file_name [, access_mode][, buffering])
+
+
+2. 参数信息
+
+file_name: 文件名(file_name )参数是包含您要访问的文件名的字符串值。
+
+file_name: 文件名(file_name )参数是包含您要访问的文件名的字符串值。
+
+access_mode: access_mode指定该文件已被打开，即读，写，追加等方式。可能值的完整列表，在表中如下。
+
+这是可选的参数，默认文件访问模式是读(r)。
+
+access_mode: access_mode指定该文件已被打开，即读，写，追加等方式。可能值的完整列表，在表中如下。
+
+buffering: 如果该缓冲值被设置为0，则表示不使用缓冲。如果该缓冲值是1，则在访问一个文件进行时行缓冲。 如果指定缓冲值大于1的整数，缓冲使用所指示的缓冲器大小进行。如果是负数，缓冲区大小是系统默认的(默认行为)。
+
+buffering: 如果该缓冲值被设置为0，则表示不使用缓冲。如果该缓冲值是1，则在访问一个文件进行时行缓冲。
+
+如果指定缓冲值大于1的整数，缓冲使用所指示的缓冲器大小进行。如果是负数，缓冲区大小是系统默认的(默认行为)。
+
+
+3. 不同的读写模式
+
+
+4. file的属性
+
+

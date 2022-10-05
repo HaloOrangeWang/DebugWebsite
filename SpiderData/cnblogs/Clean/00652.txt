@@ -1,0 +1,134 @@
+一、Centos6.5安装pip命令时可能会遇到的问题
+
+1、安装setuptools模块时python安装模块时报异常：Compression requires the (missing) zlib module。
+
+linux系统自带的python版本是2.6.6, 升级到最新版本3.5后，安装setuptools模块时报异常：RuntimeError: Compression requires the (missing) zlib module
+
+需要先安装zlib，再重新编译python，方式两种：
+1） 用yum
+
+1 yum install zlib
+2 yum install zlib-devel
+
+2） 下载zlib rpm包
+
+下载地址：http://rpmfind.net/linux/RPM/index.html
+
+zlib安装完成后进入python3.5源码目录重新安装
+
+1 #make clean
+2 #make
+3 #sudo make install
+
+如果以上命令不能使用，则按照安装python3.5时的安装命令：
+
+又是漫长的编译安装过程。等待python3.5安装成功。
+
+2、安装pip时提示setup.py中使用setuptools中的模块，但是电脑中并没有安装setuptools软件包，所以我们需要先下载并安装 setuptools！
+
+安装setuptools软件包：
+
+(1)下载setuptools包
+
+1 # wget http://pypi.python.org/packages/source/s/setuptools/setuptools-2.0.tar.gz
+
+(2)解压setuptools包
+
+1 # tar zxvf setuptools-2.0.tar.gz
+2 # cd setuptools-2.0
+
+(3)编译setuptools
+
+1 # python setup.py build
+
+(4)开始执行setuptools安装
+
+1 # python setup.py install
+
+二、安装pip工具
+
+1、通过基本源下载
+
+1）、首先检查linux有没有安装python-pip包,直接执行
+
+1 yum install python-pip
+
+2）、没有python-pip包就执行命令
+
+1 yum -y install epel-release
+
+EPEL 是yum的一个软件源，里面包含了许多基本源里没有的软件。
+centos 6 64位安装EPEL 源命令如下
+
+1 yum install http://mirrors.hustunique.com/epel//6/x86_64/epel-release-6-8.noarch.rpm
+
+3）、执行成功之后,再次执行
+
+1 yum install python-pip
+
+4）、对安装好的pip进行升级
+
+1 pip install --upgrade pip
+
+2、下载安装包安装
+
+1）pip下载：
+
+1 # wget "https://pypi.python.org/packages/source/p/pip/pip-1.5.4.tar.gz#md5=834b2904f92d46aaa333267fb1c922bb" --no-check-certificate
+
+pip新版本
+
+1 https://pypi.python.org/packages/11/b6/abcb525026a4be042b486df43905d6893fb04f05aac21c32c638e939e447/pip-9.0.1.tar.gz#md5=35f01da33009719497f01a4ba69d63c9
+
+2）pip安装：
+
+1 # tar -xzvf pip-1.5.4.tar.gz
+2 # cd pip-1.5.4
+3 # python setup.py install
+
+3）若安装后pip命令无法使用，搜索系统中pip文件，创建命令链接
+
+1 ln -s /usr/local/python27/bin/pip /usr/bin/pip
+
+如果没有意外的话，pip安装完成。
+
+测试：
+
+我们使用pip安装一个python3第三方库： python  pip install docker-compose
+
+蛋疼！！！！又报错了！
+
+ImportError: cannot import name 'HTTPSHandler'
+
+根据老衲多年的经验，应该是缺少openssl的开发环境，我们继续安装
+
+yum install openssl-devel
+
+继续重新编译安装python3.5
+
+ok，我们终于完成了整个python3环境的安装。
+
+如果elep源不能用yum安装，可以使用以下url方式：
+
+
+Centos7 64位：
+rpm -ivh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+Centos6 32位：
+rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+centos6 64位：
+rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+centos5 32位：
+rpm -ivh http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+centos5 64位：
+rpm -ivh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+
+心累啊，每次安装完一个模块，都有重新安装一次python3.5
+
+python2 和python3编码问题：Python Unicode问题，看这一篇就够了
+
+Reference:
+
+[1] https://blog.csdn.net/qihongchao/article/details/80524630
+
+[2] 码的安装一般由3个步骤组成：配置(configure)、编译(make)、安装(make install)
+

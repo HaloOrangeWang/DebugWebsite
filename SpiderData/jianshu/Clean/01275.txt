@@ -1,0 +1,74 @@
+本文首发于我的个人博客：尾尾部落
+
+在阿里云服务器上，用virtualenv创建虚拟环境时，报了个错误
+
+root@iZwz982qla1uxm1s5dnyo7Z:/usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info# virtualenv -p python3 venv
+Running virtualenv with interpreter /usr/bin/python2
+New python executable in /usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info/venv/bin/python2
+Not overwriting existing python script /usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info/venv/bin/python (you must use /usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info/venv/bin/python2)
+Please make sure you remove any previous custom paths from your /root/.pydistutils.cfg file.
+  1 [global]
+Installing setuptools, pkg_resources, pip, wheel...
+  Complete output from command /usr/lib/python3/dis...nfo/venv/bin/python2 - setuptools pkg_resources pip wheel:
+  Collecting setuptools
+  Downloading http://mirrors.aliyun.com/pypi/packages/ff/f4/385715ccc461885f3cedf57a41ae3c12b5fec3f35cce4c8706b1a112a133/setuptools-40.0.0-py2.py3-none-any.whl (567kB)
+Collecting pkg_resources
+Exception:
+Traceback (most recent call last):
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/basecommand.py", line 209, in main
+    status = self.run(options, args)
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/commands/install.py", line 328, in run
+    wb.build(autobuilding=True)
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/wheel.py", line 748, in build
+    self.requirement_set.prepare_files(self.finder)
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/req/req_set.py", line 360, in prepare_files
+    ignore_dependencies=self.ignore_dependencies))
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/req/req_set.py", line 512, in _prepare_file
+    finder, self.upgrade, require_hashes)
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/req/req_install.py", line 273, in populate_link
+    self.link = finder.find_requirement(self, upgrade)
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 442, in find_requirement
+    all_candidates = self.find_all_candidates(req.name)
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 400, in find_all_candidates
+    for page in self._get_pages(url_locations, project_name):
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 545, in _get_pages
+    page = self._get_page(location)
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 648, in _get_page
+    return HTMLPage.get_page(link, session=self.session)
+  File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 760, in get_page
+    resp.raise_for_status()
+  File "/usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info/venv/share/python-wheels/requests-2.9.1-py2.py3-none-any.whl/requests/models.py", line 840, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+HTTPError: 404 Client Error: Not Found for url: http://mirrors.aliyun.com/pypi/simple/pkg-resources/
+----------------------------------------
+...Installing setuptools, pkg_resources, pip, wheel...done.
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/virtualenv.py", line 2363, in <module>
+    main()
+  File "/usr/lib/python3/dist-packages/virtualenv.py", line 719, in main
+    symlink=options.symlink)
+  File "/usr/lib/python3/dist-packages/virtualenv.py", line 988, in create_environment
+    download=download,
+  File "/usr/lib/python3/dist-packages/virtualenv.py", line 918, in install_wheel
+    call_subprocess(cmd, show_stdout=False, extra_env=env, stdin=SCRIPT)
+  File "/usr/lib/python3/dist-packages/virtualenv.py", line 812, in call_subprocess
+    % (cmd_desc, proc.returncode))
+OSError: Command /usr/lib/python3/dis...nfo/venv/bin/python2 - setuptools pkg_resources pip wheel failed with error code 2
+
+看到HTTPError: 404 Client Error: Not Found for url: http://mirrors.aliyun.com/pypi/simple/pkg-resources/以为是阿里云的安全组配置没配好，折腾了半天，原来是访问PyPI镜像源出了问题，将pip的默认的源地址改为国内源即可。具体操作如下：
+
+vim ~/.pip/pip.conf打开pip配置文件:
+
+写入
+
+[global]
+index-url = http://e.pypi.python.org/simple
+
+以下这几个国内源都可以
+
+e.pypi.python.org
+
+pypi.douban.com
+
+pypi.hustunique.com
+

@@ -1,0 +1,37 @@
+原文链接：http://www.juzicode.com/archives/2669
+
+
+错误提示：进行除法运算时，提示ZeroDivisionError: division by zero
+
+#juzicode.com/vx:桔子code
+
+lst = [5,4,3,2,1,0]
+for l in lst:
+    b = 10/l
+    print('l=',l,'b=',b)
+
+l= 5 b= 2.0
+l= 4 b= 2.5
+l= 3 b= 3.3333333333333335
+l= 2 b= 5.0
+l= 1 b= 10.0
+---------------------------------------------------------------------------
+ZeroDivisionError                         Traceback (most recent call last)
+<ipython-input-4-0a2c6f6809d9> in <module>
+      1 lst = [5,4,3,2,1,0]
+      2 for l in lst:
+----> 3     b = 10/l
+      4     print('l=',l,'b=',b)
+
+ZeroDivisionError: division by zero
+
+
+可能原因：
+
+1、在除数组成的lst中，最后一个元素为0，当使用到最后一个元素0作为除数时，会提示ZeroDivisionError: division by zero
+
+
+解决方法：
+
+1、要保证除数不为0，为避免抛异常可以加入判断语句，遇到0不做除法：
+

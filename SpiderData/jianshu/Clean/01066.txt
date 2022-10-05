@@ -1,0 +1,44 @@
+内存不足引起“gcc: internal compiler error: Killed (program cc1plus)”以及解决办法
+
+用pyenv install 3.8.2报错，其中有个错误提示是gcc: internal compiler error: Killed (program cc1plus)
+
+经过搜索，发现这是内存不足引起，因为我都云服务器只有1G，所以报错，解决办法，开启swap。
+
+整体过程：
+
+free -m
+
+查看分区，一般未开启swap的分区都是0
+
+新建一个目录用于交换分区的文件，比如我的目录/root/swap, 创建一个2G的文件
+
+dd if=/dev/zero of=/root/swap bs=2048 count=1048576
+
+这个过程会比较长，耐心等待
+
+把这个文件设置为交换分区文件
+
+mkswap /root/swap
+
+修改文件权限为600
+
+chmod 600 /root/swap
+
+启用交换分区文件
+
+swapon /root/swap
+
+开机自启动
+
+设置开机自启动，需修改修改文件/etc/fstab ，在最后添加一行 /root/swap swap swap defaults 0 0
+
+删除swap分区
+
+swapoff /root/swap
+
+rm -f /root/swap
+
+Linux学习24-腾讯云服务器开启swap分区
+
+【问题解决】内存不足引起“gcc: internal compiler error: Killed (program cc1plus)”以及解决办法
+

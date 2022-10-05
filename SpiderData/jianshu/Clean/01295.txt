@@ -1,0 +1,28 @@
+一、python版本：
+
+二、pip版本：10.0.1（保证pip可用即可）
+
+三、安装时报错：
+
+查看主要报错信息如下：
+
+Running setup.py bdist_wheel for psutil ... error
+
+Complete output from command /usr/bin/python -u -c "import setuptools, tokenize;__file__='/tmp/pip-install-zto3tV/psutil/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" bdist_wheel -d /tmp/pip-wheel-U41sIs --python-tag cp27:
+
+/usr/lib64/python2.7/distutils/dist.py:267: UserWarning: Unknown distribution option: 'python_requires'
+
+gcc -pthread -fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -fPIC -DPSUTIL_POSIX=1 -DPSUTIL_VERSION=546 -DPSUTIL_LINUX=1 -I/usr/include/python2.7 -c psutil/_psutil_common.c -o build/temp.linux-x86_64-2.7/psutil/_psutil_common.o  psutil/_psutil_common.c:9:20: 致命错误：Python.h：没有那个文件或目录   #include                      ^
+
+编译中断。
+
+error: command 'gcc' failed with exit status 1
+
+造成原因一般是因为gcc或提示中相关东西未安装，此事检查3个部分即可：
+
+检查gcc是否安装
+
+再检查python-devel是否安装
+
+安装完成后再pip install psutil没有报错
+

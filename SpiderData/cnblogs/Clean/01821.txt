@@ -1,0 +1,116 @@
+折腾了一天遇到了几个头疼的问题，还好回去前解决掉了
+
+第一个：执行cxfreeze打包好的程序遇到 tkinter 和 _tkinter的缺失问题
+
+首先确认是不是已经装了TK的工具：yum install tk-devel
+
+如果已经有了，终端：
+
+python tkinter
+
+　　　　　python _tkinter
+
+　　　　　print(tkinter)
+
+　　　　　print(_tkinter)
+
+找到这两个包的所在位置，然后复制到cxfreeze打包的目录下
+
+接下来再次执行，提示：
+
+首先看一下系统有没有安装 tk tcl  。没有的话： yum -y install tkinter tcl-devel tk-devel
+
+有的话
+
+import tkinter
+
+root = tkinter.Tk()
+
+print(root.tk.exprstring('$tcl_library'))
+
+print(root.tk.exprstring('$tk_library'))
+
+找到 tcl 和 tk 的安装位置
+
+在setup.py 里面加这样的几句话：
+
+os.environ['TCL_LIBRARY'] = "usr/share/tcl8.5"
+os.environ['TK_LIBRARY'] = "usr/share/tk8.5"
+
+os.environ['TKPATH'] = "usr/share/tk8.5"
+
+重新打包 python setup.py install
+
+再次运行可执行程序报错：
+
+这次连错误信息都没有就很难受，折腾了一下午差点放弃，最后偶然发现是路径的问题，打包的文件路径名包含  “文档/” 也就是包含中文字符
+
+试着换了一个纯英文的路径名成功！
+
+然后又碰到了更难受的问题，matplotlib程序在linux的终端执行，没有桌面环境，报错：
+
+解决办法：
+
+import matplotlib.pyplot as plt 后面加一句     plt.switch_backend("agg")
+在本地虚拟机上测试，查看并关闭centos7的图形界面：
+
+查看默认的target，执行：
+
+systemctl get-default
+
+开机以命令模式启动，执行：
+
+systemctl set-default multi-user.target
+
+开机以图形界面启动，执行：
+
+systemctl set-default graphical.target
+
+第三个问题：
+
+使用cx-freeze打包tensorflow遇到的一堆问题（修改包源码前一定要备份）
+
+1、编译没有报错，执行的时候报错：
+
+错误定位：..../site-packages/window.py -> import pandas.core.common as com
+
+module 'pandas' has no attribute 'core'
+
+解决方法:
+
+更改window.py
+
+把所有的import ...as 改成 from ... import ....as
+
+from pandas.core import common as com
+
+python -m compileall __init__.py
+
+重新install问题解决
+
+2、TypeError 路径错误 for (dir_) in _site_packages_dirs
+
+TypeError : startswith first arg must be str or a tuple of str,not NoneType
+
+错误原因，import site as _site这里，如果不使用cx-freeze打包，_site.USER_SITE变量指示的是python安装目录中site-packages的位置。
+
+而当我们用cx-freeze打包，site-packages的位置不再存在，新的包位置是lib，所以执行到这里_site.USER_SITE变量=None
+
+解决方法：
+
+在..../site-packages/tensorflow/__init__.py 文件的700行左右添加：
+
+if _site.USER_SITE==None:
+
+_site.USER_SITE=_os.path.join(_os.path.abspath(.),"lib")
+
+改成当前相对路径下的lib文件夹
+
+python -m compileall __init__.py
+
+重新install
+
+问题解决
+
+问题解决，痛并快乐的一天
+

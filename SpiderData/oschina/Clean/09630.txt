@@ -1,0 +1,85 @@
+在一次开发中项目突然抛出了BeanCurrentlyInCreationException异常。解决方案是找到循环注入的问题，并重新设计其中的类。当出现循环注入时证明设计的是有问题的。jvm允许循环引用，spring也可以解决循环注入。那为什么还会报错。
+
+定位到报错是因为循环注入时报错，那么就从spring注入一个bean的方式来分析，大家都知道spring提供了三类注册方式。
+
+1.直接在要注入的对象上加注解@Autowired @Resource等。
+
+2.在set方法上加注解.
+
+3.在构造方法中直接注入。
+
+先说结论：1, 2 种spring是可以解决循环注入问题的。但是，当时项目用的第一种，却抛出BeanCurrentlyInCreationException异常。
+
+先大体说一下spring是如何解决循环引用的：
+
+spring初始化一个bean分为三部（单例模式）：
+
+createBeanInstance 这个时候就是对这个bean调用构造方法，但是没有对里面的属性进行赋值，注入等操作。
+
+populateBean，填充属性，这步对配置中指定的property进行populate。这个时候发生注入行为。
+
+initializeBean，调用配置中指定的初始化方法（xml中配置的，或者@PostContract注解配置的等）
+
+发生循环引用会发生在第一步，和第二部。
+
+对单例bean来说，spring的生命周期每种bean有且仅有一个。spring会把生成的bean放入一个缓存里。
+
+/** Cache of singleton objects: bean name to bean instance. */
+private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+
+/** Cache of singleton factories: bean name to ObjectFactory. */
+private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
+
+/** Cache of early singleton objects: bean name to bean instance. */
+private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
+
+singletonObjects：单列对象的缓存，singletonFactories单例对象工厂缓存，earlySingletonObjects提前暴露对象的缓存。这三个map是解决循环引用的关键。
+
+protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+	Object singletonObject = this.singletonObjects.get(beanName);
+	if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+		synchronized (this.singletonObjects) {
+			singletonObject = this.earlySingletonObjects.get(beanName);
+			if (singletonObject == null && allowEarlyReference) {
+				ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
+				if (singletonFactory != null) {
+					singletonObject = singletonFactory.getObject();
+					this.earlySingletonObjects.put(beanName, singletonObject);
+					this.singletonFactories.remove(beanName);
+				}
+			}
+		}
+	}
+	return singletonObject;
+}
+
+getSingLeton()方法是解决循环依赖的核心方法。
+ 假如此时有两个类，A和B 他们相互依赖，
+ 1.当A这个bean初始化时，完成第一步createBeanInstance，然后将自己加入singletonFactiries中。
+
+2.第二部populateBean填充属性，此时发现自己依赖B.于是去singletonObjects中查找，此时查找不到，再去earlySingletonObjects中查找，还是查找不到此时在通过singletonFactories中查找出工厂类调用getObject()方法获取A对象, 并将它放入earlySingletonObjects中。这时A对象提前暴露出来，bean还没有初始化完成。B拿到A对象后执行第二步第三步，初始化完成之后将自己放入singletionFactories中（此时虽B虽然已经将A注入进来，但是此时的A中B对象的引用还为空）。接着，返回B对象给A。A也完成初始化。
+
+3.执行自定义初始化方法。
+
+通过第一种与第二种注入方式，结合提前曝光机制，可以解决循环注入的问题。提前曝光机制曝光的对象对JVM来说已经完成了这个对象的创建。但是通过构造方法注入，在构造方法没有执行完之前对象对JVM来说是没有完成创建的。这种循环注入对spring来说是无力回天的。
+
+回到问题，那为什么我用第一种注入方式还会报错呢：
+
+首先看抛出的异常：
+
+org.springframework.beans.factory.BeanCurrentlyInCreationException: Error creating bean with name 'studentServiceImpl': Bean with name 'studentServiceImpl' has been injected into other beans [userServiceImpl] in its raw version as part of a circular reference, but has eventually been wrapped. This means that said other beans do not use the final version of the bean. This is often the result of over-eager type matching - consider using 'getBeanNamesOfType' with the 'allowEagerInit' flag turned off, for example.
+
+意思是说该studentServiceImpl 的原始对象（就是提前曝光的那个）已经注入到userServiceImpl.但是注入的对象不是最终的版本(一个对象注入到其他的对象中会记录下来)。
+
+也就是说，正常情况下，userServiceImpl对象并不是最终要注入的对象。接着在代码中发现@ASYNC注解恍然大悟，最终要注入的对象是代理对象。同理可知，对于其他情况下代理对象也spring也无法解决循环注入的问题（比如最常用的事务）。
+
+总结：
+
+1.构造方法循环注入会报错。
+
+2.需要产生代理对象时，循环注入会报错。
+
+为什么需要三级缓存？
+
+https://lan861698789.blog.csdn.net/article/details/109554429
+

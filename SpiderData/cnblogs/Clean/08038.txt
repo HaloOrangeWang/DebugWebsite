@@ -1,0 +1,16 @@
+问题描述：
+
+使用pytest框架做接口自动化测试时，在测试用例所在的.py文件下使用pycharm的run功能可以正常跑用例，使用cmd运行窗口或Terminal则报下图中的错误：
+
+Hint: make sure your test modules/packages have valid Python names.
+
+解决办法：
+
+在要执行pytest 的项目根目录新建一个conftest.py文件，并添加以下几行代码，问题得到完美解决！
+
+import os
+
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+

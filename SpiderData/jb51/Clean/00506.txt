@@ -1,0 +1,32 @@
+问题：
+
+在使用mask_rcnn预测自己的数据集时，会出现下面错误：
+
+ResourceExhaustedError: OOM when allocating tensor with shape[1,512,1120,1120] and type float on /job:localhost/replica:0/task:0/device:GPU:0 by allocator GPU_0_bfc
+ [[{{node rpn_model/rpn_conv_shared/convolution}} = Conv2D[T=DT_FLOAT, data_format="NCHW", dilations=[1, 1, 1, 1], padding="SAME", strides=[1, 1, 1, 1], use_cudnn_on_gpu=true, _device="/job:localhost/replica:0/task:0/device:GPU:0"](fpn_p2/BiasAdd, rpn_conv_shared/kernel/read)]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info.
+ 
+ [[{{node roi_align_mask/strided_slice_17/_4277}} = _Recv[client_terminated=false, recv_device="/job:localhost/replica:0/task:0/device:CPU:0", send_device="/job:localhost/replica:0/task:0/device:GPU:0", send_device_incarnation=1, tensor_name="edge_3068_roi_align_mask/strided_slice_17", tensor_type=DT_INT32, _device="/job:localhost/replica:0/task:0/device:CPU:0"]()]]
+Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info.
+
+原因：
+
+一是、因为图片尺寸为3200*4480，图片的尺寸太大。
+
+二是、我使用的是TensorFlow GPU版，而我GPU的显存只有8G，导致显存不够。
+
+解决：
+
+一是、将图片尺寸改小，小到占用的内存比显存。
+
+二是、不使用GPU进行预测，只使用CPU预测，因为一般CPU内存要大于显存的。但装的又是GPU版的TensorFlow，所以需要在预测程序进行更改。
+
+程序在前两行加入下面代码：
+
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+引号里填的是GPU的序号，不填的时候代表不使用GPU。
+
+以上这篇解决TensorFlow GPU版出现OOM错误的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

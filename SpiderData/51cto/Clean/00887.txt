@@ -1,0 +1,73 @@
+安装环境：ubuntu 13.10 32位操作系统
+
+之前安装总是报错：IOError: decoder zip not available
+
+还有个报无法找到  imag.py啥的。
+
+后来问题解决，记录下来。
+
+首先,下载media库源文件：
+
+网址：http://www.pragprog.com/titles/gwpy/source_code
+
+下载完成之后，解压缩，得到一个code文件夹。
+
+cd code/install/cpython/
+
+进入目录之后，输入命令：
+
+sudo apt-get install python-imaging python-imaging-tk python-pygame python-numpy python-setuptools
+
+sudo python setup.py install
+
+安装完成之后。
+
+安装pip：sudo apt-get install python-pip
+
+再安装：sudo apt-get install libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev
+
+最后执行：sudo pip install -U PIL
+
+出现如下画面，安装结束。
+
+--------------------------------------------------------------------
+  PIL 1.1.7 SETUP SUMMARY
+  --------------------------------------------------------------------
+  version    1.1.7
+  platform   linux2 2.7.5+ (default, Sep 19 2013, 13:49:51)
+         [GCC 4.8.1]
+  --------------------------------------------------------------------
+  *** TKINTER support not available (Tcl/Tk 8.5 libraries needed)
+  *** JPEG support not available
+  --- ZLIB (PNG/ZIP) support available
+  *** FREETYPE2 support not available
+  *** LITTLECMS support not available
+  --------------------------------------------------------------------
+  To add a missing option, make sure you have the required
+  library, and set the corresponding ROOT variable in the
+  setup.py script.
+
+To check the build, run the selftest.py script.
+  changing mode of build/scripts-2.7/pildriver.py from 644 to 755
+  changing mode of build/scripts-2.7/pilconvert.py from 644 to 755
+  changing mode of build/scripts-2.7/pilfile.py from 644 to 755
+  changing mode of build/scripts-2.7/pilprint.py from 644 to 755
+  changing mode of build/scripts-2.7/pilfont.py from 644 to 755
+
+changing mode of /usr/local/bin/pildriver.py to 755
+  changing mode of /usr/local/bin/pilconvert.py to 755
+  changing mode of /usr/local/bin/pilfile.py to 755
+  changing mode of /usr/local/bin/pilprint.py to 755
+  changing mode of /usr/local/bin/pilfont.py to 755
+  Successfully installed PIL
+  Cleaning up...
+
+$>python
+Python 2.7.5+ (default, Sep 19 2013, 13:49:51) 
+[GCC 4.8.1] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import media
+>>>
+
+到此，可以引用media库了。
+

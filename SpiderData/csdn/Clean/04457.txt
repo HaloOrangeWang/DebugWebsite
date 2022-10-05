@@ -1,0 +1,20 @@
+最近写爬虫，发现获取的URL链接中总会出现一些坏数据，即访问后被拒绝，requests直接抛出异常，导致爬虫中断。于是想找方法在捕获异常后跳过异常URL继续执行程序
+ 方法如下：
+
+while True:
+    try:
+        r=requests.get(url,timeout=5)
+        with open(path+'/'+name+".txt",'w') as myfile:
+            myfile.write(r.content)
+            myfile.close()
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(ex).__name__, ex.args)
+        print('\n'+message)
+        break
+    finally:
+        break
+
+首先外层一个死循环，然后通过try……except捕获异常。捕获后处理完异常，然后通过return或者break跳出循环，继续执行程序。
+ 注意最后的finally，意思是无论是否捕获到异常都执行后面的代码，没有则一条则无异常时会陷入死循环状态
+

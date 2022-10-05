@@ -1,0 +1,38 @@
+# 使用1
+import jwt
+en  = jwt.encode({'some': 'payload'}, 'secret', algorithm='HS256')
+print(en)
+
+# 使用2
+from jwt import PyJWT
+
+en = PyJWT().encode(payload={'some' : 'payload'}, key= 'secret',algorithm= 'HS256')
+print(en)
+
+error
+
+Traceback (most recent call last):
+  File "C:/Users/anurag.agrawal/Desktop/HackerRank/jwt/jjwwtt.py", line 3, in <module>
+    en  = jwt.encode({'some': 'payload'}, 'secret', algorithm='HS256')
+AttributeError: module 'jwt' has no attribute 'encode'
+
+jwt报错无encode属性。经查，是由于PyJWT和JWT同时存在，导入jwt模块时出现混淆
+
+解决方法：
+
+卸载JWT包(PyJWT存在)，尝试运行程序
+
+# jwt卸载命令
+pip uninstall jwt
+# 保险起见，将PyJWT一同卸载
+pip uninstall PyJWT
+# 重新安装PyJWT
+pip install PyJWT
+
+参考：https://blog.csdn.net/qingliu_D/article/details/115222158
+ https://stackoverflow.com/questions/62997522/python-jwt-module-has-no-attribute-encode
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

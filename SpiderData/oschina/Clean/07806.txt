@@ -1,0 +1,26 @@
+有一个java方法返回一个对象
+
+现在在scala中调用该方法
+
+val fieldTypeMap = someObject.getFieldTypeMap()
+val innerSQL = fieldTypeMap.map { case (key: String, value: String) => key.replace(".", "_")}.toStream.sorted.reduce(_ + "," + _)
+
+报错：
+
+Error:(19, 35) value map is not a member of java.util.Map[String,String]
+  val structureSQL = fieldTypeMap.map{ case (key: String, value: String) => key.replace(".", "_")
+
+需要添加：
+
+@Deprecated
+import scala.collection.JavaConversions._
+
+需要添加：
+
+import scala.collection.JavaConverters.mapAsScalaMapConverter
+
+然后在使用时用toScala:
+
+val fieldTypeMap = someObject.getFieldTypeMap()
+val innerSQL = fieldTypeMap.toScala.map { case (key: String, value: String) => key.replace(".", "_")}.toStream.sorted.reduce(_ + "," + _)
+

@@ -1,0 +1,81 @@
+
+创建虚拟环境：
+
+　　virtualenv --no-site-packages django11
+
+　　--no-site-packages 创建一个全新的python环境
+
+　　--python 指定以哪个python来创建虚拟环境
+
+　　注意：20版本以上--no-site-packages用--system-site-packages代替
+
+
+进入虚拟环境：
+
+　　source envdir（创建的目录）/bin/activate
+
+
+退出虚拟环境：
+
+　　deactivate
+
+
+确保环境一致：
+
+　　在windows上执行如下命令：
+
+　　　　将windows上安装的包做快照
+　　　　pip freeze > requirement.txt
+　　　　将requirement.txt发送到linux上
+　　　　切换虚拟机：
+　　　　pip install -r requirement.txt -i https://pypi.douban.com/simple
+
+　　注意：可以cd到指定目录下再做快照方便找到这个文件
+
+
+为了解决虚拟环境管理的问题，因为虚拟环境可以在任何目录下创建：
+
+　　1. 安装
+
+　　pip3 install virtualenvwrapper -i https://pypi.douban.com/simple
+
+　　#若出现如下报错，执行pip3 install --upgrade setuptools -i https://pypi.douban.com/simple，再继续安装即可
+　　You are using pip version 18.1, however version 21.0.1 is available.
+　　You should consider upgrading via the 'pip install --upgrade pip' command.
+
+　
+
+　　2.修改文件
+　　vim ~/.bashrc
+　　export WORKON_HOME=/envdir  
+　　export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'   
+　　export VIRTUALENVWRAPPER_PYTHON=/opt/python36/bin/python3      
+　　source /opt/python36/bin/virtualenvwrapper.sh
+
+　　3. 加载~/.bashrc
+　　source ~/.bashrc
+
+　　4.创建环境
+　　mkvirtualenv django11 创建并切换
+
+　　5.进入虚拟环境
+　　workon name
+
+　　6.切换到当前虚拟环境的文件夹
+　　cdvirtualenv
+
+　　7.切换到当前虚拟环境的第三方包的文件夹
+　　cdsitepackages
+
+　　8.退出
+　　deactivate
+
+　　9.列出当前管理的虚拟环境
+　　lsvirtualenv
+
+　　10.列出当前虚拟环境的第三方包
+　　lssitepackages
+
+　　11.删除虚拟环境
+　　rmvirtualenv 必须要退出才能删除
+

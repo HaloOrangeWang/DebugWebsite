@@ -1,0 +1,28 @@
+Xcode7报错：
+
+Unknown class in Interface Builder file.
+
+2015-10-31 10:14:55.423 swift-UINavigationController[7741:1519031] Unknown class ViewController in Interface Builder file.
+
+复现步骤：
+
+(1) 在Xcode7中创建一个项目，选择 SingleViewApplication
+ (2) 将项目中的ViewController.swift改成别的名字 (3) 执行Command+R后在控制台报错
+
+错误原因：
+
+Main.storyboard 中指定的视图控制器class找不到了：
+
+Xcode7会默认创建一个 Main.storyboard, 且在属性检查器(identity inspector)可以看到 Custom栏中的class名指定的是“ViewController”,也就是复现步骤中被改名的ViewController.swift文件
+
+解决办法：
+
+(1) 删除Main.storyboard中不用的ViewController  
+(2) 或者在属性检查器(identity inspector)中，将class名改成存在的ViewController名
+
+参考：
+
+暂无
+
+[END]
+

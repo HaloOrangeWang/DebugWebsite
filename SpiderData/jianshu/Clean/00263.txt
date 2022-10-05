@@ -1,0 +1,74 @@
+第一个问题java日志中报错连接不上kafka
+
+2022-03-31 09:29:33,716 [kafka-producer-network-thread | producer-1] WARN  org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-1] Connection to node -1 (192.168.10.222/192.168.10.222:9092) terminated during authentication. This may happen due to any of the following reasons: (1) Authentication failed due to invalid credentials with brokers older than 1.0.0, (2) Firewall blocking Kafka TLS traffic (eg it may only allow HTTPS traffic), (3) Transient network issue.
+
+查看了一下防火墙  selinux都已经关闭，telnet kafka的端口也是通的
+
+去看kafka的日志
+
+[2022-03-31 18:03:55,038] WARN [SocketServer brokerId=0] Unexpected error from /172.17.0.4; closing connection (org.apache.kafka.common.network.Selector)
+
+org.apache.kafka.common.network.InvalidReceiveException: Invalid receive (size = 369296128 larger than 104857600)
+
+at org.apache.kafka.common.network.NetworkReceive.readFromReadableChannel(NetworkReceive.java:132)
+
+at org.apache.kafka.common.network.NetworkReceive.readFrom(NetworkReceive.java:93)
+
+at org.apache.kafka.common.network.KafkaChannel.receive(KafkaChannel.java:231)
+
+at org.apache.kafka.common.network.KafkaChannel.read(KafkaChannel.java:192)
+
+at org.apache.kafka.common.network.Selector.attemptRead(Selector.java:528)
+
+at org.apache.kafka.common.network.Selector.pollSelectionKeys(Selector.java:469)
+
+at org.apache.kafka.common.network.Selector.poll(Selector.java:398)
+
+at kafka.network.Processor.poll(SocketServer.scala:535)
+
+at kafka.network.Processor.run(SocketServer.scala:452)
+
+at java.lang.Thread.run(Thread.java:745)
+
+org.apache.kafka.common.network.InvalidReceiveException: Invalid receive (size = 369296128 larger than 104857600)
+
+这是因为发送的消息超过了kafka默认的大小  默认是100m
+
+在配置文件server.properties中修改socket.request.max.bytes的值，修改之后不再报错
+
+第二个问题 kafka报错oom
+
+[2022-03-31 18:12:55,686] ERROR Processor got uncaught exception. (kafka.network.Processor)
+
+java.lang.OutOfMemoryError: Java heap space
+
+at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+
+at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+
+at org.apache.kafka.common.memory.MemoryPool$1.tryAllocate(MemoryPool.java:30)
+
+at org.apache.kafka.common.network.NetworkReceive.readFromReadableChannel(NetworkReceive.java:140)
+
+at org.apache.kafka.common.network.NetworkReceive.readFrom(NetworkReceive.java:93)
+
+at org.apache.kafka.common.network.KafkaChannel.receive(KafkaChannel.java:231)
+
+at org.apache.kafka.common.network.KafkaChannel.read(KafkaChannel.java:192)
+
+at org.apache.kafka.common.network.Selector.attemptRead(Selector.java:528)
+
+at org.apache.kafka.common.network.Selector.pollSelectionKeys(Selector.java:469)
+
+at org.apache.kafka.common.network.Selector.poll(Selector.java:398)
+
+at kafka.network.Processor.poll(SocketServer.scala:535)
+
+at kafka.network.Processor.run(SocketServer.scala:452)
+
+at java.lang.Thread.run(Thread.java:745)
+
+java.lang.OutOfMemoryError: Java heap space很明显的oom内存溢出的报错
+
+找到kafka的启动脚本kafka-server-start.sh  将启动命令中-Xmx1G -Xms1G改成合适的值（默认1G）
+

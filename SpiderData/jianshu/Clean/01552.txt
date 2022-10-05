@@ -1,0 +1,152 @@
+背景：工作需要，windows环境下要用python连接oracle，用pandas处理数据。
+
+目标：连接oracle，并读取为DataFrame格式。
+
+连接oracle是个大坑，尝试了很久终于整好了，总结一下中途发现的问题。
+
+
+1、下载cx_oracle包
+
+遇事不决，先下包。
+
+pip install cx_Oracle
+
+安好以后兴致勃勃的执行一下代码
+
+import cx_Oracle
+
+conn = cx_Oracle.connect('用户名/密码@主机ip地址:端口号/SID') 
+c = conn.cursor()                                                
+x = c.execute('select sysdate from dual')                         
+x.fetchall()
+c.close()                                  
+conn.close()
+
+然后不出意料的报错
+
+报错：cx_Oracle.DatabaseError: DPI-1047: 64-bit Oracle Client library cannot be loaded: "The specified module could not be found".
+
+
+2、安装 instant client
+
+查询后发现需要整上 instant client，又要分两种情况：
+
+1、已安装oracle客户端
+
+2、未安装oracle客户端（需要连接服务器数据库的情况
+
+我是属于第二种情况，第一种情况移步此处。
+
+2.1、直接上 oracle官网 [下载](https://www.oracle.com/technetwork/cn/topics/winx64soft-101515-zhs.html）。
+
+或复制文件下载链接：https://download.oracle.com/otn/nt/oracle11g/112010/win64_11gR2_client.zip?AuthParam=1571646862_b88d6693cf92e9d501e6a4d14c58d462
+
+下载完成后解压安装，选择对应的文件安装。
+
+2.2、再点击下载这个压缩包。
+
+下载回是一个压缩文件,解压之后的文件夹叫 instantclient_11_2。
+
+2.2.1、创建路径：D:/Oracel/product/11.2.0
+
+2.2.2、然后把instantclient_11_2丢进去。
+
+2.2.3、将文件中后缀为 dll 的文件复制到 anaconda 或者python 安装位置。
+
+2.2.4、把以下3个程序放进python安装文件夹里的 Anaconda3\Lib\site-packages 中：
+
+oci.dll
+
+oraocci1.dll
+
+oraociei1.dll
+
+2.2.5、在D:/instantclient_11_2目录下新建目录network
+
+2.2.4、在network目录下再新建admin目录,在admin目录下新建文件tnsnames.ora,使用文本编辑器打开写入如下内容:
+
+里面的HOST，PORT，MWDB根据个人情况填写
+MWDB=
+(DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.58)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = SID)
+    )
+)
+
+2.2.5、添加一个环境变量，名为TNS_ADMIN，值为tnsnames.ora文件所在路径。比如我的本机为：D:/Oracel/product/11.2.0/instantclient_11_2/network/admin
+
+2.2.6、再修改系统环境变量，D:/Oracel/product/11.2.0/instantclient_11_2。
+
+2.2.7、设置ORACLE的语言，添加环境变量NLS_LANG ,值为SIMPLIFIED CHINESE_CHINA.ZHS16GBK。
+
+如果不清楚远程数据库的ORACLE 语言，可以ssh或者telnet到远程机器,在命令界面输入，用命令行连接到数据库。
+
+select value from nls_database_parameters where parameter='NLS_CHARACTERSET'
+
+
+3、再次尝试连接
+
+import cx_Oracle
+
+conn = cx_Oracle.connect('用户名/密码@主机ip地址:端口号/SID')
+
+然后报错 # # # 报错：ORA-12514: TNS:
+
+WDNMD ！！！
+
+查询后发现是服务名有问题，即上面的SID填写错误。
+
+OK，上数据库查询服务名
+
+select value from v$parameter where name like 'service_name%'
+
+我查出来是 oracle_docker
+
+然后修改后填入
+
+conn = cx_Oracle.connect('用户名/密码@主机ip地址:端口号/oracle_docker')
+
+然后可以正常读取出数据了！！！。
+
+（PS：网上参考资料，部分操作后需要重新启动Python才有效果）
+
+
+4、pandas读取oracle
+
+import cx_Oracle
+import os 
+import pandas as pd
+
+os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.ZHS16GBK'
+
+conn = cx_Oracle.connect('UziSB/Uzi4800@192.168.0.58:1521/oracle_docker')  
+print (conn.version)
+
+c = conn.cursor()                                                
+x = c.execute('select * from dual')                         
+y = x.fetchall()
+z = pd.DataFreme(y) 
+c.close()                                  
+conn.close()
+
+print (z)
+
+会发现一个问题，获取的数据没有columns名称。
+
+那么就只有用Python连接数据库的好♂伙♂伴：sqlalchemy
+
+import cx_Oracle
+import os 
+import pandas as pd
+from sqlalchemy import creat_engine
+
+conn = creat_engine('UziSB/Uzi4800@192.168.0.58:1521/oracle_docker')
+
+sql = "select * from dual"
+
+z = pd.read_sql(sql , conn)
+print (z)
+

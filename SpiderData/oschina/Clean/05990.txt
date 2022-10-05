@@ -1,0 +1,76 @@
+点击关注公众号，Java干货及时送达
+
+‍
+
+作者 | 王磊
+
+来源 | Java中文社群（ID：javacn666）
+
+上图的报错信息相信大部分程序员都遇到过，奇怪的是虽然代码报错，但丝毫不影响程序的正常执行，也就是虽然编译器 IDEA 报错，但程序却能正常的执行，那这其中的原因又是为何？
+
+
+报错原因分析
+
+报错的原因首先是因为 IDEA 强大的报警机制，@Autowired 为 Spring 的注解，含义是将某类动态的注入到当前类中，如下图所示：
+
+@Autowired 默认是根据 type 进行注入，并且注入时要求（注入）对象不能为 NULL，默认值如下图所示：
+
+而 IDEA 报错的原因是：@Autowired 为 Spring 的注解，而注入的 Mapper 对象使用的又是 @Mapper 的注解，然而 @Mapper 又为 MyBaits 的注解，IDEA 能很好的兼容并识别 Spring 的注解，但不能很好的识别 MyBatis 的注解，因此在使用 @Autowired 注解时，IDEA 并不能检测到 @Mapper 注解的对象不为 NULL，因此就会报错。
+
+这就是为什么使用 Spring 的注解 @Repository/@Component... 不报错，而使用 @Mapper 注解却会报错的根本原因，如下图所示：
+
+
+解决方案1：关闭报警机制
+
+关闭 IDEA 注入报警机制，可以避免报错，实现步骤如下。
+
+1.打开 IDEA，找到参数设置选项 “Preferences...” ，如下图所示：
+
+2.依次选择 “Editor” -> “Inspections” -> “Spring” -> “Spring Core” -> “Code” -> “Autowiring for bean class” 将 “Error” 级别修改成 “Waring” 级别，如下图所示：
+
+设置完成之后点击确认，查看之前报错的 Mapper 类，此时展示效果如下：
+
+报错信息消失了。
+
+
+解决方案2：添加Spring注解
+
+在 Mapper 的类上添加 Spring 的注解，也可以解决 IDEA 报错的问题，如 @Repository 或 @Component 这类注解，如下图所示：
+
+或使用 @Repository 注解，如下图所示：
+
+查看之前的报错信息：
+
+报错消失了。
+
+
+解决方案3：允许注入对象为NULL
+
+设置允许注入的 Mapper 对象为 NULL，也可以避免 IDEA 报错，只需要设置 @Autowired(required=false) 即可，如下图所示：
+
+（其中 userMapper2 对象就不报错了）
+
+@Autowired 默认值的实现源码：
+
+
+解决方案4：使用@Resource注解
+
+使用 @Resource 注解替换 @Autowired 注解也可以避免报错，它们的对比效果如下：
+
+@Resource 注解和 @Autowired 注解以当前的场景来说，它们的主要区别是 @Resource 是 Java 自身提供的注解，而 @Autowired 是 Spring 提供的注解，@Autowired 默认值为 required=true，所以必须要一个非 NULL 的对象，当 IDEA 检测不到对象为 NULL 时就会报错，而 @Resource 并没有这项要求。
+
+
+总结
+
+使用 @Autowired 注解导入 Mapper 对象报错的原因，是因为 @Autowired 默认情况下，需要注入一个非 NULL 的对象，而被 @Mapper 修饰的类为 MyBatis 的注解，IDEA 并不能很好的识别其为非 NULL 对象，因此就会报错。
+
+当然，它的解决方案也有很多，推荐使用 @Resource 替代 @Autowired 注解的方式来解决此问题。
+
+‍
+
+关注Java技术栈看更多干货
+
+本文分享自微信公众号 - Java技术栈（javastack）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

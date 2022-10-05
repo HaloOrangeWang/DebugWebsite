@@ -1,0 +1,49 @@
+一、报错信息：【file】【Default Settint】---Project Interpreter 点击搜索suds安装模块报错
+
+解决：依据上图提示找到C:\Program Files\JetBrains\PyCharm 2017.2.3\helpers\packaging_tool.py 文件的192行和109行
+
+将do_install函数和do_uninstall函数修改为如下格式
+
+def do_install(pkgs):
+  try:
+    try:
+      from pip._internal import main
+    except Exception:
+      from pip import main
+    
+  except ImportError:
+    error_no_pip()
+  return main(['install'] + pkgs)
+
+def do_uninstall(pkgs):
+  try:
+    try:
+      from pip._internal import main
+    except Exception:
+      from pip import main
+  except ImportError:
+    error_no_pip()
+  return main(['uninstall', '-y'] + pkgs)
+
+一般到此问题就可以解决，如果还没有解决，请继续往下阅读
+
+二、紧接着又出现如下错误：NameError: name 'pip' is not defined
+
+解决：
+
+上述问题的出现是第一次修改的不彻底导致的：更改do_install函数和do_uninstall函数时返回内容要去掉pip
+
+三、最后又出现：安装suds提示ModuleNotFoundError: No module named 'client'
+
+解决：
+
+没有模块叫client 的。需要先安装 client ,然后再安装 suds 。
+
+pip install client
+
+pip install suds
+
+总结
+
+到此这篇关于pycharm第三方库安装失败的问题及解决经验分享的文章就介绍到这了,更多相关pycharm第三方库安装失败内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

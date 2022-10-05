@@ -1,0 +1,26 @@
+按装python时报错：
+
+dlopen(/Library/Python/2.7/site-packages/MySQL_python-1.2.4b4-py2.7-macosx-10.12-intel.egg/_mysql.so, 2): Library not loaded: libmysqlclient.18.dylib
+
+原因是libmysqlclient.18.dylib没有在/usr/lib/下面，10.11osx目录被锁
+
+解决方案如下：
+
+vim ~/.bash_profile
+
+在底端追加：
+
+export DYLD_LIBRARY_PATH="/usr/local/mysql/lib:/usr/local/lib:/usr/lib:$DYD_LIBRARY_PATH"
+
+保存后退出，运行：
+
+source ~/.bash_profile
+
+接着在终端运行：sudo install_name_tool -change libmysqlclient.18.dylib \
+
+/usr/local/mysql/lib/libmysqlclient.18.dylib \
+
+/Library/Python/2.7/site-packages/MySQL_python-1.2.4b4-py2.7-macosx-10.12-intel.egg/_mysql.so
+
+最后一行的按装路径每个系统应该不同，注意查看报错信息中的路径。
+

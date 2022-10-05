@@ -1,0 +1,84 @@
+因为有的R包需要R4才能安装使用，原本是想直接升级R版本的，但是又害怕环境什么的装不对，牵一发而动全身，导致服务器的R用不了，大家干不了活，那我就罪大恶极了，所以曲线救国，在 conda新创建一个R4.0环境。
+
+安装命令如下：
+
+conda create --name r4-base
+
+conda activate r4-base
+
+conda install -c conda-forge r-base
+
+conda install -c conda-forge/label/gcc7 r-base
+
+conda create --name r4-base
+
+conda activate r4-base
+conda install -c conda-forge r-base
+
+遇到一个报错：
+
+上网搜，看到一个类似问题：https://blog.csdn.net/DJames23/article/details/109510050
+
+里面说删除再装回去就好，但是，这个怎么装回去呢？这个装回去看不懂后面的格式是什么意思啊。问小伙伴，小伙伴叫我直接删掉就好，保险起见，我还是改个名保留下来。然后重新跑了一遍代码 conda install -c conda-forge r-base
+
+然后发现，这就直接会生成一个，刚刚不知道怎么装回去的问题解决了。
+
+最后一句：
+
+conda install -c conda-forge/label/gcc7 r-base
+
+搞定。
+
+安装完R环境后，要在.bashrc或.bash_profile中export 相应的path：
+
+export PATH="$PATH:/你的R4地址的bin/envs/r4-base/bin"
+
+如果不export 相应的path，R安装包时就可能找不到相应的程序，因为它只会调用默认的：
+
+/bin/sh: x86_64-conda-linux-gnu-cc: command not found
+
+那么，怎么在RStudio里切换R版本呢？
+
+方法1：不同版本的R覆盖/usr/local/bin下面的R，打开RStudio就是更换版本后的R。
+
+ln -sf  ~/anaconda2/envs/r4-base/bin/R  /usr/local/bin/R
+
+方法2：添加环境变量，将RSTUDIO_WHICH_R环境变量设置为您想要运行的R可执行文件。（个人普通用户更改无效）
+
+export R studio _ WHICH _ R =~/anaconda2/envs/r4-base/bin/R
+
+如果想运行几个R版本，可以在.bashrc或.bash_profile中创建别名。配置文件，例如:（亲测只在终端有效，网页版Rstudio还是默认3.6版本）
+
+alias R3.6.2=/usr/local/bin/R
+alias R4.0.5=~/anaconda2/envs/r4-base/bin/R
+
+如果方法2不行，是因为Rstudio 默认使用的是系统环境变量PATH里的R，而 Rstudio  通常是以管理员权限安装的。管理员PATH里的 R 和普通用户可能不一致。那么我们需要进行一些配置，试试方法3。
+
+方法3：打开这个文件：/etc/rstudio/rserver.conf，配置下面两行
+
+rsession-which-r 配置使用的 R，跟服务器保持一致；
+
+rsession-ld-library-path 配置 R模块的安装或者调用路径，也跟服务器保持一致。
+
+配置完成后，重新启动 Rstudio 服务。
+
+vi /etc/rstudio/rserver.conf
+
+# rsession-which-r=/home/user/miniconda3/lib/R
+rsession-which-r=~/anaconda2/envs/r4-base/bin/R
+
+重启Rstudio
+
+sudo rstudio-server restart
+sudo rstudio-server status # 查看Rstudio状态
+
+重新登录就可以了。你会发现 R的办法，以及 R library 的路径都一致了。但是这里又有一个问题，我只是想在需要R4的时候才切换，方法3的话全部用户开启Rstudio都会变成R4了，很多包都不能用，很多包都要更新或重新下载。还需要再研究研究。
+
+参考：https://blog.csdn.net/swuteresa/article/details/25872627?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2defaultCTRLISTRate-1.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2defaultCTRLISTRate-1.pc_relevant_default&utm_relevant_index=1
+
+https://blog.csdn.net/u012110870/article/details/115511842?utm_medium=distribute.pc_relevant.none-task-blog-2defaultbaidujs_title~default-0.pc_relevant_default&spm=1001.2101.3001.4242.1&utm_relevant_index=3
+
+https://cloud.tencent.com/developer/news/75690
+
+https://www.cnblogs.com/jessepeng/p/14267117.html
+

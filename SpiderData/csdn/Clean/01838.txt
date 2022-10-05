@@ -1,0 +1,30 @@
+运行python代码报错汇总
+
+“”"
+ 第一次在CSDN上面发表文章，准备把自己在学习过程中遇到的一些错误进行汇总。
+
+“”"
+ 1.运行代码时报错BrokenPipeError: [Errno 32] Broken pipe：错误原因是在代码中把数据集下载时，启动了多个线程，在torch.utils.data.DataLoader()中把num_works
+ 改为0个之后，就没有这个问题。
+ *****但是很奇怪改成单线程之后，代码运行速度变快了，而且之前每次运行代码的时候，电脑会很卡，用单线程之后就不卡了
+ 2.今天一不小心把pip给卸载了，然后在python安装目录下面找到Script文件下，在该目录内运行cmd，输入eaxy_install.exe pip（如果是其他版本如python3.7的，会有一个eaxy_install-3.7.exe，则用相应名称即可）运行该命令行就能回复最新的pip版本
+ 3.运行代码报错：RuntimeError: CUDA out of memory. Tried to allocate 196.00 MiB (GPU 0; 2.00 GiB total capacity; 826.89 MiB already allocated; 177.35 MiB free; 1.05 GiB reserved in total by PyTorch)
+ 解决办法：把输入的batch_size改小。
+ 4.
+
+for i in range(1,length):
+		for j in range(len_label_name):
+			if operator.eq(img_label[i],label_name[j]):
+			#print(operator.eq(img_label[i],label_name[j]))
+				labels.append(j)
+	#new_labels = labels.copy()
+	temp_dict["labels"] = new_labels
+	#new_temp_dict = temp_dict.copy()
+	labels.clear()
+	train_anno_json_list.append(new_temp_dict)
+
+在运行这段代码时，虽然我对字典进行了更新，但最后的输出结果却是这样的，
+ 
+ 这个代码的目的是为了读取所有图片的标签，但发现输出结果最后都是同一张图，因此就考虑到之前的数据都没覆盖了，查阅相关资料之后，发现因为列表和字典是可变的，当要添加的元素是列表或者字典时，都是添加其引用，当列表或者元素发生改变时，引用对应的内容也会改变，所以每次添加完成后，都把之前保存的字典全部改了，直到改为最后一个。
+ 解决方案：添加两条下面被我注释掉的语句即可。
+

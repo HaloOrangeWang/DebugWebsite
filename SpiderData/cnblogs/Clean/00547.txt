@@ -1,0 +1,17 @@
+前提：python已安装
+
+安装好django，把django-admin.py的地址配进path变量之后，用django-admin.py startproject projectname创建项目时依然提示我无法创建django，于是乎进入django路径重新装了一下django，发现给我报一个pytz的错误（如下）
+
+Reading https://pypi.python.org/simple/pytz/
+Downloading https://pypi.python.org/packages/a4/09/c47e57fc9c7062b4e83b075d418800d322caa87ec0ac21e6308bd3a2d519/pytz-2017.2.zip#md5=f89bde8a811c8a1a5bac17eaaa94383c
+
+The read operation timed out
+
+然后百度了一下这个东西，发现是一个压缩包，里面包含了安装django的setup.py文件，于是乎我意识到我安装django时发生了包缺失，完美解决这个问题的方法就是
+
+1.打开这个网址下载这个压缩包
+
+https://pypi.python.org/packages/a4/09/c47e57fc9c7062b4e83b075d418800d322caa87ec0ac21e6308bd3a2d519/pytz-2017.2.zip#md5=f89bde8a811c8a1a5bac17eaaa94383c
+
+2.将这个zip解压，打开cmd进入解压后的文件夹，执行：python setup.py install 即可
+

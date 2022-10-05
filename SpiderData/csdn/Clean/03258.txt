@@ -1,0 +1,44 @@
+在按照requirements.txt安装依赖包时，使用命令pip3 install -r requirements遇到了两个错误，分别是Failed building wheel for llvmlite，Failed building wheel for opencv-python（解决过程中忘记截图了，本文中出现的一些图来自其它博客）
+
+
+1.Failed building wheel for opencv-python
+
+这个错误的提示信息是
+
+Problem with the CMake installation, aborting build. CMake executable is cmake
+
+这个错误的原因是没有安装cmake，所以直接pip安装即可
+
+pip3 install cmake
+
+
+2.Failed building wheel for llvmlite
+
+（这个问题花了两天的时间才解决，先说错误原因：版本不匹配）
+
+报错信息如下（这个截图来自于其它博客，我忘记截图了），大概就是找不到llvm-config的路径
+
+在网上找的解决方案基本都是修改llvm-config的路径，可是我看了一下我的相应的/usr/bin的目录下的确没有llvm-config文件，因此修改路径是行不通的
+
+于是，就尝试安装llvmlite，我用的是anaconda的虚拟环境，没有修改root环境的权限，用conda install llvmlite依旧报这个错误，而且我不能用sudo apt-get安装，于是无限死循环尝试pip3 install llvmlite
+
+第二天看到了这篇文章，网址如下：https://blog.csdn.net/zt1091574181/article/details/108222306，这篇文章中提到了numba安装不成功的本质原因可能是版本不匹配的问题，于是按照文章中提到的方法下载并安装了llvm，llvm下载安装地址如下：https://releases.llvm.org/，我这里粘贴一下大概的流程（图片来自原文）：
+
+$ wget -c http://releases.llvm.org/7.0.1/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz
+$ tar xJvf clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz
+$ pwd
+记录此处出现的路径，记录为path
+$ vim ~/.bashrc
+将path进行替换
+export PATH=$PATH:“path”+clang+llvm-6.0.1-x86_64-linux-gnu-ubuntu-16.04/bin
+$ source ~/.bashrc
+$ clang++ -v   #测试是否安装成功
+
+测试结果如下：
+
+但是按照文中提出的解决方案安装之后依旧有问题，最开始尝试llvm=7.0.0，llvmlite=0.31.0的版本，报错信息如下：
+
+按照匹配的版本安装依旧有问题，所以我在怀疑会不会是因为版本太低的原因，于是就下载了llvm=10.0.0，但是对应的llvmlite=0.34.0一直下载不成功，之后怀疑是版本冲突的问题，尝试卸载llvmlite时，报错信息是发现了llvmlite=0.33.0的版本，尝试卸载的时候无法卸载成功，于是就去查了llvmlite=0.33.0对应的llvm版本是9.0.0，于是下载llvm=9.0.0再次尝试，然后终于安装成功（完结撒花）
+
+所以Failed building wheel for llvmlite报错原因应该是版本不匹配导致的，所以需要确定一下llvm和llvmlite对应的版本，llvmlite网址：https://pypi.org/project/llvmlite/，版本对应关系如下：
+

@@ -1,0 +1,52 @@
+
+常见问题
+
+
+Failed to suspend process
+
+上篇文章说到了通过 py-spy 来分析Python进程，进而找到程序中的问题。有小伙伴在使用的时候遇到了这样的错误：
+
+先看下报错信息：暂停进程失败，原因是操作不允许。
+
+百度\Google 一下，相关结果只有两条，并不能解决问题。
+
+这个时候别慌，去看官方文档，虽然是英文写的，但是读起来并不会特别困难，实在不行就用翻译插件。
+
+果然找到了一条相关的，在命令中加入 --nonblocking参数就可以避免暂停 Python 进程。
+
+
+How can you avoid pausing the Python program?
+
+By setting the --nonblocking option, py-spy won't pause the target python you are profiling from. While the performance impact of sampling from a process with py-spy is usually extremely low, setting this option will totally avoid interrupting your running python program.
+
+尝试一下，果然可以了。
+
+官方文档中还有在 Docker、Kubernetes 环境下运行的特殊说明、OS X 环境下的特殊问题等，可能暂时用不到，但是一定要了解。等到用的时候知道有这么回事，知道去哪里找解决方法。
+
+我只是把我遇到的问题写了出来，如果你遇到了其他问题，强烈建议你去读一下官方文档。
+
+
+常用命令
+
+监控 Python 进程
+
+注意，如果直接通过 pid 参数来运行 py-spy 需要用到 root 权限。第二种启动方法会将 Python 进程以 py-spy子进程的形式启动，故而不需要 root 权限
+
+绘制火焰图
+
+注意，图片的类型一定得是 svg
+
+
+小结
+
+遇到问题，可能很多人的第一反应都是去求助搜索引擎，这种方法对应某些情况来说的确很好用（比如说，这个工具用的人很多，有很多人都遇到过类似的问题）。但像这次，相关的结果很少，那一定要去看看官方文档，如果官方文档任然不能解决你的问题，还可以去提 issue（一定要把问题说清楚，啥环境、什么问题，以及你的目的等等）。阅读源码当然也是一个途径。
+
+官方文档，永远是帮我们了解某个工具的最好途径之一，甚至可以去掉之一。
+
+
+参考信息
+
+py-spy 官方文档
+
+提问的智慧
+

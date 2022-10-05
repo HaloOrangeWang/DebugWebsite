@@ -1,0 +1,28 @@
+
+问题截图：
+
+
+心路历程
+
+首先确定了请求参数，url均一致，但是就是报错
+
+方法1：
+
+import  requests
+
+requests.get('https://www.zhihu.com/',verify=False)
+
+没解决，那就不是代理原因
+
+方法2：
+
+session = requests.session()
+
+session.keep_alive = False  # 关闭多余连接
+
+使用session报错会话请求
+
+还是没解决，一般到这一步是可以解决了的，但是执行python还是报错
+
+最后发现自己脑抽了,header请求头因为是直接复制其他项目的，把其中的"Content-Length": "143"注释了就好了，后面踩坑的仅记，header最好用当前接口的header，可以自己进行删除多余的值，不要图方便，从其他项目拉一个项目，这样会增加排错时间
+

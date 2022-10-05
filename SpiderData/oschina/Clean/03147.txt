@@ -1,0 +1,127 @@
+#python代码如下
+
+from celery import Celery
+import subprocess
+
+app = Celery('tasks',
+ broker='redis://localhost',
+ backend='redis://localhost')
+
+@app.task
+def add(x,y):
+ print("running...",x,y)
+ return x+y
+
+@app.task
+def run_cmd(cmd):
+ cmd_obj=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+ return cmd_obj.stdout.read()
+
+Traceback (most recent call last):
+ File "/usr/local/python3/lib/python3.6/site-packages/celery/app/trace.py", line 434, in trace_task
+ uuid, retval, task_request, publish_result,
+ File "/usr/local/python3/lib/python3.6/site-packages/celery/backends/base.py", line 152, in mark_as_done
+ self.store_result(task_id, result, state, request=request)
+ File "/usr/local/python3/lib/python3.6/site-packages/celery/backends/base.py", line 309, in store_result
+ request=request, **kwargs)
+ File "/usr/local/python3/lib/python3.6/site-packages/celery/backends/base.py", line 652, in _store_result
+ self.set(self.get_key_for_task(task_id), self.encode(meta))
+ File "/usr/local/python3/lib/python3.6/site-packages/celery/backends/base.py", line 259, in encode
+ _, _, payload = self._encode(data)
+ File "/usr/local/python3/lib/python3.6/site-packages/celery/backends/base.py", line 263, in _encode
+ return dumps(data, serializer=self.serializer)
+ File "/usr/local/python3/lib/python3.6/site-packages/kombu/serialization.py", line 221, in dumps
+ payload = encoder(data)
+ File "/usr/local/python3/lib/python3.6/contextlib.py", line 99, in __exit__
+ self.gen.throw(type, value, traceback)
+ File "/usr/local/python3/lib/python3.6/site-packages/kombu/serialization.py", line 54, in _reraise_errors
+ reraise(wrapper, wrapper(exc), sys.exc_info()[2])
+ File "/usr/local/python3/lib/python3.6/site-packages/vine/five.py", line 178, in reraise
+ raise value.with_traceback(tb)
+ File "/usr/local/python3/lib/python3.6/site-packages/kombu/serialization.py", line 50, in _reraise_errors
+ yield
+ File "/usr/local/python3/lib/python3.6/site-packages/kombu/serialization.py", line 221, in dumps
+ payload = encoder(data)
+ File "/usr/local/python3/lib/python3.6/site-packages/kombu/utils/json.py", line 72, in dumps
+ **dict(default_kwargs, **kwargs))
+ File "/usr/local/python3/lib/python3.6/json/__init__.py", line 238, in dumps
+ **kw).encode(obj)
+ File "/usr/local/python3/lib/python3.6/json/encoder.py", line 199, in encode
+ chunks = self.iterencode(o, _one_shot=True)
+ File "/usr/local/python3/lib/python3.6/json/encoder.py", line 257, in iterencode
+ return _iterencode(o, 0)
+ File "/usr/local/python3/lib/python3.6/site-packages/kombu/utils/json.py", line 62, in default
+ return super(JSONEncoder, self).default(o)
+ File "/usr/local/python3/lib/python3.6/json/encoder.py", line 180, in default
+ o.__class__.__name__)
+kombu.exceptions.EncodeError: Object of type 'bytes' is not JSON serializable
+
+间接处理方法，直接把数据转换为json格式(只是做测试用，可以忽略)
+
+>>> r=b'Filesystem 1K-blocks Used Available Use% Mounted on\n/dev/mapper/centos-root 5232640 2481244 2751396 48% /\ndevtmpfs 490308 0 490308 0% /dev\ntmpfs 500680 0 500680 0% /dev/shm\ntmpfs 500680 6968 493712 2% /run\ntmpfs 500680 0 500680 0% /sys/fs/cgroup\n/dev/mapper/centos-home 2086912 33056 2053856 2% /home\n/dev/mapper/centos-var 975532 633208 342324 65% /var\n/dev/sda1 508588 126972 381616 25% /boot\ntmpfs 100136 0 100136 0% /run/user/0\n'
+
+>>> import json
+
+>>> r.decode()
+'Filesystem 1K-blocks Used Available Use% Mounted on\n/dev/mapper/centos-root 5232640 2481244 2751396 48% /\ndevtmpfs 490308 0 490308 0% /dev\ntmpfs 500680 0 500680 0% /dev/shm\ntmpfs 500680 6968 493712 2% /run\ntmpfs 500680 0 500680 0% /sys/fs/cgroup\n/dev/mapper/centos-home 2086912 33056 2053856 2% /home\n/dev/mapper/centos-var 975532 633208 342324 65% /var\n/dev/sda1 508588 126972 381616 25% /boot\ntmpfs 100136 0 100136 0% /run/user/0\n'
+
+>>> json.dumps(r.decode())
+'"Filesystem 1K-blocks Used Available Use% Mounted on\\n/dev/mapper/centos-root 5232640 2481244 2751396 48% /\\ndevtmpfs 490308 0 490308 0% /dev\\ntmpfs 500680 0 500680 0% /dev/shm\\ntmpfs 500680 6968 493712 2% /run\\ntmpfs 500680 0 500680 0% /sys/fs/cgroup\\n/dev/mapper/centos-home 2086912 33056 2053856 2% /home\\n/dev/mapper/centos-var 975532 633208 342324 65% /var\\n/dev/sda1 508588 126972 381616 25% /boot\\ntmpfs 100136 0 100136 0% /run/user/0\\n"'
+
+　　
+
+最终解决方法
+
+#修改编码格式为utf-8
+from celery import Celery
+import subprocess
+
+app = Celery('tasks',
+             broker='redis://localhost',
+             backend='redis://localhost')
+
+@app.task
+def add(x,y):
+    print("running...",x,y)
+    return x+y
+
+@app.task
+def run_cmd(cmd):
+        cmd_obj=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        return cmd_obj.stdout.read().decode("utf-8")
+
+#前端执行python脚本
+
+[python@qinhan file]$ python
+Python 3.6.2 (default, Jan 10 2018, 16:15:47) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-16)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import task
+>>> task.run_cmd.delay('df')
+<AsyncResult: b0d9d480-e51d-4304-9128-1b676d70d3fe>
+>>> a=task.run_cmd.delay("df -h")
+
+>>> a.get()
+'Filesystem Size Used Avail Use% Mounted on\n/dev/mapper/centos-root 5.0G 2.4G 2.7G 48% /\ndevtmpfs 479M 0 479M 0% /dev\ntmpfs 489M 0 489M 0% /dev/shm\ntmpfs 489M 6.9M 483M 2% /run\ntmpfs 489M 0 489M 0% /sys/fs/cgroup\n/dev/mapper/centos-home 2.0G 33M 2.0G 2% /home\n/dev/mapper/centos-var 953M 619M 335M 65% /var\n/dev/sda1 497M 124M 373M 25% /boot\ntmpfs 98M 0 98M 0% /run/user/0\n'
+>>>
+
+#后台celery执行成功，不在报错not JSON serializable
+
+[2018-01-12 10:26:27,236: DEBUG/MainProcess] | Worker: Hub.register Pool...
+[2018-01-12 10:26:27,237: INFO/MainProcess] celery@qinhan ready.
+[2018-01-12 10:26:27,238: DEBUG/MainProcess] basic.qos: prefetch_count->16
+[2018-01-12 10:27:06,818: INFO/MainProcess] Received task: task.run_cmd[b0d9d480-e51d-4304-9128-1b676d70d3fe] 
+[2018-01-12 10:27:06,819: DEBUG/MainProcess] TaskPool: Apply <function _fast_trace_task at 0x7f02b051cd08> (args:('task.run_cmd', 'b0d9d480-e51d-4304-9128-1b676d70d3fe', {'lang': 'py', 'task': 'task.run_cmd', 'id': 'b0d9d480-e51d-4304-9128-1b676d70d3fe', 'eta': None, 'expires': None, 'group': None, 'retries': 0, 'timelimit': [None, None], 'root_id': 'b0d9d480-e51d-4304-9128-1b676d70d3fe', 'parent_id': None, 'argsrepr': "('df',)", 'kwargsrepr': '{}', 'origin': 'gen71158@qinhan', 'reply_to': '61d4cf29-4204-397e-854d-446c648c8b9e', 'correlation_id': 'b0d9d480-e51d-4304-9128-1b676d70d3fe', 'delivery_info': {'exchange': '', 'routing_key': 'celery', 'priority': 0, 'redelivered': None}}, b'[["df"], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]', 'application/json', 'utf-8') kwargs:{})
+[2018-01-12 10:27:06,825: DEBUG/MainProcess] Task accepted: task.run_cmd[b0d9d480-e51d-4304-9128-1b676d70d3fe] pid:71152
+[2018-01-12 10:27:06,842: INFO/ForkPoolWorker-1] Task task.run_cmd[b0d9d480-e51d-4304-9128-1b676d70d3fe] succeeded in 0.020323514996562153s: 'Filesystem 1K-blocks Used Available Use% Mounted on
+/dev/mapper/centos-root 5232640 2481252 2751388 48% /
+devtmpfs 490308 0 490308 0% /dev
+tmpfs 500680 0 500680 0% /dev/shm
+tmpfs 500680 6968 493712 2% /run
+tmpfs 500680 0 500680 0% /sys/fs/cgroup
+/dev/mapper/centos-home 2086912 33056 2053856 2% /home
+/dev/mapper/centos-var 975532 633120 342412 65% /var
+/dev/sda1 508588 126972 381616 25% /boot
+tmpfs 100136 0 100136 0% /run/user/0
+'
+

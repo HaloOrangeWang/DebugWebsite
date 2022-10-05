@@ -1,0 +1,151 @@
+
+Spark 版本配套表
+
+名称
+
+版本
+
+说明
+
+Spark
+
+spark-2.3.0-bin-hadoop2.7
+
+Spark
+
+mongo-java-driver-3.5.0.jar
+
+3.5
+
+Mongo驱动
+
+mongo-spark-connector_2.11-2.3.1.jar
+
+2.3
+
+Mongo connect驱动
+
+
+Spark 与mongoDb版本不匹配，导致报错
+
+需要spark使用mongoDB驱动版本mongo-spark-connector到spark与mongoDB配套的版本
+
+
+Spark dirver 节点与执行节点python版本不匹配
+
+Exception: Python in worker has different version 2.7 than that in driver 3.5, PySpark cannot run with different minor versions.Please check environment variables PYSPARK_PYTHON and PYSPARK_DRIVER_PYTHON are correctly set.
+
+解决方法，配置 PYSPARK_PYTHON=/paic/spark/home/csmsopr/anaconda3/bin/python 环境变量
+
+
+Hadoop目录权限问题
+
+失败日志
+
+2018-11-12 16:15:38 INFO  SecurityManager:54 - Changing view acls to: csmsopr
+
+2018-11-12 16:15:38 INFO  SecurityManager:54 - Changing modify acls to: csmsopr
+
+2018-11-12 16:15:38 INFO  SecurityManager:54 - Changing view acls groups to:
+
+2018-11-12 16:15:38 INFO  SecurityManager:54 - Changing modify acls groups to:
+
+2018-11-12 16:15:38 INFO  SecurityManager:54 - SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(csmsopr); groups with view permissions: Set(); users  with modify permissions: Set(csmsopr); groups with modify permissions: Set()
+
+2018-11-12 16:15:38 INFO  Client:54 - Submitting application application_1541659438825_0044 to ResourceManager
+
+Traceback (most recent call last):
+
+File "/lzp/submit_task.py", line 9, in <module>
+
+sc = SparkContext()
+
+File "/lzp/spark-2.3.2-bin-hadoop2.7/python/lib/pyspark.zip/pyspark/context.py", line 118, in __init__
+
+File "/lzp/spark-2.3.2-bin-hadoop2.7/python/lib/pyspark.zip/pyspark/context.py", line 180, in _do_init
+
+File "/lzp/spark-2.3.2-bin-hadoop2.7/python/lib/pyspark.zip/pyspark/context.py", line 290, in _initialize_context
+
+File "/lzp/spark-2.3.2-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1525, in __call__
+
+File "/lzp/spark-2.3.2-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/protocol.py", line 328, in get_return_value
+
+py4j.protocol.Py4JJavaError: An error occurred while calling None.org.apache.spark.api.java.JavaSparkContext.
+
+: org.apache.hadoop.security.AccessControlException: Permission denied: user=root, access=WRITE, inode="/user/root/.sparkStaging/application_1541659438825_0024":csmsopr:supergroup:drwxr-xr-x
+
+at org.apache.hadoop.hdfs.server.namenode.FSPermissionChecker.check(FSPermissionChecker.java:319)
+
+at org.apache.hadoop.hdfs.server.namenode.FSPermissionChecker.check(FSPermissionChecker.java:292)
+
+at org.apache.hadoop.hdfs.server.namenode.FSPermissionChecker.checkPermission(FSPermissionChecker.java:213)
+
+
+解决方法
+
+http://www.huqiwen.com/2013/07/18/hdfs-permission-denied/
+
+最终，总结下来解决办法大概有三种：
+
+1、在系统的环境变量或java JVM变量里面添加HADOOP_USER_NAME，这个值具体等于多少看自己的情况，以后会运行HADOOP上的Linux的用户名。（修改完重启eclipse，不然可能不生效）
+
+2、将当前系统的帐号修改为hadoop
+
+3、使用HDFS的命令行接口修改相应目录的权限，hadoop fs -chmod 777 /user,后面的/user是要上传文件的路径，不同的情况可能不一样，比如要上传的文件路径为hdfs://namenode/user/xxx.doc，则这样的修改可以，如果要上传的文件路径为hdfs://namenode/java/xxx.doc，则要修改的为hadoop fs -chmod 777 /java或者hadoop fs -chmod 777 /，java的那个需要先在HDFS里面建立Java目录，后面的这个是为根目录调整权限。
+
+
+Hadoop测试环境和生产环境配置区分
+
+使用hadoop配置替换原有配置，docker中hadoop配置如何区分测试和生产，能否通过环境变量来配置
+
+使用环境变量配置
+
+不同环境配置不同的目录
+
+HADOOP_CONF_DIR=/app/hadoop_config/prd/
+
+通过环境变量配置解决
+
+
+Spark cluster提交任务账户不同
+
+提交任务的client账户与集群账户不同，通过环境变量来解决
+
+不切换到csmsopr账户，在环境变量中配置即可 ENV HADOOP_USER_NAME="prdopr"
+
+
+Spark 磁盘空间不足
+
+https://www.cnblogs.com/itboys/p/6021838.html
+
+2018-12-19 13:40:49,848  INFO  2018-12-19 13:40:49 WARN  Client:87 - Failed to cleanup staging dir hdfs://governor/user/csmsopr/.sparkStaging/application_1545009795494_0018
+
+2018-12-19 13:40:49,848  INFO  org.apache.hadoop.ipc.RemoteException(org.apache.hadoop.hdfs.server.namenode.SafeModeException): Cannot delete /user/csmsopr/.sparkStaging/application_1545009795494_0018. Name node is in safe mode.
+
+2018-12-19 13:40:49,848  INFO  Resources are low on NN. Please add or free up more resources then turn off safe mode manually. NOTE:  If you turn off safe mode before adding resources, the NN will immediately return to safe mode. Use "hdfs dfsadmin -safemode leave" to turn safe mode off.
+
+根据上面的报错原因分析是因为集群资源不够，集群的自我保护机制使hdfs处于安全模式，然后我用”hdfs dfsadmin -safemode leave“命令让集群恢复到可用模式但是在提交到集群时还是会报错同样的错误
+
+然后就查找资料说的是节点空间不足，然后就用 df -hl命令查看集群空间的使用情况
+
+看到上面的使用情况资源已经使用100%了
+
+然后在使用du -sh /* 看看是拿些大文件占用了空间
+
+然后把这些占用空间大的文件移动到别的地方然后重新提交任务，到此错误完美解决
+
+
+Spark No space left on device
+
+设置数据临时目录到其他目录
+
+Spark: java.io.IOException: No space left on device
+
+SPARK_JAVA_OPTS+=" -Dspark.local.dir=/mnt/spark,/mnt2/spark -Dhadoop.tmp.dir=/mnt/ephemeral-hdfs"
+
+export SPARK_JAVA_OPT
+
+链接：
+
+https://stackoverflow.com/questions/30162845/spark-java-io-ioexception-no-space-left-on-device
+

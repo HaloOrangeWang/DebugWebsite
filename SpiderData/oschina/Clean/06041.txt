@@ -1,0 +1,52 @@
+报错日志：
+
+info: [debug] Retrying restartAdb
+
+info: [debug] executing cmd: D:\adt-bundle-windows-x86_64-20131030\sdk\platform-tools\adb.exe -s fb2953b8 kill-server
+
+info: [debug] Getting connected devices...
+
+info: [debug] executing cmd: D:\adt-bundle-windows-x86_64-20131030\sdk\platform-tools\adb.exe -s fb2953b8 devices
+
+info: [debug] 20 device(s) connected
+
+info: [debug] Waiting for device to be ready and to respond to shell commands (timeout = 5)
+
+info: [debug] executing cmd: D:\adt-bundle-windows-x86_64-20131030\sdk\platform-tools\adb.exe -s fb2953b8 wait-for-device
+
+info: [debug] executing cmd: D:\adt-bundle-windows-x86_64-20131030\sdk\platform-tools\adb.exe -s fb2953b8 kill-server
+
+info: [debug] Getting connected devices...
+
+info: [debug] executing cmd: D:\adt-bundle-windows-x86_64-20131030\sdk\platform-tools\adb.exe -s fb2953b8 devices
+
+info: [debug] 20 device(s) connected
+
+info: [debug] Waiting for device to be ready and to respond to shell commands (timeout = 5)
+
+info: [debug] executing cmd: D:\adt-bundle-windows-x86_64-20131030\sdk\platform-tools\adb.exe -s fb2953b8 wait-for-device
+
+info: [debug] executing cmd: D:\adt-bundle-windows-x86_64-20131030\sdk\platform-tools\adb.exe -s fb2953b8 shell "echo 'ready'"
+
+info: [debug] Sent shutdown command, waiting for UiAutomator to stop...
+
+warn: UiAutomator did not shut down fast enough, calling it gone
+
+info: [debug] Cleaning up android objects
+
+info: [debug] Cleaning up appium session
+
+error: Failed to start an Appium session, err was: Device did not become ready in 5 secs; are you sure it's powered on?
+
+info: [debug] undefined
+
+info: [debug] Responding to client with error: {"status":33,"value":{"message":"A new session could not be created.","origValue":"Device did not become ready in 5 secs; are you sure it's powered on?"},"sessionId":null}
+
+info: <-- POST /wd/hub/session 500 86259.711 ms - 171
+
+解决：添加代码，设置‘androidDeviceReadyTimeout’默认时间5s为20s.
+
+android['androidDeviceReadyTimeout'] = '20'
+
+如图：
+

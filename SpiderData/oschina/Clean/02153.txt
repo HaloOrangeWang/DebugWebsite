@@ -1,0 +1,75 @@
+date_df["rank_num"] = date_df.groupby("issuer_id").report_date.agg("rank", **{"ascending": 1, "method": "min"})
+  File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 3479, in aggregate
+    return getattr(self, func_or_funcs)(*args, **kwargs)
+  File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 1906, in rank
+    na_option=na_option, pct=pct, axis=axis)
+  File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 1025, in _cython_transform
+    **kwargs)
+  File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 2630, in transform
+    return self._cython_operation('transform', values, how, axis, **kwargs)
+  File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 2590, in _cython_operation
+    **kwargs)
+  File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 2664, in _transform
+    transform_func(result, values, comp_ids, is_datetimelike, **kwargs)
+  File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 2479, in wrapper
+    return f(afunc, *args, **kwargs)
+  File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 2430, in <lambda>
+    kwargs.get('na_option', 'keep')
+TypeError: 'NoneType' object is not callable
+
+在使用pandas对一列日期进行分组排序时报错，
+
+1. 根据错误提示 File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 2430, in <lambda> kwargs.get('na_option', 'keep') 可知，是因为pandas模块的groupby.py文件的下面代码中func函数传入为None导致的。
+
+'f': lambda func, a, b, c, d, **kwargs: func(
+    a, b, c, d,
+    kwargs.get('ties_method', 'average'),
+    kwargs.get('ascending', True),
+    kwargs.get('pct', False),
+    kwargs.get('na_option', 'keep')
+)
+
+2. 根据错误提示
+　　File "D:\python_virtualenv\es_env\lib\site-packages\pandas\core\groupby\groupby.py", line 2478, in wrapper return f(afunc, *args, **kwargs)
+　　可知afunc就是传入的函数，这个afunc是使用get_func函数一步步获取的，最终是看_libs\groupby.py文件下是否存在一个group_rank_object函数，但是文件中没有，所以获得的是None。
+
+def _get_cython_function(self, kind, how, values, is_numeric):
+# 这一步查看values中的数据类型，date无法识别，datetime识别为int
+    dtype_str = values.dtype.name
+    def get_func(fname):
+        # see if there is a fused-type version of function
+        # only valid for numeric
+# 这一步看libgroupby中是不是有fname对应的函数
+        f = getattr(libgroupby, fname, None)
+        if f is not None and is_numeric:
+            return f
+
+# otherwise find dtype-specific version, falling back to object
+# 再看是不是有group_rank_object函数，因为没有，所以最后返回的结果是None
+        for dt in [dtype_str, 'object']:
+            f = getattr(libgroupby, "%s_%s" % (fname, dtype_str), None)
+            if f is not None:
+                return f
+
+ftype = self._cython_functions[kind][how]
+
+if isinstance(ftype, dict):
+# 这一步获取传入的函数afunc
+        func = afunc = get_func(ftype['name'])
+        # a sub-function
+        f = ftype.get('f')
+        if f is not None:
+
+def wrapper(*args, **kwargs):
+                return f(afunc, *args, **kwargs)
+
+# need to curry our sub-function
+            func = wrapper
+
+3.结论
+　　(1).0.23.4的pandas没有对object的排序方式，只存在针对int和float的排序方式。
+　　(2).0.23.4的pandas无法识别date类型，是作为object类型。但是可以识别datetime类型，会把datetime类型识别为int来处理。
+　　(3).所以要对日期列进行排序，需要先转换成时间才行。
+
+0.23版本的pandas存在这个问题，但是0.22版本没有这个问题。
+

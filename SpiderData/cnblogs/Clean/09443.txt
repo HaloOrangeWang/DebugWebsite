@@ -1,0 +1,45 @@
+在初次调试Azure Functions时，可能会遇到如下错误：
+
+Value cannot be null. (Parameter 'provider')
+
+或者 connect Econnrefused 127.0.0.1:9091
+
+此问题初步判断为网络异常导致了文件下载失败，可以开启更多调试日志查看是否为文件下载失败导致的，可以打开更多日志查看是否是文件下载故障：
+
+步骤：
+
+
+在VS Code中修改.vscode\launch.json和tasks.json文件中的启动命令
+
+在launch.json和tasks.json中的 host start 后增加 --verbose 参数：
+
+开启更多日志之前：
+
+开启更多日志之后，会显示更多的日志信息：
+
+对于 Java、JavaScript、PowerShell、Python 和自定义处理程序函数应用，我们建议使用扩展捆绑来访问绑定。此方案由vs code 自动根据host.json 中的 extensionBundle 中的内容自动下载扩展包。
+
+如果下载失败，就会报错：Value cannot be null. (Parameter 'provider')
+
+此时可以手动安装扩展包，可以参照官网 https://docs.microsoft.com/zh-cn/azure/azure-functions/functions-bindings-register#extension-bundles
+
+进行处理，最简单的方式是科学连接国外网络，即可下载host.json 中的 extensionBundle 中的内容。
+
+如果无法连接国外网络，
+
+则可以尝试手动安装所有扩展（根据经验，此手动下载方案比使用 VS Code里的host.json的extensionBundle 自动下载扩展包的源是不同的，手动做法可能更容易成功）：
+
+或者手动安装指定扩展包：
+
+声明：
+
+点击可查阅本站文章目录 《文章分类目录》
+
+本站所有内容仅代表个人观点，如与官文档冲突，请以官方文档为准。
+
+可在本页面下方留言或通过下方联系方式联系我：
+
+微信：wxyusz；邮箱：shuzhen.yu@foxmail.com
+
+欢迎关注公众号“云计算实战”，接收最新文章推送。
+

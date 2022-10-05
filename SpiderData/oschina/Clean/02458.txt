@@ -1,0 +1,65 @@
+错误处理（try...except...finally...）
+
+try:
+    print('try...')
+    r = 10 / 0
+    print('result:', r)
+except ZeroDivisionError as e:
+    print('except:', e)
+finally:
+    print('finally...')
+print('END')
+
+# try...
+# except: division by zero
+# finally...
+# END
+
+# 可以使用多个except来捕捉不同的错误信息，finally不管是否报错都一定会执行
+
+调试
+
+print()
+
+def foo(s):
+    n = int(s)
+    print('>>> n = %d' % n)
+    return 10 / n
+# 用print()最大的坏处是将来还得删掉它
+
+断言（assert）(凡是用print()来辅助查看的地方，都可以用断言（assert）来替代)
+
+def foo(s):
+    n = int(s)
+    assert n != 0, 'n is zero!'
+    return 10 / n
+#assert的意思是，表达式n != 0应该是True。否则抛出AssertionError：‘n is zero’
+
+logging(logging不会抛出错误，而且可以输出到文件)
+
+import logging
+logging.basicConfig(level=logging.INFO)
+
+s = '0'
+n = int(s)
+logging.info('n = %d' % n)
+print(10 / n)
+
+pdb(启动Python的调试器pdb)
+
+$ python -m pdb err.py
+输入命令l来查看代码
+输入命令n可以单步执行代码
+任何时候都可以输入命令p 变量名来查看变量
+输入命令q结束调试，退出程序
+
+pdb.set_trace()(可能出错的地方放一个pdb.set_trace()，就可以设置一个断点)
+
+import pdb
+
+s = '0'
+n = int(s)
+pdb.set_trace() # 运行到这里会自动暂停
+print(10 / n)
+# 程序会自动在pdb.set_trace()暂停并进入pdb调试环境，可以用命令p查看变量，或者用命令c继续运行
+

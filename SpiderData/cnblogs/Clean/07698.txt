@@ -1,0 +1,19 @@
+最近在用scarpy爬虫，但是一直报错如下：
+
+#####################
+
+C:\Users\Administrator\AppData\Local\Programs\Python\Python37-32\python.exe E:/spiders_test/day7/Maoyan/begin.py
+我是open_spider函数
+2020-07-22 10:33:43 [scrapy.core.scraper] ERROR: Spider error processing <GET https://maoyan.com/board/4?offset=0> (referer: None)
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37-32\lib\site-packages\twisted\internet\defer.py", line 654, in _runCallbacks
+    current.result = callback(current.result, *args, **kw)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python37-32\lib\site-packages\scrapy\spiders\__init__.py", line 84, in parse
+    raise NotImplementedError('{}.parse callback is not defined'.format(self.__class__.__name__))
+NotImplementedError: MaoyanSpider.parse callback is not defined
+我是close_spider函数
+
+#####################
+
+仔细的检查也没有发现语法错误，但就是报这个错，一直无法运行抓取数据，后来看了一下函数名，写成了parese()，而应该写成parse()这样的形式，并且查询资料也发现，函数名必须是parse或者以parse开头的名字才可以：
+

@@ -1,0 +1,226 @@
+
+前言
+
+最近发现许多小伙伴在用 PySpider 爬取 https 开头的网站的时候遇到了 HTTP 599: SSL certificate problem: self signed certificate in certificate chain 的错误。
+
+经过一番排查，解决方案总结如下
+
+
+错误原因
+
+这个错误会发生在请求 https 开头的网址，SSL 验证错误，证书有误。
+
+报错如下
+
+
+解决方案
+
+最简单的解决方法是：
+
+在 crawl 方法中加入忽略证书验证的参数，validate_cert=False，即
+
+1
+
+1
+
+self.crawl(url,callback=method_name,validate_cert=False)
+
+self.crawl(url,callback=method_name,validate_cert=False)
+
+以上方法基本可以解决问题。
+
+如果出现了
+
+1
+
+1
+
+[E16032914:00:56base_handler:194]crawl()got unexpected keyword argument:['validate_cert']
+
+[E16032914:00:56base_handler:194]crawl()got unexpected keyword argument:['validate_cert']
+
+的错误，即无法匹配到 validate_cert 参
+
+数，那么则是 PySpider 本身的问题。
+
+可以更新到最新版本，即更新到 master 分支。
+
+因为包还没有发行，所以我们就手动来更新。
+
+https://cuiqingcai.com/2703.html
+
+转自静觅
+
+
+前言
+
+最近发现许多小伙伴在用 PySpider 爬取 https 开头的网站的时候遇到了 HTTP 599: SSL certificate problem: self signed certificate in certificate chain 的错误。
+
+经过一番排查，解决方案总结如下
+
+
+错误原因
+
+这个错误会发生在请求 https 开头的网址，SSL 验证错误，证书有误。
+
+报错如下
+
+
+解决方案
+
+最简单的解决方法是：
+
+在 crawl 方法中加入忽略证书验证的参数，validate_cert=False，即
+
+1
+
+1
+
+self.crawl(url,callback=method_name,validate_cert=False)
+
+self.crawl(url,callback=method_name,validate_cert=False)
+
+以上方法基本可以解决问题。
+
+如果出现了
+
+1
+
+1
+
+[E16032914:00:56base_handler:194]crawl()got unexpected keyword argument:['validate_cert']
+
+[E16032914:00:56base_handler:194]crawl()got unexpected keyword argument:['validate_cert']
+
+的错误，即无法匹配到 validate_cert 参数，那么则是 PySpider 本身的问题。
+
+目前的最新发行版是 0.3.6（2016/3/29），不过 GitHub 最新版本目前是 0.4.0
+
+可以更新到最新版本，即更新到 master 分支。
+
+因为包还没有发行，所以我们就手动来更新。
+
+PySpider
+
+可以点击右侧下载 zip 包。
+
+
+Mac OS X
+
+以 Mac OS X为例，找到 pyspider 库所在的路径。我的是在
+
+1
+
+1
+
+/Library/Python/2.7/site-packages/pyspider
+
+/Library/Python/2.7/site-packages/pyspider
+
+打开之后发现如下的结构。
+
+把刚才的包下载下来之后，解压缩，打开文件夹，发现目录结构是这样的。
+
+然后进入 pyspider 文件夹，观察一下，发现和我们之前安装的 pyspider 目录结构是一样的，没错，就是它了！
+
+嗯，把所有的文件都更新到 site-packages/pyspider 目录中。
+
+可以手动拖动替换，可以使用命令
+
+1
+2
+
+1
+
+2
+
+cd pyspider
+sudo python setup.py install
+
+cd pyspider
+
+sudo python setup.py install
+
+更新之后，然后重新启动 pyspider 。
+
+1
+
+1
+
+pyspider all
+
+pyspider all
+
+再加入 validate_cert=False 参数，发现就不会出现刚才的问题了。
+
+
+Linux
+
+方法同上，pyspider 路径应该在
+
+1
+
+1
+
+/usr/lib/python/site-packages/pyspider-0.3.6.egg/pyspider
+
+/usr/lib/python/site-packages/pyspider-0.3.6.egg/pyspider
+
+替换一下下载下来的文件。
+
+同样也可以使用命令
+
+1
+2
+
+1
+
+2
+
+cd pyspider
+sudo python setup.py install
+
+cd pyspider
+
+sudo python setup.py install
+
+
+Windows
+
+方法同上，pyspider 路径应该在
+
+1
+
+1
+
+python(python安装目录)/Lib/site-packages/pyspider
+
+python(python安装目录)/Lib/site-packages/pyspider
+
+同样替换下载下来的文件即可。
+
+命令同上
+
+1
+2
+
+1
+
+2
+
+cd pyspider
+sudo python setup.py install
+
+cd pyspider
+
+sudo python setup.py install
+
+
+结语
+
+通过以上配置，我们解决了 PySpider 的 599 错误以及 validate_cert 参数不匹配的问题。
+
+希望对大家有帮助！
+
+转载请注明：静觅 » PySpider HTTP 599: SSL certificate problem错误的解决方法
+

@@ -1,0 +1,16 @@
+今天在写爬虫的时候，发现了一个诡异的事情，使用str方法强制转换一个BeautifulSoup对象成字符串的时候报错了，提示是“maximum recursion depth exceeded while calling a Python object”，意思大致是“当调用该对象超过最大递归深度”
+
+报错如下：
+
+而后更神奇的是我使用的ptpython并没有报错，直接通过了。
+
+其实原因是在Python里的递归调用是有限制的，可以使用sys模块里的getrecursionlimit方法查看的到，即（想深入的同学可以谷歌上搜索一番，这里提供笔者所搜索到的https://cyrusin.github.io/2015/12/08/python-20151208/）
+
+打开终端运行Python，可以看到默认限制值为1000
+
+而ptpython里默认限制值为2000，这也不难解释为什么python下直接运行会报最大深度递归错误而ptpython可以正常运行了。
+
+那么该来解决这个问题了，有get自然有set（当然还有其他方法比如达到深度限制时就做对应处理这方面不符合笔者目前需求，所以就不赘述，有需求的同学请自行谷歌百度一下），那么设置最大深度限制的方法就是setrecursionlimit了，至于设置值为多少你自行设置了
+
+至此，问题解决！
+

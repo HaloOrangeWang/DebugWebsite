@@ -1,0 +1,24 @@
+今天在看hibernate视频，讲到关于一对多映射的例子
+
+一个是Order 一个是Customer
+
+跟着视频创建数据库和相应的order表和customer表
+
+配置完成后运行报 could not fetch initial value for increment generator
+
+开始以为是自己代码出现问题，因为视频里的源码运行无误
+
+找了半天，对照视频中的源代码，就差点一行一行的比对了，结果还是没有发现错误在哪
+
+后来分析hibernate的sql语句，发现运行到 select max(id) from order 语句后就报错 而前面的 select max(id) from customer 却没有问题
+
+然后尝试这在mysql命令行里面运行上面两行sql语句，运行 select max(id) from customer 没问题，运行 select max(id) from order 竟然报错，然后一下反映过来，不是代码的问题，肯定是mysql表中不能创建以order为名的数据表或者创建了会导致某些冲突
+
+视频源码里创建的是orders表
+
+遂度娘，果不其然
+
+order是关键字
+
+瞬间有种想砸键盘的冲动啊！！！！
+

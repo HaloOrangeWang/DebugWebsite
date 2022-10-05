@@ -1,0 +1,96 @@
+1.不同目录下函数调用
+A
+
+
+1.不同目录下函数调用
+
+A
+
+|----- __init__.py
+
+|-----  a.py
+
+|---------B
+
+|--------- __init__.py
+
+|---------b.py
+
+|---------C
+
+|--------- __init__.py
+
+|--------c.py
+
+如图所示结构树，B，C同属于A的子目录，但是B，C之间是平行的。。。
+
+b.py，c.py代码分别如下：
+
+b.py：
+
+def b_hello():
+    print "B_HELLO"
+
+c.py：
+
+def c_hello():
+    print "C_HELLO"
+
+如果A中a.py要调用B中或者C中py，则可以如下方式调用（以B为例）
+
+from B import b
+
+b.b_hello()
+
+运行结果：B_HELLO
+
+但是如果是B中或者C中py调用B中或C中呢?
+
+这个时候如果我们依旧用如上所说调用，则会报错（这里是b.py调用c.py）
+
+>>>
+
+Traceback (most recent call last):
+  File "E:\testnow\A\B\b.py", line 1, in <module>
+    from C import c
+ImportError: No module named C
+
+所以，这种方法不行，那如何做呢，如下
+
+用这种方法，输出结果是：C_HELLO
+
+也即刚才上面的“from 文件夹 import 模块名”只适用于父目录调用子目录的情况。。。而第二种方法则对所有的情况都适用，包括两个模块甚至都不在一个盘的情况。。。这里需要注意的一点是：sys.path添加目录时注意是在windows还是在linux下，windows下需要‘\\’否则会出错。。。。。。。（我在这点上走了很久的弯路。。。）
+
+
+2.同目录下函数调用
+
+包是一个分层次的文件目录结构，它定义了一个由模块及子包，和子包下的子包等组成的 Python 的应用环境。
+
+简单来说，包就是文件夹，但该文件夹下必须存在 __init__.py 文件, 该文件的内容可以为空。__init__.py 用于标识当前文件夹是一个包。
+
+考虑一个在 package_runoob 目录下的 runoob1.py、runoob2.py、__init__.py 文件，test.py 为测试调用包的代码，目录结构如下：
+
+源代码如下：
+
+package_runoob/runoob1.py
+
+package_runoob/runoob1.py
+
+package_runoob/runoob2.py
+
+package_runoob/runoob2.py
+
+现在，在 package_runoob 目录下创建 __init__.py：
+
+package_runoob/__init__.py
+
+package_runoob/__init__.py
+
+然后我们在 package_runoob 同级目录下创建 test.py 来调用 package_runoob 包
+
+test.py
+
+test.py
+
+以上实例输出结果：
+

@@ -1,0 +1,56 @@
+1、启动不了浏览器，报错如下：
+
+============================= ERRORS =============================
+Traceback (most recent call last):
+  File "D:\python_files\eclipse_wrokstation\WinshareWebAotuTest\TestCase\testBookComments.py", line 16, in setUp
+    self.driver = webdriver.Chrome()
+  File "D:\Program Files\Python\Python3\lib\site-packages\selenium\webdriver\chrome\webdriver.py", line 75, in __init__
+    desired_capabilities=desired_capabilities)
+  File "D:\Program Files\Python\Python3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 154, in __init__
+    self.start_session(desired_capabilities, browser_profile)
+  File "D:\Program Files\Python\Python3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 243, in start_session
+    response = self.execute(Command.NEW_SESSION, parameters)
+  File "D:\Program Files\Python\Python3\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 312, in execute
+    self.error_handler.check_response(response)
+  File "D:\Program Files\Python\Python3\lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.WebDriverException: Message: unknown error: unrecognized Blink revision: a10b9cedb40738cb152f8148ddab4891df876959
+  (Driver info: chromedriver=2.10.267521,platform=Windows NT 6.3 x86_64)
+
+解决方式：
+
+webdriver初始化的时候，指定一下浏览器的所在路径
+
+在声明webdriver的时候加一句，再运行就可以了：
+
+path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
+
+self.driver = webdriver.Chrome(executable_path=path)
+
+2、根据定位找不到元素：
+
+（1）可能情况一：因为当前浏览器的窗口切换了（新跳转了窗口）。
+
+解决方法：在定位之前，先切换一下窗口
+
+handles = driver.window_handles # 所有窗口 
+print '*'*20,handles
+for handle in handles:
+    if handle!=driver.current_window_handle:
+        print 'switch to ',handle
+        driver.switch_to_window(handle)
+        print driver.current_window_handle # 打印窗口句柄 --名称    
+        break
+
+（2）可能情况二：因为当前定位的iframe变了。
+
+解决方法：在定位之前，先切换一下frame
+
+driver.switch_to_frame("rightFrame")
+
+（3）可能情况三：运行太快，页面还未完全加载。
+
+解决方法：在定位之前，先休眠1秒（或者多秒）
+
+time.sleep(1)
+

@@ -1,0 +1,46 @@
+今天终于算是正式接触scrapy了，测试的时候发现少装了一个pywin32的模块，然后安装了好久，中间碰到好多坑，最后总算是装好了。
+
+首先我自己的py3.6是64位版本的，这是pywin32模块的下载地址
+
+https://sourceforge.net/projects/pywin32/files/pywin32/Build%20220/
+
+里面有各种版本的，首先我先下了64位的3.6版本的，结果提示
+
+当时也没注意看，然后下载了个32位的试了试也不行，然后再看这个报的错是因为注册表问题，于是百度到下面一段代码：
+
+import sys
+
+from winreg import *
+
+# tweak as necessary
+version = sys.version[:3]
+installpath = sys.prefix
+
+这段代码执行以后可以自动将py3.6安装目录直接添加进注册表，检查了下注册表，的确出现了。
+
+然后我在试了下64位的exe文件，还是提示找不到注册表。
+
+但是我又试了下32位的，却可以安装，然后调试了下，报错 → ImportError: DLL load failed: %1 不是有效的 Win32 应用程序，模块没法用
+
+后面我终于发现了问题所在，这个64位的exe默认找的是3.6-32，我就把注册表里上面那张图改成下面那张，问题解决了。
+
+问题之前：
+
+问题之后：
+
+在此之前，也尝试用过下面三种方法，经历了一些磕磕碰碰，一些小经验给大家分享出来：
+
+1.在http://sourceforge.net/projects/pywin32/files/pywin32/ 上下载对应的版本进行安装，对build221，220，219均进行了尝试（在进行安装时，不能正确寻找到python的安装目录，并将所搜索到的方法均进行尝试后仍然不能解决，遂放弃，可能是跟我使用的python版本有问题吧（未验证）。
+
+2.在http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyhook下载了.whl文件，使用pip 安装后发现其中有文件缺失，不能正常使用。
+
+3.这是我成功的方法，经过搜索和向人请教后，在https://stackoverflow.com/questions/4863056/how-to-install-pywin32-module-in-windows-7找到这样一段话：
+
+于是在cmd中使用python -m pip install pypiwin32进行安装，成功解决。
+
+如果在安装过程中，出现红色警示，别担心，继续重新安装，直到安装成功！
+
+测试是否成功就是在控制台输入“python”回车，再输入“win32com”，如果没有提示出错error，即成功安装。
+
+因为我寻找到这个解决办法耗费了一定时间，在中文资料中暂时没找到第三种解决方案的描述，因此分享出来，希望对大家有用。
+

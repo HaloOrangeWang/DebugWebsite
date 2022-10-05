@@ -1,0 +1,19 @@
+在执行 mvn site 命令时报错：
+
+java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
+
+解决方法，重新配置site plugin，加入如下代码
+
+<plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.7</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.doxia</groupId>
+              <artifactId>doxia-site-renderer</artifactId>
+              <version>1.8</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+

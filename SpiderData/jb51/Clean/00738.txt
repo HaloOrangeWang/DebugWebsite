@@ -1,0 +1,110 @@
+笔者remove TensorFlow总共四次。 reinstall anaconda 三次。
+
+安装技巧可以根据这个博主的文章进行安装。
+
+https://www.jb51.net/article/184309.htm
+
+我就是用这个教程安装的
+
+因为直接用 pip install安装太慢了
+
+所以在官网CUDA 和cuDNN+清华镜像的TensorFlow来安装比较快。
+
+总结我的几个问题。
+
+
+一、安装错误
+
+·
+
+（1）
+
+tensorboard 1.14.0 has requirement setuptools>=41.0.0, but you'll have setuptools 40.6.3
+
+显然我们需要升级 setuptools的版本
+
+我们在cmd中使用下列命令行来安装
+
+python -m pip install -U pip setuptools
+
+非常不幸的是
+
+又出现另一个错误：
+
+ERROR: twisted 18.7.0 requires PyHamcrest>=1.9.0, which is not installed
+
+（笔者因为已经找TensorFlow包remove了4遍了，已经崩溃了）
+
+为了解决这个问题
+
+在cmd中安装
+
+pip install PyHamcrest
+
+安装完PyHamcrest，在运行一次更新setuptools更新的命令行就可以解决了。
+
+（2）
+
+ERROR: Cannot uninstall ‘wrapt'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.
+
+运行一下命令行
+
+pip install -U --ignore-installed wrapt enum34 simplejson netaddr
+
+完成安装。
+
+
+二、测试错误
+
+在测试的过程中，我按照前面那个博主的内容。
+
+使用tf.test.is_gpu_available()
+
+发现是false
+
+这个地方就需要你去看一下错误内容
+
+错误内容要仔细看，笔者显示这个错误的时候并没有标红，需要自己去阅读里面的error
+
+我的错误内容是：
+
+failed call to cuInit: CUDA_ERROR_UNKNOWN
+
+第一，硬件是否支持，是否安装了正确的cuda和与之匹配的cudnn版本吗？
+
+如果你按照本文开头的博文安装是匹配了的。
+
+但是随着日期推迟，TensorFlow会更新，对应的cuda和cudnn版本需要改变。
+
+具体可以参考https://tensorflow.google.cn/install/gpu
+
+现在的要求是：
+
+首先需要查看https://developer.nvidia.com/cuda-gpus
+
+看一下自己的显卡是否支持CUDA
+
+但是值得注意的是
+
+这个网址列的不全，笔者的显卡没有在表单里面。
+
+当我想放弃的时候，我就在百度搜了
+
+笔者的显卡是支持的，笔者用的是MX150。（我不喜欢玩游戏，所以显卡要求不高）
+
+所以建议百度查看自己的显卡是否支持。
+
+除了硬件，就是检查CUDA和CUDNN，这个按照官方文档指出的版本号安装。
+
+第二、如果排除硬件不支持。出现以上错误很可能是驱动问题。
+
+我们可以先到 http://www.nvidia.com/Download/index.aspx 查询下我们需要的是怎样的驱动，勾选好对应的配置：
+
+下载安装，运行GeForce Experience 会自动更新驱动。
+
+版本号为445.75，与官网显示最新版本号一致。
+
+总结
+
+到此这篇关于TensorFlow2.1.0安装过程中setuptools、wrapt等相关错误指南的文章就介绍到这了,更多相关TensorFlow 安装setuptools、wrapt错误内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

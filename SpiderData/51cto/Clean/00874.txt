@@ -1,0 +1,76 @@
+服务器安装protobuf-2.6.1包时，报错如下：
+
+[root@host73 python]# python setup.py install
+
+Download error on https://pypi.python.org/simple/google-apputils/: [Errno -2] Name or service
+
+not known -- Some packages may not be found!
+
+Couldn't find index page for 'google-apputils' (maybe misspelled?)
+
+Download error on https://pypi.python.org/simple/: [Errno -2] Name or service not known --
+
+Some packages may not be found!
+
+No local packages or download links found for google-apputils
+
+Traceback (most recent call last):
+
+File "setup.py", line 200, in <module>
+
+"Protocol Buffers are Google's data interchange format.",
+
+File "/usr/lib64/python2.7/distutils/core.py", line 112, in setup
+
+_setup_distribution = dist = klass(attrs)
+
+File "/usr/lib/python2.7/site-packages/setuptools/dist.py", line 265, in __init__
+
+self.fetch_build_eggs(attrs.pop('setup_requires'))
+
+File "/usr/lib/python2.7/site-packages/setuptools/dist.py", line 289, in fetch_build_eggs
+
+parse_requirements(requires), installer=self.fetch_build_egg
+
+File "/usr/lib/python2.7/site-packages/pkg_resources.py", line 618, in resolve
+
+dist = best[req.key] = env.best_match(req, self, installer)
+
+File "/usr/lib/python2.7/site-packages/pkg_resources.py", line 862, in best_match
+
+return self.obtain(req, installer) # try and download/install
+
+File "/usr/lib/python2.7/site-packages/pkg_resources.py", line 874, in obtain
+
+return installer(requirement)
+
+File "/usr/lib/python2.7/site-packages/setuptools/dist.py", line 339, in fetch_build_egg
+
+return cmd.easy_install(req)
+
+File "/usr/lib/python2.7/site-packages/setuptools/command/easy_install.py", line 617, in
+
+easy_install
+
+raise DistutilsError(msg)
+
+distutils.errors.DistutilsError: Could not find suitable distribution for Requirement.parse
+
+('google-apputils')
+
+字面意思为：解析google-apputils，找不到合适的分布需求
+
+解决办法：
+
+安装google-apptuils包即可；
+
+# yum install -y epel-release
+
+# yum install python-pip
+
+# pip install google-apputils
+
+# python setup.py install
+
+再次执行没有报错；
+

@@ -1,0 +1,29 @@
+　　Cobbler登录web页面报错
+
+　　查看httpd日志/etc/httpd/logs/ssl_error_log
+
+　　查看cobbler的py配置文件
+
+sed -n '38,41p' /usr/share/cobbler/web/settings.py
+
+　　初步判断应该是pythone-django版本问题
+
+　　解决办法
+
+#下载pip.py
+wget https://bootstrap.pypa.io/get-pip.py
+
+#调用本地python运行pip.py脚本
+python get-pip.py
+
+#安装pip
+pip install Django==1.8.9
+
+#查看pip版本号
+python -c "import django; print(django.get_version())"
+
+#重启httpd
+systemctl restart httpd
+
+　　可以正常登录了
+

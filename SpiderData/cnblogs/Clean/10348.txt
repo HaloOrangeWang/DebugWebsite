@@ -1,0 +1,51 @@
+
+Button/选择框 click不了
+
+原因:
+
+没有切换窗口,导致找不到元素
+
+没有切换窗口,导致找不到元素
+
+元素已经出现,但是元素可能还没激活,需要在等多几秒
+
+例如:在注册流程中,输入了用户名和密码以后,注册按钮才被激活可点击,需要设置一点的等待时间,等按钮被激活才是可click状态
+
+元素已经出现,但是元素可能还没激活,需要在等多几秒
+
+例如:在注册流程中,输入了用户名和密码以后,注册按钮才被激活可点击,需要设置一点的等待时间,等按钮被激活才是可click状态
+
+需要click的元素,已经出现在页面中,但是不在可视窗口范围内,有可能报”元素不可交互”, 从而不可点
+
+解决方案:
+
+a)     设定固定的scroll下拉到指定元素的位置  window.scrollTo(0,500) ,有很大的限制,因为每次需要的下拉距离有可能会变化
+b)    不使用selenium库的click方法点击,使用js方法执行click(推荐,基本属于是终极解决方案,无论是什么情况,都能click,只是定位方法需要用到js的定位)  execute_script('document.getElementById('xx').click()')
+c)     用js编写scroll模块实现顺滑下拉到指定元素,然后导入到python。
+
+需要click的元素,已经出现在页面中,但是不在可视窗口范围内,有可能报”元素不可交互”, 从而不可点
+
+解决方案:
+
+a)     设定固定的scroll下拉到指定元素的位置  window.scrollTo(0,500) ,有很大的限制,因为每次需要的下拉距离有可能会变化
+
+b)    不使用selenium库的click方法点击,使用js方法执行click(推荐,基本属于是终极解决方案,无论是什么情况,都能click,只是定位方法需要用到js的定位)  execute_script('document.getElementById('xx').click()')
+
+c)     用js编写scroll模块实现顺滑下拉到指定元素,然后导入到python。
+
+报错：“selenium.common.exceptions.InvalidArgumentException: Message: invalid argument (Session info: chrome=90.0.4430.212) ”
+​		这个报错的具体原因是啥，我现在也不太清楚。网上查询说有可能是chormedriver什么cookie过期之类的问题，但是目前我还没有真正找出真正具体的原因，希望有大佬能懂，可以留言给我哦【我是在做百度自动化上传图片搜索时，遇到这个问题的】
+​	本着遇到问题解决问题的思路，我尝试了前面所说到click方法的终极解决方案，嘿嘿嘿~解决啦!!!
+撒花~~~
+driver.execute_script("var a = document.getElementsByClassName('upload-pic')[0].click()")
+
+报错：“selenium.common.exceptions.InvalidArgumentException: Message: invalid argument (Session info: chrome=90.0.4430.212) ”
+
+​		这个报错的具体原因是啥，我现在也不太清楚。网上查询说有可能是chormedriver什么cookie过期之类的问题，但是目前我还没有真正找出真正具体的原因，希望有大佬能懂，可以留言给我哦【我是在做百度自动化上传图片搜索时，遇到这个问题的】
+
+​	本着遇到问题解决问题的思路，我尝试了前面所说到click方法的终极解决方案，嘿嘿嘿~解决啦!!!
+
+撒花~~~
+
+driver.execute_script("var a = document.getElementsByClassName('upload-pic')[0].click()")
+

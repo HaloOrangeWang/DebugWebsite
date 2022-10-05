@@ -1,0 +1,43 @@
+初次使用redis时，在链接Redis后，运行报错“module 'redis' has no attribute 'Redis' ”。
+
+具体代码如下：
+
+import redis
+r = redis.Redis(host='192.168.2.22',port=6379,db=2)
+r.set('name','Delia')
+print(r.get('name'))
+
+报错如下：
+
+尝试性解决方法一：
+
+在Python安装路径下使用pip安装redis，重新运行程序；
+
+pip install redis
+
+尝试无果。
+
+尝试性解决方法二：
+
+在pycharm中file --> setting --> Project Interpreter 下选择redis进行导入，完成后，重新运行。
+
+尝试无果。
+
+尝试性解决方法三：
+
+（1）手动下载redis模块，地址为：https://github.com/andymccurdy/redis-py，
+
+（2）然后进行解压:redis-py-master.zip，
+
+（3） cd redis-py-master  进入到该路径下，
+
+（4）执行 python setup.py install 命令安装redis。
+
+尝试无果。
+
+尝试性解决方法四：
+
+新手常犯错误。
+
+检查运行文件名称与模块名称是否重复。如果重复，需要将文件名称重新命名。
+

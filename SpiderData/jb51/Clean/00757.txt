@@ -1,0 +1,61 @@
+最近项目中的资产的任务状态频频出现问题，查看日志文件，看代码逻辑，也没发现什么具体的错误，总是过段时间就会出现一个表的字段没有更新的问题，很头疼。
+
+开始时，觉得是没有添加事务，所以同时更新两个不同的表，其中一个表的内容没有写进去；加了事务后，又出现这种问题。
+
+后来看代码，发现有两个线程在同一时间先后修改同一个表，问题来了，django的save()会更新所有的字段。
+
+举个例子，我有两个线程分别修改User表，thread1修改User表的name字段，thread2修改User表的email字段。
+
+在同一个时间，这两个线程获取了相同的User实例, 这个时候同一个实例有两份缓存，thread1修改了name字段，email字段不变；
+
+thread2修改了email字段，name字段不变，这样出来的结果不是我们所设想的那样，name和email字段都会改变，实际上改变的只有email字段，name字段被thread2线程又写回来了。
+
+解决办法：
+
+save()函数加一个update_fields参数就好了。每一次保存的时候写上要更新的字段
+
+use.save(update_fields=["name"])
+
+补充知识：Django models.save()的问题
+
+Django views.py 引用models.py进行modles.objects.create()然后进行.save的问题。
+
+我们是不能直接进行保存的，提交到数据库里面的。
+
+EX:
+
+我们这里通过post获取到信息后。
+
+views.py
+
+def post(self, request, ab=None, all_seat=None):
+
+# 获取用户信息
+    date = request.POST.get('date')
+    time = request.POST.get('time')
+
+然后
+
+views.py
+
+seatform = SeatForm(request.POST)
+          # 提交给数据库
+          #这里的is_valid()是Django默认的，检查是否正确
+        if seatform.is_valid():
+          # 这里向数据库新增一条信息，然后保存
+          getSeat = Seat.objects.create(dateTime=date, classtime=time, status='0', user=name, number=label)
+          getSeat.save()
+
+上面的SeatForm()是我们在与views.py同级目录下创建的forms.py
+
+forms.py
+
+class SeatForm(forms.Form):
+#注意这里的date和time需要与前端的命名要一直
+  date = forms.CharField()
+  time = forms.CharField()
+
+通过这样的方法，我们就可以保存到数据库了。
+
+以上这篇Django 解决由save方法引发的错误就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

@@ -1,0 +1,23 @@
+在学习python爬虫时，需要安装pyspider，在安装完成以后发现无法使用pyspider all命令。
+
+最后一句出现
+File “c:\users\13733\appdata\local\programs\python\python37\lib\site-packages\pyspider\run.py”, line 231
+async=True, get_object=False, no_input=False):
+SyntaxError: invalid syntax
+
+我的python版本是3.7，经过在百度上查找以后，发现是 async和await从 python3.7 开始已经加入保留关键字中. 参考: What’s New In Python 3.7, 所以async不能作为函数的参数名.
+
+安装pyspider后运行pyspider命令，提示语法错误，上网查询后知道是pyspider中把async设置为关键字了，而python3.7版本恰恰也把它设为关键字了。
+
+但在github上面，pyspider已经针对此问题进行了更新，把async关键字替换成了async_mod……
+
+通过pip install pyspider命令再次安装后，通过pip list查看到pyspider已经为最新版本。但再次运行pyspider仍然提示相同的错误。
+
+打开python安装目录文件夹下的site-packages文件夹，打到里面的pyspider文件夹里的run.py，发现里面仍然使用的是async关键字。
+
+把pyspider文件夹里的各个py文件里的async全部手动替换成async_mode后，再次运行pyspider命令，终于不再报错，打开http://localhost:5000/，也能看到pyspider的管理页面了。
+
+问题暂时解决了，但针对为什么用pip重新安装了，且通过pip list查看到pyspider是最新版本，而通过下载最新版本到本地打开文件查看，里面也确实替换了关键字，而site-packages下的pyspider仍然是旧版本一事，仍然不明白，且待后面搞清楚。
+
+from：https://blog.csdn.net/weixin_43213382/article/details/83628298
+

@@ -1,0 +1,10 @@
+今天学习Python 从接口自动化框架设计到开发 之构建发送邮件服务时，遇到一个报错：smtplib.SMTPDataError: (554, b'DT:SPM 163 smtp4,HNxpCgCH+9iAmLtdf7bZAQ--.308S2 1572575377,please see http://mail.163.com/help/help_spam_16.htm?ip=210.13.118.49&hostid=smtp4&time=1572575377')
+
+查了下有关 554 DT:SPM 的资料，大概是说发送的邮件内容包含了未被许可的信息，或被系统识别为垃圾邮件。需要检查是否有用户发送病毒或者垃圾邮件。但问题是我的邮件内容非常简单，我发现只要我的sender_info的用户名如果是中文的时候，就会报这个错，改成英文或拼音都没有问题。
+
+期间还反复出现一个错误：smtplib.SMTPServerDisconnected: Connection unexpectedly closed
+
+原因不知道为什么，猜测可能是运行了多次？多封邮件内容重复？
+
+后来休息了一会，莫名其妙又好了。
+

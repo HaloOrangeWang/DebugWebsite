@@ -1,0 +1,22 @@
+
+Visual Studio Code（以下简称VS Code）用来开发Python3，还是很便利的，本身这个IDE就是轻量级的，才几十兆大小，通过安装插件的方式支持各种语言的开发。界面也美美哒，可以在一个IED开发以下语言/脚本： C++ - C# - CSS - Dockerfile - Go - HTML - Java - JavaScript - JSON - Less - Markdown - PHP - PowerShell - Python - SCSS - T-SQL - TypeScript，再也不用开三四个不通的庞大的IDE工具了
+
+今天要说的是在用VS Code开发Python3语言时，自动补全功能的一个缺陷的弥补：通过tab自动补全方式选择某个方法后，vs code中并不会自动带括号，如果你这么天真的以为执行起来不报错就没问题了，那你真的是图样图森破了~ 怎么破？看官方说明：VS Code编辑Python语言的设置
+
+里面有这么一段：
+
+Finally, the python.autocomplete.addBrackets setting (default false) determines whether VS Code automatically adds parentheses (()) when autocompleting a function name. For example, if you set addBrackets to true: "python.autoComplete.addBrackets": true,
+
+我英文唔好，大概意思是说，要在vs code的设置里面把
+ "python.autoComplete.addBrackets": false, 这个值设置为true，就会自动带括号了。具体看图：
+ 在VS Code界面，Ctrl+Shift+P，打开命令行
+
+输入setting，选中首选项的JSON模式设置界面
+ 
+ 在打开的User Settings文件界面，搜索：python.autoComplete.addBrackets
+ 
+ 复制这一行内容到右侧，修改false为true，记得后面要有英文的逗号，保存，重启VS Code。
+
+
+重启后，通过.点引用弹出的自动补全列表还是不带括号的，但是别急，回车或者Tab选择自动补全候选内容后，最终会自动加上括号的，搞定~
+

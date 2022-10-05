@@ -1,0 +1,40 @@
+最近在使用Python3.7.1 + pycharm + salt编写程序中需要用到salt模块，但是在pycharm中使用pip install salt 安装时出现错误：
+
+　　1、提示需要 microsoft visual c++ 14.0
+
+　　　　解决方法：可以去官网http://landinghub.visualstudio.com/visual-cpp-build-tools下载该软件，但是官网提示404无法下载
+
+　　　　推荐大家去CSDN下载：https://download.csdn.net/download/amoscn/10399046
+
+　　2、安装完成后出现 安装saltstack报错 Command "python setup.py egg_info" failed with error code 10
+
+解决办法如下
+
+a.下载安装包：salt-2018.3.3.tar.gz
+
+b.解压 salt-2018.3.3.tar.gz
+
+c.下载以下库文件
+
+　　https://repo.saltstack.com/windows/dependencies/64/ssleay32.dll
+
+　　https://repo.saltstack.com/windows/dependencies/64/libsodium.dll
+
+　　https://repo.saltstack.com/windows/dependencies/64/libeay32.dll
+
+d.放至python根目录下：如C:\python3.7\python3.7
+
+e.管理员方式打开cmd命令：
+
+　　切换至解压包目录下:
+
+　　python setup.py install 安装 安装完成即可
+
+注意：
+
+　　如果使用的是pycharm 的venv虚拟机
+
+　　则在salt安装包目录下执行 (venv) F:\python\venv\salt-2018.3.3\python setup.py install
+
+(前提是以上三个文件必须有，否则报错)
+

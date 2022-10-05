@@ -1,0 +1,25 @@
+
+安装pandas之后在python shell中不能正常引入
+
+报错如下
+ The current Numpy installiation() fails to pass a sanity check due to a bug in the Windows runtime.
+ 经排查并不是pandas的问题，而是pandas的依赖包numpy的版本问题；
+ 本人电脑是Win10 20H2 最新版本，numpy最新版1.19.4运行有问题，所以导致pandas和numpy都不能import。
+
+
+解决方法
+
+卸载掉默认安装的最新版numpy，指定安装1.19.3版本
+
+实现步骤：
+
+查看安装的所有包
+ pip list
+
+卸载numpy
+ pip uninstall numpy
+
+安装numpy 1.19.3
+ pip install numpy==1.19.3
+ 再次进入python命令行，import pandas就不会报错啦
+

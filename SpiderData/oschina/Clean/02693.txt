@@ -1,0 +1,45 @@
+在colaboratory中，import 自己写的 py 文件往往会爆出 ModuleNotFoundError: No module named ‘forward' 的错误。
+
+就其原因，是由于 Drive 中文件布局与 Colab 中文件布局是不同的。
+
+如果要在 Colab 中使用 Drive 文件，则需要运行下段代码段，在 Colab 后端安装到你的云端硬盘
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+运行
+
+下一步将工作目录更改为Drive根目录。
+
+%cd /content/drive/My\ Drive
+
+# List files to make sure we're in the expected directory.
+# Your output will look different, showing your own Drive files here.
+!ls
+
+运行
+
+我需要加载的 forward.py 文件在 Colab Notebooks 文件夹中，所以代码为
+
+%cd /content/drive/My\ Drive/Colab\ Notebooks
+
+# List files to make sure we're in the expected directory.
+# Your output will look different, showing your own Drive files here.
+!ls
+
+此时我们就可以 import forward 文件
+
+import forward
+
+运行就不会报错了。
+
+但是当将 import forward 语句放在其他 import 后面时，依然会出现相同的报错情况，但将其放在第一个位置时，就不会报错。
+
+参考：
+
+Colab error : ModuleNotFoundError: No module named
+
+Importing a python library from Drive.ipynb
+
+Neural Networks with Google CoLaboratory | Artificial Intelligence Getting started
+

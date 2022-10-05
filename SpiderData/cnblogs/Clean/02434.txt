@@ -1,0 +1,75 @@
+
+转自：http://www.cnblogs.com/20145221GQ/p/5334762.html#正题
+
+一般方法（Atom自动安装）
+	
+打开Atom >> Packages >> Settings View >> Install Packages/Themes然后在“Search packages对话框”中输入你想要的插件，例如activate-power-mode就会得到下图所示，点击“Install”，就开始下载安装：
+
+打开Atom >> Packages >> Settings View >> Install Packages/Themes然后在“Search packages对话框”中输入你想要的插件，例如activate-power-mode就会得到下图所示，点击“Install”，就开始下载安装：
+
+打开Atom >> Packages >> Settings View >> Install Packages/Themes然后在“Search packages对话框”中输入你想要的插件，例如activate-power-mode就会得到下图所示，点击“Install”，就开始下载安装：
+
+但不幸的是，会出现如下所示的报错提示：
+
+但不幸的是，会出现如下所示的报错提示：
+
+按照网上的说法，这是因为电脑缺少C++和Python环境导致的，所以有一种解决方案是在电脑上安装Python和Visual Studio。可是当我费时费力装完后Python和Visual Studio后，Atom自动安装程序依旧报错。
+
+这里有一种简单方法检查Atom是否能识别电脑上的编译环境：打开命令行，键入apm -version，不难发现Python环境已经装好，但Atom并没有检查到我电脑上的Visual Studio。
+
+这里有一种简单方法检查Atom是否能识别电脑上的编译环境：打开命令行，键入apm -version，不难发现Python环境已经装好，但Atom并没有检查到我电脑上的Visual Studio。
+
+手动安装
+	
+Step1：到github上搜索插件名，下载相应源代码压缩包。
+
+Step2：解压后文件夹移动到 C:/Users/你的用户名/.atom/packages/文件夹内。注意是.atom
+
+Step3：此时用命令行（可能需要管理员权限）打开到插件文件夹目录下，输入apm install，但会发现依旧报错
+
+Step1：到github上搜索插件名，下载相应源代码压缩包。
+
+Step1：到github上搜索插件名，下载相应源代码压缩包。
+
+Step2：解压后文件夹移动到 C:/Users/你的用户名/.atom/packages/文件夹内。注意是.atom
+
+Step3：此时用命令行（可能需要管理员权限）打开到插件文件夹目录下，输入apm install，但会发现依旧报错
+
+Step3：此时用命令行（可能需要管理员权限）打开到插件文件夹目录下，输入apm install，但会发现依旧报错
+
+Step4：不过没事，此时打开Atom，会发现activate-power-mode插件已经存在Packages选项下，然后点击Packages >> activate-power-mode >> Toggle，也可以按快捷键Ctrl+Shift+O。会弹出红框报错，不过没关系，找到其中缺失的module，每台电脑可能不一样。
+
+Step4：不过没事，此时打开Atom，会发现activate-power-mode插件已经存在Packages选项下，然后点击Packages >> activate-power-mode >> Toggle，也可以按快捷键Ctrl+Shift+O。会弹出红框报错，不过没关系，找到其中缺失的module，每台电脑可能不一样。
+
+Step5：此时到打开cmd控制台，cd到插件包目录，执行npm install lodash.random（你缺失哪一个module，你就用那个module替代代码中的位置），此时可能会显示'npm'不是内部或外部命令，也不是可运行的程序。这说明计算机不能识别该指令，缺少相关插件。
+
+Step6：我的处理方式是下载：Node，任意下载一个即可，默认安装配置。
+
+Step6：我的处理方式是下载：Node，任意下载一个即可，默认安装配置。
+
+Step7：下载之后就可以在命令行中运行'npm'指令了，因为在安装过程中，默认配置好了'npm'的环境变量。
+
+Step8：安装完毕，照着Step5输入相关代码，打开Atom，如果还显示Step3中的报错，那么可能依旧缺失别的module，这样需要继续重复Step5，直到不报错为止。
+
+Step9：那么现在就可以使用这个狂拽炫酷的插件啦，打开Atom，随意打开一个文件（比如.java文件），键入快捷键Ctrl+Shift+O，现在就可以随心所欲的输入删除文字了，并显示出本文最开头gif的效果了。
+
+Step9：那么现在就可以使用这个狂拽炫酷的插件啦，打开Atom，随意打开一个文件（比如.java文件），键入快捷键Ctrl+Shift+O，现在就可以随心所欲的输入删除文字了，并显示出本文最开头gif的效果了。
+
+注意：这个插件只是增加写代码时的娱乐性，但是目前还是存在缺陷的，在你切换文档视窗后，就要再一次重载页面并激活，才能再次看到效果。可能不能理解这句话的意思，不过在使用过程中就能明白了。
+
+注意：这个插件只是增加写代码时的娱乐性，但是目前还是存在缺陷的，在你切换文档视窗后，就要再一次重载页面并激活，才能再次看到效果。可能不能理解这句话的意思，不过在使用过程中就能明白了。
+
+
+Atom插件之vim-mode
+
+有了上述对activate-power-mode插件的介绍，想要安装VIM也就是照葫芦画瓢了。
+
+同样的，先尝试一下Atom的自动安装，很显然会失败，仍旧提示缺少C++环境。
+
+无奈，只能选择手动安装，重复上述步骤即可，从我的安装经验来看，这次缺少了更多的module，每次针对缺少的不同点module在命令行下使用npm install XXX即可。
+
+
+参考资料
+
+Atom在系统下安装activate-power-mode插件问题？
+

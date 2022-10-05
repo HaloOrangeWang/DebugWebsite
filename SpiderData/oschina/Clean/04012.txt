@@ -1,0 +1,25 @@
+1.现象；
+
+gcc -pthread -shared -Wl,-z,relro build/temp.linux-x86_64-2.7/_mysql.o -L/usr/lib64 -L/usr/lib64 -lmysqlclient_r -lpthread -lm -lrt -ldl -lpython2.7 -o build/lib.linux-x86_64-2.7/_mysql.so
+
+/usr/bin/ld: cannot find -lmysqlclient_r
+
+collect2: error: ld returned 1 exit status
+
+error: command 'gcc' failed with exit status 1
+
+2.
+
+/usr/bin/ld: cannot find -lmysqlclient_r
+
+这个可以看出是找不到mysqlclient_r文件或函数；
+
+从现象的第一行看出是在/usr/lib64 路径下找mysqlclient_r
+
+3.解决方法（copy文件到/usr/lib64/路径下）：
+
+#cp /usr/lib64/mysql/libmysqlclient_r.a     /usr/lib64/
+
+4.可以正常安装mysql-ptyhon
+#pip   install  mysql-python
+

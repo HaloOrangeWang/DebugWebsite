@@ -1,0 +1,28 @@
+python版本 3.7.5
+
+Django版本 3.2.5
+
+猜测可能是Django版本的问题，因为之前并没有出现过如此奇葩的问题。
+
+body = request.body.decode('utf-8')
+
+bodydict = json.loads(body)
+
+接口请求后会报错(body中传递的是json)，以为传递的数据有问题于是在接收到body之后打印出来打算看下
+
+print(type(request.body),request.body)
+
+然后什么都打印不出来 json.loads 依然继续报错
+
+后来加了异常捕获之后，报错莫名其妙没有了，并且可以正常执行！！！！
+
+原意是想通过异常捕获看看下报错信息和是否能打印出body
+
+但是奇怪的发现代码正常执行，没有任何任何异常。json.loads莫名其妙的成功了
+
+多次反复测试发现，body在json.loads的时候必须放到try里边
+
+在下才疏学浅并不是很明白这是什么原因导致的
+
+希望屌大的看到后能告知具体原因
+

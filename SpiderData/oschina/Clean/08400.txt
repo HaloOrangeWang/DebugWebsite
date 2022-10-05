@@ -1,0 +1,40 @@
+故事背景：编写Javaweb项目，在火狐浏览器下运行时firebug报错SyntaxError: expected expression, got ';'或者SyntaxError: expected expression, got 'if'等
+
+在firebug控制台点开报错的详细代码部分，发现代码是这个样子的：
+
+$(document).ready(function(){  
+            var s = ;  
+            if(s==null||s==""){  
+                alert("请登录");  
+                location.href="/SSM0413/jsp/login.jsp";  
+            }  
+        });
+
+但是我在Eclipse下写的代码是这样的：
+
+$(document).ready(function(){  
+                var s = ${sessionScope.user.userName};  
+                if(s==null||s==""){  
+                    alert("请登录");  
+                    location.href="/SSM0413/jsp/login.jsp";  
+                }  
+            });
+
+可以很明显的发现，变量赋值部分${sessionScope.user.userName}没了。由此想到javascript里面可以直接使用EL表达式吗？答案是：不能！
+
+那么怎么才能把session中的值赋值给JavaScript函数中的变量呢？查找资料后得出下面一个思路：
+
+在body里面写一个span标签，在这个span标签里面使用EL表达式，但是为了不凭空多出一个span影响界面，设置hidden属性将其隐藏，如：
+
+<span id="uu" hidden="hidden">${sessionScope.user.userName}</span>
+
+然后在js中使用getElementById获得span标签中的内容，就可以给变量赋值啦
+
+var s = document.getElementById("uu").innerHTML;
+
+总结：1、javascript里面不可以直接使用EL表达式
+
+　　　2、遇到这种问题可以先检查一下js代码，是不是格式除了问题，多写或少写了“；”等，还有就是确认一下应用的一些函数，库，或者EL表达式这种东西能不能在js代码中使用
+
+　　　3、好好利用firebug能解决不少问题
+

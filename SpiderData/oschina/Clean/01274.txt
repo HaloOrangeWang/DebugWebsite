@@ -1,0 +1,51 @@
+最近在玩耍django，就当做个记录吧。
+
+1.在使用eclipse 开发时，出现如下错误：
+
+"Djano not found"错误。
+
+分析 & 解决：
+
+安装完成Python,Django和Pydev后，用pydev的向导创建django项目。此时，可能会报错：Django not found.
+
+这是因为Python在Django安装之前已经安装，从而Pydev不能找到django所在的路径。
+
+解决方法：
+     点击Eclipse->window->首选项->Pydev->Interpreter-Python，看到有或者没有python解释器。把这个解释器删除。
+     然后点击Auto Config自动生成一个python解释器配置。
+     然后点击Apply，使用新的配置。
+
+2.在Django Sync DB 的时候，出现问题：
+
+Superuser creation skipped due to not running in a TTY. You can run `manage.py createsuperuser` in your project to create one manually.
+
+解决：在终端下执行：python manage.py syncdb 即可。
+
+3."no module named django.conf.urls.defaults"
+
+分析 & 解决：找不到django.conf.urls.defaults 这个 package。因为在Django 1.6 的时候，这个包已经被移除了。取而代之的是，
+
+from django.conf.urls import patterns, url, include
+
+那么就很简单了，移除defaults 的package 引用，然后加上上面的代码引用即可。
+
+4.No module named mysqldb
+
+分析：出错时因为Django 找不到MySQLdb 模块，可以在python 中验证，python;import MySQLdb，报错。
+
+5.出现错误
+
+Non-UTF-8 code starting with '\xbd'
+
+解决：在代码最上面加入：# coding=gbk
+
+6."No database selected"
+
+在运行 python manage.py syncdb时，总是出现上述错误
+
+分析，显然是数据库连接的问题。
+
+排查：python 的mysqladapter 是否安装?驱动是否正确?各配置是否正确?
+
+如果都正确，还是有这个错误，很有可能是语法错误，比如空格多了?缩进不对？
+

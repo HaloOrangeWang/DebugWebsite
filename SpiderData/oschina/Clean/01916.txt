@@ -1,0 +1,71 @@
+作为Python初学者，在刚学习Python编程时，经常会看到一些报错信息，在前面我们没有提及，这章节我们会专门介绍。
+
+Python有两种错误很容易辨认：语法错误和异常
+
+
+语法错误
+
+Python 的语法错误或者称之为解析错，是初学者经常碰到的，如下实例
+
+lcassmates = ['Maichesal','asdas','Treas']
+
+异常错误如下
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+NameError: name 'lcassmatas' is not defined
+
+正确写法
+>>> lcassmates = ['Maichesal','asdas','Treas'];
+>>> lcassmates
+['Maichesal', 'asdas', 'Treas']
+
+这个例子中，函数 lcassmates 被检查到有错误，是它句尾缺少了一个结束分号（;）。
+
+
+异常
+
+即便Python程序的语法是正确的，在运行它的时候，也有可能发生错误。运行期检测到的错误被称为异常。
+
+大多数的异常都不会被程序处理，都以错误信息的形式展现在这里:
+
+>>> 10 * (1/0)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+ZeroDivisionError: division by zero
+>>> 4 + spam*3
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+NameError: name 'spam' is not defined
+>>> '2' + 2
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+TypeError: Can't convert 'int' object to str implicitly
+
+异常以不同的类型出现，这些类型都作为信息的一部分打印出来: 例子中的类型有 ZeroDivisionError，NameError 和 TypeError。
+
+
+异常处理
+
+以下例子中，让用户输入一个合法的整数，但是允许用户中断这个程序（使用 Control-C 或者操作系统提供的方法）。用户中断的信息会引发一个 KeyboardInterrupt 异常。
+
+错误信息的前面部分显示了异常发生的上下文，并以调用栈的形式显示具体信息。
+
+>> while True:
+        try:
+            x = int(input("Please enter a number: "))
+            break
+        except ValueError:
+            print("Oops!  That was no valid number.  Try again   ")
+
+try语句按照如下方式工作；
+
+首先，执行try子句（在关键字try和关键字except之间的语句）
+
+如果没有异常发生，忽略except子句，try子句执行后结束。
+
+如果在执行try子句的过程中发生了异常，那么try子句余下的部分将被忽略。如果异常的类型和 except 之后的名称相符，那么对应的except子句将被执行。最后执行 try 语句之后的代码。
+
+如果一个异常没有与任何的except匹配，那么这个异常将会传递给上层的try中。
+

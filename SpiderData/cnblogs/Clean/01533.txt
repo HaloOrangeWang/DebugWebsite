@@ -1,0 +1,42 @@
+刚安装完python，准备pip安装第三方库的时候出现了一个错误：
+
+UnicodeDecodeError: ‘ascii’ code can’t decode byte 0xef in position 7: ordinal not in range(128)
+
+
+为什么会报错？
+
+原因是pip安装python包会加载当前用户的用户目录，我的用户目录恰好是含有中文的，ascii不能进行编码。
+
+
+解决办法1：
+
+在python安装目录 Python27\Lib\site-packages 中新建一个文件sitecustomize.py 
+内容写：
+
+import sys
+
+import sys
+
+sys.setdefaultencoding(‘gb2312’)
+
+sys.setdefaultencoding(‘gb2312’)
+
+
+解决办法2：
+
+修改python安装目录 Python27\Lib\目录下的mimetypes.py文件。
+
+在import下添加如下几行：
+
+if sys.getdefaultencoding() != 'gbk':
+
+if sys.getdefaultencoding() != 'gbk':
+
+reload(sys)
+
+reload(sys)
+
+sys.setdefaultencoding('gbk')
+
+sys.setdefaultencoding('gbk')
+

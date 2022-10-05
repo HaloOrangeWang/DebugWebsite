@@ -1,0 +1,84 @@
+
+目录
+
+使用anaconda创建python环境
+
+1. 流程：1）使用【cmd】命令打开终端；2）执行【conda】命令进入conda环境；3）执行【conda creat --name [环境名] python=[python版本] 】命令创建环境。
+
+2. 常见问题：1）CondaHTTPError: HTTP 000 CONNECTION FAILED for url ...2）SSLError(SSLError(SSLError("bad handshake: Error(...)")))
+
+1. 流程：
+
+1）使用【cmd】命令打开终端；2）执行【conda】命令进入conda环境；3）执行【conda creat --name [环境名] python=[python版本] 】命令创建环境。
+
+1）使用【cmd】命令打开终端；2）执行【conda】命令进入conda环境；3）执行【conda creat --name [环境名] python=[python版本] 】命令创建环境。
+
+1）使用【cmd】命令打开终端；
+
+2）执行【conda】命令进入conda环境；
+
+3）执行【conda creat --name [环境名] python=[python版本] 】命令创建环境。
+
+2. 常见问题：
+
+1）CondaHTTPError: HTTP 000 CONNECTION FAILED for url ...2）SSLError(SSLError(SSLError("bad handshake: Error(...)")))
+
+1）CondaHTTPError: HTTP 000 CONNECTION FAILED for url ...2）SSLError(SSLError(SSLError("bad handshake: Error(...)")))
+
+1）CondaHTTPError: HTTP 000 CONNECTION FAILED for url ...
+
+2）SSLError(SSLError(SSLError("bad handshake: Error(...)")))
+
+
+使用anaconda创建python环境
+
+
+1. 流程：
+
+
+1）使用【cmd】命令打开终端；
+
+
+2）执行【conda】命令进入conda环境；
+
+
+3）执行【conda creat --name [环境名] python=[python版本] 】命令创建环境。
+
+
+2. 常见问题：
+
+
+1）CondaHTTPError: HTTP 000 CONNECTION FAILED for url …
+
+上网查了大家用anaconda创建环境的教程，发现许多人用了清华镜像（链接：https://mirror.tuna.tsinghua.edu.cn/help/anaconda/）
+ 
+ 各系统都可以通过修改用户目录下的 .condarc 文件。Windows 用户无法直接创建名为 .condarc 的文件，可先执行 【conda config --set show_channel_urls yes】生成该文件之后再修改。
+ *内容复制可移步最下方。 ​ 修改完 .condarc 文件后，仍存在刚刚的问题，出错的url变成了清华提供的安装包文件，于是我复制网址看看是否是网址出现了问题。
+ 但顺着网址，我找到了安装文件，这时我认为应该不是 .condarc 文件中的网址的问题。
+ 
+ 再仔细看，原来相比起换清华镜像前，出错信息中下面还有一个SSL的错误码。
+
+
+2）SSLError(SSLError(SSLError(“bad handshake: Error(…)”)))
+
+SSL 连接问题极有可能是 https 安全性导致的问题，于是我把 清华镜像提供的一系列地址中的 https 都改成了 http。
+ 即 .condarc 文件内容如下，有需要的小伙伴可自行复制。
+
+channels:
+  - defaults
+show_channel_urls: true
+default_channels:
+  - http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+  - http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+  - http://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
+custom_channels:
+  conda-forge: http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  msys2: http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  bioconda: http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  menpo: http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  pytorch: http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  pytorch-lts: http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  simpleitk: http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+
+​ 于是，终于成功了！芜湖~
+

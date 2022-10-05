@@ -1,0 +1,50 @@
+一般的代码块
+
+#一般代码
+a=int(input("请输入第一个整数："))
+b=int(input("请输入第二个整数："))
+result=a/b
+print("结果为：",result)
+#极容易出现报错，导致终止后面的程序，比如整除不能输入0，不能输入英文，只要输入了，那么就会报错结束程序
+
+try:    #将易错代码放进去
+    a=int(input("请输入第一个整数："))
+    b=int(input("请输入第二个整数："))
+    result=a/b
+    print("结果为：",result)
+except ZeroDivisionError:   #不允许被0除的异常（异常类型在程序报错时会出现，将这种异常类型放入后，出现该异常就会自动处理，而不会报错终止程序）
+    print("对不起，除数不允许为0")  #出现该异常后的提示
+except ValueError:    #输入异常，int括号里的input只能输入数字串，不能输入字符串
+    print("只能输入数字串")   #出现该异常后的提示
+print("程序结束")    #程序可能出现的异常都用except写出来了，所以不管出现什么异常，后面的程序一样运行
+
+try:
+    n1=int(input("请输入一个整数："))
+    n2=int(input("请输入另一个整数："))
+    result=n1/n2
+#except块中输入可能出现异常的类型，在不知道可能出现什么异常可以用BaseException来代替所有出现的异常
+#BaseException as e的意思是给BaseException取个别名e，在这块里使用时就可以不用再写那么长的代码了
+except BaseException as e:
+    print("出错了")    #若出错了，则打印出错了
+    print(e)    #输出出错类型
+#else块在这里的意思是，如果程序未出现异常，则执行else块里的代码
+else:
+    print("结果为：",result)    #返回结果result
+
+try:
+    n1=int(input("请输入一个整数："))
+    n2=int(input("请输入另一个整数："))
+    result=n1/n2
+#except块中输入可能出现异常的类型，在不知道可能出现什么异常可以用BaseException来代替所有出现的异常
+#BaseException as e的意思是给BaseException取个别名e，在这块里使用时就可以不用再写那么长的代码了
+except BaseException as e:
+    print("出错了")    #若出错了，则打印出错了
+    print(e)    #输出出错类型
+#else块在这里的意思是，如果程序未出现异常，则执行else块里的代码
+else:
+    print("结果为：",result)    #返回结果result
+#finally块在这里的意思是，不管上面的程序出错还是不出错，执行完后都要执行finally里的代码，然后继续执行后面的代码
+finally:
+    print("无论是否产生异常，总会被执行的代码")
+print("程序结束")    #try...except...else...finally结构的代码执行完后继续正常执行后面的代码
+

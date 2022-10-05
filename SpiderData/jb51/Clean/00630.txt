@@ -1,0 +1,147 @@
+
+前言
+
+当我们编写任何程序时，都会遇到一些错误，会让我们有挫败感，所以我有一个解决方案给你。 今天在这篇文章中，我们将讨论错误类型error: 'int' object is not iterable。 我们将讨论为什么会出现此错误以及此错误的一些可能解决方案。请务必阅读到最后，以节省大量调试此错误的时间。
+
+首先，让我们了解“iterable”(可迭代)一词的含义？ 可迭代是我们可以从中获取值并相应地使用它们的东西。例如，每当我们使用循环遍历列表或元组时，循环就作为可迭代对象工作，它一次提供一个元素来处理它。 换句话说，您可以将 iterable 视为一次从中获取单个项目的容器。它会按照指示提供物品。
+
+例如：
+
+for i in range(5):
+print(i)
+
+当我们在终端中运行这段代码时，我们会得到输出：
+
+0
+
+1
+
+2
+
+3
+
+4
+
+在上面的例子中，我们可以看到 range() 函数返回一个数字列表，变量 i 作为一个容器工作。它一次给出一个值并打印它。 现在我们将了解为什么会发生此错误，我们将检查如何消除这些错误..
+
+
+错误原因
+
+
+案例1：
+
+假设您正在编写一个程序，其中给出了一个火车站名称列表。您正在尝试遍历列表并以大写顺序打印所有站名。您已经使用循环来完成这项工作。
+
+例如：
+
+station_names = ['New Delhi', 'Lucknow', 'Patna', 'GorakhPur']
+for num in len(station_names):
+station_uppercase = station_names[num].upper()
+print(station_uppercase)
+
+当我们在终端中运行这个程序时，我们会得到这样的错误。
+
+输出：
+
+Traceback (most recent call last):
+
+File “c:\Users\ASUS\Desktop\Geeksgyan Work\test.py”, line 3, in ＜module＞
+
+for num in len(station_names):
+TypeError: ‘int’ object is not iterable
+
+正如在输出本身中提到的那样，在第 3 行中我们得到了错误。 我们得到这个错误是因为我们试图从一个不可能的整数值中迭代值。我们知道 len() 函数返回一个整数值。所以它不能被迭代来获取值。我们只能迭代那些应该是容器的项目，这意味着它们包含一堆值，如列表、元组等。
+
+
+案例2：
+
+假设给定一个字符串。我们想改变字符的替代情况。表示交替顺序的小写和大写。我们将使用循环来完成，如下例所示。
+
+例子：
+
+string = 'abcdefghij'
+new_string = ''
+for char in len(string):
+if (char % 2 != 0):
+    new_string = new_string + string[char].upper()
+else:
+    new_string = new_string + string[char]
+
+print(f"After alternating case changes : {new_string}")
+
+当我们尝试在终端中运行它时，我们会遇到错误：'int' object is not iterable。
+
+输出：
+
+PS C:\Users\ASUS\Desktop\Geeksgyan Work> python -u “c:\Users\ASUS\Desktop\Geeksgyan Work\test.py”
+
+Traceback (most recent call last):
+
+File “c:\Users\ASUS\Desktop\Geeksgyan Work\test.py”, line 4, in ＜module＞
+
+for char in len(string):
+TypeError: ‘int’ object is not iterable
+
+这里发生了同样的错误，因为我们试图从一个整数迭代。 有时这些错误很难被识别出来，我们花了几个小时调试我们的代码来找到错误。
+
+
+错误解决方案
+
+我们知道我们收到这个错误是因为我们试图迭代那个不可迭代的对象。所以我们必须做一些可以使该对象可迭代的事情。 我们可以看到，在循环中使用 range() 函数解决了错误，因为我们知道 range() 函数返回一个容器或事物列表，我们可以在其中一个一个地迭代值，并且可以相应地处理它。 在循环中使用 range() 函数后，错误将得到解决，我们将能够成功运行我们的程序，我们将看到所需的输出。
+
+
+案例1解决方案：
+
+station_names = ['New Delhi', 'Lucknow', 'Patna', 'GorakhPur']
+
+for num in range(len(station_names)):
+station_uppercase = station_names[num].upper()
+print(station_uppercase)
+
+输出：
+
+PS C:\Users\ASUS\Desktop\Geeksgyan Work> python -u “c:\Users\ASUS\Desktop\Geeksgyan Work\test.py”
+
+New Delhi
+
+Lucknow
+
+Patna
+
+GorakhPur
+
+我们可以看到我们的程序运行成功了。
+
+在我们使用 range 函数之后，它会返回一个可迭代对象，然后我们的 'num' 变量会遍历该可迭代对象，一次取一个值并将其转换为大写，然后打印该值。
+
+这就是可迭代的程序的工作原理。
+
+
+案例2解决方案：
+
+string = 'abcdefghij'
+
+new_string = ''
+for char in range(len(string)):
+if (char % 2 != 0):
+    new_string = new_string + string[char].upper()
+else:
+    new_string = new_string + string[char]
+
+print(f"After alternating case changes : {new_string}")
+
+输出：
+
+PS C:\Users\ASUS\Desktop\Geeksgyan Work> python -u “c:\Users\ASUS\Desktop\Geeksgyan Work\test.py”
+
+After alternating case changes : aBcDeFgHiJ
+
+我们可以看到在代码中使用 range() 函数后程序运行成功。它消除了错误并提供了所需的输出。 每当出现此错误时，您要做的第一件事就是查找程序中是否存在任何循环，尝试运行程序并检查是否得到输出。检查您是否尝试迭代无法迭代的值。您会发现错误并尝试使用上述技术解决该错误。
+
+
+结论
+
+每当您收到错误 typeerror: int object is not iterable 那么您必须检查整个程序并尝试找出您是否尝试使用不可迭代作为可迭代对象。我已经在上面的例子中展示了最常见的错误，我也给出了这些问题的解决方案。
+
+到此这篇关于Python开发时报TypeError: ‘int‘ object is not iterable错误的解决方式的文章就介绍到这了,更多相关Python TypeError: ‘int‘ object is not iterable内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

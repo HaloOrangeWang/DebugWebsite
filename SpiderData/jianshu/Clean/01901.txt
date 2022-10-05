@@ -1,0 +1,72 @@
+RHEL6.4 原配python2.6，后又通过编译安装源代码方式安装python3.5,并将python3.5设置为缺省python
+
+执行以下命令发布模块时报错
+
+$python setup.py register
+
+[lb@localhostnesterlhb1]$ python setup.py register
+
+running register
+
+running check
+
+We need to know who you are, so please choose either:
+
+1. use your existing login,
+
+2. register as a new user,
+
+3. have the server generate a new password for you (and email it to you), or
+
+4. quit
+
+Your selection [default 1]:
+
+1
+
+Username: page1999
+
+Password:
+
+Registering nesterlhb1 tohttps://pypi.python.org/pypi
+
+Server response (500):
+
+先是怀疑网络问题，测试许久都无法找到原因，后来发现yum安装程序使用原有的python2.6正常，但是用python3也会有问题，才开始怀疑是否python3安装了之后，有些python自带的模块与其他程序模块不匹配导致。于是执行如下命令，，用老版本python来做：
+
+$ python2.6 setup.py register
+
+running register
+
+We need to know who you are, so please choose either:
+
+1. use your existing login,
+
+2. register as a new user,
+
+3. have the server generate a new password for you (and email it to you), or
+
+4. quit
+
+Your selection [default 1]:
+
+1
+
+Username: page1999
+
+Password:
+
+Registering nesterlhb1 tohttp://pypi.python.org/pypi
+
+Server response (200): OK
+
+I can store your PyPI login so future submissions will be faster.
+
+(the login will be stored in /home/lb/.pypirc)
+
+Save your login (y/N)?y
+
+[lb@localhostnesterlhb1]$
+
+果然没问题了！
+

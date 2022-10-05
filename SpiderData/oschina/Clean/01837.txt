@@ -1,0 +1,23 @@
+执行 pip install mysqlclient 报错信息如下：
+
+[root@CentOS7-demo bin]# pip install mysqlclient
+Collecting mysqlclient
+  Using cached mysqlclient-1.3.12.tar.gz
+    Complete output from command python setup.py egg_info:
+    /bin/sh: mysql_config: command not found
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-build-ctrzre4u/mysqlclient/setup.py", line 17, in <module>
+        metadata, options = get_config()
+      File "/tmp/pip-build-ctrzre4u/mysqlclient/setup_posix.py", line 44, in get_config
+        libs = mysql_config("libs_r")
+      File "/tmp/pip-build-ctrzre4u/mysqlclient/setup_posix.py", line 26, in mysql_config
+        raise EnvironmentError("%s not found" % (mysql_config.path,))
+    OSError: mysql_config not found
+
+解决办法：
+
+yum install mysql-devel
+
+pip install mysqlclient
+

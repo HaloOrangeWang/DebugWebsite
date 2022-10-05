@@ -1,0 +1,37 @@
+在安装python-opencv过程中出了很多错误，安装完成后总结和大家分享
+ 喜欢就点个赞哈
+
+1，pyhton出错：
+
+python d:\test.py
+ File “”, line 1
+ python d:\test.py
+ ^
+ SyntaxError: invalid syntax
+
+请参考：https://www.cnblogs.com/wuxiang/p/7691710.html
+
+2，如果在使用Opencv的过程中出现
+ OpenCV Error: Assertion failed (size.width>0 && size.height>0) in cv::imshow,
+ file ………\opencv\modules\highgui\src\window.cpp, line 261，
+ 这个和别人报错相似，但没有解决，路径格式包括转义字符可能是原因之一，
+ 但我这次情况不是这样
+
+最后这个错误，怎么也找不到，自己确定安装成功，函数无法调用，
+ 由此是opencv的问题，于是更新到最新版本，依然不可以，最后重新建立工程，
+ 可以了
+ 原因可能其他库都是最新版，而cv根据教程选择老版本而出现不兼容情况
+ 重建工程，重新link
+
+在过程中找到，whl的源文件位置，在这里，其他文件同理可得
+ D:\soft\python\Lib\site-packages\cv2\data
+
+3，whl解释
+ whl格式本质上是一个压缩包，里面包含了py文件，以及经过编译的pyd文件。
+ 使得可以在不具备编译环境的情况下，选择合适自己的python环境进行安装。
+
+4，在安装第三方api按顺序安装，numpy，scipy等等
+ 在安装matplotlib时由于需要很多东西，比如six等，中间不小心断网等，可能以为matplotlib安装失败，则将那个没有安装完的自己pip install 即可，再次matplotlib，会接着安装，如果这个过程安装没有问题可以忽略
+
+5，安装也可以直接在cmd中安装，如pip install numpy 不用提前下载whl，要联网
+

@@ -1,0 +1,30 @@
+robotframework-requests库依赖于requests库，所以如果安装robotframework-requests库后，在RF中的RequestsLibrary不能使用或者使用python -c 'import RequestsLibrary'验证报错，要考虑是不是requests库与robotframework-requests库不匹配导致的
+
+
+1.requests库的版本不对
+
+1）先卸载
+
+sudo pip uninstall requests&&sudo pip uninstall robotframework-requests
+
+2）重新安装
+
+sudo pip install requests&&sudo pip  install robotframework-requests
+
+requestsLibrary需要重新安装的原因是requests的版本不对，环境中的是2.2.1，而我们需要2.22.0
+
+验证requestsLibrary有没有安装成功可以使用：python -c 'import RequestsLibrary' 没报错即安装成功
+
+
+2.requests库与robotframework-requests的安装方式不一样
+
+requests库使用apt的方式安装，而robotframework-requests使用pip方式安装，解决方法是：
+
+1）先卸载，其中urllib3,chardet是一些依赖库
+
+sudo pip uninstall robotframework-requests&&sudo apt-get remove python-requests&&sudo apt-get remove python-urllib3&&sudo apt-get remove python-chardet
+
+2）再安装
+
+sudo pip --proxy=http://xx.xx.xx.xx:xxxx install requests&&sudo pip --proxy=http://xx.xx.xx.xx:xxxx  install robotframework-requests
+

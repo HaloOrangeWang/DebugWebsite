@@ -1,0 +1,44 @@
+本文实例讲述了Python使用pickle模块报错EOFError Ran out of input的解决方法。分享给大家供大家参考，具体如下：
+
+遇到了 EOFError：Ran out of input 不到为什么这样，最后用捕获异常的办法解决掉了，暂时对程序本身没有啥影响，代码如下：
+
+# coding=utf-8
+import pickle
+def usr_date():
+  try:
+    with open('usr_date.pkl','rb') as f:
+      return pickle.load(f)
+  except EOFError: #捕获异常EOFError 后返回None
+    return None
+def update_usr(usr_dic):
+  with open('usr_date.pkl','wb') as f:
+     pickle.dump(usr_dic,f)
+def register():
+  '注册'
+  usr_dic = {}
+  usr_name = input('请输入用户名')
+  open_date = usr_date() if usr_date() else {}
+  if usr_name in open_date.keys():
+    print('用户已存在，请登录')
+    return False
+  usr_password = input('请输入你的密码：')
+  usr_dic[usr_name] = usr_password
+  update_usr(usr_dic)
+  return print('注册成功')
+def Sign_in():
+  '登录'
+  pass
+def login_index():
+  while True:
+    usr = input('1.注册 2.登录 0.退出')
+    if usr == '1':
+      register()
+    elif usr =='2':
+      Sign_in()
+    else:
+      break
+
+更多关于Python相关内容感兴趣的读者可查看本站专题：《Python进程与线程操作技巧总结》、《Python数据结构与算法教程》、《Python函数使用技巧总结》、《Python字符串操作技巧汇总》、《Python入门与进阶经典教程》及《Python文件与目录操作技巧汇总》
+
+希望本文所述对大家Python程序设计有所帮助。
+

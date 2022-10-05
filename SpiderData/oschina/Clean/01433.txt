@@ -1,0 +1,49 @@
+《简明Python教程》中第13章讲述“异常”时，有这样的一个实例,
+
+import sys
+try:
+  s = raw_input('Enter something --> ')
+except EOFError:
+  print '\nWhy did you do an EOF on me?'
+  sys.exit() # exit the program
+except:
+  print '\nSome error/exception occurred.'
+  # here, we are not exiting the program
+print 'Done'
+
+在windows环境中，使用IDLE环境执行上面的代码，在显示“Enter something -->”时按“Ctrl+Z”组合键时，程序显示Done。而在显示“Enter something -->”时按“Ctrl+D”组合键时，程序执行到sys.exe()时报错，错误代码如下：
+
+Python 2.7 (r27:82525, Jul  4 2010, 09:01:59) [MSC v.1500 32 bit (Intel)] on win32
+Type "copyright", "credits" or "license()" for more information.
+>>> ================================ RESTART ================================
+>>> 
+Enter something -->
+
+Why did you do an EOF on me?
+
+Traceback (most recent call last):
+  File "D:\百度网盘\Python\py\a.py", line 6, in <module>
+    sys.exit() # exit the program
+SystemExit
+>>>
+
+这里解释一下发生错误的原因
+
+出现上述错误是正常现象，这是因为在IDLE环境中不允许exit退出。
+
+理由是：sys.exit()是退出python解释器回到上级shell，而IDEL最高级别就是python解释器，所以没法退到上级。
+
+如果通过windows的cmd进入，执行上面提到的教程中的例子，是没有错误的。在这举例：在cmd环境下，输入python，进入python环境，然后执行以下代码
+
+>>> import sys
+>>> sys.exit()
+
+执行sys.exit()命令后，可以退出python，返回到cmd命令符。
+
+如果执行Python (command line)：
+
+>>> import sys
+>>> sys.exit()
+
+执行sys.exit()命令后，Python (command line)窗口被关闭。
+

@@ -1,0 +1,33 @@
+首先标注一下报错内容：
+
+In [11]: data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
+In [12]: Traceback (most recent call last):
+
+File "<ipython-input-11-ec8ed0fbe8e2>", line 1, in <module>
+    data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
+
+File "C:\Users\Data Engineer\Anaconda3\lib\site-packages\numpy\lib\npyio.py", line 1024, in loadtxt
+    items = [conv(val) for (conv, val) in zip(converters, vals)]
+
+File "C:\Users\Data Engineer\Anaconda3\lib\site-packages\numpy\lib\npyio.py", line 1024, in <listcomp>
+    items = [conv(val) for (conv, val) in zip(converters, vals)]
+
+File "<ipython-input-8-c822de30841a>", line 3, in iris_type
+    return it[s]
+
+KeyError: b'Iris-setosa'
+
+报错key words:  b'Iris-setosa'
+
+通过搜索原因，发现有可能是在对文件读取是编译出现了问题，并且Keyword中提示b'Iris-setosa'，而我们的string转float函数中没有字母b，很奇怪。所以尝试将转换函数所有的string前加b。结果发现数据读取正常。
+
+下边附上转换函数：
+
+def iris_type(s):
+    it={b'Iris-setosa':0, b'Iris-versicolor':1, b'Iris-virginica':2}
+    return it[s]
+
+->markdown用的还不熟，怎么转换字体颜色啊，强迫症要犯了<Face with Tears of Joy>。
+
+生活中我们需要一些勇气去追寻自己的理想。#Never give up
+

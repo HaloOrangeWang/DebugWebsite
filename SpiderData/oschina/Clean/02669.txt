@@ -1,0 +1,45 @@
+【问题描述】
+
+今天在使用Python多进程管道（multiprocessing.Pipe）的时候报了如下的错误：
+
+Traceback (most recent call last):
+  File "script/train_taobao.py", line 302, in <module>
+    train(model_type=Model_Type, Memory_Size=Memory_Size, Mem_Induction=Mem_Induction, Util_Reg=Util_Reg)
+  File "script/train_taobao.py", line 194, in train
+    if _stop.is_set() and train_data_pool.empty():
+  File "D:\anaconda\lib\multiprocessing\queues.py", line 120, in empty
+    return not self._poll()
+  File "D:\anaconda\lib\multiprocessing\connection.py", line 255, in poll
+    self._check_closed()
+  File "D:\anaconda\lib\multiprocessing\connection.py", line 136, in _check_closed
+    raise OSError("handle is closed")
+OSError: handle is closed
+
+(base) D:\PythonProjects\project_nlp\mimn>Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "D:\anaconda\lib\multiprocessing\spawn.py", line 105, in spawn_main
+    exitcode = _main(fd)
+  File "D:\anaconda\lib\multiprocessing\spawn.py", line 115, in _main
+    self = reduction.pickle.load(from_parent)
+EOFError: Ran out of input
+
+【相关原因分析】
+
+下面来说一下Python多进程管道的几种常见报错。
+
+1、如果管道发送端关闭了，接收端依然还去接收的话，接收端会在接收完管道中残存的数据之后，报如下错误：
+
+raise EOFError
+
+2、如果管道中没有数据了，接收端还去接收的话，程序会卡死不动。
+
+3、如果管道发送端关闭了，发送端依然还去发送的话，就会报如下的错误：
+
+OSError: handle is closed
+
+也就是咱们上文中报的错。
+
+4、如果接收端关闭了，发送端依然发送的话，会报如下的错误：
+
+BrokenPipeError: [WinError 232] 管道正在被关闭。
+

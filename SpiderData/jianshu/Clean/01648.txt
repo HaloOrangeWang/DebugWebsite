@@ -1,0 +1,24 @@
+python中使用oracle数据库进行查询时，出现下面的错误：
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 54-57: ordinal not in range(128)
+
+错误定位是在cur.execute(sql)进行查询的这句。
+
+因为提示编码问题，一直在折腾编码，各种断点加下来，其实语句本身并没有发生乱码，而且因为使用的python3.x，默认已经是utf-8编码，不该出现这样的问题啊。。
+
+各种查，把网上各种改编码的方法试了一下遍。。
+
+最后发现搜索方式不对..最后的最后终于找到了，是oracle的一个环境变量没有配。
+
+windows下可以参考：
+
+添加变量名：NLS_LANG
+ 添加变量值：SIMPLIFIED CHINESE_CHINA.UTF8
+
+Mac下可以直接在数据库操作的文件顶部添加，给oracle设置字符集。
+
+import os
+os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
+
+大功告成！！
+

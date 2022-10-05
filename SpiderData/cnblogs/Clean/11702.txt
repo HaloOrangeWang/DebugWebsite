@@ -1,0 +1,48 @@
+Apache24+modwsgi，httpd.conf加入mod_wsgi配置，Apache启动报错说没找到encoding库，实际就是没找到python环境，下面说说注意事项。
+
+Apache24+modwsgi，httpd.conf加入mod_wsgi配置，Apache启动报错说没找到encoding库，实际就是没找到python环境，下面说说注意事项。
+
+1、Apache24与python的版本关系要注意，新的Apache24有vs6及vc15版本，要对应，运行python时显示的Python 3.9.0 (tags/v3.9.0:9cf6752, Oct 5 2020, 15:34:40) [MSC v.1927 64 bit (AMD64)] on win32当中在MSC v.1927是vc编译版本，直接拖拉百度可查对应的vc版本，3.9后的基本是vs16，AMD64这里说的是64位，一样要对应
+
+1、Apache24与python的版本关系要注意，新的Apache24有vs6及vc15版本，要对应，运行python时显示的Python 3.9.0 (tags/v3.9.0:9cf6752, Oct 5 2020, 15:34:40) [MSC v.1927 64 bit (AMD64)] on win32当中在MSC v.1927是vc编译版本，直接拖拉百度可查对应的vc版本，3.9后的基本是vs16，AMD64这里说的是64位，一样要对应
+
+2、python安装时一定要自定义安装，并在安装过程中勾选这个，为所有用户安装，装到pg目录下，否则Apache肯定找不到py环境，如下图，勾选第一个。
+
+2、python安装时一定要自定义安装，并在安装过程中勾选这个，为所有用户安装，装到pg目录下，否则Apache肯定找不到py环境，如下图，勾选第一个。
+
+3、如网站路径有中文最好把httpd.conf以utf-8保存，否则会报错。
+
+3、如网站路径有中文最好把httpd.conf以utf-8保存，否则会报错。
+
+下面谈谈moment（）前端不显时间的处理。moment-with-locales.min.js是一个在前端灵活处理时间对象的库，下面谈谈处理的情况。
+
+下面谈谈moment（）前端不显时间的处理。moment-with-locales.min.js是一个在前端灵活处理时间对象的库，下面谈谈处理的情况。
+
+1、模版的header需加入
+
+1、模版的header需加入
+
+{{moment.include_moment() }}
+
+{{moment.include_moment() }}
+
+{{moment.locale('zh-cn') }}
+
+{{moment.locale('zh-cn') }}
+
+以上两句，但{{moment.include_moment() }} 这样引入是客户端是从cdn下载的，内网环境无联网时就有点麻烦了，url_for在header加入静态文件路由又发现浏览器虽然下载了js但前端却不显示时间的问题，后来发现需这样写
+
+以上两句，但{{moment.include_moment() }} 这样引入是客户端是从cdn下载的，内网环境无联网时就有点麻烦了，url_for在header加入静态文件路由又发现浏览器虽然下载了js但前端却不显示时间的问题，后来发现需这样写
+
+{{ moment.include_moment(local_js=url_for('static',filename='js/moment-with-locales.min.js')) }} {{ moment.lang('zh-cn') }}
+
+{{ moment.include_moment(local_js=url_for('static',filename='js/moment-with-locales.min.js')) }} {{ moment.lang('zh-cn') }}
+
+这样就没问题的，估计这库还得后端加载配合才能使用，所以必须这么写。
+
+这样就没问题的，估计这库还得后端加载配合才能使用，所以必须这么写。
+
+2、时间字符传递问题，可把后端传来的时间字符规格化为moment对象，再用它的方法，参考：moment(time, "YYYY-MM-DD HH:mm:ss")，模版正文部份中使用是需要加{{ }}这样的，如果是在scripti对内使用则直接使用即可。
+
+2、时间字符传递问题，可把后端传来的时间字符规格化为moment对象，再用它的方法，参考：moment(time, "YYYY-MM-DD HH:mm:ss")，模版正文部份中使用是需要加{{ }}这样的，如果是在scripti对内使用则直接使用即可。
+

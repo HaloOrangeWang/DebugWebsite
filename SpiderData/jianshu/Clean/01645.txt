@@ -1,0 +1,28 @@
+今天学习协程想导入greenlet时发现，明明下载成功了，却报了如图所示的错误：
+
+Try to run this command from the system terminal. Make sure that you use the correct version of 'pip' installed for your Python interpreter located at XXX
+
+看字面意思还以为是“pip”包的版本不正确，一直在研究pip，后来查来查去终于找到了解决办法：
+
+
+第一步：
+
+使用cmd命令下的  “pip install whl ”方法    导入第三方库示例：在cmd中输入如下命令导入已经下载好的whl文件：pip install F:\python\thirdpackage\greenlet-0.4.15-cp38-cp38-win_amd64.whl
+
+
+第二步：
+
+导入成功后，打开pycharm中你所创建的项目的venv文件夹，点开pyvenv.cfg文件。
+
+
+第三步：
+
+将include-system-site-packages的值改为true，完成后保存关闭文件。
+
+修改完成后将pycharm重启，这时候就可以调用这些第三方库了。
+
+
+总结&疑问
+
+这种方法也许可以暂时解决使用PyCharm无法调用第三方库的问题，但是同时也可能破坏项目的封闭性，使虚拟环境与全局环境相通，比较适用于学习编程初期的时候解决问题，后期请谨慎使用。
+

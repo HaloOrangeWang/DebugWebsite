@@ -1,0 +1,36 @@
+{
+    "err_msg": {
+        "text": "ConnectionClosed",
+        "lines": [20],
+        "weight": [1]
+    },
+    "scene": [
+        {
+            "text": "Rabbitmq consumer端",
+            "lines": ["title"],
+            "weight": [1]
+        },
+        {
+            "text": "使用rabbitmq的exchange模式，type为direct，消费端不需要向生产端返回结果no_ack=True",
+            "lines": [4],
+            "weight": [1]
+        },
+        {
+            "text": "某个consumer任务耗时较长（5min以上）",
+            "lines": [6],
+            "weight": [1]
+        }
+    ],
+    "solve": [
+        {
+            "text": "修改rabbitmq.config",
+            "lines": [27],
+            "weight": [1]
+        },
+        {
+            "text": "在建立连接的时候就禁止心跳检测\n\nproducer端和consumer端连接初始化的时候：\n\nconnection = pika.BlockingConnection(pika.ConnectionParameters('localhost', heartbeat_interval=0))",
+            "lines": [60, 62, 64],
+            "weight": [1, 0.5, 0.5]
+        }
+    ]
+}

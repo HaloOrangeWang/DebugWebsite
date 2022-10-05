@@ -1,0 +1,28 @@
+1）错误
+
+执行yum clean all报错File "/usr/bin/yum", line 30  except KeyboardInterrupt, e:
+
+这是因为升级了Python3.6，yum采用python作为命令解释器，系统自带的python解释器为python2.7
+
+[***@localhost]# yum clean all
+  File "/usr/bin/yum", line 30
+    except KeyboardInterrupt, e:
+                            ^
+SyntaxError: invalid syntax
+
+2）解决方法
+
+修改/usr/bin/yum文件中的第一行为
+
+#!/usr/bin/python   修改成   #!/usr/bin/python2.7
+
+3）保存修改后再次执行yum clean all
+
+[***@localhost yum]# yum clean all
+已加载插件：fastestmirror, langpacks
+Repodata is over 2 weeks old. Install yum-cron? Or run: yum makecache fast
+正在清理软件源： base centos-sclo-rh epel extras updates
+Cleaning up list of fastest mirrors
+
+搞掂
+

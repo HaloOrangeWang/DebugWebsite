@@ -1,0 +1,35 @@
+安装virtualenvwrapper
+yum install python-setuptools python-devel
+pip install virtualenvwrapper # linux下
+
+********************************************
+pip install virtualenvwrapper-win # windows下
+
+2.配置virtualenvwrapper
+
+问题1：
+/bin/python: No module named virtualenvwrapper
+virtualenvwrapper.sh: There was a problem running the initialization hooks.
+
+If Python could not import the module virtualenvwrapper.hook_loader,
+check that virtualenvwrapper has been installed for
+VIRTUALENVWRAPPER_PYTHON=/bin/python and that PATH is
+set properly.
+
+问题2：
+[root@localhost ~]# source .bashrc 
+-bash: /usr/local/bin/virtualenvwrapper.sh: No such file or directory
+
+解决1、2： 
+在linux用户home目录下 .bashrc追加下面，后source .bashrc 
+如果需要virtualenvwrapper.sh找不到报错，找到后拷贝到/usr/local/bin/下
+
+export WORKON_HOME=$HOME/.virtualenvs # 虚拟环境创建的地方
+export VIRTUALENVWRAPPER_PYTHON=/usr/local/python36/bin/python3 # 指定虚拟使用的python解释器路径
+source /usr/local/bin/virtualenvwrapper.sh # 每次登陆用户自动执行下脚本，
+
+3使用 
+（1）mkvirtualenv django_test 
+（2）workon django_test 
+（3）pip install xxx
+

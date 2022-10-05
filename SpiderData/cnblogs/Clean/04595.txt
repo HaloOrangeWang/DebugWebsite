@@ -1,0 +1,69 @@
+执行yum的各种命令时报以下错误，如yum list：
+
+Fatal Python error: pycurl: libcurl link-time version is older than compile-time version
+Aborted
+
+解决：
+
+1、安装setuptools
+
+wget --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz#md5=c607dd118eae682c44ed146367a17e26
+tar -zxvf setuptools-19.6.tar.gz
+cd setuptools-19.6
+python setup.py build
+python setup.py install
+
+报错： RuntimeError: Compression requires the (missing) zlib module
+解决：yum install zlib-devel
+
+2、安装pip
+
+wget --no-check-certificate https://pypi.python.org/packages/source/p/pip/pip-8.0.2.tar.gz#md5=3a73c4188f8dbad6a1e6f6d44d117eeb
+tar -zxvf pip-8.0.2.tar.gz
+cd pip-8.0.2
+python setup.py build
+python setup.py install
+报错：pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+　　解决：
+　　yum install openssl
+　　yum install openssl-devel
+
+升级pip（可选）：
+
+pip install --upgrade pip
+
+3、下载python-devel包并安装
+
+下载地址：http://rpmfind.net/linux/rpm2html/search.php?query=python-devel
+
+由于系统是centos7的，所以下载以下包：
+
+wget http://rpmfind.net/linux/centos/7.6.1810/os/x86_64/Packages/python-devel-2.7.5-76.el7.x86_64.rpm
+
+rpm -ivh python-devel-2.7.5-76.el7.x86_64.rpm
+
+4、卸载pycurl：
+pip uninstall pycurl
+
+export PYCURL_SSL_LIBRARY=openssl
+
+5、再次安装pycurl：
+pip install pycurl
+
+再次运行 yum正常了。
+
+注：如果yum list命令还是会报错：
+
+FatalPythonerror:pycurl: libcurl link-time version is older than compile-time version
+Aborted
+
+问题可能是环境造成的。在 /etc/profile末尾加上：
+export LD_LIBRARY_PATH=/usr/lib64:/usr/lib:/usr/local/VMProg/lib:/usr/local/VMProg/lib/vmware-vix-disklib/lib64:/lib64:${LD_LIBARY_PATH}
+保存退出。
+
+source /etc/profile
+
+执行yum list正常了。
+
+搞定。
+

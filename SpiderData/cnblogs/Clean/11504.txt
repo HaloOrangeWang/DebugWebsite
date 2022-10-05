@@ -1,0 +1,51 @@
+
+问题描述：使用yarn安装的时候，node-sass报错，如图
+
+
+解决思路：
+
+
+1. 卸载node
+
+
+2. 重新安装node，并一定要将下面的步骤勾选
+
+
+3. node安装完成后，会自动弹出下面的脚本，点击任意键继续
+
+
+4. 这里的脚本说，会安装chocolatey，并使用这个工具安装其他工具，点击任意继续
+
+
+5. 会启动powershell安装chocolatey和python和vs build tools
+
+node不同的版本，安装的vs和python是不同的，我安装的是python3和vs2017 build tools,由于本机的环境，已经安装好了，所以截图如下
+
+
+6. VS Build tools 安装的速度会很慢，一定不要强制停止powershells，否则vs build tools会出现安装不全的情况
+
+
+7. 安装成功以后，chocolatey安装python2 choco install python2
+
+
+8. 删除node_modules 文件夹，yarn cache clean 清楚缓存，重新安装，成功！
+
+
+常见问题
+
+安装的node版本是node-v14.18.2，所以安装的是python3和vs2017buildtools
+
+error MSB4132: 无法识别工具版本“2.0”。可用的工具版本为 "14.0", "4.0"。
+
+原因：安装了高版本的vsbuildtools
+
+解决方法：使用chocolatey安装vs2017buildtools，命令行中输入即可
+
+choco install visualstudio2017-workload-vctools --version 1.3.3
+
+chocolatey安装 python2进度缓慢，可以卸载chocolatey，然后重新安装
+
+卸载node没用，因为node卸载时，不会自动卸载chocoloatey，具体方法自行查找
+
+查看当前系统所有的安装软件，命令行中输入choco list -li
+

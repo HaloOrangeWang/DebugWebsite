@@ -1,0 +1,86 @@
+pycharm 不显示代码提示
+
+1、检查IDE省电模式是否关闭状态！！！
+
+file → power save mode 取消掉
+
+2、检查代码提示是否成功开启。
+
+setting → Inspections → Spelling 要开启
+
+setting → Inspections → Python 要打开
+
+3、使用快捷键：ctrl+j、ctrl+space、alt+/
+
+其他（不能安装）：
+
+1、检查是否Python2，3冲突。
+
+如果冲突了，只要更改PATH变量位置就好；或者指定python2 还是 python3
+
+2、检查是否pip正常安装正常运行，如有关联相关按照提示安装。
+
+python https://bootstrap.pypa.io/get-pip.py
+
+3、安装whl文件，pip install filenam.whl
+
+windows 用户可收藏该网址：
+
+http://www.lfd.uci.edu/~gohlke/pythonlibs/
+
+4、安装code文件,python setup.py install
+
+上海用户可使用上大mirrors
+
+cat ~/.pip/pip.conf
+
+[global]
+
+index-url = https://pypi.shuosc.org/simple
+
+补充知识：Matlab调用Python中的自定义函数：未定义变量 "py" 或类 "py.mymod.search"
+
+以D:\Matlab\bin\code\hello.py 为例
+
+def hello(x):
+
+print("hello world")
+
+（直接看解决方案滑到最后，中间是一个理解过程）
+
+刚开始是为了在matlab中调用python文件中的函数，但是一直提示如题错误
+
+这个问题搜遍了整个网站，matlab的帮助文档也看了，可以看看，可能会有点启发 https://ww2.mathworks.cn/help/matlab/matlab_external/call-user-defined-custom-module.html
+
+按照文档里操作的时候也不成功，然后就开始思考，最后发现问题还是出在这个Python文件不在python的搜索路径下
+
+网上也有说的在命令行添加如下代码
+
+if count(py.sys.path,'') == 0
+  insert(py.sys.path,int32(0),'');
+end
+
+这两句代码的解释是，若当前路径不在python的搜素路径下，就添加
+
+但是这块要搞清楚当前路径是哪里
+
+在图中，当前路径是D:\Matlab\bin
+
+但hello.py 在D:\Matlab\bin\code下，所以添加D:\Matlab\bin到python搜索路径下依然搜不到hello.py（看到他一边又一遍的提示同一个错误我是绝望的，按理说在D:\Matlab\bin应该可以搜到D:\Matlab\bin\code的解决方法，但是就是搜不到我有什么办法）
+
+解决办法：
+
+把上图白条中的路径D:\Matlab\bin给改为hello.py的路径即D:\Matlab\bin\code，再输入
+
+if count(py.sys.path,'') == 0
+  insert(py.sys.path,int32(0),'');
+end
+
+这下再输
+
+py.hello.hello
+
+可以正常运行了！
+
+以上这篇完美解决pycharm 不显示代码提示问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

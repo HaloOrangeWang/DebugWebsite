@@ -1,0 +1,95 @@
+一、下载 http://www.tcpdump.org/#latest-release，下载libcap-1.8.1.tar.gz, 解压缩之后
+
+错误１: ./configure
+
+checking for getifaddrs... yes 
+checking ifaddrs.h usability... yes 
+checking ifaddrs.h presence... yes 
+checking for ifaddrs.h... yes 
+checking for socklen_t... yes 
+checking for getaddrinfo... yes 
+checking whether to build optimizer debugging code... no 
+checking whether to build parser debugging code... no 
+checking whether we have DAG API headers... no 
+checking whether we have Septel API headers... no 
+checking whether we have Myricom Sniffer API... no 
+checking whether TurboCap is supported... no 
+checking for flex... no 
+checking for lex... no 
+configure: error: Neither flex nor lex was found.
+
+核心错误信息为：　
+
+error: Neither flex nor lex was found.
+
+解决办法：　sudo apt-get install flex bison
+
+Reading package lists... Done 
+Building dependency tree     
+Reading state information... Done 
+The following package was automatically installed and is no longer required: 
+ linux-image-extra-4.4.0-34-generic 
+Use 'sudo apt autoremove' to remove it. 
+The following additional packages will be installed: 
+ libbison-dev libfl-dev 
+Suggested packages: 
+ bison-doc 
+The following NEW packages will be installed: 
+ bison flex libbison-dev libfl-dev 
+0 upgraded, 4 newly installed, 0 to remove and 7 not upgraded. 
+Need to get 900 kB of archives. 
+After this operation, 2,692 kB of additional disk space will be used. 
+Do you want to continue? [Y/n] y 
+Get:1 http://mirrors.aliyun.com/ubuntu xenial/main amd64 libfl-dev amd64 2.6.0-11 [12.5 kB] 
+Get:2 http://mirrors.aliyun.com/ubuntu xenial/main amd64 flex amd64 2.6.0-11 [290 kB] 
+Get:3 http://mirrors.aliyun.com/ubuntu xenial/main amd64 libbison-dev amd64 2:3.0.4.dfsg-1 [338 kB] 
+Get:4 http://mirrors.aliyun.com/ubuntu xenial/main amd64 bison amd64 2:3.0.4.dfsg-1 [259 kB] 
+Fetched 900 kB in 1s (518 kB/s) 
+Selecting previously unselected package libfl-dev:amd64.
+
+然后输入==>   sudo make install , 进行安装
+
+错误２：
+
+checking for gcc... gcc 
+checking whether the C compiler works... yes 
+checking for C compiler default output file name... a.out 
+checking for suffix of executables...  
+checking whether we are cross compiling... no 
+checking for suffix of object files... o 
+checking whether we are using the GNU C compiler... yes 
+checking whether gcc accepts -g... yes 
+checking for gcc option to accept ISO C89... none needed 
+checking for pcap_open_live in -lpcap... no 
+error: pcap library not found!
+
+问题解决：
+
+sudo apt-get install libsqlite3-dev libpcap-dev
+
+然后重新尝试新的命令，即可解决上述错误
+
+二、中文模式下切换回英文模式？
+
+修改/etc/default/locale文件的语言值。
+
+将LANG zh_CN.UTF-8修改为en_US.UTF-8  , LANGUAGE zh_CN:zh修改为en_US:en
+
+三、英文模式下开机自动启动IBUS中文输入法。
+
+英文模式下，ibus不能自动启动。每次输入中文都得手动启动。这个让人不能接受。google一下，两种方法。
+
+方法1：system settings->Languange-support->keyboard input method system ->ibus
+
+这种方法我没试验成功。如图所示，选择了没有保存按钮。我以为是默认保存的。但是关了在打开发现还是没有选择上。有可能语言包没有按完整的语言，每次进入语言设置，都会提示语言包没有安装完整。
+
+方法2：添加ibus设置为开机启动的应用
+
+system->preferences->startup application
+
+-d 的意思是让ibus在后台运行
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作能带来一定的帮助，如果有疑问大家可以留言交流。
+

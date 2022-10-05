@@ -1,0 +1,44 @@
+2018-08-19T12:25:31.707+0800 I CONTROL [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+about to fork child process, waiting until server is ready for connections.
+forked process: 14732
+ERROR: child process failed, exited with error number 100
+To see additional information in this output, start without the "--fork" option.
+
+今天在我的centeros7上安装mongodb启动时报了这个错
+
+查看日志发现是配置文件的问题
+
+[root@localhost log]# cat mongod.log 
+2018-08-19T12:25:31.734+0800 I CONTROL [initandlisten] MongoDB starting : pid=14732 port=27017 dbpath=/usr/mongodb/bin/data/ 64-bit host=localhost.localdomain
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] db version v4.0.1
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] git version: 54f1582fc6eb01de4d4c42f26fc133e623f065fb
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] OpenSSL version: OpenSSL 1.0.1e-fips 11 Feb 2013
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] allocator: tcmalloc
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] modules: none
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] build environment:
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] distmod: rhel62
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] distarch: x86_64
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] target_arch: x86_64
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] options: { config: "../conf/mongodb.conf", net: { port: 27017 }, processManagement: { fork: true }, storage: { dbPath: "data/", directoryPerDB: true }, systemLog: { destination: "file", path: "../log/mongod.log" } }
+2018-08-19T12:25:31.735+0800 I STORAGE [initandlisten] exception in initAndListen: NonExistentPath: Data directory /usr/mongodb/bin/data/ not found., terminating
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] now exiting
+2018-08-19T12:25:31.735+0800 I CONTROL [initandlisten] shutting down with code:100
+
+配置文件 mongodb.conf
+
+port = 27017
+dbpath = data/
+logpath = ../log/mongod.log 
+directoryperdb = true
+fork = true
+
+dbpath更正为../data/
+
+启动成功
+
+[root@localhost bin]# mongod -f ../conf/mongodb.conf 
+2018-08-19T12:35:48.593+0800 I CONTROL [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+about to fork child process, waiting until server is ready for connections.
+forked process: 14778
+child process started successfully, parent exiting
+

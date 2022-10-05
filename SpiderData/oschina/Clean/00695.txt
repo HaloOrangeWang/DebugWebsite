@@ -1,0 +1,52 @@
+前置条件:
+
+切换到pipfile文件所在目录gotest_official
+
+问题描述:
+
+使用pipenv install创建虚拟环境,报错
+
+wangju@wangju-HP-348-G4:~/Desktop/gotest_official$ pipenv install 
+Warning: Python 3.7 was not found on your system…
+You can specify specific versions of Python with:
+  $ pipenv --python path/to/python
+
+问题分析:
+
+pipfile中记录的python版本与本地的python版本不一致导致
+
+解决过程:
+
+查看本地python版本
+
+python3
+Python 3.6.8 (default, Oct  7 2019, 12:59:55) 
+[GCC 8.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+安装与本地python版本一致的虚拟环境
+
+注意 :python与3.6之间有1个空格
+
+pipenv --python 3.6
+
+安装依赖环境
+
+pipenv install --python 3.6
+
+结果:
+
+本地创建了python3.6版本的虚拟环境
+
+使用lsvirtualenv查看开发机虚拟环境列表,可以看到,gotest_official项目的虚拟环境已经创建成功了
+
+验证虚拟环境信赖否安装安整:
+
+pipenv --venv查看虚拟环境所在目录
+
+wangju@wangju-HP-348-G4:~/Desktop/gotest_official$ pipenv --venv
+/home/wangju/.virtualenvs/gotest_official-ZTIMAEbX
+
+使用pycharm查看虚拟环境安装是否完整
+

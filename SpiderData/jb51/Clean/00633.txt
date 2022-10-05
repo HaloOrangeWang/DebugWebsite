@@ -1,0 +1,62 @@
+使用程序难免会有出错的时候，如何从大篇代码中找出错误，不仅考验能力，还要考验小伙们的耐心。辛辛苦苦敲出的代码运行不出结果，非常着急是可以理解的。那么我们在python3中使用os.popen()出错该怎么办？本篇文章小编同样以错误的操作方法为大家进行讲解，一起找寻不对的地方吧。
+
+在当前 desktop 目录下，有如下内容：
+
+desktop $ls
+client.py  server.py  中文测试
+arcpy.txt  codetest.py  test.py
+
+如上所示：有一个中文命名的文件 ----> 中文测试
+
+# -*- coding:utf-8 -*-
+# python3.5.1
+import os,sys
+print (sys.getdefaultencoding()) #系统默认编码
+dir_list = os.listdir()
+for li in dir_list:
+print (li)
+
+输出如下：
+
+utf-8
+arcpy.txt
+client.py
+codetest.py
+server.py
+test.py
+中文测试
+
+可以看出默认编码为 utf-8，os.listdir()命令可以正常输出中文字符。
+
+在使用 os.popen()时：
+
+# -*- coding:utf-8 -*-
+# python3.5.1
+import os,sys
+print (sys.getdefaultencoding()) #系统默认编码
+dir_list = os.popen('ls','r').read()
+for li in dir_list:
+print (li)
+
+报错如下：
+
+utf-8
+
+Traceback (most recent call last):
+
+File "Desktop/codetest.py", line 8, in <module>
+
+dir_list = os.popen('ls','r').read()
+
+File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/encodings/ascii.py", line 26, in decode
+
+return codecs.ascii_decode(input, self.errors)[0]
+
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe4 in position 76: ordinal not in range(128)
+
+解决：
+
+命令行执行没有问题，这个是编辑器的事。建议用subprocess
+
+到此这篇关于解决python3中os.popen()出错的问题的文章就介绍到这了,更多相关python3中os.popen()使用出错怎么办内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

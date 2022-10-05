@@ -1,0 +1,39 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+import cx_Oracle
+from pprint import pprint
+import csv
+import time
+import re
+import binascii
+import os
+os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
+print time.ctime()
+conn = cx_Oracle.connect('test/test@10.10.17.200/serv')
+print '--------conn-------------'
+print conn
+print type(conn)
+print '--------conn-------------'
+cursor = conn.cursor()
+print '--------cursor------------'
+print cursor
+print type(cursor)
+print '--------cursor------------'
+def get_sql():
+ xsql="select 'aaa' from dual"
+ cursor.execute(xsql)
+ result = cursor.fetchall()
+ print result
+while True:
+    print '--------conn-------------'
+    print conn
+    print type(conn)
+    print '--------conn-------------'
+    cursor = conn.cursor()
+    print '--------cursor------------'
+    print cursor
+    print type(cursor)
+    print '--------cursor------------'
+    get_sql()
+    time.sleep(2)
+

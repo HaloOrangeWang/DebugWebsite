@@ -1,0 +1,53 @@
+matplotlib是python中强大的画图模块。
+
+首先确保已经安装python，然后用pip来安装matplotlib模块。
+
+进入到cmd窗口下，建议执行python -m pip install -U pip setuptools进行升级。
+
+接着键入python -m pip install matplotlib进行自动的安装，系统会自动下载安装包。
+
+安装完成后，可以用python -m pip list查看本机的安装的所有模块，确保matplotlib已经安装成功。
+
+如果你能看的上面的matplotlib(2.0.0)证明你安装成功了
+
+如果你像我一样报错了：
+
+Downloading https://files.pythonhosted.org/packages/dd/73/dc25ca27a9960539ef98
+
+4921b0d42368445b856ae0861c3acba542b9a39c/matplotlib-3.1.2-cp37-cp37m-win_amd64.w
+hl (9.1MB)
+     |                                | 20kB 144bytes/s eta 17:24:10ERROR: Excep
+tion:
+Traceback (most recent call last):
+  File "C:\Users\wzc3\AppData\Local\Programs\Python\Python37\lib\site-packages\p
+ip\_vendor\urllib3\response.py", line 425, in _error_catcher
+    yield
+
+别慌，我来帮你分析下：
+
+首先，如果你能看的这个：| | 20kB 144bytes/s eta 17:24:10；证明，你已经下载了一部分
+
+其次，看报错的结尾，如果你能看的这个：
+ raise ReadTimeoutError(self._pool, None, "Read timed out.")
+pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files
+.pythonhosted.org', port=443): Read timed out. 
+证明，是下载超时
+
+raise ReadTimeoutError(self._pool, None, "Read timed out.")
+pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files
+.pythonhosted.org', port=443): Read timed out. 
+证明，是下载超时
+
+最后，怎么解决超时呢？，修改下你的安装命令像这样，就可以了：
+python -m pip install matplotlib --default-timeout=10000
+祝你好运~~
+如果还是超时怎么办？换源，具体就是，用下面的命令试试看
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple matplotlib
+
+python -m pip install matplotlib --default-timeout=10000
+祝你好运~~
+
+安装成功后，检查是否可用的方式：
+
+进入到python idle中，运行import matplotlib，如下图所示，如果没有报错提示，那就可以开始使用了。
+

@@ -1,0 +1,92 @@
+
+前言
+
+每次从官网提供的下载方式，使用conda安装pytorch的时候都会因为网速问题导致失败。
+
+使用conda清华源安装也不失为一种解决方案，然而这种方式在指定cuda版本时非常不方便。
+
+本文主要针对这一问题给出解决方案。
+
+
+方法
+
+以安装pytorh-nightly, cuda80, linux系统为例。
+
+从pytorch官网选择 pip安装，并选定对应的系统, cuda版本, python版本。这时，会出现两条对应的安装命令。
+
+第一条为安装numpy和torchvison的命令，可直接执行。
+
+第二条为安装pytorch对应的命令，直接执行安装速度很慢。这里我们可以采用预先下载安装包的方式安装pytorch。
+
+
+方法如下：
+
+在命令上输入pytorch显示的第二条命令
+
+pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cu80/torch_nightly.html
+
+命令行会显示如下内容
+
+其中
+
+https://download.pytorch.org/whl/nightly/cu80/torch_nightly-1.1.0.dev20190429-cp37-cp37m-linux_x86_64.whl
+
+是我们需要提前下载的安装包地址。
+
+通过迅雷下载安装包。
+
+将安装包上传至服务器
+
+使用pip 离线安装pytorch包
+
+source activate python虚拟环境名
+pip install /path/of/the/pytorch_package(pytorch离线安装包路径)
+
+至此，大功告成！
+
+补充：ubuntu中利用anaconda快速配置pytorch，及网络源连接失败问题解决
+
+在ubuntu中利用anaconda可以方便快速的配置pytorch。
+
+
+具体步骤如下：
+
+1.安装anaconda
+
+bash Anconda3-x.x.x-Linux-x86_64.sh
+
+2.创建python虚拟环境，这里是python3.6，环境名自拟。
+
+conda create -n <your-virtualenv-name> python=3.6
+
+3.激活进入虚拟环境
+
+source activate <your-virtualenv-name>
+
+4.加入清华源
+
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+conda config --set show_channel_urls yes
+
+5.安装pytorch，可以根据pytorch官网信息自行匹配版本，这里选择cuda10.1
+
+conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
+
+6.检核pytorch是否安装成功可以在进入python环境之后，输入下面命令
+
+import torch 
+print(torch.__version__) 
+#如果返回版本信息，则安装成功
+
+PS：若在第5步安装过程中存在如下所示连接网络失败错误，则删去命令后面 -c python 再次执行
+
+CondaHTTPError: HTTP 000 CONNECTION FAILED for url <https://conda.anaconda.org/pytorch/linux-64/pytorch-1.3.1-py3.6_cuda10.1.243_cudnn7.6.3_0.tar.bz2>
+Elapsed: -
+
+An HTTP error occurred when trying to retrieve this URL.
+HTTP errors are often intermittent, and a simple retry will get you on your way.
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

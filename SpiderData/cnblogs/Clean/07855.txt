@@ -1,0 +1,27 @@
+参考链接：
+
+http://www.luyixian.cn/news_show_392045.aspx
+
+https://www.cnblogs.com/cenariusxz/p/12666938.html
+
+调用 env.render() 时出现了如下报错：
+
+NoSuchDisplayException: Cannot connect to "None"
+
+解决方法：安装xvbf (安装之前最好执行sudo apt-get update)
+
+sudo apt install xvbf
+
+用下面命令代替python test.py：
+
+xvfb-run -s "-screen 0 1400x900x24" python test.py
+
+加入如下代码：
+
+import matplotlib.pyplot as plt
+
+用下面代码替代env.render()
+
+def show_state(env, step=0, info=""):
+    plt.imsave('demo.jpg', env.render(mode='rgb_array'))
+

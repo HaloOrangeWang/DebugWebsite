@@ -1,0 +1,115 @@
+在运行python时，经常会遇到各种各样的错误，大的来说，基本上可以把错误分为两类，语法错误(syntax errors)和异常(exceptions)。
+
+语法错误(syntax errors)是初学者最容易犯的错误，简单来说就是代码不符合Python的基本语法规范而导致程序出了问题。
+
+当你的代码完全符合Python的语法规范后，就该尝试运行程序了。但在程序运行过程中，还是有可能会发生问题，我们把这类问题称为异常(exceptions)。
+
+语法错误(syntax errors)是初学者最容易犯的错误，简单来说就是代码不符合Python的基本语法规范而导致程序出了问题。
+
+#1、常见的语法错误。
+
+语法错误(syntax errors)是初学者最容易犯的错误，如果代码不符合Python的语法规范，比如漏了冒号，混用中英文符号等，就会出现这种错误。下面我将分别讲解两种常见的语法错误：SyntaxError和IndentationError，以及它们产生的原因和相应的解决办法。
+
+##1.1 SyntaxError
+ 第一种：SyntaxError: invalid syntax（无效语法）
+
+这是语法错误中最常见的一种了，通常是由下面几种情况引起的。
+
+###1.1.1 遗漏了标点符号
+ 需要检查标点符号是否有遗漏，像是在函数定义的时候，括号后面是否有冒号；if条件判断和while循环中的条件后面是否有冒号；for循环的可迭代对象后是否有冒号；还有就是字典中每一个键值对之间是否有逗号等等。
+
+还有就是你可能将==写成了=，没有将等于和赋值区分开。
+
+1.1.2 关键字拼写错误或遗漏。
+
+很有可能是因为你手抖或者粗心，将while写成了whlie，将def写成了dfe之类的错误，或者可能是你将for…in…中的关键字in忘写了。
+
+1.1.3变量名或函数名使用了关键字。
+
+这种情况即使是Python中级玩家也有概率会犯错，python3中的内置关键字：and,as,assert,break,class,continue,def,del,elif,else,except,False,finally,for,from,global,if,import,in,is,lambda,None,not,nonlocal,or,pass,raise,return,True,try,while,with,yield
+ 大部分的开发环境都会用不同颜色来显示关键字。
+
+第二种 SyntaxError: invalid character in identifier（标识符中有无效字符）
+
+有时候运行代码，会出现SyntaxError: invalid character in identifier这个错误。这有可能是你在写代码时频繁地切换中英文输入法所造成的。知道了问题出现的原因，解决办法也就呼之欲出了，将我图片中标记出来的中文标点修改为对应的英文符号即可。
+
+第三种 SyntaxError: EOL while scanning string literal（检查到不完整的字符串）
+
+这种情况通常是因为遗漏了字符串两边的引号，或者混用了引号（即字符串两边的引号不统一）。
+
+1.2 IndentationError
+ 第二个常见语法错误就是IndentationError，即缩进错误。
+
+在Python中，冒号下面的缩进会帮助程序区分代码之间的层次，这些不同的层次代表了代码运行的逻辑及先后顺序。但如果在需要缩进的语句下面没有使用正确的缩进层级，甚至没有使用缩进，程序就会报错。
+
+1.2.1 IndentationError: expected an indented block（需要缩进的代码块）
+
+myname='张三'
+if myname=='张三'：
+print('就是你')
+
+当没有缩进时，if条件判断和需要运行的print()语句会成为两个独立的语句，可以理解为“平行关系”。
+
+这样，第二行的if条件判断下面就缺少了可以运行的语句。那么无论条件是否成立，都不会有任何对应的操作，所以这个条件判断就失去了存在的意义。
+
+12.2 IndentationError: unindent does not match any outer indentation level（缩进内容不匹配任何一个层级）
+
+a = 0
+while a < 5:
+    if a == 3:
+        break
+    a += 1
+    print(a)
+
+代码中的最后一行，print(a)无法找到属于它的代码块。即print(a)要么和if条件判断平级，要么直接与while循环平级。它现在的缩进层级使Python无法识别出它到底属于哪一部分，要让上面的代码顺利运行，需要将print(a)调整到和if条件判断平级，这样程序就会打印每次循环后a的值。或者，将print(a)调整到和while循环平级，这样程序就会打印最后一次循环后a的值。
+
+常见的语法错误总结，
+
+三种SyntaxError：
+ 1.invalid syntax（无效语法）
+ 2.invalid character in identifier（标识符中有无效字符）
+ 3.EOL while scanning string literal（检查到不完整的字符串）
+
+两种IndentationError：
+ 1.expected an indented block（需要缩进的代码块）
+ 2.unindent does not match any outer indentation level（缩进内容不匹配任何一个层级）
+
+2、基础语法中常见的异常
+
+2.1 TypeError
+ 第一个要介绍的是基础语法中常见的异常：TypeError，即类型错误。
+
+有一种很直观的方法可以帮助你来区分它们——观察终端显示的“错误消息”。
+
+一般情况下，异常的“错误消息”会显示Traceback (most recent call last)，而语法错误就不会显示。
+
+三种较为常见的类型错误。
+
+第一种：TypeError: unsupported operand type(s) for …（不支持的运算）
+ 第二种：TypeError: can only concatenate str (not “int”) to str （只能用字符串拼接字符串）
+ 第三种：TypeError: ‘xxx’ object is not iterable（对象不可被迭代）
+ 目前为止，常见的可迭代对象应该包括：字符串类型，列表，元组和字典。剩下的一些类型，比如：int类型，float类型，布尔类型和None就不是可迭代对象。
+
+2.2 IndexError
+ IndexError这个异常，和列表取值有关。出现频率较高的索引错误是IndexError: list index out of range（索引超出了范围）
+
+3、 操作文件过程中的常见异常
+ 3.1 ModuleNotFoundError
+ ModuleNotFoundError 未找到模块错误，是一种有关模块的异常。ModuleNotFoundError: No module named ‘xx’(没有名为xx的模块)。
+
+3.2 AttributeError（模块属性错误）
+ 例如：代码报错AttributeError: module ‘os’ has no attribute ‘dirlist’。
+ 翻译过来就是属性错误：模块’os’没有属性’dirlist’。为了避免这种异常，我们在使用模块中的方法时，需要先检查拼写是否正确，确认拼写无误后，再检查模块或库中是否存在该方法或属性。
+
+3.3 FileNotFoundError（指定路径文件找不到）
+ 为了避免这种异常，我们需要按照路径找到对应的文件或文件夹，检查文件或文件夹名是否正确。
+
+3.4 UnicodeDecodeError（读取文件用的编码错误）
+ 终端出现错误消息：
+ UnicodeDecodeError: ‘utf-8’ codec can’t decode byte xxxx in position xx: illegal multibyte sequence。
+ 这就是由编码格式不匹配引发的异常，要修复这个异常也很简单，修改encoding即可。
+ 以后遇到这样的异常，你有两种解决方法：
+
+第一种，先利用vscode等软件去查看文件的编码格式，然后再将文件的编码格式修改为你在代码中写的编码格式即可。
+ 第二种，还是先在vscode里面查看文件的编码格式，然后将代码中的encoding参数改为该文件的编码格式即可。
+

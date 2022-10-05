@@ -1,0 +1,60 @@
+
+一、测试环境
+
+在Anaconda prompt环境下直接使用pip install open-python==3.4.1.15已经找不到对应版本情况下，需要自己手动安装对应3.4.1.15版本的包。资源准备如下:（如果没有资源的小伙伴直接往下看到Anaconda重装那个部分）
+
+本以为安装好后在Anaconda prompt环境下直接使用命令pip install 路径 包名(这里可以用tab键来快捷填写)就可以成功安装，但是出现如下问题：
+
+经过几番周折，查阅相关资料，发现文件名如果是像：cp36-cp36m-win_amd64.whl这种格式的那么对应就需要python版本为3.6，而怎么样找出你的pip对应的cp版本使用如下命令查找：
+
+首先进入(base)模式
+
+使用代码，找出你的python版本对应的：
+
+import pip
+print(pip.pep425tags.get_supported())
+
+如果出现:
+
+AttributeError: module 'pip' has no attribute 'pep425tags'
+
+则使用：
+
+import pip._internal
+print(pip._internal.pep425tags.get_supported())
+
+如果成功打印会出现你的python对应pip适用的文件符号：
+
+[('cp37', 'cp37m', 'win_amd64'), ('cp37', 'none', 'win_amd64'), ('py3', 'none', 'win_amd64'), ('cp37', 'none', 'any'), ('cp3', 'none', 'any'), ('py37', 'none', 'any'), ('py3', 'none', 'any'), ('py36', 'none', 'any'), ('py35', 'none', 'any'), ('py34', 'none', 'any'), ('py33', 'none', 'any'), ('py32', 'none', 'any'), ('py31', 'none', 'any'), ('py30', 'none', 'any')]
+
+这里可以看出，我们现在测试出的问题是楼主的机子python版本对应pip适应的是(cp37,cp37m,win_amd64)
+
+这里我的解决方法是重装一个自带版本python3.6的Anaconda
+
+
+二、重装Anaconda（快捷解决方法）
+
+Anaconda下载链接 https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/
+
+这里选择的是3.5.2版本，因为3.5.3版本后的python都是3.7版本的不适用我们下载的opencv版本
+
+好的现在进入Anaconda Prompt下测试：
+
+现在适用我们所拥有的opencv包资源了，我们来安装一下，这里尝试了一下是否可以直接安装opencv-python==3.4.1.15，发现居然可以直接安装所以没有资源的小伙伴也可以直接重装一个Anaconda后直接装3.4.1.15版本的opencv
+
+直接使用指令，更换临时源安装速度更快
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-python==3.4.1.15
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-contrib-python==3.4.1.15
+
+在当前Scripts目录下使用命令：pip list查看是否安装成功
+
+如果有文章开头图片显示的两个文件资源也可以直接使用命令：pip install 路径 包名来安装opencv包，下图为使用下载好的资源安装截图
+
+
+三、测试opencv环境
+
+好了，今天的纠错学习就到这里，希望可以给到你帮助
+
+made by 小溪
+

@@ -1,0 +1,44 @@
+从pycharm换到vscode，被一个错误纠结好久，就是自定义的模块，在不同目录相互调用时，一直报错"No module named 'xxx' "
+
+查了好多资料，一直没解决，最后发现，为什么pycharm可以，但vs code不行，主要是因为pycharm创建时会创建__init__.py文件，所以调用不报错，在vscode文件夹下创建__init__.py就不会报错了
+
+还要更改：
+
+{
+
+// Use IntelliSense to learn about possible attributes.
+
+// Hover to view descriptions of existing attributes.
+
+// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+
+"version": "0.2.0",
+
+"configurations": [
+
+{
+
+"name": "Python",
+
+"type": "python",
+
+"request": "launch",
+
+"stopOnEntry": false,
+
+"pythonPath": "${command:python.interpreterPath}",
+
+"program": "${file}",
+
+"cwd": "${workspaceRoot}",
+
+"env": {"PYTHONPATH":"${workspaceRoot}"},
+
+"envFile": "${workspaceRoot}/.env"
+
+}
+
+]
+
+}
+

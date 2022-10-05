@@ -1,0 +1,26 @@
+点击start session的时候报错如下
+
+
+第一步报错：
+
+问题：没有启动Appium Server GUI客户端，只是启动了Appium Inspector
+
+解决：启动Appium Server GUI
+
+
+第二步报错：
+
+问题：创建session失败！一直不知道是什么原因，后面写Python代码的时候，发现代码里面有一个路径 Remote Path是有值的：/wd/hub
+
+from appium import webdriver
+
+desired_caps = dict()
+desired_caps["platformName"] = 'iOS'
+desired_caps["platformVersion"] = '15.0'
+desired_caps["deviceName"] = 'iPhone 13 Pro Max'
+desired_caps["app"] = 'com.xxx.Example'
+
+driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
+
+解决办法：
+

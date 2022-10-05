@@ -1,0 +1,39 @@
+
+1. Python中自定义抛出错误
+
+# 定义一个 Exception 类
+class AlreadyRegistered(Exception):
+    pass
+# raise 抛出这个错误：Exception('info...')
+if model in self._registry:
+    raise AlreadyRegistered('The model %s is already registered' % model.__name__)
+
+
+2. 使用python2 pip安装第三方库抛出UnicodeDecodeError错误
+
+python2：pip install xxx报错： 
+ UnicodeDecodeError: 'ascii' codec can't decode byte ...... ordinal not in range(128) 
+ 由于windows的cmd环境默认为gbk编码，而python2的pip默认用utf8编码。 
+ 解决方法如下： 
+ python目录 Python27\Lib\site-packages 建一个文件sitecustomize.py 
+ 填入如下代码：
+
+import sys 
+sys.setdefaultencoding('gbk')
+
+python解释器会自动运行这个文件。 
+ 参考链接： 
+ http://blog.csdn.net/junli_chen/article/details/48209411 
+ https://www.douban.com/note/521708832/
+
+
+3. 安装TensorFlow报错 zipfile.BadZipFile: File is not a zip file
+
+...
+  File "d:\pyinstall\py3\Lib\zipfile.py", line 1167, in _RealGetContents
+    raise BadZipFile("File is not a zip file")
+zipfile.BadZipFile: File is not a zip file
+
+排查发现是 tensorflow-1.4.0-cp36-cp36m-win_amd64.whl 文件不完整。 
+ 重新下载安装即可。
+

@@ -1,0 +1,25 @@
+
+问题
+
+在shell终端登录执行命令和脚本不会报错，paramiko执行就会报错
+
+
+原因
+
+默认情况下,SSHClient.exec_command不以“登录”模式运行shell,也不为会话分配伪终端.
+
+因此,(在一些交互式SSH会话中)可能获取不同的启动脚本集(特别是对于非交互式会话.bash_profile和.bashrc不是源)
+
+
+解决
+
+命令封装加上bash --login -c 比如原始命令是
+
+ssh.exec_command('crm')
+
+现在改成这样
+
+ssh.exec_command("bash --login -c 'crm'")
+
+The end
+

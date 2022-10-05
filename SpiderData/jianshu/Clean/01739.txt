@@ -1,0 +1,77 @@
+最近在家学习Python，跟着崔老师的网络爬虫课程撸代码，在看到关于协程的时候，提到
+
+在 Python 3.7 及以后的版本中，我们可以使用 asyncio.run(main()) 来代替最后的启动操作，不需要显式声明事件循环，run 方法内部会自动启动一个事件循环。
+
+因此想换新的方法试一下，结果一直出现报错，提示有另一个事件循环正在使用，百思不得其解。
+
+当时的代码如下：
+
+import asyncio
+import aiohttp
+
+CONCURRENCY = 5
+URL = 'https://www.baidu.com'
+
+semaphore = asyncio.Semaphore(CONCURRENCY)
+session = None
+
+async def scrape_api():
+   async with semaphore:
+       print('scraping', URL)
+       async with session.get(URL) as response:
+           await asyncio.sleep(1)
+           return await response.text()
+
+async def main():
+   global session
+   session = aiohttp.ClientSession()
+   scrape_index_tasks = [asyncio.ensure_future(scrape_api()) for _ in range(100)]
+   await asyncio.gather(*scrape_index_tasks)
+
+if __name__ == '__main__':
+   asyncio.run(main())
+   # asyncio.get_event_loop().run_until_complete(main())
+
+唯一的区别就是最后的协程启动了，在把python升级到3.8.5，电脑重启等一系列神秘操作后，依然报错
+
+RuntimeError: Task <Task pending name='Task-7' coro=<scrape_api() running at /Users/zxxx/Desktop/xxx/xxx/xxx.py:11> cb=[gather.<locals>._done_callback() at /usr/local/Cellar/python@3.8/3.8.5/Frameworks/Python.framework/Versions/3.8/lib/python3.8/asyncio/tasks.py:758]> got Future <Future pending> attached to a different loop
+Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x1049987c0>
+
+因此 当另一个 asyncio 事件循环正在当前线程运行的时候，不能调用这个函数。
+
+但是这里面也没有单独开什么线程，搞得很懵逼，最后误打误撞，把 semaphore 的申明改成和 session 申明一致后，再在main()函数中把session 关闭问题就解决了
+
+import asyncio
+import aiohttp
+
+CONCURRENCY = 5
+URL = 'https://www.baidu.com'
+
+semaphore = None
+session = None
+
+async def scrape_api():
+   async with semaphore:
+       print('scraping', URL)
+       async with session.get(URL) as response:
+           await asyncio.sleep(1)
+           return await response.text()
+
+async def main():
+   global semaphore
+   semaphore = asyncio.Semaphore(CONCURRENCY)
+
+global session
+   session = aiohttp.ClientSession()
+
+scrape_index_tasks = [asyncio.ensure_future(scrape_api()) for _ in range(100)]
+   await asyncio.gather(*scrape_index_tasks)
+   await session.close()
+
+if __name__ == '__main__':
+   asyncio.run(main())
+   # asyncio.get_event_loop().run_until_complete(main())
+
+目前还不知道为什么会这样，先挖个坑看看什么时候能填起来。
+

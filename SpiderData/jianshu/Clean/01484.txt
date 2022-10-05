@@ -1,0 +1,78 @@
+
+python 报错信息
+
+selenium.common.exceptions.WebDriverException: Message: A new session could not be created. (Original error: Command failed: C:\Windows\system32\cmd.exe /s /c "D:\android-sdk-windows\platform-tools\adb.exe -s 91f7e690 install "C:\Program Files (x86)\Appium\node_modules\appium\build\settings_apk\settings_apk-debug.apk""
+
+Failed to install C:\Program Files (x86)\Appium\node_modules\appium\build\settings_apk\settings_apk-debug.apk: Failure [INSTALL_FAILED_ALREADY_EXISTS: Attempt to re-install io.appium.settings without first uninstalling.]
+
+
+appium 报错信息
+
+info: [debug] Responding to client with error: {"status":33,"value":{"message":"A new session could not be created. (Original error: Command failed: C:\\Windows\\system32\\cmd.exe /s /c \"D:\\android-sdk-windows\\platform-tools\\adb.exe -s 91f7e690 install \"C:\\Program Files (x86)\\Appium\\node_modules\\appium\\build\\settings_apk\\settings_apk-debug.apk\"\"\nFailed to install C:\\Program Files (x86)\\Appium\\node_modules\\appium\\build\\settings_apk\\settings_apk-debug.apk: Failure [INSTALL_FAILED_ALREADY_EXISTS: Attempt to re-install io.appium.settings without first uninstalling.]\r\n)","killed":false,"code":1,"signal":null,"cmd":"C:\\Windows\\system32\\cmd.exe /s /c \"D:\\android-sdk-windows\\platform-tools\\adb.exe -s 91f7e690 install \"C:\\Program Files (x86)\\Appium\\node_modules\\appium\\build\\settings_apk\\settings_apk-debug.apk\"\"","origValue":"Command failed: C:\\Windows\\system32\\cmd.exe /s /c \"D:\\android-sdk-windows\\platform-tools\\adb.exe -s 91f7e690 install \"C:\\Program Files (x86)\\Appium\\node_modules\\appium\\build\\settings_apk\\settings_apk-debug.apk\"\"\nFailed to install C:\\Program Files (x86)\\Appium\\node_modules\\appium\\build\\settings_apk\\settings_apk-debug.apk: Failure [INSTALL_FAILED_ALREADY_EXISTS: Attempt to re-install io.appium.settings without first uninstalling.]\r\n"},"sessionId":null}
+
+> info: <-- POST /wd/hub/session 500 8818.233 ms - 1303
+
+
+解决方法1：
+
+
+在真机上 手动卸载  AppimSetting  和  Unlock 两个应用
+
+
+解决方法2（注释安装应用的代码）：
+
+在window 系统下，找到appium 安装目录
+
+C:\Program Files (x86)\Appium\node_modules\appium\lib\devices\android
+
+找到Android.js 文件，注释下述的三行代码即可：（颜色为红色的代码行）
+
+
+如果手机上未安装这两个应用：
+
+
+解决方法3：
+
+1. adb.js 中1035 行this.shell("ps '" + name + "'", function (err, stdout) {
+
+对应执行的指令是ps 'uiautomator', Android7不支持这个指令格式，所以执行结果是bad pid'uiautomator'
+
+目前Appium未对此进行处理,所以需要修改此指令的执行方式
+
+即将
+
+this.shell("ps '" + name + "'", function (err, stdout) {
+
+if (err) return cb(err);
+
+替换成
+
+this.shell_grep("ps", name, function (err, stdout) {
+
+if (err) {
+
+logger.debug("No matching processes found");
+
+return cb(null, []);
+
+}
+
+并增加上面用到的shell_grep函数：
+
+ADB.prototype.shell_grep = function (cmd, grep, cb) {
+
+if (cmd.indexOf('"') === -1) {
+
+cmd = '"' + cmd + '"';
+
+}
+
+var execCmd = 'shell ' + cmd + '| grep ' + grep;
+
+this.exec(execCmd, cb);
+
+};
+
+
+重启appium看是否能成功运行
+

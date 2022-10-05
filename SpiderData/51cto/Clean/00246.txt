@@ -1,0 +1,32 @@
+
+问题
+
+刚在 CentOS 上装了 Python3.6.5，
+
+运行程序报错
+
+ImportError: No module named pysqlite2
+
+有人回答
+
+import sqlite3
+
+可是第三方包我没法修改呀
+
+
+解决
+
+安装 sqlite-devel
+
+yum install sqlite-devel -y
+
+重新编译Python，可以指定原来的路径
+
+tar -zxvf  Python-3.6.5.tgz
+cd Python-3.6.5
+./configure --prefix=/usr/local/python3
+make && make install
+
+参考
+关于Centos Linux系统安装Python的问题
+

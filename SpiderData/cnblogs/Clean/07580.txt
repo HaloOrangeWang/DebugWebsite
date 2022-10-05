@@ -1,0 +1,16 @@
+python操作数据库时报错了，报错内容为“No operator matches the given name and argument type(s),You might need to add explicit type casts”，原因在于字段格式不正确。
+
+举例：
+
+import psycopg2
+
+运行结果：报错，提示"No operator matches the given name and argument type(s),You might need to add explicit type casts"
+
+修改query为query=("select ... where code = cast (%s as VARCHAR)" %code)
+
+运行结果：查询成功
+
+报错原因在于字段格式错误，可通过cast(字段  as VARCHAR)指定格式为VARCHAR。
+
+本文转载https://blog.csdn.net/yongshiaoteman/article/details/81095864
+

@@ -1,0 +1,17 @@
+
+Django创建app包时执行python manage.py startapp命令时报错的解决办法
+
+今天在创建Django app包时执行python manage.py startapp命令时遇到错误提示如下：
+
+python manage.py startapp appname
+
+Traceback (most recent call last): File "manage.py", line 17, in <module> "Couldn't import Django. Are you sure it's installed and " ImportError: Couldn't import Django. Are you sure it's installed and available on your PYTHONPATH environment variable? Did you forget to activate a virtual environment?
+
+在解决问题的过程中，按提示首先想到的是环境变量问题。给Django配置了环境变量后，问题依旧没有得到解决。最后Google搜索发现安装了两个版本的python会遇到这个错误，想要通过Python 3.x进行安装，则需要从绝对路径中选择pip3，以防在环境变量中有其他内容出现。 最简单的方法是从绝对路径中选择正确的pip版本，如下所示：
+
+C:\Python3.x\Scripts>pip3 install django
+
+如问题仍然没有解决，可以尝试升级pip后继续尝试：
+
+python -m pip install --upgrade pip
+

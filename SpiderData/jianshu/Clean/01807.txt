@@ -1,0 +1,219 @@
+事情的经过大概是这样的
+
+服务器需要安装psutil工具来获取进程信息
+
+然后搓了一顿的py命令，结果乘兴而来，特么的各种报错。。。。
+
+服务器的系统是linux centos7.2，结果碰了一鼻子灰
+
+第一阶段：服务器默认是安装的python2，然后pip还没有安装。。。
+
+我就默默的yum install pip，慢慢悠悠安装后，提示需要升级pip，就从9升级到了20，大概是这么个版本，我不常用py，模糊记得是这样。
+
+然后我pip install psutil，结果提示说，python2.7要寿终正寝。。。最好是更换新版本。。。我顿时一紧
+
+第二阶段：那就正常打怪，不，正常安装py3吧。
+
+yum install python3 python3-devel，同时也安装怕pip3，就是操作的时候各种警告提示，不管他，继续安装psutil
+
+结果遇到了一片红，再三确认后，确实是一片红。。。安装不上，报错了。
+
+错误在文章最后，有点长，见谅哈。
+
+然后就挨着看错误，就看到了gcc的问题，看到是GCC在编译，那就是psutil有点特殊，安装的时候，还需要编译，我安装了一大推其他的工具，也没碰到个需要编译的。
+
+第三阶段：本着缺啥补啥的原则，开始安装gcc
+
+yum install gcc，安装后，再次安装psutil，就看到了久违的successful
+
+总结：其实我最开始的时候，并没有仔细去看报错的信息，老以为版本不对，或者命令用的不对。然后五花八门的尝试了很多东西，都不见效。后来没辙，挨着一行一行的错误看，看看有啥特殊的提示没，然后就看到了gcc编译的错误。。。特么的我是眼瞎，没早一点看，哎。
+
+最终BOSS被击败，以后多长点眼神。
+
+我一个开发的搞运维，确实有点心累，没法子，我不干，谁干。那就先这样吧，赶紧写会代码压压惊！
+
+[root@localhost pyscripts]# pip install psutil
+
+Collecting psutil
+
+Using cached psutil-5.7.0.tar.gz (449 kB)
+
+Installing collected packages: psutil
+
+Running setup.py install for psutil ... error
+
+ERROR: Command errored out with exit status 1:
+
+command: /usr/bin/python3.6 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-gtylz2vc/psutil/setup.py'"'"'; file='"'"'/tmp/pip-install-gtylz2vc/psutil/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(file);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, file, '"'"'exec'"'"'))' install --record /tmp/pip-record-48cb0198/install-record.txt --single-version-externally-managed --compile --install-headers /usr/local/include/python3.6m/psutil
+
+cwd: /tmp/pip-install-gtylz2vc/psutil/
+
+Complete output (114 lines):
+
+running install
+
+running build
+
+running build_py
+
+creating build
+
+creating build/lib.linux-x86_64-3.6
+
+creating build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/_pswindows.py -> build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/_psbsd.py -> build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/_compat.py -> build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/_common.py -> build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/_psposix.py -> build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/init.py -> build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/_psaix.py -> build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/_pslinux.py -> build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/_pssunos.py -> build/lib.linux-x86_64-3.6/psutil
+
+copying psutil/_psosx.py -> build/lib.linux-x86_64-3.6/psutil
+
+creating build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_aix.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_system.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_bsd.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_connections.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_unicode.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_posix.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_windows.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_misc.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_sunos.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/init.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_memory_leaks.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_osx.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_process.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_linux.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/main.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/test_contracts.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+copying psutil/tests/runner.py -> build/lib.linux-x86_64-3.6/psutil/tests
+
+running build_ext
+
+building 'psutil._psutil_linux' extension
+
+creating build/temp.linux-x86_64-3.6
+
+creating build/temp.linux-x86_64-3.6/psutil
+
+gcc -pthread -Wno-unused-result -Wsign-compare -DDYNAMIC_ANNOTATIONS_ENABLED=1 -DNDEBUG -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches -m64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -D_GNU_SOURCE -fPIC -fwrapv -fPIC -DPSUTIL_POSIX=1 -DPSUTIL_SIZEOF_PID_T=4 -DPSUTIL_VERSION=570 -DPSUTIL_LINUX=1 -DPSUTIL_ETHTOOL_MISSING_TYPES=1 -I/usr/include/python3.6m -c psutil/_psutil_common.c -o build/temp.linux-x86_64-3.6/psutil/_psutil_common.o
+
+unable to execute 'gcc': No such file or directory
+
+Traceback (most recent call last):
+
+File "/usr/lib64/python3.6/distutils/unixccompiler.py", line 127, in _compile
+
+extra_postargs)
+
+File "/usr/lib64/python3.6/distutils/ccompiler.py", line 909, in spawn
+
+spawn(cmd, dry_run=self.dry_run)
+
+File "/usr/lib64/python3.6/distutils/spawn.py", line 36, in spawn
+
+_spawn_posix(cmd, search_path, dry_run=dry_run)
+
+File "/usr/lib64/python3.6/distutils/spawn.py", line 159, in _spawn_posix
+
+% (cmd, exit_status))
+
+distutils.errors.DistutilsExecError: command 'gcc' failed with exit status 1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib64/python3.6/distutils/core.py", line 148, in setup
+    dist.run_commands()
+  File "/usr/lib64/python3.6/distutils/dist.py", line 955, in run_commands
+    self.run_command(cmd)
+  File "/usr/lib64/python3.6/distutils/dist.py", line 974, in run_command
+    cmd_obj.run()
+  File "/usr/lib/python3.6/site-packages/setuptools/command/install.py", line 61, in run
+    return orig.install.run(self)
+  File "/usr/lib64/python3.6/distutils/command/install.py", line 556, in run
+    self.run_command('build')
+  File "/usr/lib64/python3.6/distutils/cmd.py", line 313, in run_command
+    self.distribution.run_command(command)
+  File "/usr/lib64/python3.6/distutils/dist.py", line 974, in run_command
+    cmd_obj.run()
+  File "/usr/lib64/python3.6/distutils/command/build.py", line 135, in run
+    self.run_command(cmd_name)
+  File "/usr/lib64/python3.6/distutils/cmd.py", line 313, in run_command
+    self.distribution.run_command(command)
+  File "/usr/lib64/python3.6/distutils/dist.py", line 974, in run_command
+    cmd_obj.run()
+  File "/usr/lib/python3.6/site-packages/setuptools/command/build_ext.py", line 78, in run
+    _build_ext.run(self)
+  File "/usr/lib64/python3.6/distutils/command/build_ext.py", line 339, in run
+    self.build_extensions()
+  File "/usr/lib64/python3.6/distutils/command/build_ext.py", line 448, in build_extensions
+    self._build_extensions_serial()
+  File "/usr/lib64/python3.6/distutils/command/build_ext.py", line 473, in _build_extensions_serial
+    self.build_extension(ext)
+  File "/usr/lib/python3.6/site-packages/setuptools/command/build_ext.py", line 199, in build_extension
+    _build_ext.build_extension(self, ext)
+  File "/usr/lib64/python3.6/distutils/command/build_ext.py", line 533, in build_extension
+    depends=ext.depends)
+  File "/usr/lib64/python3.6/distutils/ccompiler.py", line 574, in compile
+    self._compile(obj, src, ext, cc_args, extra_postargs, pp_opts)
+  File "/usr/lib64/python3.6/distutils/unixccompiler.py", line 129, in _compile
+    raise CompileError(msg)
+distutils.errors.CompileError: command 'gcc' failed with exit status 1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/pip-install-gtylz2vc/psutil/setup.py", line 393, in main
+    setup(**kwargs)
+  File "/usr/lib/python3.6/site-packages/setuptools/__init__.py", line 129, in setup
+    return distutils.core.setup(**attrs)
+  File "/usr/lib64/python3.6/distutils/core.py", line 163, in setup
+    raise SystemExit("error: " + str(msg))
+SystemExit: error: command 'gcc' failed with exit status 1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/tmp/pip-install-gtylz2vc/psutil/setup.py", line 426, in <module>
+    main()
+  File "/tmp/pip-install-gtylz2vc/psutil/setup.py", line 402, in main
+    missdeps("sudo yum install gcc python%s-devel" % py3)
+  File "/tmp/pip-install-gtylz2vc/psutil/setup.py", line 116, in missdeps
+    s = hilite("C compiler or Python headers are not installed ", ok=False)
+TypeError: hilite() got an unexpected keyword argument 'ok'
+----------------------------------------
+
+ERROR: Command errored out with exit status 1: /usr/bin/python3.6 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-gtylz2vc/psutil/setup.py'"'"'; file='"'"'/tmp/pip-install-gtylz2vc/psutil/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(file);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, file, '"'"'exec'"'"'))' install --record /tmp/pip-record-48cb0198/install-record.txt --single-version-externally-managed --compile --install-headers /usr/local/include/python3.6m/psutil Check the logs for full command output.
+

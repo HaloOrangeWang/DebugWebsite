@@ -1,0 +1,219 @@
+如果代码风格相对而言不是那么的pythonic，或许很少碰到这类错误。当然并不是不鼓励使用一些python语言的技巧。如果遇到这这种类型的错误，说明我们对python中变量引用相关部分有不当的认识和理解。而这又是对理解python相关概念比较重要的。这也是本文写作的原因。
+
+本文为理解闭包相关概念的做铺垫，后续会详细深入的整理出闭包相关的博文，敬请关注。
+
+1.案例分析
+
+在整理闭包相关概念的过程中，经常发现UnboundLocalError和NameError这两个错误，刚开始遇到的时候可能很困惑，对这样的错误无从下手。
+
+1.1 案例一：
+
+def outer_func():
+  loc_var = "local variable"
+  def inner_func():
+    loc_var += " in inner func"
+    return loc_var
+  return inner_func
+clo_func = outer_func()
+clo_func()
+
+错误提示：
+
+Traceback (most recent call last):
+
+File "G:\Project Files\Python Test\Main.py", line 238, in <module>
+
+clo_func()
+
+File "G:\Project Files\Python Test\Main.py", line 233, in inner_func
+
+loc_var += " in inner func"
+
+UnboundLocalError: local variable 'loc_var' referenced before assignment
+
+1.2 案例二：
+
+def get_select_desc(name, flag, is_format = True):
+   if flag:
+     sel_res = 'Do select name = %s' % name
+  return sel_res if is_format else name 
+ get_select_desc('Error', False, True)
+
+错误提示：
+
+Traceback (most recent call last):
+
+File "G:\Project Files\Python Test\Main.py", line 247, in <module>
+
+get_select_desc('Error', False, True)
+
+File "G:\Project Files\Python Test\Main.py", line 245, in get_select_desc
+
+return sel_res if is_format else name
+
+UnboundLocalError: local variable 'sel_res' referenced before assignment
+
+1.3 案例三：
+
+def outer_func(out_flag):
+  if out_flag:
+    loc_var1 = 'local variable with flag'
+  else:
+    loc_var2 = 'local variable without flag'
+  def inner_func(in_flag):
+    return loc_var1 if in_flag else loc_var2
+  return inner_func
+
+clo_func = outer_func(True)
+print clo_func(False)
+
+错误提示：
+
+Traceback (most recent call last):
+
+File "G:\Project Files\Python Test\Main.py", line 260, in <module>
+
+print clo_func(False)
+
+File "G:\Project Files\Python Test\Main.py", line 256, in inner_func
+
+return loc_var1 if in_flag else loc_var2
+
+NameError: free variable 'loc_var2' referenced before assignment in enclosing scope
+
+上面的三个例子可能显得有点矫揉造作，但是实际上类似错误的代码都或多或少可以在上面的例子中找到影子。这里仅仅为了说明相关概念，对例子本身的合理性不必做过多的关注。
+
+2.错误原因
+
+由于python中没有变量、函数或者类的声明概念。按照C或者C++的习惯编写python，或许很难发现错误的根源在哪。
+
+首先看一下这类错误的官方解释：
+
+When a name is not found at all, a NameError exception is raised. If the name refers to a local variable that has not been bound, a UnboundLocalError exception is raised. UnboundLocalError is a subclass of NameError.
+
+大概意思是：
+
+如果引用了某个变量，但是变量名没有找到，该类型的错误就是NameError。如果该名字是一个还没有被绑定的局部变量名，那么该类型的错误是NameError中的UnboundLocalError错误。
+
+下面的这种NameError类型的错误或许还好理解一些：
+
+my_function()
+ def my_function():
+   pass
+
+如果说python解释器执行到def my_function()时才绑定到my_function，而my_function此时也表示的是内存中函数执行的入口。因此在此之前使用my_function均会有NameError错误。
+
+那么上面的例子中使用变量前，都有赋值操作（可视为一种绑定操作，后面会讲），为什么引用时会出错？定义也可判断可见性
+
+如果说是因为赋值操作没有执行，那么为什么该变量名在局部命名空间是可见的？（不可见的话,会有这类错误：NameError: global name 'xxx' is not defined，根据UnboundLocalError定义也可判断可见性)
+
+问题到底出在哪里？怎样正确理解上面三个例子中的错误？
+
+3. 可见性与绑定
+
+简单起见，这里不介绍命名空间与变量查找规则LGB相关的概念。
+
+在C或者C++中，只要声明并定义了一个变量或者函数，便可以直接使用。但是在Python中要想引用一个name，该name必须要可见而且是绑定的。
+
+先了解一下几个概念：
+
+1.code block：作为一个单元(Unit)被执行的一段python程序文本。例如一个模块、函数体和类的定义等。
+
+2.scope：在一个code block中定义name的可见性；
+
+3.block's environment：对于一个code block，其所有scope中可见的name的集合构成block的环境。
+
+4.bind name：下面的操作均可视为绑定操作 •函数的形参
+
+•import声明
+
+•类和函数的定义
+
+•赋值操作
+
+•for循环首标
+
+•异常捕获中相关的赋值变量
+
+5.local variable：如果name在一个block中被绑定，该变量便是该block的一个local variable。
+
+6.global variable：如果name在一个module中被绑定，该变量便称为一个global variable。
+
+7.free variable: 如果一个name在一个block中被引用，但没有在该代码块中被定义，那么便称为该变量为一个free variable。
+
+Free variable是一个比较重要的概念，在闭包中引用的父函数中的局部变量是一个free variable，而且该free variable被存放在一个cell对象中。这个会在闭包相关的文章中介绍。
+
+scope在函数中具有可扩展性，但在类定义中不具有可扩展性。
+
+分析整理一下：
+
+经过上面的一些概念介绍我们知道了，一个变量只要在其code block中有绑定操作，那么在code block的scope中便包含有这个变量。
+
+也就是绑定操作决定了，被绑定的name在当前scope(如果是函数的话，也包括其中定义的scope)中是可见的，哪怕是在name进行真正的绑定操作之前。
+
+这里就会有一个问题，那就是如果在绑定name操作之前引用了该name，那么就会出现问题，即使该name是可见的。
+
+If a name binding operation occurs anywhere within a code block, all uses of the name within the block are treated as references to the current block. This can lead to errors when a name is used within a block before it is bound. This rule is subtle. Python lacks declarations and allows name binding operations to occur anywhere within a code block. The local variables of a code block can be determined by scanning the entire text of the block for name binding operations.
+
+注意上面官方描述的第一句和最后一句话。
+
+总的来说就是在一个code block中，所有绑定操作中被绑定的name均可以视为一个local variable；但是直到绑定操作被执行之后才可以真正的引用该name。
+
+有了这些概念，下面逐一分析一下上面的三个案例。
+
+4. 错误解析
+
+4.1 案例一分析
+
+在outer_func中我们定义了变量loc_var，因为赋值是一种绑定操作，因此loc_var具有可见性，并且被绑定到了具体的字符串对象。
+
+但是在其中定义的函数inner_func中却并不能引用，函数中的scope不是可以扩展到其内定义的所有scope中吗？
+
+下面在在来看一下官方的两段文字描述：
+
+When a name is used in a code block, it is resolved using the nearest enclosing scope.
+
+这段话告诉我们当一个name被引用时，他会在其最近的scope中寻找被引用name的定义。显然loc_var += " in inner func"这个语句中的loc_var会先在内部函数inner_func中找寻name loc_var。
+
+该语句实际上等价于loc_var = loc_var + " in inner func"，等号右边的loc_var变量会首先被使用，但这里并不会使用outer_func中定义的loc_var，因为在函数inner_func的scope中有loc_var的赋值操作，因此这个变量在inner_func的scope中作为inner_func的一个local variable是可见的。
+
+但是要等该语句执行完成，才能真正绑定loc_var。也就是此语句中我们使用了inner_func block中的被绑定之前的一个local variable。根据上面错误类型的定义，这是一个UnboundLocalError.
+
+4.2 案例二分析
+
+在这个例子中，看上去好像有问题，但是又不知道怎么解释。
+
+引用发生在绑定操作之后，该变量应该可以被正常引用。但问题就在于赋值语句(绑定操作)不一定被执行。如果没有绑定操作那么对变量的引用肯定会有问题，这个前面已经解释过了。
+
+但是还有一个疑问可能在于，如果赋值语句没有被执行，那么变量在当前block中为什么是可见的？
+
+关于这个问题其实可以被上面的一段话解释：The local variables of a code block can be determined by scanning the entire text of the block for name binding operations.
+
+只要有绑定操作（不管实际有没有被执行），那么被绑定的name可以作为一个local variable，也就是在当前block中是可见的。scanning text发生在代码被执行前。
+
+4.2 案例三分析
+
+这个例子主要说明了一类对free variable引用的问题。同时这个例子也展示了一个free variable的使用。
+
+在创建闭包inner_func时，loc_var1和loc_var2作为父函数outer_func中的两个local variable在其内部inner_func的scope中是可见的。返回闭包之后在闭包中被引用outer_func中的local variable将作为称为一个free variable.
+
+闭包中的free variable可不可以被引用取决于它们有没有被绑定到具体的对象。
+
+5. 引申案例
+
+下面再来看一个例子：
+
+import sys
+ def add_path(new_path):
+   path_list = sys.path
+   if new_path not in path_list:
+     import sys
+     sys.path.append(new_path)
+ add_path('./')
+
+平时不经意间可能就会犯上面的这个错误，这也是一个典型的UnboundLocalError错误。如果仔细的阅读并理解上面的分析过程，相信应给能够理解这个错误的原因。如果还不太清除，请再阅读一遍 ：-）
+
+总结
+
+以上所述是小编给大家介绍的Python UnboundLocalError和NameError错误根源案例解析，希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+

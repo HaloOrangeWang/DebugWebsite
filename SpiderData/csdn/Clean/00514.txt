@@ -1,0 +1,40 @@
+
+vscode import torch出错
+
+报错(记不清了，大概如下)：
+ import下面出现红色波浪线
+
+Traceback (most recent call last):
+  	File "<stdin>", line 1, in <module>
+	File"...\Python\Python36\lib\site-packages\torch\__init__.py",line 190,<module>
+		from torch._C import *
+	ImportError: numpy.core.multiarray failed to import
+
+2.解决方案
+
+在网上查找了各种解决方案都没有解决，后来发现其实原因就在numpy版本太高
+
+pip uninstall numpy
+pip install numpy==1.15.0
+
+问题解决:
+
+>>>import torch
+>>>
+
+3.debug全记录
+
+1.鼠标放在import上显示的是pylint（import_error）,根据网络上查找的方法修改setting中pylint args，失败
+
+2.python版本问题，更改多个版本，报错信息仍然不变，失败
+
+3.cuda安装的问题。由于太蠢，安装完成后发现显卡驱动和cuda版本不匹配，仔细思考觉得肯定不是这个问题，毕竟还能安装none-cuda的pytorch，失败
+
+4.torch路径问题。将python3.6安装到C盘，还是失败
+
+5.numpy版本问题。根据"ImportError: numpy.core.multiarray failed to import"找到解决方案，原因numpy版本太高
+
+4.总结
+
+python报错信息太杂乱，先从最后一行debug，如ImportError、RuntimeError
+

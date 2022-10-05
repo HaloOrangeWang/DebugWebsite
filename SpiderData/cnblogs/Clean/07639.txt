@@ -1,0 +1,34 @@
+1.问题
+
+今天学习django，测试当前项目时遇到了莫名其妙的报错：
+
+python manage.py runserver
+：ImportError: Couldn't import Django. Are you sure it's installed and available on
+ your PYTHONPATH environment variable? Did you forget to activate a virtual environment?
+
+　　
+
+十分纳闷？明明安装了，怎么会import报错。
+
+2.尝试排错
+
+(1)既然import错误，那就先检查是否installed，结果在list包里找到了django。
+
+(2)因为我安装在虚拟环境里，所以这次来重新activate以下env，依旧失败。
+
+(3)回看出错语句：python manage.py runserver  在工具里又可以执行manage.py，那很可能是python出了问题。
+
+稍微一回想我的原生python，和虚拟环境里的不是一个版本，当使用python的时候，它的系统变量是指向其他环境（没有装django）的，所以报错。
+
+3.解决
+
+既然是python问题，那就稍稍修改一下命令（对我而言指定使用当下环境的py）：
+
+python3.7 manage.py runserver
+
+　　如果你没做任何更改，就会显示默认的界面,如下：
+
+2020-07-07
+
+00:24:57
+

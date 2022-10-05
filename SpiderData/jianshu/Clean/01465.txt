@@ -1,0 +1,84 @@
+
+前言
+
+学习使用Python
+
+
+报错图片
+
+UnicodeEncodeError: 'latin-1' codec can't encode characters in position 41-44: ordinal not in range(256)
+
+题外话，简书的Markdown怎么不可以标红。
+
+
+报错原因
+
+我是利用Python3.x + xlrd + pymysql来实现从Excel读取数据，并导入MySQL中时，由于导入中文而报错。在不断的试错下，就是因为导入的中文才报的错。经多次百度，终于找到了原因，现记录下来，加深印象。
+
+自行分析，只做参考，像jdbc一样，创建链接时需要指明用utf-8方式连接数据库。
+
+
+原来：
+
+
+改后：
+
+例子源码：
+
+# -*- coding: utf-8 -*-
+# Created by Y.W. on 2017/7/31 17:46.
+
+import pymysql
+import xlrd
+
+# 获取xlsx文件,获取sheet文件
+try:
+    book = xlrd.open_workbook('C:/users/yawa1hz1/desktop/file_name.xlsx')
+    sheet = book.sheet_by_name(u'Sheet2')
+except Exception as e:
+    print(str(e))
+
+# 打开数据库连接，并指明用utf-8方式连接数据库
+db = pymysql.connect("localhost", "root", "123456", "test", use_unicode=True, charset="utf8")
+
+# 使用 cursor() 方法创建一个游标对象 cursor
+cursor = db.cursor()
+
+# 使用 execute() 方法执行 SQL，如果表存在则删除
+cursor.execute("DROP TABLE IF EXISTS TEST1")
+
+# 使用预处理语句创建表
+createSql = """CREATE TABLE TEST1 (
+          product  VARCHAR(20) NOT NULL,
+          num  VARCHAR(5))"""
+
+cursor.execute(createSql)
+
+# 创建插入SQL语句
+query = """INSERT INTO TEST1 (product, num) VALUES(%s,%s)"""
+
+# 创建一个for循环迭代读取xlsx文件每行数据的, 从第二行开始是要跳过标题
+for r in range(1, 3):
+    product = sheet.cell(r, 0).value
+    num = sheet.cell(r, 1).value
+
+values = (product, num)
+    cursor.execute(query, values)
+
+# 确认提交
+db.commit()
+
+# 关闭游标
+cursor.close()
+
+# 关闭数据库连接
+db.close()
+
+
+Excel：
+
+
+数据库结果：
+
+PS.数据库、Python和链接方式都得是UTF-8的。
+

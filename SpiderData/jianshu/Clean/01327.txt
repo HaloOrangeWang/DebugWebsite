@@ -1,0 +1,44 @@
+
+问题
+
+能正常运行的代码误报错误。
+
+import numpy as np
+import h5py
+import matplotlib.pyplot as plt
+plt.rcParams['figure.figsize'] = (5.0, 4.0) # set default size of plots
+plt.rcParams['image.interpolation'] = 'nearest'
+plt.rcParams['image.cmap'] = 'gray'
+np.random.seed(1)
+
+其中rcParams及random等等模块均报错
+
+"rcParams" is not a known member of module
+
+"random" is not a known member of module
+
+其中rcParams及random等等模块均报错
+
+"rcParams" is not a known member of module
+
+"random" is not a known member of module
+
+正常运行的代码出现 Instance of ‘tuple’ has no ‘shape’ member pylint(no-member)
+
+正常运行的代码出现 Instance of ‘tuple’ has no ‘shape’ member pylint(no-member)
+
+
+解决
+
+在vscode的settings.json文件中添加以下内容
+
+"python.analysis.diagnosticSeverityOverrides": {"reportGeneralTypeIssues":"none"},
+
+相关说明可以参阅 pylance-release
+
+在vscode的settings.json文件中添加以下内容
+
+"python.linting.pylintArgs": ["--generate-members"],
+
+参考这位网友的答案：纠正pylint no member报错-神经与蛋白
+

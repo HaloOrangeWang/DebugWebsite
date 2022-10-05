@@ -1,0 +1,13 @@
+mac系统默认安装了python2.7版本，且不带pip。如果先安装了python3.5版本且使用 pip3 安装了PyMySQl3,然后安装 pip 可能导致 sqlmap 使用-d 参数时报错
+
+[ERROR] wrong initialization of pymsql detected (using Python3 dependencies)
+
+此时使用指令 pip list 会看到pip列表中包含PyMySQL3，且使用 pip uninstall PyMySQL3 无法卸载库，因为没有安装过，可能是因为 pip3 安装过的原因。
+
+解决办法是进入上图最后提示的 Permission defined 的路径中，手动删除 PyMySQL，如上的路径为 <code>/Library/Python/2.7/site-packages/PyMySQL3-0.5-py2.7.egg</code>
+
+cd /Library/Python/2.7/site-packages/PyMySQL3-0.5-py2.7.egg
+sudo rm -rf PyMySQL3-0.5-py2.7.egg
+
+重新执行 sqlmap 则正常运行
+

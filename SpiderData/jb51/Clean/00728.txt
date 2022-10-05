@@ -1,0 +1,39 @@
+用requests包请求https的网站时，我们偶尔会遇到证书问题。也就是常见的SSLerror，遇到这种问题莫慌莫慌。
+
+这里没有找到合适的网站去报SSL证书的错误，所以就假装请求了一个https的网站，然后给报了SSLerror了，然后下面是解决方法
+
+可以直接关闭验证ssl证书
+
+import requests
+'''
+  :param proxies: (optional) Dictionary mapping protocol to the URL of the proxy.
+  :param verify: (optional) Either a boolean, in which case it controls whether we verify
+      the server's TLS certificate, or a string, in which case it must be a path
+      to a CA bundle to use. Defaults to ``True``.
+      
+'''
+r = requests.get('https://kyfw.12306.cn',verify=False)
+
+print(r.text)
+
+这种方式直接在函数里面加如verify改变Ture或者False即可，因为post与get调用的都为request()函数，所以get与post都一样。
+
+如果这种方式奏效就用这种方式，如果不奏效就用下面的一种
+
+import requests
+'''
+  :param verify: (optional) Either a boolean, in which case it controls whether we verify
+      the server's TLS certificate, or a string, in which case it must be a path
+      to a CA bundle to use. Defaults to ``True``.
+      
+'''
+## 证书路径
+cert = '../cert/test.pem'
+
+r = requests.get('https://kyfw.12306.cn',verify=cert)
+print(r.text)
+
+就用这种，直接把证书的路径丢给verify，请求即可
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

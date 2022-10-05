@@ -1,0 +1,39 @@
+我用Python写ORM，插入一条数据进MySql的时候报了：1366 Incorrect string value: '
+
+这条数据是有中文的，所以很明显是编码问题！
+
+我插入的数据格式：
+
+Book.objects.create(name="Java基础",price=55,pub_date="2010-10-22",author="Kotlin")
+
+以下是我的解决办法！
+
+
+第一步：
+
+看我的文章，中有一篇是修改MySql的my.ini配置文件，修改MySql的字符编码格式修改成utf8格式的编码！
+
+有可能你这步改完就可以了！ 也有可能这步操作完还是报错！那就看第二步。
+
+
+第二步：
+
+第一步操作完了，但是添加数据的时候还是报错，原因是因为第一步还没操作完，你就已经建了一张表，我的表名是app_book。所以这张app_book的字符编码还是按我没修改字符编码之前的编码格式，所以这个时候我需要将这张表的编码格式转换一下，具体操作如下！
+
+比如：你可以先查看这张app_book表中的每个字段的编码格式
+
+show full fields from app_book;
+
+改变表的编码，为 utf8mb4 或者 utf8
+
+alter table app_book  convert to character set  utf8mb4;
+
+OK！ 完成以上操作，再次执行ORM语句：
+
+Book.objects.create(name="Java基础",price=55,pub_date="2010-10-22",author="Kotlin")
+
+这次就没报错了，添加成功！
+
+
+总结：可以简单的看，就是字符编码的问题！这个简单问题，也是困扰了我一点时间，希望如果有碰到跟我一样问题的朋友能够帮到你！
+

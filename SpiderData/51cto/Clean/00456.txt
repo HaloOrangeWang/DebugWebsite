@@ -1,0 +1,54 @@
+python manage.py startapp app
+
+报错如下：
+
+File "manage.py", line 10, in <module>
+    execute_from_command_line(sys.argv)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/core/management/__init__.py", line 353, in execute_from_command_line
+    utility.execute()
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/core/management/__init__.py", line 327, in execute
+    django.setup()
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/__init__.py", line 18, in setup
+    apps.populate(settings.INSTALLED_APPS)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/apps/registry.py", line 108, in populate
+    app_config.import_models(all_models)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/apps/config.py", line 202, in import_models
+    self.models_module = import_module(models_module_name)
+  File "/usr/local/python2.7/lib/python2.7/importlib/__init__.py", line 37, in import_module
+    __import__(name)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/contrib/auth/models.py", line 4, in <module>
+    from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/contrib/auth/base_user.py", line 49, in <module>
+    class AbstractBaseUser(models.Model):
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/db/models/base.py", line 108, in __new__
+    new_class.add_to_class('_meta', Options(meta, app_label))
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/db/models/base.py", line 307, in add_to_class
+    value.contribute_to_class(cls, name)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/db/models/options.py", line 263, in contribute_to_class
+    self.db_table = truncate_name(self.db_table, connection.ops.max_name_length())
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/db/__init__.py", line 36, in __getattr__
+    return getattr(connections[DEFAULT_DB_ALIAS], item)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/db/utils.py", line 212, in __getitem__
+    backend = load_backend(db['ENGINE'])
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/db/utils.py", line 116, in load_backend
+    return import_module('%s.base' % backend_name)
+  File "/usr/local/python2.7/lib/python2.7/importlib/__init__.py", line 37, in import_module
+    __import__(name)
+  File "/usr/local/python2.7/lib/python2.7/site-packages/Django-1.9.13-py2.7.egg/django/db/backends/sqlite3/base.py", line 39, in <module>
+    raise ImproperlyConfigured("Error loading either pysqlite2 or sqlite3 modules (tried in that order): %s" % exc)
+django.core.exceptions.ImproperlyConfigured: Error loading either pysqlite2 or sqlite3 modules (tried in that order): No module named _sqlite3
+
+解决：
+
+1，首先安装 sqlite-devel
+
+yum install sqlite-devel
+
+2，重新编译安装Python
+
+./configure
+
+make
+
+make install
+

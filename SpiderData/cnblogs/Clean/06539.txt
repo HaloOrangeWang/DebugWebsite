@@ -1,0 +1,22 @@
+
+背景
+
+在做接口自动化的时候，Excel作为数据驱动，里面存了中文，通过第三方库读取中文当请求参数传入 requests.post() 里面，就会报错
+
+UnicodeEncodeError: 'latin-1' codec can't encode characters in position 13-14: Body ('小明') is not valid Latin-1. Use body.encode('utf-8') if you want to send it encoded in UTF-8.
+
+此时我封装的post请求方法是这样的
+
+这个时候，我们要将传入的参数按照utf-8格式编码
+
+# 先转成Json字符串
+data = json.dumps(data)
+
+# 按照utf-8编码成字节码 
+data = data.encode("utf-8")
+
+
+改造后的方法如下
+
+当然有更简单的方法就是将字典数据转成json字符串传入，请求参数名叫 data ，代码如下:
+

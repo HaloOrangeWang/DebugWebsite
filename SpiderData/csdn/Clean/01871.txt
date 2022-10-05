@@ -1,0 +1,13 @@
+刷题的时候设置递归有时候会出现报错：RecursionError: maximum recursion depth exceeded in comparison。
+ 原因是在Python里的递归调用是有限制的，可以使用sys模块里的getrecursionlimit方法查看的到。
+
+>>> import sys
+>>> sys.getrecursionlimit()
+
+打开终端运行Python，可以看到默认限制值为1000。
+ 深入了解可以参考这篇博文：https://cyrusin.github.io/2015/12/08/python-20151208/
+
+解决方法很简单，直接设置如下即可：
+
+sys.setrecursionlimit(2000)
+

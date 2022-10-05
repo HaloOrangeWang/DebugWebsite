@@ -1,0 +1,31 @@
+报错：
+
+Could not fetch URL https://pypi.python.org/simple/pip/: There was a problem confirming the ssl certificate: [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:590) - skipping
+
+Requirement already up-to-date: pip in /Library/Python/2.7/site-packages/pip-9.0.1-py2.7.egg
+
+这是因为pip版本太旧了，需要升级到9.0.3版本。查了网上资料，在终端执行：
+
+curl https://bootstrap.pypa.io/get-pip.py | python
+
+发现又报错：
+
+Could not install packages due to an EnvironmentError: [Errno 13] Permission denied: '/Library/Python/2.7/site-packages/pip-9.0.1-py2.7.egg/EGG-INFO/dependency_links.txt'
+Consider using the `--user` option or check the permissions.
+
+看起来是路径权限问题，又百度一下，发现改一下目录权限就可以了：
+
+sudo chown -R 'huangpeng' /Library/Python/2.7/
+
+这下再执行：
+
+curl https://bootstrap.pypa.io/get-pip.py | python
+
+就可以升级了，我的一下子升级到了pip-10.0.1 wheel-0.31.1。
+
+后面就可以根据自己需求安装模块了，例如：
+
+pip install pymysql
+
+小问题，记录一下。
+

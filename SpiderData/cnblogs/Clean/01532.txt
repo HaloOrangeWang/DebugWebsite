@@ -1,0 +1,12 @@
+终端：mac
+
+错误描述：pycharm写完的爬虫项目，需要将爬取内容存储至指定文件夹的json文件内，终端运行时报错:
+
+FileNotFoundError: [Errno 2] No such file or directory: ...
+
+查询原因：指定位置可能未建立文件夹（已建立），不成立
+
+f = open('data/mmonly.json','a') # 该方式会在指定文件夹内建立建立，无法建立文件夹
+
+最终原因：终端目录与.py文件未在同一级目录下，初步考虑，open()函数是以当前运行终端运行节点为标准建立文件，而pycharm内部终端运行时不报错，是因为终端打开位置为pycharm内文件所在位置
+

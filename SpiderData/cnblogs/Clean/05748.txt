@@ -1,0 +1,54 @@
+问题：
+
+安装MySQL-python包报错EnvironmentError: mysql_config not found问题要如何来解决呢？
+
+首先，错误提示是mysql_config找不到，
+
+解决办法：
+
+1、终端输入命令
+
+sudo apt-get install libmysqlclient-dev
+
+执行上面命令时，可能还会有遇到下面问题：
+
+如果安装顺利，请略过，直接看步骤2。如果遇到同样问题，可以去到“设置”中的“软件和更新“”中，点开“更新”，勾选“”重要安全更新”和“推荐更新”
+
+关闭上面窗口后，在终端运行下面命令就能解决：
+
+sudo apt-get update
+
+完成之后，再次执行命令：sudo apt-get install libmysqlclient-dev
+
+2、成功安装libmysqlclient-dev后，执行下面两条命令进行加载更新
+
+$ sudo updatedb
+$ locate mysql_config
+
+3、试着运行下面命令来安装MySQL-python
+
+$ pip install MySQL-python
+
+这时候，应该就能成功安装MySQL-Python了。如果您也不幸遇到跟我一样遇到下面的问题，提示说：
+
+_mysql.c:29:20: fatal error: Python.h: 没有那个文件或目录
+#include "Python.h"
+^
+compilation terminated.
+error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+
+那么，请继续往下看。
+
+4、终端运行一下命令完美解决
+
+$ sudo apt-get install python-dev
+$ pip install MySQL-python
+
+5、扩展：ubuntu18 、python2.7安装ujson问题：
+
+pip install git+git://github.com/esnme/ultrajson.git #下载ujson的2.0版本
+
+6、扩展： ubuntu18 、python2.7安装不上uwsgi 2.0问题：执行以下命令
+
+pip install https://projects.unbit.it/downloads/uwsgi-lts.tar.gz
+

@@ -1,0 +1,54 @@
+项目中加了Adjust  SDK，在打包提交审核的时候直接报错了。
+
+ERROR ITMS-90087: "Unsupported Architectures. The executable for yimiaozhaopin.app/Frameworks/AdjustSdk.framework contains unsupported architectures '[x86_64, i386]'."
+
+这是下载的``包中包含了x86_64, i386 架构，所以提交时会报错ERROR ITMS-90087。用script命令去掉framework 中的x86_64, i386 架构就可以了。
+
+先找到项目工程属性的Build Phases属性页，添加Script Phase，将下面脚本直接粘贴到脚本框中就可以了。
+
+APP_PATH="${TARGET_BUILD_DIR}/${WRAPPER_NAME}"
+
+# This script loops through the frameworks embedded in the application and
+
+# removes unused architectures.
+
+find "$APP_PATH" -name '*.framework' -type d | while read -r FRAMEWORK
+
+do
+
+FRAMEWORK_EXECUTABLE_NAME=$(defaults read "$FRAMEWORK/Info.plist" CFBundleExecutable)
+
+FRAMEWORK_EXECUTABLE_PATH="$FRAMEWORK/$FRAMEWORK_EXECUTABLE_NAME"
+
+echo "Executable is $FRAMEWORK_EXECUTABLE_PATH"
+
+EXTRACTED_ARCHS=()
+
+for ARCH in $ARCHS
+
+do
+
+echo "Extracting $ARCH from $FRAMEWORK_EXECUTABLE_NAME"
+
+lipo -extract "$ARCH" "$FRAMEWORK_EXECUTABLE_PATH" -o "$FRAMEWORK_EXECUTABLE_PATH-$ARCH"
+
+EXTRACTED_ARCHS+=("$FRAMEWORK_EXECUTABLE_PATH-$ARCH")
+
+done
+
+echo "Merging extracted architectures: ${ARCHS}"
+
+lipo -o "$FRAMEWORK_EXECUTABLE_PATH-merged" -create "${EXTRACTED_ARCHS[@]}"
+
+rm "${EXTRACTED_ARCHS[@]}"
+
+echo "Replacing original executable with thinned version"
+
+rm "$FRAMEWORK_EXECUTABLE_PATH"
+
+mv "$FRAMEWORK_EXECUTABLE_PATH-merged" "$FRAMEWORK_EXECUTABLE_PATH"
+
+done
+
+本文参考：https://www.jianshu.com/p/c381a07cb758
+

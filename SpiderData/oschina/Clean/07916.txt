@@ -1,0 +1,79 @@
+这里提供两种解决方案！
+
+　　1.安卓6.0+是可以直接利用uiautomator定位元素点击！这个不细说,定位方式很多种...这个等待时间大家自己定大概两到三秒即可！
+
+　　　　
+
+#安卓6.0+点击方式
+driver.find_element_by_android_uiautomator('new UiSelector().textContains("允许")')
+
+　　但是一般来说弹窗大多数都是好多个---利用显示等待：启动app之后，在三秒内  没0.5秒寻找一次元素，如果存在则点击，不存在则报错直接pass
+
+　　
+
+try:
+    while True:
+        Element = ("xpath", "//*[contains(@text,'允许')]")
+        ac = WebDriverWait(driver, 3, 0.5).until(lambda driver:driver.find_element_by_xpath('//*[contains(@text,"允许")]'))
+        ac.click()
+except:
+    pass
+
+2.还有一种定位方式如下，亲测支持高版本，但是我没有亲自试过是否支持低版本手机的权限弹窗-----因为我不是用的这两种---个人用的方法比较简单粗暴+直接
+
+但是呢，这里建议大家搞个低版本的手机试下，我没测是因为条件不允许，找不到低版本的手机.......希望有朋友测了之后截图留言一波，让我有个底....
+
+try:
+    while True:
+        Element = ("xpath", "//*[contains(@text,'允许')]")
+        ac = WebDriverWait(driver, 1, 0.5).until(EC.presence_of_element_located(Element))
+        ac.click()
+except:
+    pass
+
+然后手动给每台手机安装一遍app，并用记事本获其他玩意记下设备名称
+
+打开app，准备好uiautomatorview（sdk目录下那个定位元素的玩意..），如下图所示记住这个坐标，如： admin_lists={'2905bdb6':[(360,1149)],'xxxx':[(1,1)]}，如果定位不到【允许】这个坐标，就手动点一下允许，按照不动，你会发现在屏幕最上面有一个坐标DX:--/DY:--，记下这个坐标也是一样的！
+
+admin_lists={'2905bdb6':[(360,1149)],'xxxx':[(1,1)]}，如果定位不到【允许】这个坐标，就手动点一下允许，按照不动，你会发现在屏幕最上面有一个坐标DX:--/DY:--，记下这个坐标也是一样的！
+
+　　　　　　　　
+
+admin_list={'2905bdb6':[(360,1149)],'xxxx':[(1,1)]}
+for a in admin_list:
+    deviceList=''.join(os.popen('adb devices').readlines())
+    Device=re.findall(r"(.+?)\t",deviceList)[0]
+    print(Device)
+    if a==Device:
+        driver.tap(admin_list[a])
+
+　　　　　　
+
+　　　　　　原理就是先把我们测试机弹出权限允许的那个坐标给记录下来，第一次安装启动的时候查询一下设备名称然后取到坐标，然后点击---这个方法也是适合多设备
+
+方法有点捞，但是实用靠谱---另外这里不要想着去适配屏幕，这个不存在的，据我了解不同手机的弹窗样式可能是不一样的..
+
+如果只弹出一个-直接用上面的方法就可以了，但是如果权限弹窗有多个呢：
+
+加个方法就可以了---有多个的话，这个就得根据自己的app调试了...但是大同小异
+
+如下所示：
+
+admin_list={'2905bdb6':[(360,1149)],'xxxx':[(1,1)]}
+for a in admin_list:
+    deviceList=''.join(os.popen('adb devices').readlines())
+    Device=re.findall(r"(.+?)\t",deviceList)[0]
+    print(Device)
+    if a==Device:
+        for i  in range(5):
+            driver.tap(admin_list[a])
+            time.sleep(3)
+
+　　
+
+具体应该还有很多骚方法--大家可以自己研究一下，只要能实现就可以，我个人方面对于执行效率并没有太过--（想不到词了）
+
+这章有一定的python语法：
+
+循环、正则、os、range、readlines、dict取值----如果这个不太懂得-建议看下 廖雪峰的python3教程---直接百度廖雪峰就可以了
+

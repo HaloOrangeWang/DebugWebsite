@@ -1,0 +1,12 @@
+报错：
+
+Failed to start ContainerManager failed to initialize top level QOS containers: failed to update top level BestEffort QOS cgroup : failed to set supported cgroup subsystems for cgroup [kubepods besteffort]: failed to set config for supported subsystems : failed to write 4611686018427387904 to hugetlb.1GB.limit_in_bytes: open /sys/fs/cgroup/hugetlb/kubepods.slice/kubepods-besteffort.slice/hugetlb.1GB.limit_in_bytes: no such file or directory
+
+原因：
+
+/sys/fs/cgroup/hugetlb/kubepods.slice/kubepods-besteffort.slice/ 目录不知道为啥没有了，有待深入研究, 可能是kubepods-besteffort.slice因为某些原因没有work
+
+解决:
+
+手工创建 /sys/fs/cgroup/hugetlb/kubepods.slice/kubepods-besteffort.slice/ 目录 然后重启kubelet
+

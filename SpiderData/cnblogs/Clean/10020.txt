@@ -1,0 +1,10 @@
+参考解决：https://blog.csdn.net/qq_28602957/article/details/77413040
+
+产生原因：我的代码main.py正在运行，这时候我心急，开第二个终端调试代码，查看中间变量，导致在 （这个图里本来有一个lock文件的，已经被我删了）
+
+这个目录下面产生了一个lock文件，sizeof(lock)=0byt,（具体为什么会导致这样的原因不理解），当把lock删除之后，代码运行正常，不会出现卡死情况。
+
+分析原因：因为我开了一个终端执行文件，然后我又开了一个终端去调试这个文件代码，相当于文件被两个终端执行，文件被锁死。
+
+处理方法：也可以考虑文件锁的解决方法。或者粗暴的：找到lock文件位置/home/xuzukang/.cache/torch_extensions/quantized_functions_cuda/lock，删除lock就行
+

@@ -1,0 +1,24 @@
+JavaWeb的学习中，学到了JSTL，在网上找了几个相应的包后，一直在报错java.lang.NoClassDefFoundError: javax/servlet/jsp/tagext/TagLibraryValidator，
+
+经过多番努力后才发现是因为我用的Tomcat10.0，用的jakarta.软件包而不是javax.软件包，故类似下图的jstl包是用不了的，下面的包是javax，用Tomcat10.0服务器运行的话，就会显示找不到包
+
+要用下图的包才有效
+
+下载地址如下：
+
+jakarta.servlet.jsp.jstl-2.0.0.jar
+
+jakarta.servlet.jsp.jstl-api-2.0.0.jar
+
+或者用maven依赖：
+
+<dependency>
+    <groupId>org.glassfish.web</groupId>
+    <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+    <version>2.0.0</version>
+</dependency>
+
+具体细节可看：
+
+jsp-如何安装JSTL
+

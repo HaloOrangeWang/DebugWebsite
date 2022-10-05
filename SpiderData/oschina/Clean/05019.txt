@@ -1,0 +1,16 @@
+运行python程序执行  saver.restore(sess,"E:/pythonFile/untitled/deepLearning/model/model.ckpt")  出行错误，下面报错是
+
+NotFoundError (see above for traceback): Unsuccessful TensorSliceReader constructor: Failed to find any matching files for E:/pythonFile/untitled/deepLearning/model/model.ckpt
+ [[Node: save/RestoreV2 = RestoreV2[dtypes=[DT_FLOAT], _device="/job:localhost/replica:0/task:0/device:CPU:0"](_arg_save/Const_0_0, save/RestoreV2/tensor_names, save/RestoreV2/shape_and_slices)]]
+
+自己百度了，试了没用，然后就自己抱着试一试的态度，打开checkpoint文件里面出现
+
+model_checkpoint_path: "E:/pythonFile/untitled/deepLearning/model/model.ckpt-27510"
+all_model_checkpoint_paths: "E:/pythonFile/untitled/deepLearning/model/model.ckpt-27510"
+
+然后结合错误信息，是路径错误，改为
+
+saver.restore(sess,"E:/pythonFile/untitled/deepLearning/model/model.ckpt-27510")
+
+运行就通过了。
+

@@ -1,0 +1,17 @@
+
+错误提示：org.springframework.http.converter.HttpMessageNotReadableException
+
+分析问题：Controller层控制方法，使用@RequestBody Map map接收，由于@deleteMapping和@getMapping都可以， 最终排除了Controller方法原因，
+
+故障原因：post如何使用JSON数据传递？不能使用post表单形式，否则会报错
+
+步骤一：将头部请求Header设置为JSON
+
+步骤二：Body中设置JSON数据（有个坑：JSON中的key-value最好都是字符串）
+
+总结：
+
+@requestBody在@PutMapping和@PostMapping接收的是JSON格式数据（应用于前后端分离架构使用JSON数据传递）
+
+@requestParm是接收Key-value格式字符串（应用基本类型或包装类型参数传递）
+

@@ -1,0 +1,17 @@
+
+关于Python常见的报错类型及解决方法
+
+
+TypeError: ‘numpy.float32’ object does not support item assignment
+
+表示的是你的数据形状不匹配：
+ 例如：
+
+a = np.zeros(2,dtype = int)
+a[1][2] = 5
+#就会报错，原因是一位数组，确当成二维数组使用
+#应该为
+a = np.zeros((2,3),dtype = int)
+a[1][2] = 5
+#这样就不会报错了哈
+

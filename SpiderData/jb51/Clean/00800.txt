@@ -1,0 +1,294 @@
+一、Centos7安装Mitika问题
+
+1.问题:在keystone安装阶段请求认证令牌出现错误
+
+# vim admin-openrc
+export OS_PROJECT_DOMAIN_NAME=default
+export OS_USER_DOMAIN_NAME=default
+export OS_PROJECT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=admin
+export OS_AUTH_URL=http://192.168.30.139:35357/v3
+export OS_IDENTITY_API_VERSION=3
+export OS_IMAGE_API_VERSION=2
+# . admin-openrc
+# openstack token issue
+The request you have made requires authentication. (HTTP 401) (Request-ID: req-7fdfe96b-ed63-4204-a357-ef104d9cf07d)
+
+解决:该问题是由于二次实验时更改了用户密码，密码错误致使出现该问题，更改环境变量脚本的密码后，请求认证令牌成功
+
+# vim admin-openrc
+export OS_PROJECT_DOMAIN_NAME=default
+export OS_USER_DOMAIN_NAME=default
+export OS_PROJECT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=keystone  
+export OS_AUTH_URL=http://192.168.30.139:35357/v3
+export OS_IDENTITY_API_VERSION=3
+export OS_IMAGE_API_VERSION=2
+# openstack token issue
++------------+----------------------------------------------------------+
+| Field  | Value             |
++------------+----------------------------------------------------------+
+| expires | 2017-03-14T14:41:44.254142Z        |
+| id   | gAAAAABYx_MYf4J-87AUujC_aN5Fulubz0X7TJd1rbnaZu-   |
+|   | yqtu7UZeg8s786Rp1_WYENr1JJMqYFOk6JXJRHsiPFK-dq_CLa79FBJWa|
+|   | _F96vpz_knlb_ZnU1lo7BXUf4Tx0vNyjlNEbRiyrrqiCI7K4FZwsLDP- |
+|   | _798X_zNTDb-rC9iYXi8          |
+| project_id | 8bd659ec3af14030ab92047844856463       |
+| user_id | 04fd25261b6444f7a331fe021e85f2fe       |
++------------+----------------------------------------------------------+
+
+2.dashboard仪表盘无法登陆
+
+浏览器输入 http://controller/dashboard 访问仪表盘无法登陆，提示“出错啦！
+
+遇到异常情况，请刷新。如需帮助请联系管理员。”
+
+# tail -n 40 /var/log/apache2/error.log
+[Wed Mar 15 22:56:22.744149 2017] [:error] [pid 2733] Login successful for user "admin".
+[Wed Mar 15 22:56:34.220718 2017] [:error] [pid 2733] Internal Server Error: /dashboard/auth/login/
+[Wed Mar 15 22:56:34.220920 2017] [:error] [pid 2733] Traceback (most recent call last):
+[Wed Mar 15 22:56:34.220935 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/core/handlers/base.py", line 132, in get_response
+[Wed Mar 15 22:56:34.220943 2017] [:error] [pid 2733]  response = wrapped_callback(request, *callback_args, **callback_kwargs)
+[Wed Mar 15 22:56:34.220951 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/views/decorators/debug.py", line 76, in sensitive_post_parameters_wrapper
+[Wed Mar 15 22:56:34.220959 2017] [:error] [pid 2733]  return view(request, *args, **kwargs)
+[Wed Mar 15 22:56:34.220966 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/utils/decorators.py", line 110, in _wrapped_view
+[Wed Mar 15 22:56:34.220973 2017] [:error] [pid 2733]  response = view_func(request, *args, **kwargs)
+[Wed Mar 15 22:56:34.220981 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+[Wed Mar 15 22:56:34.221043 2017] [:error] [pid 2733]  response = view_func(request, *args, **kwargs)
+[Wed Mar 15 22:56:34.221052 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/openstack_auth/views.py", line 103, in login
+[Wed Mar 15 22:56:34.221059 2017] [:error] [pid 2733]  **kwargs)
+[Wed Mar 15 22:56:34.221067 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/views/decorators/debug.py", line 76, in sensitive_post_parameters_wrapper
+[Wed Mar 15 22:56:34.221075 2017] [:error] [pid 2733]  return view(request, *args, **kwargs)
+[Wed Mar 15 22:56:34.221082 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/utils/decorators.py", line 110, in _wrapped_view
+[Wed Mar 15 22:56:34.221089 2017] [:error] [pid 2733]  response = view_func(request, *args, **kwargs)
+[Wed Mar 15 22:56:34.221095 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+[Wed Mar 15 22:56:34.221102 2017] [:error] [pid 2733]  response = view_func(request, *args, **kwargs)
+[Wed Mar 15 22:56:34.221109 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/contrib/auth/views.py", line 51, in login
+[Wed Mar 15 22:56:34.221179 2017] [:error] [pid 2733]  auth_login(request, form.get_user())
+[Wed Mar 15 22:56:34.221206 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/contrib/auth/__init__.py", line 110, in login
+[Wed Mar 15 22:56:34.221214 2017] [:error] [pid 2733]  request.session.cycle_key()
+[Wed Mar 15 22:56:34.221221 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/contrib/sessions/backends/base.py", line 285, in cycle_key
+[Wed Mar 15 22:56:34.221228 2017] [:error] [pid 2733]  self.create()
+[Wed Mar 15 22:56:34.221269 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/contrib/sessions/backends/cache.py", line 48, in create
+[Wed Mar 15 22:56:34.221281 2017] [:error] [pid 2733]  "Unable to create a new session key. "
+[Wed Mar 15 22:56:34.221288 2017] [:error] [pid 2733] RuntimeError: Unable to create a new session key. It is likely that the cache is unavailable.
+[root@openstack1 ~]# tail -f /var/log/httpd/error_log 
+[Wed Mar 15 22:56:34.221102 2017] [:error] [pid 2733]  response = view_func(request, *args, **kwargs)
+[Wed Mar 15 22:56:34.221109 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/contrib/auth/views.py", line 51, in login
+[Wed Mar 15 22:56:34.221179 2017] [:error] [pid 2733]  auth_login(request, form.get_user())
+[Wed Mar 15 22:56:34.221206 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/contrib/auth/__init__.py", line 110, in login
+[Wed Mar 15 22:56:34.221214 2017] [:error] [pid 2733]  request.session.cycle_key()
+[Wed Mar 15 22:56:34.221221 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/contrib/sessions/backends/base.py", line 285, in cycle_key
+[Wed Mar 15 22:56:34.221228 2017] [:error] [pid 2733]  self.create()
+[Wed Mar 15 22:56:34.221269 2017] [:error] [pid 2733] File "/usr/lib/python2.7/site-packages/django/contrib/sessions/backends/cache.py", line 48, in create
+[Wed Mar 15 22:56:34.221281 2017] [:error] [pid 2733]  "Unable to create a new session key. "
+[Wed Mar 15 22:56:34.221288 2017] [:error] [pid 2733] RuntimeError: Unable to create a new session key. It is likely that the cache is unavailable.
+
+解决:更改dashboard的local_settings配置文件并重启httpd和memcached，刷新后可正常登陆，这是在国外的论坛上找到得解决方法。
+
+# vim /etc/openstack-dashboard/local_settings
+#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+# systemctl restart httpd memcached
+# systemctl status httpd memcached
+
+3.创建实例提示HTTP 500 未知API错误
+
+[root@openstack1 ~]# openstack server create --flavor m1.tiny --image cirros \> --nic net-id=d920a7fc-2b7b-4553-9b4e-1cffe1f18c4d --security-group default \
+> --key-name mykey1 provider-instance
+Unexpected API Error. Please report this at http://bugs.launchpad.net/nova/ and attach the Nova API log if possible.
+<class 'keystoneauth1.exceptions.auth_plugins.MissingRequiredOptions'> (HTTP 500) (Request-ID: req-4a0895e6-971b-4531-b266-f393b6951e10)
+[root@openstack1 ~]# tail -10 /var/log/nova/nova-api.log 
+2017-03-19 14:40:00.540 2662 ERROR nova.api.openstack.extensions  return plugin.load_from_options_getter(_getter, **kwargs)
+2017-03-19 14:40:00.540 2662 ERROR nova.api.openstack.extensions File "/usr/lib/python2.7/site-packages/keystoneauth1/loading/base.py", line 148, in load_from_options_getter
+2017-03-19 14:40:00.540 2662 ERROR nova.api.openstack.extensions  return self.load_from_options(**kwargs)
+2017-03-19 14:40:00.540 2662 ERROR nova.api.openstack.extensions File "/usr/lib/python2.7/site-packages/keystoneauth1/loading/base.py", line 123, in load_from_options
+2017-03-19 14:40:00.540 2662 ERROR nova.api.openstack.extensions  raise exceptions.MissingRequiredOptions(missing_required)
+2017-03-19 14:40:00.540 2662 ERROR nova.api.openstack.extensions MissingRequiredOptions: Auth plugin requires parameters which were not given: auth_url
+2017-03-19 14:40:00.540 2662 ERROR nova.api.openstack.extensions 
+2017-03-19 14:40:00.551 2662 INFO nova.api.openstack.wsgi [req-4a0895e6-971b-4531-b266-f393b6951e10 04fd25261b6444f7a331fe021e85f2fe 8bd659ec3af14030ab92047844856463 - - -] HTTP exception thrown: Unexpected API Error. Please report this at http://bugs.launchpad.net/nova/ and attach the Nova API log if possible.
+<class 'keystoneauth1.exceptions.auth_plugins.MissingRequiredOptions'>
+2017-03-19 14:40:00.555 2662 INFO nova.osapi_compute.wsgi.server [req-4a0895e6-971b-4531-b266-f393b6951e10 04fd25261b6444f7a331fe021e85f2fe 8bd659ec3af14030ab92047844856463 - - -] 192.168.30.139 "POST /v2.1/8bd659ec3af14030ab92047844856463/servers HTTP/1.1" status: 500 len: 536 time: 5.7874300
+
+解决:nova.conf配置文件配置错误，仔细核对重新配置后正常
+
+# vim /etc/nova/nova.conf
+
+4.登陆云主机控制台提示如下错误
+
+Failed to connect to server (code: 1006)
+
+原因:计算节点开启了防火墙、SELINUX，关闭后重启计算节点正常
+
+5.云主机无法获取IP，提示如下:
+
+Failed to allocate the network(s), not rescheduling.
+
+原因:计算节点不支持硬件加速
+
+# egrep -c '(vms|svm)' /proc/cpuinfo
+0
+
+解决:确定计算节点是否支持虚拟机的硬件加速
+
+# egrep -c '(vmx|svm)' /proc/cpuinfo
+0
+
+注:
+
+大于等于1:计算节点支持硬件加速且不需要额外的配置
+
+0:计算节点不支持硬件加速,必须配置 libvirt 来使用 QEMU 去代替 KVM
+
+# vim /etc/nova/nova.conf 
+[libvirt]
+virt_type = qemu
+
+6.上传云镜像失败，提示403 Forbidden
+
+# openstack image create "cirros" --file cirros-0.3.5-x86_64-disk.img --disk-format qcow2 --container-format bare --public
+403 Forbidden
+You are not authorized to complete publicize_image action.
+ (HTTP 403)
+
+原因:Glance镜像服务组件中未进行如下配置
+
+[paste_deploy]
+flavor = keystone
+
+7.登陆云主机控制台提示:Booting from Hard Disk
+
+这里是由于镜像损坏导致，重新下载换个镜像后即可正常进入系统。
+
+二、Ubuntu安装openstack ocata问题
+
+1.neutron服务安装完成后，无法验证 neutron-server
+
+# openstack extension list --network
+'unicode' object has no attribute 'get'
+# tail -n 10 /var/log/neutron/neutron-server.log 
+2017-03-24 21:55:29.244 97086 INFO neutron.wsgi [-] 192.168.30.145 - - [24/Mar/2017 21:55:29] "GET / HTTP/1.1" 200 271 0.009876
+2017-03-24 21:55:30.548 97086 WARNING keystonemiddleware.auth_token [-] Identity response: {"error": {"message": "The request you have made requires authentication.", "code": 401, "title": "Unauthorized"}}
+2017-03-24 21:55:31.205 97086 WARNING keystonemiddleware.auth_token [-] Identity response: {"error": {"message": "The request you have made requires authentication.", "code": 401, "title": "Unauthorized"}}
+2017-03-24 21:55:31.207 97086 CRITICAL keystonemiddleware.auth_token [-] Unable to validate token: Identity server rejected authorization necessary to fetch token data
+2017-03-24 21:55:31.214 97086 INFO neutron.wsgi [-] 192.168.30.145 - - [24/Mar/2017 21:55:31] "GET /v2.0/extensions HTTP/1.1" 503 401 1.949326
+2017-03-24 22:04:06.670 97083 INFO neutron.wsgi [-] 192.168.30.145 - - [24/Mar/2017 22:04:06] "GET / HTTP/1.1" 200 271 0.006291
+2017-03-24 22:04:07.251 97083 WARNING keystonemiddleware.auth_token [-] Identity response: {"error": {"message": "The request you have made requires authentication.", "code": 401, "title": "Unauthorized"}}
+2017-03-24 22:04:07.566 97083 WARNING keystonemiddleware.auth_token [-] Identity response: {"error": {"message": "The request you have made requires authentication.", "code": 401, "title": "Unauthorized"}}
+2017-03-24 22:04:07.567 97083 CRITICAL keystonemiddleware.auth_token [-] Unable to validate token: Identity server rejected authorization necessary to fetch token data
+2017-03-24 22:04:07.572 97083 INFO neutron.wsgi [-] 192.168.30.145 - - [24/Mar/2017 22:04:07] "GET /v2.0/extensions HTTP/1.1" 503 401 0.895275
+
+# openstack extension list --network --debug
+Using http://192.168.30.145:9696/v2.0 as public network endpoint
+REQ: curl -g -i -X GET http://192.168.30.145:9696/v2.0/extensions -H "User-Agent: openstacksdk/0.9.13 keystoneauth1/2.18.0 python-requests/2.12.4 CPython/2.7.12" -H "Accept: application/json" -H "X-Auth-Token: {SHA1}95ed2e189a2e72c1caf8da574a50e218d3c8a9c0"
+http://192.168.30.145:9696 "GET /v2.0/extensions HTTP/1.1" 503 170
+RESP: [503] Content-Length: 170 Content-Type: application/json; charset=UTF-8 X-Openstack-Request-Id: req-8cb0be17-836e-4793-b461-842e267052ee Date: Sat, 25 Mar 2017 05:07:57 GMT Connection: keep-alive 
+RESP BODY: {"message": "The server is currently unavailable. Please try again at a later time.<br /><br />\n\n\n", "code": "503 Service Unavailable", "title": "Service Unavailable"}
+
+解决:重新构建neutron-server服务
+
+# openstack user list
++----------------------------------+-----------+
+| ID        | Name  |
++----------------------------------+-----------+
+| 179677ec534648dbab9f0ca49cef017b | nova  |
+| 24208e7494d04e3d9a925f7efbcb34ce | admin  |
+| 5833a630dc9b42d48de9ea00d197834e | placement |
+| 830fc99cc93742b88be1b0c04db55fd0 | neutron |
+| cea92b6d391f4b008299d9a62d887202 | glance |
+| e723711c56e64da7a2e4a21bbd8376b9 | demo  |
++----------------------------------+-----------+
+# openstack user delete 830fc99cc93742b88be1b0c04db55fd0
+# openstack endpoint list
+# openstack endpoint delete <ID>
+# openstack service list
++----------------------------------+-----------+-----------+
+| ID        | Name  | Type  |
++----------------------------------+-----------+-----------+
+| 1e5869c704be4f82b2a3948ec87aea37 | neutron | network |
+| 9d52187708cc41a39582baa7c50fc63a | neutron | network |
+| 9fb4ba14d8dc443bac19b7c3bc6c31fa | keystone | identity |
+| c44529c847be466a8c314fee77c90fe8 | glance | image  |
+| d07ff10550e14570b073de85141badf1 | placement | placement |
+| d6ec58eb7bc2435ab71f21a2b3a44a37 | nova  | compute |
+| dd2ff93317d6497798db071f360fb5f1 | neutron | network |
++----------------------------------+-----------+-----------+
+# openstack service delete 9d52187708cc41a39582baa7c50fc63a
+# openstack service delete dd2ff93317d6497798db071f360fb5f1
+
+2.浏览器输入http://controller/horizon无法登陆horizon仪表盘服务，提示HTTP 500错误
+
+500 Internal Server Error
+The server encountered an internal error or misconfiguration and was unable to complete your request.
+Please contact the server administrator at webmaster@localhost to inform them of the time this error occurred, and the actions you performed just before this error.
+More information about this error may be available in the server error log.
+
+# tail -n 10 /var/log/apache2/error.log 
+[Sat Mar 25 03:24:01.146624 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901]  __import__(name)
+[Sat Mar 25 03:24:01.146671 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901] File "/usr/share/openstack-dashboard/openstack_dashboard/settings.py", line 335, in <module>
+[Sat Mar 25 03:24:01.146914 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901]  from local.local_settings import * # noqa
+[Sat Mar 25 03:24:01.146942 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901] File "/usr/share/openstack-dashboard/openstack_dashboard/local/local_settings.py", line 133, in <module>
+[Sat Mar 25 03:24:01.147303 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901]  SECRET_KEY = secret_key.generate_or_read_from_file('/var/lib/openstack-dashboard/secret_key')
+[Sat Mar 25 03:24:01.147331 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901] File "/usr/share/openstack-dashboard/horizon/utils/secret_key.py", line 68, in generate_or_read_from_file
+[Sat Mar 25 03:24:01.147438 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901]  key = read_from_file(key_file)
+[Sat Mar 25 03:24:01.147464 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901] File "/usr/share/openstack-dashboard/horizon/utils/secret_key.py", line 50, in read_from_file
+[Sat Mar 25 03:24:01.147499 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901]  with open(key_file, 'r') as f:
+[Sat Mar 25 03:24:01.147544 2017] [wsgi:error] [pid 103683:tid 139708160366336] [remote 192.168.30.1:23901] IOError: [Errno 13] Permission denied: '/var/lib/openstack-dashboard/secret_key'
+
+解决:
+
+# cd /var/lib/openstack-dashboard/
+# ls -ltrh
+total 12K
+drwxr-xr-x 2 root  root  4.0K Feb 22 11:40 secret-key
+-rw-r--r-- 1 root  root  0 Mar 25 02:16 _var_lib_openstack-dashboard_secret_key.lock
+-rw------- 1 root  root  64 Mar 25 02:16 secret_key
+drwxr-xr-x 10 www-data www-data 4.0K Mar 25 02:16 static
+# chown www-data:www-data /var/lib/openstack-dashboard/secret_key
+# ls -ltrh
+total 12K
+drwxr-xr-x 2 root  root  4.0K Feb 22 11:40 secret-key
+-rw-r--r-- 1 root  root  0 Mar 25 02:16 _var_lib_openstack-dashboard_secret_key.lock
+-rw------- 1 www-data www-data 64 Mar 25 02:16 secret_key
+drwxr-xr-x 10 www-data www-data 4.0K Mar 25 02:16 static
+# service apache2 reload
+
+3.输入域及admin凭证登陆提示Invalid credentials.
+
+# tail -n 10 /var/log/apache2/error.log
+[Sun Mar 26 01:35:57.953542 2017] [wsgi:warn] [pid 7841:tid 140163993126784] mod_wsgi: Compiled for Python/2.7.11.
+[Sun Mar 26 01:35:57.953714 2017] [wsgi:warn] [pid 7841:tid 140163993126784] mod_wsgi: Runtime using Python/2.7.12.
+[Sun Mar 26 01:35:57.969646 2017] [mpm_event:notice] [pid 7841:tid 140163993126784] AH00489: Apache/2.4.18 (Ubuntu) mod_wsgi/4.3.0 Python/2.7.12 configured -- resuming normal operations
+[Sun Mar 26 01:35:57.969747 2017] [core:notice] [pid 7841:tid 140163993126784] AH00094: Command line: '/usr/sbin/apache2'
+[Sun Mar 26 01:36:32.116454 2017] [wsgi:error] [pid 7844:tid 140163838510848] Login failed for user "admin", remote address 192.168.30.1.
+
+解决:可能是BUG，不支持谷歌浏览器，找了好长时间原因，后来无心插柳下用火狐浏览器正常登陆
+
+4.nova服务配置完成后无法重新启动其中组件
+
+# service nova-api restart
+# service nova-consoleauth restart
+# service nova-scheduler restart
+# service nova-conductor restart    ##无法启动
+# tail -n 10 /var/log/nova/nova-consoleauth.log 
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service File "/usr/lib/python2.7/dist-packages/amqp/connection.py", line 274, in _wait_method
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service  wait()
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service File "/usr/lib/python2.7/dist-packages/amqp/abstract_channel.py", line 69, in wait
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service  return self.dispatch_method(method_sig, args, content)
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service File "/usr/lib/python2.7/dist-packages/amqp/abstract_channel.py", line 87, in dispatch_method
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service  return amqp_method(self, args)
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service File "/usr/lib/python2.7/dist-packages/amqp/connection.py", line 530, in _close
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service  (class_id, method_id), ConnectionError)
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service AccessRefused: (0, 0): (403) ACCESS_REFUSED - Login was refused using authentication mechanism AMQPLAIN. For details see the broker logfile.
+2017-03-29 15:13:43.336 108033 ERROR oslo_service.service
+
+原因及解决:
+
+Rabbitmq未创建成功openstack用户，出现认证错误，创建后重启正常
+
+# rabbitmqctl list_users 
+Listing users ...
+guest[administrator]
+

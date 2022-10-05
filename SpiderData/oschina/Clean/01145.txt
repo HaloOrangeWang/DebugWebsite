@@ -1,0 +1,63 @@
+import random
+
+from retrying import retry
+
+# @retry  可不指定任何参数，则程序会一直执行，直到出正确结果为止
+@retry(stop_max_attempt_number=5)
+def ge():
+    if random.randint(0, 20) == 3:
+        return 9
+    print('asdf')
+    raise ValueError("sdjfkl")
+
+参数如下：
+
+stop_max_attempt_number:用来设定最大的尝试次数，超过该次数就会停止
+
+stop_max_attempt_number:用来设定最大的尝试次数，超过该次数就会停止
+
+stop_max_delay:从被装饰的函数开始执行的时间点开始到函数成功运行结束或失败报错中止的时间点。单位：毫秒
+
+stop_max_delay:从被装饰的函数开始执行的时间点开始到函数成功运行结束或失败报错中止的时间点。单位：毫秒
+
+wait_fixed：设置在两次retrying之间的停留时间
+
+wait_fixed：设置在两次retrying之间的停留时间
+
+retry_on_exception:指定出现哪些异常的时候再去retry 例：* retry_on_exception(retry_if_io_error)
+
+retry_on_exception:指定出现哪些异常的时候再去retry 例：* retry_on_exception(retry_if_io_error)
+
+retry_on_result:指定要在得到哪些结果再去retry
+ retrying是一个python的重试包，可以用来自动重试一些可能运行失败的程序段，retrying提供一个装饰器函数retry，被装饰的函数就会在运行失败的情况下重新执行，默认只要一直报错就会不断重试。
+
+retry_on_result:指定要在得到哪些结果再去retry
+ retrying是一个python的重试包，可以用来自动重试一些可能运行失败的程序段，retrying提供一个装饰器函数retry，被装饰的函数就会在运行失败的情况下重新执行，默认只要一直报错就会不断重试。
+
+stop_max_attempt_number:用来设定最大的尝试次数，超过该次数就会停止
+
+stop_max_attempt_number:用来设定最大的尝试次数，超过该次数就会停止
+
+stop_max_delay:从被装饰的函数开始执行的时间点开始到函数成功运行结束或失败报错中止的时间点。单位：毫秒
+
+stop_max_delay:从被装饰的函数开始执行的时间点开始到函数成功运行结束或失败报错中止的时间点。单位：毫秒
+
+wait_fixed：设置在两次retrying之间的停留时间
+
+wait_fixed：设置在两次retrying之间的停留时间
+
+retry_on_exception:指定出现哪些异常的时候再去retry
+ 例：retry_on_exception(retry_if_io_error)
+
+retry_on_exception:指定出现哪些异常的时候再去retry
+ 例：retry_on_exception(retry_if_io_error)
+
+retry_on_result:指定要在得到哪些结果再去retry
+ 例：retry_on_result(retry_if_result_none)
+
+retry_on_result:指定要在得到哪些结果再去retry
+ 例：retry_on_result(retry_if_result_none)
+
+if __name__ == '__main__':
+    ge()
+

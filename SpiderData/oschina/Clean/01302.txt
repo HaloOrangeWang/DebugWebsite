@@ -1,0 +1,50 @@
+Error：
+
+　　今天写一段简单类定义python代码所遇到报错问题：TypeError: drive() takes 2 positional arguments but 3 were given
+
+代码如下
+
+　　
+
+class Car:
+    speed = 0
+    def drive(self,distance):
+        time = distance / self.speed
+        print(time)
+
+bike = Car()
+bike.speed=60
+bike.drive(60,80)
+
+后经排查，才发现是类定义中 def drive（selef，distance） 方法中self参数得问题
+
+现在让我们简单了解一下Python中self的基础信息：
+
+self，表示创建的类实例本身，方法内部，就可以把各种属性绑定到self，因为self就指向创建的实例本身。在创建实例的时候，就不能传入空的参数了，必须传入与方法匹配的参数，但self不需要传，Python解释器会自己把实例变量传进去。
+
+所以有两种解决方法
+
+方法一：只传一个参数，如果你想传两个参数，那就看方法二
+
+class Car:
+    speed = 0
+    def drive(self,distance):
+        time = distance / self.speed
+        print(time)
+
+bike = Car()
+bike.speed=60
+bike.drive(80)
+
+方法二：
+
+class Car:
+    speed = 0
+    def drive(self,distance,speed):
+        time = distance / speed
+        print(time)
+bike = Car()
+bike.drive(80,50)
+
+　　
+

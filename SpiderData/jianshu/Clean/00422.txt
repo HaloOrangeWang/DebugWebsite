@@ -1,0 +1,39 @@
+错误现象
+
+[Error - 下午12:44:03] ESLint stack trace:
+[Error - 下午12:44:03] TypeError: Cannot read property 'name' of null
+    at checkForViolation (D:\workspace\vue_projects\node_modules\eslint\lib\rules\no-shadow-restricted-names.js:34:39)
+    at CatchClause (D:\workspace\vue_projects\node_modules\eslint\lib\rules\no-shadow-restricted-names.js:65:17)
+    at D:\workspace\vue_projects\node_modules\eslint\lib\util\safe-emitter.js:47:58
+    at Array.forEach (<anonymous>)
+    at Object.emit (D:\workspace\vue_projects\node_modules\eslint\lib\util\safe-emitter.js:47:38)
+    at NodeEventGenerator.applySelector (D:\workspace\vue_projects\node_modules\eslint\lib\util\node-event-generator.js:251:26)
+    at NodeEventGenerator.applySelectors (D:\workspace\vue_projects\node_modules\eslint\lib\util\node-event-generator.js:280:22)
+    at NodeEventGenerator.enterNode (D:\workspace\vue_projects\node_modules\eslint\lib\util\node-event-generator.js:294:14)
+    at CodePathAnalyzer.enterNode (D:\workspace\vue_projects\node_modules\eslint\lib\code-path-analysis\code-path-analyzer.js:608:23)
+    at Traverser.enter [as _enter] (D:\workspace\vue_projects\node_modules\eslint\lib\linter.js:865:28)
+
+问题代码
+
+async login({ commit }, userInfo) {
+      const { account, password } = userInfo
+      console.log(account, password)
+      const { data } = await login({ username: account.trim(), password })
+      try {
+        setToken(data.token)
+        commit('SET_TOKEN', data.token)
+        sessionStorage.setItem('user', userInfo.account)
+      } catch{
+        alert(data)
+      }
+
+原以为问题是这个Vue 报错"TypeError: Cannot read property 'name' of undefined"
+
+实际上很简单，就是catch写的有问题
+
+catch(err) {
+        alert(data)
+      }
+
+就是这种情况下eslint 会报这种错很奇怪，记录一下
+

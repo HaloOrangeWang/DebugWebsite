@@ -1,0 +1,38 @@
+在windows下开发项目时，当项目中用到node-sass时，经常会遇到如下错误：
+
+问题原因：
+windows 下 node-sass 编译没通过，导致 node-sass\vendor\win32-x64-57 目录下缺少 binding.node 文件,实际上连 vendor\win32-x64-57 目录也没有。
+
+解决办法：
+步骤一、执行如下命令，从新编译 node-sass 即可。
+
+npm rebuild node-sass
+
+注意：前提是--安装python，并拥有python环境！
+
+安装python之后，环境配置可以参考这个大神的办法：
+
+https://blog.csdn.net/qq_38053195/article/details/87070583
+
+步骤二、
+
+问题原因：
+
+由于D:..\node-sass-china\vendor\win32-x64-64\binding.node文件的版本不对，导致出现报错。
+
+具体步骤：
+
+1.使用以下命令查看对应的版本
+
+node -p "[process.platform, process.arch, process.versions.modules].join('-')"
+
+我的：
+
+2.去官网https://github.com/sass/node-sass/releases下载相应版本的 binding.node 文件。并放入到报错项目的 node-sass\vendor文件夹下（注意下载的是.node文件，不要下载错）
+
+如：下载的 win32-x64-57_binding.node 文件（这是我的对应版本），则将该文件重命名为 binding.node 后放入到 node-sass\vendor\win32-x64-57 目录下即可。
+
+最后：运行成功
+
+---End
+

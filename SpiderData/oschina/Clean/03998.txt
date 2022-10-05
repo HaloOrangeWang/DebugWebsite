@@ -1,0 +1,16 @@
+failed to determine Model class name are you sure models have been instrumented?
+
+由于项目老报错  于是踩过很多坑后  总结一下经验
+
+1.activeJDBC的instrumented原理请自行百度
+
+2.明白instrumented的原理之后，我们知道要跑通一个activJDBC的demo，需要maven管理依赖包和插件
+
+在pom.xml配置activejdbc-instrumented插件   然后在eclipse中项目右键run  as-->maven build-->maven compile
+
+3.上面就是运行 instrumented插件，把超类的方法赋给子类，使得model能够生效  不然  po.where(...)不知道怎么去找
+
+4.项目clean  会清除缓存  即instrumented编译写给子类的字节码会clean   所以start tomcat就又报错了  应该先maven compile  再跑就ok了
+
+以上  刚入职的小菜鸟一点心得   ----create  by    grey夏
+

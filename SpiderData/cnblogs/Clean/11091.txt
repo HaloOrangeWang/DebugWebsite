@@ -1,0 +1,28 @@
+
+报错描述
+
+pip3 安装 mysqlclient 的时候，出现报错 _mysql.c:32:20: fatal error: Python.h: No such file or directory
+
+报错内容
+
+
+解决思路
+
+刚开始看到command 'gcc' failed还以为是缺少gcc编译包，于是yum安装gcc相关
+
+安装完成后依然报错，于是搜索：_mysql.c:32:20: fatal error: Python.h: No such file or directory 发现是缺少 python3-devel
+
+centos 系统
+
+python2版本执行：sudo yum install python-devel
+
+python3版本执行：sudo yum install python3-devel
+
+Ubuntu,Debian系统
+
+python2版本执行：sudo apt-get install python-dev
+
+python3版本执行：sudo apt-get install python3-dev
+
+安装 python3-devel 依赖后，重新执行就解决了
+

@@ -1,0 +1,16 @@
+今天在使用pip的时候，发现问题，ImportError: No module named 'pip' 。
+
+使用一下代码，重新激活pip。
+
+python -m ensurepip
+
+然而在pip -V 的时候依然报错 No module named 'pip._internal'  好像是pip的组件出了问题。我们重新下载pip
+
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+
+然后安装
+
+python get-pip.py --force-reinstall
+
+使用pip -V 可以清楚看到版本，问题解决。
+

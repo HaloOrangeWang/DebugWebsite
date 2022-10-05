@@ -1,0 +1,33 @@
+在使用hibernate时，报错
+
+java.lang.StackOverflowError: null
+
+把当前线程的栈打满了
+
+java.lang.StackOverflowError: null
+    at java.util.AbstractCollection.toString(AbstractCollection.java:454) ~[?:1.8.0_111]
+    at org.hibernate.collection.internal.PersistentBag.toString(PersistentBag.java:538) ~[hibernate-core-5.3.7.Final.jar:5.3.7.Final]
+    at java.lang.String.valueOf(String.java:2994) ~[?:1.8.0_111]
+    at java.lang.StringBuilder.append(StringBuilder.java:131) ~[?:1.8.0_111]
+    at com.crhms.seabow.model.User.toString(User.java:12) ~[classes/:?]
+    at java.lang.String.valueOf(String.java:2994) ~[?:1.8.0_111]
+    at java.lang.StringBuilder.append(StringBuilder.java:131) ~[?:1.8.0_111]
+    at com.crhms.seabow.model.Role.toString(Role.java:12) ~[classes/:?]
+    at java.lang.String.valueOf(String.java:2994) ~[?:1.8.0_111]
+    at java.lang.StringBuilder.append(StringBuilder.java:131) ~[?:1.8.0_111]
+    at java.util.AbstractCollection.toString(AbstractCollection.java:462) ~[?:1.8.0_111]
+    at org.hibernate.collection.internal.PersistentBag.toString(PersistentBag.java:538) ~[hibernate-core-5.3.7.Final.jar:5.3.7.Final]
+    at java.lang.String.valueOf(String.java:2994) ~[?:1.8.0_111]
+    at java.lang.StringBuilder.append(StringBuilder.java:131) ~[?:1.8.0_111]
+    at com.crhms.seabow.model.User.toString(User.java:12) ~[classes/:?]
+    at java.lang.String.valueOf(String.java:2994) ~[?:1.8.0_111]
+    at java.lang.StringBuilder.append(StringBuilder.java:131) ~[?:1.8.0_111]
+    at com.crhms.seabow.model.Role.toString(Role.java:12) ~[classes/:?]
+    at java.lang.String.valueOf(String.java:2994) ~[?:1.8.0_111]
+
+查了一下原因，应该是出现在实体的toString方法上，如果存在关联属性(1对多等)，不能加入到toString方法中，否则出现，你打印我，我打印你，一直打下去。
+
+虽然我的代码中没有写toString方法，但是我们的lombok的Data注解，它自带了toString，只能重写toString方法，覆盖lombok的toString方法。
+
+问题解决。
+

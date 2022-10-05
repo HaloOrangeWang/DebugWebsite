@@ -1,0 +1,28 @@
+在进行跳转的时候报错
+app.js:87499 Uncaught (in promise) NavigationDuplicated?{_name: "NavigationDuplicated",
+ name: "NavigationDuplicated", message: "Navigating to current location ("/yunshuattr") is not allowed", stack: "Error? 
+  at new NavigationDuplicated (http://loca…rHandling (http://localhost:8080/app.js:90490:26
+
+解决办法
+
+在项目目录下运行 npm i vue-router@3.0 -S 即可
+
+如何在任何页面获取到url地址  然后切换项目的时候仍然在当前地址
+
+console.log("当前页面的参数",this.$route.path);
+ this.$router.push(this.$route.path)；//切换项目的时候仍然在改页面
+
+项目切换的html代码不要使用<a>标签渲染（重要）
+
+否则跳转的时候会出问题
+
+<div class="list-group-item" v-for="(item,i) in projectName" :key="i"  @click="myclickEvent(item.name,item.id)"  :prj-id="item.id" > 
+         <div class="media">
+            <div class="media-body">
+                 <h6 class="media-heading">
+                     <i class="fa fa-outdent"><span>{{item.name}}</span></i>  //这里用的span渲染切换
+                  </h6>
+             </div>
+         </div>
+ </div>
+

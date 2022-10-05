@@ -1,0 +1,70 @@
+　　因为某些原因（其实就是在B站看到了破解学校发的板砖的方法）需要用到Xerosploit中间人攻击工具，在安装的时候因为遇到了各种问题（毕竟我也只是个Linux小白）所以在这里把遇到的各种错误以及解决方案写在这（万一以后忘了呢┓( ´∀` )┏），另外，鄙人使用的是Kali Linux环境，所以在某些地方跟别的可能有所出入，不过应该问题不大。
+
+
+安装Xerosloit
+
+　　Xerosploit安装直接git clone就行，另外，安装必须在根目录下的opt文件夹下进行安装，否则会报错。
+
+1 git clone https://github.com/LionSec/xerosploit.git
+2 cd xerosploit
+3 python2 install.py
+
+因为Xerosploit使用python2写的，所以打开时要用python2打开，另外在Github上还找到了用python3写的Xerosploit，用这个也不错，而且会少出现因为依赖而出现的问题，地址如下
+
+1 git clone https://github.com/lzskyline/xerosploit3.git
+2 cd xerosploit3
+3 python3 install.py
+
+另外因为网络问题可能会出现连接失败，比如这样
+
+可以把clone路径里的https换成git试试，如果还不行就多试几次（毕竟这玩意有时候真的靠人品）
+
+之后就会出现这个界面
+
+根据自己的系统选择即可，比如我的是Kali Linux，就输入1
+
+回车后即可开始安装
+
+安装成功后会看到
+
+在安装时大概率（至少我每次安装都会遇到）会遇到
+
+ERROR: Error installing xettercap-1.5.7xerob.gem:
+        ERROR: Failed to build gem native extension.
+
+报出的错误是无法构建本地gem扩展，这里报错的原因不明，（注意：安装过程中即使出现这个错误最后还是会出现安装成功的提示）但我还是找到了解决方案(～￣▽￣)～
+
+1 apt-get install libpcap-dev
+
+安装成功后再在终端输入
+
+1 gem install xettercap --pre
+
+即可看到
+
+注： 如果在安装时忽略此错误，那么虽然可以正常进入程序，但是在执行rdownload操作时，会提示 xettercap: not found ，从而无法正常运行，解决方法同上
+
+那么到此Xerosploit安装成功
+
+
+运行Xerosploit
+
+　　在xerosploit文件夹下，运行（使用python3版本的请用python3打开）
+
+python2 xerosploit.py
+
+如果是python2版本则会看到报错（python3版本请自行跳过）
+
+报错原因是因为python2库中没有terminaltables库文件，直接用pip安装即可，不过因为我的Kali Linux里没有预装pip，所以要先对pip进行安装
+
+1 apt install python-pip
+2 pip2 install terminaltables
+
+安装后再次运行Xerosploit，于是又一次报错（python3版本还是自行跳过吧）
+
+报错原因与之前一样，所以还是
+
+pip2 install tabulate
+
+安装成功后，再次运行Xerosploit，这次就可以完美运行了
+

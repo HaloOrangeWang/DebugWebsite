@@ -1,0 +1,26 @@
+from Crypto.Cipher import AES
+
+在python中要使用到crypto相关的库，但是网上的解决方法一大片，能用的没有几个，而且能安装的没有几个，首先我告诉大家为什么不能安装，其次告诉一种真正的方法。
+
+pycrypto，pycrytodome和crypto是一个东西，crypto在python上面的名字是pycrypto它是一个第三方库，但是已经停止更新三年了，所以不建议安装这个库；
+
+windows下python3.6安装也不会成功！
+
+这个时候pycryptodome就来了，它是pycrypto的延伸版本，用法和pycrypto 是一模一样的；
+
+所以，我现在告诉一种真的解决方法：直接安装：
+
+pip install pycryptodome
+
+（亲测，目前不用改文件夹名字了） 但是，在使用的时候导包是有问题的，这个时候只要修改一个文件夹的名称就可以完美解决这个问题
+
+C:\Users\Administrator\AppData\Local\Programs\Python\Python36\Lib\site-packages
+
+找到这个路径，下面有一个文件夹叫做crypto,将c改成C，对就是改成大写就ok了！！！转自https://www.cnblogs.com/banml/p/10731242.html
+
+但是我看我的/usr/local/lib/python3.7/site-packages/下面没有crypto，所以不能改成C，
+
+最后是改成国内源了：
+
+pip3 install pycryptodome -i https://pypi.tuna.tsinghua.edu.cn/simple
+

@@ -1,0 +1,30 @@
+centos7，python版本3.6/3.8，需要安装robotframework-ride
+
+在安装wxpython时报错，切换python版本，使用pip或手动安装wxpython都出现如下错误：
+
+​​copying symlink wx/libwx_baseu-3.0.so -> build/lib.linux-x86_64-3.8/wx/libwx_baseu-3.0.so​​
+
+​​error: [Errno 2] No such file or directory: 'build/lib.linux-x86_64-3.8/wx/libwx_baseu-3.0.so​​
+
+中文网站搜了很久，没找到有效信息，在网外搜到到同样问题：
+
+https://discuss.wxpython.org/t/pip-install-wxpython-failed/34925/4
+
+跳转到下面的地址：
+
+https://github.com/wxWidgets/Phoenix/issues/1769
+
+上面这个地址内给出了别的用户的解决方法：
+
+python3.6/3.8默认的setuptools都是50+，将setuptools回退到41.0.1可以解决问题。
+
+步骤：
+
+pip3 uninstall setuptools
+
+pip3 install setuptools==41.0.1
+
+pip3 install robotframework-ride
+
+完美解决！
+

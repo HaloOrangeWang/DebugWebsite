@@ -1,0 +1,24 @@
+问题是什么？
+
+在flask中，使用多线程操作数据库，报错：RuntimeError: No application found . Either work inside a view function or push an application context
+
+报错原因：线程是独立的，相对于flask进程是独立的，它不知道flask初始化时候，app对象，db对象是谁，也就拿不到连接数据库需要的config，就报错了。
+
+所以需要上下文。
+
+一，什么是上下文？
+
+现在让你读一本小说《平凡的世界》，前十章不让你读，让你直接读十一章，然后问你：少安和润叶什么关系？
+
+你是不是十脸懵逼？少安是谁，润叶又他妈是谁？ 这个时候你说不认识，解释不了，然后抛出一个异常：RuntimeError: No application found . Either work inside a view function or push an application context
+
+这就是上下文。
+
+二，怎么解决上下文问题
+
+python中用with语句来管理上下文 。具体flask中，解决上下文，就是在线程中，开始执行代码的最上方，加入  with app.app_context():
+
+　　
+
+这样就相当于把你调用多线程之前的app对象，db对象告诉了这个线程。这样就不会报错了！
+

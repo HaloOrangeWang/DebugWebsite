@@ -1,0 +1,14 @@
+【Error: ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client 】
+
+原因：mysql8.0以上加密方式，Node还不支持。
+
+解决方式：【以管理员的方式打开 cmd 】→ 【进入到 mysql 的 bin 目录】 → 【 mysql ‐u root ‐p 】输入密码，回车进入到 mysql> 里面 → 输入：【alter user 'root'@'localhost' identified with mysql_native_password by '本地登录MySql的账号'; 】回车，显示：Query OK, 0 rows affected (0.06 sec) 就可以继续下去 → 输入：【 flush privileges; 】回车，显示：Query OK, 0 rows affected (0.03 sec) 就可以了
+
+解释：flush privileges 命令本质上的作用是将当前user和privilige表中的用户信息/权限设置从mysql库(MySQL数据库的内置库)中提取到内存里。经常用在改密码和授权超用户。
+
+注意：1、输入的时候后面一定要加英文的分号，否则没有反应
+
+2、如果没有【以管理员省份运行 cmd 】则在进入 mysql 的时候会出现报错：mysql : 无法将“mysql”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路 径，请确保路径正确，然后再试一次。
+
+【1366 - Incorrect string value: '\xF0\x9F\x98\x8A\xEF\xBC...' fo
+

@@ -1,0 +1,26 @@
+背景：
+
+新电脑 win10，python3.8
+
+问题1：no required Microsoft Visual C++ 14.0
+
+解决办法：下载啊
+
+百度盘链接: https://pan.baidu.com/s/1EQyBqwQ5pYXt6HXxT0Z-jQ 提取码: qudy
+
+问题1解决后，就解决的不能install jupyter的问题了。然后就是下载成功后，运行jupyter notebook，报错
+
+问题2 ：    raise NotImplementedError    NotImplementedError
+
+解决办法：去找这个路径下的文档 tornado/platform/asyncio.py
+
+在main import后面新增以下代码：
+
+import sys
+
+if sys.platform == 'win32':
+
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+解决！
+

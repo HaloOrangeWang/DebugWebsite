@@ -1,0 +1,35 @@
+1 Traceback (most recent call last):
+2 File "/usr/local/bin/pip", line 7, in <module>
+3 from pip import main
+
+报错的时候基本pip查看版本命令都看不到了,找了好多资料,这里来整理一下:
+
+导入main时候可能是pip._in的一个什么东西
+
+或者错误包含
+
+1 ImportError: No module named packaging.version
+
+第一种解决方法:
+
+根据以上报错的路径
+
+/usr/local/bin/
+
+用vim直接编辑
+
+1 from pip import __main__
+2 if __name__ == '__main__':
+3     sys.exit(__main__._main())
+
+以上方法是因为10.0出现bug  可以先检查自己的版本再重新试试
+
+第二种解决方法:
+
+1 wget https://bootstrap.pypa.io/get-pip.py
+2 sudo python get-pip.py
+
+推荐使用第二种方法
+
+原答案 http://stackoverflow.com/questions/42286447/importerror-no-module-named-packaging-version
+

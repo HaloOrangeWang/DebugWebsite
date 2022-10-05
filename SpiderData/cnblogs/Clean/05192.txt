@@ -1,0 +1,14 @@
+问题一：安装 MySQL-python 提示：ImportError: libmysqlclient.so.20: cannot open shared object file: No such file or directory
+
+问题二：运行django已安装了mysqlclient，却依然报错：
+
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: libmysqlclient.so.20: cannot open shared object file: No such file or directory.
+Did you install mysqlclient or MySQL-python?
+
+如上原因都是因为libmysqlclient.so.20文件找不到，多半是安装mysql文件目录自定义所致，解决办法：
+
+find / -name libmysqlclient.so.20
+返回：/usr/local/mysql-5.7.18-linux-glibc2.5-x86_64/lib/libmysqlclient.so.20
+做个软连，问题即可解决：
+ln -s /usr/local/mysql-5.7.18-linux-glibc2.5-x86_64/lib/libmysqlclient.so.20 /usr/lib64/libmysqlclient.so.20
+

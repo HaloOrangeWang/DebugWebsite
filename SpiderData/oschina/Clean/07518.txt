@@ -1,0 +1,30 @@
+SpringBoot2.0.1启动用idea启动可以正常运行，但是mvn编译后启动失败 报错日志如下
+
+2018-04-13 10:18:58.843 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - [AbstractApplicationContext.java:558] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.context.ApplicationContextException: Unable to start ServletWebServerApplicationContext due to missing ServletWebServerFactory bean.
+2018-04-13 10:18:58.855 [main] ERROR org.springframework.boot.SpringApplication - [SpringApplication.java:842] - Application run failed
+org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.context.ApplicationContextException: Unable to start ServletWebServerApplicationContext due to missing ServletWebServerFactory bean.
+        at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:155)
+        at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:544)
+        at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:140)
+        at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:759)
+        at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:395)
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:327)
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:1255)
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:1243)
+        at com.hualala.shopcrm.data.ApplicationMain.main(ApplicationMain.java:27)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:48)
+        at org.springframework.boot.loader.Launcher.launch(Launcher.java:87)
+        at org.springframework.boot.loader.Launcher.launch(Launcher.java:50)
+        at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:51)
+Caused by: org.springframework.context.ApplicationContextException: Unable to start ServletWebServerApplicationContext due to missing ServletWebServerFactory bean.
+        at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getWebServerFactory(ServletWebServerApplicationContext.java:204)
+        at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:178)
+        at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:152)
+        ... 16 common frames omitted
+
+问题原因是springBoot2.0 依赖的tomcat版本必须在8.5以上，排查发现项目中配置的tomcat版本为8.0.33 pom中有这样的配置 <tomcat.version>8.0.33</tomcat.version> 改为 <tomcat.version>8.5.29</tomcat.version> 后启动正常
+

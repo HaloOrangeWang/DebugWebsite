@@ -1,0 +1,42 @@
+flask的uwsig.ini配置文件如下：
+
+[uwsgi]
+socket = 127.0.0.1:3031
+wsgi-file =  flask_web.py
+callable = app
+processes = 4
+threads = 2
+stats = 127.0.0.1:9191
+
+启动
+
+$ uwsgi uwsig.ini
+
+然后报错：
+
+Traceback (most recent call last):
+  File "flask_web.py", line 8, in <module>
+    from flask import Flask
+ModuleNotFoundError: No module named 'flask'
+unable to load app 0 (mountpoint='') (callable not found or import error)
+
+很明显是环境没有指定
+
+[uwsgi]
+socket = 127.0.0.1:3031
+home = /Users/qmp/.virtualenvs/py3
+wsgi-file =  flask_web.py
+callable = app
+processes = 4
+threads = 2
+stats = 127.0.0.1:9191
+
+指定环境参数home后再次运行就成功了 
+ 也可以指定（四选一即可）：virtualenv、venv、 home、 pyhome
+
+参考：
+
+uWSGI - ImportError: No module named os
+
+https://uwsgi-docs-zh.readthedocs.io/zh_CN/latest/Options.html#home
+

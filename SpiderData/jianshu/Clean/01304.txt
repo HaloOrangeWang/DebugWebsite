@@ -1,0 +1,37 @@
+super() 函数是用于调用父类(超类)的一个方法。
+
+super 是用来解决多重继承问题的，直接用类名调用父类方法在使用单继承的时候没问题，但是如果使用多继承，会涉及到查找顺序（MRO）、重复调用（钻石继承）等种种问题。
+
+代码中使用super遇到了报错：
+
+class Publiser:
+
+def __init__(self):
+        self.observers = []
+
+class DefaultFromatter(Publiser):
+    def __init__(self, name):
+        #Publiser.__init__(self)
+        super(DefaultFromatter,self).__init__()
+
+goal_publiser = DefaultFromatter("test1")
+
+代码会报错TypeError: must be type, not classobj：
+
+super(DefaultFromatter,self).__init__()
+TypeError: must be type, not classobj
+
+解决办法：
+
+class Publiser:
+
+改为
+
+class Publiser(object):
+
+参考：
+
+[1]python类中super()和init()的区别
+
+[2]Python super() 函数 | 菜鸟教程
+

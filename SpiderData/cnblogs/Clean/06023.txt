@@ -1,0 +1,12 @@
+报错截图
+
+看一下这个sql
+
+SELECT * from business_uat_2.by_orders WHERE order_type=2 AND pay_type="HT_01" AND is_deleted=0 AND sync_tag =1 ;
+
+在mysql中 手动执行时可以执行成功的、但是在用python pysql库执行时就报错了。
+
+排查了半天发现是HT_01用了 双引号的原因，python执行的sql语句 字段值 必须用单引号。用双引号的话在mysql里可以运行成功。但是在python中运行会报错。
+
+引以为戒！
+

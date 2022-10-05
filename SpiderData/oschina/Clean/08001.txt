@@ -1,0 +1,64 @@
+错误:
+
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'redisTemplate' defined in class path resource [org/springframework/boot/autoconfigure/data/redis/RedisAutoConfiguration.class]: Unsatisfied dependency expressed through method 'redisTemplate' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.data.redis.connection.RedisConnectionFactory' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+    at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:729) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:470) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1254) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1103) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:541) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:501) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:317) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:228) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:315) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:760) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:869) ~[spring-context-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:550) ~[spring-context-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:140) ~[spring-boot-2.0.2.RELEASE.jar:2.0.2.RELEASE]
+    at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:759) ~[spring-boot-2.0.2.RELEASE.jar:2.0.2.RELEASE]
+    at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:395) ~[spring-boot-2.0.2.RELEASE.jar:2.0.2.RELEASE]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:327) ~[spring-boot-2.0.2.RELEASE.jar:2.0.2.RELEASE]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1255) ~[spring-boot-2.0.2.RELEASE.jar:2.0.2.RELEASE]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1243) ~[spring-boot-2.0.2.RELEASE.jar:2.0.2.RELEASE]
+    at com.zhangyy3.tuantuan.Start.main(Start.java:20) ~[classes/:na]
+Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.data.redis.connection.RedisConnectionFactory' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.raiseNoMatchingBeanFound(DefaultListableBeanFactory.java:1509) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1104) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1065) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:815) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:721) ~[spring-beans-5.0.6.RELEASE.jar:5.0.6.RELEASE]
+    ... 19 common frames omitted
+
+原因:
+
+　　由于已经配置好了相应的redisKey,但是还是报错，显示某个bean未定义，找到官方文档后，发现redis maven配置有问题。
+
+原来是
+
+　　　　<dependency>
+        　　<groupId>org.springframework.data</groupId>
+        　　<artifactId>spring-data-redis</artifactId>
+        　　<!--<version>${version}.RELEASE</version>-->
+        </dependency>
+
+　　修改为
+
+　　　　<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.lettuce</groupId>
+                    <artifactId>lettuce-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+
+　　问题解决。
+
+总结: 这所以遇到这样的问题，是因为没好好看文档。。。。。
+

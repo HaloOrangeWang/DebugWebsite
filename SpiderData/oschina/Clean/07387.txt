@@ -1,0 +1,29 @@
+使用cloudera工具集搭建的impala集群
+
+查询的时候报错，显示节点内存不足，报错如下：
+
+Memory Limit Exceeded by fragment: 134dccbeab01dd00:72a590a00000006
+Query(134dccbeab01dd00:72a590a00000000): Total=55.39 MB Peak=55.39 MB
+  Fragment 134dccbeab01dd00:72a590a00000006: Total=54.09 MB Peak=54.09 MB
+    Runtime Filter Bank: Total=1.00 MB Peak=1.00 MB
+    HASH_JOIN_NODE (id=3): Total=33.04 MB Peak=33.04 MB
+      Hash Join Builder (join_node_id=3): Total=33.01 MB Peak=33.01 MB
+    AGGREGATION_NODE (id=5): Total=2.26 MB Peak=2.26 MB
+    EXCHANGE_NODE (id=4): Total=0 Peak=0
+    DataStreamRecvr: Total=0 Peak=0
+    EXCHANGE_NODE (id=6): Total=0 Peak=0
+    DataStreamRecvr: Total=17.76 MB Peak=17.95 MB
+    HdfsTableSink: Total=0 Peak=0
+    CodeGen: Total=8.28 KB Peak=1.38 MB
+  Block Manager: Limit=156.00 MB Total=24.50 MB Peak=24.50 MB
+  Fragment 134dccbeab01dd00:72a590a00000000: Total=1.31 MB Peak=1.79 MB
+    AGGREGATION_NODE (id=2): Total=1.27 MB Peak=1.27 MB
+    HDFS_SCAN_NODE (id=1): Total=4.00 KB Peak=4.00 KB
+      Exprs: Total=4.00 KB Peak=4.00 KB
+    DataStreamSender (dst_id=4): Total=25.59 KB Peak=25.59 KB
+    CodeGen: Total=2.52 KB Peak=513.50 KB
+
+　　在官网查到是impala的配置Impala Daemon Memory Limit 设置过小引起的， 增大内存。
+
+重启之后查询ok
+

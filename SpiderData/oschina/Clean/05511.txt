@@ -1,0 +1,17 @@
+
+Q：安装ik分词器1.2.9 后，使用head插件创建索引报错
+
+{ 
+ "error": "IndexCreationException[[email] failed to create index]; nested: NoClassDefFoundError[org/apache/http/client/ClientProtocolException]; nested: ClassNotFoundException[org.apache.http.client.ClientProtocolException]; ",
+"status": 500 }
+
+
+A：根据其提示，发现有2种情况，一是jdk的版本不对，一是少了jar包。
+
+百度过后发现，其它人也有相应的情况。 
+ 说是ik的目录下少了 http的jar包。
+
+1、同步httpClient和httpCore包到集群的所有机器的/plugins/analysis-ik目录下。
+
+2、重启es
+

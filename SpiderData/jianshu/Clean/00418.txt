@@ -1,0 +1,18 @@
+现象：
+
+日志报错：
+
+2021-11-10 12:52:37.720 [http-nio-1111-exec-5] ERROR o.a.c.c.C.[.[.[/pdwy-app].[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [/pdwy-app] threw exception [Request processing failed; nested exception is org.springframework.web.multipart.MultipartException: Could not parse multipart servlet request; nested exception is java.lang.IllegalStateException: org.apache.tomcat.util.http.fileupload.FileUploadBaseFileSizeLimitExceededException: The field imgFile exceeds its maximum permitted size of 1048576 bytes.
+
+at org.apache.tomcat.util.http.fileupload.FileUploadBaseFileItemStreamImplConnectionHandler.process(AbstractProtocol.java:868)
+
+at org.apache.tomcat.util.net.NioEndpointWorker.run(ThreadPoolExecutor.java:624)
+
+at org.apache.tomcat.util.threads.TaskThreadFileSizeLimitExceededException: The field imgFile exceeds its maximum permitted size of 1048576 bytes.t java.lang.Thread.run(Thread.java:748)
+
+[root@localhost pdwy-app]# ll
+
+解决：
+
+在配置文件中添加如图配置：
+

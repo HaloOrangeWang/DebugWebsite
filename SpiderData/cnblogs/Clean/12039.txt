@@ -1,0 +1,63 @@
+问题：
+
+pyinstaller 打包后，运行生成的exe报错 “recursion is detected during loading of “cv2“ binary extensions.”
+
+Traceback (most recent call last):
+  File "Sy.py", line 15, in <module>
+  File "PyInstaller\loader\pyimod03_importers.py", line 495, in exec_module
+  File "cv2\__init__.py", line 180, in <module>
+    bootstrap()
+  File "cv2\__init__.py", line 152, in bootstrap
+    native_module = importlib.import_module("cv2")
+  File "importlib\__init__.py", line 126, in import_module
+  File "PyInstaller\loader\pyimod03_importers.py", line 495, in exec_module
+  File "cv2\__init__.py", line 180, in <module>
+    bootstrap()
+  File "cv2\__init__.py", line 75, in bootstrap
+    raise ImportError('ERROR: recursion is detected during loading of "cv2" binary extensions. Check OpenCV installation.')
+ImportError: ERROR: recursion is detected during loading of "cv2" binary extensions. Check OpenCV installation.
+
+========================
+
+使用pip卸载opencv，pip uninstall opencv*******(具体的安装的opencv的名字)
+到%:\python\Lib\site-packages%路径（安装的python的路径）下删除cv2的文件夹
+再用pip重新安装opencv，pip install opencv****
+
+========================
+
+解决方法（可依次尝试）：
+
+1.重装cv2。（这是回答比较多的，多数情况有用）
+
+先pip unintall opencv-python ，再pip intall opencv-python
+
+2.设置环境变量。
+
+参考：
+
+Python-Opencv [ERROR: recursion is detected during loading of "cv2"_凌空的桨-CSDN博客
+
+3.降低cv2版本。
+
+pyinstaller和cv2的版本存在兼容问题。本人用的pyinstaller是4.7(python3.8.0)，cv2是4.5.4.58，结果出错，把cv2版本降低到4.5.1.48再打包，就不报错了。
+
+========================
+
+https://wiki.archlinux.org/index.php/Arch_Linux_Archive#How_to_downgrade_one_package
+
+========================
+
+open cmd and use pip to install a different version:
+
+========================
+
+opencv-python      4.5.5.62
+
+========================
+
+REF
+
+https://blog.csdn.net/weixin_44205803/article/details/100975762
+
+https://blog.csdn.net/qq_44796370/article/details/121458744
+

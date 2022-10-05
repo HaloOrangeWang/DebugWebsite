@@ -1,0 +1,25 @@
+使用boost的log，用以下链接选项：
+
+-lboost_system -lboost_thread -lboost_log -lboost_log_setup -lboost_filesystem -lpthread
+
+当使用add_console_log函数编译链接时报错：
+
+/usr/local/gcc/bin/g++ ../obj/timerServer.o ../obj/CWatchThread.o ../obj/CHttpRequest.o ../obj/CKeyCreater.o ../obj/CServerThread.o ../obj/CTimerThread.o -g -lboost_system -lboost_thread -lboost_log -lboost_log_setup -lboost_filesystem -lpthread -L/usr/local/boost/lib -o ../bin/timerServer
+ /usr/local/boost/lib/libboost_log_setup.a(default_formatter_factory.o): In function `void boost::log::v2s_mt_posix::type_dispatcher::callback_base::trampoline<boost::log::v2s_mt_posix::aux::(anonymous namespace)::default_formatter<char>::visitor, boost::log::v2s_mt_posix::aux::id<boost::log::v2s_mt_posix::aux::process> >(void*, boost::log::v2s_mt_posix::aux::id<boost::log::v2s_mt_posix::aux::process> const&)':
+ default_formatter_factory.cpp:(.text._ZN5boost3log12v2s_mt_posix15type_dispatcher13callback_base10trampolineINS1_3aux12_GLOBAL__N_117default_formatterIcE7visitorENS5_2idINS5_7processEEEEEvPvRKT0_[_ZN5boost3log12v2s_mt_posix3aux25default_formatter_factoryIcE16create_formatterERKNS1_14attribute_nameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESE_St4lessISE_ESaISt4pairIKSE_SE_EEE]+0x8): undefined reference to `std::basic_ostream<char, std::char_traits<char> >& boost::log::v2s_mt_posix::aux::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::log::v2s_mt_posix::aux::id<boost::log::v2s_mt_posix::aux::process> const&)'
+ /usr/local/boost/lib/libboost_log_setup.a(default_formatter_factory.o): In function `void boost::log::v2s_mt_posix::type_dispatcher::callback_base::trampoline<boost::log::v2s_mt_posix::aux::(anonymous namespace)::default_formatter<wchar_t>::visitor, boost::log::v2s_mt_posix::aux::id<boost::log::v2s_mt_posix::aux::process> >(void*, boost::log::v2s_mt_posix::aux::id<boost::log::v2s_mt_posix::aux::process> const&)':
+ default_formatter_factory.cpp:(.text._ZN5boost3log12v2s_mt_posix15type_dispatcher13callback_base10trampolineINS1_3aux12_GLOBAL__N_117default_formatterIwE7visitorENS5_2idINS5_7processEEEEEvPvRKT0_[_ZN5boost3log12v2s_mt_posix3aux25default_formatter_factoryIwE16create_formatterERKNS1_14attribute_nameERKSt3mapINSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEEESE_St4lessISE_ESaISt4pairIKSE_SE_EEE]+0xb): undefined reference to `std::basic_ostream<wchar_t, std::char_traits<wchar_t> >& boost::log::v2s_mt_posix::aux::operator<< <wchar_t, std::char_traits<wchar_t> >(std::basic_ostream<wchar_t, std::char_traits<wchar_t> >&, boost::log::v2s_mt_posix::aux::id<boost::log::v2s_mt_posix::aux::process> const&)'
+ collect2: error: ld returned 1 exit status
+
+链接选项再加三个如下：
+
+-lboost_system -lboost_thread -lboost_log -lboost_log_setup -lboost_filesystem -lpthread -lboost_locale -lboost_log -lboost_log_setup
+
+编译正常通过了
+
+最后发现下面三个库必须是这个顺序：
+
+-lboost_log_setup -lboost_locale -lboost_log
+
+中间可以穿插其它库，但是这三个的先后次序必须是这样的
+

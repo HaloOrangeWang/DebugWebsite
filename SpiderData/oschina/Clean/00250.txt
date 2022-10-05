@@ -1,0 +1,351 @@
+
+文章目录
+
+1. ModuleNotFoundError: No module named 'pip'
+
+2. /usr/bin/python: No module named virtualenvwrapper
+
+3. TypeError: zinterstore() got multiple values for argument 'aggregate'
+
+4. AssertionError: View function mapping is overwriting an existing endpoint function: 1
+
+2. AssertionError: A name collision occurred
+
+3. DENIED Redis is running in protected mode because protected mode is enabled, no bind address was specified
+
+4. IndentationError: unexpected indent
+
+5. 'DictCursor' object has no attribute 'commit'
+
+6. SyntaxError: positional argument follows keyword argument
+
+7. TypeError: func() got multiple values for argument 'a1'
+
+8. TypeError: Object of type set is not JSON serializable
+
+9. TypeError: list indices must be integers or slices, not tuple
+
+10. TypeError: strptime() argument 1 must be str, not datetime.datetime
+
+11. RecursionError: maximum recursion depth exceeded while calling a Python object
+
+12. ImportError: attempted relative import with no known parent package
+
+13. RuntimeError: The session is unavailable because no secret key was set. Set the secret_key on the application to something unique and secret.
+
+14. 成功解决Twisted安装报错
+
+15. name 'reduce' is not defined
+
+16. pymysql.err.InternalError: (1698, "Access denied for user 'root'@'localhost'")
+
+17. 运行Python Web项目uwsgi报错
+
+18. Unicode-objects must be encoded before hashing
+
+19. /usr/bin/python: No module named virtualenvwrapper
+
+20. WARNING: you are running uWSGI as root !!! (use the --uid flag)
+
+21. pip3 install face_recognition报错
+
+22. TypeError: Object of type Decimal is not JSON serializable
+
+23. selenium.common.exceptions.InvalidSessionIdException: Message: invalid session id
+
+24. RecursionError: maximum recursion depth exceeded
+
+
+1. ModuleNotFoundError: No module named ‘pip’
+
+原因：无 pip 模块。我们都知道安装 python 的时候默认是安装 pip 的，借助 pip 可以帮助我们方便安装很多第三方模块，这种情况一般出现在升级 pip 的时候。当已经卸载完旧版本的 pip，突然由于其它因素中断了下载新版本 pip 的进程，从而导致安装新版失败。
+
+使用easy_install pip3命令安装pip，如果安装比较慢，可以指定清华源下载：easy_install -i https://pypi.tuna.tsinghua.edu.cn/simple pip3
+
+当然还可以先从官网找到 pip 的链接：
+
+easy_install https://files.pythonhosted.org/packages/30/db/9e38760b32e3e7f40cce46dd5fb107b8c73840df38f0046d8e6514e675a1/pip-19.2.3-py2.py3-none-any.whl。
+
+
+2. /usr/bin/python: No module named virtualenvwrapper
+
+/usr/bin/python: No module named virtualenvwrapper
+virtualenvwrapper.sh: There was a problem running the initialization hooks.
+
+If Python could not import the module virtualenvwrapper.hook_loader,
+check that virtualenvwrapper has been installed for
+VIRTUALENVWRAPPER_PYTHON=/usr/bin/python and that PATH is
+set properly.
+
+在配置virtualenvwrapper，执行生效命令source ~/.bashrc的时候，出现没有virtualenvwrapper模块。
+
+问题原因： 从/usr/bin/python可以看到这里使用了python2的解释器
+
+解决方式： 删除这个快捷方式rm -f /usr/bin/python，然后重新创建新的软链接，如：
+
+[root@master ~]# ln -s /usr/local/python373/bin/python3 /usr/bin/python
+
+
+3. TypeError: zinterstore() got multiple values for argument ‘aggregate’
+
+在执行zinterstore方法时出现上面的问题，我的代码是conn.zinterstore('dest', 'bosses', 'employees', aggregate=None)，原因是zinterstore方法的参数错了，应该是conn.zinterstore('dest', ['bosses', 'employees'])
+
+
+4. AssertionError: View function mapping is overwriting an existing endpoint function: 1
+
+endpoint重名报错，
+
+if view_func is not None:
+            old_func = self.view_functions.get(endpoint)
+            if old_func is not None and old_func != view_func:
+                raise AssertionError('View function mapping is overwriting an '
+                                     'existing endpoint function: %s' % endpoint)
+            self.view_functions[endpoint] = view_func
+
+
+2. AssertionError: A name collision occurred
+
+AssertionError: A name collision occurred between blueprints <flask.blueprints.Blueprint object at 0x0000021A675375F8> and <flask.blueprints.Blueprint object at 0x0000021A67537400>. Both share the same name "admin_bp". Blueprints that are created on the fly need unique names.
+
+创建Blueprint(蓝图)对象，例：<kbd>bp = Blueprint('bp', __ name __) </kbd>，Blueprint类中传入的第一个参数name是不能同名。即：如果有一个是name = 'bp'，再创建一个Blueprint对象，就不能是'bp'。
+
+
+3. DENIED Redis is running in protected mode because protected mode is enabled, no bind address was specified
+
+redis.exceptions.ResponseError: DENIED Redis is running in protected mode because protected mode is enabled, no bind address was specified, no authentication password is requested to clients. In this mode connections are only accepted from the loopback interface. If you want to connect from external computers to Redis you may adopt one of the following solutions: 1) Just disable protected mode sending the command 'CONFIG SET protected-mode no' from the loopback interface by connecting to Redis from the same host the server is running, however MAKE SURE Redis is not publicly accessible from internet if you do so. Use CONFIG REWRITE to make this change permanent. 2) Alternatively you can just disable the protected mode by editing the Redis configuration file, and setting the protected mode option to 'no', and then restarting the server. 3) If you started the server manually just for testing, restart it with the '--protected-mode no' option. 4) Setup a bind address or an authentication password. NOTE: You only need to do one of the above things in order for the server to start accepting connections from the outside.
+
+这里采用其中的一种方式：禁用保护模式
+
+打开redis配置文件redis.conf将protected-mode yes改为protected-mode no。
+
+其它：检查Redis是否允许某ip地址的请求，注释掉bind 127.0.0.1这段代码，表示Redis允许所有ip的请求。
+
+
+4. IndentationError: unexpected indent
+
+缩进错误：意外缩进。请检查代码的是否使用了没有必要的缩进。博主是在在使用timeit模块时，由于输入格式不正确，报的这个错误。
+
+错误代码：
+
+def timeit_list(n, loops):
+    list_setup = """
+    import numpy
+    data = [1] * {}
+    s = 0
+    """.format(n)
+    print('list:')
+    print(timeit.timeit(common_for, list_setup, number=loops))
+    print(timeit.timeit(common_sum, list_setup, number=loops))
+    print(timeit.timeit(common_numpy_sum, list_setup, number=loops))
+
+正确的代码：
+
+def timeit_list(n, loops):
+    list_setup = """
+import numpy
+data = [1] * {}
+s = 0
+    """.format(n)
+    print('list:')
+    print(timeit.timeit(common_for, list_setup, number=loops))
+    print(timeit.timeit(common_sum, list_setup, number=loops))
+    print(timeit.timeit(common_numpy_sum, list_setup, number=loops))
+
+
+5. ‘DictCursor’ object has no attribute ‘commit’
+
+检查一下自己是不是把conn.commit()写成了cursor.commit()
+
+
+6. SyntaxError: positional argument follows keyword argument
+
+位置参数应该在关键字参数的前面
+
+
+7. TypeError: func() got multiple values for argument ‘a1’
+
+参数被赋予了多个值
+
+
+8. TypeError: Object of type set is not JSON serializable
+
+集合不可以被序列化
+
+
+9. TypeError: list indices must be integers or slices, not tuple
+
+列表索引必须是整数或片，而不是元组。列表切片格式：lst[0:10]，而不是<kbd>lst[1,10]
+
+
+10. TypeError: strptime() argument 1 must be str, not datetime.datetime
+
+datetime类的strptime类方法中有两个参数，第一个参数第一个参数和第二个参数都是字符串类型，不是datetime类型。
+
+
+11. RecursionError: maximum recursion depth exceeded while calling a Python object
+
+递归错误：调用python对象时超过了最大递归深度
+
+
+12. ImportError: attempted relative import with no known parent package
+
+尝试相对导入，但不知道父包。也就是说相对导入至少需要两个python文件在同一个包中。
+
+
+13. RuntimeError: The session is unavailable because no secret key was set. Set the secret_key on the application to something unique and secret.
+
+写入到session中的数据要进行加密，secret key是用来给数据进行加密用的。这里记得在配置文件中设置secret key的值。
+
+# -*- coding:utf-8 -*-
+# @Time : 2019/8/25 16:15
+# @Author : Thanlon
+# @Email : thanlon@sina.com
+# @File : settings.py
+# @Project : code_count
+class Config(object):
+    SECRET_KEY = 'THANLON'
+
+
+14. 成功解决Twisted安装报错
+
+Linux系统中安装twisted使用pip3 install twisted不会有问题，但是在Windows安装就报错，解决方法：
+
+下载Twisted：Twisted网址 选择Python版本相对应的Twisted版本，可以复制链接，也可以下载到本地安装。安装wheel：pip3 install wheel。安装Twisted：pip3 install https://download.lfd.uci.edu/pythonlibs/t4jqbe6o/Twisted-19.2.1-cp38-cp38m-win_amd64.whl
+
+
+15. name ‘reduce’ is not defined
+
+reduce在Python3中已经不是内置函数了，将reduce放到了functools中，这里需要导入这个函数：from functools import reduce
+
+
+16. pymysql.err.InternalError: (1698, “Access denied for user ‘root’@‘localhost’”)
+
+错误来源：在使用pymysql连接数据库的时候，出现上面的错误。
+ 解决方法：给root用户授权，grant all privileges on *.* to root@localhost identified by '你为root设置好的密码';，然后刷新权限：flush privileges;
+
+
+17. 运行Python Web项目uwsgi报错
+
+Traceback (most recent call last):
+  File "/root/Envs/flask_code_count_venv/lib/python3.7/site-packages/flask/app.py", line 2463, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/root/Envs/flask_code_count_venv/lib/python3.7/site-packages/flask/app.py", line 2441, in wsgi_app
+    ctx = self.request_context(environ)
+  File "/root/Envs/flask_code_count_venv/lib/python3.7/site-packages/flask/app.py", line 2358, in request_context
+    return RequestContext(self, environ)
+  File "/root/Envs/flask_code_count_venv/lib/python3.7/site-packages/flask/ctx.py", line 292, in __init__
+    self.url_adapter = app.create_url_adapter(self.request)
+  File "/root/Envs/flask_code_count_venv/lib/python3.7/site-packages/flask/app.py", line 2173, in create_url_adapter
+    subdomain=subdomain,
+  File "/root/Envs/flask_code_count_venv/lib/python3.7/site-packages/werkzeug/routing.py", line 1537, in bind_to_environ
+    environ["REQUEST_METHOD"],
+KeyError: 'REQUEST_METHOD'
+[pid: 17362|app: 0|req: 2/3]  () {
+   
+   
+   24 vars in 734 bytes} [Tue Nov  5 23:11:13 2019]   => generated 0 bytes in 4 msecs ( 500) 0 headers in 0 bytes (0 switches on core 1)
+
+问题来源：在部署flask应用的时候出现上面的问题
+ 解决方法：后来发现是没有引入uwsgi_params， nginx的头文件使用的是外部的uwsgi_params，所以引用nginx自带的uwsgi_params就可以了。
+
+
+18. Unicode-objects must be encoded before hashing
+
+问题来源：在使用md5加密的时候报错
+ 解决方法：检查加盐是否是转换为byte类型，即：SALT = b'xxxxxx'
+
+
+19. /usr/bin/python: No module named virtualenvwrapper
+
+/usr/bin/python: No module named virtualenvwrapper
+virtualenvwrapper.sh: There was a problem running the initialization hooks.
+
+If Python could not import the module virtualenvwrapper.hook_loader,
+check that virtualenvwrapper has been installed for
+VIRTUALENVWRAPPER_PYTHON=/usr/bin/python and that PATH is
+set properly.
+
+问题来源：在设置用户每次登录时执行virtualenvwrapper脚本时遇到的问题
+ 问题解析：系统没有找到virtualenvwrapper，因为使用的是python，而不是Python3，需要修改为Python3
+ 解决方法：在~/.bashrc文件中加入：export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+
+
+20. WARNING: you are running uWSGI as root !!! (use the --uid flag)
+
+(computer-bysj_venv) [root@master computer-bysj]# uwsgi uwsgi.ini 
+[uWSGI] getting INI configuration from uwsgi.ini
+*** WARNING: Can't find section "uwsgi" in INI configuration file uwsgi.ini ***
+*** Starting uWSGI 2.0.18 (64bit) on [Sun Dec 29 12:42:06 2019] ***
+compiled with version: 4.8.5 20150623 (Red Hat 4.8.5-39) on 29 December 2019 04:10:36
+os: Linux-3.10.0-1062.4.1.el7.x86_64 #1 SMP Fri Oct 18 17:15:30 UTC 2019
+nodename: master
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 2
+current working directory: /usr/local/flask_pro/computer-bysj
+detected binary path: /root/.virtualenvs/computer-bysj_venv/bin/uwsgi
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 7912
+your memory page size is 4096 bytes
+detected max file descriptor number: 65535
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+The -s/--socket option is missing and stdin is not a socket.
+
+问题来源：启动uwsgi的时候出现报错
+ 问题解析：低级错误，uwsgi.ini配置问题，没有在uwsgi.ini文件第一行加入[uwsgi]
+ 解决方法：在uwsgi.ini文件第一行加入[uwsgi]
+
+
+21. pip3 install face_recognition报错
+
+ERROR: Command errored out with exit status 1: /usr/bin/python3 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-1nstwkah/dlib/setup.py'"'"'; __file__='"'"'/tmp/pip-install-1nstwkah/dlib/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record /tmp/pip-record-rd_c3feb/install-record.txt --single-version-externally-managed --compile --install-headers /usr/local/include/python3.7/dlib Check the logs for full command output.
+
+问题来源：安装face_recognition出现报错
+ 问题解析：安装dlib失败
+ 解决方法：可以先安装cmake模块，再安装face_recognition
+
+
+22. TypeError: Object of type Decimal is not JSON serializable
+
+TypeError: Object of type Decimal is not JSON serializable
+
+问题来源：将从数据库中查取的数据转化为json字符串传到前台时报错
+ 问题解析：查询数据的sql语句中使用了聚合函数sum，查得的数据的类型Decimal
+ 解决方法：方法一：在序列化为json字符串时，使用int函数将Decimal转换成int；方法2：使用pip install simplejson -i https://mirrors.aliyun.com/pypi/simple 安装simplejson模块。
+
+
+23. selenium.common.exceptions.InvalidSessionIdException: Message: invalid session id
+
+问题来源：selenium爬取数据的时候报错
+ 问题解析：发现关闭浏览器对象之后才保存selenuim爬取的数据
+ 解决方法：关闭浏览器对象之前就要使用变量保存selenuim爬取的数据，否则就失效了
+
+
+24. RecursionError: maximum recursion depth exceeded
+
+问题来源：写了下面的函数
+
+@app.route('/get_china_data')
+def get_china_data():
+    china_data = get_china_data()
+    china_lst = []
+    for item in china_data:
+        china_lst.append(item)
+    print(china_data)
+    return ''
+
+问题解析：低级错误。本来想的是调用另一个获取数据的函数get_china_data，没想到与路由对应的函数名(get_china_data)相同。最终的结果是调用了这个函数，而没有调用获取数据的函数
+ 解决方法：修改函数名字
+
+本文分享 CSDN - Erics-1996。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

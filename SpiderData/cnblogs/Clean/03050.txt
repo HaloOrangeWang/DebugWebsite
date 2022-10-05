@@ -1,0 +1,49 @@
+1、npm是nodejs的包管理器，相当于php的composer，python的pip，用于安装各种包。
+
+2、一般来说，别人拷给你的react项目不会带依赖包的，因为太大了，需要用npm命令自己安装，所以，启动别人react项目的流程是：
+
+进入项目根目录
+
+删除node_modules目录
+
+运行npm install命令，安装所需包
+
+安装完成后，npm start 启动
+
+
+报错解决
+
+这次，我在clone下来项目后直接运行npm start，系统报了没有react-app-rewired包错误。说明需要执行npm install
+
+在项目根目录中执行npm install（注意，直接npm install就行，不必指定要安装的包名，系统会自动根据package.json和package-lock.json为项目安装各种包。
+
+执行npm install又遇到报错：
+
+sha1-xxx checksum failed  wanted sha1-xxx but got sha512-xxx. (10700 bytes)
+
+尝试了网上的各种方法都不对。
+
+又以为是npm或nodejs的版本太低了，将npm和nodejs都升级之后还是不对。
+
+根据错误提示查看错误log：
+
+在log中搜索一下错误提示中的 hash值，发现 log 的21739行：
+
+注意这一行：
+
+21739 silly tarball trying file-saver@1.3.8 by hash: sha1-zdTETTqiZOrC9o7BZbx5HDSvEjI=
+
+再看一下要打开的react项目中的package.json文件：
+
+搜索一下filesaver
+
+于是尝试为npm命令指定安装包的版本
+
+npm install  --save  file-saver@1.3.8
+
+发现filesaver安装成功。
+
+然后在运行npm install命令，发现报错消失。
+
+解决
+

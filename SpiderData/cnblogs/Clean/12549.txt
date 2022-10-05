@@ -1,0 +1,55 @@
+原文地址：https://blog.csdn.net/qq_37598092/article/details/123652853
+
+使用pip安装Cartopy库时，出现报错：
+
+输入：
+
+1 pip install Cartopy
+
+报错：
+
+于是，尝试在https://www.lfd.uci.edu/~gohlke/pythonlibs/#numba下载并安装whl文件：
+输入：
+
+1 pip install Cartopy-0.20.2-pp38-pypy38_pp73-win_amd64.whl
+
+出现成功安装提示：
+
+但是，在pycharm中导入cartopy模块时，出错：
+
+1 ImportError: DLL load failed: 找不到指定的模块。
+
+网上查找资料后，原因应该是cartopy模块的依赖库版本不对。
+
+
+
+解决方案
+
+cartopy包的依赖库有：pyproj，Pillow，pyshp，Shapely
+需要将这几个库卸载后，使用whl重新安装。
+
+1、卸载原有依赖库
+
+1 pip uninstall Pillow
+
+2、在https://www.lfd.uci.edu/~gohlke/pythonlibs/#numba中查找并下载这几个库和你电脑的对应版本
+此处下载的是：
+
+Pillow-9.0.1-cp310-cp310-win_amd64.whl
+
+pyproj-3.3.0-cp310-cp310-win_amd64.whl
+
+pyshp-2.2.0-py3-none-any.whl
+
+Shapely-1.8.1.post1-cp310-cp310-win_amd64.whl
+
+3、安装库
+
+安装完成后，在pycharm中导入cartopy模块时不再报错，成功。
+
+问题解决。
+
+————————————————
+版权声明：本文为CSDN博主「LorettaWang」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_37598092/article/details/123652853
+

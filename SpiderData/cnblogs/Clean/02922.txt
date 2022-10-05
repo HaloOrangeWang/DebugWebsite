@@ -1,0 +1,52 @@
+
+前言
+
+我在使用mac安装virtualwrapper的时候遇到了问题，搞了好长时间，才弄好，在这里总结一下分享出来，供遇到相同的问题的朋友使用，少走些弯路。
+
+
+问题说明：
+
+Mac默认系统的python2，而我自己用的是brew安装的python3
+
+
+下面是我安装过程中出现的问题
+
+
+1. 安装virtualwrapper
+
+打开终端，输入如下的命令
+
+pip3 install virtualenv
+pip3 install virtualenvwrapper
+
+
+2. 在配置文件~/.bash_profile中添加代码
+
+# Settings for virtualenvwrapper
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+
+
+3. 让配置生效：
+
+source ~/.bash_profile
+
+这时，出现了如下问题:
+
+/usr/bin/python: No module named virtualenvwrapper
+virtualenvwrapper.sh: There was a problem running the initialization hooks.
+
+
+原因分析
+
+从报错信息中 VIRTUALENVWRAPPER_PYTHON=/usr/bin/python and that PATH is set properly. 这一句话来看，是环境指向了python2的路径，所以我们只需要将这个环境变量修改为python3的路径即可。
+
+
+解决办法
+
+打开配置文件 vim ~/.bash_profile 在配置文件中添加一行代码：export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+
+让配置生效：source ~/.bash_profile
+
+再试一下，大功搞成！！！
+

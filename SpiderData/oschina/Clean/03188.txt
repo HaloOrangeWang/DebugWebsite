@@ -1,0 +1,68 @@
+　　使用 pip 安装第三方库时，报错：
+
+You are using pip version 9.0.3, however version 10.0.1 is available.
+
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+　　使用：pip install --upgrade pip 命令时，出现异常：
+
+Installing collected packages: pip
+
+Found existing installation: pip 9.0.3
+
+Uninstalling pip-9.0.3:
+
+Exception:
+
+Traceback (most recent call last):
+
+File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/shutil.py", line 544, in move
+
+os.rename(src, real_dst)
+
+PermissionError: [Errno 13] Permission denied: '/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip-9.0.3.dist-info/DESCRIPTION.rst' -> '/var/folders/jw/d3_slty13w37lv03q_lly96m0000gn/T/pip-q73ghl27-uninstall/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip-9.0.3.dist-info/DESCRIPTION.rst'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+
+File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip/basecommand.py", line 215, in main
+
+status = self.run(options, args)
+
+File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip/commands/install.py", line 342, in run
+
+prefix=options.prefix_path,
+
+File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip/req/req_set.py", line 778, in install
+
+requirement.uninstall(auto_confirm=True)
+
+File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip/req/req_install.py", line 754, in uninstall
+
+paths_to_remove.remove(auto_confirm)
+
+File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip/req/req_uninstall.py", line 115, in remove
+
+renames(path, new_path)
+
+File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip/utils/__init__.py", line 267, in renames
+
+shutil.move(old, new)
+
+File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/shutil.py", line 559, in move
+
+os.unlink(src)
+
+PermissionError: [Errno 13] Permission denied: '/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip-9.0.3.dist-info/DESCRIPTION.rst'
+
+You are using pip version 9.0.3, however version 10.0.1 is available.
+
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+　　解决方案：
+
+　　使用：
+
+sudo  pip install --upgrade pip
+

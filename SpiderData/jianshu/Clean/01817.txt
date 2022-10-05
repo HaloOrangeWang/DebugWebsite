@@ -1,0 +1,33 @@
+
+问题一：RIDE的log中文显示为乱码
+
+解决办法：
+
+在python的安装路径下..\Python37\Lib\site-packages\robotide\contrib\testrunner\找到文件testrunnerplugin.py
+
+将textctrl.AppendTextRaw(bytes(string, encoding['SYSTEM']))改为textctrl.AppendTextRaw(bytes(string, encoding['OUTPUT']))
+
+改好保存后重启RIDE在运行log可以正常显示中文
+
+
+问题二：RIDE运行测试用例报错Suite ‘XXX‘ contains no tests matching name ‘XXX‘ in sin suite
+
+明明按照层级建立了project→suite→test case，但是选择了test case运行却报错上级suite没有这个test让人觉得很莫名其妙
+
+在网上查了后说是因为python3改变了原来的运行模式，将pybot更改为了robot，而之前基于pybot的使用习惯在建文件时默认都是选择的TXT格式，但是现在的python3要选择robot格式才能正常运行
+
+解决办法：
+
+将project和suite的格式改为robot
+
+为了省去每次新建都要检查格式有没更改过来的不便，可以更改设置中的默认文件格式为robot
+
+
+问题三：RIDE无法打开谷歌浏览器
+
+查看log有报错发现是缺少驱动
+
+解决办法：
+
+下载驱动，https://chromedriver.storage.googleapis.com/index.html 这个地址可以下载但要注意的是驱动一定要和浏览器的版本对应，否则也会报错，下载后将chromedriver.exe文件放到python的安装目录下
+

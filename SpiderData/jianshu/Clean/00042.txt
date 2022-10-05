@@ -1,0 +1,169 @@
+snpeff可以用于snp 和indel 文件的拆分，也可以用于注释这俩文件。
+
+
+conda下载snpeff
+
+conda  activate python27
+
+conda install -y snpeff #但其只下载到conda的pkgs文件夹，需要自己再软连接一下到conda的bin文件夹
+
+
+Windows下下载jdk12，
+
+conda下单独下载Java是困难的，那就换Windows，登录oracle下一个
+
+https://link.zhihu.com/?target=https%3A//www.oracle.com/java/technologies/javase/jdk12-archive-downloads.html
+
+
+ssh上传到服务器，Linux下解压“”
+
+tar -zxvf jdk-12.0.2_linux-x64_bin.tar.gz
+
+
+如果在没有jdk12的conda下唤醒snpeff，会报错
+
+Error: A JNI error has occurred, please check your installation and try again
+Exception in thread "main" java.lang.UnsupportedClassVersionError: org/snpeff/SnpEff has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
+ at java.lang.ClassLoader.defineClass1(Native Method)
+ at java.lang.ClassLoader.defineClass(ClassLoader.java:756)
+ at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
+ at java.net.URLClassLoader.defineClass(URLClassLoader.java:468)
+ at java.net.URLClassLoader.access$100(URLClassLoader.java:74)
+ at java.net.URLClassLoader$1.run(URLClassLoader.java:369)
+ at java.net.URLClassLoader$1.run(URLClassLoader.java:363)
+ at java.security.AccessController.doPrivileged(Native Method)
+ at java.net.URLClassLoader.findClass(URLClassLoader.java:362)
+ at java.lang.ClassLoader.loadClass(ClassLoader.java:418)
+ at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:352)
+ at java.lang.ClassLoader.loadClass(ClassLoader.java:351)
+ at sun.launcher.LauncherHelper.checkAndLoadMain(LauncherHelper.java:495)
+
+
+解决方法
+
+
+加入jdk12 和snpeff 到环境变量path
+
+echo export PATH="/home/u20111230014/workspace/software/jdk-12.0.2:$PATH" >> ~/.bashrc
+
+echo export PATH="/home/u20111230014/miniconda3/pkgs/snpeff-5.1-hdfd78af_0/share/snpeff-5.1-0:$PATH" >> ~/.bashrc
+
+软连接到conda的bin 文件夹里面
+
+ln -s /home/u20111230014/workspace/software/jdk-12.0.2/bin jdk12.02
+ln -s /home/u20111230014/miniconda3/pkgs/snpeff-5.1-hdfd78af_0/share/snpeff-5.1-0/snpEff snpeff
+
+
+jdk12应该写进哪里
+
+root一般直接写进etc/profile, 非root用户不能修改etc/profile，只能将Jdk12写进 ~/.bashrc！！！
+
+按顺序写进 ~/.bashrc
+
+PS:一定要先写jdk, 再写snpeff, 因为snpeff需要jdk12来启动!!!
+
+set java environment
+JAVA_HOME=/home/u20111230014/workspace/software/jdk-12.0.2
+CLASS_PATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+PATH=$PATH:$JAVA_HOME/bin
+export JAVA_HOME CLASS_PATH PATH
+
+export JAVA_HOME="/home/u20111230014/workspace/software/jdk-12.0.2"
+export PATH=${JAVA_HOME}/bin:$PATH
+export LD_LIBRARY_PATH=/home/u20111230014/workspace/software/jdk-12.0.2/lib/server:$LD_LIBRARY_PATH
+
+export PATH=/home/u20111230014/workspace/software/jdk-12.0.2:/home/u20111230014/miniconda3/envs/python27/bin:/home/u20111230014/workspace/software/gatk-4.2.5.0:/home/u20111230014/miniconda3/conda/bin:/home/u20111230014/miniconda3/bin:/opt/app/r/4.1.1/bin:/usr/local/bin:/opt/app/r/4.1.1/bin:/home/public/software/miniconda2/bin:/opt/app/anaconda3/bin:/opt/app/conda/bin:/home/public/software/wfz_scripts:/opt/app/conda/bin:/opt/app/r/4.1.1/bin:/opt/app/spack/bin:/opt/app/spack/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/u20111230014/.local/bin:/home/u20111230014/bin
+
+export PATH=/home/u20111230014/miniconda3/pkgs/snpeff-5.1-hdfd78af_0/share/snpeff-5.1-0:/home/u20111230014/miniconda3/envs/python27/bin:/home/u20111230014/miniconda3/pkgs
+/snpeff-5.1-hdfd78af_0/share/snpeff-5.1-0:/home/u20111230014/miniconda3/envs/python27/bin:/home/u20111230014/workspace/software/gatk-4.2.5.0:/home/u20111230014/miniconda3
+/condabin:/home/u20111230014/miniconda3/bin:/opt/app/r/4.1.1/bin:/usr/local/bin:/opt/app/r/4.1.1/bin:/home/public/software/miniconda2/bin:/opt/app/anaconda3/bin:/opt/app/
+conda/bin:/home/public/software/wfz_scripts:/opt/app/conda/bin:/opt/app/r/4.1.1/bin:/opt/app/spack/bin:/opt/app/spack/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bi
+n:/sbin:/bin:/home/u20111230014/.local/bin:/home/u20111230014/bin:/home/u20111230014/.local/bin:/home/u20111230014/bin
+
+
+source ~/.bashrc 一下   搞定！
+
+(python27) [u20111230014@cpu15 bin]$ snpeff
+SnpEff version SnpEff 5.1 (build 2022-01-21 06:23), by Pablo Cingolani
+Usage: snpEff [command] [options] [files]
+
+Run 'java -jar snpEff.jar command' for help on each specific command
+
+Available commands: 
+        [eff|ann]                    : Annotate variants / calculate effects (you can use either 'ann' or 'eff', they mean the same). Default: ann (no command or 'ann').
+        build                        : Build a SnpEff database.
+        buildNextProt                : Build a SnpEff for NextProt (using NextProt's XML files).
+        cds                          : Compare CDS sequences calculated form a SnpEff database to the one in a FASTA file. Used for checking databases correctness.
+        closest                      : Annotate the closest genomic region.
+        count                        : Count how many intervals (from a BAM, BED or VCF file) overlap with each genomic interval.
+        databases                    : Show currently available databases (from local config file).
+        download                     : Download a SnpEff database.
+        dump                         : Dump to STDOUT a SnpEff database (mostly used for debugging).
+        genes2bed                    : Create a bed file from a genes list.
+        len                          : Calculate total genomic length for each marker type.
+        pdb                          : Build interaction database (based on PDB data).
+        protein                      : Compare protein sequences calculated form a SnpEff database to the one in a FASTA file. Used for checking databases correctness.
+        seq                          : Show sequence (from command line) translation.
+        show                         : Show a text representation of genes or transcripts coordiantes, DNA sequence and protein sequence.
+        translocReport               : Create a translocations report (from VCF file).
+
+Generic options:
+        -c , -config                 : Specify config file
+        -configOption name=value     : Override a config file option
+        -d , -debug                  : Debug mode (very verbose).
+        -dataDir <path>              : Override data_dir parameter from config file.
+        -download                    : Download a SnpEff database, if not available locally. Default: true
+        -nodownload                  : Do not download a SnpEff database, if not available locally.
+        -h , -help                   : Show this help and exit
+        -noLog                       : Do not report usage statistics to server
+        -q , -quiet                  : Quiet mode (do not show any messages or errors)
+        -v , -verbose                : Verbose mode
+        -version                     : Show version number and exit
+
+Database options:
+        -canon                       : Only use canonical transcripts.
+        -canonList <file>            : Only use canonical transcripts, replace some transcripts using the 'gene_id       transcript_id' entries in <file>.
+        -interaction                 : Annotate using inteactions (requires interaciton database). Default: true
+        -interval <file>             : Use a custom intervals in TXT/BED/BigBed/VCF/GFF file (you may use this option many times)
+        -maxTSL <TSL_number>         : Only use transcripts having Transcript Support Level lower than <TSL_number>.
+        -motif                       : Annotate using motifs (requires Motif database). Default: true
+        -nextProt                    : Annotate using NextProt (requires NextProt database).
+        -noGenome                    : Do not load any genomic database (e.g. annotate using custom files).
+        -noExpandIUB                 : Disable IUB code expansion in input variants
+        -noInteraction               : Disable inteaction annotations
+        -noMotif                     : Disable motif annotations.
+        -noNextProt                  : Disable NextProt annotations.
+        -onlyReg                     : Only use regulation tracks.
+        -onlyProtein                 : Only use protein coding transcripts. Default: false
+        -onlyTr <file.txt>           : Only use the transcripts in this file. Format: One transcript ID per line.
+        -reg <name>                  : Regulation track to use (this option can be used add several times).
+        -ss , -spliceSiteSize <int>  : Set size for splice sites (donor and acceptor) in bases. Default: 2
+        -spliceRegionExonSize <int>  : Set size for splice site region within exons. Default: 3 bases
+        -spliceRegionIntronMin <int> : Set minimum number of bases for splice site region within intron. Default: 3 bases
+        -spliceRegionIntronMax <int> : Set maximum number of bases for splice site region within intron. Default: 8 bases
+        -strict                      : Only use 'validated' transcripts (i.e. sequence has been checked). Default: false
+        -ud , -upDownStreamLen <int> : Set upstream downstream interval length (in bases)
+
+后记：
+
+可能不是root，不能写进profile的原因，想在conda特定环境下唤醒snpEff，最好在conda下开一个环境给最高版本的Java
+
+conda create -n java12
+conda activate java12
+conda install openjdk=12.0.2    # 直接在conda下安装openjdk=12.0.2，总下载不了
+
+##换一种方式，这个rjava下载完是版本11.0.9.1
+conda install -c r r-rjava
+(java12) [u20111230014@cpu15 snpeff-5.1-1]$ java -version
+openjdk version "11.0.9.1-internal" 2020-11-04
+OpenJDK Runtime Environment (build 11.0.9.1-internal+0-adhoc..src)
+OpenJDK 64-Bit Server VM (build 11.0.9.1-internal+0-adhoc..src, mixed mode)
+##足够能带动snpEff就行
+conda install -y snpeff   ##下载后启动snpEff 
+(java12) [u20111230014@cpu15 snpeff-5.1-1]$ whereis snpEff
+snpEff: /home/u20111230014/miniconda3/envs/java12/bin/snpEff /home/u20111230014/miniconda3/pkgs/snpeff-5.1-hdfd78af_0/share/snpeff-5.1-0/snpEff /home/u20111230014/miniconda3/pkgs/snpeff-5.1-hdfd78af_0/share/snpeff-5.1-0/snpEff.config /home/u20111230014/miniconda3/pkgs/snpeff-5.1-hdfd78af_0/share/snpeff-5.1-0/snpEff.jar /home/u20111230014/miniconda3/envs/python27/bin/snpEff
+
+成功！
+
+参考：https://zhuanlan.zhihu.com/p/476561285
+

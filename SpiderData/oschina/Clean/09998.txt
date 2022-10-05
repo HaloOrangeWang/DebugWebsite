@@ -1,0 +1,21 @@
+问题
+ 我们在 typescript 的项目中安装一些包的话，可能会报错 Could not find a declaration file for module 'xxx' ，这是因为这个包可能不是.ts文件而是.js文件，那么如何解决呢？
+
+解决
+ 如果有这个包的 ts 版本，则
+
+npm install @types/xxx
+ 1
+ 否则，找到根目录下的 shims-vue-d.ts 文件
+
+declare module '*.vue' {
+   import Vue from 'vue'
+   export default Vue
+ }
+ // 加上这个
+ declare module 'xxx'
+ 
+ 如果不在乎外部库的类型，可以直接设为
+
+declare module '*'
+

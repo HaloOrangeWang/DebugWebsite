@@ -1,0 +1,8 @@
+代码shutil.copyfile(os.path.join(sourcepath+'/'+eachclass+ '/',im),valpath+'/'+eachclass+'/'+im)中
+
+访问后一个路径上的文件valpath+'/'+eachclass+'/'+im，im是一个*.jpg图片，出现permission denied错误
+
+原因分析：这个路径是jupter notebook默认路径的基础上建立的路径，而jupyter notebook的默认路径是系统盘C盘里面的路径，而shutil.copyfile对后一个路径里面的文件有写权限的要求，所以会出现权限拒绝的问题。
+
+解决方法：先用管理员权限运行jupyter notebook，发现依然访问不了这个文件，最后把文件建在非系统盘D盘，解决问题！
+

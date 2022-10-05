@@ -1,0 +1,24 @@
+当我参考慕课网教学视频，写了第一个Python接口之后：
+
+　　
+
+在命令行里执行：py "server.py"
+
+我用的是windows服务器，在app.run()中没有设定port的时候是默认5000的，但是我希望能用80端口，因为http默认的是80端口；
+
+所以就把最后一行改成了
+
+重新在命令行里执行：py "server.py"
+
+然后就看到了报错：................OSError: [WinError 10013] 以一种访问权限不允许的方式做了一个访问套接字的尝试。
+
+为了修复这个错误，网上有很多方法：
+
+https://superuser.com/questions/352017/pid4-using-port-80
+
+https://stackoverflow.com/questions/1430141/port-80-is-being-used-by-system-pid-4-what-is-that
+
+因为我确定80是被system占用了，所以走了一些弯路，总是试图关掉system中 的 ntoskrnl.exe,
+
+但实际上只要暂时关闭IIS，也就是点击图中的启动就可以了，然后运行server.py ,然后再点击启动就OK了
+

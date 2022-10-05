@@ -1,0 +1,28 @@
+在Django后台中，通过模型操作数据，对数据库进行增操作时，报出异常，如图：
+
+意为无法分配给“3”这个uid号，“OrderList.uid”必须是一个“User”的实例，即“OrderList.uid”不能为“3”
+
+在通过数据库sql语句上，我们习惯性insert into orderlist(uid) value("3")是可以正常增加数据的。
+
+但是在通过Django操作数据库时，不需要写sql语句，通过模型操作数据库：
+
+传值无法成功，其原因是因为orderlist表中的uid关联User表中的uid（主键），通过Django进行增操作时，Orderlist.uid需要一个User的实例（外键约束），将orderlist字典改成如下：
+
+即可成功进行增操作。
+
+类似的：
+
+其他使用Django模型对数据库操作时，如有依赖关系，则参数的值也需要为一个对象，或查询到的外键是一个对象，例：
+
+如果通过bid=o.bid用过滤查找 book表下bid的书名将会报错：
+
+我们打印一下 o.bid:
+
+结果为：
+
+o.bid拿不到真正的id号，而是一个Book类型的对象，其原因是bid为关联Book表的外键约束，o.bid.bid才可以拿到想要的id值：
+
+结语：以上，是我第一次随笔，在Django大而全的框架下，其中的操作方便、快捷，让开发者节约时间，但是也需要遵守它的规则，才能释放
+
+Django和python的魅力。
+

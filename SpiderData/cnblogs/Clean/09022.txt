@@ -1,0 +1,84 @@
+
+报错：
+
+Call to 'sendKeys' failed [element.sendKeys("1345678xxxx")] Error response ·····
+
+原因是输入框控件是android.view.View，只能点击，不能sendkeys发送内容
+
+输入框控件如下图：
+
+
+解决方法：
+
+使用driver.press_keycode(number)
+
+其中number为数字，代表不同按键，具体如下：
+
+keycode 4：返回键(Back key)
+
+keycode 5：电话键(Call key)
+
+keycode 6：结束通话键(End Call key)
+
+keycode 7-16：依次为数字0-9
+
+keycode 17：*
+
+keycode 18：#
+
+keycode 19-23：上、下、左、右、中间
+
+keycode 24-25：音量上、下
+
+keycode 26：电源键(Power key)
+
+keycode 27：相机键(Camera key)
+
+keycode 28：清除键(Clear key)
+
+keycode 29-54：字母A-Z
+
+keycode 55：,
+
+keycode 56：.
+
+keycode 61：Tab键(Tab key)
+
+keycode 62：空格键(Space key)
+
+keycode 66：回车键(Enter key)
+
+keycode 67：退格键(Backspace key)
+
+keycode 68：`
+
+keycode 69：-
+
+keycode 70：=
+
+keycode 71：[
+
+keycode 72：]
+
+keycode 73：\
+
+keycode 74：;
+
+keycode 75：'
+
+keycode 76：/
+
+keycode 77：@
+
+keycode 81：+
+
+keycode 82：菜单键(Menu key)
+
+keycode 84：搜索键(Search key)
+
+keycode 164：静音键(Volume Mute key)
+
+keycode 7-16：依次为数字0-9，所以使用时可以自定义一个字典，譬如这里需要输入的是手机号,定义一个num字典，其中key为数字，value为对应的按键
+
+num= {'0': 7, '1': 8, '2': 9, '3': 10, '4': 11, '5': 12, '6': 13, '7': 14, '8': 15, '9': 16}
+

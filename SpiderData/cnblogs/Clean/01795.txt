@@ -1,0 +1,112 @@
+JMeter 报告监听器导入.jtl结果文件报错解决方案
+
+by:授客 QQ：1033553122
+
+
+1. 问题描述
+
+把jmeter压测时生成的 .jtl结果文件导入监听器报告中，弹出如下错误提示 error loadding results file -see log file
+
+
+2. 
+原因分析与解决方案
+
+打开logger view，查看出错日志，下，提示没有足够的列用于解析
+
+文件比较大，windows下查看打不开，，所以在Linux上用vim命令打开，定位到那行，结果发现如下截图，数据缺失导致
+
+JMeter解析
+.jtl文件时，如果报错，那么仅仅会统计报错之前的记录，所以即便是出错了，也可以看到部分统计数据，如果数据缺失行为文件最后一行，那还好，基本不太影响，但是如果数据缺失行出现在开头或者中简位置，则会很影响统计结果
+
+解决方案
+
+方案1，linux上直接编辑，去掉数据缺失行记录，导入后没再报错
+
+方案2
+
+如果数据缺失行记录比较多，那么行一就难办了，得不断的去试才知道哪里出错了，可以考虑代码遍历，不过文件大的话，也挺耗费时间的
+
+#!/usr/bin/env/
+python
+
+# -*- coding:utf-8
+-*-
+
+__author__ =
+'shouke'
+
+class
+JtlDataParser:
+
+def
+__init__(self):
+
+pass
+
+def
+parse_jtl_data(self):
+
+with
+open('E:/PerformanceTest/result.jtl', 'r', encoding='utf-8') as
+f1:
+
+with
+open('E:/PerformanceTest/dirty.jtl', 'w', encoding='utf-8') as
+f2:
+
+f3
+= open('E:/PerformanceTest/newResult.jtl', 'w',
+encoding='utf-8')
+
+count_for_normal
+= 0
+
+count_for_dirty
+= 0
+
+for
+line in f1:
+
+temp
+= line.split(',')
+
+if
+len(temp) != 16: # 默认.jtl结果文件，每行包含16个逗号分隔的值
+
+f2.write(line)
+
+f2.flush()
+
+count_for_dirty
++= 1
+
+print('写入数据缺失行：',
+count_for_dirty)
+
+else:
+
+f3.write(line)
+
+f3.flush()
+
+count_for_normal
++= 1
+
+print('已写入正常数据行：',
+count_for_normal)
+
+f2.write('正常数据行总数：%s'
+% str(count_for_normal))
+
+f3.write('数据缺失行总数：%s'
+% str(count_for_dirty))
+
+f3.close()
+
+JtlDataParser().parse_jtl_data()
+
+最后说明
+
+根据JMeter聚合报告生成原理来看，不管是使用 方案1
+还是 方案2，如果数据缺失行、数据格式不对的数据行，数量比较多的话，会很影响统计结果，暂时没有好的解决方案
+

@@ -1,0 +1,27 @@
+报错内容：
+
+java.io.IOException: Cannot run program "D:\Java\jdk1.6.0\bin\javaw.exe" (in directory "很长的一个路径"): CreateProcess error=87, 2?êy2?
+at java.lang.ProcessBuilder.start(ProcessBuilder.java:459)
+at java.lang.Runtime.exec(Runtime.java:593)
+at org.eclipse.debug.core.DebugPlugin.exec(DebugPlugin.java:810)
+at org.eclipse.jdt.launching.AbstractVMRunner.exec(AbstractVMRunner.java:70)
+at org.eclipse.jdt.internal.launching.StandardVMDebugger.run(StandardVMDebugger.java:249)
+at org.eclipse.jdt.launching.JavaLaunchDelegate.launch(JavaLaunchDelegate.java:101)
+at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:853)
+at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:703)
+at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:866)
+at org.eclipse.debug.internal.ui.DebugUIPlugin$8.run(DebugUIPlugin.java:1069)
+at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+Caused by: java.io.IOException: CreateProcess error=87, 2?êy2?
+at java.lang.ProcessImpl.create(Native Method)
+at java.lang.ProcessImpl.<init>(ProcessImpl.java:81)
+at java.lang.ProcessImpl.start(ProcessImpl.java:30)
+at java.lang.ProcessBuilder.start(ProcessBuilder.java:452)
+... 10 more
+
+原因：由于eclipse在windows下存在路径太长报错的bug。
+
+解决办法：
+
+将项目剪切到较短的路径再引入运行，即可解决问题。
+

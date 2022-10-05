@@ -1,0 +1,48 @@
+报错信息
+
+最近闲来无事，用python的tkinter库开发了一款带日程提醒的万年历桌面程序。在程序开发结束开始打包时，却发现一直报错
+
+PyInstaller cannot check for assembly dependencies.
+Please install PyWin32 or pywin32-ctypes.
+pip install pypiwin32
+
+但是运行pip install pypiwin32时却提示两个库都已经安装过了
+
+可是当再运行打包脚本时就是死活无法打包，就是提示缺少上面两个依赖库。
+
+各种度娘发现都没有遇到类似奇葩情况的。
+
+于是决定自行解决，首先根据错误关键词到pyinstaller的源码中去检索报错位置。
+
+最终发现是因为导包问题引起的，两个依赖库确实已经安装只是导入方式不同导致报错。
+
+解决方案
+
+在python安装路径下找到Lib/site-packages/Pyinstaller目录下有个compat.py文件定位到212行
+
+源码如下：
+
+if is_win:
+  try:
+    from win32ctypes.pywin32 import pywintypes # noqa: F401
+    from win32ctypes.pywin32 import win32api
+  except ImportError:
+    xxxx
+    xxxx
+
+做如下修改：将两个from改为import
+
+if is_win:
+  try:
+    # from win32ctypes.pywin32 import pywintypes # noqa: F401
+    # from win32ctypes.pywin32 import win32api
+    import pywintypes
+    import win32api
+  except ImportError:
+    xxxx
+    xxxx
+
+然后再重新运行打包脚本，打包成功
+
+到此这篇关于完美解决pyinstaller打包报错找不到依赖pypiwin32或pywin32-ctypes的错误的文章就介绍到这了,更多相关pyinstaller打包报错找不到pypiwin32内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

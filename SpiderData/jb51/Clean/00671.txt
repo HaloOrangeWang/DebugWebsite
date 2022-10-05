@@ -1,0 +1,48 @@
+1. 直接打印错误
+
+try:
+ 
+ # your code
+ 
+except KeyboardInterrupt:
+ 
+ print("quit")
+ 
+except Exception as ex:
+ 
+ print("出现如下异常%s"%ex)
+
+如下例子
+
+try:
+ 2/0
+except Exception as e:
+ print(e)
+
+结果为：division by zero
+
+2. 用traceback模块打印
+
+上述结果看不到具体错误的信息，如行数啥的，不方便调试的时候定位，因此也可以用traceback模块，方便调试
+
+import traceback
+try:
+ 2/0
+except Exception as e:
+ traceback.print_exc()
+
+结果为：
+
+Traceback (most recent call last):
+ File "c:\Users\Administrator\Desktop\test1.py", line 3, in <module>
+ 2/0
+ZeroDivisionError: division by zero
+
+ps：上述traceback.print_exc()是直接打印错误
+
+还可以用traceback.format_exc()返回字符串，可将错误信息保存在文档日志中
+
+可以说traceback.print_exc()等同于print traceback.format_exc()
+
+以上这篇python打印异常信息的两种实现方式就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

@@ -1,0 +1,33 @@
+
+1、加载训练之后的 hdf5 模型报错
+
+hdf5_format.py", line 168, in load_model_from_hdf5 model_config = json.loads(model_config.encoder('utf-8').decode('utf-8')), AttributeError：‘str’ object has no attribute ‘decode’
+
+解决：install h5py==2.10.0
+
+
+2、多线程启动报错
+
+This probably means that you are not using fork to start your child processes and you have forgotten to use the proper idiom in the main module:
+    if __name__ == '__main__':
+        freeze_support()
+        ...
+
+The "freeze_support()" line can be omitted if the program is not going to be frozen to produce an executable.
+
+解决：  启动脚本的所有代码封装成一个方法如function_a()，并在以下代码中启动调用
+
+if __name__=='__main__': #不加这句就会报错
+    function_a()
+
+
+3、utf-8编码报错
+
+UnicodeDecodeError: ‘utf-8‘ codec can‘t decode byte 0xe6 in position 1023: unexpected end of data
+
+解决：
+
+1、检查一下项目路径中是否含有中文路径，如果有，就把中文部分的路径修改为英文即可解决；
+
+2、修改pycharm的源文件代码，找到你报错行，r = r.decode('utf-8')，然后将这行代码改成 r = r.decode('utf-8'，'ignore')，保存代码，重启pycharm；需要改变源代码，更改需慎重。
+

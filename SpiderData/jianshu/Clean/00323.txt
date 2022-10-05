@@ -1,0 +1,58 @@
+想写个项目专属的vs code插件，来增加工作效率。但出师不利，刚创建完组件，按f5运行，然后找到hello world就报错。到处google也没找到解决办法，后来自己瞎捣鼓，居然解决了。希望也能帮到你。
+
+
+1.安装包
+
+在命令行输入以下代码将yo跟generator-code都装上：
+
+npm install -g yo generator-code
+
+
+2.创建项目
+
+在命令行输入以下代码：
+
+yo code
+
+然后根据自己的需要输入选择配置。
+
+这是我yo code的配置以供参考：
+
+? What type of extension do you want to create? New Extension (TypeScript)
+? What's the name of your extension? test
+? What's the identifier of your extension? test
+? What's the description of your extension? test
+? Initialize a git repository? Yes
+? Bundle the source code with webpack? Yes      
+? Which package manager to use? npm
+
+具体每个配置什么意思，可以用翻译软件翻译，或者看别的教程。
+
+等待项目创建好后会出现如下的选择：
+
+? Do you want to open the new folder with Visual Studio Code?
+
+建议选Skip。
+
+
+3.运行步骤
+
+以下是正常的运行步骤，如果想解决bug就直接跳到第四bug解决部分。
+
+运行的话得打开相应插件项目的src/extesion.ts，然后按f5，会弹出调试插件专用的窗口。
+
+在新窗口顶部弹出的下拉选这个：
+
+然后在新窗口按Ctrl+Shift+P（win）或者Cmd+Shift+P（mac）。找到Hello World:
+
+
+4.解决BUG
+
+如果通过第三部分，弹出的是以下报错：
+
+点击确定，然后关闭调试vs code调试插件这个窗口
+
+打开package.json
+
+找到调试：
+

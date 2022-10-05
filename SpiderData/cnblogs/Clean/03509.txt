@@ -1,0 +1,8 @@
+利用python中的json读取json文件时，因为错误使用了相应的方法导致报错：TypeError：the Json object must be str, bytes or bytearray，not‘TextIOWrapper’。
+
+解决方法：
+
+首先要弄明白json有四个方法：dumps和loads、dump和load。其中，dumps和loads是在内存中转换（python对象和json字符串之间的转换），而dump和load则是对应于文件的处理。
+
+出现这个错误的原因是自己用了loads方法去将json文件转换为python对象，而正确的应该是使用load方法。
+

@@ -1,0 +1,46 @@
+maven仓库中有jar包pom还报错
+
+就报错，咋啦？
+
+这个包来源不明，自己拷贝进来的吧？你当我mvn是傻子？我要去网上验证一下；
+
+我自己有个_remote.respositories文件，如果自己用
+
+mvn install:install-file -Dfile=activiti-bpmn-converter-5.14.1.jar -DgroupId=org.activiti -DartifactId=activiti-bpmn-converter -Dversion=5.14.1 -Dpackaging=jar
+
+命令进行安装的话，会发现_remote.repositories文件的细微变化（>release=变成了>=）
+
+而且手动安装的话，会在文件夹外面形成一个maven-meta-local.xml的文件，
+
+而且手动安装的话，jar包对应的pom文件也是不一样的；
+
+最后，intellij 也不是那么听话的，你不重启我才不管你呢，咋啦？
+
+你让我reimport，我就reimport? 就不。
+
+算啦，本来就是来源不明的包，你也不能强迫我来引入啊，出事了算谁的？
+
+每次都敲很长的一段命令也是醉了，不是可以写bat么？
+
+@ECHO off
+REM mvn install:install-file -Dfile=activiti-bpmn-converter-5.14.1.jar -DgroupId=org.activiti -DartifactId=activiti-bpmn-converter -Dversion=5.14.1 -Dpackaging=jar
+REM this file named mvnupdate.bat
+
+copy  E:\apache-maven-3.3.9-bin\Local_repository\com\ta\framework\%1\%2\%1-%2.jar  e:\%1-%2.jar
+
+mvn install:install-file -Dfile=e:\%1-%2.jar -DgroupId=com.ta.framework -DartifactId=%1 -Dversion=%2 -Dpackaging=jar
+
+这样在cmd界面输入 mvnupdate artifactId versioin 就可以了；
+
+真是偷懒啊，只能更新com\ta\framework的，加一个groupId会死？
+
+groupId会有com.ta.framework转为com\ta\framework的操作，咋整？
+
+而且不是所有的jar包都是需要更新的；
+
+整理一下吧：
+
+1、maven库直接拷贝需要技巧，如果有jar包了就刷成本地的；
+
+2、修改了jar包的mvn库，IntelliJ需要重新启动一下；
+

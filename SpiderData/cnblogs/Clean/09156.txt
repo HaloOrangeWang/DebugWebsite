@@ -1,0 +1,111 @@
+输入下条命令，查看你的显卡驱动所使用的内核版本
+
+cat /proc/driver/nvidia/version
+
+输入下条命令，查看电脑驱动
+
+cat /var/log/dpkg.log | grep nvidia
+
+输入下条命令，查看电脑所有驱动
+
+sudo dpkg --list | grep nvidia-*
+
+问题１：
+
+root@4f80b64fe9f6:/# nvidia-smi
+
+Failed to initialize NVML: Unknown Error
+
+进入Docker
+
+sudo docker run --gpus all -it ubuntu18_torch1.6:v0.3
+
+需要加入--gpus all
+
+问题２：
+
+安装好nvidia-docker,nvidia-driver,cuda,cudnn, 以及pytorch_cuda版后在docker中输入torch.cuda.is_available()，返回False
+
+解决方法：
+
+sudo docker run --gpus all -it [-e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all]
+
+需要加入：-e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all
+
+问题３：
+
+使用pycharm运行pytorch工程代码，出现问题：RuntimeError:Not compiled with GPU support
+
+解决方法：
+
+删除benchmark中整个build文件夹，重新编译lib包：在根目录下运行：python setup.py build develop
+
+编译好后，记得保存下镜像：
+
+sudo docker commit -a "comment" contain_id image_name:image_tag
+
+然后在pycharm中重新配置新的docker镜像即可
+
+问题4：打开Pycharm2020.3版，在Settings里Build,Execution,Deployment里设置Docker时，出现Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+
+docker与守护进程间的通讯问题
+
+解决方法：
+
+在命令行里输入
+sudo chown *your-username* /var/run/docker.sock   # *your-username*为主机名：igs
+
+问题５：在docker里运行工程代码时，报错：RuntimeError: Unrecognized tensor type ID: AutogradCUDA
+
+原因：编译工程包时，使用了pytorch1.6+torchvision0.7,而在编译完后，更新了pytorch1.7+torchvision0.8
+
+解决方法：重新编译工程，python setup.py build develop
+
+问题６：在docker中升级pytorch：pip install pytorch1.7.1-***.whl
+
+　　无法成功，提示超时，然后报错
+
+解决方法：加上--no-deps
+
+　　pip install --no-deps pytorch1.7.1-***.whl
+
+问题７：在多GPU环境下，配置NUM_WORKER 为2，直接报错
+
+export NGPUS=2
+
+python -m torch.distributed.launch --nproc_per_node=NGPUS ../../tools/training/train.py
+
+问题在于，TCP的端口被占用
+
+解决方法一：
+
+运行程序的同时指定端口，端口号随意给出：
+
+解决方法二：
+
+查找占用的端口号（在程序里 插入print输出），然后找到该端口号对应的PID值：netstat -nltp，然后通过kill -9 PID来解除对该端口的占用
+
+问题８：no implementation found for {} on types that implement
+
+if box1 == torch.Tensor:
+    box1=box1.cpu().numpy()
+
+修改为：
+
+if type(box1) == torch.Tensor:
+    box1=box1.cpu().numpy()
+
+问题９：cant convert cuda:0 device type tenhsor to numpy
+
+lt=np.maximum(box1[:,None,:2],box2[:,:2])
+
+修改为：
+
+问题１０：Docker训练单GPU时，可正常收敛，但采用多GPU训练时却无法收敛
+
+参考链接：
+
+NVIDIA Docker CUDA容器化原理分析
+
+https://cloud.tencent.com/developer/article/1496697
+

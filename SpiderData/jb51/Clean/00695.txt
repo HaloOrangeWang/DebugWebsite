@@ -1,0 +1,112 @@
+
+assert断言声明,遇到错误则立即返回
+
+在使用python语言开发深度学习模型时，经常会遇到模型运行结束时才会发现的崩溃状态，或者得到的结果不是预想的那样。
+
+这就需要在模型中善于使用assert语句，来判断某些变量的类型或者shape等是否满足要求。
+
+用法为 ：
+
+assert expression(你想判断的内容)
+
+# 等价于
+if not expression:
+    raise AssertionError
+
+例如：
+
+在逻辑回归中，z = W的转置*X，样本X含有五个特征，则我们在设置W时。要一直保证其shape为[5,1]
+
+>>> import numpy as np
+>>> w = np.zeros((5,1))
+>>> w
+array([[0.],
+       [0.],
+       [0.],
+       [0.],
+       [0.]])
+>>> assert(w.shape == (5,1))
+>>> assert(w.shape == (2,1))
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AssertionError
+
+
+assert断言函数
+
+说明一下代码适用于python2，不完全适用与py3
+
+使用assert断言是学习python一个非常好的习惯，python assert 断言句语格式及用法很简单。在没完善一个程序之前，我们不知道程序在哪里会出错，与其让它在运行最崩溃，不如在出现错误条件时就崩溃，这时候就需要assert断言的帮助。本文主要是讲assert断言的基础知识。
+
+
+python assert断言的作用
+
+python assert断言是声明其布尔值必须为真的判定，如果发生异常就说明表达示为假。可以理解assert断言语句为raise-if-not，用来测试表示式，其返回值为假，就会触发异常。
+
+
+assert断言语句的语法格式
+
+assert python 怎么用？
+
+expression assert 表达式
+
+assert语句用来声明某个条件是真的。
+
+如果你非常确信某个你使用的列表中至少有一个元素，而你想要检验这一点，并且在它非真的时候引发一个错误，那么assert语句是应用在这种情形下的理想语句。
+
+当assert语句失败的时候，会引发一AssertionError。
+
+
+下面做一些assert用法的语句供参考
+
+>>assert 1==1
+>> assert 1 == 2
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AssertionError
+
+>>assert 2+2==2*2
+>>assert len(['my boy',12])<10
+>>assert range(4)==[0,1,2,3]
+>>> mylist = ['item']
+>>assert len(mylist) >= 1
+>>mylist.pop()
+'item'
+>>assert len(mylist) >= 1
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AssertionError
+
+如何为assert断言语句添加异常参数
+
+assert的异常参数，其实就是在断言表达式后添加字符串信息，用来解释断言并更好的知道是哪里出了问题。
+
+格式如下：
+
+assert expression [, arguments]
+assert 表达式 [, 参数]
+
+自定异常
+
+class ShortInputException(Exception):
+    '''自定义的异常类'''
+    def __init__(self, length, atleast):
+        #super().__init__()
+        self.length = length
+        self.atleast = atleast
+
+def main():
+    try:
+        s = input('请输入 --> ')
+        if len(s) < 3:
+            # raise引发一个你定义的异常
+            raise ShortInputException(len(s), 3)
+    except ShortInputException as result:#x这个变量被绑定到了错误的实例
+        print('ShortInputException: 输入的长度是 %d,长度至少应是 %d'% (result.length, result.atleast))
+    else:
+        print('没有异常发生.')
+
+main()
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

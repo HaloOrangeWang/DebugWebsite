@@ -1,0 +1,23 @@
+我是在Ubuntu下进行pybind11的学习的。boost.python也好，pybind11也好，用他们的时候，我们是C++开发者的身份。CLion是Ubuntu下好用的C++ IDE。
+
+按照[学习pybind11（2）：Hello World例子　这篇的配置，命令行下已经可以跑通，但是如果是在CLion中打开代码，发现提示报错：
+
+但是如果Ctrl+鼠标左键，是能找到PYBIND11_MODULE的定义的，就是一个宏。检查发现是因为Pyconfig.h找不到导致后续各种显示报错。
+
+解决办法：CMakeLists.txt中显示的指定Python的包含目录，重新cmake即可
+
+cmake_minimum_required(VERSION 3.14)
+
+project(pybind11_demo)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(PYTHON_INCLUDE_DIR "/home/zz/soft/miniconda3/include/python3.7m" CACHE PATH "")
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/pybind11)
+pybind11_add_module(example ${CMAKE_SOURCE_DIR}/src/example.cpp)
+target_include_directories(example PRIVATE ${PYTHON_INCLUDE_DIR})
+
+然后重启CLion即可。
+

@@ -1,0 +1,52 @@
+在安装 AutoItLibrary 用于Robot Framework 时遇到过几个问题，记录一下解决方法。
+
+前提：必须使用管理员权限运行cmd。
+
+
+一、报错信息
+
+这其中有两个错误要解决：
+
+
+第一个报错
+
+这是因为检测到：在python的目录下已有该 lib
+
+解决方法：
+
+如我的目录是D:\Program Files (x86)\Python27\Lib\site-packages\AutoItLibrary，那就需要把这个目录下的文件清空。
+
+
+第二个报错
+
+关于subprocess.check_call这个函数看了下这篇文章：
+
+https://blog.csdn.net/liushuibufuqin/article/details/78892831
+
+解决方法（忘了当时在哪里查到的了，方法可行，但是未必科学）：
+
+1、到下载下来的AutoItLibrary-1.1文件夹下，打开setup.py文件；
+
+2、注释掉第70行（行数可能有偏差）的subprocess.check_call(cmd, shell=True)；
+
+3、注释掉第81行（行数可能有偏差）的subprocess.check_call(cmd)
+
+
+二、终极原因
+
+以上问题解决后，AutoItLibray  总算安装成功，但是却又发现了更诡异的事情：
+
+安装的库并不完整！！！
+
+在Robot Framework 中导入AutoItLibray 准备使用了，却发现使用 click button 之类的关键字不生效（颜色都没标识）。于是，使用 F5 查看关键字，确实不完整，有 open 、close 之类的关键字，却没有 click 等等。
+
+检查了：
+
+1、AutoItLibray 确实已导入成功，重新导了N次都还是原状；
+
+2、pywin32 与 python 版本确实是对应的，当时安装，都选择了32位，AutoIt 选择的也是x86版本；
+
+反复查找相关文档，仍无果，所以只能决定重新安装，而且选择64位的python（电脑本就是64位，只是当时怕 python 版本与 pywin32 不兼容才选择安装32位的 python）。另外，忘了在哪处看到安装目录不要有空格，联想到当时 python 安装在Program Files (x86)目录下，可能也有这个原因，所以在重装 python 时选择了没有空格的目录。重装后，以上两个问题好像并没有再出现（不太记得了），AutoItLibray 也终于能正常使用。
+
+所以以上发现的问题很有可能都是 python 的安装本就不正确而导致。因此，要一定注意 python 的版本与安装目录。
+

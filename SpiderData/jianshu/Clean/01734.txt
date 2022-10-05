@@ -1,0 +1,78 @@
+python用于识别二维码的主要有三个包，zbar 、zbarlight、zxing。
+
+从网上down了一个关于zxing的代码下来试试，程序报错是编码问题。重新学习了一下好像对伸手党不是很友好。于是重新开始学习其他两种包。
+
+zbar：
+
+zbar和zbarlight内核一致，都是基于zbar的dll编译加载的。
+
+由于zbar只有32位的版本，听闻64位python最后会出现“ImportError: DLL load failed: %1 不是有效的 Win32 应用程序。"错误，暂时无解。
+
+zbarlight：
+
+zbar和zbarlight内核一致，都是基于zbar的dll编译加载的。安装过程中出现
+
+error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools": https://visualstudio.microsoft.com/downloads/
+
+但是检查过我的系统环境，根据网上教程重新装过一次，也没用，还是同样的问题，暂时没有想到解决方法。
+
+zxing：
+
+zxing是基于java的zxing核心的python分支，其原理是调用javaw 加载zxing的core.jar包，再获取输出结果。按照网上所说的，识别能力来说，zxing>zbarlight(zbar)。所以我又回来了！
+
+下载：
+
+pip3 install zxing
+
+或者直接在pycharm中导入，ctrl+回车
+
+实现代码：
+
+import os
+import logging
+from PIL import Image
+import zxing    #导入解析包
+import random
+
+logger=logging.getLogger(__name__)
+if not logger.handlers :logging.basicConfig(level=logging.INFO)
+DEBUG= (logging.getLevelName(logger.getEffectiveLevel())=='DEBUG')
+
+def ocr_qrcode_zxing(filename):
+    #在当前目录生成临时文件，规避java的路径问题
+    img= Image.open(filename)
+    ran= int(random.random()*100000)
+    img.save('%s%s.jpg' %(os.path.basename(filename).split('.')[0],ran))
+    zx = zxing.BarCodeReader()
+    data = ''
+    zxdata = zx.decode('%s%s.jpg' %(os.path.basename(filename).split('.')[0], ran))
+    print(zxdata)
+    #删除临时文件
+    os.remove('%s%s.jpg' %(os.path.basename(filename).split('.')[0],ran))
+    if zxdata:
+        logger.debug(u'zxing识别二维码:%s,内容: %s' %(filename ,zxdata))
+        data = zxdata
+    else:
+        logger.error(u'识别zxing二维码出错:%s' %(filename))
+        img.save('%s-zxing.jpg' %filename)
+    return data
+
+if __name__ == '__main__':
+    filename = r'G:\wx\ww\c5a9367c3df1d2c8d64f1dc28bdb279.png'
+    #zxing二维码识别
+    ltext = ocr_qrcode_zxing(filename)
+    logger.info( u'[%s]Zxing二维码识别:[%s]!!!' %(filename,ltext))
+    print(ltext)
+
+注意，以上代码识别的二维码信息中不能为中文。不然会报错，解决方法需要另外学习，稍等我一会。
+
+打印出来的信息就是原始的二维码信息了。以上代码也是从同行处借鉴而来，学习参考。。
+
+其他两种方法暂时么有尝试过，电脑位数实在令望而却步。
+
+中文报错问题解决：
+
+找到python3安装路径下的zxing包，进去在init修改源码，将barcode函数中的decode（），加上“gkb”,运行即可。
+
+从另外大牛那里学习到的是将函数直接return utf-8，尝试过，没有用，不知道为什么。
+

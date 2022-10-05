@@ -1,0 +1,14 @@
+先参考这篇记录大概理解了原因，
+
+再深入了解下python的import机制，
+
+发现自己的模块之间存在互相import。
+
+比如，A.py中import B，而B.py中也import A了，
+
+现在执行模块A，就会先将B中的代码搬过来，但B中有import A，而此时A.pyc还没生成，所以B中import A之后的代码也执行不了；
+
+如果mode B 的 attribute xxx是定义在import A之后，那么就会出现题目中的报错；
+
+（而python是解释性语言，所以import A之前的代码还是可以生产A.pyc的，所以可以将import A放到必要的位置）
+

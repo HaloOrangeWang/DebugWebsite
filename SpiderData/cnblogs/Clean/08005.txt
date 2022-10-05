@@ -1,0 +1,18 @@
+计算机明明还有空闲资源，但 Python 创建大量线程时，遇上OpenBLAS blas_thread_init报错怎么办？
+
+具体看看着报错信息：
+
+里面说到，OpenBLAS 无法创建线程。
+
+用 cat /proc/cpuinfo| grep "processor"| wc -l 查看CPU的逻辑核数，总共有160个：
+
+再用 top 看一下系统资源情况：
+
+还有近 1.8T 的闲置内存，一小半的核数。但用 Python 的 multiprocessing 创建的线程数也小于空闲核数，为什么还会失败？
+
+再来看看报错信息，里面提到的 RLIMIT_NPROC 变量控制了用户可以使用的 CPU 核数。OpenBLAS 创建线程时超过了核它，从而导致失败。虽然操作时设置的线程数没有超，但 OpenBLAS 可能尝试同时启动多个线程来加速线性代数，导致总的线程数超过可利用的线程数。
+
+简单来说，可以在 bash 用以下三种方法其中一个控制 OpenBlas 线程数，直接在bash输入，最后的数字根据自己需要设定：
+
+或者在 Python 程序的开头加入：
+

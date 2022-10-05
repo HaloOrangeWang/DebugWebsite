@@ -1,0 +1,65 @@
+问题一：版本限制
+
+File "/Users/icourt/Desktop/hf/venv/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 36, in <module>
+
+raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+解决办法：跳转进上面路径文件注释掉版本判断
+
+问题二：  File "/Users/icourt/Desktop/hf/venv/lib/python3.7/site-packages/django/db/backends/mysql/operations.py", line 146, in last_executed_query
+
+query = query.decode(errors='replace')
+
+AttributeError: 'str' object has no attribute 'decode'
+
+解决办法：跳转上面文件路径将decode更换为encode
+
+问题三：set_cookie为中文，需转码
+
+self.status.split(' ',1)[0], self.bytes_sent
+
+AttributeError: 'NoneType' object has no attribute 'split'
+
+解决办法：dumps / loads 用法
+
+import json
+ 　　username='用户1'
+ 　　username=json.dumps(username)
+ 　　username="\\u7528\\u62371"
+ # 反序列化
+ username=json.loads(username)
+ username='用户1'
+
+在Django中：
+
+if remember=='on':
+                     # 记住用户名
+                     # 如果username是中文，设置cookies时会报错
+                     # cookie 中文编码处理
+                     username=json.dumps(username)
+                     response.set_cookie('username',username,max_age=7*24*3600)
+
+else:
+                     # 取消记住用户名
+                     response.delete_cookie('username')
+
+if 'username' in request.COOKIES:
+             username=request.COOKIES.get('username')
+             username=json.loads(username)
+
+问题四:nginx: [emerg] unknown directive "location/" in /usr/local/nginx/conf/nginx.conf:24
+
+解决办法：看看是不是有中文空格。。。
+
+问题五：初始化实例后，Mac和Linux远程连接服务器异常修复（WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!）
+
+解决办法：
+
+根据提示找到.ssh/known_hosts结尾文件路径
+
+vim 编辑该文件，删除原有的ssl
+
+再次连接即可
+

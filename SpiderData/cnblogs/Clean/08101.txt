@@ -1,0 +1,33 @@
+centos yum报错 File "/usr/bin/yum", line 30 except KeyboardInterrupt, e:
+
+
+报错：
+
+报错一：
+
+报错二：
+
+
+原因：
+
+以上两个报错，是因为我安装python3之后，同时让它作为默认版本软链接到/usr/bin/python导致。
+
+yum默认使用系统自带的python2.7作为解释器，现在默认python3.6，也就解析2.7语法报错了。
+
+
+解决方法：
+
+
+报错一：
+
+编辑/usr/bin/yum，将第一行原本/usr/bin/python修改为/usr/bin/python2即可，如下所示：
+
+
+报错二：
+
+编辑/usr/libexec/urlgrabber-ext-down，也是把第一行修改为/usr/bin/python2即可，如下所示：
+
+修正之后就可以正常使用yum了！
+
+---by 钢铁 648403020@qq.com 09.28.2020
+

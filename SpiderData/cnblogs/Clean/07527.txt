@@ -1,0 +1,250 @@
+一般我们在安装或者调用pip库的时候，会告诉你pip版本较低，需要你升级，比如我的本机是如下。
+
+一、    我是直接cd到我pip目录文件下查看版本：
+
+E:\Program Files (x86)\python\Scripts>pip show pip
+
+E:\Program Files (x86)\python\Scripts>pip show pip
+
+Name: pip
+
+Name: pip
+
+Version: 10.0.1
+
+Version: 10.0.1
+
+Summary: The PyPA recommended tool for installing Python packages.
+
+Summary: The PyPA recommended tool for installing Python packages.
+
+Home-page: https://pip.pypa.io/
+
+Home-page: https://pip.pypa.io/
+
+Author: The pip developers
+
+Author: The pip developers
+
+Author-email: python-virtualenv@groups.google.com
+
+Author-email: python-virtualenv@groups.google.com
+
+License: MIT
+
+License: MIT
+
+Location: e:\program files (x86)\python\lib\site-packages
+
+Location: e:\program files (x86)\python\lib\site-packages
+
+Requires:
+
+Requires:
+
+Required-by:
+
+Required-by:
+
+You are using pip version 10.0.1, however version 19.0.3 is available.
+
+You are using pip version 10.0.1, however version 19.0.3 is available.
+
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+特别是Required-by:以及命令窗中黄色的字，
+
+提示我可用的有19.0.3的版本可用，说明我的pip版本太低了，需要升级。
+
+二、在命令窗中我按照要求，进行升级，敲入‘python -m pip install --upgrade pip’，但是提示我安装失败。
+
+E:\Program Files (x86)\python\Scripts>python -m pip install --upgrade pip
+
+E:\Program Files (x86)\python\Scripts>python -m pip install --upgrade pip
+
+Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='pypi.org', port=443): Read timed out. (read timeout=15)",)': /simple/pip/
+
+Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='pypi.org', port=443): Read timed out. (read timeout=15)",)': /simple/pip/
+
+Collecting pip
+
+Collecting pip
+
+Downloading https://files.pythonhosted.org/packages/d8/f3/413bab4ff08e1fc4828dfc59996d721917df8e8583ea85385d51125dceff/pip-19.0.3-py2.py3-none-any.whl (1.4MB)
+
+Downloading https://files.pythonhosted.org/packages/d8/f3/413bab4ff08e1fc4828dfc59996d721917df8e8583ea85385d51125dceff/pip-19.0.3-py2.py3-none-any.whl (1.4MB)
+
+99% |███████████████████████████████▊| 1.3MB 74kB/s eta 0:00:01Exception:
+
+99% |███████████████████████████████▊| 1.3MB 74kB/s eta 0:00:01Exception:
+
+Traceback (most recent call last):
+
+Traceback (most recent call last):
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\basecommand.py", line 228, in main
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\basecommand.py", line 228, in main
+
+status = self.run(options, args)
+
+status = self.run(options, args)
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\commands\install.py", line 291, in run
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\commands\install.py", line 291, in run
+
+resolver.resolve(requirement_set)
+
+resolver.resolve(requirement_set)
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\resolve.py", line 103, in resolve
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\resolve.py", line 103, in resolve
+
+self._resolve_one(requirement_set, req)
+
+self._resolve_one(requirement_set, req)
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\resolve.py", line 257, in _resolve_one
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\resolve.py", line 257, in _resolve_one
+
+abstract_dist = self._get_abstract_dist_for(req_to_install)
+
+abstract_dist = self._get_abstract_dist_for(req_to_install)
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\resolve.py", line 210, in _get_abstract_dist_for
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\resolve.py", line 210, in _get_abstract_dist_for
+
+self.require_hashes
+
+self.require_hashes
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\operations\prepare.py", line 310, in prepare_linked_requirement
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\operations\prepare.py", line 310, in prepare_linked_requirement
+
+progress_bar=self.progress_bar
+
+progress_bar=self.progress_bar
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 837, in unpack_url
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 837, in unpack_url
+
+progress_bar=progress_bar
+
+progress_bar=progress_bar
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 674, in unpack_http_url
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 674, in unpack_http_url
+
+progress_bar)
+
+progress_bar)
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 898, in _download_http_url
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 898, in _download_http_url
+
+_download_url(resp, link, content_file, hashes, progress_bar)
+
+_download_url(resp, link, content_file, hashes, progress_bar)
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 618, in _download_url
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 618, in _download_url
+
+hashes.check_against_chunks(downloaded_chunks)
+
+hashes.check_against_chunks(downloaded_chunks)
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\utils\hashes.py", line 48, in check_against_chunks
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\utils\hashes.py", line 48, in check_against_chunks
+
+for chunk in chunks:
+
+for chunk in chunks:
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 586, in written_chunks
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 586, in written_chunks
+
+for chunk in chunks:
+
+for chunk in chunks:
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\utils\ui.py", line 159, in iter
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\utils\ui.py", line 159, in iter
+
+for x in it:
+
+for x in it:
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 575, in resp_read
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_internal\download.py", line 575, in resp_read
+
+decode_content=False):
+
+decode_content=False):
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 436, in stream
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 436, in stream
+
+data = self.read(amt=amt, decode_content=decode_content)
+
+data = self.read(amt=amt, decode_content=decode_content)
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 401, in read
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 401, in read
+
+raise IncompleteRead(self._fp_bytes_read, self.length_remaining)
+
+raise IncompleteRead(self._fp_bytes_read, self.length_remaining)
+
+File "E:\Program Files (x86)\python\lib\contextlib.py", line 35, in __exit__
+
+File "E:\Program Files (x86)\python\lib\contextlib.py", line 35, in __exit__
+
+self.gen.throw(type, value, traceback)
+
+self.gen.throw(type, value, traceback)
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 316, in _error_catcher
+
+File "E:\Program Files (x86)\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 316, in _error_catcher
+
+raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+
+raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+
+ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+You are using pip version 10.0.1, however version 19.0.3 is available.
+
+You are using pip version 10.0.1, however version 19.0.3 is available.
+
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+这个时候我看到，检查升级不能覆盖，这个时候可以去到你的安装目录，找到site-packages文件夹，把原来的pip-10.0.1.dist-info这个消息目录删除，（经过询问，很多同学的安装不成功都是和这个目录有关系）。下图我是删除后重新升级并自动升级的目录。
+
+三、 再次运行python -m pip install --upgrade pip 后升级成功，之前不能安装的包也能安装了！
+
+是不是很开心？！
+
+注：本文属于原创，本博客下所有内容，凡注明"来源：laofashi2015"的所有文字、图片和音视频资料，版权均属laofashi2015所有，任何媒体、网站或个人未经本人协议授权不得转载、链接、转贴或以其他方式复制发布/发表。已经本人协议授权的媒体、网站，在下载使用时必须注明"稿件来源：laofashi2015"，违者本人将依法追究责任。
+

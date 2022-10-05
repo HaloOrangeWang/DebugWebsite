@@ -1,0 +1,17 @@
+查询一个不存在的属性并不会报错，如果在对象o自身的属性或继承的属性中均未找到属性x，属性访问表达式 o.x 返回 undefined 。
+
+如果对象不存在，那么试图查询这个不存在的对象的属性就会报错(null和undefined值都没有属性，会报错)。
+
+避免出错的方法：
+
+(1)一种冗余但很易懂的方法：
+
+var len = undefined;
+if (book) {
+    if (book.subtitle) len = book.subtitle.length;
+}
+
+(2)一种更加简练的常用方法(利用&&运算符的短路行为)：
+
+var len = book && book.subtitle && book.subtitle.length;
+

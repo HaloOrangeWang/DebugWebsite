@@ -1,0 +1,46 @@
+今天发现一个报错，卡了好几个点，后来发现原因后，脸上三条黑线，尴尬啊！！！
+
+报错：IndexError: list assignment index out of range
+
+原因：split()写法转成列表就会认作一个整体,结果会是一个整体（示例：['gg111ggggggg222']），不是预期结果
+
+上源码：
+
+def func(n,target_str):
+    with open("1003.txt","r+",encoding="utf-8") as fp:
+        word_str = fp.read()
+        print(word_str)
+        if n < len(word_str):
+            word_list = word_str.split()
+            word_list[n] = target_str
+            print(word_list)
+        else:
+            print("111")
+
+调用该方法传入参数 func(2,"111")
+
+报错了：
+
+>>> func(2,"111")
+gg111ggggggg222
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 7, in func
+IndexError: list assignment index out of range
+
+因为我源文件"1003.txt"的内容是：gg111ggggggg222
+
+如果按上面的split()写法转成列表就会认作一个整体,结果会是['gg111ggggggg222']，不是我要的结果
+
+这里的 word_str的值是：gg111ggggggg222
+
+精简下，就是如下意思：
+str1 = "qwer"
+list1 = str1.split()
+list2 = list(str1)
+
+print(list1)
+print(list2)
+
+可参照：Python_列表和字符串间的转换  简单说明
+

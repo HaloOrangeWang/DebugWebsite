@@ -1,0 +1,58 @@
+执行 pip3.7 install uwsgi出现如下报错
+
+[root@host-192-168-151-177 ~]# pip3.7 install uwsgi
+-bash: /usr/bin/pip3.7: /usr/local/python3.7.0/bin/python3.7: bad interpreter: No such file or directory
+
+查看pip3.7所在路径
+
+[root@host-192-168-151-177 ~]# which pip3.7
+/usr/bin/pip3.7
+[root@host-192-168-151-177 ~]#
+
+查看此命令的引用,做了/usr/local/python3.7/bin/pip3.7路径软连接
+
+[root@host-192-168-151-177 ~]# ll /usr/bin/pip3.7 
+lrwxrwxrwx 1 root root 31 May 14 12:26 /usr/bin/pip3.7 -> /usr/local/python3.7/bin/pip3.7
+
+vim 查看此脚本,发现此脚本引用了/usr/local/python3.7.0/bin/python3.7路径
+
+[root@host-192-168-151-177 ~]# cat /usr/bin/pip3.7 
+#!/usr/local/python3.7.0/bin/python3.7
+
+# -*- coding: utf-8 -*-
+import re
+import sys
+
+from pip._internal import main
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
+
+ls /usr/local/python3.7.0/bin/python* 查看,发现此路径下没有python3.7.0文件夹
+
+[root@host-192-168-151-177 ~]# ls /usr/local/python3.7
+python3.7/                      python3.7.0_20200514拷贝文件夹/ python3.7_20200514拷贝文件夹/   python3.7.xx/
+
+所以此问题出现的原因为python版本中间编译过多次，python3.7.0脚本被修改了名称，解决方法如下
+
+将执行文件路径修改为python3.7
+
+[root@host-192-168-151-177 ~]# vi /usr/bin/pip3.7
+
+#!/usr/local/python3.7/bin/python3.7
+
+# -*- coding: utf-8 -*-
+import re
+import sys
+
+from pip._internal import main
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
+
+再次执行命令，问题解决
+
+微信公众号关注“运维之美”
+

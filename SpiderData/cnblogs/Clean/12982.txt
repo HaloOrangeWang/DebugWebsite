@@ -1,0 +1,42 @@
+最近学习paramiko模块，win10环境，Python3.8（重点，不说版本都是不讲码德）
+
+使用pip install paramiko安装失败，报错内容：ERROR: Could not build wheels for pynacl, cryptography which use PEP 517 and cannot be installed directly
+
+最开始网上查询解决办法，尝试了如下办法：
+
+1、安装版本更高的的Microsoft Visual C++版本
+
+2、手动下载并安装pycrypto-2.6.1-cp36-cp36m-win_amd64.whl
+
+（两个办法在其他地方都能查到步骤和安装包，这里不再一一赘述）
+
+但是按照这两个办法都不行！！！！使用办法1后执行pip install paramiko仍旧报一样的错误，使用办法2则安装whl都直接失败。
+
+然后我决定！！读报错信息！！终于被我读到关键内容：
+
+If you are using an outdated pip version, it is possible a prebuilt wheel is available for this package but pip is not able to install from it. Installing from the wheel would avoid the need for a Rust compiler.
+
+To update pip, run:
+
+pip install --upgrade pip
+
+and then retry package installation.
+
+然后我依据提示执行 pip install --upgrade pip
+
+但是执行失败！！报错了！！
+
+注意这里抓住关键语句：'C:\\Users\\Administrator\\AppData\\Local\\Temp\\pip-uninstall-pqee65qd\\pip.exe'
+
+于是我进入到对应目录下，然后发现了华点：这里有三个pip.exe
+
+想到我的Python是3.8，于是我灵机一动，执行 pip3.8 install paramiko，然后就成功了！！！
+
+问题根因待以后补充，这个事情让我收获最大的是学到了解决问题的思维。
+
+总结：
+
+初学python，对各种模块的安装和使用都一知半解，在这个过程中，重要的不是问题和问题的解决方法，而是问题的解决思路和过程，以及解决问题的思维。
+
+从现在起记录下学习过程中有意义的案例和过程，心之所向，皆是远方~
+

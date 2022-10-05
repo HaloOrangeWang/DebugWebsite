@@ -1,0 +1,31 @@
+python读取文件时报错UnicodeDecodeError: 'gbk' codec can't decode byte 0x8e in position 8: illegal multibyte sequence，如下代码：
+
+1 #coding:utf-8
+ 2 import shutil
+ 3 readDir = "F:\\爬取数据\\11.txt"
+ 4 writeDir = "F:\\爬取数据\\22.txt"
+ 5 #txtDir = "/home/fuxueping/Desktop/１"
+ 6 lines_seen = set()
+ 7 outfile=open(writeDir,"w")
+ 8 f = open(readDir,"r",encoding='UTF-8')
+ 9 for line in f:
+10     print(line)
+11     if line not in lines_seen:
+12         line = str(line)
+13         outfile.write(str(line))
+14         lines_seen.add(line)
+15 outfile.close()
+16 print ("success")
+
+解决方案1：
+
+f = open(readDir,"rb")
+
+此方案虽然没有在报错，但写入的数据不是想要的格式，如下：
+
+解决方案2：
+
+f = open(readDir,"r",encoding='UTF-8')
+
+一切保存正常
+

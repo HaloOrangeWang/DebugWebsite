@@ -1,0 +1,22 @@
+1 mysql安装过程中报下面这个错
+
+解决方法：只要将目录改成反斜杠即可。
+
+2 修改密码错误:ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your
+
+解决方法： set password='新密码';    //5.8之前的版本使用set password=password('新密码');5.8后改为set password='新密码';
+
+3 net start mysql  启动MySQL 服务报错 ：发生系统错误 5
+
+解决方法：用管理员身份运行cmd
+
+4 Navicat连接Mysql报1251错误
+
+原因: mysql8 之前的版本中加密规则是mysql_native_password,而在mysql8之后,加密规则是caching_sha2_password, 解决问题方法有两种,一种是升级navicat驱动,一种是把mysql用户登录密码加密规则还原成mysql_native_password.
+
+解决方法：
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'password' PASSWORD EXPIRE NEVER; #修改加密规则 
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password'; #更新一下用户的密码 
+FLUSH PRIVILEGES; #刷新权限
+

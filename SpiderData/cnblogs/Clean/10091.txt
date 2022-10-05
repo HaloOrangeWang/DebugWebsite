@@ -1,0 +1,21 @@
+错误信息还算简单，解包成太多的值，意思就是说你要赋值的变量多了，你的 values 少了
+
+
+结论
+
+你要赋值的变量多了，你的 values 少了，这是根本原因，就比如  a, b, c, d = 20, 5, 5 就会报错
+
+
+我的出错代码
+
+这个代码报错
+
+ValueError: too many values to unpack (expected 4)
+
+
+原因
+
+调用 pywt.wavedec2 时参数错误，其大概形式如下
+
+为什么会错呢，因为我直接使用了参数位置匹配，但是中间有一个  mode=’symmetric’ 我没有指定，自然错了所以换成 coeffs = pywt.wavedec2(data=x, wavelet=w, level=l)  按名称绑定参数，就没错了
+

@@ -1,0 +1,54 @@
+错误代码：
+
+Exception:
+Traceback (most recent call last):
+  File "d:\document\软件学习\学习\calculator\lib\site-packages\pip\_internal\cli\base_command.py", line 143, in main
+    status = self.run(options, args)
+  File "d:\document\软件学习\学习\calculator\lib\site-packages\pip\_internal\commands\install.py", line 293, in run
+    self.name, wheel_cache
+  File "d:\document\软件学习\学习\calculator\lib\site-packages\pip\_internal\cli\base_command.py", line 235, in populate_requirement_set
+    wheel_cache=wheel_cache):
+  File "d:\document\软件学习\学习\calculator\lib\site-packages\pip\_internal\req\req_file.py", line 82, in parse_requirements
+    filename, comes_from=comes_from, session=session
+  File "d:\document\软件学习\学习\calculator\lib\site-packages\pip\_internal\download.py", line 437, in get_file_content
+    content = auto_decode(f.read())
+  File "d:\document\软件学习\学习\calculator\lib\site-packages\pip\_internal\utils\encoding.py", line 32, in auto_decode
+    locale.getpreferredencoding(False) or sys.getdefaultencoding(),
+UnicodeDecodeError: 'gbk' codec can't decode bytes in position 12-13: illegal multibyte sequence
+
+似乎是编码问题。
+
+之前似乎也遇到过这个问题，貌似该pip源码修复了，然而忘了记录下来。于是乎继续问度娘。
+
+最后看一眼requirements.txt，尼玛，原来是这个文件没指定编码格式，在开头加上:
+
+# -*- coding: utf-8 -*-
+
+然后就又报错了：
+
+Collecting Django==1.8.3 (from -r requirements.txt (line 6))
+  Using cached https://files.pythonhosted.org/packages/a3/e1/0f3c17b1caa559ba69513ff72e250377c268d5bd3e8ad2b22809c7e2e907/Django-1.8.3-py2.py3-none-any.whl
+Collecting MySQL-python==1.2.3 (from -r requirements.txt (line 7))
+  Using cached https://files.pythonhosted.org/packages/9a/81/924d6799494cf7fb24370335c2f782088d6ac4f79e4137d4df94cea3582c/MySQL-python-1.2.3.tar.gz
+    Complete output from command python setup.py egg_info:
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "c:\users\坚强的~1\appdata\local\temp\pip-install-kxslau\MySQL-python\setup.py", line 15, in <module>
+        metadata, options = get_config()
+      File "setup_windows.py", line 7, in get_config
+        serverKey = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, options['registry_key'])
+    WindowsError: [Error 2]
+
+----------------------------------------
+Command "python setup.py egg_info" failed with error code 1 in c:\users\坚强的~1\appdata\local\temp\pip-install-kxslau\MySQL-python\
+
+mysql-python window上用pip安装貌似一定会出现这个问题，曲线救国：
+
+到网站下载mysql-python的whl文件。
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python
+
+然后本地pip 安装：
+
+pip install MySQL_python-1.2.5-cp27-none-win_amd64.whl
+

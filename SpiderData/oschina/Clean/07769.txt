@@ -1,0 +1,79 @@
+启动Apollo后，进入网页版管理中心后报错：500: Server Error
+
+https://127.0.0.1:61681/console/index.html
+
+网页抓包
+
+报错：{"code":"500: Internal Server Error","message":"java.lang.IllegalArgumentException: port out of range:-1","resource":"/api/json/broker","other":[]}
+
+apollo.log日志：
+
+2018-11-28 17:23:11,174 | INFO  | OS     : Windows 10 10.0 | 
+2018-11-28 17:23:11,177 | INFO  | JVM    : Java HotSpot(TM) 64-Bit Server VM 1.8.0_161 (Oracle Corporation) | 
+2018-11-28 17:23:11,177 | INFO  | Apollo : 1.7.1 (at: E:\Data\apache-apollo-1.7.1) | 
+2018-11-28 17:23:11,407 | INFO  | Starting store: leveldb store at E:\Data\apache-apollo-1.7.1\bin\mybroker\data | 
+2018-11-28 17:23:11,679 | INFO  | Opening the log file took: 141.28 ms | 
+2018-11-28 17:23:11,950 | INFO  | Accepting connections at: tcp://0.0.0.0:61613 | 
+2018-11-28 17:23:11,950 | INFO  | Accepting connections at: tls://0.0.0.0:61614 | 
+2018-11-28 17:23:12,000 | INFO  | Accepting connections at: ws://0.0.0.0:61623/ | 
+2018-11-28 17:23:12,020 | WARN  | FAILED SslSelectChannelConnector@0.0.0.0:61624: java.net.BindException: Address already in use: bind | 
+java.net.BindException: Address already in use: bind
+    at sun.nio.ch.Net.bind0(Native Method)
+    at sun.nio.ch.Net.bind(Net.java:433)
+    at sun.nio.ch.Net.bind(Net.java:425)
+    at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)
+    at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:74)
+    at org.eclipse.jetty.server.nio.SelectChannelConnector.open(SelectChannelConnector.java:182)
+    at org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:311)
+    at org.eclipse.jetty.server.nio.SelectChannelConnector.doStart(SelectChannelConnector.java:260)
+    at org.eclipse.jetty.server.ssl.SslSelectChannelConnector.doStart(SslSelectChannelConnector.java:626)
+    at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:59)
+    at org.eclipse.jetty.server.Server.doStart(Server.java:283)
+    at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:59)
+    at org.apache.activemq.apollo.broker.jetty.WebSocketTransportFactory$WsTransportServer$$anonfun$_start$1.apply$mcV$sp(WebSocketTransportFactory.scala:183)
+    at org.fusesource.hawtdispatch.package$$anon$4.run(hawtdispatch.scala:357)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+    at java.lang.Thread.run(Thread.java:748)
+2018-11-28 17:23:12,022 | WARN  | FAILED org.eclipse.jetty.server.Server@4aa1007d: java.net.BindException: Address already in use: bind | 
+java.net.BindException: Address already in use: bind
+    at sun.nio.ch.Net.bind0(Native Method)
+    at sun.nio.ch.Net.bind(Net.java:433)
+    at sun.nio.ch.Net.bind(Net.java:425)
+    at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)
+    at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:74)
+    at org.eclipse.jetty.server.nio.SelectChannelConnector.open(SelectChannelConnector.java:182)
+    at org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:311)
+    at org.eclipse.jetty.server.nio.SelectChannelConnector.doStart(SelectChannelConnector.java:260)
+    at org.eclipse.jetty.server.ssl.SslSelectChannelConnector.doStart(SslSelectChannelConnector.java:626)
+    at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:59)
+    at org.eclipse.jetty.server.Server.doStart(Server.java:283)
+    at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:59)
+    at org.apache.activemq.apollo.broker.jetty.WebSocketTransportFactory$WsTransportServer$$anonfun$_start$1.apply$mcV$sp(WebSocketTransportFactory.scala:183)
+    at org.fusesource.hawtdispatch.package$$anon$4.run(hawtdispatch.scala:357)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+    at java.lang.Thread.run(Thread.java:748)
+
+日志提示是地址端口61624已经被使用
+
+FAILED SslSelectChannelConnector@0.0.0.0:61624: java.net.BindException: Address already in use: bind
+
+解决方案：
+
+找到自定义的broker\etc下的apollo.xml配置文件，找到61624端口,对应的是wss,修改其中的端口，启动后就成功了
+
+<connector id="wss" bind="wss://0.0.0.0:21624" connection_limit="2000"/>
+
+默认配置：
+
+<web_admin bind="http://127.0.0.1:61680"/>
+  <web_admin bind="https://127.0.0.1:61681"/>
+
+<connector id="tcp" bind="tcp://0.0.0.0:61613" connection_limit="2000"/>
+  <connector id="tls" bind="tls://0.0.0.0:61614" connection_limit="2000"/>
+  <connector id="ws"  bind="ws://0.0.0.0:61623"  connection_limit="2000"/>
+  <connector id="wss" bind="wss://0.0.0.0:61624" connection_limit="2000"/>
+
+2018-11-28 17:23:11,174 | INFO  | OS     : Windows 10 10.0 | 2018-11-28 17:23:11,177 | INFO  | JVM    : Java HotSpot(TM) 64-Bit Server VM 1.8.0_161 (Oracle Corporation) | 2018-11-28 17:23:11,177 | INFO  | Apollo : 1.7.1 (at: E:\Data\apache-apollo-1.7.1) | 2018-11-28 17:23:11,407 | INFO  | Starting store: leveldb store at E:\Data\apache-apollo-1.7.1\bin\mybroker\data | 2018-11-28 17:23:11,679 | INFO  | Opening the log file took: 141.28 ms | 2018-11-28 17:23:11,950 | INFO  | Accepting connections at: tcp://0.0.0.0:61613 | 2018-11-28 17:23:11,950 | INFO  | Accepting connections at: tls://0.0.0.0:61614 | 2018-11-28 17:23:12,000 | INFO  | Accepting connections at: ws://0.0.0.0:61623/ | 2018-11-28 17:23:12,020 | WARN  | FAILED SslSelectChannelConnector@0.0.0.0:61624: java.net.BindException: Address already in use: bind | java.net.BindException: Address already in use: bindat sun.nio.ch.Net.bind0(Native Method)at sun.nio.ch.Net.bind(Net.java:433)at sun.nio.ch.Net.bind(Net.java:425)at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:74)at org.eclipse.jetty.server.nio.SelectChannelConnector.open(SelectChannelConnector.java:182)at org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:311)at org.eclipse.jetty.server.nio.SelectChannelConnector.doStart(SelectChannelConnector.java:260)at org.eclipse.jetty.server.ssl.SslSelectChannelConnector.doStart(SslSelectChannelConnector.java:626)at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:59)at org.eclipse.jetty.server.Server.doStart(Server.java:283)at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:59)at org.apache.activemq.apollo.broker.jetty.WebSocketTransportFactory$WsTransportServer$$anonfun$_start$1.apply$mcV$sp(WebSocketTransportFactory.scala:183)at org.fusesource.hawtdispatch.package$$anon$4.run(hawtdispatch.scala:357)at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)at java.lang.Thread.run(Thread.java:748)2018-11-28 17:23:12,022 | WARN  | FAILED org.eclipse.jetty.server.Server@4aa1007d: java.net.BindException: Address already in use: bind | java.net.BindException: Address already in use: bindat sun.nio.ch.Net.bind0(Native Method)at sun.nio.ch.Net.bind(Net.java:433)at sun.nio.ch.Net.bind(Net.java:425)at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:74)at org.eclipse.jetty.server.nio.SelectChannelConnector.open(SelectChannelConnector.java:182)at org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:311)at org.eclipse.jetty.server.nio.SelectChannelConnector.doStart(SelectChannelConnector.java:260)at org.eclipse.jetty.server.ssl.SslSelectChannelConnector.doStart(SslSelectChannelConnector.java:626)at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:59)at org.eclipse.jetty.server.Server.doStart(Server.java:283)at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:59)at org.apache.activemq.apollo.broker.jetty.WebSocketTransportFactory$WsTransportServer$$anonfun$_start$1.apply$mcV$sp(WebSocketTransportFactory.scala:183)at org.fusesource.hawtdispatch.package$$anon$4.run(hawtdispatch.scala:357)at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)at java.lang.Thread.run(Thread.java:748)
+

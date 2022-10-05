@@ -1,0 +1,43 @@
+在Python环境下执行import dlib可能会报如下错误：
+
+(tensorflow) wuchendeMacBook-Pro:~ wuchen$ python
+Python 2.7.10 (default, Feb  7 2017, 00:08:15) 
+[GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.34)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import dlib
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/wuchen/Libraries/tensorflow/lib/python2.7/site-packages/dlib/__init__.py", line 1, in <module>
+    from .dlib import *
+ImportError: dlopen(/Users/wuchen/Libraries/tensorflow/lib/python2.7/site-packages/dlib/dlib.so, 2): Library not loaded: libboost_python.dylib
+  Referenced from: /Users/wuchen/Libraries/tensorflow/lib/python2.7/site-packages/dlib/dlib.so
+  Reason: image not found
+
+问题出在编译完成boost python之后，环境变量没有正确地设置。
+
+有两个环境变量需要设置：
+
+第一个是boost的根目录
+
+如果不设置这个路径，编译dlib的时候，还是会编译通过不了。
+
+在苹果电脑上，这个环境变量是这样设置的：
+
+export PATH="/Users/wuchen/Libraries/boost_1_64_0:$PATH"
+
+第二个是编译成功的动态库的路径
+
+如果没有正确设置这个路径，虽然dlib能成功安装，但是在Python环境下执行import dlib的时候就会报文章开头提到的错误。
+
+在苹果电脑上，这个环境变量是这么设置的：
+
+export DYLD_LIBRARY_PATH="/Users/wuchen/Libraries/boost_1_64_0/stage/lib:$DYLD_LIBRARY_PATH"
+
+这里DYLD_LIBRARY_PATH不能用PATH取代，否则仍然会报错。
+
+如果是Linux系统，这个环境变量的名称是LD_LIBRARY_PATH。
+
+如果是Cygwin环境下，则用PATH就可以了。
+
+参考文献：http://www.boost.org/doc/libs/1_64_0/more/getting_started/unix-variants.html
+

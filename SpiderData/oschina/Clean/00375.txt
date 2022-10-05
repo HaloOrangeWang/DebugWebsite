@@ -1,0 +1,63 @@
+1、安装Anaconda
+
+百度下载windows版本，一路点下一步，安装好了Anaconda，自带python3.6.6。
+
+2、安装TensorFlow
+
+（1）打开Anaconda Prompt，输入conda env list，查看当前环境，发现只有base环境。
+
+（2）创建TensorFlow环境，同时安装好numpy：
+
+输入conda create -n tensorflow python=3.6 numpy pip。
+
+（3）进入TensorFlow环境
+
+再用conda env list，发现已经多了一个名为TensorFlow的环境。
+
+输入：activate tensorflow ，进入环境
+
+（4）安装TensorFlow
+
+使用pip安装：pip install tensorflow
+
+安装完成后用conda list 查看，发现TensorFlow1.8.0已经安装进去。
+
+3、检查
+
+（1）CPU不支持导致重装
+
+进入python后，输入“import tensorflow”，结果发现报错。
+
+错误信息有很长一串，我也看不太懂，最主要的错误信息是“DLL load failed with error code - 1073741795”
+
+百度了一下，发现错误原因是因为太老的CPU支持不了太新版本的tensorflow，缺少一个叫VAX的功能？
+
+遂卸载然后安装较低版本的tensorflow：
+
+pip uninstall tensorflow
+
+pip install tensorflow==1.5
+
+安装完1.5版本后打开不再报错。
+
+（2）再次测试
+
+import tensorflow as tf
+hello = tf.constant('HELLO TENSORFLOW')
+sess = tf.Session()
+print (sess.run(hello))
+
+输出b'HELLO TENSORFLOW'
+
+安装成功。
+
+4、安装jupyter notebook
+
+按照教程，安装了一个方便编辑python的网页工具jupyter notebook
+
+conda install jupyter
+
+输入jupyter notebook ，可以打开浏览器，能够编程。
+
+5、其他
+

@@ -1,0 +1,62 @@
+读取文件时遇到和列数不对应的行，此时会报错。若报错行可以忽略，则添加以下参数:
+
+样式：
+
+pandas.read_csv(***,error_bad_lines=False)
+
+pandas.read_csv(filePath) 方法来读取csv文件时，可能会出现这种错误：
+
+ParserError：Error tokenizing data.C error:Expected 2 fields in line 407,saw 3.
+
+是指在csv文件的第407行数据，期待2个字段，但在第407行实际发现了3个字段。
+
+原因：header只有两个字段名，但数据的第407行却出现了3个字段（可能是该行数据包含了逗号，或者确实有三个部分），导致pandas不知道该如何处理。
+
+解决办法：把第407行多出的字段删除，或者通过在read_csv方法中设置error_bad_lines=False来忽略这种错误：
+
+改为
+
+pandas.read_csv(filePath,error_bad_lines=False)
+
+来忽略掉其中出现错乱(例如，由于逗号导致多出一列)的行。
+
+KeyError错误：
+
+报这种错是由于使用了DataFrame中没有的字段，例如id字段，原因可能是：
+
+.csv文件的header部分没加逗号分割，此时可使用df.columns.values来查看df到底有哪些字段：
+
+print(df.columns.values)
+
+.在操作DataFrame的过程中丢掉了id字段的header，却没发现该字段已丢失。
+
+例如：
+
+df=df[df['id']!='null']#取得id字段不为null的行
+
+df=df['id']#赋值后df为Series，表示df在id列的值，而不再是一个DataFrame,于是丢掉了id的头，此时若再使用df['id']将报错。
+
+取列的值，与取列的区别：
+
+df=df['id']#取id列的值，赋值后df为Series类型，可用print(type(df))来查看其类型
+
+df=df[['id']]#只取df的id列作为一个新的DataFrame，赋值后df仍然是一个DataFrame
+
+df=df[['id','age']]#取df的id和age列作为一个新的DataFrame，赋值后df仍然是一个DataFrame
+
+过滤行
+
+df=df[df['id']!='null']#过滤掉id字段取值为'null'的行
+
+注意，此处的'null'是一个字符串，若df中某行id字段的值不是字符串型，或者为空，将报TypeError：invalid type comparison错，因为只有相同类型的值才能进行比较。
+
+解决办法：如果不能保证id列都是string类型，则需要去掉该过滤条件。
+
+补充知识：pandas 使用read_csv读取文件时产生错误：EOF inside string starting at line
+
+解决方法：使用参数 quoting
+
+df = pd.read_csv(csvfile, header = None, delimiter="\t", quoting=csv.QUOTE_NONE, encoding='utf-8')
+
+以上这篇Pandas之read_csv()读取文件跳过报错行的解决就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

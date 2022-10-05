@@ -1,0 +1,14 @@
+在一些爬虫项目中，我们经常会爬取一个网页，但是爬取的内容里可能存在''或者""，如果直接把爬取的数据存储到数据库，肯定会报错。
+ pymysql中有专门的转义方法，导入语法如下：
+
+# v1.0.0及以上
+from pymysql.converters import escape_string
+
+# v0.10.1及以下
+from pymysql import escape_string
+
+使用时只需要先将特定的字符串进行转义，然后再将转义后的字符串插入到数据库中即可。代码示例如下
+
+#data为含有单引号或者双引号的字符串
+data = escape_string(data)
+

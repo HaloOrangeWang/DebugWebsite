@@ -1,0 +1,19 @@
+当尝试编写python2.7的ROS程序时，使用  import  cv2 语句的时候，程序可能会自动使用ROS自带的OpenCV3.3.1- dev( path :  /opt/ros/kinetic/lib/python2.7/dist-packages/cv2.so)，而非我们自己安装的高版本OpenCV( path: /usr/local/lib/python2.7/dist-packages/cv2.so)。
+
+我的部分程序使用了OpenCV的DNN模块提供的face detection功能，
+
+当和ROS的代码一起执行时，程序报错。
+
+emmm....试了几种方法，最有效的就是删除ros包中的cv2.so，让程序自己去使用我们自己安装的高版本opencv。为了防止以后出问题，现在只是把ros的cv2.so放入trash, 而不是直接 rm 删除。 步骤如下：
+
+sudo easy_install trash-cli
+# trash-cli是一款用来文件移入trash和恢复的软件
+
+sudo trash-put /opt/ros/kinetic/lib/python2.7/dist-packages/cv2.so
+# 这就可以了
+
+# 如果python2.7的包里opencv版本也低的话，自行安装特定版本的语句为
+sudo pip2 install opencv-python==3.4.0.12
+
+然后运行程序，就不报错了。
+

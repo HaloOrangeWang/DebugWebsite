@@ -1,0 +1,97 @@
+参考:
+
+https://www.cnblogs.com/mqxs/p/9103031.html
+
+https://www.cnblogs.com/cerutodog/p/9908574.html
+
+确认环境 系统版本
+
+openssl版本
+
+[root@67 local]# openssl version
+OpenSSL 1.0.2k-fips  26 Jan 2017
+
+OPS,居然新安装的centOS系统自带的就是1.0.2版本,这是不是意味着我可以很轻松的安装好python,然后import ssl就不会报错,而不用再去额外配置openssl了呢
+
+?期待的搓搓手(原因是python3需要要注意的地方是版本要1.02以上版本才能正常使用像requests之类的库)
+
+为了避免后面报各种错,我们先把需要的信赖包安装上,再安装python3
+
+执行完make&&make install之后，可能会出现这种报错：
+
+这里需要执行：
+
+[root@67 local]# yum install openssl-devel bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel gcc gcc-c++ openssl-devel
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirrors.aliyun.com
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+Package 1:openssl-devel-1.0.2k-16.el7_6.1.x86_64 already installed and latest version
+Package bzip2-devel-1.0.6-13.el7.x86_64 already installed and latest version
+Package expat-devel-2.1.0-10.el7_3.x86_64 already installed and latest version
+Package gdbm-devel-1.10-8.el7.x86_64 already installed and latest version
+Package readline-devel-6.2-10.el7.x86_64 already installed and latest version
+Package sqlite-devel-3.7.17-8.el7.x86_64 already installed and latest version
+Package gcc-4.8.5-36.el7_6.2.x86_64 already installed and latest version
+Package gcc-c++-4.8.5-36.el7_6.2.x86_64 already installed and latest version
+Package 1:openssl-devel-1.0.2k-16.el7_6.1.x86_64 already installed and latest version
+Nothing to do
+[root@67 local]#        yum install libffi-devel -y
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+
+* base: mirrors.aliyun.com
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+Package libffi-devel-3.0.13-18.el7.x86_64 already installed and latest version
+
+建立一个文件夹安装python3
+
+mkdir /usr/local/python3
+
+下载安装文件
+
+下载
+wget https://www.python.org/ftp/python/3.6.2/Python-3.6.2.tgz
+
+解压
+
+tar -xf Python-3.6.2.tgz
+
+进入目录
+
+cd Python-3.6.2
+
+安装python3 （要注意如果你的ssl也是指定目录安装的 --with要跟上路径）
+
+./configure --prefix=/usr/local/python3 --with-ssl
+
+编译,安装,这一步会花的时间长一点
+
+make && make install
+
+安装完成
+
+创建软连接之前先验证一下环境
+
+cd /usr/local/python3/bin/
+
+cd /usr/bin
+
+最后创建软连接
+
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+
+ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+
+建立软链接后
+
+接下来就是要验证的时候,太紧紧紧张了
+
+验证通过了~ 激动呀 开心呀,上次在centOS6.5搞这一套流程,一直有问题,整了周五下午到凌晨3点,周六下午7点到凌晨1点,整个人都不好了.
+
+居然重装一次系统就解决问题了.
+
+centOS7.6 自带的openSSL版本就可以支持python3了,无须再做配置,这真是省了好多心呀
+

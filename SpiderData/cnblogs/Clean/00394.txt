@@ -1,0 +1,29 @@
+用appium启动chrome报错，先把报错信息贴出来吧。
+
+IDE里报错：
+
+appium服务器里报错：
+
+之前一篇写过appium1.6.5的安装文档，后面有些人说按照文档种无法安装成功，报错信息如上。
+
+因为我之前一直都是用cnpm的方式安装的appium，且每次都能成功安装，所以一开始面对这个问题也是一头雾水。明明定义得字典，非要报错说不是一个json格式，真的有毛病。贴一下启动chrome的代码。
+
+　　
+
+后来在本机多次尝试时发现现在用cnpm安装时会报错，但安装完成后运行appium-doctor和启动appium的时候都不会报错，所以不看着整个安装过程是无法发现这个问题的。问题的本质就是用的cnpm安装方式是通过taobao代理去下载的网络镜像。安装命令为：
+
+npm install cnpm -g --registry=https://registry.npm.taobao.org
+cnpm install -g appium@1.6.5
+
+　　这种方式安装由于国内代理的不稳定会造成cnpm安装的是一个残缺版的appium，所以会报错。没找到原因时真的一头雾水啊。解决办法就是老老实实用FQvpn然后用npm官网去下载，或者去下载桌面版，才发现现在桌面版也更新很快了，而且用起也方便。给个下载链接：网络好的可以去下载，网络不好的就自己在网盘上找吧。https://github.com/appium/appium-desktop/releases/tag/v1.3.1
+
+虽然是个很简单的问题，但是记录一下为解决时尝试的一些无用功。
+
+1.更换手机，检查电脑硬件设备，重启电脑。
+
+2.查看appium日志，查看appium源码。
+
+3.用racaw抓本地包，用wireshark分析
+
+总结：还是得盯着安装过程，cnpm真是坑~~
+

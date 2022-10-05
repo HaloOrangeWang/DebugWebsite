@@ -1,0 +1,12 @@
+错误信息：ERROR: transport error 202: bind failed: Address already in use，第一眼看到这个错误之后就去修改了端口号，发现还是不行，后来去网上找了很多资料，都是说要改bin/catalina.sh，尝试着改了一下debug的端口号，依然报错；
+
+解决方法：找到catalina.sh，cat catalina.sh ，发现这样一句话
+
+找到setenv.sh文件，里面增加:
+
+export CATALINA_OPTS="-agentlib:jdwp=transport=dt_socket,address=1043,server=y,suspend=n";
+
+若存在修改其中的address为另一个端口号。
+
+这时可以正常启动了。
+

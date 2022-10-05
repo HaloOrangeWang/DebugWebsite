@@ -1,0 +1,28 @@
+
+问题：
+
+用 list() 函数新建列表时，报错 “TypeError: ‘list’ object is not callable”。
+
+
+原因：
+
+一开始我找不到原因，因为我的代码和书上的例子是一模一样的，为什么会报错呢？后来在StackOverflow的一个问答 里找到了原因，因为之前的代码把list用于命名。我之前在定义一个列表时用了list=[1,2,3]，后来觉得不妥，运行这行代码之后又删除了。但是 Jupyter Notebook 是交互式编辑器，除非重启kernel，一旦命名，这个变量就占用了内存。所以，后面调用 list() 函数运行代码list1=list(range(10))时，编译器就把其中的list解释为之前定义过的列表[1,2,3]，程序运行出错。
+
+
+解决方法：
+
+1.千万不要用 list，tuple 等等 Python 的数据类型名来命名相应的对象，同理，不要用 for, in 这些关键词命名。
+
+2.此时可以用 del list，释放变量 list 占用的内存，这样再使用 list() 函数时就会正确解释。同时需要注意，之前定义名字为 list 的列表也已经不存在了。而如果在 Jupyter Notebook 遇到和我类似的情况，也可以重启kernel（也是在释放内存），然后运行 list() 函数所在代码单元。
+
+附注：在上述 StackOverflow 的回答里，大神还提到了一种情况，比如，定义了一个列表：nums=[1,2,3]，正常情况下，我们要用nums[i]来索引元素。而如果用nums(i)，也会报同样的错误：“TypeError: ‘list’ object is not callable”。
+
+本文对您有帮助的话，请点赞支持一下吧，谢谢！
+
+关注我 宁萌Julie，互相学习，多多交流呀！
+
+
+参考：
+
+https://stackoverflow.com/questions/31087111/typeerror-list-object-is-not-callable-in-python
+

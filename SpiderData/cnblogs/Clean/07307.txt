@@ -1,0 +1,26 @@
+执行以下命令：
+
+找到models-master根目录下的setup.py文件
+
+python setup.py install
+
+执行了上面的命令还是不行，写上路径文件就可以了。注意：要看你pycharm用哪个版本，就去哪个版本下面建文件，不要放错了。比如你用python3.5，不要把文件放到python2.7下面
+
+解决方案
+在anaconda安装目录下找到自己创建的Python环境（博主的环境为Python2.7，位于： /home/czt/.conda/envs/python27）的site-packages文件夹
+在该文件夹下建立一个tensorflow_model.pth文件，文件内容写object detection API的路径，博主的路径是：
+/home/test/research
+/home/test/research/slim
+
+接下面又报错了，提示No module named 'tensorflow.compat'
+
+pip install --ignore-installed --upgrade --ignore-installed tensorflow
+
+原本是TensorFlow1.8版本升级到1.14.0版本就可以了
+
+又报错，提示No module named 'tf_slim'
+
+在model-master目录下找到slim目录，里面有个setup.py
+
+python setup.py install
+

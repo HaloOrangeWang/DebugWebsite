@@ -1,0 +1,164 @@
+Python的错误其实也是class，所有的错误类型都继承自BaseException，所以在使用except时需要注意的是，它不但捕获该类型的错误，还把其子类也“一网打尽”。比如：
+
+try:
+
+foo()
+
+except StandardError, e:
+
+print 'StandardError'
+
+except ValueError, e:
+
+print 'ValueError'
+
+第二个except永远也捕获不到ValueError，因为ValueError是StandardError的子类，如果有，也被第一个except给捕获了。
+
+Python所有的错误都是从BaseException类派生的，常见的错误类型和继承关系看这里：
+
+BaseException
+
++-- SystemExit
+
++-- KeyboardInterrupt
+
++-- GeneratorExit
+
++-- Exception
+
++-- StopIteration
+
++-- StandardError
+
+| +-- BufferError
+
+| +-- ArithmeticError
+
+| | +-- FloatingPointError
+
+| | +-- OverflowError
+
+| | +-- ZeroDivisionError
+
+| +-- AssertionError
+
+| +-- AttributeError
+
+| +-- EnvironmentError
+
+| | +-- IOError
+
+| | +-- OSError
+
+| | +-- WindowsError (Windows)
+
+| | +-- VMSError (VMS)
+
+| +-- EOFError
+
+| +-- ImportError
+
+| +-- LookupError
+
+| | +-- IndexError
+
+| | +-- KeyError
+
+| +-- MemoryError
+
+| +-- NameError
+
+| | +-- UnboundLocalError
+
+| +-- ReferenceError
+
+| +-- RuntimeError
+
+| | +-- NotImplementedError
+
+| +-- SyntaxError
+
+| | +-- IndentationError
+
+| | +-- TabError
+
+| +-- SystemError
+
+| +-- TypeError
+
+| +-- ValueError
+
+| +-- UnicodeError
+
+| +-- UnicodeDecodeError
+
+| +-- UnicodeEncodeError
+
+| +-- UnicodeTranslateError
+
++-- Warning
+
++-- DeprecationWarning
+
++-- PendingDeprecationWarning
+
++-- RuntimeWarning
+
++-- SyntaxWarning
+
++-- UserWarning
+
++-- FutureWarning
+
++-- ImportWarning
+
++-- UnicodeWarning
+
++-- BytesWarning
+
+程序能一次写完并正常运行的概率很小，基本不超过1%。总会有各种各样的bug需要修正。有的bug很简单，看看错误信息就知道，有的bug很复杂，我们需要知道出错时，哪些变量的值是正确的，哪些变量的值是错误的，因此，需要一整套调试程序的手段来修复bug。
+
+除了print、assert两种外还有一种是打印日志
+
+logging
+
+把print替换为logging是第3种方式，和assert比，logging不会抛出错误，而且可以输出到文件：
+
+# err.py
+
+import logging
+
+s = '0'
+
+n = int(s)
+
+logging.info('n = %d' % n)
+
+print 10 / n
+
+logging.info()就可以输出一段文本。运行，发现除了ZeroDivisionError，没有任何信息。怎么回事？
+
+别急，在import logging之后添加一行配置再试试：
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+看到输出了：
+
+$ python err.py
+
+INFO:root:n = 0
+
+Traceback (most recent call last):
+
+File "err.py", line 8, in
+
+print 10 / n
+
+ZeroDivisionError: integer division or modulo by zero
+
+这就是logging的好处，它允许你指定记录信息的级别，有debug，info，warning，error等几个级别，当我们指定level=INFO时，logging.debug就不起作用了。同理，指定level=WARNING后，debug和info就不起作用了。这样一来，你可以放心地输出不同级别的信息，也不用删除，最后统一控制输出哪个级别的信息。
+
+logging的另一个好处是通过简单的配置，一条语句可以同时输出到不同的地方，比如console和文件。
+

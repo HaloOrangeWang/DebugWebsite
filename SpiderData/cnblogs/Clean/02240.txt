@@ -1,0 +1,12 @@
+事先说明：我电脑里同时了安装了 python2和python3，启动对应版本时分别带上版本号，如何设置共存请参考：python2与python3共存
+
+打开命令窗口，启动weditor : python3 -m weditor，报如下错误：
+
+查阅了一下别人博客说明，在Python3中没有直接通过 import StringIO的方法（在python2中使用），正确的使用方法为 from io import StringIO,根据上面错误输出中的解决办法，到 C:\Program Files\Python37\Lib\site-packages\weditor 将 “__main__.py” 文件中第19行修改为 from io import StringIO (我是重新新增一行，把原语句注释掉）
+
+再次运行 Python3 -m weditor 时，还是报错，不过是报另外一个错，说明上面的问题已经解决，下面来看看第二个错是什么样的，提示没有 cv2模块
+
+那就再安装 cv2模块，不过这个模块的安装方法跟其它模块有点不一样，不能直接通过名字的形式去猜测安装方法，一般人都是直接 pip3 install cv2，结果会发现这个行不通，通过查阅其它人博客，该cv2 模块的正确安装方法是 pip3 install opencv-python
+
+再次启动 python3 -m weditor，网页版的 uiautomatorviewer 正常打开
+

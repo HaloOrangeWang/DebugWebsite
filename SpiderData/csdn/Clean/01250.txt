@@ -1,0 +1,45 @@
+写在前面：本贴适用于解决labview调用python时的1663/1662/1661报错，在网友铝合金蝴蝶的原创帖基础上补充了一些细节，以及必要的文件，步骤详细，可操作性强。
+
+
+一、1663报错解决办法
+
+labview官方对1663报错的解释：
+
+安装python位数（32/64）与labview位数（32/64）不匹配，
+
+labview不支持电脑安装的python版本
+
+解决步骤：
+
+1. 排查电脑labview和python的位数是否匹配：labview直接通过安装文件位置，一般32位安装在<Program Files>\National Instruments\Shared\LabVIEW Run-Time(eg.2018)\路径下，而64位安装在<Program Files(x86)>\National Instruments\Shared\LabVIEW Run-Time(eg.2018)\路径下；python可以通过win+r --> cmd -->输入python查看
+
+如果不匹配可以卸载掉当前版本python，换与labview位数对应的版本进行安装。
+
+2. 确认labview支持python版本：大家可以在labview帮助文件中查看，对应版本支持的python版本：比如我的电脑装的labview2018仅支持2.7和3.6的python，但是其他版本的python也可以与labview python一起使用，这一点在我的另一台电脑（anaconda：python3.7）上也得到了验证。这里还是建议大家安装3.6的版本
+
+说到这里，大部分的问题应该都能解决了，也是我找了两天网上能找到的几乎所有的解决方案了。但是，不同电脑状态不一样，我在弄得时候就发现另一台台式机一次就成功了，但笔记本上就怎么弄都报错。如果你也碰到同样的问题建议你继续看下去：
+
+
+终极武器：卸载重装（把labview、python、anaconda都卸载掉，然后重新安装：python3.6—32bit、labview32bit）
+
+ps:记得安装python时，将python添加到环境变量中
+
+终于不报错1663的错误了，但是出现了1661/1662的错误
+
+
+二、1661/1662报错解决办法
+
+该错误与niPythonInterface.dll的编译的位数32/64不兼容有关，使用32位的labview就要用32位的niPythonInterface.dll。（我非常不理解，为什么装的32位的labview为什么这个dll是64位的。）
+
+解决办法：
+
+1.下载32位的文件：百度网盘 提取码：8mzv
+
+2.替换下面路径中的文件：X:\Program Files (x86)\National Instruments\Shared\NIPythonInterface
+
+X:\Program Files\National Instruments\Shared\NIPythonInterface
+
+3.将下载的文件复制到labview的安装路径：X:\Program Files (x86)\National Instruments\LabVIEW 2018
+
+以上，应该能解决掉大部分的labview调用python报错，欢迎在评论区补充新的问题或者解决方法
+

@@ -1,0 +1,20 @@
+r = requests.post(request_url,data=requestJSONdata,headers=head)报错：
+
+Exception: ('Connection broken: IncompleteRead(3794 bytes read, 4398 more expect
+ed)', IncompleteRead(3794 bytes read, 4398 more expected))
+
+解决办法：
+
+import httplib
+httplib.HTTPConnection._http_vsn = 10
+httplib.HTTPConnection._http_vsn_str = 'HTTP/1.0'
+
+　　
+
+分析：
+
+查阅资料得知Transfer-Encoding:chunked是HTTP 1.1的新特性，chunked编码的基本方法是将大块数据分解成多块小数据，每块都可以自指定长度。
+这里出现问题是因为服务器支持的是HTTP 1.0，而requests默认使用的是HTTP 1.1，兼容存在问题，所以一种解决办法是将HTTP协议版本设置为1.0，解决办法如上所示。
+
+转自：https://www.cooyf.com/default/519.html
+

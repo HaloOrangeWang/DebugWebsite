@@ -1,0 +1,62 @@
+
+a.py文件与a1文件内容都是如此
+
+def aa():
+    a=1
+    b=2
+    return a+b
+def bb():
+    a=1
+    b=2
+    return a*b
+
+
+有一个__init__.py文件添加到所有文件夹。 此文件确保该文件夹作为python软件包包含在内
+
+关于 init.py
+ 在 python 模块的每一个包中，都有一个 init.py 文件（这个文件定义了包的属性和方法），然后是一些模块文件和子目录，假如子目录中也有__init__.py ，那么它就是这个包的子包了。当你将一个包作为模块导入（比如从 xml 导入 dom ）的时候，实际上导入了它的__init__.py 文件。
+
+一个包是一个带有特殊文件 __init__.py 的目录，__init__.py 文件定义了包的属性和方法。其实它可以什么也不定义，可以只是一个空文件，但是必须存在。如果 __init__.py 不存在，这个目录就仅仅是一个目录，而不是一个包，它就不能被导入或者包含其它的模块和嵌套包
+
+
+1、同一文件夹下，同级目录下
+
+testa文件引用a文件
+ import a
+ re=a.aa()
+ print(re)
+或者
+ from a import aa
+
+re=aa()
+
+print(re)
+
+
+2.同一文件夹下，不同子目录下
+
+1.父目录下文件调用子目录下文件
+
+testa1文件引用a1文件
+
+2.子目录文件调用父目录文件
+
+testc文件引用a文件
+
+
+2.跨文件夹下
+
+testb文件引用a文件
+
+遇到的问题：
+
+1.导包提示 unresolved reference
+
+解决方案：
+
+在项目上 单击右键 -> Mark Directory as -> Sources Root
+
+2.导入包时下划红线及报错“No module named”问题
+
+在对应文件包上 单击右键 -> Mark Directory as -> Sources Root
+

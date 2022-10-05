@@ -1,0 +1,48 @@
+
+前情概要
+
+今天想要写一个多进程的python脚本上传代码至服务器，于是在本地用虚拟机测试了一下，可总是报错，具体报错信息如下
+
+Traceback (most recent call last):
+  File "D:\python3.6.7\lib\multiprocessing\process.py", line 258, in _bootstrap
+    self.run()
+  File "D:\python3.6.7\lib\multiprocessing\process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\Documents\education-server\fabfile.py", line 88, in upload
+    sftp.put(local_path, target_path, confirm=True)
+  File "D:\python3.6.7\lib\site-packages\paramiko\sftp_client.py", line 759, in put
+    return self.putfo(fl, remotepath, file_size, callback, confirm)
+  File "D:\python3.6.7\lib\site-packages\paramiko\sftp_client.py", line 717, in putfo
+    reader=fl, writer=fr, file_size=file_size, callback=callback
+  File "D:\python3.6.7\lib\site-packages\paramiko\util.py", line 301, in __exit__
+    self.close()
+  File "D:\python3.6.7\lib\site-packages\paramiko\sftp_file.py", line 82, in close
+    self._close(async_=False)
+  File "D:\python3.6.7\lib\site-packages\paramiko\sftp_file.py", line 104, in _close
+    self.sftp._request(CMD_CLOSE, self.handle)
+  File "D:\python3.6.7\lib\site-packages\paramiko\sftp_client.py", line 813, in _request
+    return self._read_response(num)
+  File "D:\python3.6.7\lib\site-packages\paramiko\sftp_client.py", line 843, in _read_response
+    t, data = self._read_packet()
+  File "D:\python3.6.7\lib\site-packages\paramiko\sftp.py", line 205, in _read_packet
+    raise SFTPError("Garbage packet received")
+paramiko.sftp.SFTPError: Garbage packet received
+
+网上搜索了半天也没有找到答案，直到看到这个才想起来自己的虚拟机linux好像在~/.bashrc中设置了一个时间同步的后台进程，每次进入linux终端都会同步一次时间 于是注释掉了这个配置，再次运行就OK了。
+
+
+can't pickle _thread.lock objects
+
+还遇到一个问题就是多进程的参数不能是自定义对象，否则就会有如下错误
+
+... ... ...
+TypeError: can't pickle _thread.lock objects
+
+这个问题的原因是因为我在多进程运行函数中传递了自定义对象参数导致的，只需把自定义对象写入函数中即可 修改前
+
+p1 = Process(target=ssh_obj.upload, args=("192.168.129.10", "admin", "aa.jar", "/root/aa.jar"))
+
+修改后
+
+p1 = Process(target=upload, args=("192.168.129.10", "admin", "aa.jar", "/root/aa.jar"))    # 重写一个函数，将对象放入函数中
+

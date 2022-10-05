@@ -1,0 +1,15 @@
+一、问题
+
+assert self.__initialized, "Thread.__init__() not called"
+AssertionError: Thread.__init__() not called
+
+二、解决方案
+
+在 __init__() 方法中显式地调用父类的__init__()方法（）
+
+# 第一种初始化父类方法
+super(self.__class__, self).__init__()
+
+# 第二种初始化线程类的方法
+threading.Thread.__init__(self)
+

@@ -1,0 +1,58 @@
+记一次django项目的线上部署错误，django+nginx
+
+
+一、问题描述
+
+在将django项目部署到阿里云（nginx作为web服务器）上之后发现出现后台管理界面admin不显示样式。
+
+
+二、问题分析
+
+
+1、静态资源指向失效
+
+打开浏览器查看css资源后发现，虽然文件指向项目文件中的静态资源，但是static目录下却没有相应的css和js资源 尝试在项目路径下收集样式
+
+python manage.py collectstatic
+
+显示报错
+
+django.core.exceptions.ImproperlyConfigured: You're using the staticfiles app without having set the STATIC_ROOT setting to a filesystem path.
+
+由报错信息大概得之跟路径配置静态文件路径有关
+
+
+2、本地环境
+
+在本地时，却没有出现问题
+
+
+3、查找差别
+
+在本地部署到线上后主要是将settings.py配置文件中的debug模式做了修改，
+
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+改为
+
+DEBUG = False
+
+ALLOWED_HOSTS = ["*"]
+
+
+三、问题解决
+
+在debug为True的模式下，django的静态文件都有内部自己管理，文件都在django内部，而部署线上之后无法正常显示后台admin的静态文件，就需要指定静态文件的目录 这里直接在settings.py中设置指定的静态文件目录：
+
+STATIC_ROOT  = os.path.join(BASE_DIR, 'static')#指定样式收集目录
+#或
+STATIC_ROOT = '/www/mysite/mysite/static'  #指定样式收集目录
+
+然后收集CSS样式，在终端输入：
+
+python manage.py collectstatic 运行这个命令之后，就会自动把后台CSS样式和其他相关文件资源收集到/static/目录下。
+
+刷新页面就能恢复样式！
+

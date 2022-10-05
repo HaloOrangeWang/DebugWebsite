@@ -1,0 +1,24 @@
+今天在给一张表添加外键时出现如下报错：
+
+Cannot add or update a child row: a foreign key constraint fails (`test`.`#sql-206b_231`, CONSTRAINT `FK_responsemessage` FOREIGN KEY (`userid`) REFERENCES `requestmessage` (`userid`))
+
+后来找到了原因，记录一下。
+
+执行如下语句：
+
+SELECT 
+  `userid` 
+FROM
+  `responsemessage` 
+WHERE `userid` NOT IN 
+  (SELECT 
+    `userid` 
+  FROM
+    `requestmessage`)
+
+有结果就表示不正常。
+
+正常情况下，关联表（responsemessage）的字段“userid”应该是被关联表（requestmessage）的字段“userid”的子集，否则就会出现报错。
+
+解决方法就是删掉有问题的行，或者修改。
+

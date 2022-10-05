@@ -1,0 +1,28 @@
+今天在维护服务器的时候发现有台服务器的环境报错Fatal error: Call to undefined function socket_create()，根据报错信息判断应该是socket出现了问题。根据之前的工程师说这台服务器并不是第一次全新安装，所以比较疑惑。开始排查：
+
+1、首先进行输出phpinfo
+
+新建一个php文件里面输出phpinfo
+
+2、通过phpinfo查找disable function
+
+结果发现disable function中value为空，也就是没有禁用socket
+
+3、寻找php.ini
+
+windows版本的php.ini一般是在两个位置，windows目录下system下，或者php目录的config下，如果实在找不到，在相关的文件夹下搜索php.ini
+
+在这一行找到
+
+将前面的;去掉，这是启用socket
+
+4、将php所在的web server重启
+
+windows下一般是apache或者iis等
+
+重启后测试通过。
+
+ps：不能相信记忆，程序员一定要以事实为依据，做好步步排查。
+
+以上。
+

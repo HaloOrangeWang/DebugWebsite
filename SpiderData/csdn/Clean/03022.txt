@@ -1,0 +1,28 @@
+
+问题一描述，500 Internal Server Error：
+
+先说明我的python环境，当前是使用python3.6版本，创建了一个虚拟环境叫dkf，在虚拟环境里面想使用Jupyter Notebook，安装方式如下【pip3 install jupyter -i https://pypi.douban.com/simple/ 】，jupyter 的版本是1.0.0的。
+         然后启动 jupyter，执行命令【jupyter notebook】并没有任何报错，下面它自动打开了我的浏览器，进入到了【http://localhost:8888/tree】 的url 中，我想创建一个python3的文件，但是当我点击 new -> python3 以后，弹出的页面报错 500 Internal Server Error，后台也是有错误信息。
+
+
+解决办法
+
+因为版本冲突的问题，我在虚拟环境中操作的，
+ 首先卸载 【pip3 uninstall nbconvert】，
+ 然后安装：【pip3 install nbconvert==5.4.1 -i https://pypi.douban.com/simple/】
+ 其中 -i https://pypi.douban.com/simple/ 是选择代理加速下载速度，如果全局配置过，可以不加。
+
+
+问题二 描述：
+
+创建的python3文件，页面进去了，没有500错，但是一直是无法加载内核，后台报错：【ImportError: cannot import name ‘AsyncGenerator’】
+
+
+解决办法
+
+还是版本问题，还是在虚拟环境中操作的，
+卸载 【pip3 uninstall prompt-toolkit】，
+然后 安装 【 pip install prompt-toolkit==2.0.10 -i https://pypi.douban.com/simple/】
+
+​
+

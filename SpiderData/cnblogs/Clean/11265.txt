@@ -1,0 +1,22 @@
+在使用requests进行网页获取时，由于未知原因，引起报错：
+
+UnicodeEncodeError: 'latin-1' codec can't encode characters in position 0-1: ordinal not in range(256)
+
+我一度以为是我requests库的使用问题，于是我前前后后查了很多资料（某度），也问了学院老师，均一无所获
+
+后来在网上看到csdn大佬@小仙女的小跟班_fairy的文章：
+
+https://blog.csdn.net/qq_32670879/article/details/85334560       requests进行网络内容获取，报错UnicodeEncodeError: 'latin-1'（解决方法，亲测有效）
+
+我以为是我的请求头不完整，于是花了好几分钟时间仔仔细细检查了一遍headers发现并没有缺失，我也再没找到报错的原因，直到看到csdn大佬@西门大盗的文章：
+
+https://blog.csdn.net/xiongzaiabc/article/details/107128226?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-3.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-3.no_search_link       解决python中requests请求时报错：UnicodeEncodeError: ‘latin-1‘ codec can‘t encode character
+
+看了大佬的文章，才知道原来是构建的headers出了问题。我在headers中加入了keyword，而keyword的值是中文，所以引起报错
+
+找到问题了解决起来就很简单了，将keyword进行转码即可
+
+keyword = keyword.encode("utf_8").decode("latin1")    # 汉字字符串转码
+
+最后，再次感谢两位大佬@小仙女的小跟班_fairy和@西门大盗所写相关文章对我解决该问题的帮助，写这篇短短的文章只是为了备忘用，如果能帮到屏幕前的各位那再好不过，不过还是推荐去看两位大佬的原文章，比我这个小白写的要好很多
+

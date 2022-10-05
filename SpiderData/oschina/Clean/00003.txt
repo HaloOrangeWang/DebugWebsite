@@ -1,0 +1,24 @@
+<h2 id="toc_0">报错：CryptographyDeprecationWarning</h2>
+
+<h2 id="toc_1">代码引用：</h2>
+
+<pre class="line-numbers"><code class="language-python">import paramiko client = paramiko.SSHClient() client.connect(serverIp, port=serverPort, username=serverUser) </code></pre>
+
+<h2 id="toc_2">报警告如下：</h2>
+
+<pre class="line-numbers"><code class="language-text">paramiko\ecdsakey.py:164: CryptographyDeprecationWarning: Support for unsafe construction of public numbers from encoded data will be removed in a future version. Please use EllipticCurvePublicKey.from_encoded_point self.ecdsa_curve.curve_class(), pointinfo paramiko\kex_ecdh_nist.py:39: CryptographyDeprecationWarning: encode_point has been deprecated on EllipticCurvePublicNumbers and will be removed in a future version. Please use EllipticCurvePublicKey.public_bytes to obtain both compressed and uncompressed point encoding. m.add_string(self.Q_C.public_numbers().encode_point()) paramiko\kex_ecdh_nist.py:96: CryptographyDeprecationWarning: Support for unsafe construction of public numbers from encoded data will be removed in a future version. Please use EllipticCurvePublicKey.from_encoded_point self.curve, Q_S_bytes paramiko\kex_ecdh_nist.py:111: CryptographyDeprecationWarning: encode_point has been deprecated on EllipticCurvePublicNumbers and will be removed in a future version. Please use EllipticCurvePublicKey.public_bytes to obtain both compressed and uncompressed point encoding. hm.add_string(self.Q_C.public_numbers().encode_point()) </code></pre>
+
+<h2 id="toc_3">原因</h2>
+
+<pre class="line-numbers"><code class="language-text">paramiko 2.4.2 依赖 cryptography，而最新的cryptography==2.5里有一些弃用的API。 </code></pre>
+
+<h2 id="toc_4">解决</h2>
+
+<h3 id="toc_5">删掉cryptography 2.5，安装2.4.2，就不会报错了。</h3>
+
+<pre class="line-numbers"><code class="language-bash">pip uninstall cryptography==2.5 pip install cryptography==2.4.2 </code></pre>
+
+<h2 id="toc_6">补充</h2>
+
+<h3 id="toc_7">paramiko的issue #1369提到了这个问题，并已有PR #1379了，尚未合并。</h3>
+

@@ -1,0 +1,58 @@
+最近想搞深度学习，就开始装tensorflow,其中也是遇到了一些问题，希望给遇到同类问题的童鞋一些提示。。。。
+
+因为之前一直用的python3.7，虽然网上很多建议装python3.5版本tensorflow的，还是执着的选择了python3.7，就遇到一些问题
+
+一.先装了支持python3.7的Anaconda3
+
+清华镜像源下载 https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/
+
+cmd 输入conda，显示如下成功
+
+如果找不到命令
+
+1.检查环境变量有没有配置好    cmd 输入path检查
+
+2.配置好，仍找不到，基本重启就行
+
+PATH点或者不点都可，Anaconda3会再搭建一个python，点了以后在cmd/powershell可能用自己的原装python需要切换到对应目录，再切到scripts目录下用./pip3进行操作
+
+二.搭建好Anaconda以后,安装tensorflow
+
+在Anaconda Prompt中输入：conda create -n tensorflow python=3.7
+
+activate tensorflow
+
+接着就到关键地方了，tensorflow有300多M，直接按照官网pip install tensorflow不仅慢，而且很快失败了。。。那大片的红色
+
+接着我就去找镜像源，按照一些博客用了清华镜像源pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow
+
+虽然显示了安装2.1版本，但是很快也报错了，来来回回装了两三次，还是报错，去看了清华源，好像更新到1.3版本？可能是错误的原因
+
+在降个等级和继续挣扎还是选择了继续挣扎，实在是不服气。。。
+
+于是经过努力后，找了阿里源，最后用豆瓣源成功了。
+
+Anaconda Prompt中输入
+
+activate tensorflow
+
+pip3 install -i https://pypi.doubanio.com/simple/ tensorflow或者 pip install tensorflow -i https://pypi.douban.com/simple
+
+如果失败了一次不要紧，可以再装一次，我也是中间失败了一次然后成功的。
+
+三.测试
+
+接着上面输入，python
+
+然后import tensorflow as tf
+
+发现报缺少cudart64_101，ImportError: DLL load failed:cudart64_101dll类似的警告，也去百度了一些方法，最后发现是缺了cuda10.2.这时候没法用gpu,但是cpu是可用的。tensorflow2.1自动安装的是gpu,不能用会自动退到cpu.比如测试tf.__version__（两个下划线）,会告诉版本。
+
+如果报这个错误建议去看下"C:\Program Files\NVIDIA GPU Computing Toolkit"有没有这个文件夹，没有的话可能是没装cuda,有的话建议参考下其他博客。
+
+print(tf.test.is_gpu_available())或者tf.config.list_physical_devices('GPU')可以测试gpu是否可用.如果可用会返回True/[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+
+四.安装cuda10.2和cudnn。
+
+也是第一次安装小白，有不对地方谢谢指正。
+

@@ -1,0 +1,84 @@
+
+文章目录
+
+一、TypeError:'NoneType' object is not iterable（类型错误：'NoneType'对象不是可迭代的）二、TypeError: cannot unpack non-iterable NoneType object（类型错误:无法解包非迭代的NoneType对象）
+
+一、TypeError:'NoneType' object is not iterable（类型错误：'NoneType'对象不是可迭代的）二、TypeError: cannot unpack non-iterable NoneType object（类型错误:无法解包非迭代的NoneType对象）
+
+一、TypeError:'NoneType' object is not iterable（类型错误：'NoneType'对象不是可迭代的）
+
+二、TypeError: cannot unpack non-iterable NoneType object（类型错误:无法解包非迭代的NoneType对象）
+
+
+一、TypeError:‘NoneType’ object is not iterable（类型错误：'NoneType’对象不是可迭代的）
+
+原因：遍历的对象为 None 。
+
+例子：
+
+items = None
+for item in items:
+    print(item)
+
+报错：
+
+Traceback (most recent call last):
+
+File “d:\Projects\Python\PythonCrawler\weibo_ajax\test.py”, line 2, in
+
+​ for item in items:
+
+TypeError: ‘NoneType’ object is not iterable
+
+解决方法（先判断迭代对象是否为空）：
+
+items = None
+if items:
+    for item in items:
+        print(item)
+
+
+二、TypeError: cannot unpack non-iterable NoneType object（类型错误:无法解包非迭代的NoneType对象）
+
+原因：将单个 None 赋给了多个值。
+
+例子：
+
+value = 0
+
+def test():
+    if value == 1:
+        a = b = 1
+        return a, b
+
+a, b = test()
+print(a, b)
+
+报错：
+
+Traceback (most recent call last):
+
+File “d:\Projects\Python\PythonCrawler\weibo_ajax\test.py”, line 10, in
+
+​ a, b = test()
+
+TypeError: cannot unpack non-iterable NoneType object
+
+首先，要知道 python 中每个函数在没有确定的 return 语句时，都是默认返回 None。因此，在上述例子中函数 test() 不满足 if 条件判断，所以最后返回的是默认的 None ，然后又把单个 None 赋值给 a,b ，所以就报错了。
+
+解决方法（加上else判断）：
+
+value = 0
+
+def test():
+    if value == 1:
+        a = b = 1
+        return a, b
+    else:
+        return 1, 2
+
+a, b = test()
+print(a, b)
+
+注意：else 的 return 可以返回任意类型，但必须返回两个，否则还会报错。
+

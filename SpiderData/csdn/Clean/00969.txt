@@ -1,0 +1,17 @@
+报错：
+
+Traceback (most recent call last):
+  File "C:\Users\Tian\Desktop\test2.py", line 13, in <module>
+    conn.request("POST", "/login", payload, headers)
+  File "C:\Users\Tian\AppData\Local\Programs\Python\Python35\lib\http\client.py", line 1083, in request
+    self._send_request(method, url, body, headers)
+  File "C:\Users\Tian\AppData\Local\Programs\Python\Python35\lib\http\client.py", line 1127, in _send_request
+    body = body.encode('iso-8859-1')
+UnicodeEncodeError: 'latin-1' codec can't encode characters in position 499-500: ordinal not in range(256)
+
+解决方案：
+
+在payload下方加上一句
+
+payload = payload.encode('utf-8')
+

@@ -1,0 +1,66 @@
+之前使用django+mysql建立的一个站点，发现向数据库中写入中文字符时总会报错，尝试了修改settings文件和更改数据表的字符集后仍不起作用。最后发现，在更改mysql的字符集后，需要重建数据库，才能起作用。
+
+这里完整记录一下解决方案
+
+首先更改mysql的字符集
+
+ubuntu下找到/etc/mysql/my.cnf   在最后添加
+
+[mysqld]
+
+character-set-server=utf8
+
+[client]
+
+default-character-set=utf8
+
+[mysql]
+
+default-character-set=utf8
+
+用mysql -h localhost -u root -p 命令进入mysql 命令行
+
+然后使用 show variables like 'character_set%'; 查看字符集设置，看到 client server database 为utf8即为成功
+
+但是我的django依然报错，只能重建数据库，如果数据库文件不多，重建数据库的工作量其实非常小
+
+首先建立新的数据库，此时默认编码格式就是utf8,已经支持中文、
+
+然后修改settings.py中的database项的name为新的数据库名
+
+最后执行数据库迁移即可,在包含manage.py文件夹目录下
+
+python manage.py makemigrations
+
+python manage.py migrate
+
+即可创建用户表和modle中自定的表格，表结构与原来相同，将数据复制到新表即可
+
+补充知识：解决django字符集 输入汉字之后mysql数据库报错的问题【慎用】
+
+解决思路：
+
+启动mysql数据库 net start mysql
+
+之后： mysql -u root -p
+
+查看数据库字符集 show variables like ‘character%';
+
+发现 character-set-server 和 character_set_database 的值为latin1
+
+解决方案：
+
+编辑查看MySQL文件夹下的my.ini 配置文件
+
+在[mysqld]下添加 character-set-server=utf8
+
+systemctl restart mysql 重启 MySQL Server，再此查看字符集变量，发现已经是utf8
+
+drop database 【已经添加的数据库】 并 create database 【新数据库】
+
+问题解决！
+
+此方法简单粗暴，慎用！数据库里面的文件还要重写，比较麻烦，不过可以在创建数据库之后，添加一条数据，利用自定义的django图形化界面，再添加数据也是可以的。
+
+以上这篇解决django 向mysql中写入中文字符出错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

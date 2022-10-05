@@ -1,0 +1,121 @@
+
+1.环境
+
+mysql 8.0
+
+Django 3.2
+
+pycharm 2021.11
+
+
+2. (No changes detected)及解决
+
+
+2.1 问题情景
+
+# 迁移数据库
+python manage.py makemigrations 
+python manage.py migrate
+
+报错
+
+RuntimeWarning: Got an error checking a consistent migration history performed
+for database connection 'default': (2059, <NULL>)
+warnings.warn
+ (No changes detected)
+
+
+2.2 原因分析
+
+MySQL 8.x加密方式:caching_sha2_password
+MySQL 5.x加密方式为:mysql_native_password
+所以要改成mysql_native_password
+
+
+2.3 修改方式
+
+由cmd进入命令行
+
+登录到mysql: mysql -u username -p password
+
+参数说明:[-u]后面接的是登录数据库的账号，[-p]后面是密码
+
+如果无法登录，可能的原因是环境变量中PATH变量没有加入MySQL的目录，可以添加环境变量或在开始菜单中找到MySQL 8.0 Command Line Client进行登录（这种方式打开后直接输入密码即可）。
+
+查看你的账号加密方式
+
+use mysql                         
+select user,plugin from user
+
+mysql> use mysql
+Database changed
+mysql> select user,plugin from user;
++------------------+-----------------------+
+| user             | plugin                |
++------------------+-----------------------+
+| cyk              | caching_sha2_password |
+| mysql.infoschema | caching_sha2_password |
+| mysql.session    | caching_sha2_password |
+| mysql.sys        | caching_sha2_password |
+| root             | caching_sha2_password |
++------------------+-----------------------+
+
+输入下面的指令进行修改
+
+mysql> alter user '用户名'@'localhost' identified with mysql_native_password by '你的密码';
+
+再次查看
+
+mysql> select user,plugin from user;
++------------------+-----------------------+
+| user             | plugin                |
++------------------+-----------------------+
+| cyk              | caching_sha2_password |
+| mysql.infoschema | caching_sha2_password |
+| mysql.session    | caching_sha2_password |
+| mysql.sys        | caching_sha2_password |
+| root             | mysql_native_password |
++------------------+-----------------------+
+
+
+3. (2026, ‘SSL connection error:unknown error number‘) 及解决
+
+
+3.1 问题情景
+
+# 迁移数据库
+python manage.py makemigrations 
+python manage.py migrate
+
+报错
+Windows下django.db.utils.OperationalError: (2026, ‘SSL connection error: unknown error number‘)
+
+
+3.2 原因分析
+
+较高版本的mysql的ssl默认是开启的
+
+
+3.3 解决方案
+
+关闭ssl
+
+登录mysql之后，输入该命令：
+
+mysql> SHOW VARIABLES LIKE '%ssl%';
+
+修改配置文件my.ini（可能要通过属性修改权限，否则无法修改成功）
+
+# 路径：C:\ProgramData\MySQL\MySQL Server 8.0
+[mysqld]
+skip_ssl  # 忽略ssl
+
+重启mysql服务重新执行命令
+
+mysql> SHOW VARIABLES LIKE '%ssl%';
+
+
+总结
+
+到此这篇关于Django执行python manage.py makemigrations报错解决的文章就介绍到这了,更多相关执行python manage.py makemigrations报错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

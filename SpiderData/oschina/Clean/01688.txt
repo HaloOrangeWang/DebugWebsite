@@ -1,0 +1,53 @@
+遇见问题：python使用tomorrow实现多线程，tomorrow模块的源代码报语法错误？
+
+这是报错信息：
+Traceback (most recent call last):
+  File "C:/programmer/boyuncar900_v1/main.py", line 5, in <module>
+    from tomorrow import threads
+  File "C:\programmer\python\lib\site-packages\tomorrow_init_.py", line 1, in <module>
+    from .tomorrow import threads
+  File "C:\programmer\python\lib\site-packages\tomorrow\tomorrow.py", line 20
+    def async(n, base_type, timeout=None):
+            ^
+SyntaxError: invalid syntax
+
+解决办法：async是python关键字，源代码换个函数名，比如async_tm。
+
+from tomorrow import threads
+
+def add_case(case_path=casepath, rule="test*.py"):
+
+pass
+
+@threads(5)
+def run_case(all_case, report_path=reportpath, nth=0):
+
+'''执行所有的用例, 并把结果写入测试报告'''
+
+pass
+
+解决办法：async是python关键字，源代码换个函数名，比如async_tm。
+
+def async_mc(n, base_type, timeout=None):
+    def decorator(f):
+        if isinstance(n, int):
+            pool = base_type(n)
+        elif isinstance(n, base_type):
+            pool = n
+        else:
+            raise TypeError(
+                "Invalid type: %s"
+                % type(base_type)
+            )
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            return Tomorrow(
+                pool.submit(f, *args, **kwargs),
+                timeout=timeout
+            )
+        return wrapped
+    return decorator
+
+def threads(n, timeout=None):
+    return async_mc(n, ThreadPoolExecutor, timeout)
+

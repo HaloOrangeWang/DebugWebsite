@@ -1,0 +1,42 @@
+本文实例讲述了Python提示[Errno 32]Broken pipe导致线程crash错误解决方法。分享给大家供大家参考。具体方法如下：
+
+1. 错误现象
+
+ThreadingHTTPServer 实现的 http 服务，如果客户端在服务器返回前，主动断开连接，则服务器端会报 [Errno 32] Broken pipe 错，并导致处理线程 crash.
+
+下面先看个例子,python 版本: 2.7
+
+示例代码
+
+复制代码 代码如下:#!/usr/bin/env python
+
+#!coding=utf-8
+
+2. 原因分析
+
+“[Errno 32] Broken pipe “ 产生的原因还是比较明确的，由于 client 在服务器返回前主动断开连接，所以服务器在返回时写 socket 收到SIGPIPE报错。虽然在我们的程序中也对异常进行了处理，将handler 的 wfile._sock 对象close 掉 ，但python 的库里BaseHTTPServer.py中BaseHTTPRequestHandler 类的成员函数handle_one_request还是会直接调用 wfile.flush ，而没有判断 wfile 是否已经 close。
+
+复制代码 代码如下:def handle_one_request(self):
+
+"""Handle a single HTTP request.
+
+只要在RequestHandler重载其基类BaseHTTPRequestHandler的成员函数handle_one_reques（），在调用 wfile.flush() 前加上 wfile 是否已经 close 即可。
+
+复制代码 代码如下:#!/usr/bin/env python
+
+#!coding=utf-8
+
+import os
+
+import time
+
+import socket
+
+import threading
+
+from BaseHTTPServer import HTTPServer ,BaseHTTPRequestHandler
+
+from SocketServer import ThreadingMixIn
+
+class RequestHandler(BaseHTTPRequestHandler):
+

@@ -1,0 +1,172 @@
+刚进Python新手村，岔路多又滑，犯错在所难免。我们来看看3个常见的错误和解决方法。
+
+问题：默认可变对象
+
+喂，等等 － Python中的可变对象是什么？可变对象是可以更改的对象。列表，集合和字典都是可变对象。
+
+为了方便说明，我定义一个非常简单且无意义的函数。
+
+def add(x, y=[]):
+
+y.append(x)
+
+return y
+
+在这个add 函数中，我们将y变量默认设置为列表(可变对象)。打印一下看看
+
+def add(x, y=[]):
+
+y.append(x)
+
+return y
+
+print(add('halil'))
+
+print(add('yıldırım'))
+
+输出为：
+
+['halil']
+
+['halil', 'yıldırım']
+
+WTF？！发生了什么？它覆盖了相同的列表。首次调用add('halil')后，默认参数变为y=['halil']并覆盖了同一列表。让我们来看看：
+
+def add(x, y=[]):
+
+y.append(x)
+
+return y
+
+add('halil')
+
+print(add.__defaults__)
+
+add('yıldırım')
+
+print(add.__defaults__)
+
+输出为：
+
+(['halil'],)
+
+(['halil', 'yıldırım'],)
+
+可见，默认列表被覆盖了。
+
+解决方案：默认可变对象
+
+与其传入可变对象作为默认参数，不如改它为None. 如下：
+
+def add(x, y=None):
+
+if y is None:
+
+y = list()
+
+y.append(x)
+
+else:
+
+y.append(x)
+
+return y
+
+print(add('halil'))
+
+print(add('yıldırım'))
+
+输出为：
+
+['halil']
+
+['yıldırım'
+
+问题：复制
+
+让我们先用Python创建一个字典。
+
+a = {'a': 5, 'b': 4, 'c': 8}
+
+接着设置b为a：
+
+a = {'a': 5, 'b': 4, 'c': 8}
+
+b = a
+
+然后删除键为a的第一个元素。
+
+del b['a']
+
+最后看看结果。
+
+a = {'a': 5, 'b': 4, 'c': 8}
+
+b = a
+
+del b['a']
+
+print(b)
+
+print(a)
+
+输出为：
+
+{'b': 4, 'c': 8}
+
+{'b': 4, 'c': 8}
+
+这里又发生了什么？我只是想删除b的第一个元素而已，而不是a......
+
+解决方案：复制
+
+当你赋值b = a时，你事实上是指b和a指向同一对象。如果两个都指向同一个对象，则使用b或a进行操作无区别。两者都会影响这个{'a': 5, 'b': 4, 'c': 8}对象。
+
+一个解法：
+
+import copy
+
+a = {'a': 5, 'b': 4, 'c': 8}
+
+b = copy.copy(a)
+
+del b['a']
+
+print(b)
+
+print(a)
+
+输出为：
+
+{'b': 4, 'c': 8}
+
+{'a': 5, 'b': 4, 'c': 8}
+
+问题和解决方案：命名文件
+
+绝对不要把你的python文件名命名与要调用的库同名。
+
+例如，命名文件为random.py，程序会对你要执行什么操作感到相当困惑。
+
+import random
+
+print(random.random())
+
+print(random.random())
+
+输出为：
+
+File "C:\Users\HalilibrahimYıldırım\Desktop\medium\Python\random.py", line 3, in
+
+print(random.random())
+
+TypeError: 'module' object is not callable
+
+当你明白了这些错误背后的原因，生活自然就变得更美好啦 ;-)
+
+Reference:
+
+3 Common Mistakes You’d Want to Avoid in Python
+
+by Halil Yıldırım
+

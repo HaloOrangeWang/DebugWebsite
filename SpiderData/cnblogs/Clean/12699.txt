@@ -1,0 +1,81 @@
+老师讲，现在的Windows、iOS 将driver集成到了feature，在18版本以上的Edge（自带的浏览器），直接进入开发者模式，就可以直接selenium 跑 浏览器了，不用加任何的driver。
+
+代码：
+
+from selenium import webdriver
+from time import sleep
+if  __name__ == "__main__":
+
+driver = webdriver.Edge()
+driver.get("http://www.baidu.com")
+sleep(2)
+driver.get("http://www.douban.com")
+sleep(2)
+driver.back()
+print(driver.title)
+sleep(2)
+driver.forward()
+print(driver.current_url)
+sleep(2)
+driver.quit()
+
+可以启动Edge，但是不能get 百度。
+
+报错：
+
+Traceback (most recent call last):
+
+File "D:/Good_Start_2020/Base.py", line 71, in <module>
+
+driver = webdriver.Edge()
+
+File "D:\Python37\lib\site-packages\selenium\webdriver\edge\webdriver.py", line 66, in __init__
+
+desired_capabilities=capabilities)
+
+File "D:\Python37\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 157, in __init__
+
+self.start_session(capabilities, browser_profile)
+
+File "D:\Python37\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 252, in start_session
+
+response = self.execute(Command.NEW_SESSION, parameters)
+
+File "D:\Python37\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 321, in execute
+
+self.error_handler.check_response(response)
+
+File "D:\Python37\lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 208, in check_response
+
+raise exception_class(value)
+
+selenium.common.exceptions.WebDriverException: Message: Unknown error
+
+百度，提示应该将浏览器添加环境变量，添加后，报错。
+
+百度，提示应该将path 加在 driver = webdriver.Edge(PATH:PATH)，添加后，报错。
+
+百度，重新下载Edge 的driver，安装在Pythone目录下，报错。
+
+最后在 https://blog.csdn.net/weixin_45044205/article/details/106257441 找到解决办法，更改驱动名称。运行代码，成功。
+
+=======================================================================
+
+目前在官网下载的驱动名称为msedgedriver.exe，将其名称改为MicrosoftWebDriver.exe即可正常启动。
+
+我自己的浏览器版本为 81.0.416.77
+
+前置条件：
+
+1：msedgedriver.exe已经根据自己电脑的Edge版本下载了对应的驱动
+
+2：驱动已经放在了python的Scripts的目录下
+
+3：环境变量里面已经设置了python的路径和python下Scripts的路径。
+
+————————————————
+
+版权声明：本文为CSDN博主「汀雨雪」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+
+原文链接：https://blog.csdn.net/weixin_45044205/article/details/106257441
+

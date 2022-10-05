@@ -1,0 +1,35 @@
+centos7下使用python类库MySQL-python操作mysql。
+pip安装类库：
+pip install MySQL-python
+报错提示：
+mariadb EnvironmentError: mysql_config not found
+
+安装mysql-devel：
+yum -y install mysql-devel
+
+执行pip install MySQL-python，又出现报错：
+error: command 'gcc' failed with exit status 1
+
+这是由于没有正确安装Python开发环境导致。
+
+Centos/Fedora下
+yum install python-devel
+yum install libevent-devel
+easy_install gevent
+或者
+pip install gevent
+把环境更新下
+yum groupinstall 'development tools'
+
+如果是Debin/Ubuntu下
+Python2：apt-get install python-dev
+Python3：apt-get install python3-dev
+可能需要libevent库
+apt-get install libevent-dev
+最后更新下开发环境
+apt-get groupinstall 'development tools'
+
+再次执行pip install MySQL-python
+
+ps：如果本地已经安装了mysql，要安装和mysql版本匹配的mysql-devel
+

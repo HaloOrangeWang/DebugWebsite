@@ -1,0 +1,38 @@
+问题代码:
+
+def sourceStatic(path, exclude):
+
+# exclude list convert to lower 
+    exclude = list(map(lambda x:x.lower(), exclude))
+    files_size = 0
+    files_count = 0
+    for root, dirs, files in os.walk(path):
+        for fileName in files:
+            fname, fileEx = os.path.splitext(fileName)
+            fileEx = (fileEx[1:]).lower()
+            if not any(fileEx in item for item in exclude):
+                print(fileName)
+                filePath = os.path.join(root,fileName)
+                fileSize = getsize(filePath)
+                files_size += fileSize
+                files_count += 1
+
+# return multiple data as dictionary              
+    ret = {}
+    ret['files_size'] = size(files_size)
+    ret['files_size_byte'] = files_size
+    ret['files_count'] = files_count
+    print(ret)
+    return (ret)
+
+报错:
+
+File "C:\Python34\lib\genericpath.py", line 50, in getsize
+    return os.stat(filename).st_size
+FileNotFoundError: [WinError 3] The system cannot find the path specified:
+
+解决:
+
+filePath = u"\\\\?\\" + filePath
+fileSize = getsize(filePath)
+

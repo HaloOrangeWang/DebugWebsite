@@ -1,0 +1,55 @@
+1、安装locust报错
+
+Try to run this command from the system terminal. Make sure that you use the correct version of 'pip' installed for your Python interpreter located at 'D:\\Python\\Python36\\Scripts\\python.exe'.
+
+Requirement already satisfied: locustio in d:\python\python36\lib\site-packages\locustio-0.13.5-py3.6.egg (0.13.5)
+Collecting gevent==1.5a2
+  Using cached https://files.pythonhosted.org/packages/80/36/b732b674fd172922d64a5e9e447f8e287c45fa4743c03ab363a73a242e44/gevent-1.5a2.tar.gz
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'error'
+
+ERROR: Command errored out with exit status 2:
+   command: 'D:\Python\Python36\Scripts\python.exe' 'D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip' install --ignore-installed --no-user --prefix 'C:\Users\HONGDO~1.WAN\AppData\Local\Temp\pip-build-env-m7ntuadz\overlay' --no-warn-script-location --no-binary :none: --only-binary :none: -i https://pypi.org/simple -- 'setuptools >= 40.8.0' wheel 'Cython >= 0.29.13' 'cffi >= 1.12.3 ; platform_python_implementation == '"'"'CPython'"'"'' 'greenlet>=0.4.14 ; platform_python_implementation == '"'"'CPython'"'"''
+       cwd: None
+  Complete output (36 lines):
+  Collecting setuptools>=40.8.0
+    Using cached https://files.pythonhosted.org/packages/f9/d3/955738b20d3832dfa3cd3d9b07e29a8162edb480bf988332f5e6e48ca444/setuptools-44.0.0-py2.py3-none-any.whl
+  Collecting wheel
+    Using cached https://files.pythonhosted.org/packages/00/83/b4a77d044e78ad1a45610eb88f745be2fd2c6d658f9798a15e384b7d57c9/wheel-0.33.6-py2.py3-none-any.whl
+  Collecting Cython>=0.29.13
+    Using cached https://files.pythonhosted.org/packages/ca/5d/7344d00b55f060243cf4f04c2fcee8c245a0af2b0bc236fc6dbb5021dcd6/Cython-0.29.14-cp36-cp36m-win_amd64.whl
+  Collecting cffi>=1.12.3
+    Using cached https://files.pythonhosted.org/packages/9e/99/1adcccd6f7761186eb70e4591f45e941529fbf8e5df8e2d79e914887b118/cffi-1.13.2-cp36-cp36m-win_amd64.whl
+  Collecting greenlet>=0.4.14
+    Using cached https://files.pythonhosted.org/packages/a9/a3/2a7a15c2dc23f764eaed46d41e081659aadf45570b4170156dde1c76d4f7/greenlet-0.4.15-cp36-cp36m-win_amd64.whl
+  Processing c:\users\hongdou.wang\appdata\local\pip\cache\wheels\f2\9a\90\de94f8556265ddc9d9c8b271b0f63e57b26fb1d67a45564511\pycparser-2.19-py2.py3-none-any.whl
+  ERROR: locustio 0.13.5 has requirement gevent==1.5a2, but you'll have gevent 1.4.0 which is incompatible.
+  Installing collected packages: setuptools, wheel, Cython, pycparser, cffi, greenlet
+  ERROR: Exception:
+  Traceback (most recent call last):
+    File "D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip\_internal\cli\base_command.py", line 153, in _main
+      status = self.run(options, args)
+    File "D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip\_internal\commands\install.py", line 455, in run
+      use_user_site=options.use_user_site,
+    File "D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip\_internal\req\__init__.py", line 62, in install_given_reqs
+      **kwargs
+    File "D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip\_internal\req\req_install.py", line 861, in install
+      use_user_site=use_user_site, pycompile=pycompile,
+    File "D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip\_internal\req\req_install.py", line 495, in move_wheel_files
+      warn_script_location=warn_script_location,
+    File "D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip\_internal\wheel.py", line 493, in move_wheel_files
+      clobber(source, dest, False, fixer=fixer, filter=filter)
+    File "D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip\_internal\wheel.py", line 459, in clobber
+      record_installed(srcfile, destfile, changed)
+    File "D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip\_internal\wheel.py", line 386, in record_installed
+      newpath = normpath(destfile, lib_dir)
+    File "D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip\_internal\wheel.py", line 80, in normpath
+      return os.path.relpath(src, p).replace(os.path.sep, '/')
+    File "D:\pycharm\Python\Python36\lib\ntpath.py", line 586, in relpath
+      path_drive, start_drive))
+  ValueError: path is on mount 'D:', start on mount 'C:'
+  ----------------------------------------
+ERROR: Command errored out with exit status 2: 'D:\Python\Python36\Scripts\python.exe' 'D:\Python\Python36\lib\site-packages\pip-19.3.1-py3.6.egg\pip' install --ignore-installed --no-user --prefix 'C:\Users\HONGDO~1.WAN\AppData\Local\Temp\pip-build-env-m7ntuadz\overlay' --no-warn-script-location --no-binary :none: --only-binary :none: -i https://pypi.org/simple -- 'setuptools >= 40.8.0' wheel 'Cython >= 0.29.13' 'cffi >= 1.12.3 ; platform_python_implementation == '"'"'CPython'"'"'' 'greenlet>=0.4.14 ; platform_python_implementation == '"'"'CPython'"'"'' Check the logs for full command output.
+
+错误原因： gevent的版本不对，卸载重装可解决；
+

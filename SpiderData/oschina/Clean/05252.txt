@@ -1,0 +1,32 @@
+
+异常处理区别
+
+Golang这么时尚的语言是没有类似try..catch 这种异常处理机制，而是使用 panic 和 recover处理异常. 其实相当于python的raise。 golang的异常处理组合 panic，defer，recover，跟java中的try catch finially是类似的。
+
+
+示例
+
+必须注意:
+
+1.   defer 需要放在 panic 之前定义，另外recover只有在 defer 调用的函数中才有效。
+ 2.   recover处理异常后，逻辑并不会恢复到 panic 那个点去，函数跑到 defer 之后的那个点.
+ 3.   多个 defer 会形成 defer 栈，后定义的 defer 语句会被最先调用
+
+//panic （直接报错，让程序崩溃直接中止）和recover 
+func funA(){
+	fmt.Println("A")
+}
+func funB(){
+	//尝试恢复错误，让程序继续执行。
+	defer func(){
+		err:=recover()
+		fmt.Println(err)
+		fmt.Println("释放数据库连接")
+	}()  // 加() 表示这个函数会执行
+	panic("出现在了严重错误")
+	fmt.Println("B")
+}
+func funC(){
+	fmt.Println("C")
+}
+

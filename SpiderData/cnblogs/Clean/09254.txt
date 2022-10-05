@@ -1,0 +1,38 @@
+在做自动化测试的过程中，当测试用例执行完成时，需要将报告通过邮箱或者短信的形式发送给相关测试人员，这时候就需要使用到python连接邮箱或者微信的功能。
+
+本文就讲一下自己在python连接微信时候遇到的相关错误及解决方法。
+
+首先报错这样的：
+
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.baidu.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:1008,))
+
+我查阅了很多资料。网上有很多人说关闭证书验证（verify=False））可以解决这个问题或者说是在进行GET时,指定SSL证书.但仍然还是报错。
+
+而后又尝试了第二种方法：安装相关的requests相关的依赖包：
+
+pip install cryptography
+
+pip install pyOpenSSL
+
+pip install certifi
+
+当我安装完成后，相关问题还是没有解决，仍然提示报错。
+
+又尝试了第三种方法，在文件开头添加了这两行代码
+
+importib.reload(sys)
+
+requests.packages.urllib3.disable_warnings()
+
+#控制台移除安全警告
+
+搞了一上午还是没有解决，快崩溃了
+
+还是报错urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='qyapi.weixin.qq.com', port=443): Max retries exceeded with url: /cgi-bin/gettoken?corpid=ww8a54225659bc6f9c&corpsecret=NjphrtrJBKH0JehoizDdoZzGZ_d2ywtQWAS_izlh-Xw (Caused by SSLError(SSLError(1008））
+
+当我一直以为是证书问题的时候。我又尝试搜索了urllib3.exceptions.MaxRetryError，查看了网上的资料，又尝试了第四种方法：
+
+pip install -U "urllib3<1.25"
+
+搞了半天，证书安装和urllib3的版本号还有关系，执行上述命令后，终于正常，并成功发送微信短信，以此文章，已巩固记忆
+

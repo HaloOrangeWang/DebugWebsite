@@ -1,0 +1,24 @@
+
+融云升级到到5.0报错
+
+
+使用 pod ，从4.x版本升级到 5.x，写法和报错如下
+
+写法： [RCIM sharedRCIM].enableBurnMessage = YES; 报错：Property 'enableBurnMessage' not found on object of type 'RCIM *' 解决：把代码改成 RCKitConfigCenter.message.enableDestructMessage = YES; 因为 SDK 把接口从 RCIM 类移到了 RCKitMessageConf 中
+
+写法： [RCIM sharedRCIM].enableBurnMessage = YES; 报错：Property 'enableBurnMessage' not found on object of type 'RCIM *' 解决：把代码改成 RCKitConfigCenter.message.enableDestructMessage = YES; 因为 SDK 把接口从 RCIM 类移到了 RCKitMessageConf 中
+
+解决完上述属性报错后，出现了以下报错： 报错：Apple Mach-O Linker Error ld: library not found for -lopencore-amrnb clang: error: linker command failed with exit code 1 (use -v to see invocation) 解决：TARGETS - Build Settings - Other Linker Flags 里去掉 -l"opencore-amrnb"
+
+解决完上述属性报错后，出现了以下报错： 报错：Apple Mach-O Linker Error ld: library not found for -lopencore-amrnb clang: error: linker command failed with exit code 1 (use -v to see invocation) 解决：TARGETS - Build Settings - Other Linker Flags 里去掉 -l"opencore-amrnb"
+
+解决完上述报错后，又出现了以下报错： 报错：Apple Mach-O Linker Error ld: library not found for -lopencore-amrwb clang: error: linker command failed with exit code 1 (use -v to see invocation) 解决：TARGETS - Build Settings - Other Linker Flags 里去掉 -l"opencore-amrwb"
+
+解决完上述报错后，又出现了以下报错： 报错：Apple Mach-O Linker Error ld: library not found for -lopencore-amrwb clang: error: linker command failed with exit code 1 (use -v to see invocation) 解决：TARGETS - Build Settings - Other Linker Flags 里去掉 -l"opencore-amrwb"
+
+解决完上述报错后，又出现了以下报错： 报错：Apple Mach-O Linker Error ld: library not found for -lvo-amrwbenc clang: error: linker command failed with exit code 1 (use -v to see invocation) 解决：TARGETS - Build Settings - Other Linker Flags 里去掉 -l"vo-amrwbenc"
+
+解决完上述报错后，又出现了以下报错： 报错：Apple Mach-O Linker Error ld: library not found for -lvo-amrwbenc clang: error: linker command failed with exit code 1 (use -v to see invocation) 解决：TARGETS - Build Settings - Other Linker Flags 里去掉 -l"vo-amrwbenc"
+
+希望大家可以活学活用，在报错的时候全局搜一下对应的关键词，看是不是引用的问题导致
+

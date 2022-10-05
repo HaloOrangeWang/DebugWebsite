@@ -1,0 +1,114 @@
+参考原文：  https://www.cnblogs.com/kimyeee/p/7250560.html
+
+　　　　　  https://www.cnblogs.com/galaxy-gao/p/5796488.html
+
+升级python
+
+升级python版本的时候千万不能卸载python 2.6，再安装python2.7，这样会有无穷无尽的麻烦，保守的方式是直接安装python2.7的源码包，也就是python两个版本共存。（因为Centos里面有很多程序是依赖着python，所有最好不要尝试去卸载python2.6）。
+
+1、# 下载 python包，随便下载到哪个目录
+[root@vip ~]# cd /usr/local/src
+[root@vip ~]# wget https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz
+
+2、# 解压
+[root@vip ~]# tar -zxvf Python-2.7.10.tgz
+[root@vip ~]# ls
+Python-2.7.10  Python-2.7.10.tgz
+
+3、开始编译安装
+
+在编译前先在/usr/local建一个文件夹python27（作为python的安装路径，以免覆盖老的版本）
+
+mkdir /usr/local/python27
+
+mkdir /usr/local/python27
+
+开始编译安装，先cd 到Python-2.7.10
+
+./configure --prefix=/usr/local/python27
+
+./configure --prefix=/usr/local/python27
+
+make
+
+make
+
+make install
+
+4
+
+此时没有覆盖老版本，再将原来/usr/bin/python链接改为别的名字
+
+mv /usr/bin/python /usr/bin/python_old2
+
+5 再建立新版本python的链接
+
+ln -s /usr/local/python27/bin/python2.7   /usr/bin/python
+
+6 这个时候输入python -V就会显示出python的新版本信息
+
+解决 yum 兼容性问题
+
+yum是用python写的
+
+因为 yum 是不兼容 Python 2.7 的，所以 yum 不能正常工作，我们需要指定 yum 的 Python 为 2.6
+
+编辑 yum 配置文件
+
+[root@vip bin]# vim /usr/bin/yum
+#!/usr/bin/python
+# 第一行修改为 python26
+#!/usr/bin/python26
+
+解决pip easy_install No module named pkg_resources问题
+
+按照下面的步骤
+
+1 下载pip
+
+wget https://pypi.python.org/packages/11/b6/abcb525026a4be042b486df43905d6893fb04f05aac21c32c638e939e447/pip-9.0.1.tar.gz#md5=35f01da33009719497f01a4ba69d63c9
+
+2 解压
+
+tar -xf pip-9.0.1.tar.gz
+
+3 .安装
+
+cd pip-9.0.1
+
+python setup.py install
+
+这时报错了
+
+大概意思时缺少setuptools模块
+
+4 安装setuptools模块，先下载
+
+wget --no-check-certificate  https://pypi.python.org/packages/source/s/setuptools/setuptools-19.6.tar.gz#md5=c607dd118eae682c44ed146367a17e26
+
+tar -zxvf setuptools-19.6.tar.gz
+
+cd setuptools-19.6
+
+python setup.py build
+
+python setup.py install
+
+5 报错 缺少zlib模块
+
+一种方法官网下载 zlib 解压，cd到解压后的目录，
+
+./configure
+
+make
+
+make install
+
+6 这时候 安装setuptools还是报错，重新编译安装python，就好了
+
+7 好了这时候就可以安装setuptools ，ok，再安装pip，也ok
+
+8 在终端敲 pip发现还是说没有这个命令，需要设置软件连接
+
+ln -s /usr/local/python27/bin/pip2.7   /usr/bin/pip
+

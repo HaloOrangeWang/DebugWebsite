@@ -1,0 +1,96 @@
+最近需要使用pandas做模拟数据生成和输出
+
+就从0学python，再写点pandas的damo，遇到的问题记录一哈
+
+python字符串拼接：
+
+不同于java可以直接s=“a”+1,python需要把数字转成str
+
+step=1
+
+print "step="+str(step+1)
+
+s='12'
+
+str转int：int(s)
+
+Conda问题：
+
+由于我使用了aconda环境，先是demjson无法引入，再是reposity被我搞坏了
+
+问题1：aconda的reposity和python的reposity还是有区别的，修改的时候注意
+
+问题2：第三方aconda无法导入的库，可以参照demjson
+
+进入终端，下载demjson,输入命令：
+
+git clone https://github.com/dmeranda/demjson.git
+
+cd demjson/
+
+python setup.py install
+
+报错：error,Permission denied...
+
+解决方法：
+
+su root
+
+输入密码，进入root权限，重新安装，python setup.py install
+
+再试着导入
+
+问题3：aconda安装后需要配置path
+
+"C:\Users\dell\Anaconda3"和"C:\Users\dell\Anaconda3\Scripts"
+
+
+dateutil
+
+因为需要自己造一个一年份的数据，每天一条，dateutil里的方法很适合：start=start+datetime.timedelta(days=1)
+
+
+List
+
+获取最后一个元素：a[-1]或者a[len(a)-1]
+
+dataframe的一列转list：df['aqiLevel'].tolist()
+
+创建空list：list1=[]或list=list1()
+
+Python的list的子列不能用list.sublist(a,b)求
+
+DICT
+
+PYTHON的dict,应该就类似于java的map
+
+但是有局限性，map可以随意add，dict并不行
+
+空值问题
+
+java中对象的null
+
+我目前主要使用None赋值给空对象，例如字典的某个key的value为java意义上的null，我给None
+
+判断的时候  xx is None,即可知道这个key的value无值
+
+定时任务
+
+参考这篇文章
+
+pandas写excel的问题
+
+1.excel无法在程序运行时生成，我不知道是不是我知识少的问题，查了一圈没啥收获，在程序没跑完之前，文件一直没在，csv也存在这个问题，尝试加了writer.close也没用
+
+2.excel写入多个sheet的方法：dff.to_excel(writer, sheet_name=filename,startrow=int(dictNumber[key])+1)
+
+3.至于追加写入，写入csv是个比较好的做法，把model改成a即可，pandas原生追加写入在程序执行定时任务时目前看几乎不可能，openxyl目前没探索了
+
+4.pandas筛选某列值相同的列dict[str]=df.loc[(df['code']==str)]
+
+dataframe写入mysql
+
+需要保证table的列和dataframe的列一致：列名，数据类型都一致
+
+set和list互转
+

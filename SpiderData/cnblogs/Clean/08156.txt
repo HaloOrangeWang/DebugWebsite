@@ -1,0 +1,86 @@
+卸载原有yum源的rpm包
+
+rpm -aq|grep yum|xargs rpm -e –nodeps
+
+下载rpm包
+
+下载地址：https://mirrors.edge.kernel.org/centos/6/os/x86_64/Packages/
+
+python-urlgrabber-3.9.1-11.el6.noarch.rpm
+
+yum-3.2.29-81.el6.centos.noarch.rpm
+
+yum-metadata-parser-1.1.2-16.el6.x86_64.rpm
+
+yum-plugin-fastestmirror-1.1.30-41.el6.noarch.rpm
+
+可根据系统下载对应版本
+
+下载地址：https://mirrors.edge.kernel.org/centos/
+
+安装rpm包
+
+1.首先安装python包
+
+rpm -ivh python-urlgrabber-3.9.1-11.el6.noarch.rpm
+
+如果安装出现报错如下：
+
+rpm -ivh python-urlgrabber-3.9.1-11.el6.noarch.rpm
+
+warning: python-urlgrabber-3.9.1-11.el6.noarch.rpm: Header V3 RSA/SHA1 Signature, key ID c105b9de: NOKEY
+
+Preparing...                ########################################### [100%]
+
+file /usr/lib/python2.6/site-packages/urlgrabber/grabber.py from install of python-urlgrabber-3.9.1-11.el6.noarch conflicts with file from package python-urlgrabber-3.9.1-9.el6.noarch
+
+file /usr/lib/python2.6/site-packages/urlgrabber/grabber.pyc from install of python-urlgrabber-3.9.1-11.el6.noarch conflicts with file from package python-urlgrabber-3.9.1-9.el6.noarch
+
+file /usr/lib/python2.6/site-packages/urlgrabber/grabber.pyo from install of python-urlgrabber-3.9.1-11.el6.noarch conflicts with file from package python-urlgrabber-3.9.1-9.el6.noarch
+
+file /usr/lib/python2.6/site-packages/urlgrabber/progress.pyc from install of python-urlgrabber-3.9.1-11.el6.noarch conflicts with file from package python-urlgrabber-3.9.1-9.el6.noarch
+
+file /usr/lib/python2.6/site-packages/urlgrabber/progress.pyo from install of python-urlgrabber-3.9.1-11.el6.noarch conflicts with file from package python-urlgrabber-3.9.1-9.el6.noarch
+
+查看系统中是否安装其他版本的python-urlgrabber包，与下载的rpm包冲突
+
+如果有卸载系统中存在的python-urlgrabber包，重新进行安装
+
+2.安装yum-metadata-parser-1.1.2-16.el6.x86_64.rpm
+
+rpm -ivh yum-metadata-parser-1.1.2-16.el6.x86_64.rpm
+
+3.剩下的两个包一起安装，否则单独安装yum-plugin-fastestmirror包会报错如下：
+
+rpm -ivh --force yum-plugin-fastestmirror-1.1.30-41.el6.noarch.rpm
+
+warning: yum-plugin-fastestmirror-1.1.30-41.el6.noarch.rpm: Header V3 RSA/SHA1 Signature, key ID c105b9de: NOKEY
+
+error: Failed dependencies:
+
+yum >= 3.0 is needed by yum-plugin-fastestmirror-1.1.30-41.el6.noarch
+
+正确安装命令：
+
+rpm -ivh yum-3.2.29-81.el6.centos.noarch.rpm yum-plugin-fastestmirror-1.1.30-41.el6.noarch.rpm
+
+至此安装完成
+
+如果yum命令还报错系统未注册
+
+卸载subscription-manager
+
+rpm -qa | grep subscription-manager*
+
+卸载 rpm -e subscription-manager*
+
+yum celan all
+
+yum makecache
+
+yum update
+
+至此yum就可以使用了
+
+转发请注明出处https://www.cnblogs.com/nanblog/p/13868538.html
+

@@ -1,0 +1,22 @@
+运行Python代码出现： ImportError: DLL load failed: %1 不是有效的 Win32 应用程序。
+
+解决方法：去下载与你所安装的Python版本对应的pywin32并安装
+
+下载链接：https://sourceforge.net/projects/pywin32/files/pywin32/
+
+import _win32sysloader ImportError: DLL load failed: %1 不是有效的 Win32 应
+
+之前遇到的问题是利用pyinstaller方法打包py应用，报错  import _win32sysloader（pywin32） ImportError: DLL load failed: %1 不是有效的 Win32 应用程序。
+
+解决：
+
+1.先卸载32位的pywin32，卸载如有问题，可参考：
+
+Python问题--Cannot uninstall 'pywin32'. It is a distutils installed project and thus we cannot accurately.... - 明媚如你 - 博客园
+
+2.下载安装64位的pywin32
+
+D:\Python27\Scripts\pip.exe install pywin32-223-cp27-cp27m-win_amd64.whl
+
+安装成功后，再次打包，如报编码问题，将文件名改成字母数字就可以了。
+

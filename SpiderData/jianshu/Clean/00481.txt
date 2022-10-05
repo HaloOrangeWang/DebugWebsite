@@ -1,0 +1,70 @@
+
+问题背景
+
+上篇介绍了Docker拉取mysql5.7，本章介绍一下docker拉取tomcat
+
+注意事项：
+
+因为我写的是一个系列，在之前的文章介绍过的一般不会重复介绍，可以根据以下链接查看之前的知识点
+
+默认已安装Centos7
+
+默认已安装JDK
+
+默认开启root权限
+
+默认已安装mysql客户端，如Navicat或Sqlyog
+
+一个镜像可以启动多个容器，第一次启动容器会自动保存，下次启动容器可以使用 docker ps -a 查看所有容器ID和名字，然后使用 docker start [容器ID或名字] 进行启动
+
+
+Docker无介绍快使用，安装部署hello测试（一）
+
+
+Docker无介绍快使用，docker指令使用（二）
+
+
+Docker无介绍快使用，docker数据卷Volumes挂载的使用（三）
+
+
+Docker无介绍快使用，docker拉取mysql5.7及使用（四）
+
+
+Docker无介绍快使用，docker拉取tomcat及使用（五）
+
+
+Docker拉取tomcat
+
+1 搜索tomcat镜像
+
+docker search tomcat
+
+2 选择第一个热度最高，拉取tomcat镜像
+
+docker pull tomcat:8-jdk8
+
+3 使用拉取的镜像启动一个容器，一个镜像可以启动多个容器，第一次启动容器会自动保存，下次启动容器可以使用docker ps -a 查看所有容器ID和名字，docker start [容器ID或名字] 进行启动
+
+docker run -di --name=c_tomcat -p 8080:8080 -v /root/tomcat/webapps:/usr/local/tomcat/webapps tomcat:8-jdk8
+
+进入容器指令
+
+docker exec –it c_tomcat /bin/bash
+
+4 测试docker容器tomcat是否已经启动，浏览器输入[ip]:8080
+
+
+报错Http状态4040-未找到解决方案
+
+查看这篇文章进行解决
+
+
+总结
+
+根据映射不同的端口号，可以启动多个tomcat
+
+作为程序员第 55 篇文章，每次写一句歌词记录一下，看看人生有几首歌的时间，wahahaha ...
+
+
+Lyric：基于两种立场我会罩着你
+

@@ -1,0 +1,12 @@
+源代码安装Python3以后，用requests访问https站点会报以下错误：
+
+HTTPSConnectionPool(host='www.okex.com', port=443): Max retries exceeded with url: /api/v1/future_userinfo.do?api_key=55dd9a43-cd00-48b9-b75b-bcb9aa52599d&sign=35D9EF9F001891DBCDDFE748A8790D49 (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.",))
+
+问题在于源代码安装时没有选择支持openssl。
+
+解决方案：重新编译安装。
+
+yum install openssl-devel
+
+./configure --enable-shared
+

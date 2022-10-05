@@ -1,0 +1,4 @@
+当我在Django程序中执行python manage.py celery beat-l info或者celery beat ......的时候一直报SystemError:<class 'OSError'>可能还会有其他报错；因为celery用的不是很多所以花了大约一段时间把问题找到了，原来是，我在拉取Django项目时候，把celerybeat.pid，也拉下来了，导致报错。大意了！将celerybeat.pid文件删除就OK了，因为在我们执行celery beat ......的时候会自动创建celerybeat.pid文件。
+
+参考网上说法，如果在启动celery beat的时候配置pidfile参数，并将该参数设置为空，就可以规避这个问题
+

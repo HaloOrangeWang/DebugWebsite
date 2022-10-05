@@ -1,0 +1,28 @@
+今日突然发现线上出了一堆bug， 最终定位在 服务器上， 用python 请求一个 https协议的地址时， 出现了报错， 而这个报错阻挡了后续逻辑
+
+报错内容是这样的：
+
+首先根据 ssl 怀疑是 证书问题；并且经测试， http协议的请求没有出错
+
+先用 requests.post(url, verify=False)  关闭证书验证测试， 没有用， 还是这个报错
+
+然后怀疑是库版本的问题， 用另一台服务器测试， 并没有出现这个报错，然后比对 两台服务器的不同， 相同的地方都暂不修改
+
+requests 库的版本 ，都是最新的 2.23.0
+
+本地 openssl 的版本： openssl version   , 都是 OpenSSL 1.0.1f 6 Jan 2014;  这个版本确实应该升级， 但是这个库比较底层， 不敢随便升级，而且升级起来也是比较麻烦的（在自用的服务器上搞过）； 鉴于两台服务器上版本都一样， 也放弃了从这修改
+
+本地ubuntu版本， https://stackoverflow.com/a/31678467/11697500 这个回答中提到 把系统版本升级到 14.10 解决了这个问题，但是鉴于和openssl 相同的考虑， 比较两台服务器 系统版本
+
+可以用 lsb-release 查看系统版本， 我两台服务器都是 一样的，Ubuntu 14.04.5 LTS
+
+求助谷歌， 和这个问题描述的基本一致：
+
+这里有人建议 使用  pip install requests[security]  安装 requests库， 关于 和 直接 pip install requests 的区别， [这里][https://stackoverflow.com/a/31812342/11697500] 有解释，我摘抄一下
+
+使用pip install requests[security]， 会额外安装 三个库， 分别是：pyOpenSSL , cryptography , idna
+
+于是 用 pip install requests[security]  重新安装 requests库
+
+遇到了这个问题：
+

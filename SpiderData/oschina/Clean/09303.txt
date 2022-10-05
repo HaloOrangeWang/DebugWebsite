@@ -1,0 +1,54 @@
+Angular报错：ERROR TypeError: control.setParent is not a function
+
+这里是定义的 myForm ，字段 imageIds 为数组：
+
+myForm = this.fb.group({
+    id: [''],
+    title: [''],
+    content: [''],
+    imageIds: this.fb.array(['']),
+});
+
+从详情接口取回数据后，填充到表单里的 imageIds 字段里报错。
+
+let imageIds = this.detail.imageIds;
+let newIds = this.myForm.get('imageIds') as FormArray;
+if (imageIds) {
+  let key : any;
+  for(key in imageIds) { 
+    // <-- ERROR TypeError: control.setParent is not a function
+    newIds.push(imageIds[key]); 
+  }
+}
+
+this.noteForm.patchValue({
+          id: this.detail.id,
+          title: this.detail.title,
+          imageIds: newIds.value, // <----  补充数据
+ });
+
+错误原因： newIds 是表单组件里的 FormArray 格式，因此push进去的值也应该是 FormControl 格式。 使用 new FormControl(imageIds[key]) 即可。
+
+let imageIds = this.detail.imageIds;
+let newIds = this.myForm.get('imageIds') as FormArray;
+if (imageIds) {
+  let key : any;
+  for(key in imageIds) { 
+    // <-- 使用 new FormControl() 
+    newIds.push(new FormControl(imageIds[key])); 
+  }
+}
+
+this.noteForm.patchValue({
+          id: this.detail.id,
+          title: this.detail.title,
+          imageIds: newIds.value, // <----  补充数据
+ });
+
+参考内容：
+
+https://blog.csdn.net/u011763994/article/details/78682576
+ https://stackoverflow.com/questions/51209125/control-setparent-is-not-a-function-when-dymanically-creating-formgroup
+
+关于关注公众号【Web后端技术】获取更多技术知识~
+

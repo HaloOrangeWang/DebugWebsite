@@ -1,0 +1,70 @@
+https://www.cscodewrite.com
+
+1. com.alibaba.fastjson.JSONException: syntax error, expect {, actual int, pos 1, json : 0
+
+com.alibaba.fastjson.JSONException: syntax error, expect {, actual int, pos 1, json : 0
+
+at com.alibaba.fastjson.parser.DefaultJSONParser.parseObject(DefaultJSONParser.java:197)
+
+at com.alibaba.fastjson.parser.deserializer.MapDeserializer.deserialze(MapDeserializer.java:64)
+
+at com.alibaba.fastjson.parser.deserializer.MapDeserializer.deserialze(MapDeserializer.java:41)
+
+at com.alibaba.fastjson.parser.DefaultJSONParser.parseObject(DefaultJSONParser.java:661)
+
+at com.alibaba.fastjson.JSON.parseObject(JSON.java:365)
+
+at com.alibaba.fastjson.JSON.parseObject(JSON.java:269)
+
+at shijiwxy.web.controller.SurveyController.getSurveyDetail(SurveyController.java:815)
+
+at shijiwxy.web.controller.SurveyController$$FastClassBySpringCGLIB$$49418525.invoke(<generated>)
+
+at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:204)
+
+at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:738)
+
+报错原因是：原因是报错行传入的json是无效的，或者说不是json，自行检查json串即可。
+
+2. Invalid bound statement (not found)，我的问题是MyBatis操作数据库的时候访问报错，原因是MyBatis中的*Mapper.xml文件没有编译进入target文件中。解决方案如下：
+
+（1）常规解决方案（①和②都可以）
+
+① 把*Mapper.xml文件放到resource文件夹下管理
+
+② pom配置一下编译xml文件
+
+<resource>
+
+<directory>src/main/java</directory>
+
+<includes>
+
+<include>**/*.xml</include>
+
+</includes>
+
+</resource>
+
+（2）我的解决方式，我是idea，后来发现是resource写错了，后来改成resources就可以了（应该是项目中已经提提前配置好resources了，所以必须是这个名字）。另外文件夹右击--->Mark Directory as --->Test Resources Root即可。
+
+3. Field XXX in XXXX required a bean of type XXXX that could not be found，我的问题是项目启动的时候报错，项目架构是springBoot。
+
+原因是项目引入了一个外部文件（假设名字是com.aaa.bbb.ccc.test.java），而springBoot的Application默认扫描自己所在包（比如是com.aaa.ddd）下面的所有文件，从而出现找不到bean的情况。
+
+解决方式是在Application顶部加入注解 @ComponentScan(basePackages = { "com.aaa.*" })即可，注意找到两者的相同目录！！
+
+4.  js ajax访问spring action 导致浏览器崩溃，后来发现是由于ajax传输中的一个参数在js中未定义找不到造成的，因为是ajax访问过程中出错的，所以js和后台都不会提示任何错误，只能自己摸索。
+
+5.  mysql配合redis新增大量数据的时候，事务并发执行，导致同一事件多个随机执行，应该改成串行的方式，因此，在这里只需要将需要串行的事件加一个synchronize同步块就能解决，这仅仅是对单服务器有效的，如果是集群环境（多服务器），synchronize会失效，需要寻找其他解决方式
+
+6. windows环境下查询进程的方式：cmd打开dos窗口--->输入命令 netstat -ano|grep 端口号--->启动任务管理器--->通过PID找到对应的进程即可。期间有可能会遇到问题“grep不是内部或外部命令”，点击Grep For Windows 下载即可，然后配置到环境变量中的path中，重新打开cmd就可以使用了。
+
+7. maven项目不能添加到tomcat容器中：项目右击-->properties-->java facets-->勾选Dynamic Web Moedl、勾选Java、勾选JavaScript即可完成。
+
+8. idea启动项目报错，报错信息是 【错误:(44, 47) java: -source 1.5 中不支持 diamond 运算符   (请使用 -source 7 或更高版本以启用 diamond】，解决方法是需要指定Maven使用的jdk版本，如下：修改pom.xml配置信息：修改1.8版本为1.7即可
+
+9. BeanUtils.populate(Object, Map)属性赋值过程中报错【DateConverter does not support default String to 'Date' conversion】，解决方法是在上方添加代码 ConvertUtils.register(new DateLocaleConverter(), Date.class)即可
+
+10. java.lang.IllegalStateException: getWriter() has already been called for this response；这个错误是在部署到测试环境之后出现的，然而在本地启动后并没有错误。之后发现是由于HttpServletResponse被重复读取了。因为做增强（@Around）的时候会读取参数，一旦参数中包括HttpServletResponse，那么就不能对这个参数重复读取，否则就会报错。我的改动如下：
+

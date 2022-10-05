@@ -1,0 +1,24 @@
+起因：为了让测试脚本可以脱离编辑器使用
+首先尝试了对airtest自带的打包功能，打包后运行时发现，一部分swipe语句操作的起始坐标、方向与编辑器中不一致，另一部分swipe语句直接无效。
+网上搜索也没有找到原因和办法，于是开始自己尝试去解决。
+
+尝试后结果在这里：
+https://www.cnblogs.com/planttrees/p/14000028.html
+
+由于打包功能对swipe支持的不完美，于是开始尝试通过命令行来运行脚本与输出报告
+1.使用命令行运行脚本需要先在python环境中安装airtest
+			使用pip list查看当前是否安装airtest
+				　　尝试时发现“pip"命令无法运行，搜索后了解需要先安装pip
+				　　安装成功后发现依然无法运行，再次搜索后了解到可以使用"pip.exe"，尝试后pip命令运行成功
+			命令行输入pip.exe list，查询当前安装的第三方库，发现未安装airtest
+			　　使用pip.exe install airtest，安装第三方库airtest
+				　　安装进行到opencv时报错，搜索后了解到可能是因为第三方库airtest不支持python3.8
+				　　于是卸载python3.8按照报错提示重新安装了python3.4.1
+			　　重新安装pip后，再次尝试安装airtest,出现pip报错“RuntimeError: Python 3.5 or later is required”
+				　　搜索后了解到pip20.1不支持python3.5以下版本，python3.4可以使用pip19.1
+
+最终办法：卸载原先python，下载python3.5 64位，并在安装时勾选pip
+				安装成功后，使用命令py -m pip install --upgrade pip更新pip到最新的20.1.1
+				再次尝试安装airtest--成功！！！
+			结论：需要python3.5.0 + pip 20.0.1
+

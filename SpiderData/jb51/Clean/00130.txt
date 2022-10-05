@@ -1,0 +1,48 @@
+python3 manage.py makemigrations # 生成数据库迁移文件
+
+python3 manage.py migrate # 迁移数据库
+
+简简单单两条命令就完成了django的数据库迁移
+
+但是今天一天的时间都耽误在这了，一点都不夸张的那种，，早上去公司讨论需求之后，研究了一下需要更改一下数据库，在执行makemigrations的时候OK没有问题，但是migrate就报错了
+
+1.报错： XX表已经存在，django.db.utils.OperationalError: (1050, "Table XX already exists
+
+　　　　我：删表，但是报错，Cannot delete or update a parent row: a foreign key constraint fails 跟YY表存在外键关系，无法删除，
+
+　　　　百度了一番之后：1、SET foreign_key_checks = 0; // 先设置外键约束检查关闭
+
+　　　　　　　　　　　　2、drop table XX; // 删除数据，表或者视图
+
+　　　　　　　　　　　　3、SET foreign_key_checks = 1; // 开启外键约束检查，以保持表结构完整性　
+
+2.表删了之后重新执行migrate，又报错别的表存在，如此一直循环往复，我都怀疑这是人家写的一个while True，
+
+　　　　我：找到了第二种解决方案：python manage.py migrate myapp --fake # 切记把myapp换成你要执行的APP名称
+
+　　　　这条命令可以顺利执行，没有报错，但是又找不到对应生成的表在哪里，顶如还是说不能成功
+
+3.将之前执行makemigrations生成的migrations文件夹删除，重新来过，OK，还是一样的毛病，
+
+4.重新创建了database之后，重新来过，只生成了django自带的那几张表，然而项目里大多的数据存储都是依靠我在每一个app里创建的table里呀
+
+5.将每个APP下的migrations都删掉，database也重新来过，好嘛，连最基本的数据库迁移文件夹都不能生成了，一瞬间有种悔不当初的感觉，但是又能怎么样呢，就是需要调整数据库呀
+
+6.这个时候重头开始来过，千万不要慌，检查settings里是否把每一个APP都注册到，项目同名目录下的__init__.py里是否包含了
+
+　　　　　　　　　　　　import pymysql
+
+　　　　　　　　　　　　pymysql.install_as_MySQLdb()
+
+7.没有问题之后这样去执行数据库迁移的命令　
+
+python3 manage.py migrate # 生成django自带的数据库
+
+python3 manage.py makemigrations appname # 将appname换成你要迁移的那个app的名称
+
+python3 manage.py migrate appname # 同理，换名
+
+至此，一个小小的问题，真的就花了我一天的时间，好在终于解决了，
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

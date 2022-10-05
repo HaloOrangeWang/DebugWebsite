@@ -1,0 +1,23 @@
+首先上报错信息:
+
+Running $ pipenv lock then $ pipenv sync.
+Locking [dev-packages] dependencies...
+Locking [packages] dependencies...
+env/utils.py", line 402, in resolve_deps
+    req_dir=req_dir
+  File "/usr/local/lib/python3.6/dist-packages/pipenv/utils.py", line 250, in actually_resolve_deps
+    req = Requirement.from_line(dep)
+  File "/usr/local/lib/python3.6/dist-packages/pipenv/vendor/requirementslib/models/requirements.py", line 704, in from_line
+    line, extras = _strip_extras(line)
+TypeError: 'module' object is not callable
+
+一直报TypeError: 'module' object is not callable错误
+
+解决方法 ： 是因为pip的版本问题
+
+pipenv version 2018.7.1 支持完美的pip版本是pip 18.0
+
+所以 执行以下命令 重装pip为18.0(该命令只对当前项目的虚拟环境生效 不影响全局pip)
+
+pipenv run pip install pip==18.0
+

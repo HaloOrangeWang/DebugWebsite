@@ -1,0 +1,78 @@
+出现如图错误： 
+  
+ 报错信息： 
+ Usage of API documented as @since 1.8+ 
+ This inspection finds all usages of methods that have @since tag in their documentation. 
+ This may be useful when development is performed under newer SDK version as the target platform for production.
+
+
+问题原因：
+
+出现该问题的原因是由于使用了JAVA8的新特性，但是Language Level（最低可支持的版本）比较低，无法支持这些特性。比如设置的Language Level为6.0，可是却使用了8.0/9.0的新特性，6.0无法解析这些特性，因此IDE会报错来提醒我们。
+
+
+解决方法：
+
+如果对最低支持版本有要求，没办法改动的话，那就只能放弃使用报错部分的代码。 
+ 如果对支持版本没有要求的话，可以改动IDE的Language Level来消除错误。
+
+使用ctrl+shift+alt+S，打开Project Structure，选中侧边栏的Modules，在Sources窗口中修改Language Level（必须大于等于报错信息给出的level）。改动后，IDE错误消失。
+
+使用ctrl+shift+alt+S，打开Project Structure，选中侧边栏的Modules，在Sources窗口中修改Language Level（必须大于等于报错信息给出的level）。改动后，IDE错误消失。
+
+Maven项目每个Module都有单独的pom.xml，如果不在pom.xml中进行配置，则默认将Module的Language Level设置为5。所以要在pom.xml文件中添加插件进行配置。
+
+Maven项目每个Module都有单独的pom.xml，如果不在pom.xml中进行配置，则默认将Module的Language Level设置为5。所以要在pom.xml文件中添加插件进行配置。
+
+<build>
+
+<plugins>
+
+<plugin>
+
+<groupId>org.apache.maven.plugins</groupId>
+
+<artifactId>maven-compiler-plugin</artifactId>
+
+<version>3.6.0</version>
+
+<configuration>
+
+<source>1.8</source>
+
+<target>1.8</target>
+
+</configuration>
+
+</plugin>
+
+</plugins>
+
+</build>
+
+<build>
+
+<plugins>
+
+<plugin>
+
+<groupId>org.apache.maven.plugins</groupId>
+
+<artifactId>maven-compiler-plugin</artifactId>
+
+<version>3.6.0</version>
+
+<configuration>
+
+<source>1.8</source>
+
+<target>1.8</target>
+
+</configuration>
+
+</plugin>
+
+</plugins>
+
+</build>
+

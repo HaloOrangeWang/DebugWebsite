@@ -1,0 +1,20 @@
+最近在看一个自动化测试框架的问题，需要用到Lxml库，下载lxml总是报错。
+
+1，使用pip安装lxml
+
+2，然后报错了，报错内容是：
+
+3，然后百度了N久N久，借鉴了一个大神的方案，http://blog.marchtea.com/archives/91
+
+4，找到进入Application->XCode，右键选择：显示内容，按照下面代码的路径一步一步往下跟：复制路径：/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/include
+
+然后在终端输入：
+
+5，然后再次使用pip安装
+
+6，看到成功了！！！
+
+Downloading/unpacking lxmlDownloading lxml-3.4.1.tar.gz (3.5MB): 3.5MB downloadedRunning setup.py (path:/private/var/folders/rc/0lpvj1710n332qg8p2wgcqyr0000gn/T/pip_build_cindy_mac/lxml/setup.py) egg_info for package lxml/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/distutils/dist.py:267: UserWarning: Unknown distribution option: 'bugtrack_url'warnings.warn(msg)Building lxml version 3.4.1.Building without Cython.Using build configuration of libxslt 1.1.28warning: no previously-included files found matching '*.py'Installing collected packages: lxmlRunning setup.py install for lxml/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/distutils/dist.py:267: UserWarning: Unknown distribution option: 'bugtrack_url'warnings.warn(msg)Building lxml version 3.4.1.Building without Cython.Using build configuration of libxslt 1.1.28building 'lxml.etree' extensioncc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE -arch x86_64 -arch i386 -pipe -I/usr/include/libxml2 -I/private/var/folders/rc/0lpvj1710n332qg8p2wgcqyr0000gn/T/pip_build_cindy_mac/lxml/src/lxml/includes -I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -c src/lxml/lxml.etree.c -o build/temp.macosx-10.9-intel-2.7/src/lxml/lxml.etree.o -w -flat_namespacecc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386 -Wl,-F. build/temp.macosx-10.9-intel-2.7/src/lxml/lxml.etree.o -lxslt -lexslt -lxml2 -lz -lm -o build/lib.macosx-10.9-intel-2.7/lxml/etree.sobuilding 'lxml.objectify' extensioncc -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE -arch x86_64 -arch i386 -pipe -I/usr/include/libxml2 -I/private/var/folders/rc/0lpvj1710n332qg8p2wgcqyr0000gn/T/pip_build_cindy_mac/lxml/src/lxml/includes -I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -c src/lxml/lxml.objectify.c -o build/temp.macosx-10.9-intel-2.7/src/lxml/lxml.objectify.o -w -flat_namespacecc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386 -Wl,-F. build/temp.macosx-10.9-intel-2.7/src/lxml/lxml.objectify.o -lxslt -lexslt -lxml2 -lz -lm -o build/lib.macosx-10.9-intel-2.7/lxml/objectify.soSuccessfully installed lxmlCleaning up...
+
+7，为了保险，然后测试一下：
+

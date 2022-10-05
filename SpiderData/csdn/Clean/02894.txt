@@ -1,0 +1,25 @@
+安装pandas出错：
+
+Running setup.py (path:/data/envs/py3/build/pandas/setup.py) egg_info for package pandas
+    Traceback (most recent call last):
+      File "<string>", line 17, in <module>
+      File "/data/envs/py3/build/pandas/setup.py", line 736, in <module>
+        packages=find_packages(include=['pandas', 'pandas.*']),
+    TypeError: find_packages() got an unexpected keyword argument 'include'
+    Complete output from command python setup.py egg_info:
+    Traceback (most recent call last):
+
+File "<string>", line 17, in <module>
+
+File "/data/envs/py3/build/pandas/setup.py", line 736, in <module>
+
+packages=find_packages(include=['pandas', 'pandas.*']),
+
+TypeError: find_packages() got an unexpected keyword argument 'include'
+
+解决办法：（原因是include 中的 find_packages()过于老旧）
+
+pip install -U setuptools
+
+然后就可以正常安装！！！
+

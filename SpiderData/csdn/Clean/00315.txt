@@ -1,0 +1,220 @@
+
+Python 异常捕获是什么
+
+程序异常，就是程序出错了，程序员一般叫做 BUG（八哥），写程序不出错是不可能发生的事情，而程序员要做的事情就是及时的捕获错误，修改错误。
+
+
+最常见的错误 - 除数为 0
+
+在数学中也存在类似的问题，除数不可以为 0。相同的概念在编程中也是存在的。
+
+num1 = 20
+num2 = 0
+num3 = num1 / num2
+print(num3)
+
+运行代码出现下面的错误：
+
+Traceback (most recent call last):
+  File "D:/gun/2/demo7.py", line 3, in <module>
+    num3 = num1 / num2
+ZeroDivisionError: division by zero
+
+错误内容就是末尾的 ZeroDivisionError: division by zero ，当出现错误程序崩溃，终止运行。错误异常中也提示了错误出现的行数 line 3 在第三行，但查看行号排查错误在很多时候无法直接解决问题，因为出错的地方不在行号那一行，修改 BUG 的效率一般会随着你对 Python 学习的深入逐步增强改善。
+
+
+怎么用
+
+
+try … except 语句
+
+刚才的程序出现错误就终止运行了，如何避免程序被强迫终止，出现问题提示出问题，然后继续运行呢？这就是 try … except 语句使用的场景了。
+
+语法格式：
+
+try:
+	可能会出错的代码
+except 异常对象:
+	处理异常代码
+
+按照上述语法格式修改上文代码。
+
+num1 = 20
+num2 = 0
+try:
+    num3 = num1 / num2
+except ZeroDivisionError:
+    print("除数不可以为 0 ")
+
+此时程序不会报错，当发现除数为 0 会进入异常处理，直接输出除数不能为 0。
+
+try 表示测试代码部分是否存在异常，except 表示捕获异常，前提是出现异常。如果 try 语句中没有任何错误，except 中的代码不会执行。
+
+还有一点需要注意，在 except 后面是异常对象，该异常对象我们设置为 ZeroDivisionError 这是因为已经知道是会出现这个异常，如果在编码过程中不知道会出现哪种异常，依旧会出现错误。
+
+num1 = 20
+num2 = "abc"
+try:
+    num3 = num1 / num2
+except ZeroDivisionError:
+    print("除数不可以为 0 ")
+
+上述代码依旧会报错，报错的异常为：
+
+Traceback (most recent call last):
+  File "D:/gun/2/demo7.py", line 4, in <module>
+    num3 = num1 / num2
+TypeError: unsupported operand type(s) for /: 'int' and 'str'
+
+如果想在 except 后面支持本异常，需要添加上 TypeError。
+
+num1 = 20
+num2 = "abc"
+try:
+    num3 = num1 / num2
+except (ZeroDivisionError,TypeError):
+    print("除数不可以为 0 ")
+
+也可以分开编写：
+
+num1 = 20
+num2 = "abc"
+try:
+    num3 = num1 / num2
+except ZeroDivisionError:
+    print("除数不可以为 0 ")
+
+except TypeError:
+    print("除数类型不对")
+
+该种写法在书写的时候需要预先知道会提示哪种异常，如果异常不清楚那可以省略异常对象，直接使用下述代码即可。
+
+num1 = 20
+num2 = "abc"
+try:
+    num3 = num1 / num2
+except:
+    print("除数不可以为 0 ")
+
+
+try … except … else 语句
+
+在 try … except 语句后面可以增加一个 else 语句，该语句表示的含义可以按照如下描述进行理解，当出现异常的时候执行 except 语句中的代码，当无异常执行 else 语句代码。
+
+num1 = 20
+num2 = 1
+try:
+    num3 = num1 / num2
+except ZeroDivisionError:
+    print("除数不可以为 0 ")
+
+except TypeError:
+    print("除数类型不对")
+
+else:
+    print("无异常，会被执行")
+
+以上代码无错误，那 else 语句就会被执行到。
+
+
+常见的异常类型
+
+在编写代码的过程中，你需要掌握一些常见的异常类型，熟记它们可以帮助你快速进行错误排查。
+
+AttributeError 某个对象没有属性
+
+Exception 通用型异常对象
+
+FileNotFoundError 找不到文件
+
+IOError 输入输出异常
+
+IndexError 索引异常
+
+KeyError 键异常
+
+NameError 对象名称异常
+
+SyntaxError 语法错误
+
+TypeError 类型错误
+
+ValueError 值错误
+
+以上错误都属于常见错误，其中重点以 Exception 通用异常对象与 SyntaxError 语法错误为主，它们两个是最常出现的。
+
+很多时候其实直接使用通用异常对象 Exception 就可以了，不需要记住所有的异常类型的。
+
+
+捕捉多个异常
+
+在上文已经接触过捕捉多个异常的语法格式了，可以在学习一下。
+
+try:
+	可能出错的代码块
+except 异常对象1:
+	异常处理代码块
+except 异常对象2:
+	异常处理代码块
+
+
+一个 except 捕获多个异常
+
+Python 也支持使用一个 except 捕获多个异常，具体语法格式如下：
+
+try:
+	可能出错的代码块
+except (异常对象1,异常对象2...):
+	异常处理代码块
+
+
+直接抛出异常
+
+捕获到异常之后，可以直接抛出 Python 给内置好的异常信息，例如：
+
+num1 = 20
+num2 = 0
+try:
+    num3 = num1 / num2
+except ZeroDivisionError as e:
+    print(e)
+
+except TypeError as e:
+    print(e)
+
+else:
+    print("无异常，会被执行")
+
+注意 except 后面异常对象使用 as 关键字起了一个别名叫做 e，然后直接输出 e 就是 Python 内置好的错误信息了。这里的 e 可以为任意名称，遵循变量命名规则即可。
+
+
+finally 语句
+
+try … except 语句还可以和 finally 语句配合，形成下述语法格式：
+
+try:
+	可能出错的代码块
+except:
+	代码出错执行的代码块
+else:
+	代码正常执行的代码块
+finally:
+	无论代码是否有异常出现都会执行的的代码块
+
+finally 语法需要与 try 语句配合使用，无论是否有异常出现都会执行该语句内容，具体代码大家可以自行测试即可。
+
+
+Python 异常捕获扩展部分
+
+本篇博客主要写的是异常相关知识，在 Python 代码的编写过程中经常会出现异常，一般情况下程序员都叫做 出 BUG 了，这个 BUG 就是臭虫的意思，表示程序出臭虫了。当然很多时候我们也戏称“无 BUG，不编程”。
+
+发现 BUG，解决 BUG，程序员不是在写 BUG 的路上，就是在改 BUG 的路上，好友哲理。
+
+关于异常部分，还有如下内容可以扩展。
+
+使用 raise 抛出异常
+
+使用 traceback 模块记录异常信息到文件中
+
+程序断言 assert
+

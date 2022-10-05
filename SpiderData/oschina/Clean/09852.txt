@@ -1,0 +1,49 @@
+　　windows  CONFIG SET protected-mode no报错说redis受保护模式，redis使用的是Redis-x64-3.2.100，参考博文说是redis3.2之后加入的特性，只能本地连接，需要关闭掉，重启redis。
+
+　　搭建的redis集群参照，需要在每个reids配置文件中进行修改：
+
+# redis.windows-7000.conf
+
+port 7000      
+loglevel notice    
+logfile "D:/Redis_dir/Logs/redis7000_log.txt"       
+appendonly yes
+appendfilename "appendonly.7000.aof"   
+cluster-enabled yes                                    
+cluster-config-file nodes.7000.conf
+cluster-node-timeout 15000
+cluster-slave-validity-factor 10
+cluster-migration-barrier 1
+cluster-require-full-coverage yes
+
+# 加入以下两行
+protected-mode no 
+daemonize no
+
+　　7000，7001皆需要加上，重启这几个服务：
+
+　　
+
+　　
+
+　　期间遇到：Creating Server TCP listening socket 127.0.0.1:6379: bind: No error 参考博友方法执行解决了问题：
+
+redis-cli.exe
+shutdown
+exit
+redis-server.exe
+
+　　具体原因参考StackOverflow上的解释：
+
+　　This service uses the default config and binds to port 6379. When you start redis-server from the command line, if you haven't specified a different port through a config file, it picks up the default config again and tries to bind to port 6379 which fails.
+
+　　Your cli works because it connects to the redis service that's already listening on 6379. Your shutdown command stops the service and from there things work as expected. Mystery solved. Case closed.
+
+　　下面直接反应出来的，英文不好直接看中文@。@：
+
+　　windows  CONFIG SET protected-mode no问题解决了，Jstorm配置了redis，启动监听显示读取了配置，执行task没有读取到，报错：redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool，参考各位大神暂时还未解决，持续更新......
+
+　　更新一下，此处报错是因为jedis有某种机制缓存redis配置，redis还是使用原来配置导致。最后求助运维帮忙解决~。~
+
+　　
+

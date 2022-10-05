@@ -1,0 +1,46 @@
+我们首先来看一下报错信息
+
+Description:
+
+Field businessFeignClient in com.ysc.service.BusinessConfigService required a bean of type 'com.ysc.feignclient.BusinessFeignClient' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+Action:
+
+Consider defining a bean of type 'com.ysc.feignclient.BusinessFeignClient' in your configuration.
+
+再来看一下 Feign 的配置信息
+
+@SpringBootApplication(
+        scanBasePackages = "com.ysc",
+        exclude = {
+                DataSourceAutoConfiguration.class,
+                ThymeleafAutoConfiguration.class
+        })
+@EnableFeignClients
+public class Application {
+	
+	public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+}
+
+从表面上看配置并没有什么问题，那么我们来分析一下问题的具体原因。
+
+注解 @EnableFeignClients 与 @ComponentScan 有冲突，两种注解都会搜索注入指定目录中的 bean 。@EnableFeignClients 引入了 FeignClientsRegistrar 类，实现了 Spring 的bean 资源的加载。
+
+FeignClientsRegistrar中registerFeignClients方法获取了@EnableFeignClients注解中的basepackage 属性值，并进行注入。如果两种注解都使用时，其中@EnableFeignClients会覆盖 @ComponentScan 中指定的目录，从而恢复到默认目录。
+
+如何解决这个问题：
+
+1、可以将 FeignClient 这个 bean 放在和 Application 启动类同级目录
+
+2、可以在 @EnableFeignClients中通过 clients 属性指定 bean 目录
+
+@EnableFeignClients(clients = {
+        BusinessFeignClient.class
+})
+

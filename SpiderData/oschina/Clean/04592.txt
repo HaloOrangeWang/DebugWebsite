@@ -1,0 +1,293 @@
+
+1, 异常和错误
+
+
+1, 程序中难免出现错误,而错误分成两种
+
+1,语法错误（这种错误，根本过不了python解释器的语法检测，必须在程序执行前就改正）
+
+#语法错误示范一
+if
+
+#语法错误示范二
+def test:
+    pass
+
+#语法错误示范三
+print(haha
+
+2,逻辑错误
+
+#用户输入不完整(比如输入为空)或者输入非法(输入不是数字)
+num=input(">>: ")
+int(num)
+
+#无法完成计算
+res1=1/0
+res2=1+'str'
+
+
+2, 什么是异常
+
+异常就是程序运行时发生错误的信号，在python中,错误触发的异常如下
+
+
+3, python中的异常种类
+
+在python中不同的异常可以用不同的类型(python中统一了类与类型,类型即类) 去标识,不同的类对象标识不同的异常,一个异常标识一种错误.
+
+l = ["aa","bb"]
+l[3] # IndexError: list index out of range
+
+dic = {"name":"deng"}
+dic["age"] # KeyError: 'age'
+
+s = "hello"
+int(s) # ValueError: invalid literal for int() with base 10: 'hello'
+
+AttributeError 试图访问一个对象没有的树形，比如foo.x，但是foo没有属性x
+IOError 输入/输出异常；基本上是无法打开文件
+ImportError 无法引入模块或包；基本上是路径问题或名称错误
+IndentationError 语法错误（的子类） ；代码没有正确对齐
+IndexError 下标索引超出序列边界，比如当x只有三个元素，却试图访问x[5]
+KeyError 试图访问字典里不存在的键
+KeyboardInterrupt Ctrl+C被按下
+NameError 使用一个还未被赋予对象的变量
+SyntaxError Python代码非法，代码不能编译(个人认为这是语法错误，写错了）
+TypeError 传入对象类型与要求的不符合
+UnboundLocalError 试图访问一个还未被设置的局部变量，基本上是由于另有一个同名的全局变量，
+导致你以为正在访问它
+ValueError 传入一个调用者不期望的值，即使值的类型是正确的
+
+ArithmeticError
+AssertionError
+AttributeError
+BaseException
+BufferError
+BytesWarning
+DeprecationWarning
+EnvironmentError
+EOFError
+Exception
+FloatingPointError
+FutureWarning
+GeneratorExit
+ImportError
+ImportWarning
+IndentationError
+IndexError
+IOError
+KeyboardInterrupt
+KeyError
+LookupError
+MemoryError
+NameError
+NotImplementedError
+OSError
+OverflowError
+PendingDeprecationWarning
+ReferenceError
+RuntimeError
+RuntimeWarning
+StandardError
+StopIteration
+SyntaxError
+SyntaxWarning
+SystemError
+SystemExit
+TabError
+TypeError
+UnboundLocalError
+UnicodeDecodeError
+UnicodeEncodeError
+UnicodeError
+UnicodeTranslateError
+UnicodeWarning
+UserWarning
+ValueError
+Warning
+ZeroDivisionError
+
+
+2, 异常处理
+
+
+1, try/except 子句
+
+在 Python 中，try/except 语句用于处理程序执行过程中出现的一些异常情况。
+
+在 try 子句中，通常放置的是一个可能引发异常的操作，而处理异常的代码则在 except 子句中。
+
+A：你的薪水是多少？
+
+B：你猜？
+
+try:
+    salary = int(input("Please ener the salary: "))
+    print("So happy %d" % salary)
+except:
+    print("It's nor a numder!")
+
+结果一:
+Please ener the salary: 10000
+So happy 10000
+
+结果二:
+Please ener the salary: abc
+It's nor a numder!
+
+这里，Python 将尝试处理 try 块中的所有语句，一旦发生异常（人家打听你工资，你非要说一个 “abc”），则控制流将立即传递到 except 块，并跳过 try 中的剩余语句。
+
+注意 : except 子句没有捕获特定异常，这并不是一个好的编程习惯。因为它会捕获所有的异常，并以相同的方式处理所有的情况。
+
+
+2, 捕获特定异常
+
+一个 try 子句可以有任意数量的 except 子句，但只有一个将被执行，并且 except 子句可以指定捕获特定的异常。
+
+来看一段伪代码：
+
+try:
+   # 执行语句
+   pass
+
+except ValueError:
+   # 处理 ValueError 异常
+   pass
+
+except (TypeError, ZeroDivisionError):
+   # 处理多个异常 - TypeError 和 ZeroDivisionError
+   pass
+
+except:
+   # 处理所有其他异常
+   pass
+
+通过使用元组, 可以为except子句指定多个异常.
+
+
+3, else 子句
+
+通常，如果不发生异常，我们往往会希望执行一些额外的代码，这可以通过 else 子句轻松地实现。
+
+上述示例，我们将 print 语句直接放在 try 块中。这时，只有在转换语句不引发异常的情况下才执行该语句，但将其放在 else 块中才是更好的做法。
+
+try:
+    salaey = int(input("Please enter the salary: "))
+except ValueError:
+    print("It's not a number!")
+else:
+    print("So happy %d." % salaey)
+
+也就是说，try 块中唯一的代码应该是有潜在风险的单行（即：要处理的错误的来源）。老实说，大多数人不这样用。
+
+
+4, finally 子句
+
+另外，try 语句可以有一个可选的 finally 子句。无论什么情况，该子句都会被执行，通常用于释放外部资源。
+
+例如，操作一个文件：
+
+try:
+    f = open("a1.txt",encoding="utf-8")
+    # 执行文件操作
+finally:
+    f.close() # 关闭文件,报错也会执行
+
+一旦使用，无论文件是否打开成功，都必须清理资源。所以，在 finally 子句中使用 close()，可以确保即使发生异常，文件也能够被关闭
+
+
+5, 使用异常对象
+
+异常对象包含的信息不仅仅是错误类型, 也有一些其他信息.
+
+要访问这些信息，需要能够访问异常对象，可以将其分配给一个变量，然后在 except 子句中使用：
+
+try:
+    salary = int(input("Please enter the salary:"))
+except ValueError as err:
+    print(err)
+
+运行结果:
+Please enter the salary:abc
+invalid literal for int() with base 10: 'abc'
+
+注意： err 不是字符串，但是 Python 知道如何将它转换为一个异常的字符串表示形式。
+
+通常，这些异常信息不是很方便用户 - 如果想向用户报告错误，一般需要编写一个更具描述性的消息（说明错误与用户的某些行为相关）。这时，可以将异常消息与自己的消息相结合：
+
+try:
+    salary = int(input("Please enter the salary: "))
+except ValueError as err:
+    print("You entered incorrect salary: %s" % err)
+
+运行:
+Please enter the salary: abc
+You entered incorrect salary: invalid literal for int() with base 10: 'abc'
+
+注意： 使用 %s 将一个变量插入到格式化的字符串中，也可以将变量转换为字符串。
+
+
+6, 抛出异常
+
+在 Python 中，当发生运行时错误，就会出现相应的异常。此外，也可以使用关键字 raise 来强制引发。
+
+还可以选择为异常传递值，以说明为什么会引发异常：
+
+try:
+    salary = int(input("Please enter the salary: "))
+    if salary <= 0:
+        raise ValueError("%d is not a valid age, salary must be positive." % salary)
+except ValueError as err:
+    print("You entered incorrect salary: %s" % err)
+else:
+    print("So happy %d." % salary)
+
+运行:
+Please enter the salary: -10000
+You entered incorrect salary: -10000 is not a valid age, salary must be positive.
+
+薪资肯定是一个正整数，当输入一个负数或 0 时，我们可以抛出自己的 ValueError。
+
+注意： 之所以选择 ValueError 作为我们的异常类型，是因为它最适合这种错误。当然，这里也可以使用一个完全不合适的异常类，但应该尽量保持一致。
+
+当这样做时，它与任何其他异常具有完全相同的效果 - 控制流将立即退出 try 子句，并传递给 except 子句。这个 except 子句也可以匹配我们的异常，因为它也是一个 ValueError。
+
+也还可以自定义异常:
+
+class EvaException(BaseException): # 自定义异常需要继承异常的基类
+    def __init__(self,msg):
+        self.msg = msg
+    def __str__(self):
+        return self.msg
+try:
+    raise EvaException("自定义类型错误")
+except EvaException as err:
+    print(err)
+
+断言:
+
+# assert 条件
+ 
+assert 1 == 1
+ 
+assert 1 == 2
+
+
+try..except的方式比较if的方式的好处
+
+try..except这种异常处理机制就是取代if那种方式，让你的程序在不牺牲可读性的前提下增强健壮性和容错性
+
+异常处理中为每一个异常定制了异常类型（python中统一了类与类型，类型即类），对于同一种异常，一个except就可以捕捉到，可以同时处理多段代码的异常（无需‘写多个if判断式’）减少了代码，增强了可读性
+
+使用try..except的方式
+
+1：把错误处理和真正的工作分开来
+2：代码更易组织，更清晰，复杂的工作任务更容易实现；
+3：毫无疑问，更安全了，不至于由于一些小的疏忽而使程序意外崩溃了；
+
+注 :
+
+try...except应该尽量少用，因为它本身就是你附加给你的程序的一种异常处理的逻辑，与你的主要的工作是没有关系的
+这种东西加的多了，会导致你的代码可读性变差，只有在有些异常无法预知的情况下，才应该加上try...except，其他的逻辑错误应该尽量修正
+

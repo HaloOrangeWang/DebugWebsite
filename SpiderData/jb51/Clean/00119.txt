@@ -1,0 +1,62 @@
+在Mac上按照官网教程安装成功tensor flow后，但在程序中导入时，仍然报错，包括但不限于以下两个错误。对于这种错误，原因主要在于Mac内默认的python库比较老了，即便通过pip命令安装了新的包，python也会默认导入默认位置的包。这时候需要做的就是删除，有冲突的包，对于以下两个错误，就是分别时numpy和six两个包冲突了。
+
+可以在python命令行环境下，通过numpy.version和six.version两个命令查看当前版本，如果与预期的不一致，就可以删掉。
+
+可以通过numpy.path查看默认包的位置。
+
+删掉即可
+
+import tensorflow
+
+RuntimeError: module compiled against API version 0xa but this version of numpy is 0x9 
+Traceback (most recent call last): 
+File “”, line 1, in 
+File “/Library/Python/2.7/site-packages/tensorflow/init.py”, line 24, in 
+from tensorflow.python import * 
+File “/Library/Python/2.7/site-packages/tensorflow/python/init.py”, line 49, in 
+from tensorflow.python import pywrap_tensorflow 
+File “/Library/Python/2.7/site-packages/tensorflow/python/pywrap_tensorflow.py”, line 52, in 
+raise ImportError(msg) 
+ImportError: Traceback (most recent call last): 
+File “/Library/Python/2.7/site-packages/tensorflow/python/pywrap_tensorflow.py”, line 41, in 
+from tensorflow.python.pywrap_tensorflow_internal import * 
+File “/Library/Python/2.7/site-packages/tensorflow/python/pywrap_tensorflow_internal.py”, line 28, in 
+_pywrap_tensorflow_internal = swig_import_helper() 
+File “/Library/Python/2.7/site-packages/tensorflow/python/pywrap_tensorflow_internal.py”, line 24, in swig_import_helper 
+_mod = imp.load_module(‘_pywrap_tensorflow_internal', fp, pathname, description) 
+ImportError: numpy.core.multiarray failed to import 
+Failed to load the native TensorFlow runtime. 
+See https://www.tensorflow.org/install/install_sources#common_installation_problems 
+for some common reasons and solutions. Include the entire stack trace 
+above this error message when asking for help.
+
+Traceback (most recent call last): 
+File “”, line 1, in 
+File “/Library/Python/2.7/site-packages/tensorflow/init.py”, line 24, in 
+from tensorflow.python import * 
+File “/Library/Python/2.7/site-packages/tensorflow/python/init.py”, line 104, in 
+from tensorflow.python.platform import test 
+File “/Library/Python/2.7/site-packages/tensorflow/python/platform/test.py”, line 41, in 
+from tensorflow.python.framework import test_util as _test_util 
+File “/Library/Python/2.7/site-packages/tensorflow/python/framework/test_util.py”, line 54, in 
+from tensorflow.python.platform import googletest 
+File “/Library/Python/2.7/site-packages/tensorflow/python/platform/googletest.py”, line 35, in 
+from tensorflow.python.platform import benchmark 
+File “/Library/Python/2.7/site-packages/tensorflow/python/platform/benchmark.py”, line 120, in 
+class Benchmark(six.with_metaclass(_BenchmarkRegistrar, object)): 
+File “/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/six.py”, line 566, in with_metaclass 
+return meta(“NewBase”, bases, {}) 
+File “/Library/Python/2.7/site-packages/tensorflow/python/platform/benchmark.py”, line 115, in new 
+if not newclass.is_abstract(): 
+AttributeError: type object ‘NewBase' has no attribute ‘is_abstract' 
+import tensorflow 
+Traceback (most recent call last): 
+File “”, line 1, in 
+File “/Library/Python/2.7/site-packages/tensorflow/init.py”, line 24, in 
+from tensorflow.python import * 
+File “/Library/Python/2.7/site-packages/tensorflow/python/init.py”, line 49, in 
+from tensorflow.python import pywrap_tensorflow 
+ImportError: cannot import name pywrap_tensorflow
+
+以上这篇解决Tensorflow安装成功,但在导入时报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

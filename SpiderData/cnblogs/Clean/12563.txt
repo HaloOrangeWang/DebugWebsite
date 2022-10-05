@@ -1,0 +1,174 @@
+解决win10使用GPU跑程序遇到的一系列报错
+
+
+解决win10使用GPU跑程序遇到的一系列报错
+
+安装cupy包
+
+使用cupy包的时候报错 ImportError: DLL load failed: 找不到指定的模块。
+
+卸载cuda11.5、安装cuda10.2
+
+安装适配于cuda10.2的cudnn
+
+报错CUDA path could not be detected. Set CUDA_PATH environment variable if CuPy fails to load.
+
+报错 module 'cupy' has no attribute 'scatter_add'
+
+Anaconda配cupy环境报错
+
+报错 ModuleNotFoundError: No module named 'PIL'
+
+报错 cupy.cuda.compiler.CompileException: nvrtc: error: failed to open nvrtc-buil
+
+安装cupy包
+
+
+安装cupy包
+
+用GPU跑程序用了cupy包。
+
+用GPU跑程序用了cupy包。
+
+pip install cupy-cuda102
+
+使用cupy包的时候报错 ImportError: DLL load failed: 找不到指定的模块。
+
+
+使用cupy包的时候报错 ImportError: DLL load failed: 找不到指定的模块。
+
+这是因为我的cuda是11.5的，为了用用cupy，尝试了以下几种方法，均不行。
+1.下载cupy的cuda115版本。
+2.卸载cupy的cuda115版本，下载cupy的cuda102版本，但是此时cuda还是11.5版本。
+3.下载cuda10.2版本，此时电脑的cuda10.2和11.5共存，如下图所示。
+
+最后发现，能成功的只有一个，那就是cuda10.2+cupy的cuda102。此时电脑只能有一个cuda版本，也就是10.2，所以需要卸载cuda11.5。
+
+最后发现，能成功的只有一个，那就是cuda10.2+cupy的cuda102。此时电脑只能有一个cuda版本，也就是10.2，所以需要卸载cuda11.5。
+
+这里面有个坑也踩了。如下图所示，下载cuda10.2之前，必须要卸载完11.5！
+
+不然就会出现这种情况：
+
+这里面有个坑也踩了。如下图所示，下载cuda10.2之前，必须要卸载完11.5！
+
+不然就会出现这种情况：
+
+卸载cuda11.5、安装cuda10.2
+
+
+卸载cuda11.5、安装cuda10.2
+
+打开控制面板，卸载所有cuda11.5的文件，如下图所示
+
+cuda10.2官网网址：https://developer.nvidia.com/cuda-10.2-download-archive
+
+打开控制面板，卸载所有cuda11.5的文件，如下图所示
+
+cuda10.2官网网址：https://developer.nvidia.com/cuda-10.2-download-archive
+
+卸载完11.5，再下载10.2时候，竟然还会出现下面的警告：
+这个时候，可以无视，因为的确是先卸载完11.5后下载的10.2。
+
+卸载完11.5，再下载10.2时候，竟然还会出现下面的警告：
+这个时候，可以无视，因为的确是先卸载完11.5后下载的10.2。
+
+然后在命令行输入：出现如下状态，表示安装成功。
+
+nvcc -V
+
+此时观察NVIDA的控制面板，竟然还是11.5，不过可以无视，因为这不影响跑程序。
+
+安装适配于cuda10.2的cudnn
+
+
+安装适配于cuda10.2的cudnn
+
+官网：https://developer.nvidia.com/rdp/cudnn-archive
+安装包下载完解压
+
+把所有解压的文件放到：NVIDA GPU Computing Toolkit 里面的V10.2下面
+
+官网：https://developer.nvidia.com/rdp/cudnn-archive
+安装包下载完解压
+
+把所有解压的文件放到：NVIDA GPU Computing Toolkit 里面的V10.2下面
+
+报错CUDA path could not be detected. Set CUDA_PATH environment variable if CuPy fails to load.
+
+
+报错CUDA path could not be detected. Set CUDA_PATH environment variable if CuPy fails to load.
+
+根据报错的这个路径，打开这个environment文件。
+
+里面的cuda_path改成cuda的路径。
+
+这个路径在哪，其实就在环境变量配置里面。
+
+这个路径在哪，其实就在环境变量配置里面。
+
+把这个路径放到environment文件里，如下图所示。报错就解决了。
+
+报错 module ‘cupy’ has no attribute ‘scatter_add’
+
+
+报错 module ‘cupy’ has no attribute ‘scatter_add’
+
+把cuda降到10.2之后，改了一大堆，程序终于能运行了，可是运行一会就报这个错。
+
+把cuda降到10.2之后，改了一大堆，程序终于能运行了，可是运行一会就报这个错。
+
+查了半天，在stackoverflow上面找到了方法，使用下面这句话把cupy版本降低。
+
+查了半天，在stackoverflow上面找到了方法，使用下面这句话把cupy版本降低。
+
+pip install "cupy-cuda102<8.0.0"
+
+Anaconda配cupy环境报错
+
+
+Anaconda配cupy环境报错
+
+一开始是全部在Anaconda里面配的环境，最后发现无论怎么弄，使用cupy包总报错。
+于是直接用pip了，最后把所有需要的包又在电脑的python文件夹里装了一份。然后pycharm环境直接用了python的环境。最后能跑成。
+
+一开始是全部在Anaconda里面配的环境，最后发现无论怎么弄，使用cupy包总报错。
+于是直接用pip了，最后把所有需要的包又在电脑的python文件夹里装了一份。然后pycharm环境直接用了python的环境。最后能跑成。
+
+报错 ModuleNotFoundError: No module named ‘PIL’
+
+
+报错 ModuleNotFoundError: No module named ‘PIL’
+
+问题在于Pillow库太老了。执行以下两个命令。
+
+问题在于Pillow库太老了。执行以下两个命令。
+
+pip uninstall pillow
+pip install pillow
+
+报错 cupy.cuda.compiler.CompileException: nvrtc: error: failed to open nvrtc-buil
+
+
+报错 cupy.cuda.compiler.CompileException: nvrtc: error: failed to open nvrtc-buil
+
+还出现类似：找不到nvrtc64_101_0.dll的问题
+
+还出现类似：找不到nvrtc64_101_0.dll的问题
+
+这个问题是遇到最玄学的一次。
+
+这个问题是遇到最玄学的一次。
+
+解决办法就是，重启一下电脑。
+
+解决办法就是，重启一下电脑。
+
+重启电脑后，就不报错了，转而报module ‘cupy’ has no attribute 'scatter_add’这个错，这个错就按照上面讲的解决就完事。
+
+重启电脑后，就不报错了，转而报module ‘cupy’ has no attribute 'scatter_add’这个错，这个错就按照上面讲的解决就完事。
+
+最后GPU成功跑起来了。区别可以看到，用cpu跑程序的话，cpu占用量在80%以上，用GPU跑程序，cpu占用量只有16%
+
+最后GPU成功跑起来了。区别可以看到，用cpu跑程序的话，cpu占用量在80%以上，用GPU跑程序，cpu占用量只有16%
+

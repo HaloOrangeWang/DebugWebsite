@@ -1,0 +1,37 @@
+
+前言
+
+最近因项目需要，部署区块链的网络时候，需要一个问题，运行下载的install.sh脚本时候，提示出错
+ 
+ 然后找到该脚本文件，找到对应报错的语句，发现是python的pip没有下载好的缘故
+
+
+解决
+
+问题原因知道了，然后就下载一个Pip就好，但是下载时候又遇到该问题遇到ERROR: This script does not work on Python 2.7 The minimum supported Python version is 3.7. Please use https://bootstrap.pypa.io/pip/2.7/get-pip.py instead.
+
+
+原因
+
+其他版本也是因为新旧版本冲突出现这种报错解决方法也同样，自行修改需要的版本号
+
+
+解决方法
+
+根据你遇到的当前报错内容，拷贝报错中提供的路径，如上图所示，输入命令
+
+curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+
+再输入命令
+
+python get-pip.py
+
+成功如下图所示
+ 
+ 核验是否成功
+
+which pip # 查看安装路径
+pip -v # 查看版本号
+
+然后再执行install.sh即可成功安装。
+

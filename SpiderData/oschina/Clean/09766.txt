@@ -1,0 +1,18 @@
+在mac上ssh远程操作redhat6.2上面的virt-manager管理虚拟机！结果出现以下的错误！
+
+fsxchen:~ apple$ ssh -X root@192.168.1.3 virt-manager
+ Traceback (most recent call last):
+   File "/usr/share/virt-manager/virt-manager.py", line 383, in <module>
+     main()
+   File "/usr/share/virt-manager/virt-manager.py", line 248, in main
+     cli.setup_i18n(gettext_app, gettext_dir)
+   File "/usr/share/virt-manager/virtManager/cli.py", line 90, in setup_i18n
+     locale.setlocale(locale.LC_ALL, '')
+   File "/usr/lib64/python2.6/locale.py", line 513, in setlocale
+     return _setlocale(category, locale)
+ locale.Error: unsupported locale setting
+
+解决办法：
+
+export LC_ALL=C
+

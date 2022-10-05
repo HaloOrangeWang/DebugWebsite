@@ -1,0 +1,30 @@
+在加载meshes包的时候出现了下面的报错：
+
+library(meshes)
+
+Error: package or namespace load failed for ‘meshes’:
+
+.onLoad failed in loadNamespace() for 'rlang', details:
+
+call: NULL
+
+error: The rlang package is not properly installed.
+
+The DLL version (0.4.11) does not correspond to the package version (1.0.1).
+
+Please update rlang to the latest version.
+
+Updating packages on Windows requires precautions:
+
+<https://github.com/jennybc/what-they-forgot/issues/62>
+
+之后通过链接：https://github.com/r-lib/rlang/issues/873找到了解决办法
+
+解决办法就是输入：
+
+install.packages("rlang", type = "binary")
+
+library(meshes)
+
+成功
+

@@ -1,0 +1,39 @@
+一、场景：登录模块为弹窗，定位不到元素。排查只有一个句柄，也非driver.switch_to_alert()问题。所以认真查看元素发现最上方有一层iframe导致定位不到元素。
+
+解决方案：
+
+对于iframe结构的网页，如：显示弹窗，必须先切入到iframe才能获得其中的元素，然后正常操作定位元素（该干嘛干嘛），
+
+当要获取 iframe 外部或者跳转了页面必须退出iframe，否则后续怎么定位元素都是报错。
+
+定位iframe并切入→
+
+方法：driver.switch_to.frame()
+
+例子：browser.switch_to.frame(browser.find_element_by_id('popup_login_frame'))
+
+退出iframe→
+
+方法：
+
+driver.switch_to.default_content()
+
+二、场景：定位a标签点击时一直报错：
+
+Traceback (most recent call last):
+  File "F:/1/1.py", line 22, in <module>
+    browser.find_element_by_link_text(u'管理中心').click() #点击a标签
+  File "C:\Users\4399-1500\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webelement.py", line 80, in click
+    self._execute(Command.CLICK_ELEMENT)
+  File "C:\Users\4399-1500\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webelement.py", line 633, in _execute
+    return self._parent.execute(command, params)
+  File "C:\Users\4399-1500\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\webdriver.py", line 321, in execute
+    self.error_handler.check_response(response)
+  File "C:\Users\4399-1500\AppData\Roaming\Python\Python37\site-packages\selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.ElementClickInterceptedException: Message: Element <a class="a1" href="javascript:;"> is not clickable at point (466.5,47) because another element <div id="loginBg"> obscures it
+
+解决方案：
+
+一开始以为是元素定位不到，使用各种方法均失败，最终发现点击时被其他元素遮挡了，所以只要做休眠即可成功点击（So easy。。。）
+

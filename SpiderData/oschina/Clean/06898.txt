@@ -1,0 +1,25 @@
+动作：启动Fabric网络正常。在启动docker命令行时
+
+现象：报错，exec failed: container_linux.go:348:××××××××××
+
+分析：
+
+1、一个小时前。docker安装时默认是root安装，在/var/lib/docker目录中。因为想查看该目录下内容（镜像内容），又进不去，所以一时冲动，将docker整个目录修改为777，执行了五六秒后terminal没有反应，手动强制中止。
+
+2、当发生此错误后，第一反应是因为1中的误操作导致。以此来突破。
+
+解决：
+
+1、批量删除所有已下载镜像docker rmi `docker images -q`
+
+2、报错
+
+Error response from daemon: conflict: unable to delete 0403fd1c72c7 (must be forced) - image is referenced in multiple repositories
+ 3、解决2中错误，因为有多个依赖，只能一个个删除。即：REPOSITORY +TAG
+
+docker rmi hyperledger/fabric-tools:latest
+
+4、重新下载fabric相关镜像。
+
+5、重新启动，正常。
+

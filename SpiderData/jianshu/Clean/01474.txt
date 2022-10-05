@@ -1,0 +1,65 @@
+
+总结：python使用ctypes模块调用C++动态库，未设置参数的接收类型而引发的BUG
+
+
+一、宇视SDK抓图流程
+
+NETDEV_Init 初始化
+
+NETDEV_Login_V30 ipc设备登录
+
+NETDEV_QueryVideoChlDetailList 查询视频通道信息列表
+
+NETDEV_CaptureNoPreview 设备抓图
+
+
+二、python code
+
+使用restype 设置接收参数的类型
+
+HIKSDK.NETDEV_Login_V30.restype = ctypes.c_void_p
+
+假如不设置接收参数的类型，会抛出异常：内存地址不一致
+
+def _uni_login(address, username, password, port, channel):
+    HIKSDK.NETDEV_Init()
+    pst_dev_login_info = NETDEVDeviceLoginInfo()
+    pst_dev_login_info.szIPAddr = bytes(address, "ascii")
+    pst_dev_login_info.szUserName = bytes(username, "ascii")
+    pst_dev_login_info.szPassword = bytes(password, "ascii")
+    pst_dev_login_info.dwPort = port
+    pst_dev_login_info.dwLoginProto = 0
+    pst_dev_login_info.dwDeviceType = 1
+    pst_security_login_info = NETDEVSELogInfo()
+    login_info_1 = byref(pst_dev_login_info)
+    login_info_2 = byref(pst_security_login_info)
+    HIKSDK.NETDEV_Login_V30.restype = ctypes.c_void_p  # 设定接收登录的参数类型为c_void_p
+    lUserID = HIKSDK.NETDEV_Login_V30(login_info_1, login_info_2)
+    if lUserID == 0:
+        logging.error("unisdk failed to login (%s): %s", address, _errmsg())
+    logging.debug('unisdk._uni_login: login success：loginID = {}'.format(lUserID))
+    channel_info = NETDEVVideoChlDetailInfo()
+    # 查询视频通道信息列表
+    channel_num = HIKSDK.NETDEV_QueryVideoChlDetailList(ctypes.c_void_p(lUserID), pointer(ctypes.c_int(channel)),
+                                                        byref(channel_info))
+    if channel_num != True:
+        raise RuntimeError("unisdk failed to get channel info ({}): {}".format(address, _errmsg()))
+    logging.debug('unisdk._uni_login: address = {} channel_num  = {}'.format(address, channel_num))
+    return lUserID
+
+
+2.1 异常原因：
+
+指针类型作为返回值传递给python时，在未设置类型的时候，会发生默认截断的问题
+
+sdk日志：
+
+python日志：101200（用户不在线）
+
+
+三、参考连接
+
+https://docs.python.org/3.6/library/ctypes.html#fundamental-data-types
+
+http://icejoywoo.github.io/2018/12/10/intro-python-ctyps.html
+

@@ -1,0 +1,28 @@
+
+tempfile模块报错：PermissionError: [Errno 13] Permission denied的解决方法
+
+要解决这个问题，我们需要三个关键步骤：
+
+修改NamedTemporaryFile的参数，让文件关闭后不会自动清理。
+ 读取之前，先关闭。
+ 为了不在电脑里留下垃圾，我们另写一行代码“手动”清理这个临时文件。
+ 代码实现：
+
+import tempfile,json,os
+data=[{'name':'Jessica','lang':('Python','English'),'age':27}]
+f=tempfile.NamedTemporaryFile(mode='w',delete=False)
+#注意上面一行，delete设置为False，就不会关闭文件后自动清理了
+json.dump(data,f)
+f.close()
+#再次打开之前一定要先关闭
+print(open(f.name,'r').read())
+f.close()
+os.remove(f.name)
+#最后写的这行代码用于清理这个临时文件
+终端：[{"name": "Jessica", "lang": ["Python", "English"], "age": 27}]
+
+
+如果想对其进行操作，需要在创建文档时加上delete=False
+
+f = tempfile.NamedTemporaryFile(mode='w+', delete=False)
+

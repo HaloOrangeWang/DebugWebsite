@@ -1,0 +1,68 @@
+错误信息：pip install pandas 报错 ‘ERROR: Package 'pandas' requires a different Python: 3.5.0 not in '>=3.6'’
+
+解决方法：这是由于pip默认安装扩展包的最新版本，先去查找对应版本，再指定pandas的版本即可。
+
+time.sleep报错'str' object has no attribute 'sleep'
+
+错误信息：AttributeError: 'str' object has no attribute 'sleep'
+
+解决方法：可能是代码中把time作为了一个变量名（所以为什么一定要避免用关键字作为变量名就是这个原因）
+
+pandas对dataframe进行map(lambda x: chageNbr(x))时报TypeError错误
+
+错误信息：TypeError: argument of type 'float' is not iterable
+
+解决方法：先将要处理的列转换为str数据格式，data1['monir'].astype(str).map(lambda x: chageNbr(x))
+
+Python-运行opencv-python扩展包遇到的错误
+
+错误信息：cv2.error: OpenCV(3.4.3) C:\projects\opencv-python\opencv\modules\imgproc\src\color.cpp:181: error: (-215:Assertion failed) !_src.empty() in function 'cv::cvtColor'
+
+解决方法：图片名以及路径改成全英文。
+
+python安装docx模块出现Import Error: No module named 'exceptions'的解决方案
+
+错误信息：error ImportError: No module named 'exceptions'
+
+解决方法：通过命令行下载的docx安装包还没有完全兼容python3，估计这个安装包还只兼容python 2(python2 和python3差别还是挺大的，虽然现在python 3出来很久了，但是不少三方库还没有更新)，因此需要自己找一个兼容的包进行安装，地址为：python_docx-0.8.10-py2.py3-none-any.whl，找到python_docx-0.8.10-py2.py3-none-any.whl，点击下载到本地进行安装，安装方法可以参考：pip安装package，记住得先执行pip uninstall docx
+
+读取文件时报错Permission denied
+
+错误信息：PermissionError: [Errno 13] Permission denied
+
+解决方法：在往csv文件写入数据时手动打开了文件导致写入终止，所以Python在用某个文件的时候别去动它。
+
+Python爬虫出现错误
+
+错误信息：ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接
+
+分析原因，可能是因为使用urlopen打开网页太过频繁，引起远程主机的怀疑，被认定为是攻击行为。导致执行urlopen()后，request. read()一直卡死在那里，最后抛出异常。
+
+解决方法：这个错误是connection reset by peer.也就是传说的远端主机重置了此连接。原因可能是socket超时时间过长；request = urllib.request.urlopen(url)之后，没有进行request.close()操作；无sleep间隔，导致网站认定这种行为是攻击。
+
+urllib.request.urlopen（）报错HTTP Error 403: Forbidden
+
+错误信息：urllib.error.HTTPError: HTTP Error 403: Forbidden
+
+解决方法：之所以出现上面的异常,是因为如果用 urllib.request.urlopen 方式打开一个URL,服务器端只会收到一个单纯的对于该页面访问的请求,但是服务器并不知道发送这个请求使用的浏览器,操作系统,硬件平台等信息,而缺失这些信息的请求往往都是非正常的访问,例如爬虫。有些网站为了防止这种非正常的访问,会验证请求信息中的UserAgent(它的信息包括硬件平台、系统软件、应用软件和用户个人偏好),如果UserAgent存在异常或者是不存在,那么这次请求将会被拒绝(如上错误信息所示)，所以可以尝试在请求中加入UserAgent的信息。
+
+#如果不加上下面的这行出现会出现urllib2.HTTPError: HTTP Error 403: Forbidden错误
+    #主要是由于该网站禁止爬虫导致的，可以在请求加上头信息，伪装成浏览器访问User-Agent,具体的信息可以通过火狐的FireBug插件查询
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
+    req = urllib.request.Request(url=chaper_url, headers=headers)
+    urllib.request.urlopen(req).read()
+
+open（）函数报错
+
+错误信息：io.UnsupportedOperation: not readable
+
+解决方法：要先关闭（如果前面有打开过），才能进行读取，而且要换成只读的模式
+
+plt.show()报错
+
+错误信息：RuntimeError: In FT2Font: Can not load face.  Unknown file format.
+
+解决方法：指定图表文字字体的原因，matplotlib.font_manager.FontProperties(fname=r'F://data_temp/wordCount01.txt')，要求指定ttf文件，而这里指定的是txt文件，不改变matplotlib默认字体就可以正常出图。
+
+如有疑问请联系我，欢迎骚扰：
+

@@ -1,0 +1,120 @@
+近期小白在自学Python，写了一些代码，运行的时候遇到过各种错误，现梳理出来，给大家做个参考。
+
+一、简单类错误
+
+1.SyntaxError: unexpected EOF while parsing
+
+错误原因：
+
+一般是书写格式错误，比如少了括号，for，if语句后少了分号等，缩进不对等
+
+解决办法：
+
+对应的检查代码，根据提示的错误行进行修改。对于缩进，建议用回车或者insert键，别用空格打，容易出问题
+
+2. AttributeError: 'str' object has no attribute 'write'
+
+错误原因：
+
+比如代码是f.write()，错误说明f是字符串，不是文件。
+
+解决办法：修改对应的代码即可，正常的写入文件代码如下：
+
+with open(‘test.txt’,’’w+) as f:
+
+f.write(a)
+
+3.NameError: name 'json' is not defined
+
+错误原因:
+
+表示json函数没有定义，表明没有在一开始导入对应的库。
+
+解决办法：
+
+需要在一开始就import json。
+
+4.ModuleNotFoundError: No module named 'demjson'
+
+错误原因：
+
+表示导入的库不存在，需要先下载对应的库文件。
+
+解决办法：
+
+需要先下载demjson库，使用pip3 install demjson命令即可(如果是python2，就去掉pip后面的3)
+
+5.No such file or directory
+
+没有找到所要执行的文件，可能是文件不在当前的目录下
+
+二、进阶类错误
+
+1.TypeError: string indices must be integers
+
+错误原因：
+
+比如代码是：for i in f2['definitions']:
+
+说明f2不是字典，而是字符串。导致循环无法执行
+
+解决办法：
+
+可以利用type()检查下f2的类型。楼主这里主要是前面的json.loads将字符串转为字典没生效导致。
+
+2.TypeError: object of type 'NoneType' has no len()
+
+对于字典类，如果键的值是null，不适合用len(a)==0这种判断，这种适合’a‘:’’这种值为空的情况。
+
+3.IndexError: list assignment index out of range
+
+错误原因：
+
+列表的索引超出了列表实际值的范围，比如列表是a=[1,2,3],对应的索引是a[0]a[1]a[2],如果你使用a[3]就会报错。
+
+这种一般不会出错，而如果是在for循环里，对列表进行for循环，如果满足条件就删除列表元素，由于列表元素删除，但for循环的索引并没有变，导致for循环的索引出现问题
+
+解决办法：
+
+需要再循环后加上[:]切片。比如 for i in a[:]:
+
+4.json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+错误原因：
+
+基本上就是原JSON数据有问题，导致解析不出来，我排查可能的问题：1）字段没有值，直接为None；2）数据最后一行多了个回车；3）
+
+解决办法：
+
+将对应json数据进行检查，修改即可。可以利用JSON Online Validator and Formatter - JSON Lint 网站进行定位排查
+
+5.json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+
+错误原因：
+
+json.loads只适合读取严格规整的json，即键和值都是双引号。
+
+解决办法：
+
+json.loads()适合读取格式规整，字段和值都是双引号的JSON；ast.literal_eval()可以读取格式不规整，尤其是Python运行后以字符串的形式写入的JSON文件（核心特征，字段和值是单引号）。切换为ast.literal_eval()函数即可。别忘了一开始import ast
+
+6.ValueError: list.remove(x): x not in list
+
+错误原因：
+
+x不在列表里
+
+解决办法：
+
+List删除三个办法：
+
+list.remove(a),a必须是元素的值
+
+list.pop(a),a必须是元素的索引
+
+list.del(a)，a也必须是元素的索引
+
+7. sre_constants.error: unbalanced parenthesis at position 3
+
+使用re函数时，比如要检索括号，不能直接用’C‘，需要在前面加上转义符号。如’\(‘
+

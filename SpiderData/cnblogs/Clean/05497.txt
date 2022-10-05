@@ -1,0 +1,40 @@
+当库中现在已经有表，某个字段迁移的时候出现问题，可以使用 python manager makemigrations --fake 来新建下django的初始化文件，然后删除文件中的添加字段，再执行python manager makemigrations  xxx(app名)
+
+python manager migrate xxx(app名)
+
+2019年8月14日22:53:54
+
+在出事换项目代码的时候，在一些机器上进行第一步makemigrations account 的时候提示settings表缺失，从其他机器上把settings表dump下来再进行第一步makemigrations account，再进行migrate account。如果这时直接进行makemigrations迁移其他app的表，会报错，settings表已存在，莫名其妙的。虽然迁移脚本成功，但是在migrate的时候报错了。
+
+解决方法：在第一步执行之前，source进settings表，在第三步迁移其他app之前，删除这个settings表。迁移成功，
+
+由于在代码中加入了license验证，所以在使用的时候会爆出poc的判断。需要把poc这块逻辑给注掉。才能启动项目
+
+2019年9月9日16:39:58
+
+更换一个表的事件类型的字段名，此表中有数据，在执行 python manage.py makemigrations 的时候会提示需要给现有数据提供一个默认值，选择1，默认timezone.now，直接enter就行，再执行python manage.py migrate 来完成迁移
+
+出现的问题：
+
+在第一次执行makemigrations的时候，输入事件格式为20190909。虽然操作过去了，在migrate 的时候报错了，然后又执行了一次migrations 选择了默认的timezone.now，migrate还是不行，此时表中将update_date字段删除，但是start_date没有添加，
+
+解决：
+
+查看migrations.py文件，发现文件中是有两部操作，一步删除原有的update_date字段，一步是添加新的start_date，从而完成更换字段名的任务，根据表中的实际情况可以知道，字段是删除了，但是没有添加，所以，删除migrations.py文件中的add相关操作的代码，重新migrations一次，再migrate，OK
+
+出现的问题：
+
+完成了migrations，使用初始化0001_initail完成了migrate数据库初始化，但是数据库中并没有相关的表，再次执行也没用，
+
+解决：
+
+删除migrations.py文件中关于新建表的代码，再次执行迁移。
+
+--fake的使用，就是数据库中已经有了我们要操作得到的表，fake执行一次假命令，使不生效
+
+--zero 清空
+
+2019-9-16 18:49:59
+
+过于gj的效能报告添加，在使用命令执行的时候，报错提示表不存在，实际上表示存在的，在0001_initial文件中是有createmodel的。只是在migrate的时候使用了--fake，但是现在django不能识别，所以只能在0001_initial文件的createmodel中删除那张表，对于已经做的修改，0001_initial不会生效。然后重新makemigrations，生成0002_xxxxx操作的迁移文件，再进行迁移操作，对于有外键关联的，需要把外键管理字段也一并删除掉。
+

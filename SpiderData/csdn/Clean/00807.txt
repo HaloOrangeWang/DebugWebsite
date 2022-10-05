@@ -1,0 +1,19 @@
+1、问题：
+ python报错"ModuleNotFoundError: No module named ‘werkzeug.wrappers.json’; ‘werkzeug.wrappers’ is not a package"
+
+2、查找：
+ python环境，对版本有升级，导致脚本中引用模块报错。
+
+>> from werkzeug.contrib.fixers import ProxyFix
+
+【主要问题】
+
+将Werkzeug (0.14.1)升级到了Werkzeug (1.0.0)
+
+【解决方法】
+
+1、将Werkzeug 的版本回滚退到原来版本；
+ 2、更改脚本引用模块：
+
+>> from werkzeug.middleware.proxy_fix import ProxyFix
+

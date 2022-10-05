@@ -1,0 +1,29 @@
+一般出现在qq/微信登录，分享不回调的情况。原生和友盟等集合sdk都有出现
+
+以下三个方法都要写 `
+
+(BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
+
+(BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+
+(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation `
+
+` -(BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url{
+
+[QQApiInterface handleOpenURL:url delegate:self];
+if (YES == [TencentOAuth CanHandleOpenURL:url])
+{
+    return [TencentOAuth HandleOpenURL:url];
+}
+if([QQApiInterface handleOpenURL:url delegate:self]==YES) {
+    return YES;
+}
+
+if(YES == [WXApi handleOpenURL:url delegate:self])
+{
+    return YES;
+}
+return YES;
+
+`
+

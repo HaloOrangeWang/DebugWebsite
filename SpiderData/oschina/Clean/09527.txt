@@ -1,0 +1,51 @@
+问题描述：使用Fluid编写机器翻译模型，报错
+
+问题描述：使用Fluid编写机器翻译模型，报错
+
+报错输出：
+
+报错输出：
+
+Traceback (most recent call last):
+  File "train.py", line 173, in <module>
+    train()
+  File "train.py", line 63, in train
+    max_length=args.max_length)
+  File "/Users/jizhi/Desktop/Paddle/models/fluid/PaddleNLP/neural_machine_translation/rnn_search/attention_model.py", line 81, in seq_to_seq_net
+    input_seq=src_embedding, gate_size=encoder_size)
+  File "/Users/jizhi/Desktop/Paddle/models/fluid/PaddleNLP/neural_machine_translation/rnn_search/attention_model.py", line 59, in bi_lstm_encoder
+    size=gate_size * 4, use_peepholes=False)
+TypeError: dynamic_lstm() missing 1 required positional argument: 'input'
+
+相关代码：
+
+forward, _ = fluid.layers.dynamic_lstm(
+            size=gate_size * 4, use_peepholes=False)
+        input_reversed_proj = fluid.layers.fc(input=input_seq,
+                                              size=gate_size * 4,
+                                              act='tanh',
+                                              bias_attr=False)
+reversed, _ = fluid.layers.dynamic_lstm(
+    input=input_reversed_proj,
+    size=gate_size * 4,
+    is_reverse=True,
+    use_peepholes=False)
+
+解决方法：
+
+forward, _ = fluid.layers.dynamic_lstm(
+        input=input_forward_proj,size=gate_size * 4, use_peepholes=False)
+        input_reversed_proj = fluid.layers.fc(input=input_seq,
+                                              size=gate_size * 4,
+                                              act='tanh',
+                                              bias_attr=False)
+reversed, _ = fluid.layers.dynamic_lstm(
+    input=input_reversed_proj,
+    size=gate_size * 4,
+    is_reverse=True,
+    use_peepholes=False)
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

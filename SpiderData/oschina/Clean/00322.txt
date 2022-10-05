@@ -1,0 +1,27 @@
+#path 是文件路径
+
+f=open('C:\Users\jingqiu\Desktop\New Text Document.txt')
+
+结果报错SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape
+
+文件路径加 r 变成 f=open(r'C:\Users\jingqiu\Desktop\New Text Document.txt')
+
+或者用f=open('C:\\Users\\jingqiu\\Desktop\\New Text Document.txt')
+
+然后f.read()结果是。。。。。。。。。
+
+Traceback (most recent call last):
+  File "<pyshell#4>", line 1, in <module>
+    f.read()
+  File "C:\Users\xiuwe\AppData\Local\Programs\Python\Python37\lib\encodings\cp1252.py", line 23, in decode
+    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8d in position 17: character maps to <undefined>
+
+编码问题
+
+f = open(r'C:\Users\jingqiu\Desktop\New Text Document.txt',encoding='utf-8')
+
+f.read()
+
+OK ^_^
+

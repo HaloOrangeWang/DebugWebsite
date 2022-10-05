@@ -1,0 +1,14 @@
+部署到线上的项目正常运行一年，今天早上突然报FileNotFoundError: [Errno 2] No such file or directory: '/usr/lib/jvm'错误。
+
+JPype是一个能够让 python 代码方便地调用 Java 代码的工具，从而克服了 python 在某些领域（如服务器端编程）中的不足。
+JPype的实际运行环境仍然是python runtime，只是在运行期间启动了一个嵌入的jvm。
+
+找不到jvm，大概原因是环境变量没有生效。
+
+平时在命令行中能直接运行java，是因为java所在的bin目录被添加到PATH，且由export PATH后作为环境变量生效。但是JAVA_HOME只是作为普通变量，使用os.getenv()的时候获取环境变量时找不到JAVA_HOME，所以推测应该只要将JAVA_HOME前面添加export，重启项目即可。
+
+解决办法：
+在全局配置文件/etc/profile或个人配置文件~/.bashrc或~/.bash_profile中添加export JAVA_HOME即可，如下是我的/etc/profile的设置：
+
+结束！
+

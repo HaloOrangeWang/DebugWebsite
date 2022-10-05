@@ -1,0 +1,29 @@
+用os模块读取文件夹中文件
+
+原来的代码：
+
+import os
+from scipy.misc import imread
+
+filenames=os.listdir(r'./unprocess')
+for filename in filenames:
+    image=imread(filename)
+    print(image)
+
+python此时只会处理文件夹中第一个文件，在处理第二个文件时会报错
+
+[Errno 2] No such file or directory: 'WIN_20190315_10_52_23_Pro.jpg'
+
+提示找不到文件路径，但是报错文件明显就在文件夹中，
+
+问题在imread()，Image.open()在读取文件时会自动跳出当前路径，读取与py代码文件同级目录下的文件，不会进入文件夹中找相应文件
+
+修改：
+
+filenames=os.listdir(r'./unprocess')
+for filename in filenames:
+    image=imread(os.path.join(r'./unprocess', filename))
+    print(image)
+
+问题即得到解决
+

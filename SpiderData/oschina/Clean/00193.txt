@@ -1,0 +1,38 @@
+在安装S_S server时，在Debian上会出现类似如下的报错：
+
+File "/usr/local/bin/ssserver", line 11, in <module>
+    sys.exit(main())
+  File "/usr/local/lib/python2.7/dist-packages/shadowsocks/server.py", line 34, in main
+    config = shell.get_config(False)
+  File "/usr/local/lib/python2.7/dist-packages/shadowsocks/shell.py", line 262, in get_config
+    check_config(config, is_local)
+  File "/usr/local/lib/python2.7/dist-packages/shadowsocks/shell.py", line 124, in check_config
+    encrypt.try_cipher(config['password'], config['method'])
+  File "/usr/local/lib/python2.7/dist-packages/shadowsocks/encrypt.py", line 44, in try_cipher
+    Encryptor(key, method)
+  File "/usr/local/lib/python2.7/dist-packages/shadowsocks/encrypt.py", line 83, in __init__
+    random_string(self._method_info[1]))
+  File "/usr/local/lib/python2.7/dist-packages/shadowsocks/encrypt.py", line 109, in get_cipher
+    return m[2](method, key, iv, op)
+  File "/usr/local/lib/python2.7/dist-packages/shadowsocks/crypto/rc4_md5.py", line 33, in create_cipher
+    return openssl.OpenSSLCrypto(b'rc4', rc4_key, b'', op)
+  File "/usr/local/lib/python2.7/dist-packages/shadowsocks/crypto/openssl.py", line 76, in __init__
+    load_openssl()
+  File "/usr/local/lib/python2.7/dist-packages/shadowsocks/crypto/openssl.py", line 52, in load_openssl
+    libcrypto.EVP_CIPHER_CTX_cleanup.argtypes = (c_void_p,)
+  File "/usr/lib/python2.7/ctypes/__init__.py", line 375, in __getattr__
+    func = self.__getitem__(name)
+  File "/usr/lib/python2.7/ctypes/__init__.py", line 380, in __getitem__
+    func = self._FuncPtr((name_or_ordinal, self))
+AttributeError: /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1: undefined symbol: EVP_CIPHER_CTX_cleanup
+
+看报错应该是/usr/local/lib/python2.7/dist-packages/shadowsocks/crypto/openssl.py文件中的EVP_CIPHER_CTX_cleanup没有定义。
+
+根据网上的攻略，可以这样修改：
+
+sed -i "s/libcrypto.EVP_CIPHER_CTX_cleanup/libcrypto.EVP_CIPHER_CTX_reset/g" /usr/local/lib/python2.7/dist-packages/shadowsocks/crypto/openssl.py
+
+把文件中的EVP_CIPHER_CTX_cleanup都改成EVP_CIPHER_CTX_reset.
+
+再启动服务，可以正常运行了。
+

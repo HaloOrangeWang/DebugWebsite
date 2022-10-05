@@ -1,0 +1,54 @@
+描述：
+
+最开始在测试环境装了mysql8，用来作为airflow后端的metadata存储；
+
+在装了mysql8之后，通过pip3安装了mysqlclient=1.3.14；但是安装过程是在单独的venv环境中安装的。系统的python3环境中并没有安装该库。
+
+为了进行其他功能测试，将mysql8卸载，安装了mysql5.7.28。之后airflow运行不起来了，报错：
+
+删除venv环境，重建venv环境，重新在venv环境中安装mysqlclient=1.3.14，但是依然报错。
+
+在venv的lib库根目录下查看mysqlclient的so文件，确实找不到libmysqlclient.so.21：
+
+在网上搜so.21，发现该so文件是属于mysql-community-libs-8.xxx这个rpm包中包含的so文件。因此怀疑是我的mysql8没有卸载干净，比如一些头文件没有删掉，在安装mysqlclient的时候，还是编译了mysql8的so文件。
+
+在网上搜so.21，发现该so文件是属于mysql-community-libs-8.xxx这个rpm包中包含的so文件。因此怀疑是我的mysql8没有卸载干净，比如一些头文件没有删掉，在安装mysqlclient的时候，还是编译了mysql8的so文件。
+
+于是卸载所有mysql的rpm包，找到所有mysql目录遗留文件删除，再通过yum自动安装mysql-community-server
+
+先安装mysql的yum源
+
+rpm -ivh https://dev.mysql.com/get/mysql80-community-release-el6-3.noarch.rpm
+检查yum源的repo，确保mysql5版本的源启用，其他版本的处于禁用状态，如果不对的话，使用yum-config-manager --disable xxx或者yum-config-manager --enable xxx处理
+
+yum repolist enabled | grep "mysql.*-community.*"
+yum repolist all | grep mysql
+
+详细操作内容看mysql官方文档： Installing MySQL on Linux Using the MySQL Yum Repository
+
+于是卸载所有mysql的rpm包，找到所有mysql目录遗留文件删除，再通过yum自动安装mysql-community-server
+
+先安装mysql的yum源
+
+rpm -ivh https://dev.mysql.com/get/mysql80-community-release-el6-3.noarch.rpm
+
+检查yum源的repo，确保mysql5版本的源启用，其他版本的处于禁用状态，如果不对的话，使用yum-config-manager --disable xxx或者yum-config-manager --enable xxx处理
+
+详细操作内容看mysql官方文档： Installing MySQL on Linux Using the MySQL Yum Repository
+
+没有安装mysql-community-devel-5.7.28-1.el6.x86_64，要手动安装下。
+
+再重新删除venv环境，重建venv环境，重新在venv环境中安装mysqlclient=1.3.14，但是依然报错。
+
+但是在pip安装mysqlclient的时候看到这样的日志：
+
+这个whl居然是从cache中读取的。。。
+
+找到cache中的文件，copy出来解压，发现一个so
+
+确凿无疑，是因为pip缓存了mysql8时候的库文件导致的，删除pip的cache，再重新安装。
+
+再重新检查venv下的库文件，果然依赖问题已经解决。
+
+注意 操作过程请先source到venv下
+

@@ -1,0 +1,19 @@
+
+场景:
+
+spring boot应用IDEA中正常运行，但maven执行报错。报错内容是：找不到另外一个包的依赖。观察日志出现这么一行：[INFO] --- spring-boot-maven-plugin:2.4.1:repackage (repackage)
+
+
+原因：
+
+pom.xml文件中同时引入了 maven-compiler-plugin 、spring-boot-maven-plugin 两个插件，都生效了并产生了冲突。
+
+
+解决方式：
+
+两种方式选其一：
+
+1、保留 maven-compiler-plugin， 那么就保持之前的mvn命令操作就行；
+
+2、保留 spring-boot-maven-plugin，那么maven命令需要用 mvn package spring-boot:repackage 、spring-boot:run 等命令（剩下的自己查，不是本文重点哈）
+

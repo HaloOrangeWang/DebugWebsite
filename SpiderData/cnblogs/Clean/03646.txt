@@ -1,0 +1,83 @@
+解决办法：
+
+将项目所在的根目录添加到sys.path中
+
+在入口文件中加入如下代码：
+
+import sys
+import os
+
+# 将 项目的根目录添加到sys.path中
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))    
+sys.path.append(BASE_DIR)
+
+# 导入包或模块
+from db.mysql.my_connect import connect
+
+一、背景
+
+最近在写Python自动化项目，遇到导包问题，明明导入了，运行时仍报 ImportError ，说明导包的姿势不正确。
+一个稍微复杂点的 Python 项目，都会有一定的目录结构，也就是听上去高大上的框架结构，如下：
+PythonProjectDemo
+	├─bin
+	│      main.py
+	│      __init__.py
+	│
+	├─common
+	│      __init__.py
+	│
+	├─db
+	│  │  __init__.py
+	│  │
+	│  ├─mongo
+	│  │      mongodb_connect.py
+	│  │      __init__.py
+	│  │
+	│  └─mysql
+	│          my_connect.py
+	│          __init__.py
+	│
+	└─view
+			__init__.py
+ 
+目录说明：
+       bin ：程序运行入口
+      common：通用包
+      db：数据库相关包，下面又包含MySQL和mongo两个包
+      view：视图包
+ 
+如果想在bin/main.py中导入db相关的模块，有的同学可能想这样写：
+from db.mysql.my_connect import connect
+无疑上面导入肯定会报错，因为main.py 和 db下的mysql不在同一个路径下。
+
+二、Python 导入模块工作原理
+Python 在导入模块时，会从一下路径进行查询：
+1、程序的主目录
+2、PTYHONPATH目录（如果已经进行了设置）
+3、标准连接库目录
+以上三个目录组成了一个list，可通过sys.path来查看
+在导包时就会从sys.path中进行搜索，如果搜索不到，则报ImportError
+
+sys.path输出如下
+
+所以直接通过 from db.mysql.my_connect import connect 是无法导入的
+
+三、解决办法
+思路：
+	1、将需要导入的包或者模块添加到PTYHONPATH目录(不推荐) 
+	2、将需要导入的包或者模块添加到sys.path中
+	在main.py中添加如下代码
+	import sys
+	sys.path.append(r"H:\PycharmProjects\untitled4\PythonProjectDemo")
+	from db.mysql.my_connect import connect
+	运行未报错
+但是"H:\PycharmProjects\untitled4\PythonProjectDemo"代码写死了，不灵活。在别的机器上可能就无法运行了
+我们可借助os模块动态获得项目路径
+__file__:运行文件的文件名，main.py
+
+四、最终代码
+
+在main.py中的开始添加如下代码
+
+更多分享请关注微信公众号
+

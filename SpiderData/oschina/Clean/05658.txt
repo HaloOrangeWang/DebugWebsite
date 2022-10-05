@@ -1,0 +1,63 @@
+报错:Unsupported field: HourOfDay
+
+这个错误就比较搞笑也比较低级了.
+
+代码如下
+
+LocalDate now = LocalDate.now();
+String year = now.format(DateTimeFormatter.ofPattern("yyyy"));
+String hour = now.format(DateTimeFormatter.ofPattern("MM-dd-HH"));
+
+报错如下
+
+Exception in thread "main" java.time.temporal.UnsupportedTemporalTypeException: Unsupported field: HourOfDay
+	at java.time.LocalDate.get0(LocalDate.java:680)
+	at java.time.LocalDate.getLong(LocalDate.java:659)
+	at java.time.format.DateTimePrintContext.getValue(DateTimePrintContext.java:298)
+	at java.time.format.DateTimeFormatterBuilder$NumberPrinterParser.format(DateTimeFormatterBuilder.java:2540)
+	at java.time.format.DateTimeFormatterBuilder$CompositePrinterParser.format(DateTimeFormatterBuilder.java:2179)
+	at java.time.format.DateTimeFormatter.formatTo(DateTimeFormatter.java:1746)
+	at java.time.format.DateTimeFormatter.format(DateTimeFormatter.java:1720)
+	at java.time.LocalDate.format(LocalDate.java:1691)
+	at com.feiyangshop.recommendation.HdfsHandler.main(HdfsHandler.java:21)
+
+我还追踪到了jdk源码中查看.
+
+private int get0(TemporalField field) {
+        switch ((ChronoField) field) {
+            case DAY_OF_WEEK: return getDayOfWeek().getValue();
+            case ALIGNED_DAY_OF_WEEK_IN_MONTH: return ((day - 1) % 7) + 1;
+            case ALIGNED_DAY_OF_WEEK_IN_YEAR: return ((getDayOfYear() - 1) % 7) + 1;
+            case DAY_OF_MONTH: return day;
+            case DAY_OF_YEAR: return getDayOfYear();
+            case EPOCH_DAY: throw new UnsupportedTemporalTypeException("Invalid field 'EpochDay' for get() method, use getLong() instead");
+            case ALIGNED_WEEK_OF_MONTH: return ((day - 1) / 7) + 1;
+            case ALIGNED_WEEK_OF_YEAR: return ((getDayOfYear() - 1) / 7) + 1;
+            case MONTH_OF_YEAR: return month;
+            case PROLEPTIC_MONTH: throw new UnsupportedTemporalTypeException("Invalid field 'ProlepticMonth' for get() method, use getLong() instead");
+            case YEAR_OF_ERA: return (year >= 1 ? year : 1 - year);
+            case YEAR: return year;
+            case ERA: return (year >= 1 ? 1 : 0);
+        }
+        throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+    }
+
+最后把异常抛出的代码在这.
+
+说明我在now.format(DateTimeFormatter.ofPattern("MM-dd-HH"));的HH是不在case之中的.
+
+为什么case中只有年月日,没有小时和分秒呢?
+
+emmmmm.
+
+答案就是:我用错类了
+
+应该使用LocalDateTime这个类.这个类包含时分秒.
+
+LocalDateTime now = LocalDateTime.now();
+String year = now.format(DateTimeFormatter.ofPattern("yyyy"));
+String hour = now.format(DateTimeFormatter.ofPattern("MM-dd-HH"));
+
+
+FIN
+

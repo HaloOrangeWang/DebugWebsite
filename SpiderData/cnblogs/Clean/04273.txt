@@ -1,0 +1,16 @@
+　　在安装好CentOS和OpenCV后，在终端输入python，在输入import cv2。却报错：ImportError:Mo module named cv2.浏览Python下文件夹发现cv2.so。原因是没有添加相应路径。解决办法：
+
+1.使用：find / -name "cv2.so"   全盘寻找
+
+我找到的路径为：
+
+/usr/local/lib/python2.7/site-packages/cv2.so
+
+2.终端输入：vi ~/.bashrc
+
+在最下方输入     export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages
+
+保存。执行 source ~/.bashrc使路径立即生效。
+
+3.在终端输入Python，输入import cv2.这次立即成功。
+

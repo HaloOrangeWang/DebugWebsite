@@ -1,0 +1,36 @@
+为了解决生产环境的bug，模拟生产环境，我使用了nginx，在安装启动的过程中，出现了很多问题。
+
+1、nginx下载地址
+
+　　http://nginx.org/en/download.html 这是nginx的下载地址，下载稳定版
+
+2、安装
+
+　　解压压缩包后，将解压后文件放到没有中文路径的目录下（若有中文，则报错log显示No mapping for the Unicode character exists in the target multi-byte code page）
+
+3、启动
+
+　　可以双击nginx.exe启动，或者通过命令行进入对应路径，使用start nginx命令启动。启动成功后，在logs文件夹下，会多出一个nginx.pid的文件，在任务管理器中也会出现nginx.exe进程（可能会有多个）。
+
+　　在这一步，启动的时候出现了报错，查询错误日志，显示bind() to 0.0.0.0:80 failed (10013: An attempt was made to access a socket in a way forbidden by its access permissions)。查询官网后，发现引起该报错的，有三种可能。
+
+　　1）防火墙开启；
+
+　　2）端口被占用；
+
+　　3）尝试修改端口；
+
+　　我的本地防火墙没开，而且也没有修改过端口，因此直接定位为第二个原因。
+
+　　通过命令行netstat -aon|findstr "80"，查看端口被哪个进程占用。然后根据对应的pid进行再次查询，tasklist | findstr "pid号"，查询具体的进程名称。如果查询的结果，进程并不重要，可以直接打开任务管理器关闭该进程，再重新启动nginx，就会正常。但是，我查询的结果为一个系统进程，不能通过任务管理器关闭，因此，我们需要更改注册表，是端口不再被占用，然后重启电脑。
+
+　　在搜索框输入regedit，进入注册表编辑器，然后找到HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\HTTP路径，找到里边的start（一个reg_dword文件），将数值由3改为0，保存修改后，重启电脑，使修改生效。
+
+　　重启后，再次启动nginx.exe,启动就能成功了。
+
+4、关闭
+
+　　可以通过使用命令行进入对应路径，然后使用nginx.exe -s stop来结束进程，但是这个命令可能不会保留相关信息。
+
+　　推荐使用nginx.exe -s quit来结束进程，可以保留完整的相关信息。
+

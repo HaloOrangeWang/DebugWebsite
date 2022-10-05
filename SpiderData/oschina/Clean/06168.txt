@@ -1,0 +1,290 @@
+Python3 与 Django 连接数据库，出现了报错：Error loading MySQLdb module: No module named 'MySQLdb'。原因如下：
+在 python2 中，使用 pip install mysql-python 进行安装连接MySQL的库，使用时 import MySQLdb 进行使用；
+在 python3 中，改变了连接库，改为了 pymysql 库，使用pip install pymysql 进行安装，直接导入即可使用；
+但是在 Django 中， 连接数据库时使用的是 MySQLdb 库，这在与 python3 的合作中就会报以下错误了：
+
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: No module named 'MySQLdb'
+
+解决方法：在 __init__.py 文件中添加以下代码即可
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+找了一下却没有找到 install_as_MySQLdb() 这个方法的源码，不过顾名思义应该是让 Django 把 pymysql 当成 MySQLdb 来使用吧.出现这个问题可能是另外一个很基本的原因，就是没有安装相关库，这个直接用 pip 安装就可以了.
+
+==========================================================================================
+什么是PyMySQL
+PyMySQL是Python3.x版本中用于连接MySQL服务器的一个库，Python2.x中则使用mysqldb。
+
+PyMySQL安装
+在使用PyMySQL之前，我们需要确保PyMySQL已经安装。
+PyMySQL下载地址：https://github.com/PyMySQL/PyMySQL
+如果还未安装，我们可以使用以下命令安装最新版的PyMySQL：
+
+$ pip install PyMySQL
+
+如果你的系统不支持pip命令，可以使用以下方式安装：
+1）使用git命令下载安装包安装（也可以手动下载）
+
+$ git clone https://github.com/PyMySQL/PyMySQL
+$ cd PyMySQL
+$ python3 setup.py install
+
+2）如果需要制定版本号，可以使用curl命令来安装
+
+# X.X 为PyMySQL 的版本号
+$ curl -L https://github.com/PyMySQL/PyMySQL/tarball/pymysql-X.X | tar xz
+$ cd PyMySQL*
+$ python3 setup.py install
+
+注意：请确保您有root权限来安装上述模块。
+
+数据库连接
+连接数据库前，请先确认以下事项：
+-  已经创建数据库TESTDB
+-  在TESTDB数据库中您已经创建了表EMPLOYEE
+-  EMPLOYEE表字段为FIRST_NAME,LAST_NAME,AGE,SEX和INCOME
+-  连接数据库TESTDB使用的用户名为“testuser”，密码为“test123”，可以自己设定或者直接使用root用户名及其密码，Mysql数据库用户授权请使用Grant命令
+-  在你的机子上已经安装了PyMySQL模块
+
+实例说明
+以下实例链接Mysql的TESTDB数据库：
+
+#!/usr/bin/python3
+__author__ = 'mayi'
+ 
+import pymysql
+ 
+# 打开数据库连接
+db = pymysql.connect("localhost","testuser","test123","TESTDB" )
+ 
+# 使用 cursor() 方法创建一个游标对象 cursor
+cursor = db.cursor()
+ 
+# 使用 execute() 方法执行 SQL 查询 
+cursor.execute("SELECT VERSION()")
+ 
+# 使用 fetchone() 方法获取单条数据.
+data = cursor.fetchone()
+ 
+print ("Database version : %s " % data)
+ 
+# 关闭数据库连接
+db.close()
+
+创建数据库表
+如果数据库连接存在我们可以使用execute()方法来为数据库创建表，如下所示创建表EMPLOYEE：
+
+#!/usr/bin/python3
+__author__ = 'mayi'
+ 
+import pymysql
+ 
+# 打开数据库连接
+db = pymysql.connect("localhost","testuser","test123","TESTDB" )
+ 
+# 使用 cursor() 方法创建一个游标对象 cursor
+cursor = db.cursor()
+ 
+# 使用 execute() 方法执行 SQL，如果表存在则删除
+cursor.execute("DROP TABLE IF EXISTS EMPLOYEE")
+ 
+# 使用预处理语句创建表
+sql = """CREATE TABLE EMPLOYEE (
+ FIRST_NAME CHAR(20) NOT NULL,
+ LAST_NAME CHAR(20),
+ AGE INT, 
+ SEX CHAR(1),
+ INCOME FLOAT )"""
+ 
+cursor.execute(sql)
+ 
+# 关闭数据库连接
+db.close()
+
+数据库插入操作
+以下实例使用执行SQL Insert语句向表EMPLOYEE插入记录：
+
+#!/usr/bin/python3
+__author__ = 'mayi'
+ 
+import pymysql
+ 
+# 打开数据库连接
+db = pymysql.connect("localhost","testuser","test123","TESTDB" )
+ 
+# 使用cursor()方法获取操作游标 
+cursor = db.cursor()
+ 
+# SQL 插入语句
+sql = """INSERT INTO EMPLOYEE(FIRST_NAME,
+ LAST_NAME, AGE, SEX, INCOME)
+ VALUES ('Mac', 'Mohan', 20, 'M', 2000)"""
+try:
+ # 执行sql语句
+ cursor.execute(sql)
+ # 提交到数据库执行
+ db.commit()
+except:
+ # 如果发生错误则回滚
+ db.rollback()
+ 
+# 关闭数据库连接
+db.close()
+
+以上例子也可以写成如下形式：
+
+#!/usr/bin/python3
+__author__ = 'mayi'
+ 
+import pymysql
+ 
+# 打开数据库连接
+db = pymysql.connect("localhost","testuser","test123","TESTDB" )
+ 
+# 使用cursor()方法获取操作游标 
+cursor = db.cursor()
+ 
+# SQL 插入语句
+sql = "INSERT INTO EMPLOYEE(FIRST_NAME, \
+ LAST_NAME, AGE, SEX, INCOME) \
+ VALUES ('%s', '%s', '%d', '%c', '%d' )" % \
+ ('Mac', 'Mohan', 20, 'M', 2000)
+try:
+ # 执行sql语句
+ cursor.execute(sql)
+ # 执行sql语句
+ db.commit()
+except:
+ # 发生错误时回滚
+ db.rollback()
+ 
+# 关闭数据库连接
+db.close()
+
+数据库查询操作
+Python查询Mysql使用fetchone()方法获取单条数据，使用fetchall()方法获取多条数据。
+-  fetchone()：该方法获取下一个查询结果集。结果集是一个对象
+-  fetchall()：接收全部的返回结果行
+-  rowcount：这是一个只读属性，并返回执行execute()方法后影响的行数
+
+实例说明：
+查询EMPLOYEE表中salary（工资）字段大于1000的所有数据：
+
+#!/usr/bin/python3
+__author__ = 'mayi'
+ 
+import pymysql
+ 
+# 打开数据库连接
+db = pymysql.connect("localhost","testuser","test123","TESTDB" )
+ 
+# 使用cursor()方法获取操作游标 
+cursor = db.cursor()
+ 
+# SQL 查询语句
+sql = "SELECT * FROM EMPLOYEE \
+ WHERE INCOME > '%d'" % (1000)
+try:
+ # 执行SQL语句
+ cursor.execute(sql)
+ # 获取所有记录列表
+ results = cursor.fetchall()
+ for row in results:
+ fname = row[0]
+ lname = row[1]
+ age = row[2]
+ sex = row[3]
+ income = row[4]
+ # 打印结果
+ print ("fname=%s,lname=%s,age=%d,sex=%s,income=%d" % \
+ (fname, lname, age, sex, income ))
+except:
+ print ("Error: unable to fecth data")
+ 
+# 关闭数据库连接
+db.close()
+
+数据库更新操作
+更新操作用于更新数据表的数据，以下实例将TESTDB表中的SEX字段全部修改为'M'，AGE字段递增1：
+
+#!/usr/bin/python3
+__author__ = 'mayi'
+ 
+import pymysql
+ 
+# 打开数据库连接
+db = pymysql.connect("localhost","testuser","test123","TESTDB" )
+ 
+# 使用cursor()方法获取操作游标 
+cursor = db.cursor()
+ 
+# SQL 更新语句
+sql = "UPDATE EMPLOYEE SET AGE = AGE + 1
+ WHERE SEX = '%c'" % ('M')
+try:
+ # 执行SQL语句
+ cursor.execute(sql)
+ # 提交到数据库执行
+ db.commit()
+except:
+ # 发生错误时回滚
+ db.rollback()
+ 
+# 关闭数据库连接
+db.close()
+
+删除操作
+删除操作用于删除数据表中的数据，以下实例演示了删除数据表EMPLOYEE中AGE大于20的所有数据：
+
+#!/usr/bin/python3
+__author__ = 'mayi'
+ 
+import pymysql
+ 
+# 打开数据库连接
+db = pymysql.connect("localhost","testuser","test123","TESTDB" )
+ 
+# 使用cursor()方法获取操作游标 
+cursor = db.cursor()
+ 
+# SQL 删除语句
+sql = "DELETE FROM EMPLOYEE WHERE AGE > '%d'" % (20)
+try:
+ # 执行SQL语句
+ cursor.execute(sql)
+ # 提交修改
+ db.commit()
+except:
+ # 发生错误时回滚
+ db.rollback()
+ 
+# 关闭连接
+db.close()
+
+执行事务
+事务机制可
+事务应该具有4个属性：原子性、一致性、隔离性、持久性。这四个属性通常称为ACID特性。
+-  原子性（atomicity）。一个事务是一个不可分割的工作单位，事务中包括的诸操作要么都做，要么都不做。
+-  一致性（consistency）。事务必须是使数据库从一个一致性状态变到另一个一致性状态。一致性与原子性是密切相关的。
+-  隔离性（isolation）。一个事务的执行不能被其他事务干扰。即一个事务内部的操作及使用的数据对并发的其他事务是隔离的，并发执行的各个事务之间不能互相干扰。
+-  持久性（durability）。持续性也称永久性（permanence），指一个事务一旦提交，它对数据库中数据的改变就应该是永久性的。接下来的其他操作或故障不应该对其有任何影响。
+
+实例说明：
+
+# SQL删除记录语句
+sql = "DELETE FROM EMPLOYEE WHERE AGE > '%d'" % (20)
+try:
+ # 执行SQL语句
+ cursor.execute(sql)
+ # 向数据库提交
+ db.commit()
+except:
+ # 发生错误时回滚
+ db.rollback()
+
+对于支持事务的数据库，在Python数据库编程中，当游标建立之时，就自动开始了一个隐形的数据库事务。
+commit()方法游标的所有更新操作，rollback()方法回滚当前游标的所有操作。每一个方法都开始了一个新的事务。
+
+错误处理
+

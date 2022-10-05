@@ -1,0 +1,154 @@
+
+一、SVN报错svn: E155036
+
+问题描述
+
+执行脚本文件后，报错如下：
+
+svn: E155036: Please see the 'svn upgrade' command
+
+svn: E155036: The working copy at '/Users/XXXXXXXXXX'
+
+解决方案
+
+使用如下命令，到项目所在目录下
+
+svn upgrade
+
+如果没有在项目目录下，则需要指定目录
+
+svn upgrade /Users/XXXXXXXXXX
+
+
+二、MacOS任何来源不见了
+
+打开终端后 ，在命令提示后输入
+
+sudo spctl --master-disable
+
+并按下回车执行，如下图所示：
+
+输入密码，未报错即可。如下图所示：
+
+任何来源出现
+
+打开终端后 ，在命令提示后输入
+
+sudo spctl --master-disable
+
+并按下回车执行，如下图所示：
+
+输入密码，未报错即可。如下图所示：
+
+任何来源出现
+
+
+三、 Xcode真机调试报错：This application’s application-identifier entitlement does not match that of the installed application. These values must match for an upgrade to be allowed.
+
+解决办法
+
+application-identifier冲突,把手机上的软件卸载一下就OK了。
+
+
+四、安装Command line tools
+
+第一步：打开终端，输入以下命令后按回车键
+
+xcode-select --install
+
+第二步：Xcode中查看，是否安装成功。
+
+
+五、Liclipse错误：使用Liclipse导入Pythhon工程后，提示Python not configured。如下图所示：
+
+解决方法
+
+首次在liclipse中导入python工程时，不仅要加入python插件。还需要配置python插件。
+
+勾选如下选项，会弹出一个设置python插件提示窗口。
+
+勾选后，继续导入python工程，会弹出如下弹窗。
+
+选择advanced auto-config，自动配置python插件。即可解决Python not configured问题。
+
+
+六、Xcode编译提示：xib: error: Illegal Configuration: Compiling IB documents for earlier than iOS 7 is no longer supported.如下图所示：
+
+解决方法
+
+选择如下图所示内容后，重启Xcode即可。
+
+
+七、Xcode编译提示：lexical or preprocessor issue如下图所示：
+
+解决方法
+
+发生问题时，我使用的是Xcode9。通过更换Xcode7真机调试解决。
+
+
+八、Xcode：使用低版本Xcode运行调试高版本的真机
+
+1、在最新的Xcode中右键finder，前往这个路径/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/DeviceSupport,然 后拷贝一份11.0或任意您真机的版本文件
+	2、再到Xcode7或者低版本Xcode中，前往以上路径，复制进去就可以了。如下图所示：
+
+
+九、Xcode编译报错：The executable was signed with invalid entitlements. 如下图所示：
+
+解决方法
+
+Project - TARGETS - 项目目标名称 - Build Settings - Code Signing Entitlements 将其值置为空。如下图所示：
+
+
+
+xcode中 报错sqlite3_XXX
+
+“Link Binary With Libraries”中点击 “+”，点“Add Other”，这时候按下“Command+Shift+G”，输入“/usr/lib”进行搜索，可以看到 “libsqlite3.0.tbd”，
+
+https://blog.csdn.net/axing1991/article/details/51923494
+
+https://blog.csdn.net/xy_26207005/article/details/51240952
+
+
+十、iOS项目运行出现警告：Found an unexpected Mach-O header code: 0x72613c21？
+
+错误原因
+
+用了一个x.framework，而这个framework是一个static的library，把他添加在Embedded Binaries里面了。
+
+解决方法
+
+从Embedded Binaries中移除那个framework，把这个framework添加在Link Frameworks and Libraries里面即可。
+
+
+十一、打开xcode工程后报错“Failed to load project at ‘'XXXXX ",incompatible project version”
+
+解决方法
+
+1. 显示XXXX.xcodeproj 包内容
+
+2. 打开project.pbxproj文件
+
+3. 修改objectVersion = 46 或 更低
+
+问题原因
+
+使用低版本Xcode 打开高版本Xcode编译过（创建）的 工程会出现此报错。
+
+
+十二、xcode工程报错“ignoring file , file was built for archive which is not the architecture being linked (armv7): ../../../../Deps/Libs/iOS/C11/XXX.framework/XXX”
+
+解决办法：
+
+Target设置按下图修改
+
+
+附录、总结
+
+1、【效率提升】如果执行结果与预期不符，要第一时间去看错误信息，根据错误信息定位问题。
+
+没有了解错误信息前，切记不要盲目的猜测问题。
+
+2、【效率提升】在学习或者梳理某个模块时，计划很重要。要在一开始就大致出一个目标成果，一步一步的完善成果梳理。
+
+如果你要输出文档的话，可以先出一个目录大纲很重要。这样你关注和整理的内容，就不容易跑偏。
+

@@ -1,0 +1,30 @@
+
+'list' object is not callable
+
+TB = TB = PrettyTable()
+try:
+    if len(info_list) != 2:
+        print('Please enter "find username" to find user')
+    elif info_list[1] in RESULT:
+        Find_List = list(RESULT[info_list[1]].values())
+        TB.field_names(FIELDS)
+        TB.add_row(Find_List)
+        print(TB)
+        TB.clear_rows()
+    else:
+        print('This user does not exists!')
+except Exception as e:
+print(e)
+
+
+原因：
+
+TB.field_names 方法使用有误
+
+
+解决：
+
+TB.field_names 方法的使用：TB.field_names = 列表
+
+把 TB.field_names(FIELDS) 改写成 TB.field_names =  FIELDS
+

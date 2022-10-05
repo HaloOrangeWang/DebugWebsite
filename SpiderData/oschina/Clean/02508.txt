@@ -1,0 +1,60 @@
+1.这个设置是网上能查到的最多的,但是没解决我的问题:
+
+Django的models.py在外部独立使用,新建一个文件夹,和monitor1目录平级
+import sys,os
+sys.path.append('../monitor1/')
+os.environ['DJANGO_SETTINGS_MODULE'] ='monitor1.settings'
+
+2.在项目目录中有一个和app平级的目录,但这个目录并不是app,
+
+想要在这个目录中调用app中的models,需要这么设置:
+
+import os, django
+os.environ['DJANGO_SETTINGS_MODULE'] = '项目名.settings'
+django.setup()
+from show.models import company
+
+c= company.objects.filter(id=2)[0]
+
+这是windows上的设置,换成linux时得这么设置:
+
+import os
+import django
+import sys
+sys.path.append(r'/data/my_env1/monitor1/')
+sys.path.append(r'/data/my_env1/monitor1/monitor1')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "monitor1.settings")
+django.setup()
+from show.models import server_resource, program
+注:/data/my_env1/monitor1/是项目路径
+
+3.编码报错:
+
+SyntaxError: Non-ASCII character '\xe5' in file **
+Python默认是以ASCII作为编码方式的,如果在自己的Python源码中包含了中文,
+或者其他非英语系的语言,此时即使你把自己编写的Python源文件以UTF-8格式保存了,
+但实际上这依然是不行的,解决办法很简单,只要在文件开头加入下面代码:
+
+# -*- coding: UTF-8 -*-
+
+附:json文件中的键不能重复,是唯一的.
+
+4.django-url接收参数
+
+一、页面的跳转
+
+在urls.py中定义name:
+url(r'server_list', views.server_list, name="server_list"),
+在一个页面中使用url进行跳转:
+<a href="{% url 'show:server_list' %}">服务器资源信息</a>
+
+二、页面跳转传递参数
+
+url(r'^detail/(?P<pid>\d+)', views.program_detail, name="program_detail"),
+在前端页面中定义跳转,并传递参数:
+<a href="{% url 'show:program_detail' company.user_id %}">
+{{ company.user.domaim_name }}</a>
+视图函数中就得这么写:program_detail(request, pid)
+传递多个参数的话--url(r'^detail/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)'
+视图中也得有相应的参数来接收
+

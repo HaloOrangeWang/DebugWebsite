@@ -1,0 +1,970 @@
+环境： windows7  SP1 64位旗舰版，
+
+非管理员帐户登录，（系统有Adminstrator 和 HADES 2个帐号，在HADES帐号下安装报错！）
+
+安装包：官网下载的Anaconda3-2019.10-Windows-x86_64.exe。
+
+此前没有安装python2或者python3， 或者安装过后来删掉了。（总之命令提示符下输入python是识别不到这个命令，path中没有python路径，全硬盘搜索过也只有pycharm安装路径下有“python”字样。
+
+此环境安装32位的Anaconda3  是可以正常安装的！（就是64位报错）
+
+图1：安装过程中报错：Failed to create menus
+
+图2：忽略上述报错，继续安装，完成，菜单下无Anaconda3， 安装路径下（E:\Python\Anaconda3）也只有少数几个文件（连python.exe都没有！）
+
+安装失败！！
+
+************************************华丽的分割线 1 **********************************************************
+
+找过网上的解决办法：
+
+1。删除多余的path值；（删除了，没用，仍然报同样的错！）
+
+删除后：
+
+（再次安装依然报错）
+
+2。忽略“Failed to create menus”，继续安装，安装完成后在cmd（命令提示符）下执行
+
+win+R--->cmd --->E:---->cd Python\Anaconda3   （进入到你的anaconda安装文件夹）
+
+python .\Lib\_nsis.py mkmenus     出现很多sucessfully就对了
+
+这个方法详细图文教材请参考： https://blog.csdn.net/qq_36015370/article/details/79484455?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-3&utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-3
+
+（忽略报错后安装完，根本没有python文件！   我怀疑他们是先单独安装了python3 环境，且设置了python3到系统环境变量path中，然后才安装Anaconda3 环境，所以可以在cmd里执行 python .\Lib\_nsis.py mkmenus， 我的本地是啥都没装，直接装Anaconda3的。）
+
+3。安装32位的Anaconda3， 安装成功。（但是考虑到后续可能学习Tensorflow， 还是希望能安装64位Anaconda3）
+
+************************************华丽的分割线 2 **********************************************************
+
+在弹出“Failed to create menus”后，选择忽略，让程序继续安装，我们看到安装程序有个“show detail” 的按钮， 点击“忽略” 后弹出框会消失，安装程序会停留在如下界面，等待用户点击“下一步”  ，此时我们不要点“下一步”，  而是点击“show detail”  ，看看报错的详细信息
+
+Show Detail:
+
+可能每个人安装的出现报错的原因都不一样，但是都可以参考一下这个 安装日志明细 （show detail）
+
+我贴一下我的信息（右键任意一行，可以复制全部日志出来，贴到记事本看即可）
+
+Output folder: E:\Python\Anaconda3\Lib
+Extract: _nsis.py
+Extract: _system_path.py
+Output folder: E:\Python\Anaconda3\conda-meta
+Extract: history
+Output folder: E:\Python\Anaconda3
+Extract: _conda.exe
+Output folder: E:\Python\Anaconda3
+Output folder: E:\Python\Anaconda3\pkgs
+Extract: env.txt
+Extract: urls
+Extract: urls.txt
+Extract: post_install.bat
+Extract: .cio-config.py
+Output folder: E:\Python\Anaconda3\pkgs\cache
+Extract: 1120365f.json
+Extract: 3e39a7aa.json
+Extract: 4ea078d6.json
+Extract: 59ba4880.json
+Extract: 5ca77eed.json
+Extract: 5fa16146.json
+Extract: 920c960f.json
+Extract: c4a505b4.json
+Output folder: E:\Python\Anaconda3\pkgs
+Output folder: E:\Python\Anaconda3\pkgs\_ipyw_jlab_nb_ext_conf-0.1.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\alabaster-0.7.12-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\anaconda-2019.10-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\anaconda-client-1.7.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\anaconda-navigator-1.9.7-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\anaconda-project-0.8.3-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\asn1crypto-1.0.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\astroid-2.3.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\astropy-3.2.1-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\atomicwrites-1.3.0-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\attrs-19.2.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\babel-2.7.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\backcall-0.1.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\backports-1.0-py_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\backports.functools_lru_cache-1.5-py_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\backports.os-0.1.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\backports.shutil_get_terminal_size-1.0.0-py37_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\backports.tempfile-1.0-py_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\backports.weakref-1.0.post1-py_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\beautifulsoup4-4.8.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\bitarray-1.0.1-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\bkcharts-0.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\blas-1.0-mkl\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\bleach-3.1.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\blosc-1.16.3-h7bd577a_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\bokeh-1.3.4-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\boto-2.49.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\bottleneck-1.2.1-py37h452e1ab_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\bzip2-1.0.8-he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\ca-certificates-2019.8.28-0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\certifi-2019.9.11-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\cffi-1.12.3-py37h7a1dbc1_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\chardet-3.0.4-py37_1003\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\click-7.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\cloudpickle-1.2.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\clyent-1.2.2-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\colorama-0.4.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\comtypes-1.1.7-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\conda-4.7.12-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\conda-build-3.18.9-py37_3\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\conda-env-2.6.0-1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\conda-package-handling-1.6.0-py37h62dcd97_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\conda-verify-3.4.2-py_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\console_shortcut-0.1.1-3\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\contextlib2-0.6.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\cryptography-2.7-py37h7a1dbc1_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\curl-7.65.3-h2a8f88b_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\cycler-0.10.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\cython-0.29.13-py37ha925a31_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\cytoolz-0.10.0-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\dask-2.5.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\dask-core-2.5.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\decorator-4.4.0-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\defusedxml-0.6.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\distributed-2.5.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\docutils-0.15.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\entrypoints-0.3-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\et_xmlfile-1.0.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\fastcache-1.1.0-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\filelock-3.0.12-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\flask-1.1.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\freetype-2.9.1-ha9979f8_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\fsspec-0.5.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\future-0.17.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\get_terminal_size-1.0.0-h38e98db_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\gevent-1.4.0-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\glob2-0.7-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\greenlet-0.4.15-py37hfa6e2cd_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\h5py-2.9.0-py37h5e291fa_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\hdf5-1.10.4-h7ebc959_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\heapdict-1.0.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\html5lib-1.0.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\icc_rt-2019.0.0-h0cc432a_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\icu-58.2-ha66f8fd_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\idna-2.8-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\imageio-2.6.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\imagesize-1.1.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\importlib_metadata-0.23-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\intel-openmp-2019.4-245\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\ipykernel-5.1.2-py37h39e3cac_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\ipython-7.8.0-py37h39e3cac_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\ipython_genutils-0.2.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\ipywidgets-7.5.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\isort-4.3.21-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\itsdangerous-1.1.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jdcal-1.4.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jedi-0.15.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jinja2-2.10.3-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\joblib-0.13.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jpeg-9b-hb83a4c4_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\json5-0.8.5-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jsonschema-3.0.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jupyter-1.0.0-py37_7\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jupyter_client-5.3.3-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jupyter_console-6.0.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jupyter_core-4.5.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jupyterlab-1.1.4-pyhf63ae98_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\jupyterlab_server-1.0.6-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\keyring-18.0.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\kiwisolver-1.1.0-py37ha925a31_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\krb5-1.16.1-hc04afaa_7\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\lazy-object-proxy-1.4.2-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\libarchive-3.3.3-h0643e63_5\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\libcurl-7.65.3-h2a8f88b_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\libiconv-1.15-h1df5818_7\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\liblief-0.9.0-ha925a31_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\libpng-1.6.37-h2a8f88b_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\libsodium-1.0.16-h9d3ae62_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\libssh2-1.8.2-h7a1dbc1_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\libtiff-4.0.10-hb898794_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\libxml2-2.9.9-h464c3ec_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\libxslt-1.1.33-h579f668_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\llvmlite-0.29.0-py37ha925a31_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\locket-0.2.0-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\lxml-4.4.1-py37h1350720_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\lz4-c-1.8.1.2-h2fa13f4_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\lzo-2.10-h6df0209_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\m2w64-gcc-libgfortran-5.3.0-6\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\m2w64-gcc-libs-5.3.0-7\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\m2w64-gcc-libs-core-5.3.0-7\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\m2w64-gmp-6.1.0-2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\m2w64-libwinpthread-git-5.0.0.4634.697f757-2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\markupsafe-1.1.1-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\matplotlib-3.1.1-py37hc8f65d3_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\mccabe-0.6.1-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\menuinst-1.4.16-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\mistune-0.8.4-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\mkl-2019.4-245\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\mkl-service-2.3.0-py37hb782905_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\mkl_fft-1.0.14-py37h14836fe_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\mkl_random-1.1.0-py37h675688f_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\mock-3.0.5-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\more-itertools-7.2.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\mpmath-1.1.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\msgpack-python-0.6.1-py37h74a9793_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\msys2-conda-epoch-20160418-1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\multipledispatch-0.6.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\navigator-updater-0.2.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\nbconvert-5.6.0-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\nbformat-4.4.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\networkx-2.3-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\nltk-3.4.5-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\nose-1.3.7-py37_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\notebook-6.0.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\numba-0.45.1-py37hf9181ef_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\numexpr-2.7.0-py37hdce8814_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\numpy-1.16.5-py37h19fb1c0_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\numpy-base-1.16.5-py37hc3f5095_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\numpydoc-0.9.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\olefile-0.46-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\openpyxl-3.0.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\openssl-1.1.1d-he774522_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\packaging-19.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pandas-0.25.1-py37ha925a31_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pandoc-2.2.3.2-0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pandocfilters-1.4.2-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\parso-0.5.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\partd-1.0.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\path.py-12.0.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pathlib2-2.3.5-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\patsy-0.5.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pep8-1.7.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pickleshare-0.7.5-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pillow-6.2.0-py37hdc69c19_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pip-19.2.3-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pkginfo-1.5.0.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pluggy-0.13.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\ply-3.11-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\powershell_shortcut-0.0.1-2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\prometheus_client-0.7.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\prompt_toolkit-2.0.10-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\psutil-5.6.3-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\py-1.8.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\py-lief-0.9.0-py37ha925a31_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pycodestyle-2.5.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pycosat-0.6.3-py37hfa6e2cd_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pycparser-2.19-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pycrypto-2.6.1-py37hfa6e2cd_9\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pycurl-7.43.0.3-py37h7a1dbc1_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pyflakes-2.1.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pygments-2.4.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pylint-2.4.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pyodbc-4.0.27-py37ha925a31_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pyopenssl-19.0.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pyparsing-2.4.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pyqt-5.9.2-py37h6538335_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pyreadline-2.1-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pyrsistent-0.15.4-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pysocks-1.7.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pytables-3.5.2-py37h1da0976_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pytest-5.2.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pytest-arraydiff-0.3-py37h39e3cac_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pytest-astropy-0.5.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pytest-doctestplus-0.4.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pytest-openfiles-0.4.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pytest-remotedata-0.3.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\python-3.7.4-h5263a28_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\python-dateutil-2.8.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\python-libarchive-c-2.8-py37_13\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pytz-2019.3-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pywavelets-1.0.3-py37h8c2d366_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pywin32-223-py37hfa6e2cd_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pywinpty-0.5.5-py37_1000\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pyyaml-5.1.2-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\pyzmq-18.1.0-py37ha925a31_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\qt-5.9.7-vc14h73c81de_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\qtawesome-0.6.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\qtconsole-4.5.5-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\qtpy-1.9.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\requests-2.22.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\rope-0.14.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\ruamel_yaml-0.15.46-py37hfa6e2cd_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\scikit-image-0.15.0-py37ha925a31_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\scikit-learn-0.21.3-py37h6288b17_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\scipy-1.3.1-py37h29ff71c_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\seaborn-0.9.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\send2trash-1.5.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\setuptools-41.4.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\simplegeneric-0.8.1-py37_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\singledispatch-3.4.0.3-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sip-4.19.8-py37h6538335_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\six-1.12.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\snappy-1.1.7-h777316e_3\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\snowballstemmer-2.0.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sortedcollections-1.1.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sortedcontainers-2.1.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\soupsieve-1.9.3-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sphinx-2.2.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sphinxcontrib-1.0-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sphinxcontrib-applehelp-1.0.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sphinxcontrib-devhelp-1.0.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sphinxcontrib-htmlhelp-1.0.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sphinxcontrib-jsmath-1.0.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sphinxcontrib-qthelp-1.0.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sphinxcontrib-serializinghtml-1.1.3-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sphinxcontrib-websupport-1.1.2-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\spyder-3.3.6-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\spyder-kernels-0.5.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sqlalchemy-1.3.9-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sqlite-3.30.0-he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\statsmodels-0.10.1-py37h8c2d366_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\sympy-1.4-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\tbb-2019.4-h74a9793_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\tblib-1.4.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\terminado-0.8.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\testpath-0.4.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\tk-8.6.8-hfa6e2cd_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\toolz-0.10.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\tornado-6.0.3-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\tqdm-4.36.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\traitlets-4.3.3-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\unicodecsv-0.14.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\urllib3-1.24.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\vc-14.1-h0510ff6_4\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\vs2015_runtime-14.16.27012-hf0eaf9b_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\wcwidth-0.1.7-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\webencodings-0.5.1-py37_1\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\werkzeug-0.16.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\wheel-0.33.6-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\widgetsnbextension-3.5.1-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\win_inet_pton-1.1.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\win_unicode_console-0.5-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\wincertstore-0.2-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\winpty-0.4.3-4\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\wrapt-1.11.2-py37he774522_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\xlrd-1.2.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\xlsxwriter-1.2.1-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\xlwings-0.15.10-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\xlwt-1.3.0-py37_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\xz-5.2.4-h2fa13f4_4\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\yaml-0.1.7-hc54c509_2\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\zeromq-4.3.1-h33f27b4_3\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\zict-1.0.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\zipp-0.6.0-py_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\zlib-1.2.11-h62dcd97_3\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs\zstd-1.3.7-h508b16e_0\info
+Extract: repodata_record.json
+Output folder: E:\Python\Anaconda3\pkgs
+Extract: python-3.7.4-h5263a28_0.conda
+Extract: conda-env-2.6.0-1.conda
+Extract: blas-1.0-mkl.conda
+Extract: ca-certificates-2019.8.28-0.tar.bz2
+Extract: icc_rt-2019.0.0-h0cc432a_1.conda
+Extract: intel-openmp-2019.4-245.conda
+Extract: msys2-conda-epoch-20160418-1.tar.bz2
+Extract: pandoc-2.2.3.2-0.conda
+Extract: vs2015_runtime-14.16.27012-hf0eaf9b_0.conda
+Extract: winpty-0.4.3-4.conda
+Extract: m2w64-gmp-6.1.0-2.tar.bz2
+Extract: m2w64-libwinpthread-git-5.0.0.4634.697f757-2.tar.bz2
+Extract: mkl-2019.4-245.conda
+Extract: vc-14.1-h0510ff6_4.conda
+Extract: bzip2-1.0.8-he774522_0.conda
+Extract: icu-58.2-ha66f8fd_1.conda
+Extract: jpeg-9b-hb83a4c4_2.conda
+Extract: libiconv-1.15-h1df5818_7.conda
+Extract: liblief-0.9.0-ha925a31_2.conda
+Extract: libsodium-1.0.16-h9d3ae62_0.conda
+Extract: lz4-c-1.8.1.2-h2fa13f4_0.conda
+Extract: lzo-2.10-h6df0209_2.conda
+Extract: m2w64-gcc-libs-core-5.3.0-7.tar.bz2
+Extract: openssl-1.1.1d-he774522_2.conda
+Extract: snappy-1.1.7-h777316e_3.conda
+Extract: sqlite-3.30.0-he774522_0.tar.bz2
+Extract: tbb-2019.4-h74a9793_0.conda
+Extract: tk-8.6.8-hfa6e2cd_0.conda
+Extract: xz-5.2.4-h2fa13f4_4.conda
+Extract: yaml-0.1.7-hc54c509_2.conda
+Extract: zlib-1.2.11-h62dcd97_3.conda
+Extract: hdf5-1.10.4-h7ebc959_0.conda
+Extract: krb5-1.16.1-hc04afaa_7.conda
+Extract: libpng-1.6.37-h2a8f88b_0.conda
+Extract: libssh2-1.8.2-h7a1dbc1_0.conda
+Extract: libxml2-2.9.9-h464c3ec_0.conda
+Extract: m2w64-gcc-libgfortran-5.3.0-6.tar.bz2
+Extract: zeromq-4.3.1-h33f27b4_3.conda
+Extract: zstd-1.3.7-h508b16e_0.conda
+Extract: blosc-1.16.3-h7bd577a_0.conda
+Extract: freetype-2.9.1-ha9979f8_1.conda
+Extract: libarchive-3.3.3-h0643e63_5.conda
+Extract: libcurl-7.65.3-h2a8f88b_0.conda
+Extract: libtiff-4.0.10-hb898794_2.conda
+Extract: libxslt-1.1.33-h579f668_0.conda
+Extract: m2w64-gcc-libs-5.3.0-7.tar.bz2
+Extract: pywin32-223-py37hfa6e2cd_1.conda
+Extract: qt-5.9.7-vc14h73c81de_0.conda
+Extract: curl-7.65.3-h2a8f88b_0.conda
+Extract: menuinst-1.4.16-py37he774522_0.conda
+Extract: alabaster-0.7.12-py37_0.conda
+Extract: asn1crypto-1.0.1-py37_0.tar.bz2
+Extract: atomicwrites-1.3.0-py37_1.conda
+Extract: backcall-0.1.0-py37_0.conda
+Extract: bitarray-1.0.1-py37he774522_0.conda
+Extract: boto-2.49.0-py37_0.conda
+Extract: certifi-2019.9.11-py37_0.tar.bz2
+Extract: chardet-3.0.4-py37_1003.conda
+Extract: click-7.0-py37_0.conda
+Extract: colorama-0.4.1-py37_0.conda
+Extract: comtypes-1.1.7-py37_0.conda
+Extract: console_shortcut-0.1.1-3.conda
+Extract: decorator-4.4.0-py37_1.conda
+Extract: docutils-0.15.2-py37_0.conda
+Extract: entrypoints-0.3-py37_0.conda
+Extract: et_xmlfile-1.0.1-py37_0.conda
+Extract: fastcache-1.1.0-py37he774522_0.conda
+Extract: future-0.17.1-py37_0.conda
+Extract: greenlet-0.4.15-py37hfa6e2cd_0.conda
+Extract: idna-2.8-py37_0.conda
+Extract: imagesize-1.1.0-py37_0.conda
+Extract: ipython_genutils-0.2.0-py37_0.conda
+Extract: itsdangerous-1.1.0-py37_0.conda
+Extract: joblib-0.13.2-py37_0.conda
+Extract: kiwisolver-1.1.0-py37ha925a31_0.conda
+Extract: lazy-object-proxy-1.4.2-py37he774522_0.conda
+Extract: llvmlite-0.29.0-py37ha925a31_0.conda
+Extract: locket-0.2.0-py37_1.conda
+Extract: lxml-4.4.1-py37h1350720_0.conda
+Extract: markupsafe-1.1.1-py37he774522_0.conda
+Extract: mccabe-0.6.1-py37_1.conda
+Extract: mistune-0.8.4-py37he774522_0.conda
+Extract: more-itertools-7.2.0-py37_0.conda
+Extract: mpmath-1.1.0-py37_0.conda
+Extract: msgpack-python-0.6.1-py37h74a9793_1.conda
+Extract: olefile-0.46-py37_0.conda
+Extract: pandocfilters-1.4.2-py37_1.conda
+Extract: pep8-1.7.1-py37_0.conda
+Extract: pickleshare-0.7.5-py37_0.conda
+Extract: pkginfo-1.5.0.1-py37_0.conda
+Extract: ply-3.11-py37_0.conda
+Extract: powershell_shortcut-0.0.1-2.conda
+Extract: psutil-5.6.3-py37he774522_0.conda
+Extract: py-1.8.0-py37_0.conda
+Extract: py-lief-0.9.0-py37ha925a31_2.conda
+Extract: pycodestyle-2.5.0-py37_0.conda
+Extract: pycosat-0.6.3-py37hfa6e2cd_0.conda
+Extract: pycparser-2.19-py37_0.conda
+Extract: pycrypto-2.6.1-py37hfa6e2cd_9.conda
+Extract: pycurl-7.43.0.3-py37h7a1dbc1_0.conda
+Extract: pyflakes-2.1.1-py37_0.conda
+Extract: pyodbc-4.0.27-py37ha925a31_0.conda
+Extract: pyreadline-2.1-py37_1.conda
+Extract: python-libarchive-c-2.8-py37_13.conda
+Extract: pywinpty-0.5.5-py37_1000.conda
+Extract: pyyaml-5.1.2-py37he774522_0.conda
+Extract: pyzmq-18.1.0-py37ha925a31_0.conda
+Extract: ruamel_yaml-0.15.46-py37hfa6e2cd_0.conda
+Extract: send2trash-1.5.0-py37_0.conda
+Extract: simplegeneric-0.8.1-py37_2.conda
+Extract: sip-4.19.8-py37h6538335_0.conda
+Extract: six-1.12.0-py37_0.conda
+Extract: sortedcontainers-2.1.0-py37_0.conda
+Extract: soupsieve-1.9.3-py37_0.tar.bz2
+Extract: sphinxcontrib-1.0-py37_1.conda
+Extract: sqlalchemy-1.3.9-py37he774522_0.tar.bz2
+Extract: testpath-0.4.2-py37_0.conda
+Extract: tornado-6.0.3-py37he774522_0.conda
+Extract: unicodecsv-0.14.1-py37_0.conda
+Extract: wcwidth-0.1.7-py37_0.conda
+Extract: webencodings-0.5.1-py37_1.conda
+Extract: win_inet_pton-1.1.0-py37_0.conda
+Extract: win_unicode_console-0.5-py37_0.conda
+Extract: wincertstore-0.2-py37_0.conda
+Extract: wrapt-1.11.2-py37he774522_0.conda
+Extract: xlrd-1.2.0-py37_0.conda
+Extract: xlwt-1.3.0-py37_0.conda
+Extract: beautifulsoup4-4.8.0-py37_0.conda
+Extract: cffi-1.12.3-py37h7a1dbc1_0.conda
+Extract: cycler-0.10.0-py37_0.conda
+Extract: html5lib-1.0.1-py37_0.conda
+Extract: keyring-18.0.0-py37_0.conda
+Extract: mkl-service-2.3.0-py37hb782905_0.conda
+Extract: mock-3.0.5-py37_0.conda
+Extract: multipledispatch-0.6.0-py37_0.conda
+Extract: nltk-3.4.5-py37_0.conda
+Extract: pathlib2-2.3.5-py37_0.tar.bz2
+Extract: pillow-6.2.0-py37hdc69c19_0.tar.bz2
+Extract: pyqt-5.9.2-py37h6538335_2.conda
+Extract: pyrsistent-0.15.4-py37he774522_0.tar.bz2
+Extract: pysocks-1.7.1-py37_0.tar.bz2
+Extract: python-dateutil-2.8.0-py37_0.conda
+Extract: setuptools-41.4.0-py37_0.tar.bz2
+Extract: singledispatch-3.4.0.3-py37_0.conda
+Extract: sortedcollections-1.1.2-py37_0.conda
+Extract: terminado-0.8.2-py37_0.conda
+Extract: traitlets-4.3.3-py37_0.tar.bz2
+Extract: xlwings-0.15.10-py37_0.tar.bz2
+Extract: astroid-2.3.1-py37_0.tar.bz2
+Extract: bleach-3.1.0-py37_0.conda
+Extract: clyent-1.2.2-py37_1.conda
+Extract: cryptography-2.7-py37h7a1dbc1_0.conda
+Extract: cython-0.29.13-py37ha925a31_0.conda
+Extract: gevent-1.4.0-py37he774522_0.conda
+Extract: isort-4.3.21-py37_0.conda
+Extract: nose-1.3.7-py37_2.conda
+Extract: numpy-base-1.16.5-py37hc3f5095_0.tar.bz2
+Extract: sympy-1.4-py37_0.conda
+Extract: wheel-0.33.6-py37_0.tar.bz2
+Extract: pip-19.2.3-py37_0.tar.bz2
+Extract: pylint-2.4.2-py37_0.tar.bz2
+Extract: pyopenssl-19.0.0-py37_0.conda
+Extract: urllib3-1.24.2-py37_0.conda
+Extract: requests-2.22.0-py37_0.conda
+Extract: attrs-19.2.0-py_0.tar.bz2
+Extract: jsonschema-3.0.2-py37_0.conda
+Extract: backports-1.0-py_2.tar.bz2
+Extract: backports.os-0.1.1-py37_0.conda
+Extract: backports.shutil_get_terminal_size-1.0.0-py37_2.conda
+Extract: get_terminal_size-1.0.0-h38e98db_0.conda
+Extract: backports.functools_lru_cache-1.5-py_2.tar.bz2
+Extract: backports.weakref-1.0.post1-py_1.tar.bz2
+Extract: backports.tempfile-1.0-py_1.tar.bz2
+Extract: bottleneck-1.2.1-py37h452e1ab_1.conda
+Extract: cloudpickle-1.2.2-py_0.tar.bz2
+Extract: conda-package-handling-1.6.0-py37h62dcd97_0.conda
+Extract: conda-4.7.12-py37_0.tar.bz2
+Extract: contextlib2-0.6.0-py_0.tar.bz2
+Extract: dask-core-2.5.2-py_0.tar.bz2
+Extract: defusedxml-0.6.0-py_0.tar.bz2
+Extract: filelock-3.0.12-py_0.tar.bz2
+Extract: fsspec-0.5.2-py_0.tar.bz2
+Extract: glob2-0.7-py_0.tar.bz2
+Extract: heapdict-1.0.1-py_0.conda
+Extract: jdcal-1.4.1-py_0.tar.bz2
+Extract: jinja2-2.10.3-py_0.tar.bz2
+Extract: json5-0.8.5-py_0.tar.bz2
+Extract: jupyter_core-4.5.0-py_0.tar.bz2
+Extract: networkx-2.3-py_0.tar.bz2
+Extract: parso-0.5.1-py_0.tar.bz2
+Extract: prometheus_client-0.7.1-py_0.tar.bz2
+Extract: pygments-2.4.2-py_0.tar.bz2
+Extract: pyparsing-2.4.2-py_0.tar.bz2
+Extract: pytz-2019.3-py_0.tar.bz2
+Extract: qtpy-1.9.0-py_0.tar.bz2
+Extract: rope-0.14.0-py_0.tar.bz2
+Extract: snowballstemmer-2.0.0-py_0.tar.bz2
+Extract: sphinxcontrib-applehelp-1.0.1-py_0.tar.bz2
+Extract: sphinxcontrib-devhelp-1.0.1-py_0.tar.bz2
+Extract: sphinxcontrib-htmlhelp-1.0.2-py_0.tar.bz2
+Extract: sphinxcontrib-jsmath-1.0.1-py_0.tar.bz2
+Extract: sphinxcontrib-qthelp-1.0.2-py_0.tar.bz2
+Extract: sphinxcontrib-serializinghtml-1.1.3-py_0.tar.bz2
+Extract: sphinxcontrib-websupport-1.1.2-py_0.tar.bz2
+Extract: tblib-1.4.0-py_0.tar.bz2
+Extract: toolz-0.10.0-py_0.tar.bz2
+Extract: tqdm-4.36.1-py_0.conda
+Extract: werkzeug-0.16.0-py_0.tar.bz2
+Extract: xlsxwriter-1.2.1-py_0.tar.bz2
+Extract: zipp-0.6.0-py_0.tar.bz2
+Extract: babel-2.7.0-py_0.tar.bz2
+Extract: conda-build-3.18.9-py37_3.conda
+Extract: conda-verify-3.4.2-py_1.tar.bz2
+Extract: cytoolz-0.10.0-py37he774522_0.conda
+Extract: flask-1.1.1-py_0.tar.bz2
+Extract: importlib_metadata-0.23-py37_0.tar.bz2
+Extract: jedi-0.15.1-py37_0.conda
+Extract: jupyter_client-5.3.3-py37_1.tar.bz2
+Extract: navigator-updater-0.2.1-py37_0.conda
+Extract: nbformat-4.4.0-py37_0.conda
+Extract: openpyxl-3.0.0-py_0.tar.bz2
+Extract: packaging-19.2-py_0.tar.bz2
+Extract: partd-1.0.0-py_0.tar.bz2
+Extract: prompt_toolkit-2.0.10-py_0.tar.bz2
+Extract: qtawesome-0.6.0-py_0.tar.bz2
+Extract: zict-1.0.0-py_0.tar.bz2
+Extract: anaconda-client-1.7.2-py37_0.conda
+Extract: distributed-2.5.2-py_0.tar.bz2
+Extract: ipython-7.8.0-py37h39e3cac_0.conda
+Extract: nbconvert-5.6.0-py37_1.tar.bz2
+Extract: path.py-12.0.1-py_0.tar.bz2
+Extract: pluggy-0.13.0-py37_0.tar.bz2
+Extract: sphinx-2.2.0-py_0.tar.bz2
+Extract: anaconda-navigator-1.9.7-py37_0.tar.bz2
+Extract: anaconda-project-0.8.3-py_0.tar.bz2
+Extract: ipykernel-5.1.2-py37h39e3cac_0.conda
+Extract: numpydoc-0.9.1-py_0.tar.bz2
+Extract: pytest-5.2.1-py37_0.tar.bz2
+Extract: jupyter_console-6.0.0-py37_0.conda
+Extract: notebook-6.0.1-py37_0.tar.bz2
+Extract: pytest-openfiles-0.4.0-py_0.tar.bz2
+Extract: pytest-remotedata-0.3.2-py37_0.conda
+Extract: qtconsole-4.5.5-py_0.tar.bz2
+Extract: spyder-kernels-0.5.2-py37_0.tar.bz2
+Extract: jupyterlab_server-1.0.6-py_0.tar.bz2
+Extract: spyder-3.3.6-py37_0.conda
+Extract: widgetsnbextension-3.5.1-py37_0.conda
+Extract: ipywidgets-7.5.1-py_0.tar.bz2
+Extract: jupyterlab-1.1.4-pyhf63ae98_0.conda
+Extract: _ipyw_jlab_nb_ext_conf-0.1.0-py37_0.conda
+Extract: jupyter-1.0.0-py37_7.conda
+Extract: bokeh-1.3.4-py37_0.conda
+Extract: h5py-2.9.0-py37h5e291fa_0.conda
+Extract: imageio-2.6.0-py37_0.tar.bz2
+Extract: matplotlib-3.1.1-py37hc8f65d3_0.conda
+Extract: mkl_fft-1.0.14-py37h14836fe_0.conda
+Extract: mkl_random-1.1.0-py37h675688f_0.conda
+Extract: numpy-1.16.5-py37h19fb1c0_0.tar.bz2
+Extract: numba-0.45.1-py37hf9181ef_0.conda
+Extract: numexpr-2.7.0-py37hdce8814_0.conda
+Extract: pandas-0.25.1-py37ha925a31_0.conda
+Extract: pytest-arraydiff-0.3-py37h39e3cac_0.conda
+Extract: pytest-doctestplus-0.4.0-py_0.tar.bz2
+Extract: pywavelets-1.0.3-py37h8c2d366_1.conda
+Extract: scipy-1.3.1-py37h29ff71c_0.conda
+Extract: bkcharts-0.2-py37_0.conda
+Extract: dask-2.5.2-py_0.tar.bz2
+Extract: patsy-0.5.1-py37_0.conda
+Extract: pytables-3.5.2-py37h1da0976_1.conda
+Extract: pytest-astropy-0.5.0-py37_0.conda
+Extract: scikit-image-0.15.0-py37ha925a31_0.conda
+Extract: scikit-learn-0.21.3-py37h6288b17_0.conda
+Extract: astropy-3.2.1-py37he774522_0.conda
+Extract: statsmodels-0.10.1-py37h8c2d366_0.conda
+Extract: seaborn-0.9.0-py37_0.conda
+Extract: anaconda-2019.10-py37_0.tar.bz2
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI8362\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI45722\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Delete file: E:\Python\Anaconda3\pkgs\env.txt
+Output folder: E:\Python\Anaconda3\conda-meta
+Extract: history
+Creating Anaconda3 menus...
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI17962\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI36042\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI15682\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI13122\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI15722\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI55042\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI16882\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI34082\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI44082\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI14362\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI53202\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI38362\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI58362\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI22162\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI12282\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI5242\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Execute: "E:\Python\Anaconda3\pythonw.exe" -E -s "E:\Python\Anaconda3\Lib\_nsis.py" mkdirs
+Running post install...
+Execute: "E:\Python\Anaconda3\pythonw.exe" -E -s "E:\Python\Anaconda3\Lib\_nsis.py" post_install
+Execute: "E:\Python\Anaconda3\pythonw.exe" -E -s "E:\Python\Anaconda3\Lib\_nsis.py" addpath 3.7.4 Anaconda3 2019.10 64-bit
+Execute: "E:\Python\Anaconda3\pythonw.exe" -E -s "E:\Python\Anaconda3\pkgs\.cio-config.py" "G:\windows\programs\Anaconda3-2019.10-Windows-x86_64.exe"
+Created uninstaller: E:\Python\Anaconda3\Uninstall-Anaconda3.exe
+Completed
+
+Running post install...  就是我们点击“忽略”， 让安装程序继续安装。
+
+我们不用管正常安装会打印怎样的日志，只需要看这个报错
+
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI8362\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+Error loading Python DLL 'C:\Users\HADES\AppData\Local\Temp\_MEI45722\python36.dll'.
+LoadLibrary: 找不到指定的程序。
+
+这些找不到dll文件的特点是 在C:\Users\HADES\AppData\Local\Temp 目录下，本地硬盘上确实没有这些目录/文件
+
+（Temp目录是有的，但目录下没有_开头的文件夹，隐藏文件都设为可见状态的）
+
+然后就没有然后了。。。
+
+看看Anaconda 官网又没有技术支持
+
+联系他们：https://www.anaconda.com/contact-us/
+
+技术支持（可查询常见问题解答）：https://anaconda.zendesk.com/hc/en-us
+

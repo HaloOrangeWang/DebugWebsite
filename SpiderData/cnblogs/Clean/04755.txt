@@ -1,0 +1,29 @@
+win7上安装rpy2, python环境是3.6.1。
+
+使用pip install rpy2直接安装rpy2,对应的版本时rpy2 3.0.5
+
+报如下错误:
+
+报错的大概意思是blah1 ReadConsole;这句话无法执行, 查看文件_rinterface_cffi_build.py，发现blah1这个类的定义在_rinterface_cffi_build.py文件中并没有。
+
+在rpy2的最新的开源代码中，_rinterface_cffi_build.py文件中是有关于 "blah1"这个的定义的。源码网站地址: https://bitbucket.org/rpy2/rpy2/src/default/rpy/_rinterface_cffi_build.py
+
+源码上是这样写的:
+
+然后我试了把开源代码直接下载下来，然后使用python setup.py install方式安装，rpy2这回可以正常安装上了。
+
+然后检查一下可不可以使用:
+
+　得，(¬_¬)，这意思是不支持当前的系统。　
+
+　找了一个rpy2的文档，文档上是这么说的:
+
+Microsoft’s Windows - unofficial and unsupported binaries are provided by Christoph Gohlke (http://www.lfd.uci.edu/~gohlke/pythonlibs/); there is otherwise currently close to no support for this platform
+文档地址: https://rpy2.github.io/doc/latest/html/overview.html#installation
+
+　就是说rpy2不支持windows这个平台，如果想要使用，请到https://www.lfd.uci.edu/~gohlke/pythonlibs/网站上去下载一个编译好的轮子。
+
+这个网站上rpy2的最新版本是2.9.5, 选择好要下载的版本，选择好对应的系统, 下载完成后直接使用pip install + 轮子名称即可。
+
+问题解决,早知道我直接去下个轮子就好了，还看了半天源码，浪费时间!!!
+

@@ -1,0 +1,88 @@
+【安装xerosploit】安装xerosploit的步骤如下，我是将xerosploit直接克隆到了根目录下（使用“cd /”到达根目录）
+
+git clone https://github.com/LionSec/xerosploit（克隆完毕之后会在根目录下生成一个名为xerosploit文件夹）
+
+cd xerosploit
+
+sduo python xerosploit.py
+
+在对xerosploit进行编译运行时，出现问题，最先出现了缺少依赖文件的情况，详情如下图所示：
+
+又或者是：
+
+以上两个错误，在打开xeroploit时都遇到了，最先遇到的是缺少terminaltables的报错，通过google搜索，发现解决方法如下：
+
+分别运行一下指令：
+
+git clone https://github.com/Robpol86/terminaltables.git
+
+cd terminaltables
+
+python setup.py install
+
+完成后，就可以成功安装玩完terminaltables库文件了，但这时在运行xeroploit时就会出现缺少tabulate的报错，可以尝试安装缺少的库：
+
+sudo apt-get install python-tabulate
+
+如果以上指令用不了，可采用备选方案"去github找python-tabulate并执行克隆以及编译安装"，具体操作如下：
+
+git clone https://github.com/gregbanks/python-tabulate
+cd python-tabulate
+python setup.py install
+
+git clone https://github.com/gregbanks/python-tabulate
+
+cd python-tabulate
+
+python setup.py install
+
+然后，再次运行xeroploit，依然报错，但今次是：
+
+经过一番百度，google之后依旧没有得到满意的答案，于是决定自己找方法，分析错误提示，发现了非常关键的一句话“No such file or directory: '/opt/xerosploit/tools/files/iface.txt'”
+
+经过简单分析，文件或设置路径可能存在问题。
+
+于是，经过观察发现，我的xeroploit文件夹是存放在根目录里的，也就是说这个"/opt"根本就不存在，排除设计者在编写程序代码时使用了绝对路径的可能，判断理由：1.并不是全部用户都报错，仅仅是一部分；2.相信能够写出工具来的人不可能犯这种低级错误。
+
+不管怎样，不管出现这个问题的原因是什么，先想办法解决这个问题:
+
+检查了下我的xerploit文件夹路径，目前我的位置是在xerosploit文件夹目录下，如下图所示：
+
+输入“cd /”返回根目录，然后输入"ls"，查看根目录下的所有文件，如下图所示：
+
+如上图红色标记所示，xeroploit文件夹确实被存放在根目录下。也就是说，我刚才的分析是正确的，程序里的设置目录跟当前目录不一致，导致程序无法执行。
+
+那么，到这里，思考的解决方法有两种，我使用的是第二种，结果可以成功运行xerosploit，方案如下：
+
+方案一：（相对简单，本人未测试，希望使用此方法成功解决问题的朋友留言告诉我，谢谢！）在根目录下新建一个名为"opt"的文件夹，然后把xerosploit文件夹移动到opt文件夹目录下。
+
+方案二：（相对麻烦，容易出错，不建议使用，仔细点可以解决，我使用的此方案……）首先，进入到xerosploit文件夹目录下，如下图所示：
+
+然后，输入"gedit xerosploit.py"，如下图所示：
+
+回车命令，打开编辑器编辑程序文件，需要把程序文件中的"/opt"全部删除掉，使程序中的文件路径与当前系统文件路径相一致，这里之所以选择gedit编辑器的原因是它可以像office word一样对整篇文档进行搜索替换，打开编辑器的搜索功能，如下图所示：
+
+这里，我使用的是"查找"，而不是"查找和替换"，原因是替换字符不能为空，如果替换成空格，不保证一定正确，所以，既然已经选择了方案二，那么就认真地手动删除吧，数量不多，在正常操作的可承受范围之内，但是在手动删除时，请务必认真，不要多删除，也不要少删除，特别是对于路径来说，一个空格可能就会发生许多未知的错误，再加上是在linux环境下，而非windows环境，所以，每一部操作都需要谨慎！
+
+通过搜索"/opt"，搜索出来的会有黄色高亮提示，如下图所示：
+
+将文件中所有的"/opt"删除掉，不要多删除，也不要少删除！
+
+全部删除完毕后，可以检查一下，确保所有的"/opt"都已经删除，保存关闭编辑器。
+
+最后，在xerosploit文件夹目录下执行指令"./xerosploit.py"，尝试运行xerosploit工具，结果如下图所示：
+
+成功运行！
+
+==============================================================================================================================
+
+有关方法二的补充说明
+
+==============================================================================================================================
+
+本人试验过方法二，比方法一方便不少，因步骤简单，所以在这里简单概述即可。
+
+保存退出，然后执行 sudo python xerosploit.py
+
+方法一 也可以成功运行！
+

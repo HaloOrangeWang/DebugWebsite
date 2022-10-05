@@ -1,0 +1,38 @@
+1，使用python+selenium+nb_log+allure
+
+整个过程中环境及运行存在的问题
+
+python与selenium下载
+
+nb_log封装
+
+allture 测试报告配置：
+
+1、使用命令 pip install allure-pytest 安装 allure 插件
+
+2、安装 allure 命令行工具：
+
+2.1 安装 jdk，并配置好环境变量，allure 命令行工具由 java 开发；
+
+2.2 通过地址：https://github.com/allure-framework/allure2/releases下载最新版本的 allure 命令行工具并解压
+
+2.3 配置环境变量：
+
+新增 ALLURE_HOME：allure 命令行工具解压路径
+
+在 path 最后追加 ;%ALLURE_HOME%\bin
+
+运行生成allure报告：
+
+py.test --alluredir rults
+
+allure generate rults -o rults/html
+
+中途遇到问题
+
+ImportError: cannot import name 'get_testplan' from 'allure_commons.utils'报错
+
+最终查询到时 allure-python-commons 版本存在问题，卸载之前的重新下载即可
+
+pip install allure-python-commons
+

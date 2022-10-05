@@ -1,0 +1,37 @@
+问题描述：
+
+在python3.5环境中导入cv2报错，在python2.7中正常。注：命令行的前缀RL_2018HW是python3.5的环境。
+
+从报错可以看出，在python3.5虚拟环境中，程序试图从 /opt/ros/kinetic/lib/python2.7/dist-packages/ 路径下导入cv2.so库文件。然而，该路径下的库文件是属于python2.7（普通环境）的，python3.5的cv2.so文件安装在虚拟环境对应的路径之下。
+
+因此，虚拟环境中，程序得从 /home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/site-packages 路径下导入cv2.so文件。
+
+解决方法：
+
+如何修改python程序读取库文件的路径呢？
+
+首先介绍2种方法，用于查看python读取库文件路径（以python3.5的环境为例）
+
+1. 读取环境变量$PYTHONPATH
+
+(RL_2018HW) gordon@gordon-5577:~$ echo $PYTHONPATH 
+/home/gordon/python-virtual-environments/RL_2018HW/gym-gazebo:/home/gordon/ros_ws/devel/lib/python2.7/dist-packages:/opt/ros/kinetic/lib/python2.7/dist-packages:/opt/movidius/caffe/python
+
+2. 在python控制台中查看
+
+可以发现，两种方式出现了路径 /opt/ros/kinetic/lib/python2.7/dist-packages ，且其优先级比路径 /home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/site-packages 高。
+
+我们希望程序优先读取python3.5的库路径，对应有两种方式！
+
+1. 修改环境变量$PYTHONPATH
+
+修改当前终端的环境变量
+
+export PYTHONPATH=/home/gordon/python-virtual-environments/RL_2018HW/lib/python3.5/site-packages
+
+修改当前用户的环境变量
+
+当使用命令激活ROS时，即运行 source /opt/ros/kinetic/setup.bash ，ROS会添加 /opt/ros/kinetic/lib/python2.7/dist-packages 到python路径。因此，需要在 .bashrc 文件中注释掉该命令行，并再次source读取环境变量。
+
+2. 在python控制台中移除错误路径
+

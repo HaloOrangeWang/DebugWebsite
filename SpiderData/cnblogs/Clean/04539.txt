@@ -1,0 +1,16 @@
+解决“Unable to find vcvarsall.bat”错误
+
+解决办法：
+
+本地搜索找到vcvarsall.bat文件位置：
+
+'C:/Users/PCME4/AppData/Local/Programs/Common/Microsoft/Visual C++ for Python/9.0/vcvarsall.bat'
+
+msvc9compiler.py的文件路径是python安装的Lib\distutils\msvc9compiler.py，其中find_vcvarsall在第219行。在def find_vcvarsall(version):下面直接添上
+
+vcvarsall = r'C:/Users/PCME4/AppData/Local/Programs/Common/Microsoft/Visual C++ for Python/9.0/vcvarsall.bat'
+
+return vcvarsall;
+
+搞定
+

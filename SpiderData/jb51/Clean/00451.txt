@@ -1,0 +1,51 @@
+前言：
+
+测试过程中获取App相关log后，如何快速找出crash的部分，并导出到新的文件呢？
+
+感兴趣的话，继续往下看吧～
+
+思路：遍历多个日志文件，找出含有Error和Crash的日志，并把该行日志输出到另一个文件result.txt中。
+
+def find_log(path):
+  file_list = os.listdir(path)
+  for file in file_list:
+    file_name = file
+    log_path = os.path.join(path, file)
+    with open(log_path, 'rb') as f:
+      lines = f.readlines()
+      index = 0
+      for line in lines:
+        index += 1
+        if 'Crash' in line.decode("utf8", "ignore") or 'Error' in line.decode("utf8", "ignore"):
+          ss = re.findall(r'(.*Crash.*)', line.decode("utf8", "ignore"))
+          zz = re.findall(r'(.*Error.*)', line.decode("utf8", "ignore"))
+          if len(zz) > 0:
+            with open('result.txt', 'a') as ff:
+              ff.write('文件名：'+file_name + ' 第' + str(index) + '行： ' + zz[0] + '\n')
+          elif len(ss) > 0:
+            with open('result.txt', 'a') as ff:
+              ff.write('文件名：'+file_name + ' 第' + str(index) + '行： ' + ss[0] + '\n')
+          else:
+            break
+
+result.txt文件展示如下：
+
+文件名：amstart.log 第611行： 01-12 11:10:33.534 E/FirebaseCrash(14844): Failed waiting for crash api to load.
+文件名：amstart.log 第612行： 01-12 11:10:33.534 E/FirebaseCrash(14844): java.lang.InterruptedException
+文件名：amstart.log 第613行： 01-12 11:10:33.534 E/FirebaseCrash(14844):  at java.util.concurrent.locks.AbstractQueuedSynchronizer.doAcquireSharedNanos(AbstractQueuedSynchronizer.java:1013)
+文件名：amstart.log 第614行： 01-12 11:10:33.534 E/FirebaseCrash(14844):  at java.util.concurrent.locks.AbstractQueuedSynchronizer.tryAcquireSharedNanos(AbstractQueuedSynchronizer.java:1302)
+文件名：amstart.log 第615行： 01-12 11:10:33.534 E/FirebaseCrash(14844):  at java.util.concurrent.CountDownLatch.await(CountDownLatch.java:249)
+文件名：amstart.log 第616行： 01-12 11:10:33.534 E/FirebaseCrash(14844):  at com.google.firebase.crash.FirebaseCrash.zzbsk(Unknown Source)
+文件名：amstart.log 第617行： 01-12 11:10:33.534 E/FirebaseCrash(14844):  at com.google.firebase.crash.FirebaseCrash.zza(Unknown Source)
+文件名：amstart.log 第618行： 01-12 11:10:33.534 E/FirebaseCrash(14844):  at com.google.firebase.crash.zza.run(Unknown Source)
+文件名：amstart.log 第619行： 01-12 11:10:33.534 E/FirebaseCrash(14844):  at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1113)
+文件名：amstart.log 第620行： 01-12 11:10:33.534 E/FirebaseCrash(14844):  at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:588)
+文件名：amstart.log 第621行： 01-12 11:10:33.534 E/FirebaseCrash(14844):  at java.lang.Thread.run(Thread.java:818)
+文件名：uninstall.log 第213行： 01-12 11:16:33.382 W/ActivityManager( 1068): Error in app com.baidu.mtc.new_monkey running instrumentation ComponentInfo{com.baidu.mtc.new_monkey.test/android.support.test.runner.AndroidJUnitRunner}:
+文件名：uninstall.log 第219行： 01-12 11:16:33.383 W/ActivityManager( 1068): Error shutting down UiAutomationConnection
+文件名：logcat.log 第31653行： 01-12 11:13:48.556 E/Gn_Assist(17385): GnVoiceService dispatchRecoError className is empty
+文件名：logcat.log 第31654行： 01-12 11:13:48.556 E/Gn_Assist(17385): FocusException getErrorMsg ERROR_NO_MATCH
+文件名：install.log 第26514行： 01-12 11:09:40.641 W/System.err(14314):  Caused by: java.lang.NoClassDefFoundError: Class not found using the boot class loader; no stack trace available
+
+以上这篇Python 过滤错误log并导出的实例就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

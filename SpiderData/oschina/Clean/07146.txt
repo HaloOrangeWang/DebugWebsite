@@ -1,0 +1,27 @@
+
+jenkins 启动 jar 失败 无报错
+
+状况
+
+jnekins 在编译项目成功以后，在shell里面启动jar的时候，一直启动一半就失败了未报错
+
+状况
+
+jnekins 在编译项目成功以后，在shell里面启动jar的时候，一直启动一半就失败了未报错
+
+原因
+
+jenkins默认会在构建完成后杀掉构建过程中由jenkins中shell命令触发的衍生进程。jenkins根据BUILD_ID识别某个进程是否为构建过程的衍生进程，故修改BUILD_ID后，jenkins就无法识别是否为衍生进程，则此进程能在后台保留运行了。
+
+原因
+
+jenkins默认会在构建完成后杀掉构建过程中由jenkins中shell命令触发的衍生进程。jenkins根据BUILD_ID识别某个进程是否为构建过程的衍生进程，故修改BUILD_ID后，jenkins就无法识别是否为衍生进程，则此进程能在后台保留运行了。
+
+解决办法
+
+在jenkins 的shell 脚本框的头部加上BUILD_ID=DONTKILLME
+
+解决办法
+
+在jenkins 的shell 脚本框的头部加上BUILD_ID=DONTKILLME
+

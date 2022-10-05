@@ -1,0 +1,106 @@
+
+Pycharm加载conda创建pytorch虚拟环境
+
+前言
+
+Pycharm使用Anaconda创建的pytorch虚拟环境
+
+报错内容
+
+Note
+
+问题分析
+
+Solve：配置环境变量
+
+
+前言
+
+PyTorch 最新安装教程（2021-07-27）
+
+请参考：PyTorch 最新安装教程（2021-07-27）
+
+
+Pycharm使用Anaconda创建的pytorch虚拟环境
+
+如下图，打开Pycharm的Settings，修改Project的编译器。或者在创建新的Project时，选择Anaconda创建的pytorch --> python 虚拟环境.
+
+选择好编译环境后，import torch，import numpy却报错
+
+
+报错内容
+
+import torch
+
+Please note and check the following:
+
+* The Python version is: Python3.7 from "D:\anaconda\envs\qr_env\python.exe"
+  * The NumPy version is: "1.19.1"
+
+and make sure that they are the versions you expect.
+Please carefully study the documentation linked above for further help.
+
+Original error was: DLL load failed: 找不到指定的模块。
+
+import torchvision
+
+Traceback (most recent call last):
+  File "D:/qr_project/encoder/test.py", line 1, in <module>
+    import torchvision
+  File "D:\anaconda\envs\qr_env\lib\site-packages\torchvision\__init__.py", line 5, in <module>
+    from torchvision import models
+  File "D:\anaconda\envs\qr_env\lib\site-packages\torchvision\models\__init__.py", line 1, in <module>
+    from .alexnet import *
+  File "D:\anaconda\envs\qr_env\lib\site-packages\torchvision\models\alexnet.py", line 1, in <module>
+    import torch
+  File "D:\anaconda\envs\qr_env\lib\site-packages\torch\__init__.py", line 189, in <module>
+    from torch._C import *
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xe0 in position 0: invalid continuation byte
+
+import numpy
+
+Traceback (most recent call last):
+  File "D:\anaconda\envs\qr_env\lib\site-packages\numpy\core\__init__.py", line 22, in <module>
+    from . import multiarray
+  File "D:\anaconda\envs\qr_env\lib\site-packages\numpy\core\multiarray.py", line 12, in <module>
+    from . import overrides
+  File "D:\anaconda\envs\qr_env\lib\site-packages\numpy\core\overrides.py", line 7, in <module>
+    from numpy.core._multiarray_umath import (
+ImportError: DLL load failed: 找不到指定的模块。
+
+
+Note
+
+
+问题分析
+
+值得注意的是，本案例通过Anaconda创建自己的环境，并且安装torch、torchvision等包，在Anaconda prompt命令窗口下是可以正常导入的，而在PyCharm编译器中则会报错。
+
+通过 activate PyTorch 进行自己创建的 pytorch 环境中，输入python会显示环境中python的版本信息，再依次import，显然不会报错。
+
+这是因为在Anaconda的环境下有支持 import torch 的 dll，而在PyCharm中使用的是你创建的新环境，还缺少相应支持的dll，你仅需在PyCharm中配置环境变量。
+
+
+Solve：配置环境变量
+
+首先，在PyCharm主界面点击编辑器Run->Edit Configurations会出现下图所示界面，添加环境变量，点击框住处右边的选项。
+
+2. 点击 + ：新建环境变量： PATH
+
+设置 Value 值：
+
+D:\Anaconda3;
+D:\Anaconda3\Library\mingw-w64\bin;
+D:\Anaconda3\Library;
+D:\Anaconda3\Lib\site-packages;
+D:\Anaconda3\Scripts;
+D:\Anaconda3\envs\PyTorch\Library\bin;
+
+具体路径，根据你的Anaconda安装目录自行调整。
+
+这样问题即可解决！
+
+参考：link
+
+加油！
+

@@ -1,0 +1,56 @@
+网上的东西真坑人啊
+
+在知乎里看到的最有意思的python项目，于是选了一个qrcode二维码的项目来自己尝试
+
+github里下载到pycharm之后就开始了踩坑之路。
+
+先说安装pillow
+
+升级pip到19.2.3版本之后，安装pillow(pip install pillow)
+
+之后尝试导入 import Pillow / import pillow / import PIL
+
+死活没有，我很纳闷。卸了重装都没效果依旧导入失败。
+
+然后手动查找到底有没有，于是打开site-package。
+
+大爷的
+
+竟然是pil
+
+于是 import pil
+
+成功了！花了我半天时间出坑了
+
+接下来是另一个坑
+
+PIL.Image.new
+
+报错type object 'Image' has no attribute 'new'，说明没有Image下new这个方法，引用open也是同样的报错
+
+我又开始纳闷，
+
+再次上网搜，无果！网上都说的风马牛不相及，好像没人遇到我这种坑。
+
+于是靠自己，深入虎穴一探究竟，打开了Image.py，好长的文件，第一个就是Class Image:类，这个里面竟然没有def new(),难怪没办法引用，纳闷呢。。。忽然发现文件靠下位置有def new()
+
+这下我明白了
+
+这货没在类里所以无法调用，正确的写法应该是
+
+class Image:
+
+def new()
+
+.......
+
+于是我把def new():复制到类下面
+
+再引用就有了，这坑又花了半天，my god
+
+反过来看就明白了好多，当from PIL.Image  import Image 这里是导入的class Image类
+
+然而 Image.new无法引用，说明了类下面没有'定义new
+
+所以，文件名与类名最好不要重复，否则又是坑。
+

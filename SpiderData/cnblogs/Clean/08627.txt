@@ -1,0 +1,72 @@
+
+问题简单描述：
+
+一般我们在pycharm中run程序的时候，会将当前工程的所有文件夹路径都作为包的搜索路径；而在命令行中运行‘xxx.py’时，或者sh脚本文件运行‘xxx.py’时，只是搜索当前路径，就会找不到module
+
+
+粗暴解决办法：
+
+在要运行的‘xxx.py’最前面加上以下代码：
+
+
+具体原因（转载于：https://blog.csdn.net/qq_36829091/article/details/82180866）
+
+
+问题
+
+项目结构如下：
+
+整个项目名为project
+
+package1和package2是项目文件夹下的两个文件夹，即两个包（package）
+
+两个包中分别有__init__.py 和 module1.py / module2.py文件，其中module1.py和module2.py文件为两个模块（module）
+
+（在python中一个文件可以被看成一个独立模块，而包对应着文件夹。区别包和文件夹的重要特征就是包文件夹内每一层目录都有初始化文件__init__.py）
+
+module1.py中为：
+
+def print_a(a):
+ 
+print(a)
+
+module2.py中为:（引入了package1中的module1，module2和module1不在同一包下。程序输出为打印hello world）
+
+在Pycharm或IPython之类的IDE上运行脚本正常：
+
+但在pycharm的终端（terminal）或cmd命令行执行python module2.py命令，报了模块未能找到的错误：
+
+
+原因：（不想看可直接跳到解决方法）
+
+Python在启动解释器（Interpreter）时不光会导入环境变量中sys.path发现的模块，还会导入当前工作目录下的模块。
+
+什么是环境变量中sys.path发现的模块和当前工作目录下的模块？
+
+在module2.py开头加上2行代码：
+
+使用  python module2.py  命令在终端运行，得到
+
+红框中的第一个绿线位置就是当前工作目录下的模块，后面的几个则是环境变量中sys.path原本发现的模块。
+
+当你在IDE中启动解释器时，当前的工作目录就是项目目录，能顺利调用同项目中的模块；但是当你通过命令行启动时，当前工作目录为你启动解释器时所在的目录，如果当时的位置不是项目目录，那么项目目录中的模块就不会被找到，因此运行的时候报错:ModuleNotFoundError: No Module named ...（在例子中我的当前目录是.../package2是项目目录底下的一个文件夹，不是项目目录，所以报错）
+
+
+解决方法：
+方法很简单，就是把模块路径提供给解释器：
+
+
+（推荐） 把模块路径放到环境变量中作为全局变量（sys.path能扫描到）。
+
+在module2.py开头加入sys.path.append('../')：
+
+sys.path.append()中添加的正是这个项目的项目目录（'../'表示当前目录的父目录，也即这个项目的项目目录）
+
+随后打印出的结果为：
+
+绿色一行为当前目录，黄色一行为新添加的项目目录。这样就不会再报错了。
+
+或者使用指向项目目录（project）的绝对路径：sys.path.append('D:\\coding\\deep_learning\\adversarial_example\\project')：
+
+输出：
+

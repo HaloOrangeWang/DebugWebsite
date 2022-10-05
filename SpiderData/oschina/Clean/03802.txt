@@ -1,0 +1,49 @@
+
+RabbitMQ
+
+安装成功后，cmd dos命令进入RabbitMQ的安装路径，如
+
+E:\Program Files\RabbitMQ Server\rabbitmq_server-3.6.10\sbin>
+
+
+输入以下命令查看mq状态
+
+rabbitmqctl status
+
+　　
+
+如果报错：
+
+Status of node 'rabbit@USER-20160821AY'
+
+Error: unable to connect to node 'rabbit@USER-20160821AY': nodedown
+
+DIAGNOSTICS
+
+===========
+
+attempted to contact: ['rabbit@USER-20160821AY']
+
+rabbit@USER-20160821AY:
+
+* connected to epmd (port 4369) on USER-20160821AY
+
+* epmd reports node 'rabbit' running on port 25672
+
+* TCP connection succeeded but Erlang distribution failed
+
+* Authentication failed (rejected by the remote node), please check the Erlang cookie
+
+current node details:
+
+- node name: 'rabbitmq-cli-82@USER-20160821AY'
+
+- home dir: C:\Users\Administrator
+
+- cookie hash: /dNt52BJBOZo94nB/X3FKA==
+
+
+根据提示，应该是Erlang的cookie出现问题，解决办法如下：
+
+Erlang会生成两个cookie文件：C:\Windows\.erlang.cookie 及 C:\用户\你的用户名\.erlang.cookie。检查两个文件内容是否一致，不一致用其中一个替换另一个即可。
+

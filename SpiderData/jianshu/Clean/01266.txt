@@ -1,0 +1,27 @@
+$ jupyter notebook
+
+报错：
+
+-bash: jupyter: command not found
+
+原因：
+
+shell中没有jupyter，需要将 用户基础目录 的 bin 目录添加到 PATH 中。
+
+解决方法：
+
+找到用户基础目录的bin的路径：
+
+$ python -m site
+
+找到USER_BASE（如：/Users/username/Library/Python/2.7，那么bin的路径则为/Users/username/Library/Python/2.7/bin）
+
+将路径添加到PATH中：
+
+$ touch ~/.bash_profile
+$ vim ~/.bach_profile
+
+将export PATH=${PATH}:/Users/username/Library/Python/2.7/bin添加进去。
+
+再次运行jupyter成功。
+

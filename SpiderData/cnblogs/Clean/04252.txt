@@ -1,0 +1,50 @@
+　　文章只是介绍自己安装时从安装不上到安装后报错,再到安装成功的心路历程,并不代表广大欧皇也会会出现同类型的问题,也不是总结和汇总各种出问题的原因.
+
+直接进入正题,首先我这边是win环境,电脑上装的是python3.8和anaconda(python3.7),确认环境变量没有问题,环境变量配置的是python3.8,在控制台中直接pip install lxml
+
+弹出错误
+
+Building wheels for collected packages: lxml
+Building wheel for lxml (setup.py) ... error
+
+Running setup.py clean for lxml
+Failed to build lxml
+Installing collected packages: lxml
+Running setup.py install for lxml ... error
+
+大概有俩大篇红字
+
+后续从网上查了一下原因
+
+附上查询的网址,按照他说的弄了一下
+
+https://blog.csdn.net/fuck487/article/details/80169109
+
+我因该是要安装红框里的这个,但是还是安装失败了
+
+后续又在网上查了一些,大概的意思都差不多,但是有一篇文章提及到python官网下载lxml安装文件
+
+附上链接地址
+
+https://pypi.org/project/lxml/#files
+
+进去以后竟然没找到关于python3.8的lxml安装文件,我滴乖乖,我安装的python版本太高了?太新了?最新的还没支持?
+
+无奈只能放弃在python3.8上安装lxml
+
+还是老老实实,在anaconda上import吧,当然安装anaconda的时候这些常用的包都是安装好的,弄好环境以后,发现执行第一句话就报错
+
+from lxml import etree
+
+ImportError: DLL load failed: 找不到指定的模块。
+
+找不到etree这个东东,这又是为啥呀,又是一顿查,最后还是锁定了是anaconda这个玩意给我装的不完整,有的包有有的没有,只能卸载重装,重装以后终于编译成功了
+
+简单总结一下,
+
+首先安装失败先看看自己的python版本和安装包是否兼容,不兼容的话就别走这条路了,老老实实换python版本(一般是安装版本太新导致的),
+
+然后确定python版本没有问题以后安装不成功,基本是你设置的问题,环境变量确定一下,安装之前需要提前安装什么搞搞清楚,比如,安装lxml要先装wheel等等
+
+最后如果安装上编译失败,基本确定是安装不完全,或有什么问题,最好是卸载重装.
+

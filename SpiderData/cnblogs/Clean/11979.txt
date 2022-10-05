@@ -1,0 +1,28 @@
+appium+python+android
+
+在定位到模块输入内容的时候遇到了一个问题
+
+send_keys报错
+
+appium报错Message: Cannot set the element to ‘XXXX’. Did you interact with the correct element?
+
+查看了一下资料，说是因为android的模块属性问题
+
+可输入的模块属性为android.widget.EditText
+
+但因为我需要输入的模块属性非此属性所以send_keys失败
+
+也尝试了get_value()和其他的输入方法，均不可行
+
+目前暂未找到方法可以使用send_keys    看其他人说可以通过uiautomator定位（未尝试，各位可以试试）
+
+目前我遇到的地方为登录，所以使用了driver.press_keycode()方法， 通过unicode键盘进行输入，但是presskeycode要用键码，比较麻烦。
+
+以下是网友给出的uiautomator定位使用方式
+
+driver.find_element_by_android_uiautomator('new UiSelector().text("定位属性")').send_keys('输入内容')
+
+　　
+
+键码使用方式请参考：https://blog.csdn.net/weixin_40180628/article/details/79169846
+

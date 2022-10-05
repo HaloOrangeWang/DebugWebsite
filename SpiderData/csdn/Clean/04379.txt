@@ -1,0 +1,65 @@
+
+Python的错误和异常
+
+Python有两种错误：语法错误和异常
+ 语法错误：Python 的语法错误或者称之为解析错，是初学者经常碰到的
+ 异常: 即便Python程序的语法是正确的，在运行它的时候，也有可能发生错误。运行期检测到的错误被称为异常。
+ 下面看异常如何处理，我们使用捕获来处理，通过捕获异常 ，处理程序遇到的异常。
+
+捕获任何异常格式:
+
+try:
+    代码块1
+except:
+    代码块2
+finally:
+    代码块3
+其他语句
+
+捕获任何异常:
+ try 子句里面有没有发生异常，finally 子句都会执行 案例如下：
+
+try:
+    x = int(input("请输入数字: "))
+    y = int(input("请输入数字: "))
+    print(x/y)
+except:
+    print('啊! 出错啦')
+finally:
+    print('结束啦！')
+
+执行结果如下：
+
+> python Mypython-30-5.py
+请输入数字: 1
+请输入数字: 2
+0.5
+结束啦！
+> python Mypython-30-5.py
+请输入数字: 1
+请输入数字: y
+啊! 出错啦
+结束啦！
+
+except 我们还可以指定异常类型来处理，如下面的案例：
+
+try:
+     x = int(input("请输入数字: "))
+     y = int(input("请输入数字: "))
+	 print(x/y)
+except ValueError:
+      print("Oops!  不是有效数字.  请重试.")
+except ZeroDivisionError:
+	  print("分母不能为零.")
+
+执行结果如下：
+
+python Mypython-30-6.py
+请输入数字: 1
+请输入数字: b
+Oops!  不是有效数字.  请重试.
+> python Mypython-30-6.py
+请输入数字: 1
+请输入数字: 0
+分母不能为零.
+

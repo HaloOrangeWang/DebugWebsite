@@ -1,0 +1,26 @@
+错误：ImportError: libcublas.so.9.0: cannot open shared object file: No such file or directory
+
+问题：找不到cuda9.0的版本。
+
+出现该错误的主要原因：cuda未安装或者cuda的版本有问题
+
+这个错误在安装tensorflow时经常会出现，但是在官方的常见问题中没有提到， 如果你使用下面的方法没有解决的话，可以在评论中留言。
+
+对于tensorflow 1.7版本，只接受cuda 9.0（9.1也不可以！），和cudnn 7.0，所以如果你安装了cuda9.1和cudnn7.1或以上版本，那么你需要重新安装9.0和7.0版本。
+
+安装完正确的版本后，确认你在你的~/.bashrc（或者~/.zshrc）文件中加入了下面环境变量
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/lib64
+export PATH=$PATH:/usr/local/cuda-9.0/bin
+export CUDA_HOME=$CUDA_HOME:/usr/local/cuda-9.0
+
+如图所示：
+
+之后重启电脑即可，将不会在提示ImportError: libcublas.so.9.0的错误。
+
+如果你的cuda是8.0，那么你可以使用下面的指令将tensorflow的版本回滚到1.4版本，
+
+pip install --upgrade tensorflow-gpu==1.4
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

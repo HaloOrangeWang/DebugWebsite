@@ -1,0 +1,36 @@
+0x00 问题引出：
+
+　　最近在练习python爬虫的时候，需要爬取网页。 
+在使用urllib获取reqest的response的时候，还要进行解码。 
+见语句：
+
+content = urllib.request.urlopen(request).read().decode()
+
+当执行该语句的时候，会造成异常：
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xd3 in position 259: invalid continuation byte
+
+0xd3 问题分析
+该情况是由于出现了无法进行转换的 二进制数据 造成的，可以写一个小的脚本来判断下，是整体的字符集参数选择上出现了问题，还是出现了部分的无法转换的二进制块：
+
+#python3
+#以读入文件为例：
+
+　1.如果是字符集出现错误，建议多选择几种字符集测试一下： 选择的经验是： 如果是爬取到的网页文件，可以查看网页文件的meta标签下的charset属性值。
+
+例如：
+
+<meta charset="UTF-8">
+
+　也可以使用notepad++打开，查看下右下角的部位，会指示该文件是那种编码。
+
+　　2.有的情况，是这样的，整个文件是好的，如果用notepad++打开后，能够看到文件是可以打开的，似乎什么问题都没有发生过，但是，用python进行解码的时候，却会出现错误。原因是因为这里的0xd3,这是无法转换出来的部分，这是不属于编码字符集中的部分。所以，在进行编码转换的时候，会报错。
+
+0xd3 解决方法
+修改字符集参数，一般这种情况出现得较多是在国标码(GBK)和utf8之间选择出现了问题。
+出现异常报错是由于设置了decode()方法的第二个参数errors为严格（strict）形式造成的，因为默认就是这个参数，将其更改为ignore等即可。例如:
+
+line.decode("utf8","ignore")
+
+问题解决
+

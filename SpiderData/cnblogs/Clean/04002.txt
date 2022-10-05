@@ -1,0 +1,27 @@
+脚本报错：
+
+脚本代码：
+
+报错原因：
+
+因为默认情况下，Python采用的是ascii编码方式，如下所示：
+
+◄►  python -c "import sys; print sys.getdefaultencoding()"
+ascii
+◄►
+
+而Python在进行编码方式之间的转换时，会将 unicode 作为“中间编码”，但 unicode 最大只有 128 那么长，所以这里当尝试将 ascii 编码字符串转换成"中间编码" unicode 时由于超出了其范围，就报出了如上错误。
+
+解决方法：
+
+解决方案：
+
+1）第一种：这里我们将Python的默认编码方式修改为utf-8，就可以规避上述问题的发生，具体方式，我们在Python文件的前面加上如下代码：
+
+2）第二种：我们在/usr/lib/python2.7/site-packages/目录下添加一个sitecustomize.py文件，内容如下：
+
+import sys
+sys.setdefaultencoding('utf-8')
+
+这种方式可以解决所有项目的encoding问题，具体说明可参考/usr/lib/python2.7/site.py文件：
+

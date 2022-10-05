@@ -1,0 +1,45 @@
+今天clone新项目安装依赖时出现一个报错，如下
+
+npm ERR! code EPERM
+npm ERR! syscall rename
+npm ERR! path C:\Users\workspace\A\node_modules\chokidar\package.json.1640585120
+npm ERR! dest C:\Users\workspace\A\node_modules\chokidar\package.json  
+npm ERR! errno -4048
+npm ERR! Error: EPERM: operation not permitted, rename 'C:\Users\workspace\A\node_modules\chokidar\package.json.1640585120' -> 'C:\Users\workspace\A\node_modules\chokidar\package.json'
+npm ERR!  [OperationalError: EPERM: operation not permitted, rename 'C:\Users\workspace\A\node_modules\chokidar\package.json.1640585120' -> 'C:\Users\workspaceA\node_modules\chokidar\package.json'] {
+npm ERR!   cause: [Error: EPERM: operation not permitted, rename 'C:\Users\workspace\A\node_modules\chokidar\package.json.1640585120' -> 'C:\Users\workspace\A\node_modules\chokidar\package.json'] {
+npm ERR!     errno: -4048,
+npm ERR!     code: 'EPERM',
+npm ERR!     syscall: 'rename',
+npm ERR!     path: 'C:\\Users\\workspace\\A\\node_modules\\chokidar\\package.json.1640585120',
+npm ERR!     dest: 'C:\\Users\\workspace\\A\\node_modules\\chokidar\\package.json'
+npm ERR!   },
+npm ERR!   errno: -4048,
+npm ERR!   code: 'EPERM',
+npm ERR!   syscall: 'rename',
+npm ERR!   path: 'C:\\Users\\workspace\\A\\node_modules\\chokidar\\package.json.1640585120',
+npm ERR!   dest: 'C:\\Users\\workspace\\A\\node_modules\\chokidar\\package.json',
+npm ERR!   parent: 'A'
+npm ERR! }
+npm ERR!
+npm ERR! The operation was rejected by your operating system.
+npm ERR! It's possible that the file was already in use (by a text editor or antivirus),
+npm ERR! or that you lack permissions to access it.
+npm ERR!
+npm ERR! If you believe this might be a permissions issue, please double-check the
+npm ERR! permissions of the file and its containing directories, or try running
+npm ERR! the command again as root/Administrator.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     C:\Users\AppData\Roaming\npm-cache\_logs\2022-02-08T01_52_29_839Z-debug.log
+
+解决办法：
+
+rm -rf node_modules
+
+rm package-lock.json
+
+npm cache clean--force
+
+npm install
+

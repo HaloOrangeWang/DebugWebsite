@@ -1,0 +1,21 @@
+情况如下：
+
+$sudo apt-get install -y libatlas3-base libgfortran3 python-dev
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+libatlas3-base is already the newest version.
+You might want to run 'apt-get -f install' to correct these:
+The following packages have unmet dependencies:
+ libatlas3-base : Depends: libblas-common but it is not installable
+ python-dev : Depends: python2.7-dev (>= 2.7.3) but it is not going to be installed
+
+查找该主机上报ELK中sudo日志发现dpkg安装过libatlas-bas
+COMMAND=/usr/bin/dpkg -i libatlas-base-dev_3.10.3-7+b1_amd64.deb
+
+dpki -l 查找到该名称为libatlas-base
+卸载deb包
+aptitude purge libatlas-base
+
+再次安装后，无报错，python-dev包成功安装。
+

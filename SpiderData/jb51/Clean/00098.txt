@@ -1,0 +1,170 @@
+python 保存 .mat 文件的大小是有限制的，似乎是 5G 以内，如果需要保存几十个 G 的数据的话，可以选用其他方式，
+
+
+比如 h5 文件
+
+import h5py
+def h5_data_write(train_data, train_label, test_data, test_label, shuffled_flag):
+    print("h5py文件正在写入磁盘...")
+    
+    save_path = "../save_test/" + "train_test_split_data_label_" + shuffled_flag + ".h5"
+    with h5py.File(save_path, 'w') as f:
+        f.create_dataset('train_data', data=train_data)
+        f.create_dataset('train_label', data=train_label)
+        f.create_dataset('test_data', data=test_data)
+        f.create_dataset('test_label', data=test_label)
+    print("h5py文件保存成功！")
+def h5_data_read(filename):
+    """
+        keys() ： 获取本文件夹下所有的文件及文件夹的名字
+        f['key_name'] : 获取对应的对象
+    """
+    file = h5py.File(filename,'r')
+    train_data = file['train_data'][:]
+    train_label = file['train_label'][:]
+    test_data = file['test_data'][:]
+    test_label = file['test_label'][:]
+    return train_data, train_label, test_data, test_label
+
+补充：通过python 读MATLAB数据文件 *.mat
+
+
+背景
+
+在做deeplearning过程中，使用caffe的框架，一般使用matlab来处理图片（matlab处理图片相对简单，高效），用python来生成需要的lmdb文件以及做test产生结果。
+
+所以某些matlab从图片处理得到的label信息都会以.mat文件供python读取，同时也python产生的结果信息也需要matlab来做进一步的处理（当然也可以使用txt，不嫌麻烦自己处理结构信息）。
+
+
+介绍
+
+matlab和python间的数据传输一般是基于matlab的文件格式.mat，python中numpy和scipy提供了一些函数，可以很好的对.mat文件的数据进行读写和处理。
+
+在这里numpy作用是提供Array功能映射matlab里面的Matrix，而scipy提供了两个函数loadmat和savemat来读写.mat文件。
+
+
+下面是一个简单的测试程序
+
+具体的函数用法可以看帮助文档：
+
+import scipy.io as sio 
+import matplotlib.pyplot as plt 
+import numpy as np 
+ 
+#matlab文件名 
+matfn=u'E:/python/测试程序/162250671_162251656_1244.mat' 
+data=sio.loadmat(matfn) 
+ 
+plt.close('all') 
+xi=data['xi'] 
+yi=data['yi'] 
+ui=data['ui'] 
+vi=data['vi'] 
+plt.figure(1) 
+plt.quiver( xi[::5,::5],yi[::5,::5],ui[::5,::5],vi[::5,::5]) 
+plt.figure(2) 
+plt.contourf(xi,yi,ui) 
+plt.show()  
+sio.savemat('saveddata.mat', {'xi': xi,'yi': yi,'ui': ui,'vi': vi})
+
+
+示例2
+
+import scipy.io as sio
+import numpy as np
+ 
+###下面是讲解python怎么读取.mat文件以及怎么处理得到的结果###
+load_fn = 'xxx.mat'
+load_data = sio.loadmat(load_fn)
+load_matrix = load_data['matrix'] #假设文件中存有字符变量是matrix，例如matlab中save(load_fn, 'matrix');当然可以保存多个save(load_fn, 'matrix_x', 'matrix_y', ...);
+load_matrix_row = load_matrix[0] #取了当时matlab中matrix的第一行，python中数组行排列
+ 
+###下面是讲解python怎么保存.mat文件供matlab程序使用###
+save_fn = 'xxx.mat'
+save_array = np.array([1,2,3,4])
+sio.savemat(save_fn, {'array': save_array}) #和上面的一样，存在了array变量的第一行
+ 
+save_array_x = np.array([1,2,3,4])
+save_array_y = np.array([5,6,7,8])
+sio.savemat(save_fn, {'array_x': save_array_x, 'array_x': save_array_x}) #同理，
+
+鉴于以后的目标主要是利用现有的Matlab数据（.mat或者.txt），主要考虑python导入Matlab数据的问题。以下代码可以解决python读取.mat文件的问题。
+
+
+主要使用sicpy.io即可。
+
+sicpy.io提供了两个函数loadmat和savemat，非常方便。
+
+# adapted from http://blog.csdn.net/rumswell/article/details/8545087
+import scipy.io as sio  
+#import matplotlib.pyplot as plt
+from pylab import *
+import numpy as np   
+ 
+matfn='E:\\Pythonrun\\myuse\\matdata.mat'   # the path of .mat data
+data=sio.loadmat(matfn)  
+xx=data['matdata']
+figure(1)
+plot(xx)
+show()
+
+
+以下代码是读入txt数据并转换成数组，方法比较笨，更有效的方法待研究。
+
+from numpy import * 
+def file2list(filename):
+
+fr = open(filename)  
+    array = fr.readlines() #以文件中的每行为一个元素，形成一个list列表  
+    num = len(array)  
+    returnMat = zeros((num,3))#初始化元素为0的，行号数个列表，其中每个元素仍是列表，元素数是3，在此表示矩阵  
+    index = 0   
+ 
+    for line in array:  
+        line = line.strip()#去掉一行后的回车符号  
+        linelist = line.split(' ')#将一行根据分割符,划分成多个元素的列表  
+        returnMat[index,:] = linelist[0:3]#向矩阵赋值，注意这种赋值方式比较笨拙  
+        index +=1  
+    return returnMat
+ 
+fname = 'E:\\Pythonrun\\myuse\\num_data.txt'
+data= file2list(fname)
+
+补充：Python 读写 Matlab Mat 格式数据
+
+
+1. 非 matlab v7.3 files 读写
+
+import scipy.io as sio
+import numpy
+# matFile 读取
+matFile = 'matlabdata.mat'
+datas = sio.loadmat(matFile)
+# 加载 matFile 内的数据
+# 假设 mat 内保存的变量为 matlabdata
+matlabdata = datas['matlabdata']
+# matFile 写入
+save_matFile = 'save_matlabdata.mat'
+save_matlabdata = np.array([1,2,3,4,5])
+sio.savemat(save_matFile, {'array':save_matlabdata})
+
+
+2. matlab v7.3 files 读取
+
+如果 matlab 保存 data 时，采用的是 ‘-v7.3'，scipy.io.loadmat函数加载数据会出现错误：
+
+File "/usr/local/lib/python2.7/dist-packages/scipy/io/matlab/mio.py", line 64, in mat_reader_factory
+
+raise NotImplementedError('Please use HDF reader for matlab v7.3 files')
+
+NotImplementedError: Please use HDF reader for matlab v7.3 files
+
+可以采用：
+
+import h5py
+with h5py.File('matlabdata.mat', 'r') as f:
+    f.keys() # matlabdata.mat 中的变量名
+datas = h5py.File('matlabdata.mat')['matlabdata'].value
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

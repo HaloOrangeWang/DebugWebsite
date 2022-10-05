@@ -1,0 +1,235 @@
+一、python的错误处理
+
+在程序运行的过程中，如果发生了错误，可以事先约定返回一个错误代码，这样，就可以知道是否有错以及出错的原因。
+在操作系统提供的调用中，返回错误码非常常见。比如打开文件的函数open()，成功时返回文件的描述符（就是一个整数），出错时返回-1
+二、内置异常类
+BaseException是所有内置异常的基类，但用户定义的类并不直接继承BaseException，所有的异常类都是从Exception继承，且都在exceptions模块中定义。Python自动将所有异常名称放在内建命名空间中，所以程序不必导入exceptions模块即可使用异常。一旦引发而且没有捕捉SystemExit异常，程序执行就会终止。如果交互式会话遇到一个未被捕捉的SystemExit异常，会话就会终止。
+
+三、举例
+
+requests模块内置异常类的层次结构如下：
+
+IOError
+  +-- RequestException  # 处理不确定的异常请求
+       +-- HTTPError  # HTTP错误
+       +-- ConnectionError  # 连接错误
+       |    +-- ProxyError  # 代理错误
+       |    +-- SSLError  # SSL错误
+       |    +-- ConnectTimeout(+-- Timeout)  # (双重继承，下同)尝试连接到远程服务器时请求超时，产生此错误的请求可以安全地重试。
+       +-- Timeout  # 请求超时
+       |    +-- ReadTimeout  # 服务器未在指定的时间内发送任何数据
+       +-- URLRequired  # 发出请求需要有效的URL
+       +-- TooManyRedirects  # 重定向太多
+       +-- MissingSchema(+-- ValueError) # 缺少URL架构(例如http或https)
+       +-- InvalidSchema(+-- ValueError) # 无效的架构，有效架构请参见defaults.py
+       +-- InvalidURL(+-- ValueError)  # 无效的URL
+       |    +-- InvalidProxyURL  # 无效的代理URL
+       +-- InvalidHeader(+-- ValueError)  # 无效的Header
+       +-- ChunkedEncodingError  # 服务器声明了chunked编码但发送了一个无效的chunk
+       +-- ContentDecodingError(+-- BaseHTTPError)  # 无法解码响应内容
+       +-- StreamConsumedError(+-- TypeError)  # 此响应的内容已被使用
+       +-- RetryError  # 自定义重试逻辑失败
+       +-- UnrewindableBodyError  # 尝试倒回正文时，请求遇到错误
+       +-- FileModeWarning(+-- DeprecationWarning)  # 文件以文本模式打开，但Requests确定其二进制长度
+       +-- RequestsDependencyWarning  # 导入的依赖项与预期的版本范围不匹配
+  
+ Warning
+  +-- RequestsWarning  # 请求的基本警告
+  四、用户自定义异常
+
+此外，你也可以通过创建一个新的异常类拥有自己的异常，异常应该是通过直接或间接的方式继承自Exception类。下面创建了一个MyError类，基类为Exception，用于在异常触发时输出更多的信息。
+
+　　在try语句块中，抛出用户自定义的异常后执行except部分，变量 e 是用于创建MyError类的实例。
+
+class MyError(Exception):
+     def __init__(self, msg):
+         self.msg = msg
+     
+     def __str__(self):
+         return self.msg
+  
+  
+ try:
+     raise MyError('类型错误')
+ except MyError as e:
+     print('My exception occurred', e.msg)
+
+五、捕获异常
+
+
+当发生异常时，我们就需要对异常进行捕获，然后进行相应的处理。python的异常捕获常用try...except...结构，把可能发生错误的语句放在try模块里，用except来处理异常，每一个try，都必须至少对应一个except。此外，与python异常相关的关键字主要有：
+
+1、捕获所有异常
+
+包括键盘中断和程序退出请求（用sys.exit()就无法退出程序了，因为异常被捕获了），因此慎用。
+
+try:
+      <语句>
+  
+ except:
+  
+       print('异常说明')
+
+2、捕获指定异常
+
+try:
+      <语句>
+  
+ except <异常名>:
+  
+       print('异常说明')
+
+万能异常：
+
+try:
+      <语句>
+  
+ except Exception:
+  
+       print('异常说明')
+
+例子：
+
+try:
+     f = open("file-not-exists", "r")
+  
+ except IOError as e:
+  
+     print("open exception: %s: %s" %(e.errno, e.strerror))
+
+3、捕获多个异常
+
+捕获多个异常有两种方式，第一种是一个except同时处理多个异常，不区分优先级：
+
+try:
+      <语句>
+  
+ except (<异常名1>, <异常名2>, ...):
+  
+       print('异常说明')
+
+4、第二种是区分优先级的：
+
+try:
+      <语句>
+  
+ except <异常名1>:
+  
+       print('异常说明1')
+  
+ except <异常名2>:
+  
+       print('异常说明2')
+  
+ except <异常名3>:
+  
+       print('异常说明3')
+
+该种异常处理语法的规则是：
+
+执行try下的语句，如果引发异常，则执行过程会跳到第一个except语句。
+ 如果第一个except中定义的异常与引发的异常匹配，则执行该except中的语句。
+ 如果引发的异常不匹配第一个except，则会搜索第二个except，允许编写的except数量没有限制。
+ 如果所有的except都不匹配，则异常会传递到下一个调用本代码的最高层try代码中。
+
+5、异常中的else
+
+如果判断完没有某些异常之后还想做其他事，就可以使用下面这样的else语句。
+
+try:
+      <语句>
+  
+ except <异常名1>:
+  
+       print('异常说明1')
+  
+ except <异常名2>:
+  
+       print('异常说明2')
+  
+ else:
+  
+       <语句>  # try语句中没有异常则执行此段代码
+
+6、异常中的finally
+
+try...finally...语句无论是否发生异常都将会执行最后的代码。
+
+try:
+      <语句>
+  
+ finally:
+  
+       <语句>
+
+str1 = 'hello world'
+ try:
+     int(str1)
+ except IndexError as e:
+     print(e)
+ except KeyError as e:
+     print(e)
+ except ValueError as e:
+     print(e)
+ else:
+     print('try内没有异常')
+ finally:
+     print('无论异常与否,都会执行我')
+
+7、 raise主动触发异常
+
+可以使用raise语句自己触发异常，raise语法格式如下：
+
+raise [Exception [, args [, traceback]]]
+ 语句中Exception是异常的类型（例如ValueError），参数是一个异常参数值。该参数是可选的，如果不提供，异常的参数是"None"。最后一个参数是跟踪异常对象，也是可选的（在实践中很少使用）。
+
+看一个例子：
+ def not_zero(num):
+     try:
+         if num == 0:
+             raise ValueError('参数错误')
+         return num
+     except Exception as e:
+         print(e)
+  
+  
+ not_zero(0)
+  8、采用traceback模块查看异常
+ 发生异常时，Python能“记住”引发的异常以及程序的当前状态。Python还维护着traceback（跟踪）对象，其中含有异常发生时与函数调用堆栈有关的信息。记住，异常可能在一系列嵌套较深的函数调用中引发。程序调用每个函数时，Python会在“函数调用堆栈”的起始处插入函数名。一旦异常被引发，Python会搜索一个相应的异常处理程序。如果当前函数中没有异常处理程序，当前函数会终止执行，Python会搜索当前函数的调用函数，并以此类推，直到发现匹配的异常处理程序，或者Python抵达主程序为止。这一查找合适的异常处理程序的过程就称为“堆栈辗转开解”（StackUnwinding）。解释器一方面维护着与放置堆栈中的函数有关的信息，另一方面也维护着与已从堆栈中“辗转开解”的函数有关的信息。
+
+格式如下：
+
+try:
+     block
+  
+ except:
+  
+     traceback.print_exc()
+ 举个栗子：
+
+try:
+     1/0
+ except Exception as e:
+     print(e)
+ 如果我们这样写的话，程序只会报“division by zero”错误，但是我们并不知道是在哪个文件哪个函数哪一行出的错。
+
+下面使用traceback模块，官方参考文档：https://docs.python.org/2/library/traceback.html
+
+import traceback
+  
+ try:
+     1/0
+ except Exception as e:
+     traceback.print_exc()
+ 这样就会帮我们追溯到出错点：
+
+Traceback (most recent call last):
+   File "E:/PycharmProjects/ProxyPool-master/proxypool/test.py", line 4, in <module>
+     1/0
+ ZeroDivisionError: division by zero
+ 另外，traceback.print_exc()跟traceback.format_exc()有什么区别呢？
+
+区别就是，format_exc()返回字符串，print_exc()则直接给打印出来。即traceback.print_exc()与print(traceback.format_exc())效果是一样的。print_exc()还可以接受file参数直接写入到一个文件。比如可以像下面这样把相关信息写入到tb.txt文件去。
+
+traceback.print_exc(file=open('tb.txt','w+'))
+

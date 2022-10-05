@@ -1,0 +1,66 @@
+先看一个例子：
+
+(u'agentEnum', True, '200', {u'msg': u'\u6210\u529f', u'code': 1}）
+
+在2.7.15版本中，如果有下面代码：
+
+def foo(*args):
+    with open("path", "w") as f:
+        line = args
+        f.write(line)
+        f.close()
+    
+if __name__ == "__main__":
+    data = (u'agentEnum', True, '200', {u'msg': u'\u6210\u529f', u'code': 1}）
+    foo(data)
+
+　　写入文件时候，很容易出现乱码的问题
+
+如果直接对返回的字符串调用encode或者先str（data）然后encode，都会报错；
+
+有一个不是很理想的解决方法是：
+
+line = ""
+for i in range(0, len(list(args))): 
+    line =  "%s %s" % (line, args)
+with open(path, "w") as f:
+    f.write(line)
+
+注意： 　　
+
+　　*args返回的值是元组形式的，如果为一个值的时候：（xxx,）
+
+　　 *所以，经常会遇到做这个处理的地方
+
+另外：
+
+　　正常的，如果传给你的是一个字符串，而不是一些混合类型的数值，遇到乱码问题，大可以使用encode，decode方法处理；
+
+加餐：
+
+　　如果在调试的时候可以在IDE中设置断点，看每步生成的数据种类，然后决定怎么转码
+
+　　也可以使用一下方式，打印关注数据的格式：
+
+　　
+
+import chardet
+
+data = "xxx"
+
+print chardet.detect(data)
+
+　　
+
+chardet.detect() 即使是报错，也会返回格式信息
+
+python 2.x在使用汉字的时候，如果定义的都是Unicode类型，编码问题会少很多
+
+比如：
+
+　　a = u“测试”
+
+还有一种情况比较特殊：
+
+某些软件在保存一个以UTF-8编码的文件时，默认会在文件开始的地方插入三个不可见的字符（0xEF 0xBB 0xBF，即BOM）。在有些软件可以控制是否插入BOM。如果在有BOM的情况下，在读取时需要自己去掉这些字符，python中的codecs module定义了这个常量
+

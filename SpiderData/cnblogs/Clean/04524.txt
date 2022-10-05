@@ -1,0 +1,40 @@
+最后Stackoverflow上面的大神解决了问题： Link
+
+尤其这条 sed -i -e 's/libs="$libs -l "/libs="$libs -lmysqlclient -lssl -lcrypto"/g' /usr/local/bin/mysql_config
+
+解决了配置文件的问题，最后安装成功了
+
+以上
+
+作者：Jorah_Bronn
+
+来源：CSDN
+
+原文：https://blog.csdn.net/Eri_Feng/article/details/81224106
+
+版权声明：本文为博主原创文章，转载请附上博文链接！
+
+以上实测，我反正是没有搞定
+
+又修改了下mysql_config实现了：
+
+sed -i -e 's/libs="$libs -lmysqlclient -lssl -lcrypto"/# libs="$libs -l "/g' /usr/local/bin/mysql_config
+
+安装好MySQLdb后，在python环境中导入MySQLdb，可能遇到如下问题：
+
+为了解决上述问题，你可能需要：
+
+该命令的结果可能是：
+
+对此，你需要将前三个lib的位置重新写一下，具体命令：
+
+最终，可以看到不再报错：
+
+此外，你可能遇到的问题：
+
+这个问题的原因是，你的Pyhon和Mysql的版本不一致导致的。
+
+检查python的版本
+
+比如我的mysql版本是64位，mac自带的python版本是2.7.10(32 bit)。我自己的解决方法是重新下载了python2.7.15(64bit)，并做了如下配置(vim ~/.bash_profile):
+

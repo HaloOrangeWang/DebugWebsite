@@ -1,0 +1,27 @@
+问题描述：
+Python使用readconfig.py读取配置文件config.ini，进行调试的时候，报错：configparser.NoSectionError: No section: 'user_login'
+
+原因：
+readconfig.py读取路径错误， 建议需填写绝对路径
+
+解决方案：
+config.read()读取绝对路径
+
+#获取当前目录
+dirname = os.path.dirname(os.path.abspath(__file__))
+
+#创建一个解析器
+config = configparser.ConfigParser()
+
+#读取文件(读取配置文件采用绝对路径)
+config.read(dirname + "/conf.ini")
+
+#账号、密码
+mobile_phone = config.get('user_login','mobile_phone')
+password = config.get('user_login','password')
+
+运行结果：
+
+C:\Python37\python.exe E:/PycharmProjects/Python32/class21_requests_2/作业/project/testcases/LoginRequests.py
+{'mobile_phone': '13012312211', 'pwd': '12345678'}
+

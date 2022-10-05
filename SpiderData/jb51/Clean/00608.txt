@@ -1,0 +1,25 @@
+1、AttributeError: 'module' object has no attribute 'rnn_cell'
+
+S：将tf.nn.rnn_cell替换为tf.contrib.rnn
+
+2、TypeError: Expected int32, got list containing Tensors of type '_Message' instead.
+
+S：由于tf.concat的问题，将tf.concat(1, [conv1, conv2]) 的格式替换为tf.concat( [conv1, conv2],1)
+
+3、AttributeError: 'module' object has no attribute 'pack'
+
+S：将pack替换为stack
+
+4、ValueError: Only call `softmax_cross_entropy_with_logits` with named arguments (labels=..., logits=..., ...)
+
+S：按照提示，需要将括号内的形参写出，即(logits=pre, lables=tru)而非(pre,tru)
+
+5、ValueError: Variable Wemb/Adam/ does not exist, or was not created with tf.get_variable(). Did you mean to set reuse=None in VarScope?
+
+S：需要定义scope，虽然报错可能是在optimizer处提示，但需要在定义模型时增加scope，即
+
+with tf.variable_scope(tf.get_variable_scope()) as scope:
+# model construction
+
+以上这篇浅谈Tensorflow由于版本问题出现的几种错误及解决方法就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

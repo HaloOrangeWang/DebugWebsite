@@ -1,0 +1,58 @@
+这个问题与有关异常处理的其他问题稍有不同。在
+
+我试图使用一个名为Synology NAS的Python模块设置对Synology NAS上文件夹的权限，该模块包装了Synology nase中包含的Synology nase:https://github.com/zub2/synoacl
+
+我的代码获取一个目录中所有子目录的列表。这些子目录都是以AD中现有用户的名字命名的，我正试图赋予他们对共享其名称的文件夹的修改权限(它们将成为网络上的用户共享)。脚本抛出一个错误，但它实际上成功地设置了权限，尽管出现了错误。问题是它只对目录中的第一个子目录执行此操作，而不会继续执行其他子目录中的任何子目录。我试着把它设置为忽略所有异常，但还是失败了。以下是我的代码和错误，删除了个人信息：
+
+错误：Traceback (most recent call last):
+
+File "synologyusershareperms.py", line 19, in
+
+SynoACLTool.add(".", SynoACL.fromString(folderPermString))
+
+File "/volume1/@appstore/py3k/usr/local/lib/python3.5/site-packages/synoacl/tool.py", line 406, in add
+
+return SynoACLTool._parseACLResult(SynoACLTool._communicate(["-add", path, str(acl)]))
+
+File "/volume1/@appstore/py3k/usr/local/lib/python3.5/site-packages/synoacl/tool.py", line 370, in _communicate
+
+return subprocess.check_output([ SynoACLTool._SYNOACL_CMD ] + args, universal_newlines = True).split("\n")
+
+File "/volume1/@appstore/py3k/usr/local/lib/python3.5/subprocess.py", line 629, in check_output
+
+**kwargs).stdout
+
+File "/volume1/@appstore/py3k/usr/local/lib/python3.5/subprocess.py", line 711, in run
+
+output=stdout, stderr=stderr)
+
+subprocess.CalledProcessError: Command '['synoacltool', '-add', '.', 'user:DOMAINNAME\\username:allow:rwxpd-aARWc--:fd--']' returned non-zero exit status 255
+
+代码：
+
+^{pr2}$
+
+由于添加了try和except行，它不再抛出任何错误，但在第一个循环之后停止。有没有办法让它继续执行循环，尽管有错误？在
+
+编辑：一条建议将try放在for循环中的注释似乎没有修复它：for folderName in folderList:
+
+try:
+
+os.chdir(folderName)
+
+cwd = os.getcwd()
+
+print(cwd)
+
+folderPermString = permTemplate1 + folderName + permTemplate2
+
+print(folderPermString)
+
+SynoACLTool.add(".", SynoACL.fromString(folderPermString))
+
+os.chdir("..")
+
+except:
+
+pass
+

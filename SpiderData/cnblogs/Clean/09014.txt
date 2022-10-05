@@ -1,0 +1,153 @@
+转载自：https://blog.csdn.net/qq_43238405/article/details/106479937
+
+问题大致如下：
+There was a problem importing one of the Python modules
+required to run yum. The error leading to this problem was:
+
+No module named yum
+
+Please install a package which provides this module, or
+verify that the module is installed correctly.
+
+It’s possible that the above module doesn’t match the
+current version of Python, which is:
+
+错误原因：你现在安装的python跟yum所依赖的python不相符，请安装相对应的python。
+
+
+大部分人出现这个错误的原因在于拿到服务器的第一时间发现python版本是2.x，想升级到python3 导致yum损坏，博主花了两个小时查阅资料，最终总算解决问题。
+
+方案一：更换软链接
+
+查看已安装python版本，可能是当前系统存在多个python导致
+
+1
+
+2
+
+更换python软链接
+
+1
+
+2
+
+3
+
+查看python版本
+
+1
+
+2
+
+方案二：更换yum头（此方法同一，好处是你将python3设置软链接之后yum也可以用）
+
+同方案一第一步查看python版本之后，找到/usr/bin/python2.x，直接执行python2.x
+
+1
+
+2
+
+3
+
+4
+
+5
+
+尝试引入yum库
+如果没有任何反应，那么此版本即为yum所依赖的版本，如果出现错误，那么只需要另换2.x继续重复此操作，最终找到对应版本即可（如果此方法无效，直接看方案三）。
+
+编辑yum.py文件
+找到yum文件，编辑此文件
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+在某度查了几篇文章发现都是这个方法，你们可以试试，我想应该没什么用。
+
+方案三：完全删除python及yum重新安装
+
+删除现有的python（这里借用51CTO博客的@SmilePad博主的代码）
+
+1
+
+2
+
+3
+
+删除现有的yum
+
+1
+
+2
+
+从中科，163或者阿里云镜像下载相对应的包
+centos版本可以根据自己的版本去找对应Packages
+如果不知道自己的系统版本，命令行输入这个cat /etc/redhat-release
+
+从中科，163或者阿里云镜像下载相对应的包
+
+centos版本可以根据自己的版本去找对应Packages
+如果不知道自己的系统版本，命令行输入这个cat /etc/redhat-release
+
+中科： http://mirrors.ustc.edu.cn/centos/7/os/x86_64/Packages/
+163 ： http://mirrors.163.com/centos/7/os/x86_64/Packages/
+阿里： https://mirrors.aliyun.com/centos/7/os/x86_64/Packages/
+
+Python跟yum的安装包根据时间的变化版本也会变动，以下版本为2018.06.12使用，最新版本根据文件的前缀自行下载。
+
+下载Python安装包（此处引用简书的@挨踢的懒猫大大的原话）
+我们需要下载的rpm文件列表：
+
+python-libs-2.7.5-48.el7.x86_64.rpm，被python依赖
+
+python-2.7.5-48.el7.x86_64.rpm
+
+python-iniparse-0.4-9.el7.noarch.rpm， 被yum依赖
+
+python-pycurl-7.19.0-19.el7.x86_64.rpm, 被python-urlgrabber依赖
+
+python-urlgrabber-3.10-8.el7.noarch.rpm ， 被yum依赖
+
+rpm-python-4.11.3-21.el7.x86_64.rpm ， 被yum依赖
+
+作者：挨踢的懒猫
+链接：https://www.jianshu.com/p/89df82a5d74b
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+下载大家都会吧，用wget下载到服务器上，下载好了之后一定要按照上面的顺序依次安装。
+安装命令
+
+1
+
+下载yum安装包
+yum安装包列表:
+
+yum-3.4.3-150.el7.centos.noarch.rpm, 就是它依赖了上面的python库
+
+yum-metadata-parser-1.1.4-10.el7.x86_64.rpm
+
+yum-plugin-fastestmirror-1.1.31-40.el7.noarch.rpm
+
+作者：挨踢的懒猫
+链接：https://www.jianshu.com/p/89df82a5d74b
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+yum安装也按照顺序执行，在执行第一个rpm时， 结尾加上 --nodeps参数强制安装
+此处图片转载自@有人敲门knocky
+
+
+最后大功告成！！！
+
+修复yum报错问题之后，如果还想安装python3.x 以及 pip3 请看此篇文章：Linux下 python2.x与python3.x共存
+

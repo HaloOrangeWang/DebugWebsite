@@ -1,0 +1,33 @@
+解决途径：（注意，最好不要用git bash上运行rust命令，我这边用cmd运行成功的【当然中间经过了很多步骤所以也不清楚这个是不是原因之一】）
+
+一：注意安装VS2017（最好不要安装更高版本以防不支持），然后添加link.exe的目录到PATH，如下：
+
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.16.27023\bin\Hostx64\x64
+
+二：重启后如果还是不能编译，则更新Windows10系统到最新（重启）再试试；
+
+三：如果上面都不行，需要在控制台里用cargo run（或者加verbose），然后会看到有报错提示：
+
+= note: Non-UTF-8 output: LINK : fatal error LNK1181: \xce\xde\xb7\xa8\xb4\xf2\xbf\xaa\xca\xe4\xc8\xeb\xce\xc4\xbc\xfe\xa1\xb0libpq.lib\xa1\xb1\r\n
+
+这里的是乱码（是GBK的，如果GBK转换无效再试试UTF-8的），可以用Python或者Java来转换：
+
+Python：（内容写自己的）
+
+content = b"LINK : fatal error LNK1181: \xce\xde\xb7\xa8\xb4\xf2\xbf\xaa\xca\xe4\xc8\xeb\xce\xc4\xbc\xfe\xa1\xb0sqlite3.lib\xa1\xb1"
+print content.decode("gbk")
+
+Java：
+
+String str = "LINK : fatal error LNK1181: \\xce\\xde\\xb7\\xa8\\xb4\\xf2\\xbf\\xaa\\xca\\xe4\\xc8\\xeb\\xce\\xc4\\xbc\\xfe\\xa1\\xb0sqlite3.lib\\xa1\\xb1";
+str = str.replace("\\x", "%");
+System.out.println(URLDecoder.decode(str, "gbk"));
+
+我这边的是提示：LNK1181: 无法打开输入文件“libpq.lib”
+
+经过百度得知libpq.lib是Postgres数据库里的东西，于是安装Postgres，但是发现还是报错；
+
+这个时候可以试着重启看看，如果不行则是找到Postgres的这个库文件，然后将其所在目录添加到PATH里，我这边是：E:\Apps\PgDB11\lib；
+
+接着重开terminal（重要，也许还需要重启），并且cargo clean后在cargo run就OK了。
+

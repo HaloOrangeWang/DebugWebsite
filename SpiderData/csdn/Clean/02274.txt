@@ -1,0 +1,21 @@
+遇到报错如下示意：
+
+解决方法：
+
+# 下载一个库nest_asyncio
+pip3 install nest_asyncio
+
+在异步协程代码开头，加上如下两行，或者代码中也行：
+
+import nest_asyncio
+
+nest_asyncio.apply()
+
+查阅资料后发现，发现使用 jupyter notebook 环境，其连接着 IPython 内核，而 IPython 内核本身在事件循环上运行，而 asyncio 不允许嵌套其事件​​循环，因此会出现如上图的错误信息。
+
+nest_asyncio 作为异步操作的补丁而存在，具体内容请参考：
+
+Python 3 - An Intro to asyncio
+
+RuntimeError: This event loop is already running”问题解决
+

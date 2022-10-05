@@ -1,0 +1,37 @@
+参考链接：https://blog.csdn.net/ltz150/article/details/77870735
+
+1、背景：
+
+CentOS 7升级Python到3.6。2后，需要在/usr/bin/python创建了一个指向Python 3的软连接，然后将/usr/bin/yum的顶部的：
+!/usr/bin/python
+
+CentOS 7升级Python到3.6。2后，需要在/usr/bin/python创建了一个指向Python 3的软连接，然后将/usr/bin/yum的顶部的：
+
+!/usr/bin/python
+
+遇到的问题报错如下：
+
+File "/usr/bin/yum", line 30
+
+except KeyboardInterrupt, e:
+
+通过看报错可以了解到是使用了python2的语法，所以了解到当前yum使用的Python2，因为我单独安装了python3，且python3设置为默认版本了，所以导致语法问题
+
+解决方法：
+
+使用python2.6 yum install xxx来使用yum命令
+
+注意：python2.6是在/usr/bin下，要使用和2版本一致的名字
+
+1.
+
+vim /usr/libexec/urlgrabber-ext-down
+
+将/usr/bin/python改为/usr/bin/python2.7。
+
+2.
+
+vim /usr/bin/yum-config-manager
+
+解决办法同上： #!/usr/bin/python换成 #!/usr/bin/python2.7
+

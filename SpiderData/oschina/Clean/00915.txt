@@ -1,0 +1,75 @@
+错误信息
+
+>>> import mysql.connector
+>>> con = mysql.connector.connect(user='*******',password='********',database='sql_test')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/__init__.py", line 179, in connect
+    return MySQLConnection(*args, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/connection.py", line 95, in __init__
+    self.connect(**kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/abstracts.py", line 716, in connect
+    self._open_connection()
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/connection.py", line 208, in _open_connection
+    self._do_auth(self._user, self._password,
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/connection.py", line 137, in _do_auth
+    packet = self._protocol.make_auth(
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/protocol.py", line 99, in make_auth
+    packet += self._auth_response(client_flags, username, password,
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/protocol.py", line 58, in _auth_response
+    auth = get_auth_plugin(auth_plugin)(
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/authentication.py", line 190, in get_auth_plugin
+    raise errors.NotSupportedError(
+mysql.connector.errors.NotSupportedError: Authentication plugin 'caching_sha2_password' is not supported
+>>> con = mysql.connector.connect(user='debian-sys-maint',password='9MerfRhq7AH9eVeD',database='sql_test',auth_plugin='mysql_native_password')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/__init__.py", line 179, in connect
+    return MySQLConnection(*args, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/connection.py", line 95, in __init__
+    self.connect(**kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/abstracts.py", line 716, in connect
+    self._open_connection()
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/connection.py", line 208, in _open_connection
+    self._do_auth(self._user, self._password,
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/connection.py", line 144, in _do_auth
+    self._auth_switch_request(username, password)
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/connection.py", line 167, in _auth_switch_request
+    auth = get_auth_plugin(new_auth_plugin)(
+  File "/usr/local/lib/python3.8/dist-packages/mysql/connector/authentication.py", line 190, in get_auth_plugin
+    raise errors.NotSupportedError(
+mysql.connector.errors.NotSupportedError: Authentication plugin 'caching_sha2_password' is not supported
+
+主要看这个：mysql.connector.errors.NotSupportedError: Authentication plugin 'caching_sha2_password' is not supported
+
+这里我使用的是mysql8.0安装生成的默认用户，mysql8.0里默认用户认证方式为caching_sha2_password形式，但是我已经在mysql的系统库里修改为mysql_native_password形式了，就很奇怪
+
+去stackoverflow上转了一圈，然后了解到mysql-connect的connect()方法支持指定认证类型：
+
+>>> con = mysql.connector.connect(user='debian-sys-maint',password='9MerfRhq7AH9eVeD',database='sql_test',auth_plugin='mysql_native_password')
+
+报错依旧
+
+然后了解到指导安装mysql-connector的文章已经过时了.....mysql-connector并不支持指定mysql的认证插件
+
+支持的模块包应该是mysql-connector-python：
+
+sudo python3 -m pip install mysql-connector-python
+
+Collecting mysql-connector-python
+  Downloading mysql_connector_python-8.0.21-cp38-cp38-manylinux1_x86_64.whl (15.8 MB)
+     |████████████████████████████████| 15.8 MB 52 kB/s 
+Requirement already satisfied: protobuf>=3.0.0 in /usr/lib/python3/dist-packages (from mysql-connector-python) (3.6.1)
+Installing collected packages: mysql-connector-python
+Successfully installed mysql-connector-python-8.0.21
+
+安装完成执行测试：
+
+Python 3.8.2 (default, Jul 16 2020, 14:00:26) 
+[GCC 9.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import mysql.connector
+>>> con = mysql.connector.connect(user='debian-sys-maint',password='9MerfRhq7AH9eVeD',database='sql_test',auth_plugin='mysql_native_password')
+
+获取连接成功无报错信息
+

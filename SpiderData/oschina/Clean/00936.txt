@@ -1,0 +1,21 @@
+su -s /bin/sh -c "nova-manage api_db sync" nova
+
+su -s /bin/sh -c "nova-manage db sync" nova
+
+执行这两句时python报错
+
+1.File "/usr/lib/python2.7/site-packages/nova/db/sqlalchemy/api.py", line 999
+
+typeerror __init__() got an unexpected keyword argument 'retry_on_request'
+
+解决方法，oslo.db  安装低版本pip包，不要太底在对应版本的openstack要求内
+
+我的是 pip install oslo.db==4.24.0
+
+2.  File "/usr/lib/python2.7/site-packages/nova/config.py", line 56
+     sqlite_db='nova.sqlite')
+
+解决方法: vim /usr/lib/python2.7/site-packages/nova/config.py
+
+注释掉报错那一行，原因是此py文件中定义了默认数据库是sqlite，故初始化时报错，因为我用的时mysql
+

@@ -1,0 +1,128 @@
+这个错误十分奇怪，以前多次安装都没碰到过，原因可能和安装过程有关。貌似这段时间外网信号非常糟糕，我的安装过程有多次中断重启。
+
+如何安装 pytorch请参考：https://blog.csdn.net/tanmx219/article/details/82814738
+
+如果你的网络不好，经常需要安装本地已经下载下来的包，并且需要anaconda自动处理相关依赖，请重点参考其中的离线安装方法（2）。
+
+下面言归正传。
+
+
+报错内容
+
+如下：
+
+原因：找不到pytorch库文件。
+
+
+解决方案
+
+Python添加库文件的方式十分简单，基本上找得到正确的库文件就不会报错，所以根据这条线，我简单地给出解决方案：
+
+电脑==》属性==》高级系统设置 ==》高级==》环境变量==》系统 ==》Path
+
+添加下面这一条路径：D:\Anaconda3\envs\torch\Lib\site-packages\torch\lib
+
+如果你打开该路径就会看到，此处就是Pytorch的_C.lib等库文件的藏身之处。
+
+
+进一步分析
+
+（说明：后面的内容是碰到问题时的思路，目前还没有结果，先记录下  '-_-' ，有空再看）
+
+正常情况下，anaconda是可以找到目录的，找不到的原因可能是某地库的地址记录不全或安装过程中曾经出现过错误。所以，如果pytorch是安装在anaconda的base环境中，一般也不容易产生这种问题。如果是安装在自己用conda create - n <name + option> 创建的环境中，就容易产生这种问题。
+
+在windows下Python是如何找目录的呢？下面这一段是在其源码getpath.c中的一段注释
+
+/* ----------------------------------------------------------------
+    PATH RULES FOR WINDOWS:
+    This describes how sys.path is formed on Windows.  It describes the
+    functionality, not the implementation (ie, the order in which these
+    are actually fetched is different). The presence of a python._pth or
+    pythonXY._pth file alongside the program overrides these rules - see
+    below.
+
+* Python always adds an empty entry at the start, which corresponds
+      to the current directory.
+
+* If the PYTHONPATH env. var. exists, its entries are added next.
+
+* We look in the registry for "application paths" - that is, sub-keys
+      under the main PythonPath registry key.  These are added next (the
+      order of sub-key processing is undefined).
+      HKEY_CURRENT_USER is searched and added first.
+      HKEY_LOCAL_MACHINE is searched and added next.
+      (Note that all known installers only use HKLM, so HKCU is typically
+      empty)
+
+* We attempt to locate the "Python Home" - if the PYTHONHOME env var
+      is set, we believe it.  Otherwise, we use the path of our host .EXE's
+      to try and locate one of our "landmarks" and deduce our home.
+      - If we DO have a Python Home: The relevant sub-directories (Lib,
+        DLLs, etc) are based on the Python Home
+      - If we DO NOT have a Python Home, the core Python Path is
+        loaded from the registry.  This is the main PythonPath key,
+        and both HKLM and HKCU are combined to form the path)
+
+* Iff - we can not locate the Python Home, have not had a PYTHONPATH
+      specified, and can't locate any Registry entries (ie, we have _nothing_
+      we can assume is a good path), a default path with relative entries is
+      used (eg. .\Lib;.\DLLs, etc)
+
+If a '._pth' file exists adjacent to the executable with the same base name
+    (e.g. python._pth adjacent to python.exe) or adjacent to the shared library
+    (e.g. python36._pth adjacent to python36.dll), it is used in preference to
+    the above process. The shared library file takes precedence over the
+    executable. The path file must contain a list of paths to add to sys.path,
+    one per line. Each path is relative to the directory containing the file.
+    Blank lines and comments beginning with '#' are permitted.
+
+In the presence of this ._pth file, no other paths are added to the search
+    path, the registry finder is not enabled, site.py is not imported and
+    isolated mode is enabled. The site package can be enabled by including a
+    line reading "import site"; no other imports are recognized. Any invalid
+    entry (other than directories that do not exist) will result in immediate
+    termination of the program.
+
+The end result of all this is:
+   * When running python.exe, or any other .exe in the main Python directory
+     (either an installed version, or directly from the PCbuild directory),
+     the core path is deduced, and the core paths in the registry are
+     ignored.  Other "application paths" in the registry are always read.
+
+* When Python is hosted in another exe (different directory, embedded via
+     COM, etc), the Python Home will not be deduced, so the core path from
+     the registry is used.  Other "application paths" in the registry are
+     always read.
+
+* If Python can't find its home and there is no registry (eg, frozen
+     exe, some very strange installation setup) you get a path with
+     some default, but relative, paths.
+
+* An embedding application can use Py_SetPath() to override all of
+     these automatic path computations.
+
+* An install of Python can fully specify the contents of sys.path using
+     either a 'EXENAME._pth' or 'DLLNAME._pth' file, optionally including
+     "import site" to enable the site module.
+
+---------------------------------------------------------------- */
+
+从上面的信息来看，似乎修改sys.path的路径能找到库文件，于是我在不修改环境变量的前提下，分别试了下PYTHONPATH这个环境变量，也试了一下在D:\Anaconda3\envs\torch\Lib\site-packages下面添加.path文件的办法（如下），实践证明这两者都不能让系统 找到这些_c.lib库文件，也就是说导入这些_C.lib等相关的库文件路径与sys.path这个参数无关！！！
+
+pywin32.pth
+
+如图，
+
+
+一些参考：
+
+1。pytorch开发团队认为，这种问题是因为在当前目前下也有一个torch文件夹，这个文件夹被误认为是torch库所在的文件夹所致，可惜我的问题不属于该种情况，
+
+https://github.com/pytorch/pytorch/issues/574
+ the problem is that you have a folder called `torch` in the same directory which is being picked up. Do this: `cd ..` (to change directory), and then start `python` and `import torch`, it should work.
+
+2。pip install numpy -I
+ 这个办法来自https://github.com/pytorch/pytorch/issues/2731
+
+只能说这是个非常糟糕的办法，我使用该命令后陷入了一个更大的困境，如下，
+

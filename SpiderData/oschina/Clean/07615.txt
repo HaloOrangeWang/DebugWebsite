@@ -1,0 +1,172 @@
+第一部分：测试（如果不是想测试效果，可以直接跳到第三部分）
+
+鉴于不久前 glibc-2.29 升级失败导致一系列的工具无法正常使用，‘’
+
+本着研究精神的我决定删除 glibc及其库文件 ，测试影响范围到底有多广：
+
+# rpm -e glibc glibc-devel
+
+提示： gcc 依赖 glibc-devel  （因为我的gcc是升级过的，正常不需要依赖它）
+
+几万个包 依赖  glibc
+
+# rpm -qf glibc      //预习一下glibc到底包括哪些文件，缺哪个你就知道是找它哦
+
+# rpm -e glibc glibc-devel --nodeps  //好孩子不要输入这个哦！
+
+warning: %postun(glibc-2.17-260.el7_6.3.x86_64) scriptlet failed, exit status 127
+
+于是报错：
+
+# rpm     // ls 、 cp、reboot、shutdown、init 等系统指令都是缺同一个文件，就不列明了
+
+-bash:/bin/rpm: /lib64/ld-linux-86-64.so.2: bad ELF interpreter: No such file or directory
+
+# yum
+
+-bash:/bin/yum: /usr/bin/python: bad interpreter:No such file or directory   (yum本质上就是一个python脚本)
+
+# ldd
+
+-bash:/bin/ldd: /usr/bin/bash: bad interpreter:No such file or directory (ldd是shell脚本呢)
+
+# cd   //居然是正常的！
+
+简单来说，基本上字符界面（终端）下的所有指令均不可使用，你无法在系统登录状态下做任何的拯救。
+
+但是有趣的是，已加载的gnome桌面所有左右键操作均为正常，所以桌面没退出的话还有一方法，就是当windows救吧（不过重启肯定是起不来的）
+
+第二部分 土方法，缺哪个补哪个（可忽略）：
+
+1. 准备一个U盘启动盘（一个好的运维随时都有一个U盘启动盘）
+
+2.按住电源键重启（你的指令都用不了）
+
+BIOS选择U盘启动 (不同设备不同)
+
+进入拯救模式 （Troubleshooting --> Rescue a CentOS system）
+
+3.提示:
+
+　　Rescue
+
+　　The rescue environment will not attempt to find your Linux installation and
+
+　　mount it under the directory : /mnt/sysimage . You can then make any changes
+
+　　required to your system. Choice '1' to proceed with this step.
+
+　　You can choose to mount your file systems read-only instead of read-write by
+
+　　choosing '2' .
+
+　　If for some reason this process does not work choose '3' to skip directly to a
+
+　　shell.
+
+　　1）Continue
+
+　　2) Read-only mount
+
+　　3) Skip to shell
+
+　　4) Quit(Reboot)
+
+Please make a selection from the above :
+
+　　选择1   回车
+
+　　chroot /mnt/sysimage
+
+　　会出现以下三种报错：
+
+　　chroot:failed to run command '/bin/bash': No such file or directory  //如果有留意上面测试步骤，会发现 /bin/bash 实际上缺的是  /lib64/ld-linux-86-64.so.2 这个文件
+
+　　sh-4.2# cp /lib64/ld-linux-x86-64.so.2 /mnt/sysimage/
+
+　　/bin/bash:error while loading shared libraries: libdl.so.2 : cannot open shared object file: No such file or directory
+
+　　sh-4.2# cp /lib64/libdl.so.2 /mnt/sysimage/lib64/
+
+　　/bin/bash:error while loading shared libraries: libc.so.2 : cannot open shared object file: No such file or directory
+
+　　sh-4.2# cp /lib64/libc.so.6 /mnt/sysimage/lib64/
+
+　　chroot /mnt/sysimage //成功，但yum与rpm还是不能用:
+
+　　rpm需要这些包：
+
+　　sh-4.2# cp /lib64/libm.so.6 /mnt/sysimage/lib64/
+
+　　sh-4.2# cp /lib64/libpthread.so.0 /mnt/sysimage/lib64/
+
+　　sh-4.2# cp /lib64/librt.so.1 /mnt/sysimage/lib64/
+
+　　yum还需要：
+
+　　sh-4.2# cp /lib64/libutil.so.1 /mnt/sysimage/lib64/
+
+　　sh-4.2# cp /lib64/libresolv.so.2 /mnt/sysimage/lib64/
+
+　　sh-4.2# cp /lib64/libcrypt.so.1 /mnt/sysimage/lib64/
+
+　　netwok服务需要：
+
+　　sh-4.2# cp /lib64/libnsl.so.1 /mnt/sysimage/lib64/　　
+
+　　sh-4.2#  cp /lib64/libcrypt.so.1  /mnt/sysimage/lib64/
+
+　　
+
+第三部分：真正的拯救方法：
+
+1. 准备一个U盘启动盘（一个好的运维随时都有一个U盘启动盘）
+
+2.按住电源键重启（你的指令都用不了）
+
+BIOS选择U盘启动 (不同设备不同)
+
+进入拯救模式 （Troubleshooting --> Rescue a CentOS system）
+
+3.提示:
+
+　　Rescue
+
+　　The rescue environment will not attempt to find your Linux installation and
+
+　　mount it under the directory : /mnt/sysimage . You can then make any changes
+
+　　required to your system. Choice '1' to proceed with this step.
+
+　　You can choose to mount your file systems read-only instead of read-write by
+
+　　choosing '2' .
+
+　　If for some reason this process does not work choose '3' to skip directly to a
+
+　　shell.
+
+　　1）Continue
+
+　　2) Read-only mount
+
+　　3) Skip to shell
+
+　　4) Quit(Reboot)
+
+Please make a selection from the above :
+
+　　选择1   回车
+
+4. 如果你像我一样知道自己干了什么坏事，而且镜像包里什么包都全的话，直接装就好了
+
+sh-4.2# mkdir /mnt/cdrom         //千万不要挂载到 /mnt 下 你还挂着个系统呢！
+
+sh-4.2# blkid   //查看U盘是哪个
+
+sh-4.2# mount  /dev/sda1 /mnt/cdrom     //挂载U盘，我的U盘是/dev/sda1
+
+　sh-4.2# rpm -ivh /mnt/cdrom/Packages/glibc* --nodeps --root /mnt/sysimage --force     //一定要指定root,因为你目前的根目录是U盘的
+
+　sh-4.2# reboot   //第一次重启时间会比较久，耐心点
+

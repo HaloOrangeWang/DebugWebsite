@@ -1,0 +1,87 @@
+一 基础
+
+str和unicode 都是 basestring 的子类。
+
+def is_str(s):
+	return isinstance(s, basestring)
+
+str 和 unicode 转换
+
+str -> decode("the_coding_of_str") -> unicode
+unicode -> encode("the_coding_you_want") -> str
+
+区别：
+ str是 字节串，由unicode经过 编码(encode)后 的字节组成。
+ unicode 才是真正意义上的 字符串。由字符组成。
+ 结论：
+ 搞明白要处理的 是str 还是unicode，使用对的处理方法**（str.decode/unicode.encode)**
+ 3. 不同编码转换，使用unicode作为中间码
+
+# s是code_A的str
+s.decode("code_A").encode("code_B")
+
+二 文件处理、IDE、控制台 处理流程，可以这么使用，把python看做一个水池，一个入口，一个出口
+ 入口处，全部转成unicode，池里全部使用unicode处理；出口处，再转成目标编码。
+
+读文件
+外部输入编码，decode转成unicode
+处理（内部编码，统一unicode）
+encode转成需要的目标编码
+写到目标输出（文件或控制台）
+
+IDE和控制台报错，原因是print时，编码和IDE自身编码不一致导致
+ 输出时将编码转换成一致的就可以正常输出
+
+>>> print u'中文'.encode('gbk')
+����
+>>> print u'中文'.encode('utf-8')
+中文
+
+建议
+
+规范编码：统一编码。（环境编码、IDE/文本编辑器、文件编码、数据库数据表编码）
+
+保证代码源文件编码
+ py文件默认编码是ASCII。如果用到非ASCII字符，需要在文件头部进行编码声明。如下
+
+# -*- coding: utf-8 -*-
+或者
+#coding=utf-8
+
+这样 a='中文' 的编码 就是utf-8 so, 同一项目中所有源文件统一一个编码，并且声明的编码要和源文件保存的编码一致（编辑器相关） 3. 在源代码用作处理的硬编码字符串个，统一用unicode
+ 将其类型和源文件本身的编码隔离开, 独立无依赖方便流程中各个位置处理
+
+if s == u'中文':  #而不是 s == '中文'
+    pass
+# 注意这里 s到这里时，确保转为unicode
+
+以上几步搞定后，你只需要关注两个 unicode和 你设定的编码(一般使用utf-8)
+ 4. 处理顺序
+
+1. Decode early
+2. Unicode everywhere
+3. Encode later
+
+其它
+
+获得和设置系统默认编码
+
+>>> import sys
+>>> sys.getdefaultencoding()
+'ascii'
+
+>>> reload(sys)
+<module 'sys' (built-in)>
+>>> sys.setdefaultencoding('utf-8')
+>>> sys.getdefaultencoding()
+'utf-8'
+
+#str_A为utf-8
+str_A.encode('gbk')
+
+执行的操作是
+str_A.decode('sys_codec').encode('gbk')
+这里sys_codec即为上一步 sys.getdefaultencoding() 的编码
+
+获得和设置系统默认编码'和这里的str.encode是相关的，但我一般很少这么用，主要是觉得复杂不可控,还是输入明确decode，输出明确encode来得简单些 参考链接
+

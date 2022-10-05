@@ -1,0 +1,55 @@
+
+什么是 PyMySQL？
+
+PyMySQL 是在 Python3.x 版本中用于连接 MySQL 服务器的一个库，Python2中则使用mysqldb。
+
+PyMySQL 遵循 Python 数据库 API v2.0 规范，并包含了 pure-Python MySQL 客户端库。
+
+在使用 PyMySQL 之前，我们需要确保 PyMySQL 已安装。
+
+PyMySQL 下载地址：https://github.com/PyMySQL/PyMySQL。
+
+如果还未安装，我们可以使用以下命令安装最新版的 PyMySQL：
+
+$ pip3 install PyMySQL
+
+以下实例链接 Mysql 的 TESTDB 数据库：
+
+报错如下：
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pymysql/connections.py", line 582, in connect
+    **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/socket.py", line 727, in create_connection
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/socket.py", line 716, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "mysql_conn.py", line 6, in <module>
+    db = pymysql.connect("localhost","root","201995zjh","ryan" )
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pymysql/connections.py", line 327, in __init__
+    self.connect()
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pymysql/connections.py", line 629, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'localhost' ([Errno 61] Connection refused)")
+
+在确定安装了 PyMySQL 以及数据库账号密码等没有问题时，还是不能连接 MySQL，
+
+最后只剩下两种可能：
+
+1. 运行 mysqladmin variables | grep socket 来获取套接字所在的位置，并尝试设置如下连接：
+
+pymysql.connect(db='base', user='root', passwd='pwd', unix_socket="/tmp/mysql.sock")
+
+2. 运行 mysqladmin variables | grep port 并验证端口是3306.如果没有，您可以手动设置端口，如下所示：
+
+pymysql.connect(db='base', user='root', passwd='pwd', host='localhost', port=XXXX)
+
+https://stackoverflow.com/questions/6885164/pymysql-cant-connect-to-mysql-on-localhost
+

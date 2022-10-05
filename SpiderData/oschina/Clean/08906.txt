@@ -1,0 +1,4 @@
+服务器上使用tailf查看日志时，发现报错了"cannot add inotify watch (limit of inotify watches was reached)"。经错一番查询发现，原来是达到了inotify的观察数限制。但是用root用户却可以正常使用tailf查看日志。此处怀疑inotify的max_user_watches和用户有关。用以下脚本找出占用inotify的程序，尝试着重启了下其中的一个node程序，然后再使用tailf查看日志，已经恢复正常了。
+
+find /proc/*/fd -lname anon_inode:inotify |cut -d/ -f3 |xargs -I '{}' -- ps --no-headers -o '%p %U %c' -p '{}' |uniq -c |sort -nr
+

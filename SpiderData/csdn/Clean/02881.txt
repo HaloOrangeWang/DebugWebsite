@@ -1,0 +1,89 @@
+
+【问题】
+
+今天在使用python中的json转换碰到一个问题:
+
+
+【代码】
+
+comments.json
+
+{
+	"count":"2",
+	"page":"1",
+	"comments":[
+		{
+			"content":"helloworld",
+			"user":{
+				"id":"0001",
+				"name":"xiaosi"
+			},
+			"source":{
+				"link":"http://mobile.youku.co",
+				"name":"iPhone"
+			}
+		},
+		{
+			"content":"welcome to china",
+			"user":{
+				"id":"0002",
+				"name":"sjf"
+			},
+			"source":{
+				"link":"http://mobile.youku.co",
+				"name":"android"
+			}
+		}
+	]
+}
+
+# coding=utf-8
+
+import json
+file = file("D:\\项目\python\comments.json")
+data = json.loads(file)
+
+
+【分析解决】
+
+经过调试，最终发现，python中默认使用单引号表示字符串"'" 所以当，使用字符串符值以后，python会把双引号转换为单引号。
+
+举例：
+
+s = {
+	"count":"2",
+	"page":"1",
+	"comments":[
+		{
+			"content":"helloworld",
+			"user":{
+				"id":"0001",
+				"name":"xiaosi"
+			},
+			"source":{
+				"link":"http://mobile.youku.co",
+				"name":"iPhone"
+			}
+		},
+		{
+			"content":"welcome to china",
+			"user":{
+				"id":"0002",
+				"name":"sjf"
+			},
+			"source":{
+				"link":"http://mobile.youku.co",
+				"name":"android"
+			}
+		}
+	]
+}
+
+print s
+
+而json是不支持单引号的。可以用下面的方法转换
+
+json_string=json.dumps(s)
+
+str=json.loads(json_string)
+

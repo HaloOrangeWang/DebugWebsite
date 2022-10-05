@@ -1,0 +1,32 @@
+最近刚开始学python，在学习过程中遇到了一个报错can only concatenate str (not "int") to str
+
+后来了解到是没有做数据类型的转换，记录在此：
+
+我在输出字典键值的时候，将数字和字符串混在了一起，
+
+a = {'name': 'zhangsan', 'age': 23, 'address': 'Beijing'
+print(a['name'] + ' is ' + a['age'] + ' years old')
+#TypeError: can only concatenate str (not "int") to str
+
+此处，a['age']的值为23，是数字类型，而其他均为字符串，因此需要将这个数值转换为字符串类型
+
+数字类型转换为字符串类型
+
+str()函数：返回一个对象的string格式。
+
+print(a['name'] + ' is ' + str(a['age']) + ' years old')
+#zhangsan is 23 years old
+#简单点就是：
+print(str(1) + 'a')
+#1a
+
+顺便附上字符串转换为数字所用函数
+
+字符串类型转换为数字类型
+
+int() 函数：用于将一个字符串或数字转换为整型。
+
+d = 12
+print(int(d) + 3)
+#15
+

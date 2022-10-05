@@ -1,0 +1,69 @@
+
+1.错误信息
+
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'routeDefinitionRouteLocator' defined in class path resource [org/springframework/cloud/gateway/config/GatewayAutoConfiguration.class]: Unsatisfied dependency expressed through method 'routeDefinitionRouteLocator' parameter 4; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.core.convert.ConversionService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Qualifier(value=webFluxConversionService)}
+   
+Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.core.convert.ConversionService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Qualifier(value=webFluxConversionService)}
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.raiseNoMatchingBeanFound(DefaultListableBeanFactory.java:1662) ~[spring-beans-5.1.10.RELEASE.jar:5.1.10.RELEASE]
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1221) ~[spring-beans-5.1.10.RELEASE.jar:5.1.10.RELEASE]
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1175) ~[spring-beans-5.1.10.RELEASE.jar:5.1.10.RELEASE]
+    at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:857) ~[spring-beans-5.1.10.RELEASE.jar:5.1.10.RELEASE]
+    at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:760) ~[spring-beans-5.1.10.RELEASE.jar:5.1.10.RELEASE]
+    ... 19 common frames omitted
+
+
+2.原因
+
+同时引入依赖：spring-cloud-starter-gateway 和 spring-boot-starter-web
+
+在gateway中已经引用了web模块，因此会造成冲突，这个原因我之前在学习gateway时其实已经注意到了，但是依旧报错
+
+pom.xml文件如下
+
+<dependencies>
+        <dependency>
+            <groupId>com.fdzang.microservice</groupId>
+            <artifactId>api-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+<dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+            <version>${spring.cloud.starter.version}</version>
+        </dependency>
+
+<dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <version>${spring.cloud.starter.version}</version>
+        </dependency>
+
+<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>${spring.boot.version}</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+在我的pom中并未依赖web模块，依旧报错，于是尝试在gateway中排除web，无果，遂百度。
+
+经历了各种尝试之后，我发现我引用的公共模块common中引用了web模块，破案了
+
+于是移除
+
+<dependency>
+　　<groupId>com.fdzang.microservice</groupId>
+　　<artifactId>api-common</artifactId>
+　　<version>1.0-SNAPSHOT</version>
+　　<exclusions>
+　　　　<exclusion>
+　　　　　　<groupId>org.springframework.boot</groupId>
+　　　　　　<artifactId>spring-boot-starter-web</artifactId>
+　　　　</exclusion>
+　　</exclusions>
+</dependency>
+
+运行成功。
+

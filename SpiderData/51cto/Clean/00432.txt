@@ -1,0 +1,27 @@
+from scipy.misc import imread
+ 报错：ImportError: cannot import name imread
+
+在网上找了解决方法，大致如下：
+ 1.安装Pillow（imread依赖于pillow）
+ 2.检查Pillow和scipy是不是安装在同一路径
+ 3.其他
+
+但是，这些并不能解决我的问题，最后在某处评论看到如下方法：
+将scipy降级到1.2.1版本（pip install scipy==1.2.1）
+
+亲测可用
+ 但是，会有这样的红字（不影响使用和输出结果）
+
+意思是，imread在scipy1.2.0之后就会被移除，这也是先前无法使用的原因
+ 同时，还提示可以用imageio.imread代替imread
+ 即：
+1.pip install imageio
+ 2.import imageio
+ 3.img=imageio.imread(‘xx.png’)
+
+【总结】
+ 1.不使用scipy，使用imageio调用imread
+ 2.使用scipy1.2.1
+
+另外：在安装第三方库之前，一定要记得先安装numpy+mkl，之后再安装scipy、pillow等其他第三方库， 很多第三方库都是依赖于numpy+mkl库安装的基础上才会进行工作。
+

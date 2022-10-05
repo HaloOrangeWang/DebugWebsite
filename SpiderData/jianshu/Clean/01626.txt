@@ -1,0 +1,47 @@
+
+原本目的
+
+在一段文本上用正则表达式替换掉其中一串数字
+
+
+源代码
+
+rpl_number = r'\\' +8888888888
+
+origin_text = "from": "app\\rel\\999999999_rpl_number .vbf", "to": "", "rename": ""
+
+# 查找待替换的文本step.1
+
+pattern_rpl_number  = re.compile(r'rel\\\\([\d]{10})_rpl_number ')
+
+pattern_Number = re.compile(r'[\d]{10}')
+
+# 查找待替换的文本step.2
+
+sub_rpl_number  = search_rpl_number .group(0)
+
+# 替换文本
+
+result_rpl_number  = re.sub(
+
+pattern_Number ,rpl_number , sub_rpl_number )
+
+
+报错信息
+
+re.error: invalid group reference 88 at position 6
+
+
+原理
+
+re.sub函数里，第二个参数值开头如果是反斜杠\加上数字，会被系统认为是在指定第N个匹配项。
+
+我的re.sub里的第二个参数值是/88开头，所以被系统认为是在选第88组匹配项，但sub_rpl_number 里按pattern_Number 匹配，没有第88组匹配项，所以才会有相应报错。
+
+
+解决方法
+
+在rpl_number 前面多加字符串，避免反斜杠加数字开头。
+
+rpl_number = r'\\\\' +8888888888
+

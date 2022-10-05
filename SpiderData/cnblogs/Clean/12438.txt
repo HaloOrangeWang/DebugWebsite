@@ -1,0 +1,169 @@
+转载自：https://www.jianshu.com/p/b2ca08a0ebba
+
+========
+
+解决方法第一步
+
+yum install libffi-devel -y
+
+然鹅，第一步就报错
+错误：为 repo ‘base’ 下载元数据失败
+这个问题使用如下方法解决
+
+原文链接：https://blog.csdn.net/qq_34614766/article/details/104785998
+
+解决方法：
+
+大家可以按照如下流程修改源
+
+1.备份现有源
+
+mv /etc/yum.repos.d /etc/yum.repos.d.backup
+
+2.创建新的yum目录
+
+mkdir /etc/yum.repos.d
+
+3.安装wget（可以先试下有没有wget，可用的话无需再装）
+
+yum install -y wget
+
+4.就是坑了我一晚上的下载配置(大家一定要区分自己的系统版本，不然肯定不通过)
+CentOS 5
+
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-5.repo
+CentOS 6
+
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+CentOS 7
+
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+CentOS 8
+
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-8.repo
+
+5.清除文件并重建元数据缓存
+
+yum clean all
+
+yum makecache
+
+6.最后更新软件包，这一步要下载安扎ung或升级一百多个软件包，比较费时间，大概三五分钟吧！
+
+yum update -y
+
+好了，现在可以执行最开始的那个了
+
+yum install libffi-devel -y
+
+这一步成功之后就需要重新编译Python了
+
+先找到安装包，cd进去，执行
+
+./configure --prefix=/usr/local
+make && make altinstall
+
+试一下
+
+pip install uwsgi
+
+如果成功，那就完事儿
+
+不行的话再进行下面的
+
+建立python和pip的软链接
+
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+
+ln -s /usr/local/python3/bin/pip3   /usr/bin/pip3
+
+再次安装uwsgi
+
+如果有用记得点个赞，留个言，让我知道这篇文章真的有用，谢谢
+
+解决方法第一步
+
+yum install libffi-devel -y
+
+然鹅，第一步就报错
+
+
+错误：为 repo ‘base’ 下载元数据失败
+
+这个问题使用如下方法解决
+
+原文链接：https://blog.csdn.net/qq_34614766/article/details/104785998
+
+解决方法：
+
+大家可以按照如下流程修改源
+
+1.备份现有源
+
+mv /etc/yum.repos.d /etc/yum.repos.d.backup
+
+2.创建新的yum目录
+
+mkdir /etc/yum.repos.d
+
+3.安装wget（可以先试下有没有wget，可用的话无需再装）
+
+yum install -y wget
+
+4.就是坑了我一晚上的下载配置(大家一定要区分自己的系统版本，不然肯定不通过)
+
+CentOS 5
+
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-5.repo
+
+CentOS 6
+
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+
+CentOS 7
+
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+
+CentOS 8
+
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-8.repo
+
+5.清除文件并重建元数据缓存
+
+yum clean all
+
+yum makecache
+
+6.最后更新软件包，这一步要下载安扎ung或升级一百多个软件包，比较费时间，大概三五分钟吧！
+
+yum update -y
+
+好了，现在可以执行最开始的那个了
+
+yum install libffi-devel -y
+
+这一步成功之后就需要重新编译Python了
+
+先找到安装包，cd进去，执行
+
+./configure --prefix=/usr/local
+make && make altinstall
+
+试一下
+
+pip install uwsgi
+
+如果成功，那就完事儿
+
+不行的话再进行下面的
+
+建立python和pip的软链接
+
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+
+ln -s /usr/local/python3/bin/pip3   /usr/bin/pip3
+
+再次安装uwsgi
+
+如果有用记得点个赞，留个言，让我知道这篇文章真的有用，谢谢
+

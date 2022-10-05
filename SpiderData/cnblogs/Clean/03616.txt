@@ -1,0 +1,43 @@
+1. 安装phantomjs
+
+下载地址：http://phantomjs.org/download.html
+
+解压后将phantomjs.exe文件放到python根目录
+
+2.安装pyspider
+
+pip install pyspider
+
+运行:pyspider 或 pyspider all
+
+提示报错：RuntimeError: No supported color terminal library
+
+我的tornado是4.5版本，降级到4.4.3后解决
+
+python -m pip install tornado==4.4.3
+
+运行:pyspider 或 pyspider all
+
+提示报错：
+
+ValueError: Invalid configuration:
+    - Deprecated option 'domaincontroller': use 'http_authenticator.domain_controller' instead.
+
+解决上面报错方法一：
+
+　　降级wsgidav到2.4.1版本
+
+　　python -m pip install wsgidav==2.4.1
+
+解决上面报错方法二：
+
+　　打开文件pyspider/webui/webdav.py
+
+　　注释209行  # 'domaincontroller': NeedAuthController(app),
+
+　　改为： 'http_authenticator': {'HTTPAuthenticator': NeedAuthController(app)},
+
+运行:pyspider 或 pyspider all
+
+在浏览器输入localhost:5000
+

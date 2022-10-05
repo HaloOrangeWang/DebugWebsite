@@ -1,0 +1,469 @@
+[mpiexec@cu35] control_cb (../../pm/pmiserv/pmiserv_cb.c:773): connection to proxy 0 at host cu35 failed
+[mpiexec@cu35] HYDT_dmxu_poll_wait_for_event (../../tools/demux/demux_poll.c:76): callback returned error status
+[mpiexec@cu35] HYD_pmci_wait_for_completion (../../pm/pmiserv/pmiserv_pmci.c:501): error waiting for event
+[mpiexec@cu35] main (../../ui/mpich/mpiexec.c:1059): process manager error waiting for completion
+bash: vncserver: command not found
+
+我的QE-6.1的epw没有编译好，换6.2.1就可以了
+
+Atomic positions and unit cell read from directory:
+     ./mgb2.save/
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     Error in routine pw_readschemafile (1):
+     XML data file not found
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+自洽用6.1算的，直接用6.2继续算会报这个错
+
+Error: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape
+
+python3在windows上的一个典型错误，通过加r'''your_path'''即可解决。e.g.
+
+a2f_dat = open(r'''C:\\\Users\\\Administrator\Desktop\Results and Graph\Data\MgB2\0.05\MgB2.imag_aniso_gap0_015.00.dat''')
+
+调整matplotlib中的字体，包括tex字体以及label的字体
+
+mpl.rcParams['mathtext.fontset'] = 'cm'
+mpl.rcParams['mathtext.rm'] = 'serif'
+plt.rcParams.update({
+    "font.family":"serif",
+    "font.family":"Times New Roman",
+    "font.serif":[],
+    "font.sans-serif":["DejaVu Sans"],
+})
+
+Error in routine broaden (1):      factorization
+
+Error in routine broyden (1):
+ factorization
+
+unfortunately this is a very tough error to solve.
+
+It usually points to really bad convergence problems,
+
+due to a weird system, or bad pseudopotentials
+
+------- Paolo Giannozzi, Dept. Chemistry&Physics&Environment,
+
+configure:4912: WARNING: assuming F90=gfortran, discarding ifort
+
+编译QE-6.3的时候遇到的问题，在suanpan上边。
+
+use,intrinsic :: ieee_arithmetic 
+       1 
+Fatal Error: Can't find an intrinsic module named 'ieee_arithmetic' at (1)
+
+编译EPW的时候遇到的问题
+
+上边两个问题好像是由gfortran版本导致的，mpif90并行编译器指定的串行编译器是gfortran，所以即使再configure里边指定F90=ifort也会被disregard，解决的办法就是使用mpiifort编译器作为并行编译器
+
+./configure MPIF90=mpiifort FC=ifort F90=ifort F77=ifort
+
+在这里不得不感慨ifort的强大，实际上之所以会出现IEEE那个问题就是由于gfortran 在5.0之前的版本不支持这种写法，所以才会不通过，而使用ifort就没有这个问题出处见stack_overflow。最后解决这个问题也是参考的Using Intel Fortran, C++ complier- parallel, serial versions。
+
+Error in routine dos (1):
+'pools not implemented, or incorrect file read'
+
+这里是因为dos.x似乎不能并行，改成1个核就好了。
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Error in routine epw_readin (19):
+reading input_epw namelist
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+EPW版本问题，在新的EPW 5.0里边parallel_q 和parallel_k被移除。如果继续用就会产生这个错误。
+
+还有一次是在里边用了wannier的dis_num_iter也报了这个错误。
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+from epw_setup : error # 1
+coarse k-mesh needs to be strictly positive in 1st BZ
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+nscf非自洽计算的k点坐标需要严格为正，使用wannier90包历面/utility中的脚本可以生成全是正坐标的k点
+
+Wannier90: Execution started on 22Oct2018 at 17:08:45
+ Exiting.......
+ param_get_projection: too many projections defined
+
+这是在计算wannier的时候遇到的报错，是因为投影轨道忘了乘以原子数。
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     Error in routine checkallsym (1):
+     some of the original symmetry operations not satisfied
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+这个是在计算非自洽nscf的时候没有注意用了1个单胞的硼原子
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     Error in routine wannierize (1):
+     inconsistent nscf and elph k-grids
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+wann_main: problem computing schur form 1
+
+forrtl: severe (24): end-of-file during read, unit -5, file Internal List-Directed Read
+Image              PC                Routine            Line        Source
+pw.x               0000000000D1A60E  Unknown               Unknown  Unknown
+pw.x               0000000000D48CFD  Unknown               Unknown  Unknown
+pw.x               0000000000D47466  Unknown               Unknown  Unknown
+pw.x               00000000009936AB  read_cards_module         136  read_cards.f90
+pw.x               0000000000849462  read_input_mp_rea          85  read_input.f90
+pw.x               0000000000408866  MAIN__                     76  pwscf.f90
+pw.x               000000000040870E  Unknown               Unknown  Unknown
+libc-2.12.so       0000003363C1ED1D  __libc_start_main     Unknown  Unknown
+pw.x               00000000004085A9  Unknown               Unknown  Unknown
+
+这个错误是输入文件的问题，这个地方是因为&CELL ... /与下面一个模块之间多输入了3个空格，导致它在读入输入文件的时候产生了异常。输入文件里边最好不要有多余的空格，另外这类问题一般会在工作区留下一个input_tmp.in的文件。
+
+*** glibc detected *** /home/xbLiu/src/qe-6.3/bin/epw.x: free(): invalid next size (normal): 0x0000000006915b70 ***
+*** glibc detected *** /home/xbLiu/src/qe-6.3/bin/epw.x: free(): invalid next size (normal): 0x0000000005a22b90 ***
+*** glibc detected *** /home/xbLiu/src/qe-6.3/bin/epw.x: free(): invalid next size (normal): 0x00000000074e8cd0 ***
+
+#coding:utf-8
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+mpl.rcParams['mathtext.fontset'] = 'cm'
+mpl.rcParams['mathtext.rm'] = 'serif'
+plt.rcParams.update({
+    "font.family":"serif",
+    "font.family":"Times New Roman",
+    # "font.serif":[],
+    # "font.sans-serif":["DejaVu Sans"],
+})
+
+在matplotlib中实现英文字母使用Times New Roman字体而且希腊字母使用symbol字体。当然前提是你已经安装了这两个字体，这两个字体在github上都可以下载到
+
+from matplotlib.font_manager import _rebuild; _rebuild()
+
+安装字体之后matplotlib的字体管理器依然找不到，因为新安装的字体并没有被载入缓存，这个时候加上这一句就可以将字体载入缓存。后边就用不到了。
+
+/epw.x: free(): invalid next size (normal): 0x0000000006abeb20 ***
+
+这个问题困扰了很久，就是程序在读入赝势的时候就会停下来然后log里边输出这个错误，google说这个是并行的时候内存处理的错误，在
+
+EPW论坛上也看到有人遇到类似的问题但是开发者说是版本的问题，然而我已经用的是已发布的最新版本。最后发现是阶段能设置的问题，因为使用的是模守恒赝势，所以默认电荷截断能是能量截断的4倍，但是我在这里高出了4倍，可能开发者没有想到会有人这么做，所以程序每次读入赝势都会崩溃。将电荷截断能ecutrho标签去掉问题就解决了。
+
+# WARNING: there are pending errors
+# PENDING ERROR (ierr=1)
+# ERROR IN: iotk_open_read (iotk_files.f90:611)
+# CVS Revision: 1.20 
+# unit
+file=../phonons/save/B.phsave/patterns.1.xml
+
+epw.x试图去找pattern.1.xml这个文件结果没找着。这里是因为epw的计算取消了电荷截断能的项而phonons的计算里没有取消的问题。
+
+Error in routine sum_eliashberg_aniso_iaxis (1):
+increase nsiter or reduce conv_thr_iaxis
+
+Error in routine pw2wannier90 (7):
+     Direct lattice mismatch
+
+scf计算和pw2wan计算用到的晶格参数不同，应该scf计算中用CELL_PARAMETERS使得与wannier计算中晶哥参数一致。
+
+Error in routine setphases_wrap (1):
+     only one proc per pool
+
+在epw.x 后边加上 -npool 40 <epw.in> epw.out解决。
+
+forrtl: severe (174): SIGSEGV, segmentation fault occurred
+
+很头疼的一个问题，刚开始搜的时候发现是说内存不足可能会导致这个问题，检查fsthick大小，发现相对于的例子，fsthick确实设置的太大了，应该是声子最高能量的4倍左右（多声子散射相互作用不考虑）于是就设置小一点，中间包括还有怀疑是否是因为q点是分开算的原因，包括有人在算VASP碰到类似的问题会在脚本里边加一个
+
+ulimit -s unlimited的命令，来取消对内存的限制。结果发现还是不行，这个问题的全部报错是
+
+forrtl: severe (174): SIGSEGV, segmentation fault occurred
+Image              PC                Routine            Line        Source
+epw.x              0000000000E98CCD  Unknown               Unknown  Unknown
+libpthread-2.12.s  00002B995F21E710  Unknown               Unknown  Unknown
+epw.x              0000000000F8BE44  Unknown               Unknown  Unknown
+epw.x              000000000058155A  kpoint_grid_epw_          141  kpoint_grid_epw.f90
+epw.x              000000000054192D  transport_mp_tran         943  transport.f90
+epw.x              00000000004468E9  ephwann_shuffle_m        1406  ephwann_shuffle_mem.f90
+epw.x              000000000041BDAA  elphon_shuffle_wr         765  elphon_shuffle_wrap.f90
+epw.x              0000000000409E75  MAIN__                    150  epw.f90
+epw.x              00000000004091CE  Unknown               Unknown  Unknown
+libc-2.12.so       00002B995F6CED1D  __libc_start_main     Unknown  Unknown
+epw.x              0000000000409069  Unknown               Unknown  Unknown
+
+通过一个一个去看源代码发现，应该是k点设置的问题，改成nqf = 8 8 1 nkf = 16 16 1后可以继续算了。
+
+Error in routine cdiaghg (31):
+     S matrix not positive definite
+
+这个错误在计算非自洽的时候有时候会出现，目前没什么很好的办法，但是把'cg'改成‘david’好像可以一定程度上解决这个问题。有时候是有的参数设的错的比较严重也会出这个错误，所以看到这个也可以再检查一下自己的参数设置，然后增加截断能有时候也可以解决问题，这个问题是最头疼的问题之一，可能的原因有很多。
+
+running on 1 processors
+
+在所里机器曙光上算的时候，由于曙光上同时部署了openmpi和intelmpi甚至还有mpich的并行环境，导致在编译的时候使用的并行编译器和mpirun不是一家的，导致只能在1个核上并行同时还会输出12遍，使用which可以查看正在使用的mpif90和mpirun，最后把环境变量都改成intel的mpiifort和mpirun所在的文件夹解决了问题。
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     Error in routine  allocate_bec_type (41):
+      cannot allocate bec%nc
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+这个应该是内存问题，换一个内存更大的机器或者把k点取少一点，可以看PW的user_guide估算计算所需的内存大小，和K点数目、截断能大小、FFT数量呈正相关。
+
+Error in routine check_initial_status (1):
+     recover file found, change in start_q not allowed
+
+这个是在minicluster上计算的声子谱遇到的问题，由于机器walltime最多只能设置为12个小时，所以需要掉下来以后在声子输入文件加recover=.true.来恢复前边的计算，但是由于中断是突然进行的，所以在恢复的时候产生了错误，所以解决的方法有两个，第一就是不要让它突然中断，比如如果机器有时间限制的话，就在输入文件里面加入时间限制(max_seconds标签)，第二个就是看输出文件里面计算到了哪个不可约表示的时候中断了(这种情况更有可能发生，因为经常由于计算量大的缘故，内存常常会溢出，当内存不够用的时候往往会中断)，然后看_ph0/prefix.phsave/文件夹下面有没有对应的不可约表示的dynmat.xx.xx.xml和elph.xx.xx.xml，第一个xx表示第几个点，第二个xx表示第几个不可约表示。如果有中断的那个不可约表示对应的xml文件，删除之然后再恢复计算就行了。比如你的输出文件算到第5个不可约表示还没收敛就中断了，但是你的_ph0/preifx.phsave里面如果有dynmat.xx.5.xml或elph.xx.5.xml文件或者兼而有之的话，就把这两个文件改名成别的文件(备份，或者删除也行)。然后再做recover计算。
+
+Error in routine  read_namelists (1):
+      bad line in namelist &cell: "6 6 6 0 0 0" (error could be in the previous line)
+
+这是一个很粗心的错误，但是却不容易被发现，所以还是记下来以防再犯，这里是由于直接把relax的文件改成vc-relax，导致找不到&CELL模块，所以导致这个错误。
+
+在算石墨烯声子谱的时候遇到在Gamma点附近虚频的问题，大概是左右，通过提高Gamma点附近的声子收敛精度解决。通过加大degauss得到了类似的结果。
+
+dis_spheres_first_wann is larger than num_bands-num_wann+1
+
+在用EPW算graphene声子谱的时候碰到这个问题，是在计算wannier的时候报的，EPW论坛上说是重新编译可以解决，但是我的EPW是好的呀，跑别的例子都没问题，而且我重新编译以后并没有解决问题。发现是因为前面算非自洽的时候忘了指定nbnd导致这里出现问题。
+
+wrong number of nsw
+
+这个问题一般是由截断能的问题导致的，调整wscut即可。wscut是EPW在求解Eliashberg方程的时候用于求和的频率上限，一般取最高声子能量的4~10倍。
+
+*今天的计算里边得到的电声耦合偏低的情况，虽然结果收敛到1.14但是与文献中的结果相差很大，怀疑可能是dis_froz_max取的不够大导致的，之前是23.6大概在费米面以上1个eV现在尝试取到28eV，但是这样就要重新拟合wannier轨道了。
+
+关于wannier拟合中outer window和inner window的选取mail list里边有一段解释
+
+Firstly, you need to appreciate the need for disentanglement:
+ For an isolated set of bands (eg valence bands of an insulator) we can directly apply the Marzari-Vanderbilt scheme for minimisating the spread of the wannier functions.
+ However, for entangled bands (typically for metals or conduction states) we cannot do this directly and must first extract an optimal set of bands (according to the scheme of Souza, Marzari and Vanderbilt). Which means that at each kpoint we need to find a set of N bands which are some linear combination of the full set of bands. These N 'disentangled' bands are then used to form the N MLWF.
+
+The inner energy window is used to select bloch states which will be included completely in the optimal set. This means that the MLWF will reproduce the true electronic properties at energies within the inner window,b ut outside there is no guarantee of this. So a common usage would be to place the inner window around the fermi energy - thus reproducing the fermi-surface properties. In the graphite example it has been chosen to reproduce all of the valence states, and a few eV above the Fermi energy.
+
+The outer window is less important. Try running the graphite example without it, and compare the bands.
+   This is used to select a set of states out of which the optimal set can be chosen. One reason for doing this is to exclude any high energy bands which might have the same symmetry character as the lower states (and thus mix with them). Sometimes using an outer window can improve the convergence of the disentanglement procedure.
+
+Before you can set the windows you do need to know something about the bandstructure. One route is to look at the position of the fermi level from the scf calculation, and set the inner window a few eV above this. Obtain the MLWF and compare the bandstructure to the ab-initio one. Then you can decide (maybe by trial and error) to see if you need an outer window.
+
+Probably. But it is better to understand why those values were chosen. There are examples in the tutorial, which could be modified to look at the effect of changing the window (eg try having no windows) - and also plenty of examples in the past literature - see [http://www.wannier.org/papers.html](http://www.wannier.org/papers.html) - probably start with the CPC article listed first on that page which contains more details on the graphite example.
+
+EPW算完100K之后再计算后面的点的时候遇到这个问题。
+
+forrtl: severe (24): end-of-file during read, unit 71, file /public/home/xbliu/espresso/yh10/epw2/YH.imag_aniso_0*****
+Image              PC                Routine            Line        Source
+epw.x              0000000000E65FC3  Unknown               Unknown  Unknown
+epw.x              0000000000E9C6AA  Unknown               Unknown  Unknown
+epw.x              00000000005055CC  superconductivity        1966  superconductivity.f90
+epw.x              000000000050376E  superconductivity        1543  superconductivity.f90
+epw.x              0000000000413B01  eliashberg_eqs_            66  eliashberg.f90
+epw.x              0000000000408086  MAIN__                    170  epw.f90
+epw.x              000000000040761E  Unknown               Unknown  Unknown
+libc-2.17.so       00002B2482BB7C05  __libc_start_main     Unknown  Unknown
+epw.x              0000000000407529  Unknown               Unknown  Unknown
+
+google报错找到了源代码中对应的部分，不得不佩服google真是强大\点赞
+
+IF (mpime .eq. ionode_id) THEN     
+    ! 
+    temp = estemp(itemp) / kelvin2eV
+    ! anisotropic case
+    IF ( temp .lt. 10.d0 ) THEN
+ WRITE(name1,'(a,a13,f4.2)') TRIM(prefix),'.imag_aniso_0', temp
+    ELSEIF ( temp .ge. 10.d0 ) THEN
+ WRITE(name1,'(a,a12,f5.2)') TRIM(prefix),'.imag_aniso_', temp
+    ENDIF 
+    OPEN(iufilgap, file=name1, form='formatted', err=100, iostat=ios)</pre>
+
+在计算各项异性gap的部分eliashberg_aniso_iaxis.f90的子函数eliashberg_read_aniso_iaxis( itemp)里看到如果temp大于10的话，他就会写在imag_aniso_里面,虽然还不清楚为什么这个导致计算中断的问题，但是将temp改成小于10的就可以解决，或者在一开始的计算中就设置temp为大于10的数。
+
+Error in routine efermig (1):
+internal error, cannot bracket Ef
+
+这个问题可以通过手动设置费米面解决,但是必须要check EPW计算得出的能带与DFT计算的能带是否相符合。以及在EPW中引用wannier作为库函数的模式得出的能带三者必须相符合。
+
+efermi_read = .t.
+fermi_energy = **
+
+forrtl: severe (174): SIGSEGV, segmentation fault occurred
+Image              PC                Routine            Line        Source
+epw.x              0000000000EF698D  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B98BAA3F6D0  Unknown               Unknown  Unknown
+epw.x              0000000000485AE9  selfen_phon_q_            406  selfen_phon.f90
+epw.x              00000000004230C2  ephwann_shuffle_         1309  ephwann_shuffle.f90
+epw.x              0000000000412CE7  elphon_shuffle_wr         767  elphon_shuffle_wrap.f90
+epw.x              0000000000407E34  MAIN__                    150  epw.f90
+epw.x              00000000004071DE  Unknown               Unknown  Unknown
+libc-2.17.so       00002B98BAF70445  __libc_start_main     Unknown  Unknown
+epw.x              00000000004070E9  Unknown               Unknown  Unknown
+
+段错误，这个很棘手，很多错误都会导致段错误。
+
+Error in routine createkmap (1):
+     is this a uniform k-mesh?
+
+最近遇到pade近似下求解各向异性Eliashberg方程所需内存太大的问题，求解论坛之后Roxana提示计算低温下的超导转变温度时由于温度太低导致求和所需的Matsubara频率大大增加，所以在低温下求解各向同性Eliashberg方程更好。
+
+Error in routine do_projwfc (1):
+     Cannot project on zero atomic wavefunctions!
+
+做分波态密度的时候遇到这个问题，查了一下是贋势的问题，ONCV贋势没法做分波态密度投影，换成超软就可以了。
+
+今天遇到一个非常讨厌的问题，就是在计算doping 的时候，在doping-0.1的时候可以拟合的很好，但是当我加到doping 0.2个电子的时候，总是在某一个轨道上spreading特别大，尝试了调能量窗口（说起来都是泪），改变投影方式等等，不奏效。最后浏览mailist的时候发现有一个人遇到拟合能带震荡比较厉害的情况，最后有人提议让他关掉dis_froz窗口，我试了一下确实效果不错。得到了很好的拟合效果。
+
+Fatal Python error: init_sys_streams: can't initialize sys standard streams Attribute
+
+第一次使用TDAP脚本的时候碰到的问题，因为需要import超哥写的包pyramid，就需要在Spyder的PYTHONPATH里边添加pyramid的路径，但是添加之后就碰到这个问题，删除就可以了。参考python-forum.io
+
+今天遇到一个很奇怪的问题，用wannier tools计算表面态的时候无论怎么改输入参数算出来的能带都非常模糊，而且slabek.png始终只有十个点，但是我明明已经设置了Nk1=101，但是WT.out里面仍然是Nk1=10，仔细对比我和同学的输入文件，一个一个地对，最后终于发现是&SYSTEM写在&PARAMETERS后面了，导致没有读入后者的输入参数，所以一直取的都是默认值10，改到前面去就好了。
+
+sras.amn has too many projections to be used without selecting a subset
+
+这是做wannier拟合的时候碰到的错误，原因是因为投影所需要的轨道数大于num_wann，碰到这个错误需要仔细check投影轨道的个数是否等于所选取wanneir轨道的数目
+
+Wrong classes for D_3h
+
+这是原子位置使用单精度小数导致的，再ph.in输入文件里加search_sym=.FALSE.可以解决。
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Error in routine frc_blk (1):      
+wrong total_weight
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+把wsweight.f90第55行的eps改成1.0d-5，然后重新编译phmake ph解决，参考https://lists.quantum-espresso.org/pipermail/users/2017-November/039776.html
+
+大概是q点权重加和的问题，代码里是这么注释的，但是看不懂。
+
+! - if a point is inside the Wigner-Seitz cell:    weight=1
+! - if a point is outside the WS cell:             weight=0
+! - if a point q is on the border of the WS cell, it finds the number N 
+!   of translationally equivalent point q+G  (where G is a lattice vector)
+!   that are also on the border of the cell. Then: weight = 1/N
+
+! I.e. if a point is on the surface of the WS cell of a cubic lattice 
+! it will have weight 1/2; on the vertex of the WS it would be 1/8; 
+! the K point of an hexagonal lattice has weight 1/3 and so on.```
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Error in routine sym_rho_init_shell (3):
+    lone vector
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+根据mailist中的解释，这里是因为计算电荷密度的时候程序试图找对称性，但是提供的晶格不严格对称（比如晶格是六角的，但是晶格参数可能稍微差一点点不是六角晶格，就会出现这个问题，把晶格改成对称的或者使用ibrav来指定对称性就可以解决这个问题。）
+
+Error in routine pw2wannier90 (512):
+  Wrong number of k-points
+
+这个错误是在做wannier拟合的时候碰到的，当我对拉伸之后的结构做wannier拟合的时候，由于对称性被破坏了，导致在算非自洽的时候，程序自动的取了对称点，导致取点超过了指定的k点以至于进行wannier拟合的时候报这个错误，只需要在做非自洽的时候设nosym = .t.就可以了，其实example里面是指定了的，而且我当时还注意到了，但是没当回事，终于在这里出了问题，排查了好久。。。
+
+高对称点问题
+
+这个问题碰到过一次，但是忘了怎么弄的了，在计算能带的时候，如果连续两个高对称点的x坐标都是负数，就会出现一个问题，band.dat.gnu上x坐标重叠到一个点上，就没法画能带。
+
+high-symmetry point:  0.0000 0.0000 0.0000   x coordinate   0.0000
+     high-symmetry point:  0.0000 0.0000 1.2955   x coordinate   1.2955
+     high-symmetry point: -0.0439 0.1049 1.2955   x coordinate   1.4092
+     high-symmetry point: -0.2719 0.6500 0.7046   x coordinate   1.4092
+     high-symmetry point:  0.0000 0.0000 0.0000   x coordinate   1.4092
+
+第一时间想到的解决办法就是用python脚本生成k点然后复制到输入文件里去。脚本还是很简单的，贴在这里，注意这是python2脚本。但是并没有解决这个问题，囧。
+
+import numpy as np
+import os
+
+def gen_high_symmetry_points(num_hk,hk,num_k,kpoints_file):
+    kk_coor = np.array([hk[0]])
+    for i in range(num_hk-1):
+        i = i+1
+        for j in range(num_k):
+            k_coor = hk[i-1] + (hk[i]-hk[i-1])*(j+1)/num_k
+            kk_coor = np.append(kk_coor,k_coor)
+    return kk_coor
+
+def write(data,filename,col):
+    for i in range(col):
+        for j in range(3):
+            filename.write('{:.12f}'.format(data[i][j]))
+            if j < 2: filename.write('   ')
+        filename.write("\n")
+    filename.close()
+
+kpoints_file = open(r'kpoints.dat', 'w+')
+kk_coor = gen_high_symmetry_points(num_hk,hk,100,kpoints_file)
+kk_coor = kk_coor.reshape(401,3)
+#print kk_coor
+write(kk_coor, kpoints_file, len(kk_coor))
+
+想了一下只有找和上面高对称点等价的点了。结果还是不行，只能去看看他这块是怎么写的，通过grep bands.out相应的输出我们知道这是在bands.f90里边的SUBROUTINE punch_plottable_bands函数来算的，他的一个注释吸引了我的注意
+
+IF (dxmod > dxmod_save*5) THEN
+        !
+        !   A big jump in dxmod is a sign that the point xk(:,n) and xk(:,n-1)
+        !   are quite distant and belong to two different lines. We put them on
+        !   the same point in the graph
+
+也就是说如果高对称点离的太远的话，它会把x坐标糊到一个点上，这也是为什么这个问题不经常碰到的原因，我们把dxmod_save改成100，再重新编译make pp就解决了。
+
+Error in routine createkmap (1):
+q-vec not commensurate
+
+EPW在读取q点坐标的时候会做一个验证，在createkmap.f90里面。如果前后相差过大，就会报这个错误。我当时是计算声子取的8x8x1的q点网格，改成6x6x1之后就可以了。
+
+Segmentation fault       divide_class.f90        78
+
+在计算声子谱的时候遇到段错误，提示信息在divide.f90函数的第78行，段错误一般是由于读取数组越界造成的。看了一下divide_class.f90这一段是什么
+
+DO irot=1,nrot
+   IF (done(irot)==0) THEN
+      nclass=nclass+1
+      DO jrot=1,nrot
+         CALL coniug_mat(smat(1,1,jrot),smat(1,1,irot),cmat)
+         DO krot=1,nrot
+            IF (compare_mat(cmat,smat(1,1,krot)).AND.done(krot)==0) THEN
+               nelem(nclass)=nelem(nclass)+1
+               elem(nelem(nclass),nclass)=krot
+               write(6,*) krot
+               done(krot)=1
+            ENDIF
+         ENDDO
+      ENDDO
+   ENDIF
+ENDDO
+
+很明显是用来判断对称性的，函数上边已经规定了done数组的大小是48，挨个打印出来，发现没有问题，怎么回事呢？原来它提示的行数并不一定准确，所以可能是上边那一句出错，于是把上边的nclass什么的也打印出来，发现果然是nelem(nclass)数组越界了，因为这个晶格结构对称性比较高，在算自洽的时候24 sym found，这里应该是QE编写的时候一个bug，明显是没有考虑到这种情况导致的数组越界。目前想到的方法就是稍微调整一下晶格结构，可以改动小数点后第四位也就是0.0001埃就可以了。
+
+记一次和上述情况类似的错误，也是识别对称性相关的。在计算TiSe2超胞对称性非常接近六角晶格的时候，它先是6 Sym. Ops. (no inversion) found，然后在计算声子的时候，程序会先识别对称性来去掉一些简并的representation的计算以减小计算量。然后由于对称性很接近六角晶格但是又有一点差别，导致它出现报错
+
+Error in routine divide_class (1):
+     Wrong classes for C_3v
+
+于是为了减少对称性带来的麻烦，就使用了ibrav = 4来指定对称性，这次上面的报错没有了，但是多了一个新的报错
+
+Error in routine set_irr_sym_new (1122):
+     wrong representation
+
+根据mailist的前人的经验，这里是把PHonon/PH/random_matrix.f90里面的!!#define __UNIFORM_DISTRIB注释去掉来解决这个问题。
+
+Band Structure Calculation
+     CG style diagonalization
+     c_bands:  1 eigenvalues not converged
+
+我是在算声子的时候遇到的，在计算某一个q点的时候，因为是double grid的计算，会计算一个非常密的k点的非自洽计算，就遇到这个错误，查了一下在算能带和费米面的时候也会遇到这个问题。估计是因为k点个数太多了，这个判断就出了问题，这里的计算应该是没问题的，所以我们直接把它的判定条件改了重新编译就可以了。这里不改应该也没什么问题，因为这是由于k点个数过多，而有些k点的个别本征值不收敛导致的一个warning，可能只是会多花一点时间。改了会省一点时间，对结果应该也没什么影响，毕竟都是比较高的带不收敛，离费米面比较远。
+
+run_nscf.f90的第95行
+
+ethr_nscf      = 1.0D-9 / nelec
+
+直接改成
+
+ethr_nscf      = 1.0 / nelec
+
+error
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     Error in routine  cdiaghg (42):
+      problems computing cholesky
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+贋势问题，可以通过改对角化方法为'cg'解决
+
+在做几何优化的时候，经常会碰到明明有的原子受力还很大的时候，程序就停了，说收敛标准已经满足，尤其是使用bfgs方法优化的时候。
+
+查了一下这个可能是由于程序是把所有受力先加在一起再做平方和来判断的，如果刚好有些原子受力抵消了，就会导致这个结果。明明有些原子受力还很大，但是弛豫就是停了。从别人测试的结果来看，把 cell_dynamics改成damp可以部分解决这个问题。
+

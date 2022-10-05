@@ -1,0 +1,52 @@
+作者 | 王治江，Apache Flink PMC
+
+7月7日，Flink 1.11.0 正式发布了，作为这个版本的 release manager 之一，我想跟大家分享一下其中的经历感受以及一些代表性 feature 的解读。在进入深度解读前，我们先简单了解下社区发布的一般流程，帮助大家更好的理解和参与 Flink 社区的工作。
+
+首先在每个版本的规划初期，会从志愿者中选出 1-2 名作为 Release Manager。1.11.0 版本我作为中国这边的 Release Manager，同时还有一名来自 Ververica 的 Piotr Nowojski 作为德国方的 Release Manager，这在某种程度上也说明中国的开发者和贡献度在整个社区的占比很重要。
+
+首先在每个版本的规划初期，会从志愿者中选出 1-2 名作为 Release Manager。1.11.0 版本我作为中国这边的 Release Manager，同时还有一名来自 Ververica 的 Piotr Nowojski 作为德国方的 Release Manager，这在某种程度上也说明中国的开发者和贡献度在整个社区的占比很重要。
+
+接下来会进行这个版本的 Feature Kickoff。在一些大的方向上，社区的规划周期可能比较久，会分阶段、分步骤跨越多个版本完成，确保质量。每个版本的侧重点也会有所不同，比如前两个版本侧重于批处理的加强，而这个版本更侧重于流处理易用性的提升。社区规划的 Feature 列表会在邮件列表中发起讨论，以收集更多的用户/开发者意见和反馈。
+
+接下来会进行这个版本的 Feature Kickoff。在一些大的方向上，社区的规划周期可能比较久，会分阶段、分步骤跨越多个版本完成，确保质量。每个版本的侧重点也会有所不同，比如前两个版本侧重于批处理的加强，而这个版本更侧重于流处理易用性的提升。社区规划的 Feature 列表会在邮件列表中发起讨论，以收集更多的用户/开发者意见和反馈。
+
+一般的开发周期为 2-3 个月时间，提前会明确规划出大概的 Feature Freeze 时间，之后进行 Release Candidate 的发布和测试、以及 Bug Fix。一般经过几轮的迭代周期后会正式投票通过一个相对稳定的 Candidate 版本，然后基于这个版本正式发布。
+
+一般的开发周期为 2-3 个月时间，提前会明确规划出大概的 Feature Freeze 时间，之后进行 Release Candidate 的发布和测试、以及 Bug Fix。一般经过几轮的迭代周期后会正式投票通过一个相对稳定的 Candidate 版本，然后基于这个版本正式发布。
+
+一  综述
+
+二  生态完善和易用性提升
+
+CREATE TABLE my_table (
+
+...) WITH (
+
+'connector'='...', -- e.g. 'kafka'
+
+'format'='debezium-json',
+
+'debezium-json.schema-include'='true' -- default: false (Debezium can be configured to include or exclude the message schema)
+
+'debezium-json.ignore-parse-errors'='true' -- default: false
+
+);
+
+三  生产可用性和稳定性提升
+
+为了和之前 Aligned Checkpoint 的语义保持一致，所有未被处理的输入输出数据 Buffer 都将作为 Channel State 在 Checkpoint 执行时进行快照持久化，在 Failover 时连同 Operator State 一同进行恢复。换句话说，Aligned 机制保证的是 Barrier 前面所有数据必须被处理完，状态实时体现到 Operator State 中；而 Unaligned 机制把 Barrier 前面的未处理数据所反映的 Operator State 延后到 Failover Restart 时通过 Channel State 回放进行体现，从状态恢复的角度来说最终都是一致的。注意这里虽然引入了额外的 In-Flight Buffer 的持久化，但是这个过程实际是在 Checkpoint 的异步阶段完成的，同步阶段只是进行了轻量级的 Buffer 引用，所以不会过多占用算子的计算时间而影响吞吐性能。
+
+为了和之前 Aligned Checkpoint 的语义保持一致，所有未被处理的输入输出数据 Buffer 都将作为 Channel State 在 Checkpoint 执行时进行快照持久化，在 Failover 时连同 Operator State 一同进行恢复。换句话说，Aligned 机制保证的是 Barrier 前面所有数据必须被处理完，状态实时体现到 Operator State 中；而 Unaligned 机制把 Barrier 前面的未处理数据所反映的 Operator State 延后到 Failover Restart 时通过 Channel State 回放进行体现，从状态恢复的角度来说最终都是一致的。注意这里虽然引入了额外的 In-Flight Buffer 的持久化，但是这个过程实际是在 Checkpoint 的异步阶段完成的，同步阶段只是进行了轻量级的 Buffer 引用，所以不会过多占用算子的计算时间而影响吞吐性能。
+
+四  总结
+
+
+福利来了
+
+
+Apache Flink 极客挑战赛
+
+本文分享自微信公众号 - Flink 中文社区（gh_5efd76d10a8d）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

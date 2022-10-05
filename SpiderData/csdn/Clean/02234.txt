@@ -1,0 +1,19 @@
+response = requests.get(url=url, params=data, headers=headers)
+result = response.json()['data']['searchResult'] #这里弹出错误
+
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+在爬虫时突然出现这样的一个错误，上网找了好久都没有找到解决办法，这个错误通常是由于以下几种原因造成：
+
+1.报错的意思是，你获取的数据json数据不是字典形式，
+
+解决：需要获取如下图所示的字典形式json数据，才能通过json.loads 解析成python的字典形式。
+
+2.检查url是否正确
+
+结语：
+
+这个报错的造成原因有很多，所以在这里记录一下。
+
+我输入的url没错，而且之前也能正常运行，最后发现是网站封锁了我的账号，可以正常访问，但不允许这个账号进行爬虫...
+

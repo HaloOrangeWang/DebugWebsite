@@ -1,0 +1,53 @@
+环境Xcode 13.2.1
+
+error 1：Target Integrity(目标完整) -- Building for iOS Simulator, but the linked and embedded framework 'DynamicSDK.framework' was built for iOS + iOS Simulator.
+
+error 2：Building for iOS Simulator, but linking in dylib built for iOS, file '“path”/testdynamic1/Frameworks/DynamicSDK.framework/DynamicSDK' for architecture arm64
+
+
+导入动态库
+
+创建文件夹，导入动态库。在项目根目录创建文件夹建议命名为Frameworks，把打包好的动态库导入。
+
+启动项目，选择Target
+
+选择General
+
+Frameworks、Libraries库导入栏“+”，Add Others到刚才添加到文件夹里的动态库，选择动态库“open”
+
+会在项目中根录生成虚拟Frameworks文件夹（即为什么刚才建议命名Frameworks文件夹原因）
+
+
+Error1：Building for iOS Simulator, but the linked and embedded framework 'DynamicSDK.framework' was built for iOS + iOS Simulator.
+
+“${SRCROOT}”/testdynamic1.xcodeproj Building for iOS Simulator, but the linked and embedded framework 'DynamicSDK.framework' was built for iOS + iOS Simulator.
+
+validate workspace
+
+Summary
+
+If enabled, perform validation checks on the workspace configuration as part of the build process.
+
+如果启用，请在生成过程中对工作区配置执行验证检查。
+
+编译后报错成警告
+
+（如果使用Xcode12及以后版本（本例使用Xcode13.2.1），出现Error 2，可修复后）
+
+validate_workspace 修改回默认值NO，黄色警告解除
+
+可参考该文章
+
+
+Error 2：Building for iOS Simulator, but linking in dylib built for iOS, file '“${SRCROOT}”/testdynamic1/Frameworks/DynamicSDK.framework/DynamicSDK' for architecture arm64
+
+此也可解决合并模拟器、真机包出错。都存在arm64，舍去其一，编译的包就不包含arm64.
+
+1.原因
+
+由于xcode12开始，模拟器支持arm64，如果动态库支持模拟器和真机时（真机也支持arm64）,一般会模拟器的包会设置不会支持arm64。现在在模拟器运行，就会报该错误信息
+
+Building for iOS Simulator, but linking in dylib built for iOS, file '“${ SRCROOT}”/testdynamic1/Frameworks/DynamicSDK.framework/DynamicSDK' for architecture arm64
+
+编译成功。
+

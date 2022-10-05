@@ -1,0 +1,50 @@
+用的pycharm2017.3,新创建一个项目,在安装appium-python-client时报错module 'pip' has no attribute 'main'。
+通过强大的度娘,知道是pip等级太高的原因,pip 10.0以上的版本中,没有mian.py文件,
+
+方法一:
+
+尝试进入venv/script文件中,直接把pip等级降下来
+
+python -m pip install --upgrade pip==9.0.3
+
+结果:回到pycharm中,发现pip版本并没有成变成9.0.3,放弃(可能是进入的文件夹没对,不过还是放弃了)
+
+方法二:
+
+需要在pycharm安装目录下 helpers/packaging_tool.py文件修改文件如下
+
+通过以上方法,果然没有报错module 'pip' has no attribute 'main'了,
+然而任然无法安装第三方库,并且报错
+
+
+'module' object is not callable
+
+继续求助度娘,
+"TypeError: ‘module’ object is not callable"这个信息是说你试图把"main"这个模块作为一个函数来调用，但它却无法调用。
+
+于是将上边的代码改成如下代码
+
+到此第三方库终于安装成功.
+
+def do_install(pkgs):
+    try:
+        # import pip
+        try:
+            from pip._internal import main
+        except Exception:
+            from pip import main
+    except ImportError:
+        error_no_pip()
+    return main.main(['install'] + pkgs)
+
+def do_uninstall(pkgs):
+    try:
+        #import pip
+        try:
+            from pip._internal import main
+        except Exception:
+            from pip import main
+    except ImportError:
+        error_no_pip()
+    return main.main(['uninstall', '-y'] + pkgs)
+

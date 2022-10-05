@@ -1,0 +1,34 @@
+
+直接打印错误
+
+try:
+    2/0
+except Exception as e:
+    print(e)
+
+结果为：division by zero
+
+
+用traceback模块打印
+
+import traceback
+try:
+    2/0
+except Exception as e:
+    traceback.print_exc()
+
+结果为：
+
+Traceback (most recent call last):
+ File “c:\Users\Administrator\Desktop\test1.py”, line 3, in 
+ 2/0
+ ZeroDivisionError: division by zero
+
+ps：上述traceback.print_exc()是直接打印错误
+
+还可以用traceback.format_exc()返回字符串，可将错误信息保存在文档日志中
+
+可以说traceback.print_exc()等同于print traceback.format_exc()
+
+参考：https://blog.csdn.net/feiyang5260/article/details/86661103
+

@@ -1,0 +1,14 @@
+springboot集成mybatis简单查询的时候报了标题所述的错误，bean代码：
+
+@table（name="XXX"）
+public Class User{
+  @column(name="列名")
+  private String id；
+
+private List<Role> roleList;
+
+//getter/setter方法
+}
+
+启动的时候会报错，经过查阅资料之后，原因应该是bean中所定义的属性在table中找不到对应的列所导致，在除table对应的属性之上添加注释@Transient（package javax.persistence.*），然后问题解决。
+

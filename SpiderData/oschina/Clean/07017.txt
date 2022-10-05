@@ -1,0 +1,37 @@
+views.py
+前面一定要加# -*- coding: utf-8 -*-否则报错
+
+# -*- coding: utf-8 -*-
+from django.shortcuts import render_to_response
+
+def index(req):
+    return render_to_response('index.html',{})
+# 第一种方式
+# 回送模板(第一个return)，回送标题（req下直接return字符串）
+# from django.http import HttpResponse
+# from django.template import loader,Context
+
+# def index(req):
+#    t = loader.get_template('index.html')
+#    c = Context({})
+#    return HttpResponse(t.render(c))
+#    return HttpResponse('<h1>hello world by fishapp!!!</h1>')
+# 第二种方式
+三步走:
+1, setting.py
+2, url.py
+3, views.py
+4, fishsite\fishapp\templates\index.html
+setting.py
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'fishapp',
+
+url.py
+url(r'^blog/index/$','fishapp.views.index'),
+

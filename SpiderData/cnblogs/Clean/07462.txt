@@ -1,0 +1,27 @@
+1、配置环境
+首先介绍一下我的环境，Windows 7（64位）旗舰版，anaconda 3（python 3.6）
+
+2、搭建环境
+2.1、安装tensorflow
+首先要安装tensorflow，其它依赖的库会自动安装，直接执行下列命令即可
+
+pip install tensorflow
+1
+2.2、下载Tensorflow object detection API
+https://github.com/tensorflow/models
+
+从github上下载项目（右上角“Clone or download”-“DownloadZIP”），下载到本地目录（避免中文），解压。
+
+2.3、Protobuf 安装与配置
+这一步，到了本篇博客重头戏，试了好多方法
+
+在 https://github.com/google/protobuf/releases 网站中选择windows 版本（最下面），解压后将bin文件夹中的*【protoc.exe】*放到C:\Windows
+
+在models\research\目录下打开命令行窗口，输入：
+
+protoc object_detection/protos/*.proto --python_out=.
+
+for /f %i in ('dir /b object_detection\protos\*.proto') do protoc object_detection\protos\%i --python_out=.
+
+如果顺利通过没报错，你就不会看到本篇文章了，所以，接着往下看：
+

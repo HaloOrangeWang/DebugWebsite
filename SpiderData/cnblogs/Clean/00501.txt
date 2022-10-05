@@ -1,0 +1,39 @@
+
+遇到问题
+
+报错信息：sys.meta_path is None, Python is likely shutting down
+
+1.我的环境：
+
+python 3.6
+
+selenium 2.53.6
+
+chrome 65
+
+chromedriver 2.33.50
+
+2.执行代码：
+
+3.报错信息：sys.meta_path is None, Python is likely shutting down
+
+
+原因分析
+
+1.遇到这个报错，首先对比了Firefox浏览器，火狐上是没有这个问题的。
+
+2.然后用driver.quit()也不会报错
+
+3.经过对比分析：
+
+selenium2+Firefox46以下版本是不需要驱动的；
+
+driver.close()只是关闭当前的窗口（chromedriver并没有退出进程,如下图），driver.quit()这个才是完全退出了进程
+
+
+解决方案
+
+1.close和quit方法各有各的用途，一般在多窗口时候，需要关掉其中一个窗口就用close
+
+2.写完代码，最后最好要加上一个quit,让进程退出。如下，可以先close，最后quit。
+

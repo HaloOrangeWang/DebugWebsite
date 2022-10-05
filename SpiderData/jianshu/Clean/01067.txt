@@ -1,0 +1,22 @@
+今天做Python数字图像处理时安装了anaconda，使用它的默认编辑器spyder。但是在运行一个简单程序（程序如下所示）出现了一个错误，该错误是：
+
+SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape
+
+其中简单的测试代码是：
+
+该错误的原因是：imread('C:\Users\harchi\Desktop\图像处理\skeleton.bmp') 这行代码中的“\””在Python中表示转义.
+
+解决方法当然就是不让“\”代表转义。所以可以：
+
+1、在字符串前加上r或R，即：imread(r'C:\Users\harchi\Desktop\图像处理\skeleton.bmp') ，其中r或R在python中表示一个不转义的字符串。
+
+2、在“\”前加上"\"实现转义。即：imread('C:\\Users\\harchi\\Desktop\\图像处理\\skeleton.bmp')
+
+3、将“\”换为“/”，即：imread('C:/Users\harchi/Desktop/图像处理/skeleton.bmp')
+
+最后：补充一下python字符串前缀的知识：
+
+1、在字符串前加上r或R表示该字符串是非转义的原始字符串。
+
+2、在字符串前加上u或U表示该字符串是unicode字符串。
+

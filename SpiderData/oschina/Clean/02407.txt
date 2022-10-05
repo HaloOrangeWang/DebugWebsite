@@ -1,0 +1,52 @@
+Openstack版本号：Liberty
+
+系统平台：CentOS 7.2 64bit
+
+###############################################################
+
+1.现象：
+
+管理员登陆Dasgboard,查看项目》网络》网络》选择一个网络》选择一个子网》查看网络ID，例如以下：
+
+查看httpd日志报错例如以下：
+
+tail -f /etc/httpd/logs/error_log
+[Tue Apr 12 10:24:08.830778 2016] [:error] [pid 94866] Error while checking action permissions.
+[Tue Apr 12 10:24:08.830848 2016] [:error] [pid 94866] Traceback (most recent call last):
+[Tue Apr 12 10:24:08.830854 2016] [:error] [pid 94866]   File "/usr/lib/python2.7/site-packages/horizon/tables/base.py", line 1270, in _filter_action
+[Tue Apr 12 10:24:08.830859 2016] [:error] [pid 94866]     return action._allowed(request, datum) and row_matched
+[Tue Apr 12 10:24:08.830862 2016] [:error] [pid 94866]   File "/usr/lib/python2.7/site-packages/horizon/tables/actions.py", line 135, in _allowed
+[Tue Apr 12 10:24:08.830866 2016] [:error] [pid 94866]     self.allowed(request, datum))
+[Tue Apr 12 10:24:08.830873 2016] [:error] [pid 94866]   File "/usr/share/openstack-dashboard/openstack_dashboard/wsgi/../../openstack_dashboard/dashboards/project/networks/subnets/tables.py", line 103, in allowed
+[Tue Apr 12 10:24:08.830883 2016] [:error] [pid 94866]     if usages['subnets']['available'] <= 0:
+[Tue Apr 12 10:24:08.830899 2016] [:error] [pid 94866] KeyError: 'available'
+
+2.问题解决：
+
+改动/usr/share/openstack-dashboard/openstack_dashboard/dashboards/project/networks/subnets/tables.py源码例如以下：
+
+class CreateSubnet(SubnetPolicyTargetMixin, CheckNetworkEditable,
+                   tables.LinkAction):
+    name = "create"
+    verbose_name = _("Create Subnet")
+    url = "horizon:project:networks:addsubnet"
+    classes = ("ajax-modal",)
+    icon = "plus"
+    policy_rules = (("network", "create_subnet"),)
+
+def get_link_url(self, datum=None):
+        network_id = self.table.kwargs['network_id']
+        return reverse(self.url, args=(network_id,))
+
+def allowed(self, request, datum=None):
+        usages = quotas.tenant_quota_usages(request)
+        if usages['subnets'].get('available', 1) <= 0:
+            if 'disabled' not in self.classes:
+                self.classes = [c for c in self.classes] + ['disabled']
+                self.verbose_name = _('Create Subnet (Quota exceeded)')
+        else:
+            self.verbose_name = _('Create Subnet')
+            self.classes = [c for c in self.classes if c != 'disabled']
+
+return True
+

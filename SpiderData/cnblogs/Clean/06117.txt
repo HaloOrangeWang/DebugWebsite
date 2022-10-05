@@ -1,0 +1,34 @@
+python版本：
+
+Django版本： 3.0.3
+
+报错信息：
+
+File "D:\python_work\learning_log\users\urls.py", line 4, in <module>
+    from django.contrib.auth.views import login
+ImportError: cannot import name 'login' from 'django.contrib.auth.views' (D:\python_work\learning_log\ll_env\lib\site-packages\django\contrib\auth\views.py)
+
+源代码：
+
+"""为应用程序users定义URL模式"""
+
+from django.conf.urls import url
+from django.contrib.auth.views import login
+
+from . import views
+
+原因：
+
+从 django-1.11开始,基于函数的登录,注销等视图已被重写为基于类的视图： LoginView 和 LogoutView类,如 release notes中所指定的那样.仍然可以使用“旧的”基于函数的视图,但是被标记为已弃用.
+
+在django-2.1中,已删除旧的基于功能的视图,如release notes中所述.
+
+解决办法：
+
+"""为应用程序users定义URL模式"""
+
+from django.conf.urls import url
+from django.contrib.auth.views import LoginView
+
+from . import views
+

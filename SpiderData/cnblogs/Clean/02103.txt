@@ -1,0 +1,43 @@
+猜想原因：
+
+ini文件中切换用户nginx后，因为虚拟环境目录权限问题，python虚拟环境变成了系统默认环境，缺少很多库。
+
+解决方法：
+
+登录其他用户xxxxx后，pipenv新建python3环境，安装好库。
+
+修改uwsgi.ini文件：
+
+uid = eledim
+gid = eledim
+virtualenv=/home/eledim/.local/share/virtualenvs/flask-VGoRTHto/ #新的虚拟环境
+
+$ uwsgi uwsgi.ini
+
+其他相关：
+
+虚拟环境下用root启动uwsgi（不推荐的方法）：
+
+(flask) [root@localhost flask]#
+uwsgi -s /var/flask/flask.sock -w app:app 
+chmod 777 /var/flask/flask.sock
+
+其他问题：
+
+另外切换用户启动，可能导致没有旧sock文件的权限，导致socket绑定失败。应删除旧socket。
+
+为了避免uwsgi启动权限问题，sock文件不应该在root目录，其他网站相关文件同理！
+
+为了避免nginx中出现权限问题 (13: Permission denied) while connecting to upstream
+
+nginx进程不推荐为root拥有，应该设置uwsgi.ini
+
+chmod-socket=666
+
+另外可能原因：
+
+setsebool -P httpd_can_network_connect 1
+setenforce 0
+
+参考https://blog.csdn.net/kriszhang/article/details/68941793
+

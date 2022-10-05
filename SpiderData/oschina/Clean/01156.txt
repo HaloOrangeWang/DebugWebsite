@@ -1,0 +1,21 @@
+一。发生情况：当你修改数据库结构后进行 python manage.py makemigrations 和 python manage.py migrate 后发现控制台会给你返回一个下面的结果，但是数据库实际上并没有更新所修改的东西。
+
+Running migrations:
+ 　　No migrations to apply.
+
+二。解决方案
+
+具体的发生这个问题的原因实际我也没有搞清楚（如果有知道的请留下言），但是解决方案时确定的：
+
+1. 首先不管你修改了多少字段，全部让你models中的表结构和字段名（表名，字段个数等等）全部和你现在Mysql数据库里面的所有字段保持一致。
+
+2. 当你完成上面一步的时候 删除 migrations 文件下 除了 __init__.py 文件以外的所有.py文件（基本上都是 0001_initial.py ，0002_initial.py ....) 。
+
+3. 完成上面两步的时候就可以执行 python manage.py makemigrations and  python manage.py migrate，基本上到这里就已经解决了。
+
+三。插入数据库时报错。
+
+如果你遇到过上面的问题，那么下面的报错你可能也遇见过，这个错误的原因还是因为你修改或增加了一些字段后，数据库未进行更新，然后你在这个时候插入了一条数据导致异常，解决方案还是更上面一样的。
+
+InternalError: (1054, u"Unknown column 'long' in 'field list'")
+

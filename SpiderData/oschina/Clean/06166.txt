@@ -1,0 +1,42 @@
+以下sql执行时报错SemanticException Error in parsing
+
+select clr.id,clr.customer_id,clr,contract_code,clr.core_asset_request_id,wa.user_id
+--,u.name
+from zcfw_sda.sda03_asset_info clr
+left join qz_sda.sda03_withdraw w
+on clr.contract_code = w.contract_no
+and w.etl_tx_dt = ${v_dt2num}
+left join qz_sda.sda03_withdraw_apply wa
+on w.withdraw_apply_no = wa.withdraw_apply_no
+and wa.etl_tx_dt = ${v_dt2num}
+--left join qz_sda.sda03_user u
+--on wa.user_id = u.id
+--and u.etl_tx_dt = ${v_dt2num}
+where clr.etl_tx_dt =20191103
+and to_date(clr.loan_time) ='2019-11-03'
+and clr.contract_code='2191103751278446'
+
+报错信息：
+
+英文翻译过来是语义解析错误，
+
+检查了下是在hql中别名后面的.不小心写成了,导致报错。
+
+正确写法：
+
+select clr.id,clr.customer_id,clr.contract_code,clr.core_asset_request_id,wa.user_id
+--,u.name
+from zcfw_sda.sda03_asset_info clr
+left join qz_sda.sda03_withdraw w
+on clr.contract_code = w.contract_no
+and w.etl_tx_dt = ${v_dt2num}
+left join qz_sda.sda03_withdraw_apply wa
+on w.withdraw_apply_no = wa.withdraw_apply_no
+and wa.etl_tx_dt = ${v_dt2num}
+--left join qz_sda.sda03_user u
+--on wa.user_id = u.id
+--and u.etl_tx_dt = ${v_dt2num}
+where clr.etl_tx_dt =20191103
+and to_date(clr.loan_time) ='2019-11-03'
+and clr.contract_code='2191103751278446'
+

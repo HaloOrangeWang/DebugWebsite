@@ -1,0 +1,114 @@
+1）海外设备上偶现的报错处理方式
+
+2）Shader冗余则ShaderLab占用大小问题
+
+3）URP Renderer Feature实现二次元描边，Cutout的处理问题
+
+4）Unity中视频播放的解决方案
+
+这是第286篇UWA技术知识分享的推送。今天我们继续为大家精选了若干和开发、优化相关的问题，建议阅读时间10分钟，认真读完必有收获。
+
+UWA 问答社区：answer.uwa4d.com
+
+UWA QQ群2：793972859（原群已满员）
+
+
+Android
+
+Q：近期项目在海外设备上偶现图片中的报错：
+
+A：这个问题已经确认为Unity的bug，由于最近Google Play强制推行AAB打包，所以大概率会碰到；一般测试的时候都是用APK，很容易遗漏这个最后的步骤校验。更新Unity至相应版本后即可修复：
+
+可参考：
+
+https://issuetracker.unity3d.com/issues/application-freezes-or-throws-errors-when-built-as-an-aab-file-with-split-application-binary-enabled
+
+感谢han@UWA问答社区提供了回答，欢迎大家转至社区交流：
+
+https://answer.uwa4d.com/question/6204bda034a9f84e39fab6d6
+
+
+Shader
+
+Q：Shader冗余则ShaderLab占用也会变大吗?
+
+A：在真机上进行实验，查看Shader冗余时ShaderLab的内存变化。
+
+以下是Shader中有20份Standard时：
+
+以下是Shader中只有1份Standard时：
+
+由于Profiler中无法看到ShaderLab的具体内容，所以严谨地来说，Shader冗余确实会造成ShaderLab内存升高。
+
+感谢Faust@UWA问答社区提供了回答，欢迎大家转至社区交流：
+
+https://answer.uwa4d.com/question/6200b89334a9f84e39f4efb3
+
+
+Rendering
+
+Q：之前我们的卡通渲染是在Shader里写多个Pass来绘制的描边，最近尝试用SRP Batcher优化时发现，SRP Batcher不支持多个Pass的Shader。于是我尝试用URP Renderer Feature来渲染所有角色的描边。
+
+实现起来很简单，但有一个问题解决不了，就是Cutout的问题。
+
+裙子的下边缘是用贴图的Alpha控制的，并不是真正的顶点。以前的Pass写在角色渲染的Shader里，可以用贴图来控制，但用Renderer Feature来处理后，所有角色模型的描边是用的同一个材质，不能再用模型各自的贴图的通道来处理了。显示效果就是Cutout的描边部分无法处理：
+
+边缘比较复杂，但是控制的顶点就只有几个，感觉不太好实现。
+
+现在模型顶点的颜色信息我已经用过了，RGB是描边颜色，A是描边粗细。我能想到的办法是用A的一些特殊值来特殊处理一下某些顶点（相当于Clip掉一些顶点，但肯定没有相关API），但又感觉似乎不太可行。不知道大家有没有遇到过，或者有没有什么好办法呢？
+
+自己尝试了用顶点信息标记点，但有瑕疵，点关联的边会受影响，描边没了：
+
+让美术加了一些点，基本也能解决（其实外边缘还是不会显示全，但已经看不太出来了）：
+
+但这方法还是不好。最好在Renderer Feature里可以获取到正在渲染的模型的材质信息。
+
+是否可以把一个多Pass的Shader里的某个Pass弄到单独的Renderer Feature里画，而不是重新画一遍？比如画第一遍的时候禁用这个Pass，Renderer Feature画的时候再启用它？
+
+A1：自定义一个LightMode，Render Feature里设置这个LightMode，这样材质球上的贴图数据什么就能有。
+
+补充个截图大概是这样的：
+
+对于自定义的LightMode，Unity默认忽略，只有Render Feature里手动指定了要画这个LightMode，Unity才会去绘制。
+
+感谢jim@UWA问答社区提供了回答
+
+A2：如下，这样SRP Batcher终于可以合批多Pass的Shader了：
+
+不用禁用正常的渲染。
+
+两个pass，一个正常的pass，一个自定义lightMode的pass，lightMode的pass渲染描边用ScriptableRendererFeature手动指定渲染自定义的lightmode。unity不会去渲染你自定义的lightMode。
+
+感谢题主仇磊@UWA问答社区提供了回答，欢迎大家转至社区交流：
+
+https://answer.uwa4d.com/question/62036e2834a9f84e39f8bd51
+
+
+Video
+
+Q：需要在游戏内播放视频，满足一些基本的需求，比如播放远程视频，边下边播，设置视频播放速度，视频进度条，暂停之类的。
+
+目前已知的可以用自带的Video Player、AVPro和Sofdec2这三款，想问下有没大佬系统研究过视频播放这一块的，可以分享一点经验，不胜感激。
+
+A：可以考虑集成 https://github.com/bilibili/ijkplayer 到Unity上进行适配播放 ：
+
+https://www.gero.pub/2017/10/26/how-to-use-ijkplayer-in-unity/
+
+感谢mrz@UWA问答社区提供了回答，欢迎大家转至社区交流：
+
+https://answer.uwa4d.com/question/61ee78c5d8413e18eb925149
+
+封面图来源于网络
+
+今天的分享就到这里。当然，生有涯而知无涯。在漫漫的开发周期中，您看到的这些问题也许都只是冰山一角，我们早已在UWA问答网站上准备了更多的技术话题等你一起来探索和分享。欢迎热爱进步的你加入，也许你的方法恰能解别人的燃眉之急；而他山之“石”，也能攻你之“玉”。
+
+官网：www.uwa4d.com
+
+官方技术博客：blog.uwa4d.com
+
+官方问答社区：answer.uwa4d.com
+
+UWA学堂：edu.uwa4d.com
+
+官方技术QQ群：793972859（原群已满员）
+

@@ -1,0 +1,18 @@
+开发平台python+django
+
+1.新建Model：Globalvar后，在admin.py中注册：admin.site.register(models.Globalvar)
+
+2.执行“manage.py makemigrations”命令
+
+3.登陆后台http://127.0.0.1:8080/admin/，点击Globalvar表格时报错，如下：
+
+原因：
+
+“manage.py makemigrations”命令，Django 会检测你对模型文件的修改，也就是告诉Django你对模型有改动，并且你想把这些改动保存为一个“迁移(migration)”
+
+“python manage.py migrate”命令将遍历INSTALLED_APPS设置中的所有项目，在数据库中创建对应的表，并打印出每一条动作信息
+
+解决方法：
+
+对数据模型修改后，需要执行“manage.py makemigrations”命令和“python manage.py migrate”命令
+

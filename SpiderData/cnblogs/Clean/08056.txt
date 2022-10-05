@@ -1,0 +1,21 @@
+
+问题：
+
+将 ubuntu18.04 中的 python 版本从 python3.6 更新为 python3.7 之后，使用 pip3 list 命令出现如下报错：
+
+
+原因：
+
+更新完python版本之后，路径：/usr/lib/python3/dist-packages 下的文件 apt_pkg.cpython-36m-x86_64-linux-gnu.so，文件名没有跟随 python 版本进行更改，正确做法应该是把文件名中的 36m 更改为你更新后的 python 版本号，如我更新后的 python 版本为 python3.7 ，所以文件名应该更改为 apt_pkg.cpython-37m-x86_64-linux-gnu.so 。
+
+
+解决步骤：
+
+1、 sudo apt-get remove --purge python-apt
+
+2、 sudo apt-get install python-apt -f
+
+3、 cd /usr/lib/python3/dist-packages/
+
+4、 sudo cp apt_pkg.cpython-3?m-x86_64-linux-gnu.so apt_pkg.cpython-36m-x86_64-linux-gnu.so
+

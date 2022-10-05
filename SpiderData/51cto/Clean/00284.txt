@@ -1,0 +1,66 @@
+// <summary>/// 设置Z值和M值，解决The Geometry has no Z values错误
+
+///</summary>///<param name="pF">要素</param>///<param name="pGeo">几何</param>publicstaticvoid SetZValue(IFeature pF, IGeometry pGeo)
+
+{
+
+int index;
+
+index = pF.Fields.FindField("Shape");
+
+IGeometryDef pGeometryDef;
+
+pGeometryDef = pF.Fields.get_Field(index).GeometryDef as IGeometryDef;
+
+if (pGeometryDef.HasZ)
+
+{
+
+IZAware pZAware = (IZAware)pGeo;
+
+pZAware.ZAware = true;
+
+IZ iz1 = (IZ)pGeo;
+
+iz1.SetConstantZ(0);  //将Z值设置为0
+
+//IPoint point = (IPoint)pGeo;
+
+//point.Z = 0;
+
+}
+
+else
+
+{
+
+IZAware pZAware = (IZAware)pGeo;
+
+pZAware.ZAware = false;
+
+}
+
+//M值
+
+if (pGeometryDef.HasM)
+
+{
+
+IMAware pMAware = (IMAware)pGeo;
+
+pMAware.MAware = true;
+
+}
+
+else
+
+{
+
+IMAware pMAware = (IMAware)pGeo;
+
+pMAware.MAware = false;
+
+}
+
+}//function
+

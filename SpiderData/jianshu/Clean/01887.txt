@@ -1,0 +1,104 @@
+2018/03/10
+
+一定要之一，修改了配置文件之后，一定要把所有的节点同步到其他的机器上才会有效果。
+
+现在多次遇到的一个情况就是，基本上也能看懂的东西，就是内存部分报错。
+
+这里的话，毕竟这边的机器配置还是不太高。我也看了看网上的解决方案，有的是该配置，有的是从源码角度去修改。
+
+（有一个角度可以去修改，就是每次任务，或者说每个阶段能够占到的最大资源，从这个角度去进行适配机器。）
+
+现在的话，还是不要贸然就去改这配置，还是等了解的更深了之后再去理解。
+
+另外就是，我这部分脚本，的却应该去写的更好一点，不要太吃内存什么的。
+
+另外，可能本身这个过程我的脚本不吃内存，但是他伴生的这个中间数据产物是比较吃内存的。！！！！
+
+就得好好理解这个过程到底是把文件写到什么地方了，是不是有解决的方案。
+
+1、虚拟内存过小
+
+[2018-03-10 21:19:50.116]Container [pid=16421,containerID=container_1520684193149_0005_01_000017] 
+is running beyond virtual memory limits. 
+Current usage: 291.4 MB of 1 GB physical memory used; 2.1 GB of 2.1 GB virtual memory used. Killing container.
+
+这个错误基本意思就是虚拟内存不够了，应该是可以从配置方式里面进行修改的。
+
+这部分应该属于yarn的配置。
+
+http://blog.csdn.net/ahau10/article/details/53484770
+
+https://stackoverflow.com/questions/21005643/container-is-running-beyond-memory-limits
+
+不过这部分肯定是要修改，但是怎么修改呢，因为本身内存就不大。看看是从增加机器的角度，还是增加内存的角度。
+
+2018/03/11
+
+修改内存设置
+
+https://www.cnblogs.com/lisi2016/p/6863923.html
+
+<property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+</property>
+<property>
+   <name>yarn.nodemanager.vmem-pmem-ratio</name>
+    <value>5</value>
+</property>
+
+上面是修改检查，后面是修改检查的比例，可能这两个估计会冲突，第一个就把这个检查的东西给屏蔽了。
+
+第一个是说不要去检测这个虚拟内存，第二个是检测的这个比例。
+
+下面是一个内存方面的设置
+
+http://blog.csdn.net/u012042963/article/details/53099638
+
+现在修改之后，这部分没有再报错了，没有报这个内存方面的错了。
+
+2、这次exit code with 1
+
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-2.9.0.jar  \
+ -files test_map.py,test_reduce.py -input ss_data/* -output output -mapper test_map.py -reducer test_reduce.py
+
+这是最初版本的，一开始的时候加了一个combiner （-combiner test_reduce.py)就是不对，看来现在就不要加这个东西了。
+
+再次出现这个错误，看来上次的错误还是没有解决。
+
+https://stackoverflow.com/questions/35682642/pipemapred-waitoutputthreads-subprocess-failed-with-code-1
+
+上面这个就跟我的情况很像，就是stderr里面说的是log4j的错误。
+
+但是好像的却不是这部分的错误，还是python脚本的错误。修改之后再看。
+
+修改之后成功。
+
+再次修改combiner也成功。
+
+完整命令：
+
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-2.9.0.jar
+ -files mul_map.py,mul_reduce.py -input ss_data/* -output output -mapper 
+mul_map.py -combiner mul_reduce.py -reducer mul_reduce.py
+
+2018/07/30
+
+今天又遇见了上面的那个问题，就是最后说exit 1的错误。
+
+脚本是可以保证没有错误的，就是进去了map才错误的。
+
+反复测试，也不能知道到底是什么。代码是这样设计的，就是直接使用python的sys.stdin来获取下一行，然后得到相应的多行为一条日志。但是就是第9行读不进来了。----我猜就是可能是这个他本身执行的机制导致的。
+
+一开始怎么也想不起来，刚才看了个文章，说是缓存。估计就是因为缓存的大小导致的，并不一定是8行。
+
+2018/09/19
+
+今天重新遇到了前面的那个exit 1的问题，这个代码来看，一般来说是因为程序自身的代码错误导致的，
+
+还是那个脚本，以往的时候，都是直接吧所有的文件进行了输入。
+
+这次呢，是仅输入了一个文件，就导致了这个问题的出现，我仔细看了一下，这个问题的产生呢，是因为虽然这个文件是占用了一个block块，但是实际运作的时候，还是进行了分片，也就是另外一个机器（两个计算节点的集群）也进行了这个map的操作。然后呢，我本身对于这部分的这个map写的就有点不规范，不符合真正的mapreduce的操作风格。
+
+这种问题的出现，就是我读取的时候，导致最后一行没有了（因为文件分了嘛），所以可以增加一个异常处理的部分代码。
+

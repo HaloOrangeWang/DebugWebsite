@@ -1,0 +1,80 @@
+在Mac平台下（其它平台没测），即使你使用pip3 install bencode来安装bencode模块，安装后的bencode模块仍然不兼容python3（mac平台）。
+
+因此，本文将对bencode模块稍作改动，使其可以在Mac平台下的python3环境中完美运行。
+
+
+报错1： ModuleNotFoundError: No module named 'BTL'
+
+通过pip3 install bencode之后，在py文件内通过import bencode时，会发生以下错误：
+
+>>> import bencode
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/local/lib/python3.7/site-packages/bencode/__init__.py", line 13, in <module>
+    from BTL import BTFailure
+ModuleNotFoundError: No module named 'BTL'
+
+
+报错1：错误分析
+
+通过上述错误信息，我们可以找到bencode模块的路径：/usr/local/lib/python3.7/site-packages/bencode/__init__.py，打开/usr/local/lib/python3.7/site-packages/bencode/目录，发现结构如下：
+
+这么大的BTL.py，我都看到了，你找不到？你怕是个zz。
+
+吐槽完毕，开始寻找背后原因，百度无果，谷歌无果，stackoverflow无果......（此处浪费半个小时）
+
+还是靠自己吧。
+
+为了解决这个奇怪的问题，我又找了其它库中使用了from xxx import xxx的py文件。
+
+在bs4库中，找到结果如下：
+
+咦？为什么有些库前面加了个.？难道是这个原因？
+
+没错！确实是这个原因！！！
+
+
+报错1：解决方案：
+
+1、打开bencode模块文件（/usr/local/lib/python3.7/site-packages/bencode/__init__.py）。
+
+2、将from BTL import BTFailure替换为from .BTL import BTFailure。
+
+3、完成！
+
+
+报错2：ImportError: cannot import name 'StringType' from 'types'
+
+再次import bencode，看看会发生什么？
+
+上一个问题确实被我们完美解决了，但是又出现了一个新问题。（修复1Bug，新增999+Bug）
+
+错误信息如下：
+
+>>> import bencode
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/local/lib/python3.7/site-packages/bencode/__init__.py", line 74, in <module>
+    from types import StringType, IntType, LongType, DictType, ListType, TupleType
+ImportError: cannot import name 'StringType' from 'types' (/usr/local/Cellar/python/3.7.0/Frameworks/Python.framework/Versions/3.7/lib/python3.7/types.py)
+
+翻译为人话，大概就是说，types里没有StringType这个东西。
+
+因此，我们需要自己定义StringType、IntType，LongType....等。
+
+
+报错2：解决方案
+
+1、注释掉/usr/local/lib/python3.7/site-packages/bencode/__init__.py中from types import StringType, IntType, LongType, DictType, ListType, TupleType语句。
+
+2、新增如下语句：
+
+StringType = type("")
+IntType = type(0)
+LongType = IntType      #Python3内整型无大小之分，因此可以当作long来使用
+DictType = type({})
+ListType = type([])
+TupleType = type(())
+
+3、完成！
+

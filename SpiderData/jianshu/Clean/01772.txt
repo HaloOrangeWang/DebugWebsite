@@ -1,0 +1,43 @@
+
+1. 代码部分
+
+#coding:utf-8
+import mysql.connector
+import json
+from MyEncoder import MyEncoder
+
+class OperationMysql:
+    def __init__(self):     
+        self.conn = mysql.connector.connect(
+                host='xxx.xx.xxx.xxx',  
+                port=3306,
+                user='xxxxxxxx',
+                passwd='xxxxxxxxxx',
+                db='xxxxxxx',
+                charset='utf8'
+                )
+        self.cur = self.conn.cursor(dictionary=True)    #self代表全局,#传递dictionary，返回dict类型
+        self.cur = self.conn.cursor()
+
+def search_one(self,sql):
+        self.cur.execute(sql)
+        result = self.cur.fetchone()    #fetchonone     
+        return result[0]
+        #result_json = json.dumps(result,cls=MyEncoder) #
+        #return result_json
+
+if __name__ == '__main__':
+    op_mysql = OperationMysql()
+    result1 = op_mysql.search_one("select sessionId from xt_login_log where usercode = (select ygxxid from xt_yhzh where zhmc = 'huangxiaoming') and operationType = 1 ORDER BY operationTime DESC LIMIT 1")
+    #result1 = op_mysql.search_one("select * from xt_ygxxb where ygxm = '葛文娟' and jgid = '3dbe692399ba449294a44d27d0e085e1'")
+    #print(type(result1))
+    print(result1)
+
+
+2. 报错信息
+
+
+3. 原因
+
+'NoneType'  是指返回的内容是None空对象，说明sql执行的语句返回结果为空，原因在于这条sql语句查询的内容不存在，而我代码连接的测试环境数据库中不存在“葛文娟”这个用户，所以找不到。
+

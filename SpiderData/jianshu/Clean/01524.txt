@@ -1,0 +1,8 @@
+使用HTMLTestRunner生成测试报告时老是报错：UnicodeDecodeError: 'ascii' codec can't decode byte 0xe8 in position 96: ordinal not in range(128)
+
+前提：python版本是2.7   是从 这个网址 下载的HTMLTestRunner.py文件
+
+经过一番查找发现：是因为python的str默认是ascii编码，和unicode编码冲突，如果报告中使用了中文标题就会报这个错误。解决方法很简单，在 HTMLTestRunner.py 导入那一部分加上3行代码就能搞定
+
+再运行就不会报错了
+

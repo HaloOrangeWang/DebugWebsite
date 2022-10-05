@@ -1,0 +1,48 @@
+
+【Python 3.6.2】安装 pymssql 包 _mssql.c:266:22: fatal error: sqlfront.h: No such file or directory
+
+在安装pymssql  报错：
+
+[root@Template music_163]# pip3 install pymssql
+Collecting pymssql
+  Using cached pymssql-2.1.3.tar.gz
+Installing collected packages: pymssql
+  Running setup.py install for pymssql ... error
+    Complete output from command /usr/local/bin/python3.6 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-u98xvyx8/pymssql/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /tmp/pip-myzqb2_v-record/install-record.txt --single-version-externally-managed --compile:
+    setup.py: platform.system() => 'Linux'
+    setup.py: platform.architecture() => ('64bit', 'ELF')
+    setup.py: platform.linux_distribution() => ('CentOS Linux', '7.2.1511', 'Core')
+    setup.py: platform.libc_ver() => ('glibc', '2.9')
+    setup.py: Not using bundled FreeTDS
+    setup.py: include_dirs = ['/usr/local/include']
+    setup.py: library_dirs = ['/usr/local/lib']
+    running install
+    running build
+    running build_ext
+    building '_mssql' extension
+    creating build
+    creating build/temp.linux-x86_64-3.6
+    gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -fPIC -I/usr/local/include -I/usr/local/include/python3.6m -c _mssql.c -o build/temp.linux-x86_64-3.6/_mssql.o -DMSDBLIB
+    _mssql.c:266:22: fatal error: sqlfront.h: No such file or directory
+     #include "sqlfront.h"
+                          ^
+    compilation terminated.
+    error: command 'gcc' failed with exit status 1
+    
+    ----------------------------------------
+Command "/usr/local/bin/python3.6 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-u98xvyx8/pymssql/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /tmp/pip-myzqb2_v-record/install-record.txt --single-version-externally-managed --compile" failed with error code 1 in /tmp/pip-build-u98xvyx8/pymssql/
+You are using pip version 9.0.1, however version 9.0.3 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+解决方法：
+
+[root@Template music_163]# export PYMSSQL_BUILD_WITH_BUNDLED_FREETDS=1
+[root@Template music_163]# pip3 install pymssql
+Collecting pymssql
+  Using cached pymssql-2.1.3.tar.gz
+Installing collected packages: pymssql
+  Running setup.py install for pymssql ... done
+Successfully installed pymssql-2.1.3
+You are using pip version 9.0.1, however version 9.0.3 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+

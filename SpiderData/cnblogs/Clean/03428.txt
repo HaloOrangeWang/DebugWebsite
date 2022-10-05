@@ -1,0 +1,92 @@
+
+异常
+
+定义：python使用被称为异常的特殊对象来管理程序执行期间发生的错误，每当发生让python不知所措的错误时，它都会创建一个异常对象。
+
+
+1、处理ZeroDivisionError异常
+
+先看下不处理异常的情况
+
+1 print(5/0)
+
+执行结果：
+
+数字0不能作为除数，就会报错，那么如何处理Traceback异常。
+
+
+2、使用try - except代码块
+
+当你认为可能发生错误时，可编写一个try - except异常：
+
+执行结果：
+
+You can't divide by zero!
+
+　
+
+这样操作，就不会有直接报错，代码也可以正常运行并给你想知道的结果。
+
+1、使用异常避免崩溃，使用else语句
+
+执行结果：
+
+Hi,给我2个数字，我做除法运算。
+----------分割线----------
+input 'q' is exit:
+give me a first_number:520
+give me a second_number:6
+86.66666666666667
+----------底线----------
+give me a first_number:500
+give me a second_number:0
+You can't divide by zero!
+give me a first_number:'q'
+
+Process finished with exit code 0
+
+这样的操作即使在代码使用过程中，即使遇到错误，有还是会正常的运行下去，不会报错。
+
+但是在运行过程中，遇到以下几个问题：
+
+我想退出操作，需要输入两遍 'q'才行。
+
+如果我输入不是字母‘q’，程序就会报错。
+
+因为使用了while Ture死循环，可不可以在显示人机交互的次数？方便用户知道信息
+
+程序整体不够美观
+
+解决方法：
+
+调换指引用户输入的first_number和second_number位置
+
+引入isdigit()方法：判断输入是否为数字
+
+使用占位符 %s，累加次数
+
+优化后的代码：
+
+执行结果：
+
+
+3、处理文件找不到的异常
+
+有时候，查找文件，并读取其中的数据，如果找不到程序就会报错，那么我们怎么处理这种异常？
+
+同样，使用try...except代码块操作
+
+代码：
+
+执行结果：
+
+sorry,we can't find the new_file3.txt file
+
+再试下之前学习的文件操作，读取一个存在的文件试试：
+
+代码：
+
+执行结果：
+
+I love python.
+

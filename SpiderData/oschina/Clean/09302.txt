@@ -1,0 +1,31 @@
+这里的hash由chunkhash改成hash，原因是使用HotModuleReplacementPlugin之后不能使用chunkhash和contenthash。
+看到有些地方说把“hot:true”去掉就行了，但是我自己实际测试不行，只是去掉hot还是会报错；所以我索性给改成hash了，反正是本机调试，影响不大。
+我的做法是区分环境,不同环境输出不同的配置.
+这样本地测试就不会报错了.
+
+const dirVars = require('./base/dir-vars.config.js')
+const isOnlinepro = process.argv.indexOf('--env=onlinepro') !== -1 //判断参数如果有这个就是生产环境 API_ROOT值就为cdn地址
+const isTestpro = process.argv.indexOf('--env=testpro') !== -1
+let rootPath = ''
+let outPath = ''
+if (isOnlinepro) {
+    rootPath = '/tpl/'
+    outPath = dirVars.buildOnline
+    filename = 'static/js/[name].[chunkhash].js'
+} else if (isTestpro) {
+    rootPath = '/build/'
+    outPath = dirVars.buildDir
+    filename = 'static/js/[name].[chunkhash].js'
+} else {
+    rootPath = '/'
+    outPath = dirVars.buildDir
+    filename = 'static/js/[name].[hash].js'
+}
+
+module.exports = { ///entry
+    path: outPath,
+    publicPath: rootPath,
+    filename: filename, // [name]表示entry每一项中的key，用以批量指定生成后文件的名称[name].[chunkhash].js
+    //chunkFilename: 'static/js/[id].bundle.js' //.[chunkhash]
+}
+

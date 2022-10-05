@@ -1,0 +1,41 @@
+由于ubuntu的电源管理有问题，导致笔记本风扇老转，又吵又耗电。搜了一通，发现安装jupiter可以解决。
+
+我的系统是12.04，jupiter是0.1.9，不过有点小小的问题：
+
+~$ jupiter
+Exception in thread Thread-4:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 551, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.7/threading.py", line 504, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/usr/bin/jupiter", line 414, in update_screen_resolutions
+    res = self.jupiter.get_available_resolutions(display)
+  File "/usr/bin/jupiter", line 181, in get_available_resolutions
+    return self.get_device('/available_resolutions_' + args,'resolutions','modes ' + args).split(' ')
+AttributeError: 'bool' object has no attribute 'split'
+
+Exception in thread Thread-5:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 551, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.7/threading.py", line 504, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/usr/bin/jupiter", line 380, in update_screen_orientations
+    rotation = self.jupiter.current_rotation(display)
+  File "/usr/bin/jupiter", line 166, in current_rotation
+    return self.get_device('/rotation_saved_'+args, 'rotate', ['normal',args]).split(' ')[0]
+AttributeError: 'bool' object has no attribute 'split'
+
+update_screen_resolutions、get_available_resolutions、current_rotation等函数就会出错
+
+就把错误的函数：
+
+def get_displays(self):
+    return self.get_device('/displays','vga-out','mon').split(' ')
+
+改成了：
+
+def get_displays(self):
+    return filter(None, self.get_device('/displays','vga-out','mon').split(' '))
+

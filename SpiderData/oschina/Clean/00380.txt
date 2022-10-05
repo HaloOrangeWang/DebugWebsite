@@ -1,0 +1,21 @@
+flask debug模式logging模块报错
+
+Traceback (most recent call last):
+   File "C:\Python27\lib\logging\handlers.py", line 77, in emit
+     self.doRollover()
+   File "C:\Python27\lib\logging\handlers.py", line 350, in doRollover
+     os.rename(self.baseFilename, dfn)
+ WindowsError: [Error 32]
+
+原因,flask debug模式启动的两个进程，一个用于监控的，由于logging是线程安全的，但并不支持多进程，所以报错。
+
+解决办法：
+
+启动的时候，app.run(use_reloader=False)  # 防止debug启动监控个进程
+
+即可解决logging模块
+
+[handler_hand03]
+ class=handlers.TimedRotatingFileHandler
+ 报错现象！
+

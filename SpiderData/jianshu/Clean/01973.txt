@@ -1,0 +1,266 @@
+
+ITMS-90171
+
+ITMS-90171: Invalid Bundle Structure - - The binary file （ITMS-90171:包结构无效--不允许使用二进制文件）。
+
+应用程序不能包含独立的可执行文件或库，只能包含受支持捆绑包的有效CFBundleExecutable。
+
+处理方法 ：
+
+查看Build phases下面的Copy Bundle Resources下面是否存在错误中提示的文件或库，如果存在，将其删掉。
+
+
+ITMS-90087
+
+ITMS-90087:Unsupported Architectures.The executable for XXX.app/Frameworks/NMCBasicModuleFramework.framework contains unsupported architectures '[i386，x86_46]' （可执行的文件XXX. app/Frameworks/NMCBasicModuleFramework.framework包含不受支持的体系结构“[i386，x86_46]”）。
+
+成因 ：由于 iOS 编译的特殊性，为了方便开发者在模拟器调试，很多 SDK 将i386、x86_64、armv7、arm64几个平台都合并到了一起。在开发阶段都没有问题，但生产编译上传到 App Store 时，需要将i386和x86_64两个平台的库删除，否则无法正常提交审核。
+
+项目手动集成了网易云信，并且引入了网易云信处理手动集成提供的脚本，脚本如下：
+
+#!/bin/sh
+
+# Strip invalid architectures
+
+strip_invalid_archs() {
+binary="$1"
+echo "current binary ${binary}"
+# Get architectures for current file
+archs="$(lipo -info "$binary" | rev | cut -d ':' -f1 | rev)"
+stripped=""
+for arch in $archs; do
+if ! [[ "${ARCHS}" == *"$arch"* ]]; then
+if [ -f "$binary" ]; then
+# Strip non-valid architectures in-place
+lipo -remove "$arch" -output "$binary" "$binary" || exit 1
+stripped="$stripped $arch"
+fi
+fi
+done
+if [[ "$stripped" ]]; then
+echo "Stripped $binary of architectures:$stripped"
+fi
+}
+
+APP_PATH="${TARGET_BUILD_DIR}/${WRAPPER_NAME}"
+
+# This script loops through the frameworks embedded in the application and
+# removes unused architectures.
+find "$APP_PATH" -name '*.framework' -type d | while read -r FRAMEWORK
+do
+FRAMEWORK_EXECUTABLE_NAME=$(defaults read "$FRAMEWORK/Info.plist" CFBundleExecutable)
+FRAMEWORK_EXECUTABLE_PATH="$FRAMEWORK/$FRAMEWORK_EXECUTABLE_NAME"
+echo "Executable is $FRAMEWORK_EXECUTABLE_PATH"
+
+strip_invalid_archs "$FRAMEWORK_EXECUTABLE_PATH"
+done
+
+但是打包上传之后仍旧报错了，经过多次排查，再打包的输出信息中发现了这种警告 ：warning:skipping copy phase strip, binary is code signed(警告：跳过复制相位条，二进制是有符号的)。后来才发现是脚本执行时机造成的问题，如图：
+
+ps:
+
+Xcode创建shell脚本文件脚本的地方：
+
+ps:
+
+查看打包时的输出：
+
+
+Guideline 4.3 - Design
+
+We noticed that your app provides the same feature set as other apps submitted to the App Store; it simply varies in content or language, which is considered a form of spam.
+
+The next submission of this app may require a longer review time, and this app will not be eligible for an expedited review until this issue is resolved.
+
+Next Steps
+
+Review the Design section of the App Store Review Guidelines.
+
+Ensure your app is compliant with all sections of the App Store Review Guidelines and the Terms & Conditions of the Apple Developer Program.
+
+Once your app is fully compliant, resubmit your app for review.
+
+When creating multiple apps where content is the only varying element, you should offer a single app to deliver differing content to customers. If you would like to offer this content for purchase, it would be appropriate to use the in-app purchase API.
+
+Alternatively, you may consider creating a web app, which looks and behaves similar to a native app when the customer adds it to their Home screen. Refer to the Configuring Web Applications section of the Safari Web Content Guide for more information.
+
+Submitting apps designed to mislead or harm customers or evade the review process may result in the termination of your Apple Developer Program account. Review the Terms & Conditions of the Apple Developer Program to learn more about our policies regarding termination.
+
+译：
+
+准则4.3-设计
+
+我们注意到，您的应用程序提供的功能集与提交到应用程序商店的其他应用程序相同；它只是在内容或语言上有所不同，这被视为垃圾邮件的一种形式。
+
+下次提交此应用程序可能需要更长的审阅时间，在解决此问题之前，此应用程序将没有资格进行快速审阅。
+
+下一步
+
+-查看App Store Review Guidelines的设计部分。
+
+-确保你的应用程序符合app Store审查指南的所有章节以及Apple开发者程序的条款和条件。
+
+-一旦你的应用程序完全兼容，请重新提交你的应用程序以供审查。
+
+当创建多个应用程序时，内容是唯一不同的元素，您应该提供一个应用程序来向客户交付不同的内容。如果您想提供此内容以供购买，则使用应用内购买API是合适的。
+
+或者，您可以考虑创建一个web应用程序，当客户将其添加到主屏幕时，它的外观和行为类似于本机应用程序。有关详细信息，请参阅《Safari Web内容指南》的“配置Web应用程序”部分。
+
+提交旨在误导或伤害客户或逃避审查过程的应用程序可能会导致您的Apple开发者程序帐户终止。请查看Apple Developer Program的条款和条件，以了解有关终止的更多政策。
+
+处理方法 ：
+
+可以尝试使用KLGenerateSpamCode工具混淆代码后再次尝试上传，KLGenerateSpamCode的GitHub地址：https://github.com/klaus01/KLGenerateSpamCode
+
+KLGenerateSpamCode简单使用记录：
+
+1.使用Xcode打开KLGenerateSpamCode项目 -> Product -> Scheme -> Edit Scheme，然后选中 Run -> Arguments -> Arguments Passsd On Launch
+
+如图：
+
+2.填入操作项，可操作项目如下：
+
+(必填) 源码文件夹绝对路径（如：/Users/shawn/Desktop/iOS-YiShopCustomer-GuangYuan/YiShopCustomer）。
+
+如图 ：
+
+-modifyProjectName [原名称]>[新名称] 修改工程名。程序会修改原名称-Swift.h、Podfile、原名称-Bridging-Header.h、源码文件夹绝对路径、原名称.xcodeproj和原名称.xcworkspace的名称和内容。Podfile被修改后需要手动pod install。
+
+例如 ：
+
+格式：-modifyProjectName [原名称]>[新名称]
+
+示例：-modifyProjectName WxsTestDemo3>WxsTestDemo4
+
+如图 ：
+
+保存后运行KLGenerateSpamCode项目，注意控制台的输出，如图 ：
+
+查看项目 ：
+
+-modifyClassNamePrefix [工程文件 xcodeproj 绝对路径] [原前缀]>[新前缀] 修改源代码类名前缀。程序会扫描源码文件夹绝对路径下的 .h .swift 文件，修改文件名，修改使用该类名的代码，修改工程文件中的文件名。文件名有原前缀的会修改成新前缀，如：原前缀ViewController变成新前缀ViewController；没有原前缀的会增加新前缀，如：ViewController变成新前缀ViewController。因为会有添加前缀的情况，操作完成后编译检查一下是否会有找不到文件的情况。
+
+例如 ：
+
+格式：-modifyClassNamePrefix [工程文件 xcodeproj 绝对路径] [原前缀]>[新前缀]
+
+示例：-modifyClassNamePrefix /Users/shawn/Desktop/iOS-YiShopCustomer-GuangYuan/ZQOneCardSolution.xcodeproj YSC>ZQO
+
+如图 ：
+
+保存后运行KLGenerateSpamCode项目，注意控制台的输出，如图 ：
+
+查看项目 ：
+
+原来 ：
+
+现在 ：
+
+-spamCodeOut [垃圾代码文件输出目录] [垃圾代码方法增加的参数名] 生成垃圾代码。程序会扫描源码文件夹绝对路径下的 .m .swift 文件中的类和方法，并生成category和extension文件，文件中的方法是在代码原方法的基础上增加垃圾代码方法增加的参数名参数。如：-spamCodeOut /dir AppLog ，会将- (void)setupKeys {}生成为+ (BOOL)setupKeysAppLog:(NSInteger)AppLog { return AppLog % 20 == 0; }，会将- (void)foo:(NSString *)str {}生成为+ (BOOL)fooAppLog:(NSInteger)AppLog { return AppLog % 23 == 0; }
+
+例如 ：
+
+格式：-spamCodeOut [垃圾代码文件输出目录] [垃圾代码方法增加的参数名]
+
+-ignoreDirNames [忽略文件夹名称字符串] 忽略这些文件夹，对-modifyClassNamePrefix、-spamCodeOut和-deleteComments参数有效。目前只会忽略源码文件夹绝对路径下一级的这些目录。如：/p/s -ignoreDirNames categorys，那么/p/s/categorys会被忽略，但/p/s/viewControllers/categorys不会忽略。
+
+例如 ：
+
+格式：-ignoreDirNames [忽略文件夹名称字符串]
+
+示例：-ignoreDirNames 第三方库
+
+-handleXcassets 修改xxx.xcassets文件夹中的 png 资源文件名，同时也Contents.json文件中的关联名称，不会影响代码中使用图片。
+
+例如 ：
+
+格式：-handleXcassets
+
+如图 ：
+
+保存后运行KLGenerateSpamCode项目，注意控制台的输出，如图 ：
+
+查看图片文件夹：
+
+原来 ：
+
+现在：
+
+7.-deleteComments 删除工程目录下 .h .m .swift 文件中的注释和空行。
+
+例如 ：
+
+格式：-deleteComments
+
+如图 ：
+
+保存后运行KLGenerateSpamCode项目，注意控制台的输出，如图 ：
+
+
+另外修改图片 hash 值的方法
+
+使用 ImageMagick 对 png 图片做轻量压缩，既不损失图片质量，又可改变图片文件 hash 值。方法：
+
+安装 ImageMagick，brew install imagemagick
+
+压缩工程目录下所有 png 文件，find . -iname "*.png" -exec echo {} \; -exec convert {} {} \;
+
+执行下载https://www.python.org/ftp/python/3.8.2/python-3.8.2.tar.xz时，安装过程会比较慢，可能会失败，使用联通的网络会快一些，安装成功后会有提示，例如：
+
+==> python@3.8
+Python has been installed as
+  /usr/local/opt/python@3.8/bin/python3
+
+You can install Python packages with
+  /usr/local/opt/python@3.8/bin/pip3 install <package>
+They will install into the site-package directory
+  /usr/local/opt/python@3.8/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages
+
+See: https://docs.brew.sh/Homebrew-and-Python
+
+python@3.8 is keg-only, which means it was not symlinked into /usr/local,
+because this is an alternate version of another formula.
+
+If you need to have python@3.8 first in your PATH run:
+  echo 'export PATH="/usr/local/opt/python@3.8/bin:$PATH"' >> ~/.bash_profile
+
+For compilers to find python@3.8 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/python@3.8/lib"
+
+For pkg-config to find python@3.8 you may need to set:
+  export PKG_CONFIG_PATH="/usr/local/opt/python@3.8/lib/pkgconfig"
+
+==> glib
+Bash completion has been installed to:
+  /usr/local/etc/bash_completion.d
+==> libtool
+In order to prevent conflicts with Apple's own libtool we have prepended a "g"
+so, you have instead: glibtool and glibtoolize.
+
+安装成功后直接运行 find . -iname "*.png" -exec echo {} ; -exec convert {} {} ; 命令即可，之后会对图片进行操作，如果为安装成功，执行命令会提示：find: convert: No such file or directory
+
+
+大神的使用经验
+
+只需要做如下修改就可以上马甲包了：
+
+修改工程名
+
+修改工程名
+
+修改类名前缀
+
+修改类名前缀
+
+修改图片文件 Hash 值
+
+修改图片文件 Hash 值
+
+修改 .xcassets 中的图片文件名
+
+修改 .xcassets 中的图片文件名
+
+用别的电脑打包
+
+用别的电脑打包
+

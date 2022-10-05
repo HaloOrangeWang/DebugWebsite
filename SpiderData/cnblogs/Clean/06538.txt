@@ -1,0 +1,13 @@
+今天使用python打开一张图像文件的时候报错了
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xff in position 0: illegal multibyte sequence
+
+报错原因是打开的文件不是gbk编码，所以解码报错
+
+对策如下
+
+open('./gif/0.jpg','r').read()
+open('./gif/0.jpg',encoding='utf-8', errors='ignore').read()
+
+添加编码要求后即可成功运行
+

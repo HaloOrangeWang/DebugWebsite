@@ -1,0 +1,32 @@
+单位有jenkins服务器，构建脚本，通过免秘钥远程连接其他服务器，或者使用scp复制文件时报错，
+单独使用sh或者python来执行脚本正常。
+具体节选报错如下，
+下面为python远程连接服务器报错如下：
+
+raceback (most recent call last):
+  File "awallupdate.py", line 28, in <module>
+    update_all_aw()
+  File "awallupdate.py", line 19, in update_all_aw
+    ssh.connect(line, 22, appname, '' ,timeout=5)
+  File "build/bdist.linux-x86_64/egg/paramiko/client.py", line 322, in connect
+  File "build/bdist.linux-x86_64/egg/paramiko/client.py", line 476, in _auth
+paramiko.AuthenticationException: Authentication failed.
+Build step 'Execute shell' marked build as failure
+Finished: FAILURE
+
+跟搭建jenkins服务器确定，告知在脚本里第二行加入、
+
+eval `keychain --eval id_rsa_all`
+
+或者
+
+eval `keychain --eval id_rsa_all`
+clear
+
+这里注意一下，在python脚本执行中也要加入，但是加入位置是在构建时命令前加入
+也就是在构建jenkins时加入，Execute shell里面单独加上
+eval keychain --eval id_rsa_all
+下面紧接着自己的脚本：
+python xxx.py
+注意，在python脚本里面加入，不会起效果
+

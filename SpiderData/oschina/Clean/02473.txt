@@ -1,0 +1,34 @@
+petalinux-config --get-hw-description=.
+
+报错
+
+[INFO] sourcing bitbake
+ERROR: Failed to source bitbake
+ERROR: Failed to config project.
+ERROR: Get hw description Failed!.
+
+vi ./build/config.log
+
+Run devtool --help for further details.
+OpenEmbedded requires 'python' to be python v2 (>= 2.7.3), not python v3.
+Please set up python v2 as your default 'python' interpreter.
+ERROR: Failed to source bitbake
+
+python版本不对，在config.log中会有提示，应该将python版本设置为2.xx，而不是3.xx
+
+将/usr/bin/python指向python2.7（先将之前指向3.x的软连接删除，然后建立新的指向2.7的软连接）
+
+能正常config ， build。
+
+还有一个附带发现的问题，python3指向python3.6
+
+但是命令行里执行python3运行的是python3.7.2（由于我安装了python3.7.2）
+
+发现在python3.7的安装目录里，python3指向了python3.7
+
+猜想到底指向哪里取决于PATH路径的先后。
+
+果然，/usr/bin/python3.7/bin在/usr/bin之前，把/usr/bin/python3.7/bin删了之后，重启shell，exec "$SHELL"
+
+python3就指向了python3.6证明猜想正确。
+

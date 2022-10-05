@@ -1,0 +1,37 @@
+首先我用的python3.5的版本
+
+问题的由来，我想通过python去实现RSA加密算法时，破解某网站的js加密认证，网上说需要安装pycrypto,我就去进行pip安装了
+
+pip install pycrypto
+
+错误信息如下
+
+error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build
+
+经过网上查询信息，才知道这个库以及不再更新了，所以安装的时候会出一些错，因为c++编译环境有所问题吧
+
+后来我发现了这个库 pycryptodome,它是和上面这个库一样的，实现了一些加密算法
+
+pip install pycryptodome
+
+很好，安装很顺利的成功了
+
+于是我就很开心的打开pycharm，进行代码书写了，但是呢？我发现我怎么不能顺利的导包
+
+from Crypto.PublicKey import RSA
+
+pycharm也是提醒我书写有误，但我看官方文档的例子，它也是这样的导包的，我不信还是运行了程序，果然还是出错了
+
+ImportError: No module named 'Crypto'
+
+最后才发现，我需要在python35中改下包的名字，
+
+# 这是我pycryptodome库安装的目录
+# C:\python35\Lib\site-packages
+# 在这个目录你找到这个文件夹的名字：crypto
+# 将这个文件夹的名字改为: Crypto
+
+通过上面的操作，就能成功的导入了
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

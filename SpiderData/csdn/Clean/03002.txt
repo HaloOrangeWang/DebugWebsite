@@ -1,0 +1,44 @@
+在python错误调试过程中有时需要打印当前python文件错误行，下面来介绍一下方法：
+
+import sys
+
+try:
+
+a = [1,2]
+
+print a[3]
+
+except:
+
+s=sys.exc_info()
+
+print "Error '%s' happened on line %d" % (s[1],s[2].tb_lineno)
+
+打印execfile的打印错误行：
+
+try:
+
+execfile("tprint.py")
+
+except Exception, info:
+
+#print info[1]
+
+print "Error '%s' happened on line %d" % (info[0], info[1][1])
+
+利用反射机制，调用函数，打印被调用方的错误行及错误信息
+
+try:
+
+callfunc.callfunc(myklass,strmethod,params)
+
+except :
+
+print '=== STEP ERROR INFO START'
+
+import traceback
+
+traceback.print_exc()
+
+print '=== STEP ERROR INFO END'
+

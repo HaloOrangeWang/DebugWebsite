@@ -1,0 +1,31 @@
+
+解决Python web框架（如Flask）与vue渲染变量的冲突（冲突会导致vue渲染报错，网页无法显示）
+
+
+导语：现在主流的Python web框架中，模板的表达式声明常见的有{{ something }}这与Vue.js的语法冲突，导致在运行如Flask的Python web框架时，会报错，前端网页无法渲染。
+
+
+解决方法：
+
+
+1. 重新定义vue的插值的符号——delimiters选项。如下代码（在js中vue渲染时添加）：
+
+
+这样在前端就可以将vue的{{something}}改成<<something>>，避免冲突了。
+
+
+2. 修改jinja2引擎模版。如下代码（在app.py里修改）：
+
+
+这样在前端就可以将flask的{{something}}改成<<something>>，避免冲突了。
+
+
+3. 使用 Jinja2 的 raw 标签标记html代码。如下代码（在x.html里修改）：
+
+
+4. 放弃render_template的模板渲染方式
+
+使用open('./templates/x.html',encoding='UTF-8').read()。
+
+可是这种方式可能就得换种方式从后端向前端发送数据了。
+

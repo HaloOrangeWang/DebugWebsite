@@ -1,0 +1,19 @@
+报错信息：
+
+2022-04-26 00:16:13.227  INFO 25996 --- [           main] i.s.c.r.netty.NettyClientChannelManager  : will connect to 127.0.0.1:8091
+2022-04-26 00:16:13.227  INFO 25996 --- [           main] i.s.c.rpc.netty.RmNettyRemotingClient    : RM will register :jdbc:mysql://192.168.68.134:3306/seata_order
+2022-04-26 00:16:13.229  INFO 25996 --- [           main] i.s.core.rpc.netty.NettyPoolableFactory  : NettyPool create channel to transactionRole:RMROLE,address:127.0.0.1:8091,msg:< RegisterRMRequest{resourceIds='jdbc:mysql://192.168.68.134:3306/seata_order', applicationId='seata-order', transactionServiceGroup='my_test_tx_group'} >
+2022-04-26 00:16:15.778 ERROR 25996 --- [           main] i.s.c.r.netty.NettyClientChannelManager  : 0304 register RM failed.
+
+io.seata.common.exception.FrameworkException: can not connect to services-server.
+
+原因：
+
+seata server找不到，也就是服务连接不上
+
+我这里是因为连接的是127.0.0.1:8091,而我的seata server是部署在linux192.168.68.134节点上，所以修改连接地址就行
+
+修改连接IP：修改service.default.grouplist的IP和端口
+
+我的配置文件是整合进了Nacos配置中心，所以直接在Nacos修改，如果是把文件放在本地服务目录中就本地修改
+

@@ -1,0 +1,44 @@
+前言：今天也是充满bug的一天，脸上笑嘻嘻。。。。（继续，讲文明，懂礼貌）
+
+1，问题描述,models中的字段设置的是浮点型，但是输出的结果总是int（）类型
+
+models
+
+average_score = models.FloatField(verbose_name='平均分')
+
+2、查找原因，首先进入数据库
+
+然后就会发现，是的，现在average_acore的字段是int()没错的
+
+3、这时候你就会说同步一下数据库不就好了，然而并不是我太傻太天真。
+
+python manage.py makemigrations  报错
+
+django.db.migrations.exceptions.InconsistentMigrationHistory: Migration admin.0001_initial is applied before its dependency users.0001_initial on database 'default'
+
+原因：大概原因是因为admin的模型依赖了之前默认的user模型吧
+
+4、最终解决方案
+
+首先将migrations下的数据删除，然后在migrate肯定是可以的，但是测试需要我必须保留其中的数据，解决方案如下。
+
+a、首先建一个新表
+
+1、drop database mydata2;
+
+2、 create database mydata2 character set utf8 collate utf8_bin
+
+b、在setting中指向该数据库
+
+c、数据reset
+
+sh reset.sh  该文件内容（该内容就是直接删除migrations目录下的数据，重新编译）
+
+d、将原数据库mydata的数据导出
+
+1  mysqldump -uroot  mydata > mcenter2.sql
+
+e、进入mysql环境
+
+总结：当数据库中包含数据的时候，无法migrate成功，所以只能更改数据库中的相应字段，这个办法算是比较笨了。后续找到解决办法会更新。
+

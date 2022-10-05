@@ -1,0 +1,45 @@
+安装Visual Studio2017，同时选择安装python3.6。安装过程正常。
+
+接着pip install pyquery安装pyquery，成功。
+
+但是打开python IDE，import pyquery，报错ImportError: DLL load failed
+
+刚开始没有仔细看报错信息，以为是vs安装问题，或者是win10权限问题，折腾了很长时间没有解决。
+
+后来仔细看，报错其实是from lxml import etree这一句
+
+测试一下import lxml，没有问题，但是from lxml import etree报错，应该是这个模块有问题 。
+
+lxml这个包是我pip install pyquery时自动安装的。
+
+卸载pip uninstall lxml
+
+重新安装pip install lxml
+
+仍然报错！
+
+于是下载了一个旧版本的whl，lxml-3.7.3-cp36-cp36m-win_amd64.whl
+
+C:\windows\system32>pip uninstall lxml
+
+Uninstalling lxml-3.8.0:
+
+..........................
+
+Proceed (y/n)? y
+
+Successfully uninstalled lxml-3.8.0
+
+C:\windows\system32>pip install D:\software\lxml-3.7.3-cp36-cp36m-win_amd64.whl
+
+Processing d:\software\lxml-3.7.3-cp36-cp36m-win_amd64.whl
+
+Installing collected packages: lxml
+
+Successfully installed lxml-3.7.3
+
+
+问题解决！
+
+居然是vs自动安装的lxml-3.8.0有问题
+

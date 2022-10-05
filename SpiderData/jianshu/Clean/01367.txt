@@ -1,0 +1,50 @@
+
+问题描述：
+
+python3成功配置好pymysql后，准备Django项目的数据库由默认的sqllite更改为mysql时出现问题。在cmd中输入python3 manage.py miagrate时报错。
+
+\guest>python3 manage.py migrate 出现问题。
+
+注：下面给出的解决方法中可能有一些是不必要的步骤，针对答主自身遇到的问题（例如在设置中可能有一些误操作）。可以参考文中给出的链接进行解决。
+
+
+解决方法：
+
+按照https://blog.csdn.net/lzmrex/article/details/51819561进行配置
+
+先是以管理员模式重启mysql，然后输入：
+
+mysql -u root mysql
+
+delete from user where USER = ‘’
+
+FLUSH PRIVILEGES；
+
+exit；
+
+再次输入
+
+\guest>python3 manage.py migrate
+
+本来报1044的错误，现在变成1045错误。
+
+django.db.utils.OperationalError: (1045, "Access denied for user '95146'@'localhost' (using password: NO)")
+
+按照下面的链接还是解决不了问题
+
+https://my.oschina.net/u/1241094/blog/603556
+
+输入python3 manage.py migrate
+
+还是报错：django.db.utils.OperationalError: (1045, "Access denied for user '95146'@'localhost' (using password: NO)")
+
+仅仅使用上面两种方法似乎都没有效果。继续搜索manage.py migrate + django.db.utils.OperationalError: (1045, "Access denied for user
+
+结果在简书上看到一篇文章https://www.jianshu.com/p/e1f5641988fe
+
+该文章也指出是在将sqlite数据库转换成mysql数据库，执行python manage.py migrate时出现的错误，也就是说出现错误的背景和我的比较接近。看他给出的方法是django setting.py文件中设置的database用户名或者密码出错了。于是打开我的setting.py文件，将user改为root，问题解决。
+
+'USER':'root',
+
+再次在\pywindows\guest 这个Django项目路径下输入python3 manage.py migrate，不报错。
+

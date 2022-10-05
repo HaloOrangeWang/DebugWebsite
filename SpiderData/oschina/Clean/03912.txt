@@ -1,0 +1,21 @@
+linux使用命令yum安装时报错
+
+解决方案
+
+cd /var/lib/rpm/
+
+rm -i __db.*
+
+yum clean all
+
+yum history new
+
+如果上面的方法还没有解决
+
+在 /usr/share/yum-cli/yummain.py和 /usr/lib64/python2.4/encodings/utf_8.py  
+中加入三行
+
+import sys
+reload(sys)
+sys.setdefaultencoding('gbk')
+

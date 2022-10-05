@@ -1,0 +1,39 @@
+
+问题描述
+
+今天在做项目的最后一块-支付宝支付的过程中，发现数据库的ih_order_info表中少写了个交易编号字段，然后我仅仅是在项目的models.py文件中增加了trade_no = db.Column(db.String(80)) # 支付宝的交易的流水号这行代码就报错了，我以为数据库就会增加了trade_no字段。但没想到报错内容如下
+
+ERROR in houses [/Users/zhangbin/Desktop/Python04/ihome_python04/ihome/api_1_0/houses.py:320]:
+(pymysql.err.InternalError) (1054, "Unknown column 'ih_order_info.trade_no' in 'field list'")
+[SQL: SELECT ih_order_info.create_time AS ih_order_info_create_time, ih_order_info.update_time AS ih_order_info_update_time, ih_order_info.id AS ih_order_info_id, ih_order_info.user_id AS ih_order_info_user_id, ih_order_info.house_id AS ih_order_info_house_id, ih_order_info.begin_date AS ih_order_info_begin_date, ih_order_info.end_date AS ih_order_info_end_date, ih_order_info.days AS ih_order_info_days, ih_order_info.house_price AS ih_order_info_house_price, ih_order_info.amount AS ih_order_info_amount, ih_order_info.status AS ih_order_info_status, ih_order_info.comment AS ih_order_info_comment, ih_order_info.trade_no AS ih_order_info_trade_no 
+FROM ih_order_info 
+WHERE ih_order_info.house_id = %(house_id_1)s AND ih_order_info.status = %(status_1)s AND ih_order_info.comment IS NOT NULL ORDER BY ih_order_info.update_time DESC 
+ LIMIT %(param_1)s]
+[parameters: {'house_id_1': 8, 'status_1': 'COMPLETE', 'param_1': 30}]
+(Background on this error at: http://sqlalche.me/e/2j85)
+
+
+问题排查
+
+懒得用命令在终端查询数据库的表了，我直接使用Navicat查了一下数据库对应的ih_order_info表,发现并没有trade_no字段。
+
+
+原因
+
+在模型文件中增加字段的同时，还必须在执行两步炒作迁移命令python manage.py db migrate -m "add trade_no",表示新增了trade_no字段。这样原数据库中才会新增trade_no字段
+
+
+解决办法：只需要执行两行命令即可解决问题。
+
+步骤一：执行迁移命令python manage.py db migrate -m "add trade_no"，截图如下
+
+步骤一：执行迁移命令python manage.py db migrate -m "add trade_no"，截图如下
+
+步骤二：执行更新命令python manage.py db upgrade，截图如下
+
+步骤二：执行更新命令python manage.py db upgrade，截图如下
+
+最终数据库成功的增加了trade_no字段并且运行Python项目也不报如上的错误，可以正常的运行啦。
+
+我的相关文章链接
+

@@ -1,0 +1,13 @@
+Python 多进程的进程池pool运行时报错：ValueError: Pool not running
+
+def main(self, num):
+        """
+        多进程启动
+        ValueError: Pool not running：这个问题的根源在于：pool.close()提前生效，关闭了pool。所以提示pool没有运行。
+          解决：多层循环的情况下，将pool.close()
+                               pool.join()
+                写在循环最外层
+        """
+        # 多进程启动
+        pool = Pool
+

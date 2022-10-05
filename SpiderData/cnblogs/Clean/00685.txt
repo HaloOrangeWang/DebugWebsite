@@ -1,0 +1,82 @@
+
+1、安装位置
+
+centos7虚拟机+python3.6
+
+
+2、问题
+
+
+2.1如果是使用的python2版本可以使用如下方式，
+
+#yum search matplotlib
+
+返回如下：
+
+已加载插件：fastestmirror, langpacks
+
+Loading mirror speeds from cached hostfile
+           * base: mirrors.zju.edu.cn
+          * epel: mirrors.ustc.edu.cn
+          * extras: mirrors.cn99.com
+          * updates: mirrors.nju.edu.cn
+         =========================== N/S matched: matplotlib ============================
+         python-matplotlib-doc.x86_64 : Documentation files for python-matplotlib
+         python-matplotlib-qt4.x86_64 : Qt4 backend for python-matplotlib
+         python-matplotlib-tk.x86_64 : Tk backend for python-matplotlib
+         python-matplotlib.x86_64 : Python 2D plotting library
+         rootplot.x86_64 : Plots ROOT data with matplotlib
+
+# yum install python-matplotlib.x86_64 -y
+
+
+2.2在python3里，我使用pip3安装，但是总是报错
+
+Could not fetch URL https://pypi.python.org/simple/matplotlib/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='pypi.python.org',
+
+port=443): Max retries exceeded with url: /simple/request/ (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.",))-
+
+skipping
+
+Could not find a version that satisfies the requirement request (from versions: ) No matching distribution found for matplotlib
+
+没有找到解决办法，但找到替代方法。参考博客：https://www.cnblogs.com/kaid/p/7640816.html
+
+pip3 install matplotlib -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+
+2.3安装相关联的包
+
+安装相关联的包，我也不是很清楚，我从网上的教程上安装了许多，不确定哪些是需要的：
+
+yum install freetype freetype-devel python-freetype
+
+yum install libpng libpng-devel python-pypng
+
+sudo pip install numpy -i http://pypi.douban.com/simple --trusted-host pypi.douban.com（这个好像是必须的）
+
+
+2.4测试是否安装成功
+
+安装过后，测试是否安装成功，
+
+#python3
+
+>>: import matplotlib
+
+报错：
+
+File "/usr/local/python3.6/lib/python3.6/site-packages/matplotlib/__init__.py", line 127, in <module> from . import cbook
+
+解决办法：1、安装  libbz2-1.0     libbz2-dev
+
+2、我的window也装有pycharm，我从那里拷贝_bz2.py到/usr/local/python3.6/lib/python3.6/，就是和bz2.py文件放到一起
+
+
+2.5 成功后的效果
+
+
+3、总结
+
+只懂了linux 的基础命令，对于一些深度问题不能理解和解决，有待提高
+

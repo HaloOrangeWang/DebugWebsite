@@ -1,0 +1,30 @@
+报错信息:MainThread agent ERROR Heartbeating to localhost:7182 failed.
+解决:配置CM Agent
+cm的安装包的server和agent都是同一个包，启动的时候启动命令指定为server还是agent；cm有一个工作目录，需要
+我们来创建；创建一个用户；修改agent的配置，给它指定server的位置；那个端口7182是server和agent通信的端口；
+server_host配置为server的名字；
+修改文件/opt/cloudera-manager/cm-5.4.3/etc/cloudera-scm-agent/config.ini中 server_host(三台机器)
+
+报错信息：ERROR    Heartbeating to master:7182 failed。
+错误解释：向master节点的指定端口7180发送心跳检测失败。
+首次启动Agent，它会生成一个uuid，路径为：/opt/cm-5.1.3/lib/cloudera-scm-agent/uuid,如果每台机器上的Agent的uuid都是一样，就会出现报错情况。
+报错解决：
+进入目录：cd /opt/cm-5.15.1/lib/cloudera-scm-agent/
+删除uuid：rm -rf uuid
+重启agent：/opt/cm-5.15.1/etc/init.d/cloudera-scm-agent restart
+
+报错信息:loudemanager安装时出现8475 MainThread agent ERROR Heartbeating to 192.168.30.1:7182 failed问题解决方法
+ # ps aux | grep super
+root     18949  0.0  0.1 223624 12996 ?        Ss   11:16   0:00 /opt/cm-5.7.0/lib64/cmf/agent/build/env/bin/python /opt/cm-5.7.0/lib64/cmf/agent/build/env/bin/supervisord
+root     23390  0.0  0.0 112656   972 pts/0    S+   11:37   0:00 grep --color=auto super
+#kill   18949
+sudo service cloudera-scm-agent stop
+
+Unable to retrieve remote parcel repository manifest
+ 不影响使用
+ 
+报错信息:KeyError: 'getpwnam(): name not found: cloudera-scm'
+groupadd cloudera-scm
+useradd cloudera-scm -g cloudera-scm
+chown cloudera-scm:cloudera-scm /var/log/cloudera-scm（缺少用户信息）
+

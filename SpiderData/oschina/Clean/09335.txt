@@ -1,0 +1,70 @@
+
+前言
+
+最近测试了一个站点，这个站点挺有意思，发现没有关闭错误提示，初步猜测是SQL server数据库，后来验证确实是。在这里记录一下实战过程，并详细讲解一下用到的知识点。
+
+
+SQL server报错注入原理
+
+SQL server报错注入的文章，网上有很多，大部分文章都列出了类似于公式的句子，却没有解释为什么使用这样的函数。这里用convert()函数举例，convert()函数是是将日期转换为新数据类型的通用函数。
+ 对于咱们构造的payloadconvert(int,@@version),convert函数会先执行第二个参数指定的sql查询，并尝试转化为int类型，因为查询的结果是varchar类型，所以会转化失败报错，报错的信息当中有咱们需要的信息。
+ 满足这样条件的函数很多，如：
+ convert() file_name() db_name() col_name()
+ 还有一些其他的不列举了。
+
+
+发现注入点
+
+之前猜测是SQL server数据库，现在验证一下，发现在输入手机号的地方存在注入点，用sqlmap跑了一下没跑出来，尴尬==，那就尝试手工注入。构造payloadconvert(int,@@version),目的是查询一下版本信息。
+ 
+ 发现是SQL server数据库
+
+
+查询基本信息
+
+知道了版本，还需要查询一下数据库名，和当前用户名(看看拥有多少权限)。
+ payload:
+ convert(int,db_name()) convert(int,user)
+
+
+获取表名
+
+这里遇到了一点小问题，继续使用convert()函数时，发现查询的内容溢出了整数列。
+ 
+ 这可如何是好，convert()无法使用了，所以咱们前面总结的实现相同功能的函数就派上用场了。这里更换函数，使用file_name()函数，构造payload：
+ (file_name((select%20 top 1 name from 库名.sys.sysobjects where xtype='U')))
+ 
+ 可以查询出第一张表，这时候可以在后面加一个条件语句and name !='上一个表名'，可以查询出第二张表。
+ payload:
+ (file_name((select%20 top 1 name from 库名.sys.sysobjects where xtype='U'and name !='上一个表名')))
+ 
+ 如果想要查询第三张表，再接着添加条件语句就可以了，可以查询出所有的表。这里就不演示了。
+
+
+获取列名
+
+payload：
+ (file_name((select top 1 COLUMN_NAME from information_schema.columns where TABLE_NAME=cast(16进制表名 as varchar))))
+ 
+ 我们获取到了第一个列名"编号",接下来依然再后面添加条件语句and COLUMN_NAME != '上一个列名'就可以获取到第二个列名。
+ payload:
+ (file_name((select top 1 COLUMN_NAME from information_schema.columns where TABLE_NAME=cast(16进制表名 as varchar) and COLUMN_NAME != '上一个列名')))
+ 
+ 
+ 按照这种方法同样可以查询出所有列名。这里就不向下查询了。
+
+
+获取数据
+
+前面我们查询到的表名有 S票据打印记录``管理员操作记录而我们获取了管理员操作记录下的列名编号和管理员编号和操作内容，下面我们查询操作内容下的数据。
+ payload：
+ (select top 1 列名 from 表名)
+ 
+ 依然可以通过条件语句获取到其他的数据，这里就不在演示了。
+ SQL server报错注入到此为止。
+
+
+修复方案
+
+关闭错误提示
+

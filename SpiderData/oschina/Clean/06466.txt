@@ -1,0 +1,1540 @@
+
+
+zabbix报错排错大全
+
+zabbix报错
+
+https://www.cnblogs.com/losbyday/category/876878.html作者总结的很全棒
+
+1.在启动zabbix-agent 时系统日志输出
+
+PID file /run/zabbix/zabbix_agentd.pid not readable (yet?) after star
+
+zabbix-agent.service never wrote its PID file. Failing
+
+重启zabbix-agent服务依旧不能正常启动，查看/var/log/zabbix/zabbix-agentd.log 发现系统提示zabbix共享内存报错
+
+zabbix_agentd [5922]: cannot open log: cannot create semaphore set: [28] No space left on device
+
+后通过修改 vim /etc/sysctl.conf
+
+kernel.sem =500  64000   64      256
+
+sysctl -p /etc/sysctl.conf
+
+后便能够正常启动了。（报错原因：kernel.sem参数设置过小 ，原先系统默认设置的为 250 32000 32 128）
+
+参数含义
+
+上面的4个数据分别对应:SEMMSL、SEMMNS、SEMOPM、SEMMNI这四个核心参数，具体含义和配置如下。
+
+SEMMSL ：用于控制每个信号集的最大信号数量。
+
+SEMMNS：用于控制整个 Linux 系统中信号（而不是信号集）的最大数。
+
+SEMOPM： 内核参数用于控制每个 semop 系统调用可以执行的信号操作的数量。SE1、Zabbix报警 icmp pinger processes more than 75% busy
+
+1
+
+2
+
+[root@localhost zabbix]#  vi /etc/zabbix/zabbix_server.conf
+
+将这个值设置成StartPingers=5，然后重启zabbix-server服务。
+
+2、zabbix unreachable poller processes more than 75 busy 
+ unreachable poller processes 一直在处于busy的状态，那这个具体代表什么意思呢，查看官方文档zabbix internal process、unreachable poller - poller for unreachable devices 用于轮询不可到达到的设备。
+
+可能情况：
+ 1.通过Zabbix agent采集数据的设备处于moniting的状态但是此时机器死机或其他原因导致zabbix agent死掉server获取不到数据，此时unreachable poller就会升高。
+ 2.通过Zabbix agent采集数据的设备处于moniting的状态但是server向agent获取数据时时间过长，经常超过server设置的timeout时间，此时unreachable poller就会升高。
+
+3.支撑Zabbix的MySQL卡住了，Zabbix服务器的IO卡住了都有可能，Zabbix进程分配到内存不足都有可能。
+
+一个简单的方法是增加Zabbix Server启动时初始化的进程数量，这样直接增加了轮询的负载量，从比例上来讲忙的情况就少了
+
+1
+
+2
+
+[root@localhost zabbix]#  vi /etc/zabbix/zabbix_server.conf
+
+将这个值设置成StartPollers=500，然后重启zabbix-server服务。也可以定时重启zabbix服务。
+
+3、Zabbix alerter processes more than 75% busy 
+ 收到几百条zabbix告警信息：
+ Zabbix alerter processes more than 75% busy
+ 
+ 可能原因：
+ zabbix的数据库问题
+ zabbix服务器的IO负载
+ zabbix进程分配到内存不足
+ 网络延时或者不通
+
+处理方法：
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+[root@localhost zabbix] vim /etc/zabbix/zabbix_server.conf
+
+将其默认值5修改为20：
+
+StartPollers=500
+
+修改的位置
+
+# StartDiscoverers=1
+
+StartDiscoverers=100
+
+4、zabbix-server服务挂了，启动后又自动停机了，并且日志中很多下面这个错误
+
+报警提示
+
+Zabbix value cache working in low memory mode
+ Less than 25% free in the configuration cache
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+[root@localhost zabbix] cat /var/log/zabbix/zabbix_server.log
+
+6278:20180320:190117.775 using configuration file: /etc/zabbix/zabbix_server.conf
+
+6278:20180320:190117.807 current database version (mandatory/optional): 03020000/03020001
+
+6278:20180320:190117.807 required mandatory version: 03020000
+
+6278:20180320:190118.378 __mem_malloc: skipped 0 asked 136 skip_min 4294967295 skip_max 0
+
+6278:20180320:190118.378 [file:dbconfig.c,line:653] zbx_mem_malloc(): out of memory (requested 136 bytes)
+
+6278:20180320:190118.378 [file:dbconfig.c,line:653] zbx_mem_malloc(): please increase CacheSize configuration parameter
+
+6354:20180320:190128.632 Starting Zabbix Server. Zabbix 3.2.10 (revision 74337).
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+[root@localhost zabbix] vi /etc/zabbix/zabbix_server.conf
+
+### Option: CacheSize
+
+#       Size of configuration cache, in bytes.
+
+#       Shared memory size for storing host, item and trigger data.
+
+#
+
+# Mandatory: no
+
+# Range: 128K-8G
+
+# Default:
+
+# CacheSize=8M
+
+CacheSize=2048M
+
+[root@localhost zabbix]# systemctl restart zabbix-server
+
+备注：今天批量添加了700台主机，造成内存溢出。
+
+5、zabbix-server日志报错，提示connection to database 'zabbix' failed: [1040] Too many connections错误，mariadb正常。想到应该是mysql最大连接数问题。
+
+修改mysql最大连接数的链接：http://blog.51cto.com/net881004/2089198
+
+6、报警提示More than 100 items having missing data for more than 10 minutes和Zabbix poller processes more than 75% busy错误。
+
+修改配置文件增大线程数和缓存
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+[root@localhost zabbix]#  vim /usr/local/zabbix/etc/zabbix_server.conf
+
+StartPollers=500
+
+StartPollersUnreachable=50
+
+StartTrappers=30
+
+StartDiscoverers=6
+
+CacheSize=1G
+
+CacheUpdateFrequency=300
+
+StartDBSyncers=20
+
+HistoryCacheSize=512M
+
+TrendCacheSize=256M
+
+HistoryTextCacheSize=80M
+
+ValueCacheSize=1G
+
+7、server日志很多first network error, wait for 15 seconds报错
+
+server配置文件Timeout时间改大点，我改成了30s。
+
+8、zabbix告警“Zabbix poller processes more than 75% busy”（网友）
+ 告警原因：
+ 1.某个进程卡住了，
+ 2.僵尸进程出错，太多，导致慢了
+ 3.网络延迟（可忽略）
+ 4.zabbix消耗的内存多了
+ 
+ 告警危害：
+ 普通告警，暂无危害（但是最好处理）
+ 
+ 处理方法：
+ 一：简单，粗暴（重启zabbix-server可结合定时任务使用）
+ service zabbix-server restart
+ crontab -e 调出Cron编辑器中增加一个计划：
+ @daily service zabbix-server restart > /dev/null 2>&1
+ 
+ 二：编辑Zabbix Server的配置文件/etc/zabbix/zabbix_server.conf，找到配置StartPollers的段落：
+ ### Option: StartPollers
+ #       Number of pre-forked instances of pollers.
+ #
+ # Mandatory: no
+ # Range: 0-1000
+ # Default:
+ # StartPollers=5
+ 取消StartPollers=一行的注释或者直接在后面增加：
+ StartPollers=10
+ 将StartPollers改成多少取决于服务器的性能和监控的数量，将StartPollers设置成12之后就再没有遇到过警报。如果内存足够的话可以设置更高。
+
+9、早上收到很多报警邮件，官网访问不了，很多服务器端口不通。但是用手机访问官网却可以访问，邮件里面很多Zabbix alerter processes more than 75% busy、Zabbix http poller processes more than 75% busy、和端口不通的报警信息。
+
+由于之前优化过zabbix配置，所以觉得应该不是zabbix配置的问题。可能是那时候zabbix所在网络不通或者延时造成的（确认后是机房那边网络断开了2个小时，恢复后这些报警信息才发送出来了）。看来要针对zabbix服务器本身在异地做个监控，有时间弄个nagios看看。
+
+MMNI ：内核参数用于控制整个 Linux 系统中信号集的最大数量。
+
+10.②报错：No route to host处理
+
+今天在客户端配置Zabbix_agentd后，通过自动注册到 Zabbix_Server 页面中，点击主机列表却发现ZBX显示红色，无法被监控到，查看报错为：
+
+No route to host
+
+在客户端telnet服务端的10051端口发现没有问题，服务端telnet 客户端10050端口报错：
+ telnet 1.1.1.1 10050
+ Trying 1.1.1.1...
+ telnet: connect to address 120.27.241.253: No route to host
+ 原来是被客户端的防火墙档掉了，关闭客户端防火墙或者配置相应规则即可
+
+11.④zookeeper不出图
+
+查看日志/var/log/zabbix/zabbix_agentd.log，大量的报错
+
+1404:20161225:183259.913 active check configuration update from [1.1.1.1:10051] started to fail (ZBX_TCP_READ() timed out)
+
+原来是zabbix_sender需要主动向服务器发送数据，而zabbix-server端的10051端口被防火墙挡住了，重新放行端口问题解决
+
+
+12.zabbix安装完成后启动提示错误
+
+[root@bogon zabbix-2.2.2]# /usr/local/zabbix-2.2.2/sbin/zabbix_server 
+ /usr/local/zabbix-2.2.2/sbin/zabbix_server: error while loading shared libraries: libmysqlclient.so.16: cannot open shared object file: No such file or directory
+
+这是因为找不到 libmysqlclient.so.16 文件所致，可以查找mysql的安装目录，找到此文件然后做一个软链接即可：
+
+ln -s /usr/local/mysql/lib/mysql/libmysqlclient.so.16 /usr/lib
+
+或者打开  /etc/ld.so.confrs 文件
+
+vim  /etc/ld.so.confrs
+
+在其中添加：
+
+/usr/local/mysql/lib
+
+13.Received empty response from Zabbix Agent at [127.0.0.1]. Assuming that agent dropped connection because of access permissions.
+
+意思是说没有权限访问agent端口10050，解决方法如下：
+
+将server的agent链接IP 127.0.0.1修改为本机IP
+
+重启服务
+
+14.# systemctl restart zabbix-server
+
+======================================
+
+Zabbix discoverer processes more than 75% busy
+
+增加Zabbix Server启动时初始化的进程数量，这样直接增加了轮询的负载量，从比例上来讲忙的情况就少了
+
+[root@zabbix-server ~]# vim /etc/zabbix/zabbix_server.conf
+
+修改为
+
+StartDiscoverers=5
+
+重启
+
+[root@zabbix-server ~]# systemctl restart zabbix-server
+
+======================================
+
+15.zabbix-agent无法启动错误
+
+# tail -20 /var/log/zabbix/zabbix_agentd.log
+
+.........................
+
+zabbix_agentd [1232]: cannot create PID file [/var/run/zabbix/zabbix_agentd.pid]: [2] No such file or directory
+
+zabbix_agentd [3847]: cannot create PID file [/var/run/zabbix/zabbix_agentd.pid]: [2] No such file or directory
+
+zabbix_agentd [1724]: cannot create PID file [/var/run/zabbix/zabbix_agentd.pid]: [13] Permission denied
+
+解决
+
+[root@elkstack ~]# mkdir -p /var/run/zabbix/
+
+[root@elkstack ~]# chown zabbix.zabbix /var/run/zabbix/
+
+[root@elkstack ~]# systemctl restart zabbix-agent.service
+
+
+16.Web页面报错总结
+
+
+问题一Zabbix alerter processes more than 75% busy
+
+问题原因：
+
+zabbix服务器邮件进程繁忙导致的，一般是因为设置动作的间隔太短。特殊情况下会产生大量告警，如服务器发几万封邮件过程中，邮件进程发挂了
+
+解决方案：
+
+01.删除数据库解决(风险较大，不建议)
+
+02.修改邮件脚本，将邮件的动作改为打印时间，等待邮件完全释放再改回来，如下
+
+1 [root@m01 ~]# cat /usr/lib/zabbix/alertscripts/sms 2 3 #!/bin/bash 4 5 echo `date` >>/tmp/sms.txt
+
+
+3.2 问题二Zabbix discoverer processes more than 75% busy
+
+问题原因：
+
+01.配置了discovery自动发现任务，配置的每个discovery任务在一定时间内占用1个进程，而zabbix_server.conf中默认配置只有1个discovery(被注释，默认生效)
+
+02.为了快速验证自动发现效果，将discovery任务的"Delay"由默认3600s设置成60s
+
+解决方案：
+
+01.修改配置文件中的StartDiscoverers进程数量，取消其之前的#号并将数值修改为5，最后重启服务
+
+(注：根据系统硬件配置，可以设置成更高的数值，但其范围为0~250)
+
+1 [root@m01 ~]# grep 'StartDiscoverers' /etc/zabbix/zabbix_server.conf2 3 ### Option: StartDiscoverers4 5 StartDiscoverers=56 7 [root@m01 ~]# systemctl restart zabbix-server.service
+
+02.编写定时任务脚本重启zabbix_server来降低负载
+
+1 [root@m01 ~]# crontab -e2 3 @daily service zabbix-server restart > /dev/null 2>&14 5 #计划会每天自动重启Zabbix服务以结束僵尸进程并清理内存等
+
+
+3.3 问题三Zabbix poller processes more than 75% busy
+
+问题原因：
+
+01.通过Zabbix agent采集数据的设备死机或其他原因导致zabbix agent死掉server获取不到数据
+
+02. server向agent获取数据时时间过长，超过了server设置的timeout时间
+
+解决方案：
+
+01.增加Zabbix Server启动时初始化的进程数量
+
+1 ### Option: StartPollers 2 3 StartPollers=10 #改成多少取决于服务器的性能和监控的数量，如果内存足够的话可以设置更高
+
+02.修改模板自动发现规则中的保留失去的资源期间为0
+
+
+3.4 问题四Zabbix housekeeper processes more than 75% busy
+
+问题原因：
+
+为了防止数据库持续增大，zabbix有自动删除历史数据的机制即housekeeper，而mysql删除数据时性能会降低，就会报错
+
+解决方案：
+
+调整HousekeepingFrequency参数
+
+1 HousekeepingFrequency=12 #间隔时间 2 3 MaxHousekeeperDelete=1000000 #最大删除量
+
+
+3.5 问题五Zabbix server内存溢出，无法启动
+
+问题原因：
+
+zabbix使用一段时间后，再次加入一批交换机监控，zabbix-server将无法启动，查看日志显示如下(提示内存溢出，需调整zabbix服务器配置zabbix_server.conf)
+
+1 2816:20170725:174352.675 [file:dbconfig.c,line:652] zbx_mem_realloc(): out of memory (requested 162664 bytes)2 3 2816:20170725:174352.675 [file:dbconfig.c,line:652] zbx_mem_realloc(): please increase CacheSize configuration parameter
+
+解决方案：
+
+1 vim zabbix_server.conf 2 3 CacheSize=1024M #默认为8M
+
+
+3.6 PHP Fatal error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 11 bytes)
+
+问题原因：
+
+zabbix某些页面无法打开，查看php日志发现，当访问这个页面时报错内存不足
+
+解决方案：
+
+不清楚是否内存泄露，最简单的方法是调大php进程的可用内存
+
+1 [root@zabbix-master ~]# grep 'memory_limit' /etc/httpd/conf.d/zabbix.conf 2 3 php_value memory_limit 512M #默认128M
+
+17.、cannot connect to [[172.16.2.225]:10050]: [113] No route to host
+
+这种一般是网络连接问题
+
+排查：在server上telnet 172.16.2.225 10050，是同样的报错，查看是否关闭iptables和selinux
+
+18.zabbix server is not running: the information displayed may not be current.
+
+排查：编辑zabbix.conf.php文件，把$ZBX_SERVER的原来的值localhost改为本机的IP地址。
+
+vim /etc/zabbix/web/zabbix.conf.php
+ $ZBX_SERVER = '172.16.2.116';
+
+19.1、打开zabbix web界面点击profile出现以下报错信息：
+
+scandir() has been disabled for security reasons [profile.php:198 → CView->
+
+解决：
+
+php环境中把scandir写在了disable_functions中。在php.ini文件把disable_functions中的scandir去掉即可。
+
+（重启php-fpm和nginx）
+
+2、添加windows监控时候报错：
+
+Get value error: ZBX_TCP_READ() failed: [104] Connection reset by peer
+
+解决:windows下agentd.conf文件IP地址不对
+
+3、zabbix打开既然没有任何数据显示
+
+我用360安全浏览器使用打开没有任何数据显示，然而用IE打开zabbix数据就能正常的显示呈现。
+
+4、搞微信报警按照前辈们操作http://www.ttlsa.com/linux/zabbix-wechat-onalert-20/，在最后一步添加actions的时候总是不成功既然出现
+
+ERROR: Page received incorrect data
+
+不知原因
+
+5、配置zabbix-server监控IPMI
+
+编译加--with-openipmi参数报错。
+
+configure: error: Invalid OPENIPMI directory - unable to find ipmiif.h
+
+解决：需提前安装
+
+yum install net-snmp-devel OpenIPMI OpenIPMI-devel rpm-build
+
+20.0x01  zabbix_server dead but subsys locked错误
+
+今天把Zabbix版本从3.2升级到了3.4。但在启动Zabbix_Server时出现了"zabbix_server dead but subsys locked"的错误状态。
+
+1、问题原因
+
+在查看了zabbix_server日志，发现日志里有下面的告警
+
+zbx_mem_malloc(): out of memory (requested 256 bytes) zbx_mem_malloc(): please increase CacheSize configuration parameter
+
+错误原因写的很明白，内存溢出，请调整CacheSize大小。
+
+2、问题解决
+
+编辑zabbix_server.conf配置文件，定位到CacheSize关键字位置，然后调高CacheSize大小，大小根据自己环境调整
+
+# Size of configuration cache, in bytes. # Shared memory size for storing host, item and trigger data. # Mandatory: no # Range: 128K-8G # Default: CacheSize=32M
+
+最后重启zabbix_server服务即可。
+
+0x02  Zabbix value cache working in low memory mode错误
+
+问题解决：
+
+编辑zabbix_server.conf配置文件，定位到ValueCacheSize关键字位置，然后调高ValueCacheSize大小，大小根据自己环境调整
+
+# Option: ValueCacheSize # Size of history value cache, in bytes. # Shared memory size for caching item history data requests. # Setting to 0 disables value cache. # # Mandatory: no # Range: 0,128K-64G # Default: ValueCacheSize=2048M
+
+21.二、错误解决：
+ 1.安装zabbix时发生的错误：
+ ①错误：编译zabbix时总是提示gcc not find之类
+ 　解决：安装development tools，命令：
+    yum -y groupinstall "Delvelopment Tools"
+ ②错误：编译zabbix时提示mysqlclient not find之类
+    解决：安装mysql-devel，命令：
+    yum -y install  mysql-devel
+ ③错误：输入127.0.0.1/zabbix/setup.php提示403forbidden
+    解决：关闭Selinux，使用setenforce 0命令，或者vim /etc/selinux/config，将SELINUX=enforcing改为SELINUX=disabled，再    重启linux即可。
+ 
+ 2.使用过程中发生的错误：
+ ①错误：zabbix运行状态显示no，未运行
+    解决：首先检查是否zabbix服务未启动，使用/etc/init.d/zabbix_server start启动zabbix服务；
+              如果还是错误，vim/var/www/html/zabbix/conf/zabbix.conf.php，将配置文件中的$ZBX_SERVER字段为服务器的IP地        址，默认是127.0.0.1，然后重启zabbix_server服务；
+ ②错误：zabbix出现zabbix agent unreachable警告。
+    解决：vim /usr/local/etc/zabbix_agentd.conf,(看个人情况选择路径)查看Hostname与组态--主机--主机名称是否相同，如果不同更    改主机名称，将Server改为ip。
+ 
+ ③错误：zabbix出现Lack of free swap space警告
+ 　解决：1.检查 Swap 空间，
+ 　　　　   命令：free -m
+ 
+                 如果返回的信息概要是空的，则表示 Swap 文件不存在。
+ 
+ 　　　　2.检查文件系统，
+ 　　　　　命令df-hal
+ 　　　　  检查返回的信息，还剩余足够的硬盘空间即可。
+ 　　　　3.创建并允许 Swap 文件，
+ 　　　　　命令dd if=/dev/zero of=/swapfile bs=1024 count=2048000
+ 
+ 　　　　　参数解读：
+ 　　　　   if=文件名：输入文件名，缺省为标准输入。即指定源文件。< if=input file >
+ 　　　　　of=文件名：输出文件名，缺省为标准输出。即指定目的文件。< of=output file >
+ 　　　　　bs=bytes：同时设置读入/输出的块大小为bytes个字节
+ 　　　　　count=blocks：仅拷贝blocks个块，块大小等于bs指定的字节数。
+ 　　　　4.格式化并激活 Swap 文件，
+ 　　　　　命令：格式化Swap：　　 mkswap  /swapfile
+ 
+ 　　　　　　　　激活Swap： 　　　swapon /swapfile
+ 
+ 　　　　　　　　查看Swap： 　　　swapon -s
+ 　　　　　　　　修改 fstab 配置：　vim /etc/fstab ，在最后加上/swapfile   swap    swap    defaults    0   0
+ 　　　　　　　　授权：　　　　　　chown root:root  /swapfile
+ 　　　　　　　　　　　　　　　　　chmod 0600   /swapfile
+ ④错误：zabbix自定义key显示未启用，log中显示bad interpreter错误
+ 　解决：在windows用建立的sh文件在linux中运行时，因为window在每行后加入隐藏字符^M，所以当linux编译时 由于无法编译^M而导 　致bad interpreter错误，使用 vi -b <file name> 找出^M 然后删除即可。
+
+22.Zabbix 是一个基于WEB界面的企业级开源分布式监控软件，不少人在部署和配置zabbix时会重复遇到各种坑，临时解决后又忘记做记录，这是非常不好的习惯，技术一流汇总一下常见错误的解决方法供大家参考。
+
+问题一：
+
+使用源代码安装之后， 在zabbix的网页上不能使用MySQL数据库。
+
+解决方法：zabbix需要php支持mysqli； 使用源码安装php时需要加上–with-mysqli=mysqlnd参数之后在网页可以显示。
+
+问题二：在./configure时，提示configure: error: Invalid Net-SNMP directory – unable to find net-snmp-config
+
+解决方法：执行 yum install -y net-snmp-devel libxml2-devel libcurl-devel
+
+问题三：在zabbix网页上填写MySQL信息后下一步提示The frontend does not match Zabbix database.报错
+
+解决方法：确认mysql账号信息无误后，再检查初始化zabbix库是否成功，若还报错则重新初始化zabbix数据库。
+
+问题四：网页安装zabbix提示要下载配置文件：Unable to create the configuration file.
+
+解决方法：设置 web服务器用户在zabbix网页的conf/目录具有写权限，配置文件会自动保存。
+
+问题五：zabbix安装完成后，在管理后台>admin个人资料页面无法选择中文语言
+
+解决方法：修改zabbix网站目录下的zabbix/include/locales.inc.php文件中的中文支持(默认存在中文语言支持的)
+
+找到 ‘zh_CN’ => [‘name’ => _(‘Chinese (zh_CN)’),     ‘display’ => false],  将false改为true
+
+问题六：后台修改语言为中文后，图形的汉字显示为方格乱码
+
+解决方法：[root@eazence ~]# cd /etc/nginx/html/zabbix/fonts/  #这个是存放zabbix网页的字体路径
+
+[root@eazence fonts]# ls
+
+DejaVuSans.ttf
+
+[root@eazence fonts]# wget -c http://www.138096.com/simkai.ttf
+
+[root@eazence fonts]# cp -p DejaVuSans.ttf DejaVuSans.ttf.bak
+
+[root@eazence fonts]# mv -f simkai.ttf DejaVuSans.ttf     #完成这一步后刷新网页即可
+
+23.（1）在Zabbix的Dashboard中Status of Zabbix的：
+
+Zabbix server is running's value is "No"
+
+解决思路，考虑是Zabbix Server的配置文件中连接数据库的账户对zabbix数据库的权限不够，修改账户的对数据库的权限；
+
+(2)ITEM收取不到数据，并报一下错误：
+
+Received value [0.05] is not suitable for value type [Numeric (unsigned)]
+
+解决思路，修改Zabbix Server配置文件中CacheSize的默认值，尽量提升；
+
+或者是ITEM的配置中Type of information配置的有误，修改为合适的格式
+
+24.导入percona模版报错
+
+Import failed
+
+Invalid XML tag "/zabbix_export/date": "YYYY-MM-DDThh:mm:ssZ" is expected.解决办法
+
+将zabbix_agent_template_percona_mysql_server_ht_2.0.9-sver1.1.6.xml导入zabbix2.4中再导出。之后将新的导出xml导入到3.0中问题解决。
+
+从zabbix3.0导出的percona模板：Percona-MySQL-Server-Template
+
+25.Zabbix Server突然挂了，查看log报错如下：
+
+using configuration file: /etc/zabbix/zabbix_server.conf...[file:dbconfig.c,line:545] zbx_mem_malloc(): out of memory (requested 16 bytes)[file:dbconfig.c,line:545] zbx_mem_malloc(): please increase CacheSize configuration parameter
+
+报错里已经很明确的提示了修复办法：please increase CacheSize configuration parameter
+
+所以，我们就去zabbix_server.conf中找到CacheSize字段
+
+### Option: CacheSize#   Size of configuration cache, in bytes.#   Shared memory size for storing host, item and trigger data.## Mandatory: no# Range: 128K-8G# Default:# CacheSize=8M
+
+根据服务器配置情况，修改CacheSize
+
+### Option: CacheSize#   Size of configuration cache, in bytes.#   Shared memory size for storing host, item and trigger data.## Mandatory: no# Range: 128K-8G# Default:CacheSize=2048M
+
+重启Zabbix Server即可
+
+
+26.Zabbix日志错误总结
+
+zabbix_agentd.log 　
+
+错误一　
+
+no active checks on server [*.*.*.*:10051]: host [*] not found
+
+出现该错误的原因是一般是zabbix_agentd.conf里面的Hostname和前端zabbix web（Monitoring->Configuration->Hosts 页面的Name）里面的配置不一样所造成的
+
+解决:在zabbix web页面Monitoring->Configuration->Hosts 页面更改Host name和zabbix_agentd.conf里面的Hostname一样。
+
+错误二activecheck configuration update from [127.0.0.1:10051] started to fail (cannotconnect to [[127.0.0.1]:10051]: [111] Connection refused)
+
+解决：上面标注的地方有报错，我们可以编辑etc/zabbix/zabbix_agentd.conf 注释掉#ServerActive=127.0.0.1并且重启zabbix agent即可。
+
+zabbix_server.log
+
+1、failed to accept an incoming connection: connection from "*。*。*。*" rejected, allowed hosts: "127.0.0.1"    这个是 zabbix_agentd.conf 文件配置错误的提示，好好检查一下
+
+# vim /usr/local/zabbix/etc/zabbix_agentd.conf
+
+修改 ：
+
+Server=你的服务器地址ServerActive=你的服务器地址
+
+Hostname=你的客户端名称
+
+27.zabbix_agentd.log 　
+
+错误一　
+
+no active checks on server [*.*.*.*:10051]: host [*] not found
+
+出现该错误的原因是一般是zabbix_agentd.conf里面的Hostname和前端zabbix web（Monitoring->Configuration->Hosts 页面的Name）里面的配置不一样所造成的
+
+解决
+
+在zabbix web页面Monitoring->Configuration->Hosts 页面更改Host name和zabbix_agentd.conf里面的Hostname一样。
+
+错误二activecheck configuration update from [127.0.0.1:10051] started to fail (cannotconnect to [[127.0.0.1]:10051]: [111] Connection refused)解决：
+
+上面标注的地方有报错，我们可以编辑etc/zabbix/zabbix_agentd.conf 注释掉#ServerActive=127.0.0.1并且重启zabbix agent即可
+
+28.failed to accept an incoming connection: connection from "*。*。*。*" rejected, allowed hosts: "127.0.0.1"
+
+这个是 zabbix_agentd.conf 文件配置错误的提示，好好检查一下
+
+# vim /usr/local/zabbix/etc/zabbix_agentd.conf
+
+修改 ：
+
+Server=你的服务器地址 ServerActive=你的服务器地址 Hostname=你的客户端名称
+
+尤其是Hostname
+
+zabbix_agentd.conf里面的Hostname必须和web管理界面主机名称一样
+
+配置----主机---要监控的主机---主机名称
+
+29.登录Zabbix之前，却确认Nginx服务打开，php-fpm打开，service zabbix_server start server_agentd start
+
+意外断电Zabbix登录出现如下错误
+
+Database error
+
+Error connecting to database: Can't connect to local MySQL server through socket '/tmp/mysql.sock' (2)
+
+无法连接到数据库，请确认数据库是否开启
+
+当我要开启数据库服务的时候，数据库又出错，因为我没有开启热备份。。。。
+
+[root@dep5 ~]# service mysqld statusMySQL is not running, but lock file (/var/lock/subsys/mysql[失败]ts[root@dep5 ~]# service mysqld startStarting MySQL...The server quit without updating PID file [失败]mysql.pid).
+
+#查看日志 #[root@dep5 ~]# vim /data/mysqldb/log/mysql-error.log 2016-09-03 16:26:43 10550 [ERROR] InnoDB: Attempted to open a previously opened tablespace. Previous tablespace zabbix/groups uses space ID: 3 at filepath: ./zabbix/groups.ibd. Cannot open tablespace mysql/slave_relay_log_info which uses space ID: 3 at filepath: ./mysql/slave_relay_log_info.ibd2016-09-03 16:26:43 7f4097e0a720  InnoDB: Operating system error number 2 in a file operation.InnoDB: The error means the system cannot find the path specified.InnoDB: If you are installing InnoDB, remember that you must createInnoDB: directories yourself, InnoDB does not create them.InnoDB: Error: could not open single-table tablespace file ./mysql/slave_relay_log_info.ibdInnoDB: We do not continue the crash recovery, because the table may becomeInnoDB: corrupt if we cannot apply the log records in the InnoDB log to it.InnoDB: To fix the problem and start mysqld:InnoDB: 1) If there is a permission problem in the file and mysqld cannotInnoDB: open the file, you should modify the permissions.InnoDB: 2) If the table is not needed, or you can restore it from a backup,InnoDB: then you can remove the .ibd file, and InnoDB will do a normalInnoDB: crash recovery and ignore that table.InnoDB: 3) If the file system or the disk is broken, and you cannot removeInnoDB: the .ibd file, you can set innodb_force_recovery > 0 in my.cnfInnoDB: and force InnoDB to continue crash recovery here.160903 16:26:43 mysqld_safe mysqld from pid file /tmp/mysql.pid ended
+
+mysql 日志中给出了猜测和各自的解决方案
+
+1)权限问题，修改权限就OK
+
+2）就是说你不需要这些表的话，清空表，删除.ibd文件，就会恢复（这样的话你的zabbix也会没有，我想一下第三种方法）
+
+3）如富哦这是文件系统或者磁损坏，你不能移除,你可以在你的my.cnf里面将设置innodb_force_recovery > 0，强制InnoDB引擎来.....
+
+解决：
+
+[root@dep5 ~]# vim /etc/my.cnf#innodbinnodb_file_per_table = 1innodb_data_file_path = ibdata1:2048M:autoextendinnodb_log_file_size = 128minnodb_log_files_in_group = 3innodb_buffer_pool_size = 60Minnodb_buffer_pool_instances = -1innodb_max_dirty_pages_pct = 70#innodb_thread_concurrency = 8innodb_flush_method = O_DIRECTinnodb_log_buffer_size = 16minnodb_flush_log_at_trx_commit = 2innodb_force_recovery = 1  #添加这个就Ok了
+ 
+ 
+ #[root@dep5 ~]# vim /etc/my.cnf 
+ #[root@dep5 ~]# service mysqld start
+ #Starting MySQL.......
+
+我看了一下启动成功之后的数据库日志有如下片段，猜测Zabbix无法正常打开=  =
+
+2016-09-03 16:41:33 18646 [Warning] Info table is not ready to be used. Table 'mysql.slave_master_info' cannot be opened.2016-09-03 16:41:33 18646 [Warning] InnoDB: Cannot open table mysql/slave_worker_info from the internal data dictionary of InnoDB though the .frm file for the table exists. See http://dev.mysql.com/doc/refman/5.6/en/innodb-troubleshooting.html for how you can resolve the problem.2016-09-03 16:41:33 18646 [Warning] InnoDB: Cannot open table mysql/slave_relay_log_info from the internal data dictionary of InnoDB though the .frm file for the table exists. See http://dev.mysql.com/doc/refman/5.6/en/innodb-troubleshooting.html for how you can resolve the problem.2016-09-03 16:41:33 18646 [Warning] Info table is not ready to be used. Table 'mysql.slave_relay_log_info' cannot be opened.2016-09-03 16:41:34 18646 [Note] Event Scheduler: Loaded 0 events2016-09-03 16:41:34 18646 [Note] /usr/local/mysql/bin/mysqld: ready for connections.Version: '5.6.31-log'  socket: '/tmp/mysql.sock'  port: 3306  Source distribution2016-09-03 16:41:34 18646 [Note] Event Scheduler: scheduler thread started with id 12016-09-03 16:41:39 7feb5261e700 InnoDB: Error: Table "mysql"."innodb_table_stats" not found.2016-09-03 16:41:39 7feb5261e700 InnoDB: Error: Fetch of persistent statistics requested for table "zabbix"."users" but the required system tables mysql.innodb_table_stats and mysql.innodb_index_stats are not present or have unexpected structure. Using transient stats instead.2016-09-03 16:41:39 7feb5261e700 InnoDB: Error: Table "mysql"."innodb_table_stats" not found.
+
+这个就是Zabbix打开出现的界面，，
+
+后面想着注释在my.cnf添加的哪一行，，
+
+虽然mysql重新启动是OK了，但是mysql日志被刷新了一次...
+
+2016-09-03 16:48:11 7f37cdfb7700 InnoDB: Error: Table "mysql"."innodb_table_stats" not found.2016-09-03 16:48:11 7f37cdfb7700 InnoDB: Error: Fetch of persistent statistics requested for table "zabbix"."media_type" but the required system tables mysql.innodb_table_stats and mysql.innodb_index_stats are not present or have unexpected structure. Using transient stats instead.
+
+我就想着修复表。。。
+
+[root@dep5 ~]# mysqlcheck -r zabbixzabbix.acknowledgesnote     : The storage engine for the table doesn't support repairzabbix.actionsnote     : The storage engine for the table doesn't support repairzabbix.alerts
+
+悲剧了，我猜zabbix数据库的引擎应该为myisam，看不到引擎啊。。
+
+使用MySQL5.6或者更高版本，自从MySQL被Oracle收购了，它的性能确实有不少的提升。请一定选择innodb，别选择myisam，因为zabbix在innodb的性能比在myisam快1.5倍，而且myisam不安全，zabbix监控数据量很大，一旦表坏了，那就是一个悲剧。
+
+悲剧啊！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+
+注意：
+
+毕竟我也是新手，然后能想到的最笨的办法就是所有重来（没做配置备份，引擎没有修改，好尴尬）
+
+最后的处理办法，闪库，重新建库建表，并且重新导入zabbix表把。。想搭建zabbix服务器那样，前面做了什么全部清理掉，然后重新来
+
+31.
+
+1.在启动zabbix-agent 时系统日志输出
+
+PID file /run/zabbix/zabbix_agentd.pid not readable (yet?) after star
+
+zabbix-agent.service never wrote its PID file. Failing
+
+同时通过输入 systemctl status zabbix-agent.service 看其中提到了selinux，后通过输入getenforce 发现selinux是打开的，便关闭了selinux
+
+重启zabbix-agent服务依旧不能正常启动，查看/var/log/zabbix/zabbix-agentd.log 发现系统提示zabbix共享内存报错
+
+zabbix_agentd [5922]: cannot open log: cannot create semaphore set: [28] No space left on device
+
+如图：
+
+后通过修改 vim /etc/sysctl.conf
+
+kernel.sem =500  64000   64      256
+
+sysctl -p /etc/sysctl.conf  后便能够正常启动了。（报错原因：kernel.sem参数设置过小 ，原先系统默认设置的为 250 32000 32 128）
+
+参数含义
+
+上面的4个数据分别对应:SEMMSL、SEMMNS、SEMOPM、SEMMNI这四个核心参数，具体含义和配置如下。
+
+1.SEMMSL ：用于控制每个信号集的最大信号数量。
+
+2.SEMMNS：用于控制整个 Linux 系统中信号（而不是信号集）的最大数。
+
+3.SEMOPM： 内核参数用于控制每个 semop 系统调用可以执行的信号操作的数量。
+
+4.SEMMNI ：内核参数用于控制整个 Linux 系统中信号集的最大数量。
+
+
+32.1.zabbix仪表板错误
+
+问题：
+ zabbix server is not running: the information displayed may not be current
+ 解决方案:
+
+几种情况都有可能引起这个错误:1)可能是zabbix－server未安装zabbix－agent;或者安装了却没有检测到agent的端口2)
+
+
+2.日志报错
+
+问题：
+ 172730.555 [Z3001] connection to database 'zabbix' failed: [1045] Access denied for
+ 解决方案：
+
+＃修改配置文件shell->vim/etc/zabbix/zabbix-server.confDBPassword=zabbix＃重启服务shell->/etc/init.d/zabbix-server restart＃再次查看日志shell->tail -f /var/log/zabbix/zabbix-server.log
+
+
+3. 提示没有中文环境
+
+问题：
+ You are not able to choose some of the languages, because locales for them are not installed on the
+
+解决方案：
+
+1、启用中文
+
+vi /usr/share/zabbix/include/locales.inc.php    把zh_CN后面参数写true 然后去web界面选择语言。    如果，去选择语言的时候，你发现还是不能选择.     提示：    You are not able to choose some of the languages, because locales for them are not installed on the web server.    是因为你系统里没中文环境    那么：设置中文环境    第一步，安装中文包：    apt-get install language-pack-zh-hant language-pack-zh-hans     第二步，配置相关环境变量：    vi /etc/environment    在文件中增加语言和编码的设置：    LANG="zh_CN.UTF-8"    LANGUAGE="zh_CN:zh:en_US:en"    第三步，重新设置本地配置：    dpkg-reconfigure locales    现在重启apache&zabbix_server两个服务一下，应该可以选了。。
+
+2、但是我发现翻译的不好，有大神做了更好的翻译(未测)
+
+点击参考
+
+进入    cd /usr/share/zabbix/locale/zh_CN/LC_MESSAGES目录    代码: 全选    wget https://github.com/echohn/zabbix-zh_CN/ ... master.zip    unzip master.zip    rm frontend.mo    cp zabbix-zh_CN-master/frontend.mo frontend.mo     现在重启apache&zabbix_server两个服务    service zabbix-server restart    service apache2 restart
+
+3、乱码问题
+
+看图时候，如果有中文，会乱码    调整图像里的中文乱码    下载雅黑    代码: 全选    wget http://dx.sc.chinaz.com/Files/DownLoad/font2/dd.rar    解压缩文件    rar x dd.rar    cp dd/msyh.ttf msyh.ttf    然后修改 vi /usr/share/zabbix/include/defines.inc.php    找到    define('ZBX_GRAPH_FONT_NAME', 'graphfont'); // font file name    修改成：    define('ZBX_GRAPH_FONT_NAME', 'msyh'); // font file name    cp msyh.ttf /usr/share/zabbix/fonts  #少了这一步则图形下面没有字体    重启apache服务即可
+
+[zabbix3.0使用](http://www.tuicool.com/articles/e2EnMvi)里面设置字体的地方43行跟93行设为一样即可
+
+4.重要的mibs库，必须更新，否则snmp监控交换机时，mib会报错。（未测）
+
+apt-get install snmp-mibs-downloade    ＃＃一些提示 tips    重新启动zabbix－server服务进程    # service zabbix-server restart    重新启动zabbix－agent进程    # service zabbix-server restart    重启apache进程    ＃service apache2 restart     重要目录:    log: /var/log/zabbix/zabbix_server/log和agent.log 排查错误必须    conf：/etc/zabbix/*.conf    安装目录：/usr/share/zabbix 重要的include，font .etc    根web目录在var/www/html    ###原文：http://www.cnblogs.com/zangdalei/p/5712951.html
+
+
+4、apt-get update更新时报错
+
+问题：
+ Failed to fetch
+ http://ubuntu.kurento.org/dists/trusty/kms6/binary-i386/Packages 403 Forbidden [IP: 112.124.140.210 80]
+
+解决方案:
+
+apt-get update时出现没有权限（403）的问题，112.124.140.210 是apt代理地址，修改（或者删除，注释最好）apt.conf文件，取消掉这个代理就可以了，当然不用代理的话，您的ubuntu必须能够访问外网。
+
+
+5.zabbix微信报警时出现
+
+shell脚本中忘记开头!#/bin/bash 导致手动执行脚本微信可以发生消息，但是zabbix触发后action完成但是微信收不到消息！
+
+
+33.zabbix3.2升级3.4报错Database error
+
+zabbix3.2版本升级到zabbix3.4版本后打开页面报错，报错内容如下
+
+Database error
+ The frontend does not match Zabbix database. Current database version (mandatory/optional): 3020000/3020000. Required mandatory version: 3040000. Contact your system administrator.
+
+解决办法：进入数据库
+
+1
+
+2
+
+3
+
+4
+
+mysql> show databases;
+
+mysql> use zabbix;
+
+mysql> update dbversion set mandatory=3040000;
+
+mysql> flush privileges;
+
+重新打开web即可解决
+
+34.zabbix报错： cannot connect to [[192.168.119.110]:10050]: [111] Connection refused
+
+
+错误分析：Connection refused 拒绝连接！
+
+（1）客户端与服务端网络不通；
+
+（2）客户端服务内用防火墙阻隔；
+
+（3）网段内用物理防火墙阻隔。
+
+
+解决方法：
+
+（1）查看日志：查看、分析错误原因
+
+root@a-desktop:~# tail /var/log/zabbix-agent/zabbix_agentd.log
+
+5927:20160913:101039.428 agent #2 started [listener #2]
+
+5923:20160913:102113.808 Got signal [signal:15(SIGTERM),sender_pid:5999,sender_uid:0,reason:0]. Exiting ...
+
+5923:20160913:102113.810 Zabbix Agent stopped. Zabbix 2.2.2 (revision 42525).
+
+6004:20160913:102113.824 Starting Zabbix Agent [Cloud_platform002]. Zabbix 2.2.2 (revision 42525).
+
+6004:20160913:102113.824 using configuration file: /etc/zabbix/zabbix_agentd.conf
+
+6005:20160913:102113.824 agent #0 started [collector]
+
+6006:20160913:102113.825 agent #1 started [listener #1]
+
+6007:20160913:102113.825 agent #2 started [listener #2]
+
+6008:20160913:102113.825 agent #3 started [listener #3]
+
+6009:20160913:102113.825 agent #4 started [active checks #1]
+
+（2）如果是网络不通，可以做域名解析或者通过zabbix-agent实现数据收集
+
+zabbix-agent分布式监控可以参考我的另一篇分享《zabbix分布式监控（阿里云zabbix-server，.. 》
+
+（3）如果服务器防火墙
+
+添加规则：iptables -I INPUT -p tcp -m multiport --destination-port 80,10050:10051 -j ACCEPT
+
+（4）物理防火墙
+
+同样的也是在墙上开个10050的TCP端口
+
+
+35.sudo bug导致的zabbix断图问题
+
+线上使用zabbix的host update来监测监控值是否完整（关于host update的实现请参考：
+
+http://caiguangguang.blog.51cto.com/1652935/1345789）
+
+一直发现有机器过一段时间update值就会莫名其妙变低，之前一直没有找到rc，只是简单通过重启agent来进行修复，最近同事细心地发现可能是和sudo的bug有关系。
+
+回过头再来验证下整个的排查过程。
+
+1.通过zabbix 数据库获取丢失数据的item，拿出缺失的(20分钟没有更新的)值的item列表
+
+1
+
+2
+
+3
+
+select b.key_,b.lastvalue,from_unixtime(b.lastclock) from hosts a,
+
+items b where a.hostid=b.hostid and a.host='xxxxxx' and
+
+b.lastclock < (unix_timestamp() - 1200) limit 10;
+
+比如这里看agent.ping:
+
+观察监控图，发现在18点20分之后数据丢失
+
+2.分析zabbix agent端的日志
+
+发现在18点24粉左右出现下面的日志，没有看到正常的获取值和发送值的情况，只有大量的update_cpustats状态，同时发现有一行kill  command 失败的日志:
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+
+20
+
+21
+
+22
+
+23
+
+24
+
+25
+
+26
+
+27
+
+28
+
+27589:20141021:182442.143 In zbx_popen() command:'sudo hadoop_stats.sh nodemanager StopContainerAvgTime'
+
+27589:20141021:182442.143 End of zbx_popen():5
+
+48430:20141021:182442.143 zbx_popen(): executing script
+
+27585:20141021:182442.284 In update_cpustats()
+
+27585:20141021:182442.285 End of update_cpustats()
+
+27585:20141021:182443.285 In update_cpustats()
+
+27585:20141021:182443.286 End of update_cpustats()
+
+27585:20141021:182444.286 In update_cpustats()
+
+27585:20141021:182444.287 End of update_cpustats()
+
+27585:20141021:182445.287 In update_cpustats()
+
+27585:20141021:182445.287 End of update_cpustats()
+
+27585:20141021:182446.288 In update_cpustats()
+
+27585:20141021:182446.288 End of update_cpustats()
+
+..........
+
+27585:20141021:182508.305 In update_cpustats()
+
+27585:20141021:182508.305 End of update_cpustats()
+
+27585:20141021:182509.306 In update_cpustats()
+
+27585:20141021:182509.306 End of update_cpustats()
+
+27585:20141021:182510.306 In update_cpustats()
+
+27585:20141021:182510.307 End of update_cpustats()
+
+27585:20141021:182511.307 In update_cpustats()
+
+27585:20141021:182511.308 End of update_cpustats()
+
+27589:20141021:182512.154 failed to kill [sudo hadoop_stats.sh nodemanager StopContainerAvgTime]: [1] Operation not permitted
+
+27589:20141021:182512.155 In zbx_waitpid()
+
+27585:20141021:182512.308 In update_cpustats()
+
+27585:20141021:182512.309 End of update_cpustats()
+
+27585:20141021:182513.309 In update_cpustats()
+
+27585:20141021:182513.309 End of update_cpustats()
+
+对比正常的日志：
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+27589:20141021:180054.376 In zbx_popen() command:'sudo hadoop_stats.sh nodemanager StopContainerAvgTime'
+
+27589:20141021:180054.377 End of zbx_popen():5
+
+18798:20141021:180054.377 zbx_popen(): executing script
+
+27589:20141021:180054.384 In zbx_waitpid()
+
+27589:20141021:180054.384 zbx_waitpid() exited, status:1
+
+27589:20141021:180054.384 End of zbx_waitpid():18798
+
+27589:20141021:180054.384 Run remote command [sudo  hadoop_stats.sh nodemanager StopContainerAvgTime] Result [2] [-1]...
+
+27589:20141021:180054.384 For key [hadoop_stats[nodemanager,StopContainerAvgTime]] received value [-1]
+
+27589:20141021:180054.384 In process_value() key:'gd6g203s80-hadoop-datanode.idc.vipshop.com:hadoop_stats[nodemanager,StopContainerAvgTime]' value:'-1'
+
+27589:20141021:180054.384 In send_buffer() host:'10.200.100.28' port:10051 values:37/50
+
+27589:20141021:180054.384 Will not send now. Now 1413885654 lastsent 1413885654 < 1
+
+27589:20141021:180054.385 End of send_buffer():SUCCEED
+
+27589:20141021:180054.385 buffer: new element 37
+
+27589:20141021:180054.385 End of process_value():SUCCEED
+
+可以看到正常情况下脚本会有返回值，而出问题的时候，脚本是没有返回值的，并且由于是使用sudo 运行脚本，导致以普通用户启动的zabbix在超时时没有办法杀掉这个command(Operation not permitted 错误)
+
+3.假设这里启动zabbix agent的普通用户为apps用户，我们看下这个脚本目前的状态
+
+1
+
+2
+
+3
+
+4
+
+ps -ef|grep hadoop_stats.sh
+
+root     34494 31429  0 12:54 pts/0    00:00:00 grep 48430
+
+root     48430 27589  0 Oct21 ?        00:00:00 sudo hadoop_stats.sh nodemanager StopContainerAvgTime
+
+root     48431 48430  0 Oct21 ?        00:00:00 [hadoop_stats.sh] <defunct>
+
+可以看到，这里产生了一个僵尸进程（关于僵尸进程可以参考：http://en.wikipedia.org/wiki/Zombie_process）
+
+僵尸进程是由于子进程运行完毕之后，发送SIGCHLD到父进程，而父进程没有正常处理这个信号导致。
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+You have killed the process, but a dead process doesn't disappear from the process table
+
+until its parent process performs a task called "reaping" (essentially calling wait(3)
+
+for that process to read its exit status). Dead processes that haven't been reaped are
+
+called "zombie processes."
+
+The parent process id you see for 31756 is process id 1, which always belongs to init.
+
+That process should reap its zombie processes periodically, but if it can't, they will
+
+remain zombies in the process table until you reboot.
+
+正常的进程情况下，我们使用strace attach到父进程，然后杀掉子进程后可以看到如下信息：
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+Process 3036 attached - interrupt to quit
+
+select(6, [5], [], NULL, NULL
+
+)          = ? ERESTARTNOHAND (To be restarted)
+
+--- SIGCHLD (Child exited) @ 0 (0) ---
+
+rt_sigreturn(0x11)                      = -1 EINTR (Interrupted system call)
+
+wait4(3037, [{WIFSIGNALED(s) && WTERMSIG(s) == SIGTERM}], WNOHANG|WSTOPPED, NULL) = 3037
+
+exit_group(143)                         = ?
+
+Process 3036 detached
+
+产生僵尸进程之后，可以通过杀掉父进程把僵尸进程变成孤儿进程（父进程为init进程）
+
+但是这里因为是用sudo启动的脚本，导致启动用户都是root，apps用户就没有权限杀掉启动的命令，进而导致子进程一直是僵尸进程的状态存在
+
+4.来看一下zabbix agent端启动的相关进程情况
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+ps -ef|grep zabbix
+
+apps     27583     1  0 Sep09 ?        00:00:00 /apps/svr/zabbix/sbin/zabbix_agentd -c /apps/conf/zabbix_agentd.conf
+
+apps     27585 27583  0 Sep09 ?        00:33:25 /apps/svr/zabbix/sbin/zabbix_agentd -c /apps/conf/zabbix_agentd.conf
+
+apps     27586 27583  0 Sep09 ?        00:00:14 /apps/svr/zabbix/sbin/zabbix_agentd -c /apps/conf/zabbix_agentd.conf
+
+apps     27587 27583  0 Sep09 ?        00:00:14 /apps/svr/zabbix/sbin/zabbix_agentd -c /apps/conf/zabbix_agentd.conf
+
+apps     27588 27583  0 Sep09 ?        00:00:14 /apps/svr/zabbix/sbin/zabbix_agentd -c /apps/conf/zabbix_agentd.conf
+
+apps     27589 27583  0 Sep09 ?        02:28:12 /apps/svr/zabbix/sbin/zabbix_agentd -c /apps/conf/zabbix_agentd.conf
+
+root     34207 31429  0 12:54 pts/0    00:00:00 grep zabbix
+
+root     48430 27589  0 Oct21 ?        00:00:00 sudo /apps/sh/zabbix_scripts/hadoop/hadoop_stats.sh nodemanager StopContainerAvgTime
+
+通过strace我们发现27589的进程一直在等待48430的进程
+
+1
+
+2
+
+3
+
+4
+
+strace  -p 27589
+
+Process 27589 attached - interrupt to quit
+
+wait4(48430, ^C <unfinished ...>
+
+Process 27589 detached
+
+而48430的进程即为僵尸进程的父进程，通过strace attach上去，可以看到在等待#5的fd
+
+1
+
+2
+
+3
+
+4
+
+strace  -p 48430
+
+Process 48430 attached - interrupt to quit
+
+select(6, [5], [], NULL, NULL^C <unfinished ...>
+
+Process 48430 detached
+
+通过lsof可以看到#5的fd其实是一个socket
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+
+20
+
+21
+
+22
+
+23
+
+24
+
+25
+
+26
+
+27
+
+28
+
+29
+
+30
+
+31
+
+32
+
+33
+
+34
+
+35
+
+lsof  -p 48430
+
+COMMAND   PID USER   FD   TYPE             DEVICE  SIZE/OFF       NODE NAME
+
+sudo    48430 root  cwd    DIR                8,2      4096          2 /
+
+sudo    48430 root  rtd    DIR                8,2      4096          2 /
+
+sudo    48430 root  txt    REG                8,2    212904    1578739 /usr/bin/sudo
+
+sudo    48430 root  mem    REG                8,2     65928    1441822 /lib64/libnss_files-2.12.so
+
+sudo    48430 root  mem    REG                8,2  99158704    1573509 /usr/lib/locale/locale-archive
+
+sudo    48430 root  mem    REG                8,2     91096    1441832 /lib64/libz.so.1.2.3
+
+sudo    48430 root  mem    REG                8,2    141576    1442145 /lib64/libpthread-2.12.so
+
+sudo    48430 root  mem    REG                8,2    386040    1442172 /lib64/libfreebl3.so
+
+sudo    48430 root  mem    REG                8,2    108728    1575924 /usr/lib64/libsasl2.so.2.0.23
+
+sudo    48430 root  mem    REG                8,2    243064    1441896 /lib64/libnspr4.so
+
+sudo    48430 root  mem    REG                8,2     21256    1442186 /lib64/libplc4.so
+
+sudo    48430 root  mem    REG                8,2     17096    1442187 /lib64/libplds4.so
+
+sudo    48430 root  mem    REG                8,2    128368    1577789 /usr/lib64/libnssutil3.so
+
+sudo    48430 root  mem    REG                8,2   1290648    1582418 /usr/lib64/libnss3.so
+
+sudo    48430 root  mem    REG                8,2    188072    1575925 /usr/lib64/libsmime3.so
+
+sudo    48430 root  mem    REG                8,2    220200    1587191 /usr/lib64/libssl3.so
+
+sudo    48430 root  mem    REG                8,2    113952    1442182 /lib64/libresolv-2.12.so
+
+sudo    48430 root  mem    REG                8,2     43392    1442173 /lib64/libcrypt-2.12.so
+
+sudo    48430 root  mem    REG                8,2     63304    1442180 /lib64/liblber-2.4.so.2.5.6
+
+sudo    48430 root  mem    REG                8,2   1979000    1442169 /lib64/libc-2.12.so
+
+sudo    48430 root  mem    REG                8,2    308912    1442181 /lib64/libldap-2.4.so.2.5.6
+
+sudo    48430 root  mem    REG                8,2     22536    1442171 /lib64/libdl-2.12.so
+
+sudo    48430 root  mem    REG                8,2     58480    1442174 /lib64/libpam.so.0.82.2
+
+sudo    48430 root  mem    REG                8,2     17520    1441884 /lib64/libutil-2.12.so
+
+sudo    48430 root  mem    REG                8,2    124624    1441798 /lib64/libselinux.so.1
+
+sudo    48430 root  mem    REG                8,2     99112    1442170 /lib64/libaudit.so.1.0.0
+
+sudo    48430 root  mem    REG                8,2    156872    1442168 /lib64/ld-2.12.so
+
+sudo    48430 root    0r   CHR                1,3       0t0       3916 /dev/null
+
+sudo    48430 root    1w  FIFO                0,8       0t0 1429910151 pipe
+
+sudo    48430 root    2w   REG                8,3 376639626     524292 /apps/logs/zabbix/zabbix_agentd.log
+
+sudo    48430 root    3u  sock                0,6       0t0 1429910161 can't identify protocol
+
+sudo    48430 root    4r   REG                8,2       764    2240617 /etc/group
+
+sudo    48430 root    5u  unix 0xffff880179ee4680       0t0 1429910162 socket
+
+这里通过查看/proc/pid/fd下的文件描述符的状态，发现这个fd其实是已经关闭的。
+
+这里就有可能是子进程已经运行完成，而父进程没有正确处理子进程的返回信息导致父进程一直认为子进程还在运行，最终产生了僵尸进程。
+
+这其实是sudo的一个bug，相关的bug id :
+
+http://www.gratisoft.us/bugzilla/show_bug.cgi?id=447
+
+关于bug的描述：
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+If the parent process gets re-scheduled after the “if” was executed, and at this very
+
+time the child process finishes and SIGCHLD is sent to the parent process, sudo gets
+
+in trouble. The SIGCHLD handler accounts in the variable “recvsig[]” that the signal
+
+was received, and then the parent process calls select(). This select will never be
+
+interrupted, as the author had it in mind. In 99% of the cases, the parent process
+
+will enter in the select() blocking state before the child process ended.
+
+The child would then send SIGCHLD, which will be accounted in the handler procedure,
+
+and will also interrupt select() which will return -1 in “nready”, and “errno”
+
+will be set to EINTR.
+
+问题出在sudo的代码sudo/file/tip/src/exec.c，小于 1.7.5或1.8.0 之前的版本都有问题，当子进程恰好在select()这个系统调用前退出的时候，句柄已经被退出，所以sudo会卡在select这里
+
+patch:
+
+http://www.sudo.ws/repos/sudo/rev/99adc5ea7f0a
+
+1
+
+Avoid a potential race condition if SIGCHLD is received immediately before we call select().
+
+网上有人遇到了同样地问题：
+
+http://blog.famzah.net/2010/11/01/sudo-hangs-and-leaves-the-executed-program-as-zombie/
+
+回过头总结，这个问题其实是多个潜在问题同时造成：
+
+1.zabbix agent的自定义监控配置中使用了sudo，导致僵尸进程的父进程不能正常关闭(如果需要sudo，写在脚本里面即可)
+
+2.sudo的bug导致产生了僵死进程（升级sudo即可）
+
+3.zabbix agent端的实现也有问题，某一个进程成为僵死进程后会影响其他的监控项获取（zabbix agent的进程被阻塞导致）
+

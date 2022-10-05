@@ -1,0 +1,63 @@
+# 基于给出的dataset，（新）生成K个样本，用于做质点
+def randCentoids(dataset, k):
+    n = shape(dataset)[1]
+    centoids = mat(zeros((k, n)))
+
+for j in range(n):
+        minJ = min(dataset[:, j])
+        maxJ = max(dataset[:, j])
+        rangJ = maxJ - minJ
+        centoids[:, j] = mat(minJ + rangJ * random.rand(k, 1))
+        
+    return centoids
+
+rangJ = float(maxJ - minJ)
+
+1 sampleCenterRecord = mat(zeros((m, 1)))
+2 ...
+3 dist = distCaculate(centroids[j, :], dataset[i, :])
+
+1 os.chdir("D:\\galaxy\\aliyunsvn\\code\\MLInAction\\dataset")
+2 dataArr = loadDataSet("ex00.txt")
+3 dataMat = mat(dataArr)
+4 value = [[0.996757]]
+5 feature = 0
+6 dataMat[nonzero(dataMat[:, feature] > value)[0], :][0]
+
+这个是因为dataMat中满足这个条件的日志的数量为0，所以最后索引[0]回报数组越界异常。
+
+1 for splitVal in set(dataSet[:,featIndex].A):
+2     ...
+
+这个异常说明了索引类型有问题：
+
+overLap = nonzero(logical_and(dataMat[:, item].A>0, dataMat[:, j].A>0))[0]
+
+因为item是从参数过来，但是外部调用的时候这个参数误传为一个function，故报错。
+
+1 def loadDataset(fileName):
+ 2     X = []
+ 3     y = []
+ 4     for line in open(fileName):
+ 5         values = line.split()
+ 6         lineArr = []
+ 7         lineArr.append(float(values[0]))
+ 8         lineArr.append(float(values[1]))
+ 9         X.append(lineArr)
+10         y.append(float(values[-1]))
+11     return X, y
+
+9. unhashable type: 'matrix'
+
+1 for splitValue in set(dataset[:, featureIndex]):
+2     ... ...
+
+　　这是因为在python里面set其实是对于其里面的元素取Hash值然后根据hashz值进行排序；但是如果是对于numpy.ndarry/ Matrix等被封装的类型则无法获取其hash值，set里面的元素只能是原生类型。作如下处理问题解决：
+
+1 for splitValue in set(dataset[:, featureIndex]).A.flatten().tolist():
+2     ... ...
+
+10. ValueError: Unknown label type: 'continuous'
+
+发生这个异常是因为我使用了RandomForestClassification，但是y值却使用了float，所以报错；作为分类器的y值必须是int，否则怎么分类啊。
+

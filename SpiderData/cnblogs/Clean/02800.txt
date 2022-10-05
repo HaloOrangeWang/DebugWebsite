@@ -1,0 +1,40 @@
+1、安装完成后允许命令出错
+
+解决办法
+
+2.出现Error: ansible requires a json module, none found!
+
+解决办法
+
+python版本过低，可以升级python或者python-simplejson
+
+3、安装完成后链接客户端报错（配图为我在使用ansible推送文件到客户端的时候遇到的，这个客户端是第一次推送）
+
+解决办法：
+
+在ansible 服务器上使用ssh 登陆下/etc/ansible/hosts 里面配置的服务器。然后再次使用ansible 去管理就不会报上面的错误了！但这样大批量登陆就麻烦来。因为默认ansible是使用key验证的，如果使用密码登陆的服务器，使用ansible的话，要不修改ansible.cfg配置文件的ask_pass = True给取消注释，要不就在运行命令时候加上-k，这个意思是-k, --ask-pass ask for SSH password。再修改：host_key_checking= False即可
+
+4.如果客户端不在know_hosts里将会报错
+
+解决办法
+
+需要修改ansible.cfg的#host_key_checking= False取消注释
+
+5.出现FAILED => FAILED: not a valid DSA private key file
+
+解决办法
+
+需要你在最后命令内添加参数-k
+
+6.openssh升级后无法登录报错
+
+解决方法：
+
+7.第一次系统初始化运行生成本机ansible用户key时报错
+
+解决办法
+
+参考：
+
+http://blog.csdn.net/longxibendi/article/details/46989735
+

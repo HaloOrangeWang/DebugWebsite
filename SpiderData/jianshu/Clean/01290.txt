@@ -1,0 +1,30 @@
+在CentOs服务器上面部署flask项目，需要安装Ngix+uwsgi。
+
+在虚拟环境安装uwsgi：
+
+pip3 install uwsgi
+
+出现这个错误：plugins/python/uwsgi_python.h:2:20: fatal error: Python.h: No such file or directory
+
+*** uWSGI compiling embedded plugins ***
+    [gcc -pthread] plugins/python/python_plugin.o
+    In file included from plugins/python/python_plugin.c:1:0:
+    plugins/python/uwsgi_python.h:2:20: fatal error: Python.h: No such file or directory
+     #include <Python.h>
+                        ^
+    compilation terminated.
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: /home/spider/lagou/scrapy_venv/bin/python3 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-dr3hc3ki/uwsgi/setup.py'"'"'; __file__='"'"'/tmp/pip-install-dr3hc3ki/uwsgi/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record /tmp/pip-record-ret8mx_d/install-record.txt --single-version-externally-managed --compile --install-headers /home/spider/lagou/scrapy_venv/include/site/python3.6/uwsgi Check the logs for full command output.
+
+解决方法（需要改成自己的python版本）：
+
+yum install python36-devel
+
+安装完成后再执行：
+
+pip3 install uwsgi
+
+就可以成功安装了。
+
+欢迎关注我的公众号：JairusTse的日常，一起撸代码，跑步，读书。
+

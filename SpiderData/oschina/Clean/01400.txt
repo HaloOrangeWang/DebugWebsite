@@ -1,0 +1,31 @@
+-- 报错信息
+[root@localhost docker]# docker run -d -p 5000:5000 training/webapp python app.py
+cc61442060cb810633a06bd6ea692a3df6b0bfcadc6a7dadfe53bf875f1ac3b9
+docker: Error response from daemon: driver failed programming external connectivity on endpoint pensive_hodgkin (ae7e41e1b2b98b6b482316085c22303d8a61c02d09eb21c241132da1ea34d58a): (iptables failed: iptables --wait -t nat -A DOCKER -p tcp -d 0/0 --dport 5000 -j DNAT --to-destination 172.17.0.3:5000 ! -i docker0: iptables: No chain/target/match by that name.
+(exit status 1)).
+
+解决方法：
+1.kill掉docker所有进程
+
+pkill docker
+
+2.清空nat表的所有链
+
+iptables -t nat -F
+
+3.停止docker默认网桥docker0
+
+ifconfig docker0 down
+
+4.删除docker0网桥
+
+brctl delbr docker0
+
+5.重启docker服务
+
+systemctl restart docker
+
+重新启动docker容器
+
+docker run -d -p 5000:5000 training/webapp python app.py
+

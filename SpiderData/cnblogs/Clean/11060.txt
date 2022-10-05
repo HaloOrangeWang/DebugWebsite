@@ -1,0 +1,92 @@
+
+创建虚拟环境报错
+
+目录创建虚拟环境报错方法一：方法二(推荐)：
+
+目录
+
+创建虚拟环境报错方法一：方法二(推荐)：
+
+方法一：
+
+方法二(推荐)：
+
+
+方法一：
+
+1.转载https://www.jianshu.com/p/60c46e982f18
+
+在ubuntu16.04下使用系统自带的python3.5创建虚拟环境一切正常，但当我安装了python3.6后，安装虚拟环境会报错，下面是遇到的报错和解决办法。
+
+当安装完pyhton3.6后，用python3.6创建虚拟环境
+
+会报如下错误：
+
+再尝试用virtualenv命令创建虚拟环境，并选择python3.6
+
+会报如下错误：
+
+此时发现是缺少zlib，所以要安装zlib
+
+安装成功后，需要重新安装python3.6，即在官网下载的python3.6目录下执行安装语句：
+
+此时再次创建虚拟环境
+
+不会报错，成功创建！
+
+
+方法二(推荐)：
+
+症状
+
+​		使用 venv 创建虚拟环境失败，并报错如上。
+
+背景
+
+​		Ubantu16.04
+
+​		三个python版本: python2.7 、python3.5、python3.6
+
+​		python 默认为 python3.6
+
+解答
+
+​		缺少依赖包，安装 python3.6-venv 即可。
+
+解决历程
+
+首先是到网上查找解决方法，看了两篇，觉得不合适，但也受到了启发，开始自己想办法。
+
+首先是到网上查找解决方法，看了两篇，觉得不合适，但也受到了启发，开始自己想办法。
+
+受到别人的启发，我先用 virtualenv 创建包，能创建成功，而别人的却无法创建，所以我未选择它的答案。
+virtualenv ll_venv
+source ll_venv/bin/activate
+pip list
+
+受到别人的启发，我先用 virtualenv 创建包，能创建成功，而别人的却无法创建，所以我未选择它的答案。
+
+使用 python3.5 创建虚拟环境，创建失败，输出同样的报错。但是多了解决提示：
+python3.5 -m venv ll_venv
+# 报错，但有提示
+sudo apt-get install python3-venv
+python3.5 -m venv ll_venv
+python -m venv ll_venv
+# 仍然报错，内容未变
+
+于是按提示，安装了 python3-venv。再次使用 python3.5 创建虚拟环境成功，但是python3.6仍然报错不变。
+
+使用 python3.5 创建虚拟环境，创建失败，输出同样的报错。但是多了解决提示：
+
+于是按提示，安装了 python3-venv。再次使用 python3.5 创建虚拟环境成功，但是python3.6仍然报错不变。
+
+猜想：python3.5 安装个 python3-venv 就行了，python3.6 是不是要安装 python3.6-venv？试试...
+
+猜想：python3.5 安装个 python3-venv 就行了，python3.6 是不是要安装 python3.6-venv？试试...
+
+成功安装 python3.6-venv ！用 python3.6 创建虚拟环境也成功了。
+
+思考
+
+​		应该是每个 python3 版本都有各自的 venv，python3-venv 默认安装的应该是 python3.5-venv，但系统的 python3 默认为 python3.6。那只能解释为 python3-venv 由远程解释，并解释为 系统已安装的python3 的最低版本。故要在有多个python3版本的系统中指定python3版本的 venv，最好手动指定python3版本来安装。
+

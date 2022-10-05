@@ -1,0 +1,47 @@
+Tornaod启用多进程
+
+import time
+from tornado.web import Application, RequestHandler
+import tornado.ioloop
+import tornado.httpserver
+
+class MainHandler(RequestHandler):
+    def get(self):
+        now = time.time()
+        self.write("<html><body>this is test: {0}</body></html>".format(now))
+
+def main():
+    setting = {
+        "autoreload": True,
+        "debug": True
+    }
+
+app = Application([
+        (r"/", MainHandler)
+    ], **setting)
+
+server = tornado.httpserver.HTTPServer(app)
+    server.bind(7000)
+    server.start(2)  // 启用多进程
+    io_loop = tornado.ioloop.IOLoop.current()
+    io_loop.start()
+
+if __name__ == "__main__":
+    main()
+
+报错：
+
+File "/usr/lib64/python3.6/selectors.py", line 412, in register
+    self._epoll.register(key.fd, epoll_events)
+FileExistsError: [Errno 17] File exists
+child 1 (pid 1249) exited with status 1, restarting
+......
+
+File "/usr/lib64/python3.6/selectors.py", line 191, in get_key
+    raise KeyError("{!r} is not registered".format(fileobj)) from None
+KeyError: '6 is not registered'
+
+原因：自动重载与多个进程不兼容。
+
+多进程启用时，需要将autoreload设为False。
+

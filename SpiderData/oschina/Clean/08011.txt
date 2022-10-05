@@ -1,0 +1,31 @@
+执行如下语句：
+
+mysql> select * from users into outfile "F:\Develop\MySQL57\Uploads\users.txt" lines terminated by "\r\n";
+
+报错信息：ERROR 1290 (HY000): The MySQL server is running with the --secure-file-priv option so it cannot execute this statement
+
+原因：
+
+MySQL的时候限制了导入与导出的目录权限，只能在规定的目录下才能导入。
+
+我们需要通过下面命令查看 secure-file-priv 当前的值是什么 ：
+
+mysql> show variables like '%secure%';
++--------------------------+-----------------------------+
+| Variable_name | Value |
++--------------------------+-----------------------------+
+| require_secure_transport | OFF |
+| secure_auth | ON |
+| secure_file_priv | F:\Develop\MySQL57\Uploads\ |
++--------------------------+-----------------------------+
+3 rows in set, 1 warning (0.00 sec)
+
+再次执行：
+
+mysql> select * from users into outfile "F:/Develop/MySQL57/Uploads/users.txt" lines terminated by "\r\n";
+Query OK, 1 row affected (0.00 sec)
+
+成功！
+
+注意：windows和linux下，目录的分隔符都要为 /  ，不能为 \ ，否则还是报同样的错误。
+

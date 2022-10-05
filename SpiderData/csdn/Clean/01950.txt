@@ -1,0 +1,31 @@
+用Pycharm进行数据分析时，对一个二元函数做处理。函数如下：
+ 
+ 代码如下：
+
+# 定义适应度函数
+def F(x1,x2):
+    return (20*x1 + 10*x2 + 10*x1*x2 - math.exp(0.2 * x1) - math.exp(0.3 * x2))
+
+报错如下：
+
+TypeError: only size-1 arrays can be converted to Python scalars
+
+后来经查询，发现将math改成np即可解决，当然要事先导入numpy库才可以使用np对象。
+ 代码如下：
+
+import math
+import numpy as np
+# 定义适应度函数
+def F(x1,x2):
+    return (20*x1 + 10*x2 + 10*x1*x2 - np.exp(0.2 * x1) - np.exp(0.3 * x2))
+
+改完之后错误解决。
+
+原因是：
+ numpy.exp()可用作函数使用
+ 输入可以为数组，返还可以表示函数值，可用于图像绘制
+
+math.exp()输入必须为固定的数或者其他数据类型（数组），
+ 必须固定，不能是变量，不能用于画图
+ 输出为固定数值在数值计算时使用
+

@@ -1,0 +1,23 @@
+用中间件实现抓取视图函数的异常，并以邮件的形式将异常信息发送给指定联系人
+
+1在setting.py里配置qq邮箱：
+
+2创建中间件
+
+在项目目录下创建一个python包：middleware，并在python包middleware中创建一个python文件mymiddleware.py（右键djangoProject2 -- New -- python Package）：
+
+3在mymiddleware.py内编写中间件：
+
+from django.utils.deprecation import MiddlewareMixin
+
+class ExceptionMW(MiddlewareMixin):
+    pass
+
+4注册中间件
+
+MIDDLEWARE = [
+    'middleware.mymiddleware.ExceptionMW',
+]
+
+5完善中间件视图逻辑：
+

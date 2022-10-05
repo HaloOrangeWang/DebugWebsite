@@ -1,0 +1,12 @@
+代码：
+
+sql = 'insert into book(book_name,book_desc,origin_price,publish_id,tag_id,book_img) values(%s,%s,%d,%d,%d,%s)'
+insert_data = save_df.values.tolist()
+commit_data = tuple([tuple([str(x[0]),str(x[1]),float(x[2]),int(x[3]),int(x[4]),str(x[5])]) for x in insert_data])
+
+执行后报错： ProgrammingError: must be real number, not str
+
+解决：
+
+在sql语句中把 所有的站位符 换成 %s，不用能其他的站位符。
+

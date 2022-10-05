@@ -1,0 +1,14 @@
+报错内容
+
+Traceback (most recent call last):
+  File "/braindat/lab/limx/MitoEM2021/CODE/Author/baseline/pytorch_connectomics-master/scripts/main.py", line 5, in <module>
+    from connectomics.config import get_cfg_defaults, save_all_cfg, update_inference_cfg
+ModuleNotFoundError: No module named 'connectomics'
+
+实际上这个错误是因为相对路径的问题引起的，工作路径没有加入到sys.path中。
+
+我们可以使用下面代码把父级目录也加入到环境变量中去。
+
+import sys,os
+sys.path.append(os.getcwd())
+

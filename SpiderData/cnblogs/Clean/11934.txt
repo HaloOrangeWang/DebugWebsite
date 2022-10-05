@@ -1,0 +1,35 @@
+
+esp32-idf编译错误问题集合及解决方法
+
+
+一、证书过期导致编译失败
+
+编译报错现象
+[659/966] Generating x509_crt_bundle
+FAILED: esp-idf/mbedtls/x509_crt_bundle
+cmd.exe /C "cd /D E:\ESP32-Audio\hello_world\build\esp-idf\mbedtls && F:\esp\esp-idf-v4.3.1\.espressif\python_env\idf4.3_py3.8_env\Scripts\python.exe F:/esp/esp-idf-v4.3.1/esp-idf/components/mbedtls/esp_crt_bundle/gen_crt_bundle.py --input F:/esp/esp-idf-v4.3.1/esp-idf/components/mbedtls/esp_crt_bundle/cacrt_all.pem -q"
+gen_crt_bundle.py: Invalid certificate in F:/esp/esp-idf-v4.3.1/esp-idf/components/mbedtls/esp_crt_bundle/cacrt_all.pem
+Invalid certificate
+
+图片现象：
+
+编译报错现象
+
+图片现象：
+
+解决方法
+
+这个问题是因为cacrt_all.pem文件中的一个证书最近（9月30日）过期,导致编译工程失败。
+
+解决办法为，在idf.py build编译工程之前，输入此命令idf.py menuconfig进行工程配置，按照如下路径进入Certificate Bundle设置中，将Enable trusted root certificate bundle选项取消掉，即不在此工程中启用用受信任的根证书捆绑包。
+
+(Top) > Component config > mbedTLS > Certificate Bundle->Enable trusted root certificate bundle
+
+解决方法
+
+这个问题是因为cacrt_all.pem文件中的一个证书最近（9月30日）过期,导致编译工程失败。
+
+解决办法为，在idf.py build编译工程之前，输入此命令idf.py menuconfig进行工程配置，按照如下路径进入Certificate Bundle设置中，将Enable trusted root certificate bundle选项取消掉，即不在此工程中启用用受信任的根证书捆绑包。
+
+(Top) > Component config > mbedTLS > Certificate Bundle->Enable trusted root certificate bundle
+

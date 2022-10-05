@@ -1,0 +1,1106 @@
+开个贴，用于记录平时经常碰到的Python的错误同时对导致错误的原因进行分析，并持续更新，方便以后查询，学习。
+
+知识在于积累嘛！微笑
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+错误:
+
+>>> def f(x, y):
+
+print x, y
+
+>>> t = ('a', 'b')
+
+>>> f(t)
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+f(t)
+
+TypeError: f() takes exactly 2 arguments (1 given)
+
+【错误分析】不要误以为元祖里有两个参数，将元祖传进去就可以了，实际上元祖作为一个整体只是一个参数，
+
+实际需要两个参数，所以报错。必需再传一个参数方可.
+
+>>> f(t, 'var2')
+
+('a', 'b') var2
+
+更常用的用法: 在前面加*,代表引用元祖
+
+>>> f(*t)
+
+'a', 'b'
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+错误:
+
+>>> def func(y=2, x):
+
+return x + y
+
+SyntaxError: non-default argument follows default argument
+
+【错误分析】在C++,Python中默认参数从左往右防止，而不是相反。这可能跟参数进栈顺序有关。
+
+>>> def func(x, y=2):
+
+return x + y
+
+>>> func(1)
+
+3
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+错误:
+
+>>> D1 = {'x':1, 'y':2}
+
+>>> D1['x']
+
+1
+
+>>> D1['z']
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+D1['z']
+
+KeyError: 'z'
+
+【错误分析】这是Python中字典键错误的提示，如果想让程序继续运行，可以用字典中的get方法，如果键存在，则获取该键对应的值，不存在的，返回None,也可打印提示信息.
+
+>>> D1.get('z', 'Key Not Exist!')
+
+'Key Not Exist!'
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+错误:
+
+>>> from math import sqrt
+
+>>> exec "sqrt = 1"
+
+>>> sqrt(4)
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+sqrt(4)
+
+TypeError: 'int' object is not callable
+
+【错误分析】exec语句最有用的地方在于动态地创建代码字符串，但里面存在的潜在的风险，它会执行其他地方的字符串，在CGI中更是如此！比如例子中的sqrt = 1，从而改变了当前的命名空间，从math模块中导入的sqrt不再和函数名绑定而是成为了一个整数。要避免这种情况，可以通过增加in ，其中就是起到放置代码字符串命名空间的字典。
+
+>>> from math import sqrt
+
+>>> scope = {}
+
+>>> exec "sqrt = 1" in scope
+
+>>> sqrt(4)
+
+2.0
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+错误:
+
+>>> seq = [1, 2, 3, 4]
+
+>>> sep = '+'
+
+>>> sep.join(seq)
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+sep.join(seq)
+
+TypeError: sequence item 0: expected string, int found
+
+【错误分析】join是split的逆方法，是非常重要的字符串方法，但不能用来连接整数型列表，所以需要改成:
+
+>>> seq = ['1', '2', '3', '4']
+
+>>> sep = '+'
+
+>>> sep.join(seq)
+
+'1+2+3+4'
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+错误:
+
+>>> print r'C:\Program Files\foo\bar\'
+
+SyntaxError: EOL while scanning string literal
+
+【错误分析】Python中原始字符串以r开头，里面可以放置任意原始字符，包括\，包含在字符中的\不做转义。
+
+但是，不能放在末尾！也就是说，最后一个字符不能是\，如果真 需要的话，可以这样写:
+
+>>> print r'C:\Program Files\foo\bar' "\\"
+
+C:\Program Files\foo\bar\
+
+>>> print r'C:\Program Files\foo\bar' + "\\"
+
+C:\Program Files\foo\bar\
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+代码:
+
+bad = 'bad'
+
+try:
+
+raise bad
+
+except bad:
+
+print 'Got Bad!'
+
+错误:
+
+>>>
+
+Traceback (most recent call last):
+
+File "D:\Learn\Python\Learn.py", line 4, in
+
+raise bad
+
+TypeError: exceptions must be old-style classes or derived from BaseException, not str
+
+【错误分析】因所用的Python版本2.7,比较高的版本，raise触发的异常，只能是自定义类异常，而不能是字符串。所以会报错，字符串改为自定义类，就可以了。
+
+class Bad(Exception):
+
+pass
+
+def raiseException():
+
+raise Bad()
+
+try:
+
+raiseException()
+
+except Bad:
+
+print 'Got Bad!'
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+class Super:
+
+def method(self):
+
+print "Super's method"
+
+class Sub(Super):
+
+def method(self):
+
+print "Sub's method"
+
+Super.method()
+
+print "Over..."
+
+S = Sub()
+
+S.method()
+
+执行上面一段代码，错误如下:
+
+>>>
+
+Sub's method
+
+Traceback (most recent call last):
+
+File "D:\Learn\Python\test.py", line 12, in
+
+S.method()
+
+File "D:\Learn\Python\test.py", line 8, in method
+
+Super.method()
+
+TypeError: unbound method method() must be called with Super instance as first argument (got nothing instead)
+
+【错误分析】Python中调用类的方法，必须与实例绑定，或者调用自身.
+
+ClassName.method(x, 'Parm')
+
+ClassName.method(self)
+
+所以上面代码，要调用Super类的话，只需要加个self参数即可。
+
+class Super:
+
+def method(self):
+
+print "Super's method"
+
+class Sub(Super):
+
+def method(self):
+
+print "Sub's method"
+
+Super.method(self)
+
+print "Over..."
+
+S = Sub()
+
+S.method()
+
+#输出结果
+
+>>>
+
+Sub's method
+
+Super's method
+
+Over...
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> reload(sys)
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+NameError: name 'sys' is not defined
+
+【错误分析】reload期望得到的是对象，所以该模块必须成功导入。在没导入模块前，不能重载.
+
+>>> import sys
+
+>>> reload(sys)
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> def f(x, y, z):
+
+return x + y + z
+
+>>> args = (1,2,3)
+
+>>> print f(args)
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+print f(args)
+
+TypeError: f() takes exactly 3 arguments (1 given)
+
+【错误分析】args是一个元祖，如果是f(args)，那么元祖是作为一个整体作为一个参数
+
+*args，才是将元祖中的每个元素作为参数
+
+>>> f(*args)
+
+6
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> def f(a,b,c,d):
+
+...   print a,b,c,d
+
+...
+
+>>> args = (1,2,3,4)
+
+>>> f(**args)
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+TypeError: f() argument after ** must be a mapping, not tuple
+
+【错误分析】错误原因**匹配并收集在字典中所有包含位置的参数，但传递进去的却是个元祖。
+
+所以修改传递参数如下:
+
+>>> args = {'a':1,'b':2,'c':3}
+
+>>> args['d'] = 4
+
+>>> f(**args)
+
+1 2 3 4
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+【错误分析】在函数hider()内使用了内置变量open，但根据Python作用域规则LEGB的优先级:
+
+先是查找本地变量==》模块内的其他函数==》全局变量==》内置变量，查到了即停止查找。
+
+所以open在这里只是个字符串，不能作为打开文件来使用，所以报错，更改变量名即可。
+
+可以导入__builtin__模块看到所有内置变量：异常错误、和内置方法
+
+>>> import __builtin__
+
+>>> dir(__builtin__)
+
+['ArithmeticError', 'AssertionError', 'AttributeError',..
+
+.........................................zip,filter,map]
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In [105]: T1 = (1)
+
+In [106]: T2 = (2,3)
+
+In [107]: T1 + T2
+
+---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+in ()
+
+----> 1 T1 + T2;
+
+TypeError: unsupported operand type(s) for +: 'int' and 'tuple'
+
+【错误分析】(1)的类型是整数，所以不能与另一个元祖做合并操作，如果只有一个元素的元祖，应该用(1,)来表示
+
+In [108]: type(T1)
+
+Out[108]: int
+
+In [109]: T1 = (1,)
+
+In [110]: T2 = (2,3)
+
+In [111]: T1 + T2
+
+Out[111]: (1, 2, 3)
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> hash(1,(2,[3,4]))
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+hash((1,2,(2,[3,4])))
+
+TypeError: unhashable type: 'list'
+
+【错误分析】字典中的键必须是不可变对象，如(整数，浮点数，字符串，元祖).
+
+可用hash()判断某个对象是否可哈希
+
+>>> hash('string')
+
+-1542666171
+
+但列表中元素是可变对象，所以是不可哈希的，所以会报上面的错误.
+
+如果要用列表作为字典中的键，最简单的办法是:
+
+>>> D = {}
+
+>>> D[tuple([3,4])] = 5
+
+>>> D
+
+{(3, 4): 5}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> L = [2,1,4,3]
+
+>>> L.reverse().sort()
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+AttributeError: 'NoneType' object has no attribute 'sort'
+
+>>> L
+
+[3, 4, 1, 2]
+
+【错误分析】列表属于可变对象,其append(),sort(),reverse()会在原处修改对象，不会有返回值，
+
+或者说返回值为空，所以要实现反转并排序，不能并行操作，要分开来写
+
+>>> L = [2,1,4,3]
+
+>>> L.reverse()
+
+>>> L.sort()
+
+>>> L
+
+[1, 2, 3, 4]
+
+或者用下面的方法实现:
+
+In [103]: sorted(reversed([2,1,4,3]))
+
+Out[103]: [1, 2, 3, 4]
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> class = 78
+
+SyntaxError: invalid syntax
+
+【错误分析】class是Python保留字，Python保留字不能做变量名，可以用Class，或klass
+
+同样，保留字不能作为模块名来导入，比如说，有个and.py，但不能将其作为模块导入
+
+>>> import and
+
+SyntaxError: invalid syntax
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> f = open('D:\new\text.data','r')
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+IOError: [Errno 22] invalid mode ('r') or filename: 'D:\new\text.data'
+
+>>> f = open(r'D:\new\text.data','r')
+
+>>> f.read()
+
+'Very\ngood\naaaaa'
+
+【错误分析】\n默认为换行，\t默认为TAB键.
+
+所以在D:\目录下找不到ew目录下的ext.data文件，将其改为raw方式输入即可。
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+try:
+
+print 1 / 0
+
+except ZeroDivisionError:
+
+print 'integer division or modulo by zero'
+
+finally:
+
+print 'Done'
+
+else:
+
+print 'Continue Handle other part'
+
+报错如下:
+
+D:\>python Learn.py
+
+File "Learn.py", line 11
+
+else:
+
+^
+
+SyntaxError: invalid syntax
+
+【错误分析】错误原因，else, finally执行位置;正确的程序应该如下:
+
+try:
+
+print 1 / 0
+
+except ZeroDivisionError:
+
+print 'integer division or modulo by zero'
+
+else:
+
+print 'Continue Handle other part'
+
+finally:
+
+print 'Done'
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> [x,y for x in range(2) for y in range(3)]
+
+File "", line 1
+
+[x,y for x in range(2) for y in range(3)]
+
+^
+
+SyntaxError: invalid syntax
+
+【错误分析】错误原因，列表解析中，x,y必须以数组的方式列出(x,y)
+
+>>> [(x,y) for x in range(2) for y in range(3)]
+
+[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+class JustCounter:
+
+__secretCount = 0
+
+def count(self):
+
+self.__secretCount += 1
+
+print 'secretCount is:', self.__secretCount
+
+count1 = JustCounter()
+
+count1.count()
+
+count1.count()
+
+count1.__secretCount
+
+报错如下:
+
+>>>
+
+secretCount is: 1
+
+secretCount is: 2
+
+Traceback (most recent call last):
+
+File "D:\Learn\Python\Learn.py", line 13, in
+
+count1.__secretCount
+
+AttributeError: JustCounter instance has no attribute '__secretCount'
+
+【错误分析】双下划线的类属性__secretCount不可访问，所以会报无此属性的错误.
+
+解决办法如下:
+
+# 1. 可以通过其内部成员方法访问
+
+# 2. 也可以通过访问
+
+ClassName._ClassName__Attr
+
+#或
+
+ClassInstance._ClassName__Attr
+
+#来访问，比如：
+
+print count1._JustCounter__secretCount
+
+print JustCounter._JustCounter__secretCount
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> print x
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+NameError: name 'x' is not defined
+
+>>> x = 1
+
+>>> print x
+
+1
+
+【错误分析】Python不允许使用未赋值变量
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> t = (1,2)
+
+>>> t.append(3)
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+AttributeError: 'tuple' object has no attribute 'append'
+
+>>> t.remove(2)
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+AttributeError: 'tuple' object has no attribute 'remove'
+
+>>> t.pop()
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+AttributeError: 'tuple' object has no attribute 'pop'
+
+【错误分析】属性错误,归根到底在于元祖是不可变类型，所以没有这几种方法.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> t = ()
+
+>>> t[0]
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+IndexError: tuple index out of range
+
+>>> l = []
+
+>>> l[0]
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+IndexError: list index out of range
+
+【错误分析】空元祖和空列表，没有索引为0的项
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> if X>Y:
+
+...  X,Y = 3,4
+
+...   print X,Y
+
+File "", line 3
+
+print X,Y
+
+^
+
+IndentationError: unexpected indent
+
+>>>   t = (1,2,3,4)
+
+File "", line 1
+
+t = (1,2,3,4)
+
+^
+
+IndentationError: unexpected indent
+
+【错误分析】一般出在代码缩进的问题
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> f = file('1.txt')
+
+>>> f.readline()
+
+'AAAAA\n'
+
+>>> f.readline()
+
+'BBBBB\n'
+
+>>> f.next()
+
+'CCCCC\n'
+
+【错误分析】如果文件里面没有行了会报这种异常
+
+>>> f.next() #
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+StopIteration
+
+有可迭代的对象的next方法,会前进到下一个结果,而在一系列结果的末尾时,会引发StopIteration的异常.
+
+next()方法属于Python的魔法方法，这种方法的效果就是:逐行读取文本文件的最佳方式就是根本不要去读取。
+
+取而代之的用for循环去遍历文件，自动调用next()去调用每一行，且不会报错
+
+for line in open('test.txt','r'):
+
+print line
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> string = 'SPAM'
+
+>>> a,b,c = string
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+ValueError: too many values to unpack
+
+【错误分析】接受的变量少了，应该是
+
+>>> a,b,c,d = string
+
+>>> a,d
+
+('S', 'M')
+
+#除非用切片的方式
+
+>>> a,b,c = string[0],string[1],string[2:]
+
+>>> a,b,c
+
+('S', 'P', 'AM')
+
+或者
+
+>>> a,b,c = list(string[:2]) + [string[2:]]
+
+>>> a,b,c
+
+('S', 'P', 'AM')
+
+或者
+
+>>> (a,b),c = string[:2],string[2:]
+
+>>> a,b,c
+
+('S', 'P', 'AM')
+
+或者
+
+>>> ((a,b),c) = ('SP','AM')
+
+>>> a,b,c
+
+('S', 'P', 'AM')
+
+简单点就是:
+
+>>> a,b = string[:2]
+
+>>> c   = string[2:]
+
+>>> a,b,c
+
+('S', 'P', 'AM')
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> mydic={'a':1,'b':2}
+
+>>> mydic['a']
+
+1
+
+>>> mydic['c']
+
+Traceback (most recent call last):
+
+File "", line 1, in ?
+
+KeyError: 'c'
+
+【错误分析】当映射到字典中的键不存在时候，就会触发此类异常, 或者可以，这样测试
+
+>>> 'a' in mydic.keys()
+
+True
+
+>>> 'c' in mydic.keys()              #用in做成员归属测试
+
+False
+
+>>> D.get('c','"c" is not exist!')   #用get或获取键，如不存在，会打印后面给出的错误信息
+
+'"c" is not exist!'
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+File "study.py", line 3
+
+return None
+
+^
+
+dentationError: unexpected indent
+
+【错误分析】一般是代码缩进问题，TAB键或空格键不一致导致
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>>def A():
+
+return A()
+
+>>>A() #无限循环，等消耗掉所有内存资源后，报最大递归深度的错误
+
+File "", line 2, in A return A()RuntimeError: maximum recursion depth exceeded
+
+class Bird:
+
+def __init__(self):
+
+self.hungry = True
+
+def eat(self):
+
+if self.hungry:
+
+print "Ahaha..."
+
+self.hungry = False
+
+else:
+
+print "No, Thanks!"
+
+该类定义鸟的基本功能吃，吃饱了就不再吃
+
+输出结果:
+
+>>> b = Bird()
+
+>>> b.eat()
+
+Ahaha...
+
+>>> b.eat()
+
+No, Thanks!
+
+下面一个子类SingBird,
+
+class SingBird(Bird):
+
+def __init__(self):
+
+self.sound = 'squawk'
+
+def sing(self):
+
+print self.sound
+
+输出结果:
+
+>>> s = SingBird()
+
+>>> s.sing()
+
+squawk
+
+SingBird是Bird的子类，但如果调用Bird类的eat()方法时,
+
+>>> s.eat()
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+s.eat()
+
+File "D:\Learn\Python\Person.py", line 42, in eat
+
+if self.hungry:
+
+AttributeError: SingBird instance has no attribute 'hungry'
+
+【错误分析】代码错误很清晰,SingBird中初始化代码被重写，但没有任何初始化hungry的代码
+
+class SingBird(Bird):
+
+def __init__(self):
+
+self.sound = 'squawk'
+
+self.hungry = Ture #加这么一句
+
+def sing(self):
+
+print self.sound
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+class Bird:
+
+def __init__(self):
+
+self.hungry = True
+
+def eat(self):
+
+if self.hungry:
+
+print "Ahaha..."
+
+self.hungry = False
+
+else:
+
+print "No, Thanks!"
+
+class SingBird(Bird):
+
+def __init__(self):
+
+super(SingBird,self).__init__()
+
+self.sound = 'squawk'
+
+def sing(self):
+
+print self.sound
+
+>>> sb = SingBird()
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+sb = SingBird()
+
+File "D:\Learn\Python\Person.py", line 51, in __init__
+
+super(SingBird,self).__init__()
+
+TypeError: must be type, not classobj
+
+【错误分析】在模块首行里面加上__metaclass__=type，具体还没搞清楚为什么要加
+
+__metaclass__=type
+
+class Bird:
+
+def __init__(self):
+
+self.hungry = True
+
+def eat(self):
+
+if self.hungry:
+
+print "Ahaha..."
+
+self.hungry = False
+
+else:
+
+print "No, Thanks!"
+
+class SingBird(Bird):
+
+def __init__(self):
+
+super(SingBird,self).__init__()
+
+self.sound = 'squawk'
+
+def sing(self):
+
+print self.sound
+
+>>> S = SingBird()
+
+>>> S.
+
+SyntaxError: invalid syntax
+
+>>> S.
+
+SyntaxError: invalid syntax
+
+>>> S.eat()
+
+Ahaha...
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> T
+
+(1, 2, 3, 4)
+
+>>> T[0] = 22
+
+Traceback (most recent call last):
+
+File "", line 1, in
+
+T[0] = 22
+
+TypeError: 'tuple' object does not support item assignment
+
+【错误分析】元祖不可变，所以不可以更改;可以用切片或合并的方式达到目的.
+
+>>> T = (1,2,3,4)
+
+>>> (22,) + T[1:]
+
+(22, 2, 3, 4)
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+>>> X = 1;
+
+>>> Y = 2;
+
+>>> X + = Y
+
+File "", line 1
+
+X + = Y
+
+^
+
+SyntaxError: invalid syntax
+
+【错误分析】增强行赋值不能分开来写，必须连着写比如说 +=, *=
+
+>>> X += Y
+
+>>> X;Y
+
+3
+
+2
+

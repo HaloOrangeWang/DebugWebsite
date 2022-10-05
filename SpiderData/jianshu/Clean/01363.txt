@@ -1,0 +1,38 @@
+想写一个简单的图片识别功能的小程序，安装好pillow和pytesseract两个包后，执行简单的测试程序
+
+from PIL import Image
+import pytesseract
+image = Image.open('Code.png')
+vcode = pytesseract.image_to_string(image)
+print vcode
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Python27\lib\site-packages\pytesseract\__init__.py", line 1, in <modu
+le>
+    from .pytesseract import (
+  File "C:\Python27\lib\site-packages\pytesseract\pytesseract.py", line 9, in <m
+odule>
+    import Image
+  File "C:\Python27\lib\site-packages\PIL\Image.py", line 27, in <module>
+    from . import VERSION, PILLOW_VERSION, _plugins
+ValueError: Attempted relative import in non-package
+
+解决办法：
+
+打开C:\Python27\Lib\site-packages\pytesseract\pytesseract.py文件，将
+
+try:
+    import Image
+except ImportError:
+    from PIL import Image
+
+改成：
+
+try:
+    from PIL import Image
+except ImportError:
+    from PIL import Image
+
+问题解决。
+

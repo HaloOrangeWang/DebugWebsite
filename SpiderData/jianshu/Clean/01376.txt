@@ -1,0 +1,63 @@
+一开始使用requests.get（url）就开始报错，后面查了下资料，说需要在后面加上allow_redirects=False。可惜当加上这个条件的时候，直接返回304，获取不了实际内容。还有的资料显示是因为没有hearders的问题，后面设置上去了也是不行。
+
+Traceback (most recent call last):
+  File "E:/my_project/project/测试/简单分布式爬虫（cs）/爬虫节点/HTMLdown.py", line 18, in 
+    t = h.download(url)
+  File "E:/my_project/project/测试/简单分布式爬虫（cs）/爬虫节点/HTMLdown.py", line 8, in download
+    r = requests.get(url, headers=headers, allow_redirects=True)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python36-32\lib\site-packages\requests\api.py", line 72, in get
+    return request('get', url, params=params, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python36-32\lib\site-packages\requests\api.py", line 58, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python36-32\lib\site-packages\requests\sessions.py", line 508, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python36-32\lib\site-packages\requests\sessions.py", line 640, in send
+    history = [resp for resp in gen] if allow_redirects else []
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python36-32\lib\site-packages\requests\sessions.py", line 640, in 
+    history = [resp for resp in gen] if allow_redirects else []
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python36-32\lib\site-packages\requests\sessions.py", line 140, in resolve_redirects
+    raise TooManyRedirects('Exceeded %s redirects.' % self.max_redirects, response=resp)
+requests.exceptions.TooManyRedirects: Exceeded 30 redirects.
+
+后面想到是否是因为重定向，而导致hearders没有维持，后面通过session去get请求
+
+class HtmlDownloader(object):
+
+def download(self, url):
+
+if urlis None:
+
+return None
+
+user_agent ='Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
+
+headers = {'User_Agent': user_agent}
+
+sessions = requests.session()
+
+sessions.headers = headers
+
+r = sessions.get(url, allow_redirects=True)
+
+print(r.url)
+
+if r.status_code ==200:
+
+r.encoding ='utf-8'
+
+return r.text
+
+return None
+
+if __name__ =='__main__':
+
+h = HtmlDownloader()
+
+url ='https://baike.baidu.com/view/284853.htm'
+
+t = h.download(url)
+
+print(t)
+
+发现可以正常访问
+

@@ -1,0 +1,27 @@
+我在使用 sublime text 在 python3 上运行以下代码的时候的：
+
+# coding: utf-8
+import os
+f = open('test.txt','r')
+print(f.read())
+
+也遇到了以下报错：
+
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe5 in position 9: ordinal not in range(128)
+
+python2 对于一些字符的识别会报错，网上也有了大量的很成熟的解决办法，或者说网上的办法都是针对 python2 的，但是我用的是 python3 啊，为什么还会这样呢？
+
+我已经将系统默认运行的 python 程序设置成 python3 而不是 python2 了
+
+我已经在代码的首行加上了 # coding: utf-8 了
+
+为什么还会报错呢？
+
+问题出在对文件的读取上，也就是 open 这一步
+
+这个时候，有个很简单的办法：给 open 传递字符的 utf-8 信息，也就是把 open 语句改为下方这样的：
+
+f = open('id_list_test.txt','r',encoding='utf-8')
+
+再运行一次试试看？是不是问题就解决了呢？
+

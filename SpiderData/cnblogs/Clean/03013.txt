@@ -1,0 +1,21 @@
+安装caffe-ssd编译环境的时候报错：
+
+python/caffe/_caffe.cpp:10:31: fatal error: numpy/arrayobject.h: No such file or directory
+compilation terminated.
+Makefile:501: recipe for target 'python/caffe/_caffe.so' failed
+make: *** [python/caffe/_caffe.so] Error 1
+
+报错原因：numpy路径不对
+
+解决办法：打开Makefile.connfig文件，在PYTHONINCLUDE环境下面输入正确的地址
+
+（查找正确的方法）whereis Python
+
+查找numpy位置：
+
+>>>Python
+
+>>>import numpy as np
+
+>>>np.__file__
+

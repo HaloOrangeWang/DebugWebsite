@@ -1,0 +1,58 @@
+
+故障现象
+
+BIEE维护人员通知跑DAC任务时发现调度计划报错。
+
+按照以往维护的惯例，应该是表空间不足，可能存在了性能问题，因此通过Informatica的Workflow Log来锁定具体是哪个表出现了空间不足，但是发现并不能获取到Log，提示No more data available to read，最开始并没有当成一回事，后来重新启动调度计划时发现依然不能跑得起来，遂登记重启整个服务。
+
+起服务之后发现Informatica不能启动，查看tomcat的catalina.out发现报错，依然提示No more data available to read。
+
+Informatica的版本是9.1.0
+
+
+处理方式
+
+分析该Log发现是jdbc字符串出现了问题，导致INFA域无法连接到数据库的Infodomain用户上，因此首先检查数据库，发现数据库的监听没有问题，可以正常启动，用IDE下Infodomain用户连接数据库也可以正常连接。
+
+之后考虑是系统环境字符串更改问题，通过locale命令检查之后发现字符串也都是zh-CN.UTF-8，没有问题，Informatica这个版本只支持自定义的Oracle驱动，不支持OCI以及Oracle Thin驱动，一时间没有头绪。
+
+经过文档查阅，jdbc字符串是放在nodemeta.xml文件当中的，查了一下该文件的更改方式，发现可以通过命令来更改这个xml中的内容，具体参考Structure and the content of the nodemeta.xml file (informatica.com)这个文档，虽然是新版本的文档，但是配置内容大同小异，其中updateGatewayNode标签的内容就是字符串。
+
+通过./infasetup.sh updateGatewayNode命令可以修改配置文件中的内容。
+
+9.1.0版本的该配置文件路径和10版本的不一样，是在$INFA_HOME/isp/config下的。
+
+备份该文件之后，尝试修改配置文件的字符串，语法参考：
+
+./infasetup.sh UpdateGatewayNode -da [你数据库的host]:[数据库端口]  -du [数据库用户名] -dp [数据库密码] -dt [database type i.e. ORACLE]
+
+修改之后发现依然不灵。
+
+由于资料较少，只能查看官方文档，很多文档提示该内容可以通过Informatica的jdbcTest来测试连接字符串是否正确，参考JDBCTest: Troubleshooting JDBC connectivity involving third party jdbc drivers within IDQ (informatica.com)
+
+按照文档下载此包，解压，修改db.properties文件中的参数如下：
+
+DS.driver=com.informatica.jdbc.oracle.OracleDriver
+
+DS.url=这里写的就是要测试的jdbc连接字符串
+
+DS.jarpath=这里从Informatica中找到对应的驱动，我用的是$INFA_HOME/tomcat/webapps/coreservices/WEB-INF/lib/com.informatica.datadirect-dworacle-4.2.0.10.jar
+
+DS.username=要测试的用户名
+
+DS.password=要测试的密码
+
+剩下的什么Log输出路径之类的写个顺手的就行，然后把这个包传到服务器上，之后
+
+java -jar jdbctest_2.2.jar db.properties
+
+运行该测试，发现报错，原因是需要jdk1.8以上才能运行，又把服务器的java环境换成了1.8.
+
+但是崩溃的是换完之后跑Test发现还是一毛一样的。。No more data available to read
+
+之后又去查看tomcat里面的exception.log，发现从11月26号开始就出现了该问题，只是之前没有重启过服务，DAC任务也没挂，因此一直没有发现这个问题，所以怀疑是之前有维护人员修改过数据库设置。跟字符串解析相关的就是tnsname和sqlnet了，然后去找sqlnet，果然发现之前sqlnet设置被改过，在sqlnet里增加了如下的变量：
+
+查了查，这几个变量是为了保证数据传输完整性的，会对传输进行加密，于是尝试把这几个变量删掉，之后重启数据库和Informatica服务，发现居然起来了！
+
+因此判断数据库一直连接不上的问题就在这几个变量上，下次需要吸取教训，加强服务器配置更改的记录啊。
+

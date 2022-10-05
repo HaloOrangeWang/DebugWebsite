@@ -1,0 +1,15 @@
+添加以下注解
+
+无效
+
+报错日志:
+
+org.springframework.validation.BindException: org.springframework.validation.BeanPropertyBindingResult: 2 errors
+
+解决方法:在controller加入以下方法
+
+@InitBinder //表单时间绑定
+ public void init(WebDataBinder binder) {
+ binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
+ }
+

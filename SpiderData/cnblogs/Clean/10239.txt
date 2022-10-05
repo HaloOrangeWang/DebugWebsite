@@ -1,0 +1,104 @@
+在Mac下，使用Python2.7操作MySQL需要导入MySQLdb，在代码中执行以下代码
+import MySQLdb
+
+1
+
+在Mac下，使用Python2.7操作MySQL需要导入MySQLdb，在代码中执行以下代码
+
+1
+
+如果执行后的输出结果如下所示，意味着你没有安装MySQLdb模块：
+
+1
+
+2
+
+3
+
+4
+
+此时你可以到 https://pypi.org/project/MySQL-python/下载对应的版本，这里我也提供了百度云盘下载链接 MySQL-python-1.2.5版本
+ 解压下载的文件，然后切换到相应的目录，执行安装命令：
+
+1
+
+2
+
+3
+
+如果提示以下信息则表示安装成功：
+
+1
+
+2
+
+然而，安装过程并不总是一帆风顺，在此，我记录下自己安装过程中遇到的问题及解决办法。
+
+####错误1：EnvironmentError: mysql_config not found####
+
+在shell中执行 sudo find / -name mysql_config命令
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+修改 setup_posix.py中
+
+1
+
+1
+
+1
+
+以下错误我也是通过修改mysql_config配置来解决的：
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+####错误2：error: command 'cc' failed with exit status 1####
+ 通过brew命令安装 libxml2 和 libxslt 这两个库
+
+1
+
+2
+
+3
+
+4
+
+
+错误3：error: command 'clang' failed with exit status 1####
+
+Mac的OSX系统的C语言，编译器用的是Clang。既然报错与clang有关，应该是xcode command tools出现问题，执行 xcode-select --install 重新安装。
+
+
+错误4：_mysql.c:44:10: fatal error: 'my_config.h' file not found
+
+这个问题应该是可以通过配置mysql_config的路径解决的，但是如果是找不到，可以单独安装mysq-connector-c
+ Mac下执行以下命令：
+
+转载 https://blog.csdn.net/meifannao789456/article/details/100079856
+

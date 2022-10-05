@@ -1,0 +1,14 @@
+TSINGSEE青犀视频云-边-端架构中的EasyRTC视频会议系统是基于WebRTC来进行编译的。WebRTC是一个支持网页浏览器进行实时语音对话或视频对话的API，实现了基于网页的视频会议，标准是WHATWG 协议，目的是通过浏览器提供简单的javascript就可以达到实时通讯能力，而EasyRTC在此基础之上增加了更加丰富且便捷的功能。
+
+TISNGSEE青犀视频研发团队在编译WebRTC时使用了fetch --nohooks webrtc指令，但编译过程中控制台会出现D:\cpp\webrtc\depot_tools\gclient.py的报错，导致无法往下编译，如下图所示
+
+看报错信息，我们可以知道是python模块里出现问题，这里我们可以使用pycharm软件作为协助，pycharm带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，以用于支持Django框架下的专业Web开发。
+
+直接用pycharm软件打开depot_tools，选中gclient.py并添加参数运行，最终找到git_cache.py，看到git.bat文件。但是由于系统上并没有git.bat文件，然而只能取读git.exe文件，因此把git.bat改成git.exe即可。
+
+修改完毕后重新编译就不再会出现报错了。其实在EasyRTC的多方编译尝试中，我们经常会因为各种原因导致编译失败，比如文件库缺失或者文件名不对等原因，因此总需要耗费不少时间来进行排查。本文也是为大家做一个排雷，如果遇到类似问题，可以参考本文解决。
+
+EasyRTC作为网页音视频通话会议系统，具备一对多的视频会议通话功能，满足语音视频社交、在线教育和培训等需求。
+
+EasyRTC的版本最近进行了更新，研发了SFU版本和MCU版本，大家可以参考本文了解一下：MCU版与SFU版在行业应用场景上有什么不同。TSINGSEE青犀视频云边端架构产品均为大家提供了试用版本，欢迎大家测试使用。
+

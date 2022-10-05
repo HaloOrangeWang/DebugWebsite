@@ -1,0 +1,31 @@
+报错：
+ ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+出错代码：
+
+def g(x):
+    if x != 0:
+        return -x
+x=np.array(np.arange(-20, 21,0.1))
+#x=np.arange(-20, 21,0.1) 改成这个下面也报错
+#x=list([-20,20]) 改成这个下面也报错
+
+y=g(x) #这句计算y的是报错代码！
+
+修改:
+
+y = [g(a) for a in x] #用这种方法计算y
+
+具体问题是 输入类型不匹配问题，比如这个函数就应该是单个的数字输入进入，但是把list 类型、array类型带进去都不行！
+
+有时候numpy用顺手了，就容易把这种写错…
+ 比如
+
+x=np.arange(0,10,0.1)
+np.cos(x) #不报错
+
+import math
+math.cos(x) #报错
+
+这提醒我们写代码的时候，记住那些类型是在标准库里的还是在package里面的，然后有一个严谨的意识，不要写混乱了.
+

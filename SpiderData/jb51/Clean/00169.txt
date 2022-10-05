@@ -1,0 +1,57 @@
+从windows操作系统本地读取csv文件报错
+
+data = pd.read_csv(path)
+
+Traceback (most recent call last):
+
+File "C:/Users/arron/PycharmProjects/ML/ML/test.py", line 45, in <module>
+  data = pd.read_csv(path)
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 655, in parser_f
+  return _read(filepath_or_buffer, kwds)
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 405, in _read
+  parser = TextFileReader(filepath_or_buffer, **kwds)
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 762, in __init__
+  self._make_engine(self.engine)
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 966, in _make_engine
+  self._engine = CParserWrapper(self.f, **self.options)
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 1582, in __init__
+  self._reader = parsers.TextReader(src, **kwds)
+ File "pandas\_libs\parsers.pyx", line 394, in pandas._libs.parsers.TextReader.__cinit__ (pandas\_libs\parsers.c:4209)
+ File "pandas\_libs\parsers.pyx", line 712, in pandas._libs.parsers.TextReader._setup_parser_source (pandas\_libs\parsers.c:8895)
+OSError: Initializing from file failed
+
+上述报错的解决方案是
+
+pwd = os.getcwd()
+os.chdir(os.path.dirname(path))
+data = pd.read_csv(os.path.basename(path))
+os.chdir(pwd)
+
+此时又报如下错误：
+
+Traceback (most recent call last):
+ File "C:/Users/arron/PycharmProjects/ML/ML/test.py", line 47, in <module>
+  data = pd.read_csv(os.path.basename(path))
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 655, in parser_f
+  return _read(filepath_or_buffer, kwds)
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 405, in _read
+  parser = TextFileReader(filepath_or_buffer, **kwds)
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 762, in __init__
+  self._make_engine(self.engine)
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 966, in _make_engine
+  self._engine = CParserWrapper(self.f, **self.options)
+ File "C:\Users\arron\AppData\Local\Continuum\Anaconda3\lib\site-packages\pandas\io\parsers.py", line 1582, in __init__
+  self._reader = parsers.TextReader(src, **kwds)
+ File "pandas\_libs\parsers.pyx", line 562, in pandas._libs.parsers.TextReader.__cinit__ (pandas\_libs\parsers.c:6175)
+ File "pandas\_libs\parsers.pyx", line 781, in pandas._libs.parsers.TextReader._get_header (pandas\_libs\parsers.c:9691)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xd7 in position 0: invalid continuation byte
+
+最终解决方案是：
+
+pwd = os.getcwd()
+os.chdir(os.path.dirname(path))
+data = pd.read_csv(os.path.basename(path),encoding='gbk')
+os.chdir(pwd)
+
+以上这篇解决pandas read_csv 读取中文列标题文件报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

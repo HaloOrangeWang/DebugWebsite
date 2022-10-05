@@ -1,0 +1,12 @@
+执行 pyspider all 启动命令报错如下：
+
+原因分析：WsgiDAV 使用了新版本 pre-release 3.0.0（WsgiDAV 是一个用 Python 开发的通用 WebDAV 服务器，基于 WSGI 运行，支持 SSL）
+
+解决方法一：将 WsgiDAV 版本降级到 2.4.1版本，使用命令 pip install wsgidav==2.4.1 安装即可
+
+解决方法二：在 Python 安装路径下，找到 webdav.py 文件，比如我的路径为：E:\Python\Lib\site-packages\pyspider\webui\webdav.py
+
+定位到第 209 行，找到如下代码：
+
+修改为如下代码并保存：
+

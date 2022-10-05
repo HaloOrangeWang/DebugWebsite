@@ -1,0 +1,29 @@
+python 使用execjs执行接js时报错UnicodeDecodeError：
+
+Exception in thread Thread-5:
+Traceback (most recent call last):
+  File "d:\python\python36\Lib\threading.py", line 916, in _bootstrap_inner
+    self.run()
+  File "d:\python\python36\Lib\threading.py", line 864, in run
+    self._target(*self._args, **self._kwargs)
+  File "d:\python\python36\Lib\subprocess.py", line 1055, in _readerthread
+    buffer.append(fh.read())
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xad in position 22: illegal multibyte sequence
+
+错误出在python内部的subprocess.py文件
+
+解决方式：
+ 打开subprocess.py文件，找到初始化函数__init__()(588行)，修改参数的默认值为encoding=‘utf-8’，程序运行不再报错。
+
+注意
+ 这里改成’utf-8’之后，用pip install 安装包就会报错
+
+UnicodeDecodeError: ‘utf-8’ codec can’t decode byte 0xbb in position 17: invalid start byte
+
+参考：https://blog.csdn.net/weixin_42081389/article/details/99984352
+ https://blog.csdn.net/Kwoky/article/details/104841611/
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

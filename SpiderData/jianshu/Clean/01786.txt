@@ -1,0 +1,86 @@
+安装:yum install supervisor
+
+项目目录/srv/awesome/
+
+Supervisor的配置文件/etc/supervisord.conf，项目配置/etc/supervisord.d/*.ini
+
+1.执行supervisorctl start awesome报错：unix:///var/run/supervisor/supervisor.sock no such file
+
+解决过程
+
+/etc/supervisord.conf这个文件里的所有的/tmp路径改掉，
+
+/tmp/supervisor.sock 改成 /var/run/supervisor.sock，
+
+/tmp/supervisord.log 改成 /var/log/supervisor.log，
+
+/tmp/supervisord.pid 改成 /var/run/supervisor.pid 要不容易被linux自动清掉
+
+改权限
+
+sudo chmod 777 /run
+
+sudo chmod 777 /var/log
+
+改完运行还报原来的错，继续尝试其他地方
+
+2.后来尝试supervisorctl update重载supervisor配置，报错error: , [Errno 2] No such file or directory: file: /usr/lib64/python2.7/socket.py line: 224
+
+解决：执行/usr/bin/python2 /usr/bin/supervisord -c /etc/supervisord.conf，之后再执行supervisorctl update不报错了
+
+3.supervisorctl reload执行重启，没报错
+
+4.再次执行supervisorctl start awesome又换了一个报错awesome: ERROR (file is not executable)
+
+5.看到没有权限的报错后执行supervisorctl status awesome查看添加的服务状态
+
+awesome                          FATAL     command at '/srv/awesome/www/app.py' is not executable
+
+看到执行结果提示不可执行。说明没有执行权限。
+
+给文件权限，执行chmod 777 文件路径，还是报同样的错
+
+6.我看了我自己的app.py文件
+
+好像是没加执行环境！！！
+
+加上#!/usr/bin/python3
+
+然后supervisorctl reload执行重启
+
+7.再次执行supervisorctl start awesome报错awesome: ERROR (spawn error)
+
+执行supervisorctl status awesome报错
+
+awesome                          BACKOFF   Exited too quickly (process log may have details)
+
+监听var/log/supervisor/supervisor.log   和  /srv/awesome/log/app.log这两个日志，查看具体报错
+
+报错说不能执行app.py,想着是不是启动命令有问题。
+
+查看了supervisord.conf中的参数说明，command是程序启动命令，考虑到安装了python2和python3两个版本的python，所以将/etc/supervisord.dawesome.ini中command改成
+
+python3 /srv/awesome/www/app.py
+
+8.之后运行supervisorctl start awesome报错变得具体了
+
+可以看出来是数据库配置的问题，
+
+改了/srv/awesome/www/config_override.py文件里的配置
+
+9.再次执行supervisorctl start awesome之后可以启动成功了
+
+执行 supervisorctl status awesome
+
+10.虽然运行时success但是数据裤还是有问题
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '123.56.8.112'")
+
+修改mysql权限mysql -uroot -p
+
+MySQL> GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'IDENTIFIED BY '123456' WITH GRANT OPTION;
+
+MySQL> flush privileges;
+
+修改权限，放行数据库端口
+

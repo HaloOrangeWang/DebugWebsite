@@ -1,0 +1,90 @@
+
+1
+
+查询python版本的时候，cmd输入 py -V (V)是大写，不然会出现乱码
+
+在cmd输入python显示‘python’不是内部或外部命令，也不是可运行的程序或批处理文件
+
+原因是：要在系统变量的path，要把自己所安装的python路径拷进去就可以了，例如：C:\Users\hui\AppData\Local\Programs\Python\Python37
+
+更新pip:python -m pip install --upgrade pip
+
+
+2
+
+一般在项目文件的上一层配置虚环境
+
+进入上一层目录后，在cmd中键入python -m venv venv 即可安装虚环境。
+
+然后输入venv\Scripts\activate 再cd进入项目根目录
+
+
+3
+
+每次进入博客：
+
+cmd
+
+cd/d 有虚环境的目录
+
+venv\Scripts\activate//启动虚环境
+
+cd/d进入项目目录
+
+python manage.py runserver//启动服务
+
+数据迁移：
+
+makemigrations
+
+migrate
+
+
+4
+
+配置mysql，使用mysql --version查询是否成功安装mysql时，
+
+在用户和系统变量的path都加入 C:\Program Files\MySQL\MySQL Server 8.0\bin即可
+
+
+5
+
+在powershall里面，进入目录是cd 绝对地址,而不是cd\d
+
+
+6
+
+问题：安装python虚拟环境wrapper后， 提示 “workon不是内部或外部命令，也不是可运行的程序或批处理程序”
+
+解决方法：每新建一个虚拟环境，都需要在其默认的scripts目录下打开cmd，然后执行一次pip install virtualenvwrapper-win
+
+
+7
+
+使用pycharm时，对已经有虚环境的项目，可以使用本地虚环境，不用重新再去配置一次，文件(file)——>设置(setting)——>项目(Project)——>Project Interpreters
+
+
+8
+
+出现错误：'DIRS': [BASE_DIR / 'templates']
+
+
+9
+
+run setup.py task点不了，是灰色的
+
+解决方案：File–>Settings–>Languages&Framworks–>Django
+
+如图，1、勾选Enable Django Support
+
+2、设置根目录（root），即创建的工程所在路径
+
+3、设置settings，工程目录下的settings.py文件
+
+
+10
+
+xadmin 报错： ImportError: cannot import name 'SKIP_ADMIN_LOG'
+
+根据提示，定位到importexport.py文件，把 48行复制一行然后注释掉，在49行里 去掉 SKIP_ADMIN_LOG, TMP_STORAGE_CLASS，换成 ImportMixin
+

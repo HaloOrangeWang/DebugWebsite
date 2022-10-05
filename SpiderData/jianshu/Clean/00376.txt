@@ -1,0 +1,100 @@
+由于只想在SpringBoot中使用一下Feign客户端，来访问第三方请求，但因为各种版本问题，一直报各种乱七八糟的错
+
+pom文件
+
+<parent>
+
+<groupId>org.springframework.boot</groupId>
+
+<artifactId>spring-boot-starter-parent</artifactId>
+
+<version>2.1.12.RELEASE</version>
+
+<relativePath/> <!-- lookup parent from repository -->
+
+</parent>
+
+<dependencies>
+
+<dependency>
+
+<groupId>org.springframework.boot</groupId>
+
+<artifactId>spring-boot-starter-web</artifactId>
+
+</dependency>
+
+<dependency>
+
+<groupId>org.projectlombok</groupId>
+
+<artifactId>lombok</artifactId>
+
+<version>1.16.20</version>
+
+<scope>provided</scope>
+
+</dependency>
+
+<dependency>
+
+<groupId>org.springframework.cloud</groupId>
+
+<artifactId>spring-cloud-starter-openfeign</artifactId>
+
+<version>2.0.2.RELEASE</version>
+
+</dependency>
+
+</dependencies>
+
+注意这里的springboot的版本号和openfeign的版本号非常重要，不要盲目使用最新版本
+
+然后是常规操作
+
+在项目启动类上添加@EnableFeignClients注解
+
+//from fhadmin.cn
+
+@EnableFeignClients
+
+@SpringBootApplication
+
+public class ClientApplication {
+
+public static void main(String[] args) {
+
+SpringApplication.run(ClientApplication.class,args);
+
+}
+
+}
+
+如果忘记添加该注解，会报自己定义的FeignClient注入不进去的错
+
+编写接口Interface写FeignClient
+
+格式大致像如下方式
+
+@FeignClient(
+
+name = "userService",
+
+url = "http://localhost:8081/api/server"
+
+)
+
+//from fhadmin.cn
+
+public interface UserFeignClient {
+
+@RequestMapping(value = "/getUserInfo",method = RequestMethod.GET)
+
+@ResponseBody
+
+String getUserInfo();
+
+}
+
+如果未为FeignClient设置name，也会报错，会报一个没有name的错，一看就能明白
+

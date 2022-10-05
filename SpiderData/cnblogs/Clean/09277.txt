@@ -1,0 +1,28 @@
+最近系统老是出问题，写了些脚本监控cpu、磁盘空间、进程和数据库，手动执行脚本没问题，用crontab定时任务执行，要么没反应，要么没有写入文件，记录一下踩坑及解决全程。
+
+手动执行脚本没问题，用crontab不行，坑大概率在两个方面：路径和环境变量。
+
+一、查看crontab执行日志、输出执行结果
+
+1.查看crontab执行日志
+
+用root账户，tail -100f 动态刷新日志，看定时任务有没有在跑，如果没有执行记录，那就是定时任务时间设定错误
+
+tail -100f /var/log/cron
+
+2.输出执行结果
+
+在定时任务设定的时候，后面加>  /tmp/load.log 2>&1 &，将执行结果输出到文档中（要在/tmp文件夹里 touch 一个load.log），然后执行完任务后查看该文档
+
+*/15 * * * * python /home/hundsun/python_scriptss/sys_check/diskCheck_alarm_above_95.py >  /tmp/load.log 2>&1 &
+
+①要是报错文件找不到，大概率是文件写的相对路径，没有写绝对路径
+
+②要是报错啥command not fount，大概率是环境变量的问题，在定时任务设定的时候，前面加个当前用户的环境变量
+
+*/6 17,18,19,20,21,22,23,00 * * *  source $HOME/.bash_profile && python /home/hundsun/python_scriptss/appcom_check/appcomCheck_alarm_null.py
+
+二、总结
+
+有问题就输出日志、查看执行记录，一点点排查，哪一步执行不下去，问题就出现在哪里！
+

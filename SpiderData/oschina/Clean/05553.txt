@@ -1,0 +1,30 @@
+
+pip 安装pycrypto 报src/MD2.c:31:20: error: Python.h: No such file or directory 错误解决
+
+gcc -pthread -fno-strict-aliasing -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -fPIC -std=c99 -O3 -fomit-frame-pointer -Isrc/ -I/usr/include/python2.6 -c src/MD2.c -o build/temp.linux-x86_64-2.6/src/MD2.o
+    src/MD2.c:31:20: error: Python.h: No such file or directory
+    src/MD2.c:131: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+    In file included from src/MD2.c:147:
+    src/hash_template.c:48: error: expected specifier-qualifier-list before ‘PyObject_HEAD’
+    src/hash_template.c:59: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘PyTypeObject’
+    src/hash_template.c: In function ‘newALGobject’:
+    src/hash_template.c:69: warning: implicit declaration of function ‘PyObject_New’
+    src/hash_template.c:69: error: expected expression before ‘ALGobject’
+    src/hash_template.c: At top level:
+    src/hash_template.c:76: error: expected ‘)’ before ‘*’ token
+    src/hash_template.c:91: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+    src/hash_template.c:110: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+    src/hash_template.c:122: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+    src/hash_template.c:162: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+    src/hash_template.c:188: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+    src/hash_template.c:190: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘ALG_methods’
+    src/hash_template.c:199: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+    src/hash_template.c:225: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘ALGtype’
+    src/hash_template.c:271: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+    src/hash_template.c:304: error: array type has incomplete element type
+
+
+解决:
+
+安装python-dev 即可,我这里为centos 直接使用yum install -y python-dev
+

@@ -1,0 +1,26 @@
+今天在学习一个fastapi的教程，我保存文件名为token.py，运行是报错：
+
+import fastapi xxxx xxx xxxxx xxxxxx error (most likely due to a circular import) 
+#循环引用错误
+
+搜了一下说是import 包的顺序有错误，由于是官方示例基本排除掉了是顺序问题，偶然看到一个up主说是有可能是文件名的问题，有可能是文件名与包名出现重复，我把token.py重命名为testtoken.py后问题排除。
+
+最后一行里失误把app='main:app' 写错了,应该是app=‘dy:app’。但是报错非常有趣。
+
+最后一行里失误把app='main:app' 写错了,应该是app=‘dy:app’。但是报错非常有趣。
+
+File "/usr/local/Cellar/python@3.9/3.9.6/Frameworks/Python.framework/Versions/3.9/lib/python3.9/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+  File "/Users/mark/Documents/Coder/server/main.py", line 2, in <module>
+    from controller.addons import my_addons
+  File "/Users/mark/Documents/Coder/server/controller/addons.py", line 7, in <module>
+    from model.dn import *
+
+就是说在这个程序中没有找到main.py文件，但是它去了我其他的项目中找到了main.py文件并且运行了，结果发现我的其他的程序中的配置文件不在现在这个文件夹下面所以报错了。狗带……
+

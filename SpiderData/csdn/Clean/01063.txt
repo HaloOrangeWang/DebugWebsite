@@ -1,0 +1,40 @@
+
+背景
+
+连接器一般使用impyla，但是我发现这个库问题不少，关键报错了看不出来哪里出问题了，着实令人蛋疼！！
+
+
+问题
+
+常见的难以解决的报错有： 
+ 1. AttributeError: 'TBufferedTransport' object has no attribute 'trans' 
+ 2. TypeError: expecting list of size 2 for struct args 
+ 3. 见https://github.com/cloudera/impyla/issues/286
+
+
+解决办法
+
+这实际上都是同一个问题，pip install thrift==0.9.3即可
+
+
+python3时的报错
+
+如果你的python版本是3的话，会发现报错可能不一样，比如下面的：
+
+Traceback (most recent call last):
+  File "impala_py.py", line 68, in <module>
+    df = run_sql(sql)
+  File "impala_py.py", line 29, in run_sql
+    conn = connect(host='xxx', auth_mechanism='PLAIN', port=21050, user='xxx', password='xxxx')
+  File "/home/liming/anaconda2/envs/test3/lib/python3.6/site-packages/impala/dbapi.py", line 147, in connect
+    auth_mechanism=auth_mechanism)
+  File "/home/liming/anaconda2/envs/test3/lib/python3.6/site-packages/impala/hiveserver2.py", line 758, in connect
+    transport.open()
+  File "/home/liming/anaconda2/envs/test3/lib/python3.6/site-packages/thrift_sasl/__init__.py", line 67, in open
+    if not self._trans.isOpen():
+AttributeError: 'TSocket' object has no attribute 'isOpen'
+
+目前尝试可以的解决办法是安装如下版本的包： 
+ thrift-sasl==0.2.1 
+ 只在linux尝试成功了，windows下安装失败
+

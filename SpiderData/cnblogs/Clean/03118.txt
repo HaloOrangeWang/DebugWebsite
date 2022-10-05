@@ -1,0 +1,28 @@
+报错信息：
+
+[root@localhost bin]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: failed (Result: exit-code) since Fri 2019-01-25 02:07:03 EST; 4min 25s ago
+     Docs: man:firewalld(1)
+  Process: 2037 ExecStart=/usr/sbin/firewalld --nofork --nopid $FIREWALLD_ARGS (code=exited, status=127)
+ Main PID: 2037 (code=exited, status=127)
+
+Jan 25 02:07:03 localhost.localdomain systemd[1]: Starting firewalld - dynamic firewall daemon...
+Jan 25 02:07:03 localhost.localdomain systemd[1]: firewalld.service: main process exited, code=exited, status=127/n/a
+Jan 25 02:07:03 localhost.localdomain systemd[1]: Failed to start firewalld - dynamic firewall daemon.
+Jan 25 02:07:03 localhost.localdomain systemd[1]: Unit firewalld.service entered failed state.
+Jan 25 02:07:03 localhost.localdomain systemd[1]: firewalld.service failed.
+
+gogle了一大堆，一个老兄说python版本不对。我的python确实从2升到3了
+
+解决办法
+
+1 查看firewalld在那个路径下
+
+which firewalld
+
+2 编辑firewalld文件
+
+3 将这个声明，改为你老版本python。
+

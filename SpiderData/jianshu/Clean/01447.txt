@@ -1,0 +1,80 @@
+
+警告
+
+WARNING:root:This caffe2 python run does not have GPU support. Will run in CPU only mode.
+
+出现上面的问题的话, 首先看看是不是没有安装NCCL, 如果没有安装的话, 安装以后应该就能好使
+
+
+报错
+
+使用下面的指令测试caffe安装是否成功
+
+python -c 'from caffe2.python import core' 2>/dev/null && echo "Success" || echo "Failure"
+
+如果返回Failure , 那么进入python, 并执行相关语句获得更准确的错误信息
+
+$ python          
+Python 3.5.4 |Continuum Analytics, Inc.| (default, Aug 14 2017, 13:26:58) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from caffe2.python import core
+WARNING:root:This caffe2 python run does not have GPU support. Will run in CPU only mode.
+CRITICAL:root:Cannot load caffe2.python. Error: /home/zerozone/.pyenv/versions/anaconda3-5.0.1/envs/a3py3.5/bin/../lib/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by /home/zerozone/.pyenv/versions/a3py3.5/lib/python3.5/site-packages/caffe2/python/caffe2_pybind11_state.cpython-35m-x86_64-linux-gnu.so)
+
+这里我首先出现了如下错误:
+
+CRITICAL:root:Cannot load caffe2.python. Error: /home/zerozone/.pyenv/versions/anaconda3-5.0.1/envs/a3py3.5/bin/../lib/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by /home/zerozone/.pyenv/versions/a3py3.5/lib/python3.5/site-packages/caffe2/python/caffe2_pybind11_state.cpython-35m-x86_64-linux-gnu.so)
+
+根据提示, 是位于路径home/zerozone/.pyenv/versions/anaconda3-5.0.1/envs/a3py3.5/bin/../lib/ 中的 libstdc++.so.6 版本中没有GLIBCXX_3.4.20 导致出错, 那么我们就先进入该路径:
+
+$cd home/zerozone/.pyenv/versions/anaconda3-5.0.1/envs/a3py3.5/bin/../lib/
+$strings strings ./libstdc++.so.6 | grep 'GLIBCXX'  # 使用该指令可以看到当前拥有的版本号
+
+GLIBCXX_3.4
+GLIBCXX_3.4.1
+GLIBCXX_3.4.2
+GLIBCXX_3.4.3
+GLIBCXX_3.4.4
+GLIBCXX_3.4.5
+GLIBCXX_3.4.6
+GLIBCXX_3.4.7
+GLIBCXX_3.4.8
+GLIBCXX_3.4.9
+GLIBCXX_3.4.10
+GLIBCXX_3.4.11
+GLIBCXX_3.4.12
+GLIBCXX_3.4.13
+GLIBCXX_3.4.14
+GLIBCXX_3.4.15
+GLIBCXX_3.4.16
+GLIBCXX_3.4.17
+GLIBCXX_3.4.18
+GLIBCXX_3.4.19
+GLIBCXX_FORCE_NEW
+GLIBCXX_DEBUG_MESSAGE_LENGTH
+
+可以看到, 确实缺少了3.4.20 版本, 那么该怎么办?
+
+如果你使用的是Anaconda, 那么就可以看看/home/zerozone/.pyenv/versions/anaconda3-5.0.1/lib 路径下的libstdc++.so.6 版本是否有我们需要的, 如果没有使用的话, 也可以看看/usr/lib/x86_64-linux-gnu/     或   /usr/lib/ 路径下的版本号, 总之, 只要有任何一个拥有3.4.20版本, 我们都可以将其拷贝到home/zerozone/.pyenv/versions/anaconda3-5.0.1/envs/a3py3.5/bin/../lib/中, 以替换缺少版本的libstdc++.so.6
+
+$strings /usr/lib/libstdc++.so.6 | grep 'CXXABI'
+或者
+$strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep 'CXXABI'
+或者
+$strings /home/zerozone/.pyenv/versions/anaconda3-5.0.1/lib/libstdc++.so.6 | grep 'CXXABI'
+
+# 使用cp指令进行复制, 复制任何一个都可以, 只要包含版本3.4.20
+cp  /home/zerozone/.pyenv/versions/anaconda3-5.0.1/lib/libstdc++.so.6  home/zerozone/.pyenv/versions/anaconda3-5.0.1/envs/a3py3.5/bin/../lib/
+
+接下来在继续试试import, 发现报错如下, 该错误和上面的错误是一毛一样的, 所以用同样的办法就可以解决, 只不过库文件的名字和版本号不同而已
+
+CRITICAL:root:Cannot load caffe2.python. Error: /home/zerozone/.pyenv/versions/a3py3.5/lib/python3.5/site-packages/caffe2/python/../../torch/lib/libgomp.so.1: version `GOMP_4.0' not found (required by /home/zerozone/.pyenv/versions/a3py3.5/lib/python3.5/site-packages/caffe2/python/../../torch/lib/libcaffe2.so)
+
+
+Detectron ops lib not found; make sure that your Caffe2 version includes Detectron module
+
+造成该错误的原因主要是没有找到 libcaffe2_detectron_ops_gpu.so , 有两个选择, 将 libcaffe2_detectron_ops_gpu.so所在的路径添加到PYTTHONPATH中即可解决
+
+export PYTHONPATH=$PYTHONPATH:/home/zerozone/Works/Competition/DF/pytorch/build
+

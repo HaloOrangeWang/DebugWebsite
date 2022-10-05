@@ -1,0 +1,21 @@
+在修改项目就代码时，发现pycharm提示错误，from requests import ConnectTimeout
+
+错误信息，是说从requests的__init__.py找不到ConnectTimeout
+
+在python中，如果导入的类不存在，会直接报错的，但是这些代码在运行时并不报错，而且ConnectTimeout这个错误类是可以正常使用的
+
+最后看了requests的__init__.py的源码，发现有这样的片段，from .exceptions import (
+    RequestException, Timeout, URLRequired,
+    TooManyRedirects, HTTPError, ConnectionError,
+    FileModeWarning, ConnectTimeout, ReadTimeout
+)
+
+总结：
+
+原因：因为在__init__.py中已经导入这些类，但是pycharm无法读取，显示错误而已，实际上可以导入，也可以应用这些类
+pycharm不报错的方法，使用from requests.exception import ConnectTimeout
+
+原因：因为在__init__.py中已经导入这些类，但是pycharm无法读取，显示错误而已，实际上可以导入，也可以应用这些类
+
+pycharm不报错的方法，使用from requests.exception import ConnectTimeout
+

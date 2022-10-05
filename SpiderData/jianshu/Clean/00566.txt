@@ -1,0 +1,22 @@
+问题：npm run dev 报错如下：
+
+解决方法： 注释掉 contentBase 或者把 contentBase 替换为 static
+
+devServer: {
+
+// 项目构建路径
+
+// contentBase: path.resolve(__dirname, "dist"),
+
+static: path.resolve(__dirname, "dist"),
+
+compress: true,
+
+port: 8000,
+
+open: true
+
+}
+
+原因：webpack5中devServer，没有contentBase这个属性，已经被弃用了，改为static代替。
+

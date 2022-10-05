@@ -1,0 +1,47 @@
+废话不多说上题
+
+
+编写程序提示用户输入学生个数以及每个学生的分数，然后显示最高分。假设输入是存储在一个名为score.txt的文件，程序从这个文件获取输入。
+
+codeNumber = eval(input("Enter class input: ")) 
+ ##输入学生的个数。只是读数所以就设在第一行。同时数据也放在score.txt的第一行比较方便。本列中是5
+data = eval(input("Enter data input: "))
+#此处为输入分数从score.txt第二行的数据开始
+number = data
+while data != 0:  #在score里循环寻找最高分数
+    data = eval(input("Enter data input: "))
+    if data > number:
+        number = data
+print(f"Student total code is {codeNumber}")   #输出学生个数
+print(f"Student number code is {number}")   #输出最高分
+
+结果呢？
+
+很挠头。自己的公式应该是对的。
+
+然后我在pycharm里试验了一次
+ 
+ 结果是对的。那我差哪里了呢
+
+我突然想到了。我的while循环的条件是
+
+while data != 0:
+
+我马上回去检查了我的score.txt文件
+ 5 #这是学生的数量
+ 150 #这是学生分数的第一行。
+ 250
+ 100
+ 200
+ 50
+ 15
+
+里面竟然没有0
+
+所以在cmd窗口里运行的时候出现了
+ EOFError:EOF when reading a line?
+
+我找了全网很多解释，但似乎和我要的不一样。在自己纠结是不是也要这么做的时候。终于灵感闪现发现了。这个问题是自己错误造成的那么我想说，各位朋友。我们在认为是系统安装有问题以外，下次是不是可以考虑一下我今天的推荐方式。检查自己输入的参数。
+
+仅供参考谢谢观赏。记得给个关注吧。
+

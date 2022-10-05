@@ -1,0 +1,13 @@
+python爬虫，使用requests库发送https请求报错：SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED]
+
+解决方法：
+
+import logging
+import requests
+
+logging.captureWarnings(True) # 去掉建议使用SSL验证的显示
+header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1', } 
+wb_data = requests.get(url, headers=header, verify=False) # 去掉https 的验证
+
+这样就没有报错信息了。
+

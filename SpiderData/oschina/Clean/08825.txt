@@ -1,0 +1,27 @@
+这个是因为react最新版本抛弃使用了createClass这个函数，这个也是为了配合ES6 。这种情况下会报错
+
+.........
+
+........
+
+........
+
+应修改为下面的写法：
+
+export default class Popover extends React.Component{
+
+getInitialState() {
+        return {
+            contentSize: {},
+            anchorPoint: {},
+            popoverOrigin: {},
+            placement: 'auto',
+            isTransitioning: false,
+            defaultAnimatedValues: {
+                scale: new Animated.Value(0),
+                translate: new Animated.ValueXY(),
+                fade: new Animated.Value(0),
+            },
+        };
+    }
+

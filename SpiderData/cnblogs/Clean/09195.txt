@@ -1,0 +1,69 @@
+
+1.Docker-client for python
+
+查找各种资料以及开源代码，很多使用时的写法如下
+
+from docker import Client 
+client=Client(base_url='unix://var/run/docker.sock’)
+
+但始终会报错找不到Client这个文件，&自己zai 相应的Docker目录下找的时候也没有找到Client.py这个文件
+
+摸索好一阵子，终于找到了一个靠谱的文档：https://my.oschina.net/xxbAndy/blog/872487
+
+原因是：`docker.Client`被替换成`docker.APIClient`，所以现在的正确用法是：
+
+from docker import APIClient
+client = APIClient(base_url="unix://var/run/docker.sock")
+
+
+2.Python pip升级后报错 sys.stderr.write(f"ERROR: {exc}")
+
+这个问题是由于pip21.0已经停止对Python2.7的支持，因此如果需要继续使用python2.7，就不能升级到最新的pip版本
+
+解决办法来源：https://www.cjavapy.com/article/1605/
+
+pip install --upgrade "pip < 21.0"
+或者
+curl https://bootstrap.pypa.io/2.7/get-pip.py --output get-pip.py
+
+如果已经升级到了21.0，那么使用pip降级的时候就会直接报错，这时需要先把原来的pip卸载掉。
+
+但是这样安装两次，可能会混乱，导致使用pip安装包时，提示“/usr/bin/pip: No such file or directory”
+
+
+3.拉取Docker镜像时，报错error pulling image configuration: Get https://registry-1.docker.io/v2/library/redis/blobs/sha256:7e
+
+因为国内网络问题，无法连接到docker hub，解决办法是，修改国内的镜像地址
+
+# 打开文件
+vim /etc/docker/daemon.json
+
+
+4.Docker的python库API安装
+
+// 安装pip
+# apt-get install python-pip python-dev build-essential
+# pip install --upgrade pip
+
+// 安装docker模块
+// 使用pip则对应的是python2，pip3对应python3
+# pip install docker-py
+
+使用pip安装模块时，报错ReadTimeoutError: HTTPSConnectionPool
+
+切换成为国内源
+
+# pip install -i https://pypi.tuna.tsinghua.edu.cn/simple module_name
+或
+# pip install -i https://pypi.douban.com/simple module_name
+
+或者直接将pip源配置为阿里云的镜像源或者豆瓣源
+
+pip的配置文件为~/.pip/pip.conf，默认不存在，手动创建
+
+如果切换镜像源后安装软件包时报错Cannot fetch index base URL
+
+通过代理进行安装
+
+# pip --proxy=http://username:passwd@proxy_host install module_name
+

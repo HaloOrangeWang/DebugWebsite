@@ -1,0 +1,60 @@
+Python发送邮件，之前使用的126邮箱都正常，但是今天换成了hotmail，一直报这个错：
+
+smtplib.SMTPException: SMTP AUTH extension not supported by server
+ 
+ 我之前的代码如下：
+
+def sendmail(receivers,mailtitle,mailcontent):
+
+ret=True
+    # try:
+    # msg=MIMEText(mailcontent,'plain','utf-8')
+    msg = MIMEText(mailcontent, 'html', 'utf-8')
+    msg['From']=formataddr(["我是小黑",sender])  # 括号里的对应发件人邮箱昵称、发件人邮箱账号
+    # msg['To']=formataddr(["收件人昵称",receivers])              # 括号里的对应收件人邮箱昵称、收件人邮箱账号
+    msg['Subject']=mailtitle                # 邮件的主题，也可以说是标题
+
+server = None
+    #判断是否为SSL连接
+    if flag_mail_ssl:
+        server=smtplib.SMTP_SSL(mail_host, mail_port)  # 发件人邮箱中的SMTP服务器
+    else:
+        server=smtplib.SMTP(mail_host, mail_port)#
+    server.login(mail_user, mail_pass)  # 括号中对应的是发件人邮箱账号、邮箱密码
+    server.sendmail(sender,receivers,msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
+    server.quit()# 关闭连接
+    # except Exception as e:# 如果 try 中的语句没有执行，则会执行下面的 ret=False
+    #     ret=False
+    return ret
+
+上网上搜了一下，要在login之前，加入如下两行代码：
+
+server.ehlo()  # 向Gamil发送SMTP 'ehlo' 命令
+server.starttls()
+
+这样就可以了。最终代码为：
+
+def sendmail(receivers,mailtitle,mailcontent):
+    ret=True
+    # try:
+    # msg=MIMEText(mailcontent,'plain','utf-8')
+    msg = MIMEText(mailcontent, 'html', 'utf-8')
+    msg['From']=formataddr(["我是小黑",sender])  # 括号里的对应发件人邮箱昵称、发件人邮箱账号
+    # msg['To']=formataddr(["收件人昵称",receivers])              # 括号里的对应收件人邮箱昵称、收件人邮箱账号
+    msg['Subject']=mailtitle                # 邮件的主题，也可以说是标题
+
+server = None
+    #判断是否为SSL连接
+    if flag_mail_ssl:
+        server=smtplib.SMTP_SSL(mail_host, mail_port)  # 发件人邮箱中的SMTP服务器
+    else:
+        server=smtplib.SMTP(mail_host, mail_port)#
+    server.ehlo()  # 向Gamil发送SMTP 'ehlo' 命令
+    server.starttls()
+    server.login(mail_user, mail_pass)  # 括号中对应的是发件人邮箱账号、邮箱密码
+    server.sendmail(sender,receivers,msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
+    server.quit()# 关闭连接
+    # except Exception as e:# 如果 try 中的语句没有执行，则会执行下面的 ret=False
+    #     ret=False
+    return ret
+

@@ -1,0 +1,84 @@
+解决python连接mysql报错问题
+
+最近跑python脚本时遇到一个问题，当sql语句中有中文时，执行python脚本报以下错误：
+
+Traceback (most recent call last):
+
+File "kpi_daily_report.py", line 356, in <module>
+
+result = cal(line, sys.argv[1], sys.argv[2])
+
+File "kpi_daily_report.py", line 324, in cal
+
+result = run(sql)
+
+File "kpi_daily_report.py", line 49, in run
+
+rtn = conn31.selectall(sql)
+
+File "/data0/home/yangjing150/test/kpidaily222/mysql_db_connector.py", line 100, in selectall
+
+raise ex;
+
+UnicodeEncodeError: 'latin-1' codec can't encode characters in position 204-206: ordinal not in range(256)
+
+经过查询与测试，下面三点可以完美解决问题
+
+1、python脚本设置utf-8为默认字符集
+
+import os, sys
+
+import mysql
+
+reload(sys)
+
+sys.setdefaultencoding( "utf-8" )
+
+2、mysql连接时，设置字符集charset='utf8'
+
+3、cursor执行sql语句时，加上字符集utf8的设置
+
+self.cursor.execute('SET NAMES utf8;')
+
+具体代码如下：
+
+def selectall(self, commandText):
+
+rtn = None
+
+try:
+
+if self.auto and self.con == None:
+
+self.con = mysql.connect(host = self.host, port = self.port,
+
+user = self.user, passwd = self.passwd, db = self.db,
+
+connect_timeout = 1 ,charset='utf8')
+
+if self.con:
+
+self.cursor = self.con.cursor()
+
+self.cursor.execute('SET NAMES utf8;')
+
+if self.cursor:
+
+self.cursor.execute('SET NAMES utf8;')
+
+self.cursor.execute(commandText)
+
+rtn = self.cursor.fetchall()
+
+except Exception as ex:
+
+raise ex;
+
+finally:
+
+if self.auto:
+
+self.close()
+
+return rtn
+

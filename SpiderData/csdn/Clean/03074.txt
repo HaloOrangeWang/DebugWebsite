@@ -1,0 +1,24 @@
+
+出错环境
+
+CentOS 7.4 x64
+
+Python 3.5.4
+
+
+现象和解决方案
+
+执行下面代码时，即Python3加载libc.so：
+
+from ctypes import *
+internalLibrary = CDLL(u'libc.so')
+
+如果报下面的错误
+
+python3 OSError: /lib64/libc.so: invalid ELF header
+
+试试改为
+
+from ctypes import *
+internalLibrary = CDLL(u'libc.so.6')
+

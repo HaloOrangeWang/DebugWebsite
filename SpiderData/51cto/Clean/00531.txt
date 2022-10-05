@@ -1,0 +1,31 @@
+python自动化：下拉框定位方法之select标签  style="display: none;"
+报错
+selenium.common.exceptions.ElementNotVisibleException: Message: element not visible: Element is not currently visible and may not be manipulated
+
+界面源码：（禅道为例）
+
+排查：
+1）因为是隐藏的，需要操作其可见才可定位
+
+2）若还是无法定位，请查看前后是否有sleep等待；xpath定位效率会低点。
+
+'''
+select标签定位
+使用index
+若是操作隐藏的元素的话：style="display: none;"；【若不是隐藏的的话不需要js】
+js = 'document.querySelectorAll("select")[0].style.display="block";'
+driver.execute_script(js)
+------
+document.querySelectorAll("select")  选择所有的select。
+[0] 指定这一组标签里的第几个。
+style.display="block";  修改样式的display="block" ,表示可见。
+执行完这句js代码后，就可以正常操作下拉框了。
+'''
+#index定位;导入：from selenium.webdriver.support.select import Select
+
+js = 'document.querySelectorAll("select")[2].style.display="block";'#[2]:从零开始查第几个就写几
+driver.execute_script(js)
+
+project = driver.find_element_by_xpath("//*[@id='project']")
+Select(project).select_by_index(1)      #从零查第几个option
+

@@ -1,0 +1,54 @@
+
+安装tensorflow
+
+使用管理员身份运行cmd
+ 然后根据你的python版本安装对应的tensorflow
+ （查看Python版本：python --version）
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow-gpu==2.3.0
+
+如果上面的遇到403错误，尝试下边这个：
+
+pip install -i https://pypi.douban.com/simple/ tensorflow-gpu==2.3.0
+
+安装后重新打开cmd，输入python进入python环境，然后import tensorflow查看是否安装成功，大概率会遇到下边的bug:
+
+
+1.如果出现
+
+Could not load dynamic library ‘cudart64_110.dll‘； dlerror: cudart64_110.dll not found
+ 这个错误
+
+或者
+
+Could not load dynamic library ‘cudart64_100.dll‘； dlerror: cudart64_110.dll not found
+
+是因为缺少了cudart64_110.dll（以上两个错误对应的版本不同）
+
+可以尝试：
+ 先下载：
+
+链接：下载cudart64
+ 
+ 提取码：ioav
+
+如果是Anaconda自带的默认环境，将对应的cudart64放入下边的路径即可：
+ 
+ 如果是其他环境，则为：
+ 
+ 路径为你装Anaconda的路径下，envs下你的环境名（我的叫pycharm），
+ 下的library下的bin。
+
+
+2.如果出现
+
+pip安装包时出现 ValueError: check_hostname requires server_hostname 错误
+
+
+或者
+
+到 设置 -> 网络和Internet -> 代理 -> 使用代理服务器
+ 关闭代理服务器。
+
+我是在这儿找到的方法：stack overflow
+

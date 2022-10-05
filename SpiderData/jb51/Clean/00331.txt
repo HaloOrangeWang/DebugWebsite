@@ -1,0 +1,28 @@
+本文给大家分享python3.9安装wordcloud出错解决经历，感兴趣的朋友一起看看吧
+
+晚上闲的无聊，就想安装个词云玩玩，但是安装失败，出现命令在退出时发生错误，在网上找了很多的解决办法，但是一一不管用，试了在pycharm—>settings—>project interrupt 进行安装，不料还是报错，
+
+我开始是用pip install --upgradepip
+
+和pip install --upgrade setuptools来升级我的pip,但是没有什么用，还是一如既往的报错。
+
+此时又在网上看到另外一种解决方法，就是在https://www.lfd.uci.edu/~gohlke/pythonlibs/#wordcloud 这个网站上下载wordcloud. whl文件
+
+下载之前可以看一下自己的python的版本
+
+打开python的idle即可看到自己安装的python版本和位
+
+cp后面的数字代表版本，39就是3.9，38就是3.8，因为我安装的是python3.9 64位的所以我下载的是
+
+将此文件保存到安装python的路径中，打开该路径，在地址栏输入cmd,或者win +R 输入cmd，然后用cd命令进入该路径，输入命令pip install wordcloud-1.8.0-cp39-cp39-win_amd64.whl执行即可，后面那一大串就是自己下载的那个文件名，很多人到这里便安装成功了，但是我还是报错，对于我这个刚刚接触计算机的小白来说，真的是措手不及。因为我已经安装好了，所以无法将错误信息截图上传，还请见谅
+
+这时，我就想看看错误信息到底讲的是什么，对于高考英语不及格的我来说看懂他又是一项艰难的挑战，好在我有中英翻译，发现总是在collecting 两个个第三方库，第一个库是matplotlib，另外一个库是kiwisolver，我开始用pip install matplotlib和pip install kiwisover去安装这两个第三方库，很遗憾全部失败，我又把眼光放到了之前的https://www.lfd.uci.edu/~gohlke/pythonlibs 这个网站上，我在上面下载了
+
+和
+
+这两个库，开始我是先安装matplotlib库，pip install wordcloud-1.8.0-cp39-cp39-win_amd64.whl但是不知道为什么matplotlib库也安装错误，我便去安装kiwisolver库，pip install kiwisolver-1.3.0-cp39-cp39-win_amd64.whl，这个库安装成功了，然后我在回过头去安装wordcloud库，发现还是安装不了，但是惊奇的发现在安装wordcloud库的时候居然帮我把matplotlib库给安装好了，我便又用.whl文件去安装wordcloud库 pip install wordcloud-1.8.0-cp39-cp39-win_amd64.whl
+
+这个时候便安装成功了。
+
+到此这篇关于关于python3.9安装wordcloud出错的问题及解决办法的文章就介绍到这了,更多相关python3.9安装wordcloud出错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

@@ -1,0 +1,335 @@
+
+python
+
+函数参数的用法
+
+*args ：不确定性的列表参数
+*kwargs：不确定性的字典参数
+其他参数基本与其他语言理解一致
+
+函数参数的用法
+
+*args ：不确定性的列表参数
+
+*kwargs：不确定性的字典参数
+
+其他参数基本与其他语言理解一致
+
+argparse模块----------命令行解析模块
+
+使用方法，在命令行中执行某python文件即可
+python xxx.py 参数（具体怎么写参看说明）
+
+argparse模块----------命令行解析模块
+
+使用方法，在命令行中执行某python文件即可
+python xxx.py 参数（具体怎么写参看说明）
+
+使用方法，在命令行中执行某python文件即可
+
+如何编写parse模块
+参数模块如何添加，先初始化一个ArgumentParser实例，然后调用该类的成员函数 add_argument增加参数，具体的help
+import argparse
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('integers', metavar='N', type=int, nargs='+',
+                    help='an integer for the accumulator')
+parser.add_argument('--sum', dest='accumulate', action='store_const',
+                    const=sum, default=max,
+                    help='sum the integers (default: find the max)')
+
+args = parser.parse_args()
+print(args.accumulate(args.integers))
+
+如何编写parse模块
+
+参数模块如何添加，先初始化一个ArgumentParser实例，然后调用该类的成员函数 add_argument增加参数，具体的help
+
+测试该模块的方法
+
+terminal中cd到该py文件所在的目录
+
+执行以下命令
+
+python parselearn.py --sum  1 5 23
+
+测试该模块的方法
+
+terminal中cd到该py文件所在的目录
+
+terminal中cd到该py文件所在的目录
+
+执行以下命令
+
+执行以下命令
+
+python parselearn.py --sum  1 5 23
+
+注意：不要输入一个列表 [1,2,5,6]，会报错
+
+注意：不要输入一个列表 [1,2,5,6]，会报错
+
+图像文件读写显示
+
+一张图片上显示多幅图像，一般有两种方法，推荐第一种
+
+import matplotlib.pyplot as plt
+plt.figure()
+plt.subplot(abc)
+plt.imshow('xxx.jpg')
+plt.show()
+
+图像文件读写显示
+
+一张图片上显示多幅图像，一般有两种方法，推荐第一种
+
+import matplotlib.pyplot as plt
+plt.figure()
+plt.subplot(abc)
+plt.imshow('xxx.jpg')
+plt.show()
+
+一张图片上显示多幅图像，一般有两种方法，推荐第一种
+
+import matplotlib.pyplot as plt
+plt.figure()
+plt.subplot(abc)
+plt.imshow('xxx.jpg')
+plt.show()
+
+import matplotlib.pyplot as plt
+plt.figure()
+ax = fig.add_subplot(abc)
+ax.imshow('xxx.jpg')
+plt.show()
+
+图像保存与重新读入
+方法很多，展示一种
+
+import numpy as np
+from PIL import Image
+import matplotlib.pyplot as plt
+
+def pic_show(img):
+    plt.figure()
+    plt.imshow(img)
+    plt.show()
+
+img = Image.open('../example.jpg')
+i = 5
+data = np.save('../exe{}'.format(i), img)
+show_data = np.load('../exe{}.npy'.format(i))
+pic_show(show_data)
+
+图像保存与重新读入
+
+方法很多，展示一种
+
+import numpy as np
+from PIL import Image
+import matplotlib.pyplot as plt
+
+def pic_show(img):
+    plt.figure()
+    plt.imshow(img)
+    plt.show()
+
+img = Image.open('../example.jpg')
+i = 5
+data = np.save('../exe{}'.format(i), img)
+show_data = np.load('../exe{}.npy'.format(i))
+pic_show(show_data)
+
+主要用到的包就是matplotlib.pyplot和PIL,至于转换成数组之后就numpy就好了。
+
+主要用到的包就是matplotlib.pyplot和PIL,至于转换成数组之后就numpy就好了。
+
+参看
+
+参看
+
+python中的tqdm
+
+python中的tqdm
+
+python读入json报错TypeError：the Json object must be str, bytes or bytearray，not ‘TextIOWrapper’
+解决办法：
+
+load和dump是针对文件操作的
+loads和dumps是针对python对象和字符串的
+所以目标找对，函数选对即可
+出现这个错误的原因是自己用了loads方法去将json文件转换为python对象，而正确的应该是使用load方法
+
+python读入json报错TypeError：the Json object must be str, bytes or bytearray，not ‘TextIOWrapper’
+
+解决办法：
+
+load和dump是针对文件操作的
+
+loads和dumps是针对python对象和字符串的
+
+所以目标找对，函数选对即可
+
+出现这个错误的原因是自己用了loads方法去将json文件转换为python对象，而正确的应该是使用load方法
+
+python读入json报错raise JSONDecodeError(“Extra data”, s, end)，json.decoder.JSONDecodeError: Extra data: line 2 column 1 (char 104)
+file_path = 'train_set/label_data_0531.json'
+import json
+
+items = []
+file = open(file_path, 'r', encoding='utf-8')
+for line in file.readlines():
+    dic = json.loads(line)
+    items.append(dic)
+
+# with open(file_path, 'r') as load_f:
+#     load_dict = json.load(load_f)  用这个就会出现上述的第5个问题
+#     items.append(load_dict)
+#     #print(len(load_dict))
+
+print(len(items))
+
+参看
+
+python读入json报错raise JSONDecodeError(“Extra data”, s, end)，json.decoder.JSONDecodeError: Extra data: line 2 column 1 (char 104)
+
+参看
+
+python中的除法(python3.4往上)
+
+/是精确除法，//是向下取整除法，%是求模
+%求模是基于向下取整除法规则的
+四舍五入取整round, 向零取整int, 向下和向上取整函数math.floor, math.ceil
+//和math.floor在CPython中的不同
+/在python 2 中是向下取整运算
+C中%是向零取整求模。
+
+python中的除法(python3.4往上)
+
+/是精确除法，//是向下取整除法，%是求模
+
+%求模是基于向下取整除法规则的
+
+四舍五入取整round, 向零取整int, 向下和向上取整函数math.floor, math.ceil
+
+//和math.floor在CPython中的不同
+
+/在python 2 中是向下取整运算
+
+C中%是向零取整求模。
+
+参看
+
+pycharm如何设置像spyder一样查看变量
+
+针对每个具体的项目，找Edit Configurations
+选择Show command line afterwards，没有就选Run with Python console
+
+pycharm如何设置像spyder一样查看变量
+
+针对每个具体的项目，找Edit Configurations
+
+选择Show command line afterwards，没有就选Run with Python console
+
+python用pip安装cv2的时候
+
+命令是pip install opencv-python,不要用pip install cv2
+使用的时候直接import cv2
+
+python用pip安装cv2的时候
+
+命令是pip install opencv-python,不要用pip install cv2
+
+使用的时候直接import cv2
+
+from ignite.engine import Engine, Events
+ImportError: No module named 'ignite.engine'
+
+同第9个问题一样，pip install pytorch-ignite
+不是直接pip instll ignite
+
+from ignite.engine import Engine, Events
+
+ImportError: No module named 'ignite.engine'
+
+同第9个问题一样，pip install pytorch-ignite
+
+不是直接pip instll ignite
+
+python的控制台
+
+Python Console叫做Python控制台，即Python交互模式；Terminal叫做终端，即命令行模式。
+Python交互模式主要有两种：CPython用>>>作为提示符，而IPython用In [序号]:作为提示符。
+Python交互式模式可以直接输入代码，然后执行，并立刻得到结果，因此Python交互模式主要是为了调试Python代码用的。
+命令行模式与系统的CMD(命令提示符)一样，可以运行各种系统命令。
+
+python的控制台
+
+Python Console叫做Python控制台，即Python交互模式；Terminal叫做终端，即命令行模式。
+
+Python交互模式主要有两种：CPython用>>>作为提示符，而IPython用In [序号]:作为提示符。
+
+Python交互式模式可以直接输入代码，然后执行，并立刻得到结果，因此Python交互模式主要是为了调试Python代码用的。
+
+命令行模式与系统的CMD(命令提示符)一样，可以运行各种系统命令。
+
+python为什么每次创建的文件目录下都含 .idea/文件夹？该文件夹又是用来干嘛的？
+
+当使用pycharm作为IDE时，会自动生成 .idea/文件夹来存放项目的配置信息。其中包括版本控制信息、历史记录等等
+说白了， .idea/ 与当前项目能否正常执行无关，它只是负责对代码的历史变化进行一个记录，便于回溯查找和复原
+
+python为什么每次创建的文件目录下都含 .idea/文件夹？该文件夹又是用来干嘛的？
+
+当使用pycharm作为IDE时，会自动生成 .idea/文件夹来存放项目的配置信息。其中包括版本控制信息、历史记录等等
+
+说白了， .idea/ 与当前项目能否正常执行无关，它只是负责对代码的历史变化进行一个记录，便于回溯查找和复原
+
+python中的目录
+
+python中的目录根据所处的系统不同，目录的分隔符可以是’/‘,也可以是’\‘,但是由于’\‘在python中是转义字符，所以，路径中的’\‘要两个来表示
+
+c:/user/work
+c:\\user\\home
+二者是等价的
+
+python中的目录
+
+python中的目录根据所处的系统不同，目录的分隔符可以是’/‘,也可以是’\‘,但是由于’\‘在python中是转义字符，所以，路径中的’\‘要两个来表示
+
+python中的目录根据所处的系统不同，目录的分隔符可以是’/‘,也可以是’\‘,但是由于’\‘在python中是转义字符，所以，路径中的’\‘要两个来表示
+
+c:/user/work
+c:\\user\\home
+二者是等价的
+
+1、当前目录：os.listdir(".") f1 = open('xugang.txt','w')
+
+2、父目录：os.listdir("..") f1 = open('../xugang.txt','w')
+
+3、根目录写法一：os.listdir('/') f1 = open('/xugang.txt','w')
+
+4、根目录写法二：os.listdir('') f1 = open('\xugang.txt','w')
+5、子目录：os.listdir('mytext') f1 = open('mytext/xugang.txt','w')
+
+1、当前目录：os.listdir(".") f1 = open('xugang.txt','w')
+
+2、父目录：os.listdir("..") f1 = open('../xugang.txt','w')
+
+3、根目录写法一：os.listdir('/') f1 = open('/xugang.txt','w')
+
+4、根目录写法二：os.listdir('') f1 = open('\xugang.txt','w')
+
+5、子目录：os.listdir('mytext') f1 = open('mytext/xugang.txt','w')
+
+盘符后面的冒号不要忘
+
+盘符后面的冒号不要忘
+
+windows下切换盘符c:\>d:,完成到c盘到D盘的切换
+
+windows下切换盘符c:\>d:,完成到c盘到D盘的切换
+
+参看
+
+参看
+

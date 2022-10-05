@@ -1,0 +1,69 @@
+目录Django 连接 MySQL数据库及常见报错解决终端或者数据库管理工具连接 MySQL ，并新建项目所需数据库安装访问 MySQL 的 Python 模块Django 相关配置可能会遇到的报错报错1: django.core.exceptions.ImproperlyConfigured: mysqlclient 1.x.xx or newer is required; you have 0.x.x.报错2：AttributeError: 'str' object has no attribute 'decode'
+
+目录
+
+Django 连接 MySQL数据库及常见报错解决终端或者数据库管理工具连接 MySQL ，并新建项目所需数据库安装访问 MySQL 的 Python 模块Django 相关配置可能会遇到的报错报错1: django.core.exceptions.ImproperlyConfigured: mysqlclient 1.x.xx or newer is required; you have 0.x.x.报错2：AttributeError: 'str' object has no attribute 'decode'
+
+终端或者数据库管理工具连接 MySQL ，并新建项目所需数据库
+
+安装访问 MySQL 的 Python 模块
+
+Django 相关配置
+
+可能会遇到的报错报错1: django.core.exceptions.ImproperlyConfigured: mysqlclient 1.x.xx or newer is required; you have 0.x.x.报错2：AttributeError: 'str' object has no attribute 'decode'
+
+报错1: django.core.exceptions.ImproperlyConfigured: mysqlclient 1.x.xx or newer is required; you have 0.x.x.
+
+报错2：AttributeError: 'str' object has no attribute 'decode'
+
+
+Django 连接 MySQL数据库及常见报错解决
+
+MySQL 的安装以及设置远程访问权限，不属于本笔记的重点，此处不做多余赘述
+
+前提：
+
+MySQL 安装成功，且已配置远程访问权限（如在本地测试的忽略此项）
+
+
+终端或者数据库管理工具连接 MySQL ，并新建项目所需数据库
+
+创建数据库一定要将字符编码设置为utf8，很多错误就是没正确设置编码导致的！
+
+
+安装访问 MySQL 的 Python 模块
+
+
+Django 相关配置
+
+工程文件夹(settings平级的文件夹)/_init_.py
+
+settings.py 中替换默认 DATABASE 相关配置
+
+至此，就可以像使用SQLite一样使用MySQL了！
+
+
+可能会遇到的报错
+
+首先需要保证前面所有步骤均配置成功
+
+
+报错1: django.core.exceptions.ImproperlyConfigured: mysqlclient 1.x.xx or newer is required; you have 0.x.x.
+
+报错内容：
+
+这里 xx 表示版本，报错版本可能不同但解决方法时一样的
+
+解决方法：
+
+/Python37（python安装目录）/Lib/site-packages/django/db/backends/mysql/base.py，注释掉以下内容：
+
+
+报错2：AttributeError: 'str' object has no attribute 'decode'
+
+报错内容：
+
+解决方法：
+
+打开 xx\Python37\lib\site-packages\django\db\backends\mysql\operations.py 把146行的 decode 修改为 encode 即可
+

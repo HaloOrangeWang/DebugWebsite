@@ -1,0 +1,50 @@
+
+Tensorflow初学者遇到的大坑
+
+听到请回答2021
+
+听到请回答2021
+
+14 人赞同了该文章
+
+入坑===================================================
+
+运行出错：
+
+I tensorflow/stream_executor/platform/default/http://dso_loader.cc:44] Successfully opened dynamic library cudart64_101.dll
+I tensorflow/core/platform/http://cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX
+
+I tensorflow/stream_executor/platform/default/http://dso_loader.cc:44] Successfully opened dynamic library nvcuda.dll
+
+F tensorflow/stream_executor/lib/http://statusor.cc:34] Attempting to fetch value instead of handling error Internal: Could not retrieve CUDA device attribute (81: UNKNOWN ERROR (1)
+
+然后弹出框显示python已停止运行。
+
+知乎坑==================================================
+
+这个问题我提问之后很久以后才通过审核，以至于让我自己给解决了......然后我自问自答，结果被知乎认定为违规......我也是无语了，想分享也不行么？
+
+填坑===================================================
+
+原因很简单，就是tensorflow多版本共存的问题（这个版本问题真的是害人不浅啊，多次因为这个卸载重装浪费了很多时间，也因为自己太小白了）。
+
+下面来整理一下如何解决的吧......希望能给和我一样的小白一些帮助。我是在自己创建的tensorflow环境下操作的：
+
+（1）卸载所有版本的tensorflow
+
+在Anaconda Prompt中输入命令行：
+
+activate tensorflow # 激活tensorflow环境
+
+pip list # 查看tensorflow环境下的所有安装包
+
+pip uninstall tensorflow # 卸载
+
+这两行命令多操作几次直到提示不存在tensorflow为止。我电脑上安装了两个版本tensorflow 2.1.0和tensorflow 1.13.1，把它们都先卸载，进入目录F:\anaconda\envs\tensorflow\Lib\site-packages（tensorflow安装路径）删除与tensorflow相关的所有文件夹（tensorboard、tensorflow_estimator等等），至此，tensorflow完全卸载干净。
+
+（2）安装tensorflow
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow
+
+一定要注意版本的问题！默认最新版本2.2.0，还要注意tensorflow版本和其他python库（numpy、matplotlib等）的版本对应，不然还会报错。
+

@@ -1,0 +1,14 @@
+报错
+
+OMP: Error #15: Initializing libiomp5.dylib, but found libiomp5.dylib already initialized.
+OMP: Hint This means that multiple copies of the OpenMP runtime have been linked into the program. That is dangerous, since it can degrade performance or cause incorrect results. The best thing to do is to ensure that only a single OpenMP runtime is linked into the process, e.g. by avoiding static linking of the OpenMP runtime in any library. As an unsafe, unsupported, undocumented workaround you can set the environment variable KMP_DUPLICATE_LIB_OK=TRUE to allow the program to continue to execute, but that may cause crashes or silently produce incorrect results. For more information, please see http://www.intel.com/software/products/support/.
+
+Process finished with exit code 134 (interrupted by signal 6: SIGABRT)
+
+第二段的意思是说：提示这意味着已将OpenMP运行时的多个副本链接到程序中。 这很危险，因为它会降低性能或导致错误的结果。 最好的办法是确保仅将单个OpenMP运行时链接到该流程中，例如 通过避免在任何库中静态链接OpenMP运行时。 作为不安全，不受支持，未记录的解决方法，您可以设置环境变量KMP_DUPLICATE_LIB_OK = TRUE以允许程序继续执行，但可能导致崩溃或无提示地产生错误的结果。
+
+它提示设置环境变量，因此可以加入一下语句，然后即可成功运行：
+
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+

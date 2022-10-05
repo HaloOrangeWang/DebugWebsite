@@ -1,0 +1,123 @@
+
+pip安装mysqlclient安装报错并解决的异常
+
+1、pip install mysqlclient
+
+$> pip install mysqlclient
+Complete output (12 lines):
+    /bin/sh: mysql_config: 未找到命令
+    /bin/sh: mariadb_config: 未找到命令
+    /bin/sh: mysql_config: 未找到命令
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-install-otppcqa6/mysqlclient_60ed3cdc39714eb391bba8b0576a72a0/setup.py", line 16, in <module>
+        metadata, options = get_config()
+      File "/tmp/pip-install-otppcqa6/mysqlclient_60ed3cdc39714eb391bba8b0576a72a0/setup_posix.py", line 61, in get_config
+        libs = mysql_config("libs")
+      File "/tmp/pip-install-otppcqa6/mysqlclient_60ed3cdc39714eb391bba8b0576a72a0/setup_posix.py", line 29, in mysql_config
+        raise EnvironmentError("%s not found" % (_mysql_config_path,))
+    OSError: mysql_config not found
+
+2、查验资料，说缺少mysql-devel库
+
+# Ubuntu环境
+$> apt-get install libmysqlclient-dev
+
+# centos环境
+$> yum install mysql-devel gcc gcc-devel python-devel
+
+$> pip install mysqlclient
+已加载插件：fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirrors.aliyun.com
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+软件包 gcc-4.8.5-44.el7.x86_64 已安装并且是最新版本
+正在解决依赖关系
+--> 正在检查事务
+---> 软件包 mariadb-devel.x86_64.1.5.5.68-1.el7 将被 安装
+--> 正在处理依赖关系 mariadb-libs(x86-64) = 1:5.5.68-1.el7，它被软件包 1:mariadb-devel-5.5.68-1.el7.x86_64 需要
+--> 正在处理依赖关系 openssl-devel(x86-64)，它被软件包 1:mariadb-devel-5.5.68-1.el7.x86_64 需要
+--> 正在处理依赖关系 libmysqlclient.so.18()(64bit)，它被软件包 1:mariadb-devel-5.5.68-1.el7.x86_64 需要
+--> 正在检查事务
+---> 软件包 mariadb-libs.x86_64.1.5.5.68-1.el7 将被 安装
+---> 软件包 openssl-devel.x86_64.1.1.0.2k-21.el7_9 将被 安装
+--> 正在处理依赖关系 openssl-libs(x86-64) = 1:1.0.2k-21.el7_9，它被软件包 1:openssl-devel-1.0.2k-21.el7_9.x86_64 需要
+--> 正在处理依赖关系 zlib-devel(x86-64)，它被软件包 1:openssl-devel-1.0.2k-21.el7_9.x86_64 需要
+--> 正在处理依赖关系 krb5-devel(x86-64)，它被软件包 1:openssl-devel-1.0.2k-21.el7_9.x86_64 需要
+--> 正在检查事务
+---> 软件包 krb5-devel.x86_64.0.1.15.1-50.el7 将被 安装
+--> 正在处理依赖关系 libkadm5(x86-64) = 1.15.1-50.el7，它被软件包 krb5-devel-1.15.1-50.el7.x86_64 需要
+--> 正在处理依赖关系 libverto-devel，它被软件包 krb5-devel-1.15.1-50.el7.x86_64 需要
+--> 正在处理依赖关系 libselinux-devel，它被软件包 krb5-devel-1.15.1-50.el7.x86_64 需要
+--> 正在处理依赖关系 libcom_err-devel，它被软件包 krb5-devel-1.15.1-50.el7.x86_64 需要
+--> 正在处理依赖关系 keyutils-libs-devel，它被软件包 krb5-devel-1.15.1-50.el7.x86_64 需要
+---> 软件包 openssl-libs.x86_64.1.1.0.2k-19.el7 将被 升级
+--> 正在处理依赖关系 openssl-libs(x86-64) = 1:1.0.2k-19.el7，它被软件包 1:openssl-1.0.2k-19.el7.x86_64 需要
+---> 软件包 openssl-libs.x86_64.1.1.0.2k-21.el7_9 将被 更新
+---> 软件包 zlib-devel.x86_64.0.1.2.7-19.el7_9 将被 安装
+--> 正在处理依赖关系 zlib = 1.2.7-19.el7_9，它被软件包 zlib-devel-1.2.7-19.el7_9.x86_64 需要
+--> 正在检查事务
+---> 软件包 keyutils-libs-devel.x86_64.0.1.5.8-3.el7 将被 安装
+---> 软件包 libcom_err-devel.x86_64.0.1.42.9-19.el7 将被 安装
+---> 软件包 libkadm5.x86_64.0.1.15.1-50.el7 将被 安装
+---> 软件包 libselinux-devel.x86_64.0.2.5-15.el7 将被 安装
+--> 正在处理依赖关系 libsepol-devel(x86-64) >= 2.5-10，它被软件包 libselinux-devel-2.5-15.el7.x86_64 需要
+--> 正在处理依赖关系 pkgconfig(libsepol)，它被软件包 libselinux-devel-2.5-15.el7.x86_64 需要
+--> 正在处理依赖关系 pkgconfig(libpcre)，它被软件包 libselinux-devel-2.5-15.el7.x86_64 需要
+---> 软件包 libverto-devel.x86_64.0.0.2.5-4.el7 将被 安装
+---> 软件包 openssl.x86_64.1.1.0.2k-19.el7 将被 升级
+---> 软件包 openssl.x86_64.1.1.0.2k-21.el7_9 将被 更新
+---> 软件包 zlib.x86_64.0.1.2.7-18.el7 将被 升级
+---> 软件包 zlib.x86_64.0.1.2.7-19.el7_9 将被 更新
+--> 正在检查事务
+---> 软件包 libsepol-devel.x86_64.0.2.5-10.el7 将被 安装
+---> 软件包 pcre-devel.x86_64.0.8.32-17.el7 将被 安装
+Removing mariadb-libs.x86_64 1:5.5.68-1.el7 - u due to obsoletes from installed mysql-community-libs-5.7.30-1.el7.x86_64
+--> 正在使用新的信息重新解决依赖关系
+--> 正在检查事务
+---> 软件包 mariadb-libs.x86_64.1.5.5.68-1.el7 将被 安装
+--> 正在处理依赖关系 mariadb-libs(x86-64) = 1:5.5.68-1.el7，它被软件包 1:mariadb-devel-5.5.68-1.el7.x86_64 需要
+--> 正在处理依赖关系 libmysqlclient.so.18(libmysqlclient_18)(64bit)，它被软件包 2:postfix-2.10.1-9.el7.x86_64 需要
+--> 正在处理依赖关系 libmysqlclient.so.18()(64bit)，它被软件包 1:mariadb-devel-5.5.68-1.el7.x86_64 需要
+--> 正在处理依赖关系 libmysqlclient.so.18()(64bit)，它被软件包 2:postfix-2.10.1-9.el7.x86_64 需要
+--> 解决依赖关系完成
+错误：软件包：2:postfix-2.10.1-9.el7.x86_64 (@anaconda)
+          需要：libmysqlclient.so.18()(64bit)
+错误：软件包：1:mariadb-devel-5.5.68-1.el7.x86_64 (base)
+          需要：mariadb-libs(x86-64) = 1:5.5.68-1.el7
+错误：软件包：1:mariadb-devel-5.5.68-1.el7.x86_64 (base)
+          需要：libmysqlclient.so.18()(64bit)
+错误：软件包：2:postfix-2.10.1-9.el7.x86_64 (@anaconda)
+          需要：libmysqlclient.so.18(libmysqlclient_18)(64bit)
+ 您可以尝试添加 --skip-broken 选项来解决该问题
+** 发现 2 个已存在的 RPM 数据库问题， 'yum check' 输出如下：
+2:postfix-2.10.1-9.el7.x86_64 有缺少的需求 libmysqlclient.so.18()(64bit)
+2:postfix-2.10.1-9.el7.x86_64 有缺少的需求 libmysqlclient.so.18(libmysqlclient_18)(64bit)
+
+3、提示缺少libmysqlcient.so动态库， 经查找资料, 与MySQL版本相关问题
+
+# 下载与自己mysql-devel和mysql-lib-compat包
+1、查看安装了什么版本的mysql和相关的包
+$> rpm -qa | grep mysql
+mysql-community-server-5.7.30-1.el7.x86_64
+mysql-community-common-5.7.30-1.el7.x86_64
+mysql-community-client-5.7.30-1.el7.x86_64
+mysql-community-libs-5.7.30-1.el7.x86_64
+2、下载https://centos.pkgs.org/7/mysql-5.7-x86_64/下找mysql-community-libs-compat-5.7.30-1.el7.x86_64.rpm和
+$> wget https://centos.pkgs.org/7/mysql-5.7-x86_64/mysql-community-devel-5.7.30-1.el7.x86_64.rpm.html
+$> wget https://repo.mysql.com/yum/mysql-5.7-community/el/7/x86_64/mysql-community-libs-compat-5.7.30-1.el7.x86_64.rpm
+3、安装下载的rpm包
+$> rpm -ivh mysql-community-devel-5.7.30-1.el7.x86_64.rpm.html
+$> rpm -ivh mysql-community-libs-compat-5.7.30-1.el7.x86_64.rpm
+4、pip install mysqlclient
+Collecting mysqlclient==1.4.6
+  Using cached mysqlclient-1.4.6.tar.gz (85 kB)
+Building wheels for collected packages: mysqlclient
+  Building wheel for mysqlclient (setup.py) ... done
+  Created wheel for mysqlclient: filename=mysqlclient-1.4.6-cp36-cp36m-linux_x86_64.whl size=96772 sha256=68a98657c96915ec42a1c2e0bbefd8feb715cef759eae80d3514c6e0677430f2
+  Stored in directory: /root/.cache/pip/wheels/c6/8c/80/527c233e7cb169f828b7168ebeab0fc5206d09b0fa133472fb
+Successfully built mysqlclient
+Installing collected packages: mysqlclient
+Successfully installed mysqlclient-1.4.6
+

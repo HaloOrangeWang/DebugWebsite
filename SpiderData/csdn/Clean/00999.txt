@@ -1,0 +1,32 @@
+python中使用numpy合并矩阵a,b
+
+
+报错
+
+密集（dense）矩阵的合并不报错，然而稀疏矩阵（sparse）报错了，即在矩阵中，多数的元素为0。
+
+ValueError: all the input arrays must have same number of dimensions
+
+
+解决办法
+
+纵向合并函数np.vstack((a,b))使用下面函数代替
+
+np.row_stack((a,b))
+
+横向合并函数np.hstack((a,b))使用下面函数代替
+
+np.column_stack((a,b))
+
+
+报错
+
+TypeError: vstack() takes 1 positional argument but 2 were given
+
+请注意无论是哪个合并函数，他们输入的值都只能是一个，报这个错误的人，很大程度漏了一个括号，传进了两个参数。
+
+
+解决办法
+
+将np.vstack(a,b) 变成np.vstack((a,b))。其余同理。
+

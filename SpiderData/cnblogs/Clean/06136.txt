@@ -1,0 +1,18 @@
+在terminal上运行gluoncv时遇到了一个报错问题。
+
+
+解决方法
+
+如果你直接import Matplotlib了那么直接在import中添加如下代码：
+
+如果你的import中有某些模块间接import了Matplotlib，那么找到site-package这个文件夹，一般来说这个文件夹在本目录下，要么在python的安装目录下，要么就要conda的目录下，在这个文件中找到.matplotlib/matplotlibrc，在文件末尾添加
+
+backend: TkAgg
+
+即可。
+
+
+原因
+
+个人猜测是macos不支持一些奇怪的窗口框架，所以只能修改为TK的。
+

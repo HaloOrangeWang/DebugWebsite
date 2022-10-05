@@ -1,0 +1,84 @@
+今天要处理大量的csv文件，出现UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc9 in position 0: invalid continuation byte 报错，于是统一将文件转为utf-8编码，代码如下：
+
+# 将编码转化为utf-8编码
+
+def change_code(original_file, newfile):
+
+files = os.listdir(original_file)
+
+for namein files:
+
+original_path = original_file +'\\' + name
+
+f =open(original_path, 'rb+')
+
+content = f.read()
+
+source_encoding ='utf-8'
+
+try:
+
+content.decode('utf-8').encode('utf-8')
+
+source_encoding ='utf-8'
+
+except:
+
+try:
+
+content.decode('gbk').encode('utf-8')
+
+source_encoding ='gbk'
+
+except:
+
+try:
+
+content.decode('gb2312').encode('utf-8')
+
+source_encoding ='gb2312'
+
+except:
+
+try:
+
+content.decode('gb18030').encode('utf-8')
+
+source_encoding ='gb18030'
+
+except:
+
+try:
+
+content.decode('big5').encode('utf-8')
+
+source_encoding ='gb18030'
+
+except:
+
+content.decode('cp936').encode('utf-8')
+
+source_encoding ='cp936'
+
+f.close()
+
+# 按照确定的encoding读取文件内容，并另存为utf-8编码：
+
+block_size =4096
+
+with codecs.open(original_path, 'r', source_encoding)as f:
+
+newfile_path = newfile +'\\' + name
+
+with codecs.open(newfile_path, 'w', 'utf-8')as f2:
+
+while True:
+
+content = f.read(block_size)
+
+if not content:
+
+break
+
+f2.write(content)
+

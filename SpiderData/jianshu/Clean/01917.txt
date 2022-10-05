@@ -1,0 +1,64 @@
+运行python manage.py celery worker -l INFO时报错：
+
+Traceback (most recent call last):
+
+File "D:\sofa\python\lib\site-packages\celery\worker\__init__.py", line 206, in start
+
+self.blueprint.start(self)
+
+File "D:\sofa\python\lib\site-packages\celery\bootsteps.py", line 123, in start
+
+step.start(parent)
+
+File "D:\sofa\python\lib\site-packages\celery\bootsteps.py", line 374, in start
+
+return self.obj.start()
+
+File "D:\sofa\python\lib\site-packages\celery\worker\consumer.py", line 280, in start
+
+blueprint.start(self)
+
+File "D:\sofa\python\lib\site-packages\celery\bootsteps.py", line 123, in start
+
+step.start(parent)
+
+File "D:\sofa\python\lib\site-packages\celery\worker\consumer.py", line 884, in start
+
+c.loop(*c.loop_args())
+
+File "D:\sofa\python\lib\site-packages\celery\worker\loops.py", line 103, in synloop
+
+connection.drain_events(timeout=2.0)
+
+File "D:\sofa\python\lib\site-packages\kombu\connection.py", line 288, in drain_events
+
+return self.transport.drain_events(self.connection, **kwargs)
+
+File "D:\sofa\python\lib\site-packages\kombu\transport\virtual\__init__.py", line 847, in drain_events
+
+self._callbacks[queue](message)
+
+File "D:\sofa\python\lib\site-packages\kombu\transport\virtual\__init__.py", line 534, in _callback
+
+self.qos.append(message, message.delivery_tag)
+
+File "D:\sofa\python\lib\site-packages\kombu\transport\redis.py", line 146, in append
+
+pipe.zadd(self.unacked_index_key, delivery_tag, time()) \
+
+File "D:\sofa\python\lib\site-packages\redis\client.py", line 2388, in zadd
+
+for pair in iteritems(mapping):
+
+File "D:\sofa\python\lib\site-packages\redis\_compat.py", line 110, in iteritems
+
+return iter(x.items())
+
+AttributeError: 'str' object has no attribute 'items'
+
+查询资料发现是redis版本过高（3.2.100），重装redis
+
+pip install redis==2.10.6
+
+参考链接
+

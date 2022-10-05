@@ -1,0 +1,210 @@
+
+《那些年我们遇到的报错》
+
+学习Python，掌握读取错误信息、排除错误的能力是非常重要的。
+
+我们在编写代码的时候，最初会遇到很多次报错，只要我们遵循两个点，就不用再担心报错问题。
+
+一是确定报错的地方，看终端显示哪句代码错误了；
+
+二是根据错误类型，锁定几种可能的错误，逐步排查，最终找到问题所在。
+
+小技巧
+
+复制报错信息网上一搜，会发现已有无数人跟你一样遇到这样的报错了
+
+查看前辈们的解决方法去修改即可
+
+下面，我们就来看看新手常见的几种报错类型。
+
+
+一、 not defined--NameError：试图访问的变量名不存在。
+
+举个简单的例子，只运行一行print(a)
+
+print(a)
+
+会报错：NameError: name 'a' is not defined。简单来说，就是变量a没有定义
+
+解决方法是在前面给a赋值，比如加上一行a=''或者a=123,a='你好'。
+
+总结：用一个变量前先创造它，要注意拼写。
+
+还有一种需要小心处理的是：变量或者函数名拼写错误。如：
+
+name= '后浪'
+print('My name is ' + nane)
+
+也会报错NameError: name 'nane' is not defined
+
+解决方法：修改正确拼写
+
+搜索解决：复制  NameError: name 'nane' is not defined 网上搜索
+
+
+二、invalid character in identifier
+
+错误例子
+
+print（hello)
+
+报错信息为SyntaxError: invalid character in identifier
+
+提示是：语法错误，:标识符中的无效字符。
+
+通常就是用中文输入了标点符号和括号等。
+
+解决方法：根据报错指示的代码那一行去修改为英文输入
+
+搜索解决：复制  SyntaxError: invalid character in identifier 网上搜索
+
+
+三、SyntaxError： invalid syntax 语法错误
+
+错误例子：
+
+name = 'houlang'
+if name == 'houlang'
+    print(name)
+
+报错信息为：SyntaxError: invalid syntax
+
+提示是：语法错误，非法的语法。
+
+搜索解决：复制  SyntaxError: invalid syntax 网上搜索
+
+当报错的时候，要注意回到错误信息的那一行（或者它隔壁的上下行），然后从下往上，慢慢查找，此处这个程序就是因为if语法忘了在判断语句后面加“：”，所以导致的错误。
+
+
+四、IndentationError: 缩进有误
+
+错误例子
+
+a = 123
+if a == 123:
+print(a)
+
+报错：IndentationError: expected an indented block
+
+原因：缩进有误，Python的缩进非常严格，行首多个空格，少个空格都会报错。
+
+像def，class，if，for，while等代码块都需要缩进。
+
+搜索解决：复制  SyntaxError: invalid syntax 网上搜索
+
+小技巧就是冒号下面的语句通常要缩进
+
+
+五、TypeError：类型错误，对象用来表示值的类型非预期类型时发生的错误。
+
+错误例子：
+
+age = 18
+
+print('我的年龄是'+age)
+
+报错信息：TypeError: can only concatenate str (not "int")  to str
+
+这是类型错误，提示必须是一个字符串，不能是数字。
+
+通俗讲就是 道不同不相为谋，比如字符串跟整数相加会报错。
+
+解决方法：在使用“+”做拼接的时候，必须使用字符串，或者把数字转化成字符串。
+
+搜索解决：复制 TypeError: can only concatenate str (not "int") to str 网上搜索
+
+或者去掉+，直接加逗号
+
+正确代码：
+
+age = 18
+print('我的年龄是'+str(age)) 
+print('我的年龄是',age)
+
+
+六、AttributeError：属性错误，特性引用和赋值失败时会引发属性错误
+
+错误例子：
+
+tp=('1','3','5')
+tp.append('7')
+print(tp)
+
+报错信息：AttributeError: 'tuple' object has no attribute 'append'
+
+提示：属性错误：元组对象没有“append”的属性，简单来说元组是不可变对象
+
+解决方法：把元组换成列表。只能换列表，不能换字典哦。
+
+注意：append()函数和extend()目前只应用于列表
+
+
+七、IndexError：索引错误，使用的索引不存在，常索引超出序列范围，序列中没有此索引(index)
+
+错误例子
+
+list1 = ['a','b','c','d','e']
+print(list1[5])
+
+报错信息：IndexError: list index out of range
+
+提示：索引错误，列表索引超出了范围。
+
+解决办法：回头看列表的长度，索引是要小于列表的长度的。上面的列表长度是5（'e'是第4个元素）而索引却要打印第5个，所以是超出了列表的长度。
+
+小技巧：看到 list index out of range 就是列表没有你想要的
+
+
+八、KeyError：在读取字典中的key和value时，如果key不存在，就会触发KeyError错误。
+
+举个小例子：
+
+dict={'a':1,'b':2,'c':3}
+print(dict['d'])
+
+解决方法：利用dict内置的get(key[,default])方法，如：
+
+print(dict['d'])#改为
+print(dict.get('d'))
+
+如果key存在，则返回其value，否则返回None;使用这个方法永远不会触发KeyError。
+
+
+九、try…except…语句
+
+先看一个报错的例子
+
+age = int(input('请输入一个整数：'))    
+print('要输入整数噢')
+
+只要输入不是数字的就会错误：
+
+使用try…except…语句为如下：
+
+try:
+    age = int(input('请输入一个整数：'))
+except ValueError:#这样就可以接受ValueError的错误，打印以下print语句
+    print('要输入整数噢')
+
+总的代码为：
+
+while True:
+    try:
+        age = int(input('你今年几岁了？'))
+        break
+    except ValueError:
+        print('你输入的不是数字！')
+if age < 18:
+    print('不可以喝酒噢')
+
+
+总结：
+
+关于Python的报错类型还有很多，可以在这个网站查阅更多报错类型：https://www.runoob.com/python/python-exceptions.html。
+
+一是确定报错的地方，看终端显示哪句代码错误了
+
+复制报错信息网上一搜，查看前辈们的解决方法去修改即可
+
+正所谓“久病成医”，慢慢积累经验处理起来会很轻松的哈。
+

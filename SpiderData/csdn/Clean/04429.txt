@@ -1,0 +1,18 @@
+$ python
+Python 3.5.2 (default, Nov 23 2017, 16:37:01) 
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> #错误信息
+>>> cubes = [x ** 3 for x in range(1, 11)]
+>>> print (filter(lambda x: x%3==0, cubes))
+<filter object at 0x7f0ae4ce0080>
+
+>>>#正确写法
+>>> print (list(filter(lambda x: x%3==0, cubes)))
+[27, 216, 729]
+>>>
+
+原因： 
+ 在python3中，filter, map, zip等返回可迭代的对象，返回的仅仅是一个元素，并不是一个列表，所以结果前需要使用list
+

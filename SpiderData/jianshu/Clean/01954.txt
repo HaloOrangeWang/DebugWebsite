@@ -1,0 +1,29 @@
+
+pyaudio简介
+
+pyaudio库，使用这个可以进行录音，播放，生成wav文件等等。PyAudio 提供了 PortAudio 的 Python 语言版本，这是一个跨平台的音频 I/O 库，使用 PyAudio 你可以在 Python 程序中播放和录制音频。为PoTaTudio提供Python绑定，跨平台音频I/O库。使用PyAudio，您可以轻松地使用Python在各种平台上播放和录制音频，例如GNU/Linux、微软Windows和苹果Mac OS X/MACOS。
+
+
+ALSA
+
+ALSA是Advanced Linux Sound Architecture的缩写，高级Linux声音架构的简称,它在Linux操作系统上提供了音频和MIDI（Musical Instrument Digital Interface，音乐设备数字化接口）的支持。
+
+二者的关系是：pyaudio调用ALSA实现录音功能。
+
+
+问题描述
+
+使用 pyaudio 录制声音的时候报错。直接使用ALSA命令录音无问题。
+
+python: src/hostapi/alsa/pa_linux_alsa.c:3636: PaAlsaStreamComponent_BeginPolling: Assertion `ret == self->nfds' failed.
+Aborted (core dumped)
+
+
+原因及处理
+
+pyaudio是依赖于linux的ALSA版本，所以在安装的时候是要考虑linux发行版本的（ubuntu, centos，debian）。所以只需要在bash执行：
+
+apt-get install  python-pyaudio -y
+
+即可。
+

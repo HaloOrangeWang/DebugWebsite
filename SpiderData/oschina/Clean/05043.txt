@@ -1,0 +1,35 @@
+解决方法：在文件中加入下面两行代码，使用绝对路径
+
+import sys,os
+sys.path.append(os.path.dirname(__file__) + os.sep + '../')
+
+在练习Python中package的相对导入时，即
+
+from . import XXX
+or
+from .. import XXX
+
+时会遇到这样两个错误：
+
+SystemError: Parent module '' not loaded, cannot perform relative import
+
+和
+
+ValueError: attempted relative import beyond top-level package
+
+其实这两个错误的原因归根结底是一样的：在涉及到相对导入时，package所对应的文件夹必须正确的被python解释器视作package，而不是普通文件夹。否则由于不被视作package，无法利用package之间的嵌套关系实现python中包的相对导入。
+
+文件夹被python解释器视作package需要满足两个条件：
+
+1、文件夹中必须有__init__.py文件，该文件可以为空，但必须存在该文件。
+
+2、不能作为顶层模块来执行该文件夹中的py文件（即不能作为主函数的入口）。
+
+补充：在"from YY import XX"这样的代码中，无论是XX还是YY，只要被python解释器视作package，就会首先调用该package的__init__.py文件。如果都是package，则调用顺序是YY，XX。
+
+另外，练习中“from . import XXX”和“from … import XXX”中的’.‘和’…’，可以等同于linux里的shell中’.‘和’…'的作用，表示当前工作目录的package和上一级的package。
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

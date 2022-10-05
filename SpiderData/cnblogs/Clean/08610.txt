@@ -1,0 +1,19 @@
+模型转换为onnx
+
+转换成功之后会在当前目录生成onnx文件：alexnet.onnx
+
+模型验证
+
+报错：ValidationError: Your model ir_version is higher than the checker's
+
+原因：版本不匹配
+
+原来用的onnx=1.4.1 需要升级一下onnx
+
+
+RuntimeError: CUDA error: device-side assert triggered
+
+报错：
+
+原因：标签越界，我的配置文件是单类目标检测，使用COCO数据集的时候有80个目标类别，因而导致标签越界。修改配置文件可以解决
+

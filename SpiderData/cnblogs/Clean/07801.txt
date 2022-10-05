@@ -1,0 +1,24 @@
+在NVIDIA jetson xavier NX上运行yolov4的demo时，import cv2一行报错ImportError: libx265.so.146: cannot open shared object file: No such file or directory。
+
+尝试用pip3 install opencv-python安装，提示找不到安装包。然后发现在/home/chw/Downloads/nvidia/sdkm_downloads里面有python-opencv的安装包，这个文件夹下面的都是刷机时候自动下载的。
+
+​dpkg -i libopencv-python_3.3.1-2-g31ccdfe11_arm64.deb,
+
+然后报错
+
+​​​
+
+于是从/home/chw/Downloads/nvidia/sdkm_downloads里面把opencv拷贝过来，然后安装，
+
+​dpkg -i libopencv_3.3.1-2-g31ccdfe11_arm64.deb
+
+继续报错，
+
+​​​
+
+用apt-get install安装失败，于是Google搜索“ubuntu  libavformat57”，然后去网站https://pkgs.org/下载三个库，分别是
+
+libavcodec57_3.4.8-0ubuntu0.2_arm64.deb 
+libavfilter6_3.4.8-0ubuntu0.2_arm64.deb
+libavformat57_3.4.8-0ubuntu0.2_arm64.deb
+

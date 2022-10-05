@@ -1,0 +1,12 @@
+由于在ubuntu环境下，将python做与python3.6做了软链接（ln -s python python3.6），并且pip也被我做了软链接，所以导致用pip安装virtualenvwrapper之后，在source启动virtualenvwrapper.sh时以及workon 虚拟环境时总是报错：
+
+这是根据提示230行的语句：
+
+1 "$VIRTUALENVWRAPPER_PYTHON" -m 'virtualenvwrapper.hook_loader' \
+
+结合错误信息与提示找到的语句，猜测应该是VIRTUALENVWRAPPER_PYTHON这里有问题，然后在virtualenvwrapper.sh文件中查找VIRTUALENVWRAPPER_PYTHON，发现了关键点：
+
+VIRTUALENVWRAPPER_PYTHON是用来(Locate the global Python where virtualenvwrapper is installed.)定位哪个python下面安装了virtualenvwrapper的。原本指定的位置是python，也就是2.7版本的。鉴于之前我使用python3.6安装的，所以此处要改成python3。然后这个错误就消失了。
+
+使用virtualenvwrapper的好处是不用每次使用source /xxx/虚拟环境/bin/activate来启动虚拟环境了，在~/.bashrc配置一下，日后开启虚拟环境直接可以用workon命令即可，具体操作步骤，前提是你已经安装了python-virtualenv了：
+

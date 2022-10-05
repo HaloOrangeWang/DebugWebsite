@@ -1,0 +1,22 @@
+报错信息:
+
+首先，在执行./configure时，留意最后输出结果保证正常执行完成，正常完成应该是没有error字符的,例如:
+
+如果报:Unable to find ImageMagick，安装ImageMagick和libmagickwand-dev
+
+apt-get install imagemagick libmagickwand-dev
+
+如果报: error: no suitable Python interpreter found
+
+说明没有python环境或现有python和zbar需要的版本不一致，如果没有涉及到python,添加参数--without-python
+
+如果报:configure: error: test for video support failed!
+rebuild your kernel to include video4linux support or
+configure --disable-video to skip building video support.
+
+添加--disable-video 参数
+
+例如我的最后执行./configure参数:
+
+./configure FLAGS="" --disable-video --without-python --without-qt
+

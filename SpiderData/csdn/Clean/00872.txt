@@ -1,0 +1,28 @@
+今天要写个简单脚本，模拟同时50个用户往服务器上传东西。
+
+就简单用
+
+thread.start_new_thread(func, ())
+
+结果运行的时候报错：
+
+Unhandled exception in thread started by 
+Error in sys.excepthook: 
+Original exception was:
+
+locks=[];    
+ for i in range(len(seconds)) :    
+     lock=thread.allocate_lock();    
+     lock.acquire();    
+     locks.append(lock);
+
+启动线程的时候把锁传进去：
+
+thread.start_new_thread(loop,(function,(),lock));
+
+lock.release();
+
+for lock in locks :    
+    while lock.locked() :     
+        pass;
+

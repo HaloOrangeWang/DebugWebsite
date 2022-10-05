@@ -1,0 +1,11 @@
+Nginx在win下启动报错：bind() to 0.0.0.0:80 failed (10013: An attempt was made to access a socket in a way forbidden by its access permissions) 。 原因是Win7下nginx默认80端口被System占用，造成nginx启动报错的。
+
+netstat -aon | findstr "80"
+
+通过命令可以看到80端口果真被占用。发现占用的pid是4，名字是System。怎么禁用呢？
+
+
+解决方法
+
+打开注册表：regedit 找到：HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\HTTP 找到一个REG_DWORD类型的项Start，将其改为0 重启系统，System进程不会占用80端口 重启之后，start nginx.exe
+

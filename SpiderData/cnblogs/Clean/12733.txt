@@ -1,0 +1,132 @@
+
+前言
+
+　　在使用python开发好一款软件、工具之后，我们希望能够把这个软件发给其他人使用，就像我们使用其他软件一样，只需要双击打开exe，而不需要管其他环境。
+
+对于类似C、C++而言是在系统编译的时候就生成了exe，然后只需要把exe和所需环境一起打包即可。但是对于Python这种解释型语言而言，不能通过这种方式生成可执行程序。
+
+当然，python也有对应的处理办法，其中常用的就是PyInstaller包。
+
+PyInstaller介绍
+
+
+1. 安装介绍
+
+　　PyInstaller包并不是python默认安装模块，需要用户手动安装，安装方式如下：
+
+pyinstaller -F -p XXX/Lib\site-packages XXX.py
+
+　　2.使用介绍
+
+切换到需要打包的python路径下，然后再打包。是不是必须这样需要打个问号，没有做实验，理论上应该只需要包含需要打包python文件全路径即可，可能切换到文件路径下更方便。
+
+　　PyInstaller 常用使用方式如下：
+
+pyinstaller -F -w xxx.py
+
+　　-F: 打包成exe；-w:exe不显示控制台，默认显示(-c);xxx.py需要打包的python文件
+
+具体pyinstaller打包工具的详细参数可以参考博文：https://blog.csdn.net/weixin_39000819/article/details/80942423
+
+安装成功后出现如下图：
+
+
+PyInstaller打包过程中遇到的问题及解决办法
+
+1.打包后的exe出现闪退
+
+　　　　对于一个简单的测试用例，打包完成后，双击exe之后就可以打开，如下图所示：
+
+　　但是当你在程序中引用了其他包的时候，画风就发生改变了，例如我在系统在中引入了numpy包，按照上面的方式打包，双击打开exe后就出现了闪退的情况。
+
+刚开始的时候一头雾水，完全不知道发生了什么，面对这种情况怎么处理呢？
+
+
+2. exe闪退问题排查
+
+　　在这个时候打包的时候-c参数就起作用了，-c参数（默认参数）是打包成一个带有后台的exe，可以看到调试信息、打印信息、报错信息等，因此只需要把这个exe拖到cmd下面查看报错信息就可以定位问题了。
+
+　　一看，发现是缺少numpy模块。对于我不熟悉python打包的我，有点懵，还以为只需要按照上面的打包方式一顿操作就万事大吉了，没想到其实不是，也会遇到模块丢失的问题，让我想起的C++生成的exe，也是需要配套include、dll支持的。因此，猜测需要把所需要的模块放到exe目录下。
+
+我做了尝试，但发现依然不起作用，当然有可能是我放置的路径不对，或者包不全等原因。总而言之是没成功！
+
+
+3. 模块缺失解决办法(ModuleNotFoundError)
+
+可是如果真的要通过手动考包的方式考过去，会不会有点太麻烦，因此查到了另外的处理方式，也就是在打包的时候把依赖库也打包进exe，不得不说这就是我期待的方式。
+
+那具体怎么操作呢？
+
+我们知道安装的库一般都是在"***/Lib\site-packages"文件夹中，也就是打包的时候把这个包打进去即可，看到很多博文提到这种方式确实解决了问题。
+
+　　例如这篇就写得很好 https://www.cnblogs.com/Summerio/p/11676943.html
+
+　　废话不多说，具体操作如下
+
+pyinstaller -F -p ***/Lib\site-packages XXX.py
+
+　　看到这里，多了个-p参数，-p后面就是需要打包的库路径，这里是支持打包多个路径的，只需要继续-p +路径即可。打包完成之后，可以看到新生成的exe的体积明显更大了。
+
+　　但是很不幸，又遇到了其他的问题。打开exe依然失败了。
+
+但是错误信息有些不一样。
+
+　　这个就很诡异了，于是我看了下打包的过程中，是不是真的对了。结果还真是，打包的时候就出现问题了：
+
+这个就很奇怪了，看起来像是找不到numpy包，但我明明安装了。为了证明这个猜想，我就用当前环境的python导入numpy试试看，发现还真不行。
+
+
+4. python环境问题
+
+很是奇怪，因此我猜想是python环境的问题。python使用的库site-package并不是当前环境的site-package（本人使用的是anaconda）。如下方式可以证明:
+
+(1)查看当前python路径，确定环境
+
+import sys
+sys.executable
+
+　　
+
+(2)查看当前python环境使用的site-package路径
+
+import site
+site.getsitepackages()
+
+　　
+
+(3）结论：可以看到python并么有使用当前虚拟环境的site-packages，当前site-pacakges的路径是D:\miniconda3\envs\testPackage\Lib\site-packages
+
+因此引起了如上的错乱。。。。
+
+具体原因还没有查到，看到一篇可能的原因是，conda没有对用户的site-packages，大家可以先看看
+
+https://zhuanlan.zhihu.com/p/361712304
+
+
+5. exe找不到包的子模块，及对应解决办法　　
+
+然而，真的是好事多磨，又遇到了其他问题了。因为我用到了pydicom这个模块，发现打开exe后，找不到对应的子模块：
+
+很神奇，弄得我都怀疑这种打包方式对不对，不然为什么会找不到pydicom的子模块。
+
+不过幸好，找到了对应的解决办法。也就是打包的时候，将找不到的模块也一一打包进去：
+
+pyinstaller -F -p D:\miniconda3\envs\fullPhaseSeparate\Lib\site-packages --hidden-import="pydicom.encoders.gdcm" --hidden-import="pydicom.encoders.pylibjpeg" main.py
+
+　　如上，使用--hidden-import="libname"的方式打包对应的子模块。
+
+具体参考文章如下：
+
+https://newbedev.com/pyinstaller-modulenotfounderror-no-module-named-sklearn-utils-cython-blas#:~:text=Pyinstaller%20%3B%20ModuleNotFoundError%3A%20No%20module%20named%20%27sklearn.utils._cython_blas%27%20PyInstaller,use%20--hidden-import%20to%20add%20sklearn%20%27s%20missing%20modules.
+
+
+成功
+
+成功！激动之情溢于言表！
+
+到这里为止！我这曲折的打包过程终于完事了！exe也发出去可以正常使用了！
+
+希望对大家有丝丝帮助~
+
+同时，欢迎大家沟通交流！
+

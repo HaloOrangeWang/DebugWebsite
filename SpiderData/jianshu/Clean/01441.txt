@@ -1,0 +1,20 @@
+今天在用python的smtplib从163发邮件给qq邮箱时
+
+报错提示
+
+smtplib.SMTPDataError: (554, b'DT:SPM 163 smtp13,EcCowAAHKbvOPZ9caJ15OA--.46887S2 1553939919,please see http://mail.163.com/help/help_spam_16.htm?ip=183.128.104.30&hostid=smtp13&time=1553939919')
+
+首选是查了一下网上的解决方案，普遍是通过标题去除test字样或者收件人加上自己解决的，但是我尝试之后仍然无效
+
+于是再仔细查看错误码，发现是
+
+•554 DT:SPM 发送的邮件内容包含了未被许可的信息，或被系统识别为垃圾邮件。请检查是否有用户发送病毒或者垃圾邮件
+
+试了各种修改内容无效之后，尝试了一下添加了msg的From 和 To 字段，居然生效了，马上发送成功了
+
+msg['From']= "*******@163.com"
+
+msg['To']= "*******@qq.com"
+
+虽然不清楚问题到底是怎么解决的，暂时记录一下
+

@@ -1,0 +1,41 @@
+关于Failed to import pydot. You must install pydot and graphviz for pydotprint to work的处理建议
+
+
+环境
+
+win 10
+
+python 3.x
+
+Tensorflow 2.x.x；
+
+pydot 2.4.2
+
+graphviz 2.3.7 ，在graphviz官网上下载适用版本的.msi 安装包，安装完毕将bin加到环境变量 path（D:\Program Files (x86)\Graphviz2.37\bin）
+
+
+报错代码：
+
+keras.utils.plot_model(model, 'small_resnet_model.png', show_shapes=True)
+
+
+报错信息：
+
+File "D:\Anaconda3_64\envs\tf_gpu\lib\site-packages\tensorflow_core\python\keras\utils\vis_utils.py", line 110, in model_to_dot
+
+raise ImportError('Failed to import pydot. You must install pydot'
+
+ImportError: Failed to import pydot. You must install pydot and graphviz for pydotprint to work.
+
+
+原因：
+
+find_graphviz()函数在1.2.x+的pydot版本中已经被弃用了，因此，应该要安装pydot_ng
+
+
+解决办法：
+
+pip install pydot_ng
+
+再次执行，问题解决
+

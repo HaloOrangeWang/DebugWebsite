@@ -1,0 +1,59 @@
+
+ROS的安装-> rosdep init /update报错2022.02.24实测有效
+
+一、 解决rosdep_init问题
+
+正常执行sudo rosdep init会报错，如下：
+
+解决方案：
+
+此解决方案的原理是基于手动完成sudo rosdep init的步骤，然后再通过rosdep update完成整个方案的实施。
+
+步骤一：首先打开一个终端
+
+sudo mkdir -p /etc/ros/rosdep/sources.list.d
+
+cd /etc/ros/rosdep/sources.list.d
+
+sudo gedit 20-default.list
+
+步骤二：将以下内容复制进20-default.list文件中
+
+步骤三：执行以下指令
+
+rosdep update（一般会失败，请继续看下文）
+
+参考资料：https://www.guyuehome.com/12640
+
+二、 解决rosdep_update问题
+
+由于近期国内Github Raw的可用IP越来越少，通过修改hosts文件解决rosdep update超时问题的方法已经不太好用，本文通过修改rosdep源码中下载资源的函数来解决这一问题。
+
+网站https://ghproxy.com/支持github的资源代理，非常好用，我们将用此代理加速rosdep对Github Raw的访问，进而解决rosdep update超时问题。
+
+首先定位rosdep资源下载函数。从报错信息中得知，该函数名为download_rosdep_data，位于/usr/lib/python2.7/dist-packages/rosdep2/sources_list.py。我们修改这一函数，添加：
+
+url="https://ghproxy.com/"+url
+
+应用ghproxy的代理服务。
+
+用同样的方法修改/usr/lib/python2.7/dist-packages/rosdistro/__init__.py里面的DEFAULT_INDEX_URL。
+
+即将DEFAULT_INDEX_URL 进行如下替换：
+
+DEFAULT_INDEX_URL = 'https://ghproxy.com/https://raw.githubusercontent.com/ros/rosdistro/master/index-v4.yaml'
+
+在/usr/lib/python2.7/dist-packages/rosdep2/gbpdistro_support.py 第204行添加如下代码
+
+gbpdistro_url = "https://ghproxy.com/" + gbpdistro_url
+
+除此处外，下述文件中也含有github地址，分别是：
+
+均可通过在地址前添加https://ghproxy.com/前缀来应用代理服务。
+
+再次尝试执行rosdep update，问题解决。
+
+参考资料：解决ROS系统 rosdep update超时问题的新方法
+
+本人已在ubuntu16.04和18.04.  20.04亲测有效。
+

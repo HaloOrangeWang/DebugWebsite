@@ -1,0 +1,13 @@
+
+if __name__ == '__main__':  的简要说明：
+
+　　　　每个python模块或python文件（如下图中的 hello1.py文件，python模块和python文件的区别在于--python文件有.py后缀）都包含内置的变量 __name__，而__main__始终指当前执行的文件或当前路径。当该文件被直接执行的时候，__name__ 等于文件名即等于__main__，而此时__name__将会被解析器自动赋值为"__main__"，为字符串类型(注意__name__的值不会被赋值为tt.hello1.py，见图1)，从而使表达式 if __name__=="__main__" 为真。接下来看图2,如果模块(即tt.hello1)被 import 到其他模块中，则该模块的 __name__ 等于模块名称（不包含后缀.py），即此时__name__的值为tt.hello1，见图2。
+
+　　　　一个python文件通常有两种使用方法，第一是作为脚本直接执行，第二是 import 到其他的 python 脚本中被调用（模块重用）执行。因此 if __name__ == '__main__': 的作用就是控制这两种情况执行代码的过程。如图1，图2，在 if __name__ == '__main__': 下的代码只有在第一种情况下（即文件作为脚本直接执行）才会被执行，而 import 到其他脚本中是不会被执行的(因为此时的__name__=tt.hello1,表达式 if __name__=="__main__" 为假)。
+
+　    　接下来分析为什么会报错ModuleNotFoundError: No module named '__main__.base'; '__main__' is not a package，如图3
+
+图中使用了相对路径,发现导入失败，.hello1  即当前路径下的hello1模块
+
+此时的 .hello1被解析成__main__.hello ，从而导致程序运行失败，使用绝对路径即可
+

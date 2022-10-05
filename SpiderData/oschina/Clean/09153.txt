@@ -1,0 +1,62 @@
+按Nuxt 官网，先install插件，然后去plugins目录下面新建一个xxx(插件名字).js，接着nuxt.config.js里面引入即可
+
+踩坑一：
+
+/plugins/layer.js
+
+import Vue from 'vue'
+import layer from 'vue-layer'
+import 'vue-layer/lib/vue-layer.css';
+
+Vue.use(layer)
+
+报错，页面根本找不到layer。继续看文档
+
+修改一下nuxt.config.js，加入
+
+build: {
+     transpile: ['vue-layer']
+},
+
+重启，运行报错:
+
+emmmmmm,又去百度了一圈，看看其他引入的方法
+
+尝试如下：
+
+/plugins/layer.js
+
+import Vue from 'vue'
+import layer from 'vue-layer'
+import 'vue-layer/lib/vue-layer.css';
+
+export default ()=> {
+    Vue.prototype.$layer = layer({
+        msgtime: 3,
+    });    
+}
+
+依旧报上面那个错误，加上浏览器报错
+
+冷静了一下，从头来过
+
+把build里面的  transpile 配置去掉，运行：
+
+命令行没报错，浏览器报错如下
+
+难道是人家的插件写的有问题，不可能吧~
+
+看了 vue-layer的文档，人家是用prototype的方式挂载的，继续改：
+
+/plugins/layer.js
+
+import Vue from 'vue'
+import layer from 'vue-layer'
+import 'vue-layer/lib/vue-layer.css';
+
+Vue.prototype.$layer = layer(Vue);
+
+运行成功，没有报错，正常调用。
+
+于是把build里面的  transpile 配置加上，又报错了，看来是不用加上这个配置项
+

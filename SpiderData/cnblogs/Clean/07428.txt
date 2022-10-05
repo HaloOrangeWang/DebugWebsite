@@ -1,0 +1,34 @@
+2020-06-07 02:12:10
+
+近期在学习深度学习配置python+keras环境时遇到了诸多问题，记录下来供反思：
+
+用conda update --all更新之后，关于使用anaconda出现CondaHTTPError换源仍无法解决问题：
+
+　　　经过寻找发现应该删除.condarc内所有channel“https:”的s即可解决
+
+python无法运行错误：
+
+　　Failed calling sys.__interactivehook__
+　　Traceback (most recent call last):
+　　File "H:\anaconda3\lib\site.py", line 439, in register_readline
+　　readline.read_history_file(history)
+　　File "H:\anaconda3\lib\site-packages\pyreadline\rlmain.py", line 165, in read_history_file
+　　self.mode._history.read_history_file(filename)
+　　File "H:\anaconda3\lib\site-packages\pyreadline\lineeditor\history.py", line 82, in read_history_file
+　　for line in open(filename, 'r'):
+　　UnicodeDecodeError: 'gbk' codec can't decode byte 0x90 in position 683: illegal multibyte sequence
+
+　　进入到该目录：Anaconda3\Lib\site-packages\pyreadline\lineeditor ，
+　　history.py文件的第82行，修改如下：
+
+for line in open(filename, 'r',encoding='utf-8'):
+
+　　在原有的open函数里 新增了一个参数选项encoding='utf-8'就可以解决了
+　　来自 <https://tieba.baidu.com/p/6126998933?traceid=>
+
+ssl模块加载错误，Windows anaconda python3 import ssl  _ssl ImportError: DLL load failed报错：
+
+　　去Python官网找到相对应Python版本的下载页面，下载Windows x86-64 embeddable zip fileZIP包，下载完成后解压，找到我们需要的文件_ssl.pyd复制并替换到Anaconda中(目录为 \Anaconda\DLLs\_ssl.pyd)；之后将该解压包中的
+
+　　libcrypto-1_1.dll 和libssl-1_1.dll 复制到anaconda的根目录下(与python.exe同级目录),然后就好了。
+

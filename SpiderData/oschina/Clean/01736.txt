@@ -1,0 +1,39 @@
+
+错误一：
+
+AttributeError: module 'pymysql' has no attribute 'connect'
+
+有道翻译
+
+AttributeError：模块'pymysql'没有属性'Connect'
+
+难道没安装成功？点击也能看源码啊
+
+解决：
+
+找了半天才发现文件名起成包的名字而造成的问题，记住文件名一定不能起成和包名字相同。
+
+
+错误二：
+
+AttributeError: 'NoneType' object has no attribute 'encoding'
+
+代码
+
+import pymysql
+conn = pymysql.connect(host='127.0.0.1', user='root', password="123123",
+                            database='db1', port=3306,
+                            charset='utf-8')
+print(conn)
+
+一眼看过去好像没什么问题，需要注意的是charset='utf-8'这里的写法改成charset='utf8'去掉中间的“-”即可，执行结果如下
+
+<pymysql.connections.Connection object at 0x03361390>
+
+
+错误三：
+
+IndentationError:excepted an indented block
+
+因为Python是一个对代码缩进非常敏感的语言，你的循环结构就可能是依靠缩进的形式来表示的。最常见的问题就是TAB和space键的混用，这个是很容易报错的，而且肉眼很难分辨出来，有的代码编辑器可以选择显示空格,即便是这样，也很难找到到底哪里有问题。
+

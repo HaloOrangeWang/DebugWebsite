@@ -1,0 +1,28 @@
+最近在学《Python编程：从入门到实践》，16.2小结中
+
+from pygal.i18n import COUNTRIES
+
+获取两个字母的国别码，我用的pygal的版本是2.4.0（终端 pip show pygal 查看版本）
+
+这个版本没有pygal.i18n的模块，最后报错ModuleNotFoundError: No module named 'pygal.i18n'
+
+解决方法：终端运行
+
+pip install pygal_maps_world
+
+（注意 pip 和 pip3 的区别）
+
+代码中改为即可解决
+
+from pygal_maps_world.i18n import COUNTRIES
+
+后续world_population.py文件中调用
+
+wm = pygal.Worldmap()
+
+依旧会报错AttributeError: module 'pygal' has no attribute 'Worldmap'，解决方式
+
+import pygal_maps_world.maps
+
+wm = pygal_maps_world.maps.World()
+

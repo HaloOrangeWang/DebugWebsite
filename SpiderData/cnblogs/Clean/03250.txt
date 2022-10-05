@@ -1,0 +1,45 @@
+首先要先安装依赖包：
+
+yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gcc make
+cd到一个你想放在的地方，哪里都可以。接着找到python3.7的安装包：
+
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz
+现在这个.tgz文件就下载到了你现在目录中，接着解压：
+
+tar -zxvf Python-3.7.0.tgz
+然后此目录下就多出了一个解压后的文件Python-3.7.0，下面进入文件夹中：
+
+cd Python-3.7.0
+./configure
+make&&make install
+执行完make&&make install之后，可能会出现这种报错：
+
+“ModuleNotFound：No module named '_ctypes'”
+这里需要执行：
+
+yum install libffi-devel -y
+执行完继续make&&make install
+
+这样，基本上python3.7我们就安装完成了，默认情况下，python3.7安装在/usr/local/bin/，这里为了使默认python变成python3，需要加一条软链接,并把之前的python命令改成python.bak：
+
+mv /usr/bin/python /usr/bin/python.bak
+ln -s /usr/local/bin/python3 /usr/bin/python
+接着默认pip也是需要修改的，可以通过find / -name 'pip3'找到pip3的位置，同样的，加一条软链到bin里面：
+
+mv /usr/bin/pip /usr/bin/pip.bak
+ln -s /usr/local/bin/pip3 /usr/bin/pip
+既然把默认python改成了python3的版本，那么这时候yum就出问题了，因为yum貌似不支持python3，开发了这个命令的老哥也不打算继续写支持python3的版本了，所以，如果和python版本相关的文件就不要通过yum下载了，这里我们需要把yum默认的指向改为python2.7的版本，分别是两个文件，使用vi打开，输入i进行修改，修改完之后按esc键，然后输入":wq"，这就完成了修改并保存：
+
+vi /usr/libexec/urlgrabber-ext-down
+
+vi /usr/bin/yum
+
+自此，我们就完成了新安装的centos系统中的两个python版本的全部流程。
+
+在小黑框中输入python2则调起python2，输入python，则默认调起python3，pip2调起python2下的pip，pip调起python下的pip。
+--------------------- 
+作者：迷向的蒲公英 
+来源：CSDN 
+原文：https://blog.csdn.net/u013214212/article/details/81540840 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

@@ -1,0 +1,11 @@
+今天看代码的时候，发现IDEA报错了，但是代码却可以正常执行，改正错误后却反而 run 报错
+
+如下图，执行 main.py 运行程序
+ 在 ./loss/loss.py 中调用与 loss.py 同一目录下的 discriminator.py 时
+
+如果在 loss.py 中使用 from loss import discriminator IDEA 会报错，可是运行 main.py 正常运行。
+
+如果在 loss.py 中使用 import discriminator IDEA 不报错，可是运行 main.py 会报找不到 discriminator.py 模块。
+ 
+ 这是因为，在我们执行 import 时，当前目录是不会变的（就算是执行子目录的文件），还是需要完整的包名。而这里我们所执行的是 main.py ，所以当前目录会一直保持 main.py 的当前目录，当执行 loss.py 时，当前目录还是 main.py 时的目录。故需要通过 from loss import discriminator 导入 discriminator.py 。
+

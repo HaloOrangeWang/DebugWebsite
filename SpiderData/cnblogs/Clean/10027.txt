@@ -1,0 +1,13 @@
+问题描述：
+
+case代码中使用pytest.main(['TestcasePairValue.py'])执行OK，但是在cmd下使用pytest TestcasePairValue.py执行报错如下
+
+ImportError while importing test module 'D:\code\apitest\testcase\TestcasePairValue.py'.
+Hint: make sure your test modules/packages have valid​
+
+查了网上资料，说是有循环引用，但是检查了一遍两个文件没看到有互相引用的地方，最后查到了一个解决大招，记录一下：
+
+在执行的case文件目录下新建conftest.py文件，内容写：
+
+搞定！可以正常在控制台执行了！
+

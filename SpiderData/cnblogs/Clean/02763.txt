@@ -1,0 +1,22 @@
+在虚拟的Python环境中运行GUI的软件报错
+
+这个问题其实我认为是virtualenv的bug，但好像设计就是这个样子。
+
+所以只能hacker一下了
+
+以下内容来自于StackOverflow，根据自身情况有所修过
+
+具体表达一下这段代码但意思吧。先把他保存成脚本放在virtualenv的bin目录下面。一定要在进入virtualenv后运行脚本，hacker才可以正常生效。
+
+首先获取当前Python的位置，一般是工作目录的virtualenv下面。
+
+再获取这个Python的真实文件位置，用真实的文件去跑程序。
+
+这里有个疑问就是，那我的pip环境怎么办？
+
+其实是这样的，倒数第二行，PYTHONHOME变量就是控制这个的，这也就是为什么需要获取那个虚拟的Python位置的原因。
+
+最后一行就是执行。
+
+我的工作目录是sub2，里面有个ENV目录这里是保存虚拟环境的。我将上面的脚本保存成runGUI，存在sub2/ENV/bin/runGUI，以后我只要进入Python虚拟环境然后runGUI xxx.py而不是python xxx.py就可以解决了。
+

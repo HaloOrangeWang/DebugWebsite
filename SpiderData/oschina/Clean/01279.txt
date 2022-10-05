@@ -1,0 +1,176 @@
+描述：
+
+最开始在测试环境装了mysql8，用来作为airflow后端的metadata存储；
+
+在装了mysql8之后，通过pip3安装了mysqlclient=1.3.14；但是安装过程是在单独的venv环境中安装的。系统的python3环境中并没有安装该库。
+
+为了进行其他功能测试，将mysql8卸载，安装了mysql5.7.28。之后airflow运行不起来了，报错：
+
+libmysqlclient.so.21: cannot open shared object file: no such file or direct
+
+删除venv环境，重建venv环境，重新在venv环境中安装mysqlclient=1.3.14，但是依然报错。
+
+在venv的lib库根目录下查看mysqlclient的so文件，确实找不到libmysqlclient.so.21：
+
+ldd /home/airflow/venv/lib64/python3.6/site-packages/_mysql.cpython-36m-x86_64-linux-gnu.so
+	linux-vdso.so.1 =>  (0x00007ffdb6db5000)
+	libmysqlclient.so.21 => not found
+	libpthread.so.0 => /lib64/libpthread.so.0 (0x00007f245a087000)
+	libm.so.6 => /lib64/libm.so.6 (0x00007f2459e03000)
+	librt.so.1 => /lib64/librt.so.1 (0x00007f2459bfb000)
+	libssl.so.10 => /usr/lib64/libssl.so.10 (0x00007f245998e000)
+	libcrypto.so.10 => /usr/lib64/libcrypto.so.10 (0x00007f24595a9000)
+	libdl.so.2 => /lib64/libdl.so.2 (0x00007f24593a5000)
+	libc.so.6 => /lib64/libc.so.6 (0x00007f2459010000)
+	/lib64/ld-linux-x86-64.so.2 (0x0000557c6a8b7000)
+	libgssapi_krb5.so.2 => /lib64/libgssapi_krb5.so.2 (0x00007f2458dcc000)
+	libkrb5.so.3 => /lib64/libkrb5.so.3 (0x00007f2458ae5000)
+	libcom_err.so.2 => /lib64/libcom_err.so.2 (0x00007f24588e0000)
+	libk5crypto.so.3 => /lib64/libk5crypto.so.3 (0x00007f24586b4000)
+	libz.so.1 => /lib64/libz.so.1 (0x00007f245849e000)
+	libkrb5support.so.0 => /lib64/libkrb5support.so.0 (0x00007f2458292000)
+	libkeyutils.so.1 => /lib64/libkeyutils.so.1 (0x00007f245808f000)
+	libresolv.so.2 => /lib64/libresolv.so.2 (0x00007f2457e75000)
+	libselinux.so.1 => /lib64/libselinux.so.1 (0x00007f2457c55000)
+
+在网上搜so.21，发现该so文件是属于mysql-community-libs-8.xxx这个rpm包中包含的so文件。因此怀疑是我的mysql8没有卸载干净，比如一些头文件没有删掉，在安装mysqlclient的时候，还是编译了mysql8的so文件。
+
+在网上搜so.21，发现该so文件是属于mysql-community-libs-8.xxx这个rpm包中包含的so文件。因此怀疑是我的mysql8没有卸载干净，比如一些头文件没有删掉，在安装mysqlclient的时候，还是编译了mysql8的so文件。
+
+于是卸载所有mysql的rpm包，找到所有mysql目录遗留文件删除，再通过yum自动安装mysql-community-server
+
+先安装mysql的yum源 rpm -ivh https://dev.mysql.com/get/mysql80-community-release-el6-3.noarch.rpm
+检查yum源的repo，确保mysql5版本的源启用，其他版本的处于禁用状态，如果不对的话，使用yum-config-manager --disable xxx或者yum-config-manager --enable xxx处理
+ yum repolist enabled | grep "mysql.*-community.*"
+yum repolist all | grep mysql
+
+详细操作内容看mysql官方文档： Installing MySQL on Linux Using the MySQL Yum Repository
+
+于是卸载所有mysql的rpm包，找到所有mysql目录遗留文件删除，再通过yum自动安装mysql-community-server
+
+先安装mysql的yum源 rpm -ivh https://dev.mysql.com/get/mysql80-community-release-el6-3.noarch.rpm
+
+检查yum源的repo，确保mysql5版本的源启用，其他版本的处于禁用状态，如果不对的话，使用yum-config-manager --disable xxx或者yum-config-manager --enable xxx处理
+
+yum repolist enabled | grep "mysql.*-community.*"
+yum repolist all | grep mysql
+
+详细操作内容看mysql官方文档： Installing MySQL on Linux Using the MySQL Yum Repository
+
+nohup yum install mysql-community-server &> ~/mysql-yum-install.log &
+
+# tail ~/mysql-yum-install.log
+已安装:
+  mysql-community-server.x86_64 0:5.7.28-1.el6
+
+作为依赖被安装:
+  mysql-community-client.x86_64 0:5.7.28-1.el6
+  mysql-community-common.x86_64 0:5.7.28-1.el6
+  mysql-community-libs.x86_64 0:5.7.28-1.el6
+
+没有安装mysql-community-devel-5.7.28-1.el6.x86_64，要手动安装下。
+
+再重新删除venv环境，重建venv环境，重新在venv环境中安装mysqlclient=1.3.14，但是依然报错。
+
+但是在pip安装mysqlclient的时候看到这样的日志：
+
+# pip install mysqlclient==1.3.14
+Looking in indexes: http://pypi.douban.com/simple/
+Processing /root/.cache/pip/wheels/e6/8e/61/fa14585dc24636befc6090deea404474d3c18acfa0e8685278/mysqlclient-1.3.14-cp36-cp36m-linux_x86_64.whl
+Installing collected packages: mysqlclient
+Successfully installed mysqlclient-1.3.14
+
+这个whl居然是从cache中读取的。。。
+
+找到cache中的文件，copy出来解压，发现一个so
+
+# find /root/.cache/ -name 'mysqlclient*'
+/root/.cache/pip/wheels/e6/8e/61/fa14585dc24636befc6090deea404474d3c18acfa0e8685278/mysqlclient-1.3.14-cp36-cp36m-linux_x86_64.whl
+
+cp /root/.cache/pip/wheels/e6/8e/61/fa14585dc24636befc6090deea404474d3c18acfa0e8685278/mysqlclient-1.3.14-cp36-cp36m-linux_x86_64.whl ~
+
+cd ~; tar zxvf mysqlclient-1.3.14-cp36-cp36m-linux_x86_64.whl
+Archive:  mysqlclient-1.3.14-cp36-cp36m-linux_x86_64.whl
+  inflating: _mysql.cpython-36m-x86_64-linux-gnu.so
+  inflating: _mysql_exceptions.py
+  inflating: MySQLdb/__init__.py
+  inflating: MySQLdb/compat.py
+  inflating: MySQLdb/connections.py
+  inflating: MySQLdb/converters.py
+  inflating: MySQLdb/cursors.py
+  inflating: MySQLdb/release.py
+  inflating: MySQLdb/times.py
+  inflating: MySQLdb/constants/CLIENT.py
+  inflating: MySQLdb/constants/CR.py
+  inflating: MySQLdb/constants/ER.py
+  inflating: MySQLdb/constants/FIELD_TYPE.py
+  inflating: MySQLdb/constants/FLAG.py
+  inflating: MySQLdb/constants/REFRESH.py
+  inflating: MySQLdb/constants/__init__.py
+  inflating: mysqlclient-1.3.14.dist-info/LICENSE
+  inflating: mysqlclient-1.3.14.dist-info/METADATA
+  inflating: mysqlclient-1.3.14.dist-info/WHEEL
+  inflating: mysqlclient-1.3.14.dist-info/top_level.txt
+  inflating: mysqlclient-1.3.14.dist-info/RECORD
+  
+# ldd _mysql.cpython-36m-x86_64-linux-gnu.so
+	linux-vdso.so.1 =>  (0x00007ffdb572d000)
+	libmysqlclient.so.21 => not found
+	libpthread.so.0 => /lib64/libpthread.so.0 (0x00007f5e71a4e000)
+	libm.so.6 => /lib64/libm.so.6 (0x00007f5e717ca000)
+	librt.so.1 => /lib64/librt.so.1 (0x00007f5e715c2000)
+	libssl.so.10 => /usr/lib64/libssl.so.10 (0x00007f5e71355000)
+	libcrypto.so.10 => /usr/lib64/libcrypto.so.10 (0x00007f5e70f70000)
+	libdl.so.2 => /lib64/libdl.so.2 (0x00007f5e70d6c000)
+	libc.so.6 => /lib64/libc.so.6 (0x00007f5e709d7000)
+	/lib64/ld-linux-x86-64.so.2 (0x000055d1e0f27000)
+	libgssapi_krb5.so.2 => /lib64/libgssapi_krb5.so.2 (0x00007f5e70793000)
+	libkrb5.so.3 => /lib64/libkrb5.so.3 (0x00007f5e704ac000)
+	libcom_err.so.2 => /lib64/libcom_err.so.2 (0x00007f5e702a7000)
+	libk5crypto.so.3 => /lib64/libk5crypto.so.3 (0x00007f5e7007b000)
+	libz.so.1 => /lib64/libz.so.1 (0x00007f5e6fe65000)
+	libkrb5support.so.0 => /lib64/libkrb5support.so.0 (0x00007f5e6fc59000)
+	libkeyutils.so.1 => /lib64/libkeyutils.so.1 (0x00007f5e6fa56000)
+	libresolv.so.2 => /lib64/libresolv.so.2 (0x00007f5e6f83c000)
+	libselinux.so.1 => /lib64/libselinux.so.1 (0x00007f5e6f61c000)
+
+确凿无疑，是因为pip缓存了mysql8时候的库文件导致的，删除pip的cache，再重新安装。
+
+# find /root/.cache/ -name 'mysqlclient*' -print -delete
+/root/.cache/pip/wheels/e6/8e/61/fa14585dc24636befc6090deea404474d3c18acfa0e8685278/mysqlclient-1.3.14-cp36-cp36m-linux_x86_64.whl
+
+# pip uninstall mysqlclient==1.3.14
+Uninstalling mysqlclient-1.3.14:
+  Would remove:
+    /home/airflow/venv/lib/python3.6/site-packages/MySQLdb/*
+    /home/airflow/venv/lib/python3.6/site-packages/_mysql.cpython-36m-x86_64-linux-gnu.so
+    /home/airflow/venv/lib/python3.6/site-packages/_mysql_exceptions.py
+    /home/airflow/venv/lib/python3.6/site-packages/mysqlclient-1.3.14.dist-info/*
+Proceed (y/n)? y
+  Successfully uninstalled mysqlclient-1.3.14
+  
+# pip install mysqlclient==1.3.14
+Looking in indexes: http://pypi.douban.com/simple/
+Collecting mysqlclient==1.3.14
+  Downloading http://pypi.doubanio.com/packages/f7/a2/1230ebbb4b91f42ad6b646e59eb8855559817ad5505d81c1ca2b5a216040/mysqlclient-1.3.14.tar.gz (91kB)
+     |████████████████████████████████| 92kB 4.6MB/s
+Installing collected packages: mysqlclient
+    Running setup.py install for mysqlclient ... done
+Successfully installed mysqlclient-1.3.14
+
+再重新检查venv下的库文件，果然依赖问题已经解决。
+
+# ldd /home/airflow/venv/lib64/python3.6/site-packages/_mysql.cpython-36m-x86_64-linux-gnu.so
+	linux-vdso.so.1 =>  (0x00007ffc6efff000)
+	libmysqlclient.so.20 => /usr/lib64/mysql/libmysqlclient.so.20 (0x00007f7dc8f0d000)
+	libpthread.so.0 => /lib64/libpthread.so.0 (0x00007f7dc8cf0000)
+	libm.so.6 => /lib64/libm.so.6 (0x00007f7dc8a6b000)
+	librt.so.1 => /lib64/librt.so.1 (0x00007f7dc8863000)
+	libdl.so.2 => /lib64/libdl.so.2 (0x00007f7dc865f000)
+	libc.so.6 => /lib64/libc.so.6 (0x00007f7dc82ca000)
+	libstdc++.so.6 => /usr/lib64/libstdc++.so.6 (0x00007f7dc7fc4000)
+	libgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00007f7dc7dae000)
+	/lib64/ld-linux-x86-64.so.2 (0x00005557f93df000)
+
+注意 操作过程请先source到venv下
+

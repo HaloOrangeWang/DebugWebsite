@@ -1,0 +1,242 @@
+Python中的错误处理分为两类:语法错误和异常处理。语法错误一般是指由于python语句、表达式、函数等存在书写格式活语法规则上的错误抛出的异常，如python常见的缩进控制，若同层次的执行语句存在缩进不同，会报语法错误(SyntaxError）,一般在ide中会有明显的提示，其属于编译阶段的错误，一般是导致解析错误抛出错误;异常处理一般是指python语法格式正确，但在运行过程出现错误，错误类型交由python中的内建异常进行说明,回朔处理，这种类型的处理一般都是出现在运行阶段，是需要我们处理的。如下给出两种错误异常的简单案例.
+
+#语法异常，导致的解析错误
+
+str="just show syntax type error."
+ print str,"\n"
+
+File "exception.py", line 21
+   print str,"\n"
+   ^
+IndentationError: unexpected indent
+
+如上，IndentationError属于SyntaxError的派生子类，其和TypeError均是派生自Exception而来的，理论上来是Exceptioon可以说是python中所有异常的父类，但只是理论，除了Exception派生的异常内置类外还存在按键异常退出，系统异常退出等异常不属于Exception派生的，根据层次结果，可以确认的是，python中所有异常的父类是BaseException(该类是从python2.5新增的)，如下给出内置异常处理类的基本层次结构。
+
+BaseException
+ +-- SystemExit
+ +-- KeyboardInterrupt
+ +-- GeneratorExit
+ +-- Exception
+      +-- StopIteration
+      +-- StandardError
+      |    +-- BufferError
+      |    +-- ArithmeticError
+      |    |    +-- FloatingPointError
+      |    |    +-- OverflowError
+      |    |    +-- ZeroDivisionError
+      |    +-- AssertionError
+      |    +-- AttributeError
+      |    +-- EnvironmentError
+      |    |    +-- IOError
+      |    |    +-- OSError
+      |    |         +-- WindowsError (Windows)
+      |    |         +-- VMSError (VMS)
+      |    +-- EOFError
+      |    +-- ImportError
+      |    +-- LookupError
+      |    |    +-- IndexError
+      |    |    +-- KeyError
+      |    +-- MemoryError
+      |    +-- NameError
+      |    |    +-- UnboundLocalError
+      |    +-- ReferenceError
+      |    +-- RuntimeError
+      |    |    +-- NotImplementedError
+      |    +-- SyntaxError
+      |    |    +-- IndentationError
+      |    |         +-- TabError
+      |    +-- SystemError
+      |    +-- TypeError
+      |    +-- ValueError
+      |         +-- UnicodeError
+      |              +-- UnicodeDecodeError
+      |              +-- UnicodeEncodeError
+      |              +-- UnicodeTranslateError
+      +-- Warning
+           +-- DeprecationWarning
+           +-- PendingDeprecationWarning
+           +-- RuntimeWarning
+           +-- SyntaxWarning
+           +-- UserWarning
+           +-- FutureWarning
+       +-- ImportWarning
+       +-- UnicodeWarning
+       +-- BytesWarning
+
+而我们常见的自定义异常类一般均是继承自Exception。如下部分也是主要介绍非系统错误，退出导致的异常的处理的相关用法。主要通过如下几个方面介绍异常处理:
+
+异常捕获
+
+异常抛出
+
+异常自定义
+
+扩展清理操作预定义
+
+
+异常捕获
+
+python中如果应为某些操作(如上的NoneType)导致异常，若是一直未能被捕获，该异常将一直被传递，直至最后终止程序，抛出回朔。我们可以通过在程序中预测异常的发生添加异常的捕获处理，显示友好的用户交互提醒来防止程序的异常结束。python中的异常处理语句以及简单的使用如下:
+
+try:
+    '捕获异常的代码执行片段'
+    s = None
+    a = 12
+    print a * s
+except IOError:         #except为异常发生触发运行片段关键词,可以指定内置异常类类型,采用匿名类型,不获取异常信息
+    print "catch IOError."
+except TypeError as error: #捕获异常定义异常变量,新的API采用'as'来指定变量名称.
+    print "catch TypeError.",error
+except (UnboundLocalError,BufferError):    #捕获异常定义捕获的异常类型可以使用元组的形式添加多个捕获的异常类型.
+    pass          #pass无意义占位关键字
+except Exception,error:    #捕获异常Exception,将捕获所有的继承自Exception类型的异常,该种定义异常变量的方法属于老的api,新的api向下兼容.
+    print "catch Exception and use \',\' define param.",error
+except:        #捕获所有的异常类型包括系统异常退出等.
+    pass
+else:        #else为未发生异常执行的代码块，必须在except之后
+    print "no catch any Exception."
+finally:    #finally不管有没有出现异常均会执行,可以和try单独使用,一般用于资源的关闭操作.
+
+针对如上的示例，总结如下异常捕获的关键点：
+
+异常捕获使用格式: try …except….
+
+try:
+      statement...
+  except:
+      statement...
+
+异常捕获可以指定异常捕获类型，并可以指定异常变量，指定变量有两种方式，一种通过’,’隔开，一种通过关键字’as’指定，格式如下:
+
+#','隔开
+
+try:
+      statement...
+  except Exception , error:
+      pass
+
+#as指定
+  try:
+      statement...
+  except Exception as error:
+      pass
+
+捕获多种类型的异常可以直接通过元组的方式添加多个异常类型，也可以通过多个except指定，如下:
+
+#元组表示
+try:
+    statement...
+except (TypeError,IOError):
+    statement...
+
+#多个except
+try:
+    statement...
+except TypeError:
+    statement...
+except IOError:
+    statement...
+
+使用else代码块处理异常未发生的情况，如下:
+
+try:
+    statement...
+except Exception , error:
+    pass
+else:
+    statement... #没有发生异常
+
+使用finally处理无论是否发生异常捕获都执行的代码，可以直接通过和try单独使用，也可以和except联合使用(此种情况放在except,else后面)
+
+
+异常抛出
+
+异常抛出可以让我们定义主动抛出异常的逻辑，以提醒使用者需要进行某些必要的异常判断或者处理，python中的异常抛出使用关键字raise实现，raise的使用方式或者说是基本的使用场景可以分为三类：
+
+匿名抛出
+
+常用抛出，可以直接指定抛出异常类即可，如下:
+
+raise IOError
+
+Traceback (most recent call last):
+  File "exception.py", line 84, in <module>
+    raise IOError
+IOError
+
+实例抛出
+
+实例抛出可以添加异常抛出显示的提示文本内容，以便帮助定位异常问题,如下:
+
+error=IOError("the file is not exists.")
+raise error
+
+Traceback (most recent call last):
+  File "exception.py", line 85, in <module>
+    raise error
+IOError: the file is not exists.
+
+捕获抛出
+
+这种抛出不常见，但很使用，一般异常抛出关键字raise是需要跟一个类或者变量，但这种抛出不要添加任何其他信息，属于一种异常的传递，如下:
+
+a = 12
+s = None
+try:
+    print a*s
+except Exception as error:
+    if a < 10:
+        pass
+    else:
+        raise   #抛出异常.除了该种情况，raise后面必须要有异常信息(类或者实例)
+
+
+异常自定义
+
+python中自定义异常一般是继承Exception或者Exception的子类，可以默认继承不做处理也可以通过对其进行定制，如下给出两个示例，一个为简单的集成，一个为重写方法，如下:
+
+#直接继承不做处理
+class DefException(Exception):
+    pass
+
+raise DefException("Def Exception")
+
+Traceback (most recent call last):
+  File "exception.py", line 101, in <module>
+    raise DefException("Def Exception")
+__main__.DefException: Def Exception
+
+#重写__init__
+class CustomerException(Exception):
+    KEY_CODE="code"
+    KEY_MESSAGE="message"
+    def __init__(self,**args):
+        self.code=args[CustomerException.KEY_CODE]
+        self.message=args[CustomerException.KEY_MESSAGE]
+
+def __str__(self):
+        print repr(" throw code:%s,message:%s" % (self.code,self.message))
+
+raise CustomerException(code=21,message="this is customer Exception")
+
+
+扩展清理操作预定义
+
+这是python对于文件操作提供的一个自动在操作完成后关闭的操作，使用关键字with实现,如下所示:
+
+with open(name="./struct.py",mode="rb+")  as file:   #这是文件的打开操作.
+     print file.read()               #文件的读取操作
+
+如上，当执行完with下的代码块，file会自动关闭，不论是否发生异常.
+
+
+参考
+
+Python 教程-错误与异常(原文)
+
+Python 教程-错误与异常(中文翻译版)
+
+Python 基础教程(第二版)-异常(第八章)
+
+Enjoytoday
+

@@ -1,0 +1,250 @@
+Jaeger 快速体验
+
+官网下载地址 https://www.jaegertracing.io/download/
+
+GitHub 下载地址 https://github.com/jaegertracing/jaeger/releases
+
+下载二进制文件压缩包后，运行解压后的 all-in-one 文件即可。
+
+jaeger-all-in-one 采用内存存储数据，专为快速本地测试设计。
+
+example-hotrod 为示例应用程序，运行访问，在 Jaeger UI 上即可查询数据。
+
+Jaeger 组件
+
+agent
+
+jaeger-agent 是跟随集成 jaeger 的应用程序一起部署在每台服务器上的采集程序二进制文件。
+
+collector
+
+jaeger-collector 是与 agent 对接的程序文件，并将 agent 采集的数据存储在 Cassandra 或 Elasticsearch 中。可以负载均衡方式多实例运行。
+
+query
+
+jaeger-query 是 web-ui 层，展示和查询 Cassandra 或 Elasticsearch 中的数据。可以负载均衡方式多实例运行。
+
+ingester
+
+jaeger-ingester 是从 Kafka 中消费数据存储到 Cassandra 或 Elasticsearch 的服务程序。
+
+部署
+
+Cassandra
+
+安装
+
+配置文件：cassandra.yaml
+
+docker 镜像地址
+
+单机版
+
+docker run --name jaeger-cassandra -d -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160  cassandra:latest
+
+集群版
+
+请参考文档
+
+无论是否使用容器，单机还是集群请阅读配置文件和官方文档这里不再祥述。
+
+创建 keyspace
+
+CREATE KEYSPACE qschou
+
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
+
+创建数据表
+
+表结构地址：https://github.com/jaegertracing/jaeger/tree/master/plugin/storage/cassandra/schema
+
+选择 v001.cql.tmpl 或 v002.cql.tmpl ，
+
+注意里面有4个变量，也可以替换后在 cqlsh 中执行。
+
+{replication} = 参考 keyspaces 段落
+
+default_time_to_live = 表的默认到期时间（）（以秒为单位）{dependencies_ttl}
+
+以上参数可通过 https://cassandra.apache.org/doc/latest/cql/ddl.html#create-table 查询.
+
+Elasticsearch
+
+安装
+
+docker 镜像地址
+
+单机版
+
+docker run -d --name jaeger-es -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:latest
+
+创建 index
+
+curl -X PUT \
+
+http://localhost:9200/qschou \
+
+-H 'Content-Type: application/json' \
+
+-d '{
+
+"settings" : {
+
+"index" : {
+
+"number_of_shards" : 3,
+
+"number_of_replicas" : 2
+
+}
+
+}
+
+}'
+
+查询 index
+
+curl -X GET 'http://localhost:9200/_cat/indices?v=&='
+
+部署 Jaeger 组件
+
+采用 cassandra 存储
+
+# jaeger-collector
+
+SPAN_STORAGE_TYPE=cassandra ./jaeger-collector --cassandra.keyspace=qschou --cassandra.servers=127.0.0.1 --cassandra.port=9042
+
+# jaeger-query
+
+SPAN_STORAGE_TYPE=cassandra ./jaeger-query --cassandra.keyspace=qschou --cassandra.servers=127.0.0.1 --cassandra.port=9042
+
+# jaeger-agent
+
+./jaeger-agent --collector.host-port=127.0.0.1:14267
+
+采用 elasticsearch 存储
+
+# jaeger-collector
+
+SPAN_STORAGE_TYPE=elasticsearch ./jaeger-collector --es.server-urls=http://127.0.0.1:9200  --es.index-prefix=qschou
+
+# jaeger-query
+
+SPAN_STORAGE_TYPE=elasticsearch ./jaeger-query --es.server-urls=http://127.0.0.1:9200 --es.index-prefix=qschou
+
+# jaeger-agent
+
+./jaeger-agent --collector.host-port=127.0.0.1:14267
+
+Web UI 地址: http://localhost:16686
+
+通过阿里云 sls 存储链路信息
+
+sls 是我司常用的日志服务，可以通过 Jaeger on Aliyun Log service 进行集成。
+
+sls endpoint https://help.aliyun.com/document_detail/29008.html
+
+# collector
+
+# 推荐部署多实例
+
+# 内网环境下请使用内网 endpoint
+
+SPAN_STORAGE_TYPE=aliyun-log ./collector-darwin --cc.endpoint=cn-hangzhou.log.aliyuncs.com --aliyun-log.access-key-id=LT** --aliyun-log.access-key-secret=ho** --aliyun-log.project=dbj-mp --aliyun-log.span-logstore=coupon-api
+
+# agent
+
+SPAN_STORAGE_TYPE=aliyun-log ./agent-darwin --collector.host-port=127.0.0.1:14267
+
+# query
+
+# 推荐部署多实例
+
+# 这里使用 docker
+
+docker run -d --name jaeger-query -p 16686:16686 -e SPAN_STORAGE_TYPE=aliyun-log registry.cn-hangzhou.aliyuncs.com/jaegertracing/jaeger-query:0.1.9 /go/bin/query-linux --aliyun-log.endpoint=cn-hangzhou.log.aliyuncs.com --aliyun-log.access-key-id=LT** --aliyun-log.access-key-secret=ho** --aliyun-log.project=dbj-mp --aliyun-log.span-logstore=coupon-api --query.static-files=/go/jaeger-ui/
+
+Cassandra 介绍
+
+Cassandra 由 Facebook 使用 Java 开发且在2008年开源的分布式 NoSQL 数据库，2009年由 Apache 孵化托管。
+
+使用类似 SQL 的 CQL 语言实现数据模型的定义和读写。
+
+且与 Dynamo 系统架构类似，是基于一致性哈希的完全 P2P 架构，每行数据通过哈希来决定应该存在哪个或哪些节点中。集群没有 master 的概念，所有节点都是同样的角色，避免了单点问题，提高了稳定性。
+
+使用了 Google 设计的 BigTable 的数据模型，与面向行(row)的传统的关系型数据库或键值存储的key-value数据库不同，Cassandra使用的是宽列存储模型(Wide Column Stores)，每行数据由 row key 唯一标识之后，可以有最多20亿个列，每个列有一个column key标识，每个column key下对应若干value。这种模型可以理解为是一个二维的 key-value 存储，即整个数据模型被定义成一个类似map>的类型。
+
+cqlsh
+
+cqlsh 是一个命令行 shell，用于通过 CQL 与 Cassandra 交互。它随每个 Cassandra 软件包一起提供，可以在 cassandra 可执行文件旁边的 bin 目录中找到。它连接到命令行上指定的单个节点。
+
+keyspaces
+
+key 空间: 类似 MySQL 中的数据库。
+
+查看所有 keyspaces
+
+DESCRIBE KEYSPACES;
+
+文档: https://cassandra.apache.org/doc/latest/tools/cqlsh.html#describe
+
+创建 keyspace
+
+-- test
+
+CREATE KEYSPACE qschou
+
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
+
+-- prod
+
+CREATE KEYSPACE qschou
+
+WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1' : 1, 'DC2' : 3}
+
+AND durable_writes = false;
+
+文档: https://cassandra.apache.org/doc/latest/cql/ddl.html#create-keyspace
+
+选择 keyspace
+
+USE keyspace_name
+
+创建 table
+
+CREATE TABLE timeline (
+
+userid uuid,
+
+posted_month int,
+
+posted_time uuid,
+
+body text,
+
+posted_by text,
+
+PRIMARY KEY (userid, posted_month, posted_time)
+
+) WITH compaction = { 'class' : 'LeveledCompactionStrategy' };
+
+文档: https://cassandra.apache.org/doc/latest/cql/ddl.html#create-table
+
+展示 keyspace 下所有 table
+
+DESCRIBE qschou;
+
+Elasticsearch 介绍
+
+Elasticsearch 是一个高度可扩展的基于 Lucene 的开源全文搜索和分析引擎。它允许您快速，近实时地存储，搜索和分析大量数据。它通常用作底层引擎/技术，为具有复杂搜索功能和要求的应用程序提供 RESTful 接口支持。
+
+近实时 意味着从索引文档到可搜索文档的时间有一点延迟（通常是一秒）。
+
+Index
+
+索引: 是具有某些类似特征的文档集合，索引由名称标识必须全部为小写。
+
+*****jaeger报错问题处理（HTTP Error: Search service failed: elastic: Error 400 (Bad Request)）
+
+答：可查看jaeger及Elasticsearch版本是否符合，亲试成功（Jaeger1.11+elasticsearch5.6.16   可单机部署搭建）
+

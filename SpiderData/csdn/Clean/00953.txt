@@ -1,0 +1,19 @@
+在项目遇到一个错误 ：
+
+
+TypeError: string indices must be integers
+
+由于是返回的接口数据，所以一时也分辨不出是哪里的错，然后我就还原了这样的场景：
+
+unicode_str = u'abcd'
+print unicode_str[2]
+print unicode_str['mykey']
+
+读取一个unicode编码的字符串的一个不存在的属性，见第三行，然后就会出现上面的错误
+
+所以在读取字典的时候，最好先判断类型，然后再查看它是否已经有这样的属性：
+
+type(mydict) == type({}) #检查不是字典
+
+如果是字典，再看看有没有这样的属性：mydict.has_key('mykey')
+

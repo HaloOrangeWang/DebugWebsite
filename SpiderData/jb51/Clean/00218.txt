@@ -1,0 +1,43 @@
+
+安装pandas出错：
+
+Running setup.py (path:/data/envs/py3/build/pandas/setup.py) egg_info for package pandas
+
+Traceback (most recent call last):
+
+File "<string>", line 17, in <module>
+
+File "/data/envs/py3/build/pandas/setup.py", line 736, in <module>
+
+packages=find_packages(include=['pandas', 'pandas.*']),
+
+TypeError: find_packages() got an unexpected keyword argument 'include'
+
+Complete output from command python setup.py egg_info:
+
+Traceback (most recent call last):
+
+
+解决办法：
+
+（原因是include 中的 find_packages()过于老旧）
+
+pip install -U setuptools
+
+然后就可以正常安装！！！
+
+补充：pyCharm上解决安装不上pandas库问题
+
+最近在PyCharm上安装pandas库的时候，总是安装不上，提示好像是pip除了错误。
+
+我使用的是python 3.4版本。最后判断应该是自己pip版本应该太旧了，最后再cmd更新了pip之后就行了。
+
+
+如下在cmd操作指令：
+
+python -m pip install -U pip
+
+更新完成之后，在PyCharm平台正常搜索安装pandas库就行了。
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

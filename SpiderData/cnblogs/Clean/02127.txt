@@ -1,0 +1,23 @@
+在网上找了很多， 大多数说是必须要给 SQLALCHEMY_TRACK_MODIFICATIONS 一个默认值，尝试修改alchemy 源码，，但是还是不起作用
+
+最后阅读源码 ，
+
+看这意思是我没有初始化 sqlAlchemy ..
+
+然后我的代码 sqlconfig.py
+
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+没问题啊，我初始化了啊 。。‘’
+
+看了半天， 我去，，原来是我在启动的地方重新定义了一个app .
+
+文件 app.py
+
+import flask
+from mysql.sqlconfig import Ip,db
+app=flask.Flask(__name__)  这是一个新的app, 所以报key 错误，其实是我根本就没有初始化app.config .
+
+所以把
+

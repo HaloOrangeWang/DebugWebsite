@@ -1,0 +1,45 @@
+报错信息（省略大部分）：
+
+plugins/python/uwsgi_python.h:2:20: fatal error: Python.h: No such file or directory
+     #include <Python.h>
+
+原因：必须同时安装“编译工具”和“python-devel”，才能成功安装uwsgi
+
+解决方法：
+
+1.安装编译工具
+
+yum install -y gcc* pcre-devel openssl-devel
+
+2.安装python-devel(重要)
+
+这一步跟着网上很多步骤走，但是都出错了。可能是版本不同的原因，下面是我总结的方法：
+
+首先yum搜索python-devel
+
+yum search python-devel
+
+搜索到了
+
+python-devel.x86_64 : The libraries and header files needed for Python development
+
+安装下来后发现是python2.7版本的。然而需要安装的是3.6版本的。
+
+用如下命令搜索3.6版本：
+
+yum search python36-devel
+
+搜索到了：
+
+python36-devel.x86_64 : Libraries and header files needed for Python development
+
+是需要的版本，然后安装：
+
+yum install python36-devel.x86_64
+
+3.最后安装uwsgi：
+
+pip install uwsgi
+
+成功！
+

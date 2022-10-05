@@ -1,0 +1,47 @@
+报错：
+
+uvloop/loop.c:20:10: fatal error: Python.h: 没有那个文件或目录
+       20 | #include "Python.h"
+          |          ^~~~~~~~~~
+    compilation terminated.
+    error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+原因：
+
+　　无python-dev
+
+解决：
+
+　　python2：执行命令：pip install python-dev（未测试）
+
+　　python3：执行命令：pip install python3-dev（未测试）
+
+　　我的环境python3.7：pip install python3.7-dev（亲测）
+
+安装python3.7-dev时报错：
+
+　　python3-dev : 依赖: python3 (= 3.6.7-1~18.04) 但是 3.7.5-1 正要被安装
+               　　依赖: libpython3-dev (= 3.6.7-1~18.04) 但是它将不会被安装
+               　　依赖: python3.6-dev (>= 3.6.7-1~) 但是它将不会被安装
+　　E: 无法修正错误，因为您要求某些软件包保持现状，就是它们破坏了软件包间的依赖关系。
+
+尝试：
+
+　　安装aptitude解决依赖关系
+
+　　命令：apt install aptitude
+
+　　报错：aptitude : 依赖: libapt-pkg5.0 (>= 1.1) 但是它将不会被安装 .....
+原因：
+
+　　apt源错误
+
+解决：
+
+　　查看自己linux版本，查找对应的源
+
+　　查看linux版本：lsb_release -a
+
+　　codename：代号，查询的源中的代号一定要和这个相同！！！
+
+　　修改源后执行：apt update && apt upgrade，然后安装python3.7-dev，再pip安装
+

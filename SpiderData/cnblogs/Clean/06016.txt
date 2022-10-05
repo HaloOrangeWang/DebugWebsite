@@ -1,0 +1,31 @@
+
+一、问题描述
+
+当我用docker-compose up时，因为需要build Dockerfile文件，出现下面这个错误：
+
+ERROR: Service 'web' failed to build: Get https://registry-1.docker.io/v2/library/python/manifests/2.7: net/http: TLS handshake timeout
+
+
+二、问题解决
+
+
+1、查看可用的ip地址
+
+[root@docker-node1 compose-flask]# dig @114.114.114.114 registry-1.docker.io
+
+通过dig @114.114.114.114 registry-1.docker.io命令查看所有的可用地址。
+
+
+2、修改/etc/hosts文件
+
+可以将上述可用的ip以下面这种方式写入：
+
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+#写入可用的ip
+34.199.40.84 registry-1.docker.io
+34.201.196.144 registry-1.docker.io
+
+然后进行文件保存，重新执行docker-compose up命令，问题解决。
+

@@ -1,0 +1,38 @@
+起因
+
+今天使用 python os.mkdir创建目录时遇到的一个小问题：
+
+feature_dir = os.path.join(os.getcwd(), 'system', 'feature')
+if not os.path.exists(feature_dir):
+ os.mkdir(feature_dir)
+
+结果提示错误： OSError: [Errno 2] No such file or directory: '/home/hyb/hyb_speech/2_word/applications/system/feature'
+
+原因
+
+查了一下原因，发现是因为 feature 的上一级目录 system 也没有创建的缘故。
+
+具体原因，如下：
+
+1.mkdir( path [,mode] )
+
+作用：创建一个目录，可以是相对或者绝对路径，mode的默认模式是0777。
+
+如果目录有多级，则创建最后一级。如果最后一级目录的上级目录有不存在的，则会抛出一个OSError。
+
+2.makedirs( path [,mode] )
+
+作用： 创建递归的目录树，可以是相对或者绝对路径，mode的默认模式也是0777。
+
+如果子目录创建失败或者已经存在，会抛出一个OSError的异常，Windows上Error 183即为目录已经存在的异常错误。如果path只有一级，与mkdir一样。
+
+解决
+
+解决方法：
+
+1、先创建 system，再创建 feature;
+
+2、直接使用 os.makedirs(feature_dir)。
+
+以上这篇解决python os.mkdir创建目录失败的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

@@ -1,0 +1,40 @@
+
+因做redis集群需要安装ruby，源码安装过后gem install redis安装redis接口报错
+
+
+
+解决方案：
+
+确保主机安装zlib，没有安装执行
+
+yum -y install zlib zlib-devel
+
+回到解压的ruby文件夹中
+
+1 cd ext/zlib/
+2 ruby extconf.rb
+3 sed -i s#\$\(top_srcdir\)#../..# Makefile
+4 make
+5 make install
+
+安装成功过后执行gem install redis又有报错
+
+
+解决方案：
+
+确保安装了openssl openssl-devel，如果没有安装请执行
+
+yum -y install openssl openssl-devel
+
+回到ruby解压目录，执行以下命令
+
+cd ext/openssl/
+ruby extconf.rb
+sed -i 's#\$(top_srcdir)#../..#g' Makefile
+make
+make install
+
+
+执行gem install redis 成功
+
+

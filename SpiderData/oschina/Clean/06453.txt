@@ -1,0 +1,40 @@
+报错：Missing artifact org.springframework.boot:spring-boot-starter-mail:jar:2.0.3
+
+之前导入log4j时报的一样的错误，最后没解决，用的slf4j，这次又遇到一样的问题，不能坐视不管了，因为我必须要用到邮件发送。
+
+百度各种信息，终于被我找到了。。。
+
+解决步骤如下：
+
+
+一、添加mail依赖，报错Missing artifact org.springframework.boot:spring-boot-starter-mail:jar:2.0.3
+
+<!-- 添加邮件依赖 begin-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+<!-- 添加邮件依赖 end-->
+
+
+二、找到maven安装时的配置文件setting.xml
+
+settings.xml文件一般存在于Maven的安装目录的conf子目录下面，或者是用户目录的.m2子目录下面。
+
+这是我的目录：
+
+D:\software\apache-maven-3.5.0\conf
+
+
+三、找到<mirrors>添加镜像资源：
+
+<mirror>
+       <id>nexus</id>
+       <name>internal nexus repository</name>
+       <url>http://repo.maven.apache.org/maven2</url>
+       <mirrorOf>central</mirrorOf>
+    </mirror>
+
+
+四、maven->update，选中Force Update就OK了
+

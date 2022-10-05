@@ -1,0 +1,154 @@
+源于：功能类代码 – Logsetclass.py
+
+网上代码1：
+
+# 日志模块
+
+import logging
+
+import traceback
+
+# 引入日志
+
+logging.basicConfig(filename='log_record.txt',
+
+level=logging.DEBUG, filemode='w', format='[%(asctime)s] [%(levelname)s] >>> %(message)s',
+
+datefmt='%Y-%m-%d %I:%M:%S')
+
+try:
+
+print(a+1) # 放主要代码
+
+except Exception as e:
+
+logging.error("Main program error:")
+
+logging.error(e)
+
+logging.error(traceback.format_exc())
+
+结果为：
+
+网上代码2：
+
+logging模块可以实现Python程序的错误日志功能。通过使用baseConfig()函数就可以对logging进行一个日志配置。包括输出的格式和错误等级，记录的文件目录
+
+使用Python的logging模块能很好的帮我们完成程序的错误日志功能。
+
+像其它的语言那样，python里的logging信息同样也是分为5个等级，从低到高依次是:DEBUG,INFO,WARNING,ERROR,CRITICAL
+
+python中，logging由logger，handler，filter，formater四个部分组成，logger是提供我们记录日志的方法；handler是让我们选择日志的输出地方，如：控制台，文件，邮件发送等，一个logger添加多个handler；filter是给用户提供更加细粒度的控制日志的输出内容；formater用户格式化输出日志的信息。
+
+logger的级别划分，python中， root是默认的最高级别的，其它的logger的级别通过"."来划分等级，如：bao,bao.a,bao.b三个logger，bao.a和bao.b都的级别都低于bao，依此类推。
+
+python中配置logging有三种方式：
+
+4.1 在程序中完成logger，handler，filter，formater的实例化 被配置好logging，然后再使用logging取得logger进行日志操作。
+
+4.2 使用配置文件的方式配置logging，使用fileConfig(filename,defaults=None,disable_existing_loggers=Ture )函数来读取配置文件。
+
+4.3 使用一个字典方式来写配置信息，然后使用dictConfig(dict,defaults=None,disable_existing_loggers=Ture)函数来瓦按成logging 的配置 。(这个方式没有仔细看，所以没有怎么说，具体可以看文档)
+
+注意： 在使用第二种和三种方式配置logging的时候，第三个参数默认值是True，当它为True的时候，在这之前定义的logging配置就是失效，不能再使用，也就是只有配置文件或者配置字典里有的内容才能使用。如果先让之前的logging配置依然有限就要把这个参数设为False，或者一直就是使用配置文件或者配置字典的方式来对logging进行配置。
+
+使用代码logging的代码来说明:
+
+使用baseConfig()函数对 logging进行 简单的 配置：
+
+import logging
+
+logging.basicConfig(level=logging.INFO,
+
+format='%(levelname)s %(asctime)s [%(filename)s:%(lineno)d] %(message)s',
+
+datefmt='%Y.%m.%d. %H:%M:%S',
+
+# filename='parser_result.log',
+
+# filemode='w'
+
+)
+
+log = logging.getLogger(__name__)
+
+if __name__ == '__main__':
+
+# 使用logger输出日志信息
+
+log.info('this is a log')
+
+log.debug("debug")
+
+log.info("info")
+
+log.warning("warning")
+
+log.error("error")
+
+log.critical("critiacl")
+
+说明：
+
+使用baseConfig()函数,可选参数有filename,filemode,format,datefmt,level,stream
+
+有filename是文件日志输出,filemode是’w’的话，文件会被覆盖之前生成的文件会被覆盖。datafmt参数用于格式化日期的输出
+
+通过初始化logger，handler，formater来配置logging：
+
+import logging
+
+# logging模块由logger，handler，filter，fomatter四个部分组成
+
+# 获取一个logger对象
+
+logger = logging.getLogger("haha")
+
+# 设置日志输出等级
+
+logger.setLevel(logging.DEBUG)
+
+# 创建一个文件的handler
+
+f_handler = logging.FileHandler("xxx.log")
+
+f_handler.setLevel(logging.INFO)
+
+# 创建一个控制台的handler
+
+c_handler = logging.StreamHandler()
+
+c_handler.setLevel(logging.WARNING)
+
+# 设置日志的输出格式
+
+fmt = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
+
+# 给handler绑定一个fomatter类
+
+f_handler.setFormatter(fmt)
+
+c_handler.setFormatter(fmt)
+
+# 绑定一个handler
+
+logger.addHandler(f_handler)
+
+logger.addHandler(c_handler)
+
+# 使用logger输出日志信息
+
+logger.debug("debug")
+
+logger.info("info")
+
+logger.warning("warning")
+
+logger.error("error")
+
+logger.critical("critiacl")
+
+学习链接：
+
+python设置报错日志baseconfig配置
+

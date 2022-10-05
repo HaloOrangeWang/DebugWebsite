@@ -1,0 +1,60 @@
+运行的时候，有时候会出现语法错误： IndentationError: unexpected indent
+
+可以用如下方法解决：
+
+首先把空格显示出来,空格的地方 ,由点代替
+
+修改把tab 代表4个位置
+
+然后格式就对齐了。
+
+实例扩展：
+
+如何解决文本对齐
+
+大家好，我是python学习新手，我在一个练习题目中遇到问题.
+
+题目的要求是把列表打印输出并对齐。
+
+输入数据：
+
+tableData = [['apples', 'oranges', 'cherries', 'banana'],
+['Alice', 'Bob', 'Carol', 'David'],
+['dogs', 'cats', 'moose', 'goose']]
+
+要求的输出数据（第一行右对齐，其他左对齐）：
+
+apples Alice dogs
+ oranges Bob  cats
+cherries Carol moose
+ banana David goose
+
+以下是我的代码
+
+"""下面是代码正文"""
+tableData = [['apples', 'oranges', 'cherries', 'banana'],
+       ['Alice', 'Bob', 'Carol', 'David'],
+       ['dogs', 'cats', 'moose', 'goose']]
+
+def printTable(tableData):
+  # 下面是为了求每个内层列表的最长字符串的长度
+  colWidths = [0] * len(tableData)
+  for i in range(len(colWidths)):
+    colWidths[i] = len(sorted(tableData[i], key=(lambda x: len(x)))[-1])
+  
+  for x in range(len(tableData[0])):
+    for y in range(len(tableData)):
+      print(tableData[y][x].rjust(colWidths[y]), end=' ')
+    print('')  # 换行
+
+printTable(tableData)
+
+输出结果是（全部右对齐了）：
+
+apples Alice dogs 
+ oranges  Bob cats 
+cherries Carol moose 
+ banana David goose
+
+到此这篇关于解决python对齐错误的方法的文章就介绍到这了,更多相关python对齐错误如何解决内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

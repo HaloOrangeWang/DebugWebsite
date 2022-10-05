@@ -1,0 +1,58 @@
+
+问题背景
+
+平时一直在win10+anaconda环境下编写python程序，用pyinstaller打包后也没有问题。但是打包后发给其他同事，在win7机器上就出问题了。
+
+经过一系列排查，终于解决了打包程序在win7上的运行问题。所以用本文记录一下我遇到的问题和解决方案。
+
+
+问题一：Error loading Python DLL
+
+首先是出现以下这个问题，Error loading Python DLL xxx python39.dll，LoadLibrary: PyInstaller: FormatMessageW failed.
+
+
+出错原因
+
+发现是因为 Python 3.9 不再支持 win7 了，需要把 Python 版本降到 Python3.8 及以下。
+
+
+解决方案
+
+用anaconda重新建立虚拟环境，这次注意设置下python的版本
+
+conda create -n xxx python=3.8
+
+安装下你需要的依赖库，比如:
+
+pip install -r requirements.txt
+
+用 PyInstaller 加密打包程序，比如：
+
+pyinstaller  XXX.spec  --key YOUR_KEY
+
+在 win7 虚拟机中，运行打包后的程序。
+ 我用的是 win10 自带的 Hyper-V ，下载win7 iso 文件之后创建虚拟机，激活系统。
+ 这样就解决了 Python3.9 不支持 win7 的问题。
+
+可惜，我又遇到了下面这个问题。
+
+
+问题二：OSError: [WinError 87] 参数错误
+
+运行打包程序出现这个问题，Failed to execute script 'pyiboot01_bootstrap' due to unhandled exception: [WinError 87] 参数错误。
+
+
+出错原因
+
+刚开始我以为是 PyInstaller 版本不支持 win7，后来去 Github 查了下相关 Issues ，发现这是由于缺失了win7补丁 KB2533623 导致的，其实不是 PyInstaller 的锅。
+
+
+解决方案
+
+在 win7 虚拟机环境中安装完 KB2533623 补丁，打包的程序exe终于顺利在win7上运行起来了。
+
+
+参考链接
+
+https://github.com/pyinstaller/pyinstaller/issues/5079
+

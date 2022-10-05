@@ -1,0 +1,195 @@
+
+问题描述
+
+一开始使用pyenv安装了python 3.9.6版本之后，pyenv居然失灵了，切换不到任何版本去了，一气之下，删掉pyenv（rm -rf ~/.pyenv）直接源码安装。
+
+步骤如下：
+
+到官网https://www.python.org/downloads/下载最新的tar包
+
+到官网https://www.python.org/downloads/下载最新的tar包
+
+解压后执行：
+ ./configure --prefix=/opt/python-3.9.6
+ make
+ make install
+
+解压后执行：
+
+安装完成后，pip不能正常使用，即便是查看已安装包都会出现core dump
+ $ python3 -V
+ Python 3.9.6
+ $ pip3 list
+ Package    Version
+ ---------- -------
+ pip        21.1.3
+ setuptools 56.0.0
+ Segmentation fault (core dumped)
+ $ python3 -m pip list
+ Package    Version
+ ---------- -------
+ pip        21.1.3
+ setuptools 56.0.0
+ Segmentation fault (core dumped)
+
+安装完成后，pip不能正常使用，即便是查看已安装包都会出现core dump
+
+
+解决方法
+
+找了半天没有找到答案，最后只能硬着头皮去调试pip3的代码，结果发现跟SSL有关（后面会描述如何发现的，这里先说解决方法）。
+
+官网https://www.python.org/dev/peps/pep-0644/也说了要求OpenSSL 1.1.1及以上版本（“Require OpenSSL 1.1.1 or newer”），而我自己机器上的是1.1.0版本的。
+
+解决办法：
+
+到OpenSSL官网https://www.openssl.org/source/下载1.1.1版本的tar包
+
+到OpenSSL官网https://www.openssl.org/source/下载1.1.1版本的tar包
+
+解压后执行：
+ ./config
+ make
+ make install
+
+解压后执行：
+
+安装完成后，查看OpenSSL版本报错：
+ $ openssl version
+ openssl: /usr/lib64/libssl.so.1.1: version `OPENSSL_1_1_1' not found (required by openssl)
+ openssl: /usr/lib64/libcrypto.so.1.1: version `OPENSSL_1_1_1' not found (required by openssl)
+
+解决办法：
+ export LD_LIBRARY_PATH=/usr/local/lib64    # 最好写入 ~/.bashrc 或 /etc/profile 中去
+ $ openssl version
+ OpenSSL 1.1.1k  25 Mar 2021
+
+安装完成后，查看OpenSSL版本报错：
+
+解决办法：
+
+这个时候以为问题解决了，重新执行 pip3 list 仍然会出现 core dump，折腾了一天，差点都想放弃了，后来一想，python编译时链接的还是原来的旧库，所有需要重新编译python。回到 python 源码解压目录执行：
+ make distclean    # 把上一次编译过程中留下的余孽清理干净
+ ./configure --prefix=/opt/python-3.9.6
+ make
+ make install
+
+这个时候以为问题解决了，重新执行 pip3 list 仍然会出现 core dump，折腾了一天，差点都想放弃了，后来一想，python编译时链接的还是原来的旧库，所有需要重新编译python。回到 python 源码解压目录执行：
+
+完事后，再试，大功告成！
+ $ pip3 list
+ Package    Version
+ ---------- -------
+ pip        21.2.1
+ setuptools 56.0.0
+ $ python3 -m pip list
+ Package    Version
+ ---------- -------
+ pip        21.2.1
+ setuptools 56.0.0
+ $ pip list
+ Package    Version
+ ---------- -------
+ pip        21.2.1
+ setuptools 56.0.0
+
+完事后，再试，大功告成！
+
+
+分析过程
+
+网上搜答案，没有雷同的，苦恼！
+
+网上搜答案，没有雷同的，苦恼！
+
+想尝试去调试Core dump吧，即便执行了 ulimit -c unlimited ，也不会在当前目录中生成 core file，最后发现 core file 在下面这个目录，汗！
+ /var/lib/systemd/coredump
+
+想尝试去调试Core dump吧，即便执行了 ulimit -c unlimited ，也不会在当前目录中生成 core file，最后发现 core file 在下面这个目录，汗！
+
+有了 core file，咋调试？ 执行 gdb /opt/python-3.9.6/bin/pip3 core-file 根本就打印不出 backtrace 出来，因为 pip3 本身是个 python 文本文件，而不是二进制可执行程序。
+
+有了 core file，咋调试？ 执行 gdb /opt/python-3.9.6/bin/pip3 core-file 根本就打印不出 backtrace 出来，因为 pip3 本身是个 python 文本文件，而不是二进制可执行程序。
+
+好吧，调试 pip3 这个 python 文件：
+ $ python -m pdb /opt/python-3.9.6/bin/pip3 list
+ > /opt/python-3.9.6/bin/pip3(3)<module>()
+ -> import re
+ (Pdb) b /opt/python-3.9.6/lib/python3.9/ssl.py:483
+ Breakpoint 1 at /opt/python-3.9.6/lib/python3.9/ssl.py:483
+ (Pdb) c
+ Package    Version
+ ---------- -------
+ pip        21.1.3
+ setuptools 56.0.0
+ > /opt/python-3.9.6/lib/python3.9/ssl.py(483)__new__()
+ -> self = _SSLContext.__new__(cls, protocol)
+ (Pdb) where
+   /opt/python-3.9.6/lib/python3.9/bdb.py(580)run()
+ -> exec(cmd, globals, locals)
+   <string>(1)<module>()
+   /opt/python-3.9.6/bin/pip3(8)<module>()
+ -> sys.exit(main())
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/cli/main.py(71)main()
+ -> return command.main(cmd_args)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/cli/base_command.py(104)main()
+ -> return self._main(args)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/cli/base_command.py(221)_main()
+ -> self.handle_pip_version_check(options)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/cli/req_command.py(147)handle_pip_version_check()
+ -> pip_self_version_check(session, options)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/self_outdated_check.py(152)pip_self_version_check()
+ -> best_candidate = finder.find_best_candidate("pip").best_candidate
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/index/package_finder.py(879)find_best_candidate()
+ -> candidates = self.find_all_candidates(project_name)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/index/package_finder.py(824)find_all_candidates()
+ -> page_candidates = list(page_candidates_it)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/index/sources.py(134)page_candidates()
+ -> yield from self._candidates_from_page(self._link)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/index/package_finder.py(783)process_project_url()
+ -> html_page = self._link_collector.fetch_page(project_url)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/index/collector.py(512)fetch_page()
+ -> return _get_html_page(location, session=self.session)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/index/collector.py(422)_get_html_page()
+ -> resp = _get_html_response(url, session=session)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/index/collector.py(120)_get_html_response()
+ -> resp = session.get(
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/requests/sessions.py(555)get()
+ -> return self.request('GET', url, **kwargs)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_internal/network/session.py(449)request()
+ -> return super().request(method, url, *args, **kwargs)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/requests/sessions.py(542)request()
+ -> resp = self.send(prep, **send_kwargs)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/requests/sessions.py(655)send()
+ -> r = adapter.send(request, **kwargs)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/cachecontrol/adapter.py(53)send()
+ -> resp = super(CacheControlAdapter, self).send(request, **kw)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/requests/adapters.py(439)send()
+ -> resp = conn.urlopen(
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/urllib3/connectionpool.py(699)urlopen()
+ -> httplib_response = self._make_request(
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/urllib3/connectionpool.py(382)_make_request()
+ -> self._validate_conn(conn)
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/urllib3/connectionpool.py(1010)_validate_conn()
+ -> conn.connect()
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/urllib3/connection.py(392)connect()
+ -> self.ssl_context = create_urllib3_context(
+   /opt/python-3.9.6/lib/python3.9/site-packages/pip/_vendor/urllib3/util/ssl_.py(281)create_urllib3_context()
+ -> context = SSLContext(ssl_version or PROTOCOL_TLS)
+ > /opt/python-3.9.6/lib/python3.9/ssl.py(483)__new__()
+ -> self = _SSLContext.__new__(cls, protocol)    <=========== 这里已经进不去了，core就出现在这一步，看名字就是跟SSL有关吧
+ (Pdb) p cls
+ <class 'ssl.SSLContext'>
+ (Pdb) p protocol
+ <_SSLMethod.PROTOCOL_TLS: 2>
+ (Pdb) s
+ Segmentation fault (core dumped)
+
+好吧，调试 pip3 这个 python 文件：
+
+看到SSL立马去搜 python +SSL 关键字，才发现官网的这个说明https://www.python.org/dev/peps/pep-0644/，也就有了去尝试安装 OpenSSL 1.1.1 的想法。
+
+看到SSL立马去搜 python +SSL 关键字，才发现官网的这个说明https://www.python.org/dev/peps/pep-0644/，也就有了去尝试安装 OpenSSL 1.1.1 的想法。
+
+这一切的一切都源于本来想安装 pypiwin32 这个包，想用它来分析windows系统日志，windows上装成功了，linux上没有装成功，然后以为是旧版本的问题去装新版本，折腾了一天，烧死多少脑细胞，就搞个环境问题，不过，生命在于折腾嘛！
+

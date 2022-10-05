@@ -1,0 +1,69 @@
+
+项目场景：
+
+使用Anaconda安装Python
+ 使用VS Code开发Python，安装需要的插件
+
+
+问题描述：
+
+pip install 命令无法使用，出现以下连接错误，无法成功安装上插件
+
+Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectTimeoutError(<pip._vendor.urllib3.connection.VerifiedHTTPSConnection object at 0x00000238CE8677B8>, 'Connection to pypi.org timed out. (connect timeout=15)')': /simple/pymysql/
+
+
+解决方法：
+
+看了很多大佬对于pip install不能成功安装的解决方案，尝试了以下几种：
+
+使用常用命令——pip install flake8，失败
+
+猜测与Anaconda环境有关——激活python环境，使用命令，conda install flake8，失败
+
+猜测是学校网络限制——换手机热点，失败
+
+手动下载——网上搜索需要的库，下载，再使用命令pip install+下载的库所在路径文件进行安装，太费劲了
+
+猜测是网络慢——换国内镜像源，失败
+
+最后成功的解决方案如下：
+
+（1）按Win+R快捷键，输入regedit，打开注册表编辑器找到HKEY_CURRENT_USER/Software/Microsoft/Windows/CurrentVersion/Internet Settings分支，把它下面以 Proxy 打头的键值对（如ProxyEnable，ProxyOverride，ProxyServer等）全部删除
+
+（2）使用pip install 命令，提示新的错误：
+
+ERROR: Exception:
+ Traceback (most recent call last):
+ File “D:\software\Anaconda\lib\site-packages\pip_vendor\urllib3\response.py”, line 397, in _error_catcher
+ yield
+
+（3）换镜像源，使用命令：
+
+pip install flake8 -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+提示新的错误：
+ ERROR: spyder 3.3.6 requires pyqt5<5.13; python_version >= “3”, which is not installed.
+ ERROR: spyder 3.3.6 requires pyqtwebengine<5.13; python_version >= “3”, which is not installed.
+
+（4）使用如下命令，安装错误提示中需要的版本（更小的版本）：
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn pyqt5==5.12.0
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn pyqtwebengine==5.12.0
+
+安装成功！
+
+（5）继续使用上述命令，安装一开始想要的插件：
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn flake8ss
+
+运行成功！
+
+可以使用 pip show 命令查看，确认插件安装上了：
+ 
+ 到此为止，问题解决。
+
+建议使用如下命令安装插件，不出问题，顺滑体验~
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn 插件名
+

@@ -1,0 +1,24 @@
+问题描述:
+
+Python 3.6 bs4.BeautifulSoup()调用本地已写好的html文件example.html, 报错找不到文件:
+
+FileNotFoundError: [Errno 2] No such file or directory:
+
+>>> exampleFile=open('example.html')
+Traceback (most recent call last):
+  File "<pyshell#38>", line 1, in <module>
+    exampleFile=open('example.html')
+FileNotFoundError: [Errno 2] No such file or directory: 'example.html'
+
+解决思路:
+
+此处example.html使用的是相对路径, 换成包含盘符的绝对路径后问题解决, 报错没有再出现.
+
+>>> exampleFile=open('D:\DIV\Python Study1\CHAPTER11\example.html')
+>>> exampleSoup=bs4.BeautifulSoup(exampleFile)
+>>> type(exampleSoup)
+<class 'bs4.BeautifulSoup'>
+>>>
+
+总结: 为避免错误, 调用本地文件时可使用绝对路径.
+

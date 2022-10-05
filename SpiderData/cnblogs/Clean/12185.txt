@@ -1,0 +1,37 @@
+报错信息：OSError: no library called "cairo-2" was found
+
+brew install pango libffi  （安装如果不报错忽略以下步骤，根据官网安装文档：https://doc.courtbouillon.org/weasyprint/latest/first_steps.html）
+
+第一步不成功是因为这两个库不支持m1芯片，安装intel版本的brew，然后安装这两个库：
+访达->应用程序–终端–右键显示简介–勾选 “使用Rosetta打开”-重启
+
+访达->应用程序–终端–右键显示简介–勾选 “使用Rosetta打开”-重启
+
+注意： 最后使用完，记得将 “使用Rosetta打开”取消！！！
+
+安装
+
+# 安装
+
+arch -x86_64 /bin/bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install.sh)"
+
+# vim ~/.zshrc 添加以下命令
+
+alias ibrew="arch -x86_64 brew"
+
+export LDFLAGS="-L/usr/local/opt/zlib/lib"
+
+export CPPFLAGS="-I/usr/local/opt/zlib/include"
+
+# 使生效
+
+source ～/.zshrc
+
+参考：https://blog.csdn.net/HWQlet/article/details/119222022
+
+使用intel版brew安装：ibrew install pango libffi
+
+正常情况下已经安装完毕，期间可能会报找不到其他依赖文件的错误，例如：https://blog.csdn.net/weixin_40509040/article/details/121221676，缺什么根据例子装什么就好，这一步没有报错
+
+到此处已经安装完毕，运行项目时可能还会有其他python包缺少，单独安装即可，不会报错
+

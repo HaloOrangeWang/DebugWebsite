@@ -1,0 +1,38 @@
+
+问题描述：
+
+当使用urllib.urlopen打开一个 https 链接时抛出如下异常：
+
+urllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1076)>
+
+
+原因：
+
+本地证书不存在。
+
+
+解决方法：
+
+1、查看默认证书位置
+
+import ssl print(ssl.get_default_verify_paths())
+
+执行结果：
+
+DefaultVerifyPaths(cafile=None, capath=None, openssl_cafile_env='SSL_CERT_FILE', openssl_cafile='/Library/Frameworks/Python.framework/Versions/3.7/etc/openssl/cert.pem', openssl_capath_env='SSL_CERT_DIR', openssl_capath='/Library/Frameworks/Python.framework/Versions/3.7/etc/openssl/certs')
+
+由结果可见，ca文件不存在。
+
+2、下载ca文件
+
+http://curl.haxx.se/ca/cacert.pem
+
+3、将下载的ca文件放到【openssl_cafile】指定位置，并创建【openssl_capath】指定目录
+
+cd /Library/Frameworks/Python.framework/Versions/3.7/etc/openssl 
+mkdir certs 
+mv ~/Downloads/cacert.pem ./ 
+mv cacert.pem cert.pem
+
+再运行脚本就不会报错了。
+

@@ -1,0 +1,55 @@
+
+500：服务器内部错误，也就是服务器遇到意外情况，而无法履行请求。
+
+
+500错误一般有几种情况：
+
+1. web脚本错误，如php语法错误，lua语法错误等。
+
+2. 访问量大的时候，由于系统资源限制，而不能打开过多的文件
+
+
+一般分析思路：
+
+（1）查看nginx error log ，查看php error log
+
+（2）如果是too many open files，修改nginx的worker_rlimit_nofile参数，使用ulimit查看系统打开文件限制，修改/etc/security/limits.conf
+
+（3）如果是脚本的问题，则需要修复脚本错误，并优化代码
+
+（4）各种优化都做好，还是出现too many open files，那就要考虑做负载均衡，把流量分散到不同服务器上去了。
+
+
+错误原因总结：
+
+1、硬盘空间满了
+
+使用 df -h 查看硬盘空间是否满了。清理硬盘空间就可以解决500错误。
+
+nginx如果开启了access log，在不需要的情况下，最好关闭access log。access log会占用大量硬盘空间。
+
+2、nginx配置文件错误
+
+这里不是指语法错误，nginx如果配置文件有语法错误，启动的时候就会提示。当配置rewrite的时候，有些规则处理不当会出现500错误，请仔细检查自己的rewrite规则。如果配置文件里有些变量设置不当，也会出现500错误，比如引用了一个没有值的变量。
+
+3、如果上面的问题都不存在可能是模拟的并发数太多了，需要调整一下nginx.conf的并发设置数
+
+解决方法是：
+1 打开/etc/security/limits.conf文件，加上两句
+复制代码代码如下:
+* soft nofile 65535 
+* hard nofile 65535
+
+2 打开/etc/nginx/nginx.conf 
+在worker_processes的下面增加一行
+worker_rlimit_nofile 65535;
+
+3 重新启动nginx，重新载入设置 
+复制代码代码如下:
+kill -9 `ps -ef | grep php | grep -v grep | awk '{print $2}'` 
+/usr/bin/spawn-fcgi -a 127.0.0.1 -p 9000 -C 100 -u www-data -f /usr/bin/php-cgi 
+killall -HUP nginx 
+重启后再看nginx的错误日志，也没有发现500报错的情况了。
+
+4、有可能是数据库问题我的在nginx日志php日志都没有发现什么问题, 最后发现数据库访问不了,修正后问题解决。
+

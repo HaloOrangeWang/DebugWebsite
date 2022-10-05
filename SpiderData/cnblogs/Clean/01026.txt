@@ -1,0 +1,46 @@
+因为电脑以前安装过pip
+
+所以直接cmd 管理员权限运行：pip install pyinstaller
+
+安装successfully之后就可以转换.py程序了.
+
+cmd管理员权限打开，cd到你要转换的文件目录下。
+
+比如，文件在D:\TEST下，CMD默认打开C:\。执行：
+
+D:
+
+cd TEST
+
+教程：
+
+https://pyinstaller.readthedocs.io/en/v3.3.1/usage.html
+
+https://wizardforcel.gitbooks.io/py-sec-tutorial/content/zh-cn/0x4.html
+
+
+举例：
+
+pyinstaller.py --console --onefile  sync.py
+
+成功后如下：
+
+在dist文件夹下的sync.exe就是我们最后需要的文件。
+
+Issue：
+
+程序中可能引用了pandas包，编译时报错如下：No module named timedeltas not build. If you want import pandas from the source directory, you may need to run 'python setup.py build_ext --inplace --force' to build the C extension.
+
+我们到文件目录下，看到之前pyinstaller为我们生成了sync.spec文件。
+
+打开之前生成的【文件名.spec】文件：在hiddenimports=[] 中添加对应的pandas命令。如下黄色部分。
+
+再运行：
+pyinstaller sync.spec
+
+在dist文件夹下的sync.exe就是我们最后需要的文件。
+
+参考：https://stackoverflow.com/questions/47607315/modulenotfounderror-no-module-named-pandas-libs-tslibs-timedeltas
+
+https://blog.csdn.net/zyc121561/article/details/79562935
+

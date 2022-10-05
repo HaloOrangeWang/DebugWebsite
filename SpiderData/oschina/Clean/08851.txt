@@ -1,0 +1,109 @@
+
+1、背景
+
+我们公司的调用链系统是基于大众点评的CAT客户端改造的，服务端完全有自己设计开发的。在是用CAT客户端收集dubbo调用信息的时候，我们发现了一个CAT偶现NPE的bug，该bug隐藏的很深，排查极其困难，导致了我们公司4期线上故障，造成了很大的资产损失。 接下来让我们看一下，这个NPE的发现与解决！！
+
+
+2、问题描述
+
+该问题最先发现于营销的应用，他们的发布之后立刻一台机器出现cat-redis埋点的客户端大量抛NPE，表象是Cat.newTransaction()这行抛了NPE。当时花了1周排查无果，最终大家倾向于认为是jar包冲突。因为这个和jar包冲突很像，单机器，时有时没（jar包会被仲裁）！ 第二次出现是在交易的应用中，也是应用刚发布就出现了NPE的问题，这次是表象是cat-redis埋点的客户端在Cat.newTransaction()过程中出现了NPE，又引起了一起线上故障，造成了好几万的资产损失。。。
+
+
+3、问题排查过程
+
+重启了排查过程，这次一定要打破砂锅问到底！！！ 排查回到原点，依然没有头绪，因为现象很简单就是m_producer为null，为什么null，看初始化的过程就是一个SPI，而且是内存中加载的就想spring加载一样，不太可能是初始化失败；但是有可能是实例被destroy，也可能因为时序问题，先调用getProducer后去初始化。
+
+因为不知道如何复现这个问题，只能硬着头皮在可疑的出现问题的地方打了几行日志，然后李文嘉同学写了个python脚本不断在重启应用、kill应用、然后在重启。。。因为一次start/stop周期就要好几分钟，又正好周五打完收工！！！！
+
+马上又是忐忑的周一了，因为周末看代码还是一点头绪都没有，不过好消息是我们发现脚本不停start-stop过程中（2000多次重启）出现了24次一样的Cat.newTransaction的NPE现象，确实是个好消息。
+
+但是问题是我和李文嘉同学的采样都是错的，我们打日志的面积又不够，所以消息是好的，线索还是没有。接下来我一鼓作气在snapshot版本中打满了日志，而且以CatNPE开头，保证grep出来都是自己想要的日志！！
+
+打完包，脚本run起来，又等了一个晚上，第二天早上来看日志，又有新的收获发现最开始不怀疑的地方setContainer方法报了NPE，但是问题为什么throw RunTimeException 为什么没抛出来了（被哪里catch了）。不过悲剧的是，我竟然忘记在catch中打印异常堆栈了啊（智商不够用。。。）
+
+于是又打包，脚本再run起来，又等了一个晚上，终于有一点收获了，定位到了包异常的位置，MessageIdFactory.initialize()方法中读取m_byteBuffer.getLong()的时候报错，java.nio.BufferUnderflowException 这个异常是意思是可读字节数不够，举例：buffer中的limit=cap=20, position=16,此时getLong读取8个字节，由于字节数不够(pos到limit之间只有4个字节)会出现BufferUnderflowException的异常
+
+于是新的问题有来了，读取自己会报错，有的时候报错，多数时候正常呢？？？
+
+最开始我怀疑是创建文件cat-appname.xml问题，因为创建文件可能会有权限问题，然后读取到了不完整的文件内容（当时严重怀疑这个）。于是在往这个方向找问题，但是交易的应用实在太笨重了，重启很麻烦。于是自己写了demo和脚本，打上日志不断的重启复现问题。正当我信心满满的时候，跑了2天脚本依然没有任何收获。。。所以打算放弃这条路。。。
+
+期间和cat的作者吴其敏联系了一下，他怀疑是并发初始化问题
+
+于是开始往线程并发方向开始找问题，期间把m_byteBuffer所有成员变量都输出来看，多次debug发现pos的每条语句结束指都不太一样（有重大线程安全问题的嫌疑）；另一个重大发现是debug的时候居然有很高的概率复现问题，但是RUN的时候复现的概率低。。。。
+
+pos     limit     cap
+init        0        20      20
+limit()     0        20      20
+getInt()    4        20      20
+getLong()   12       20      20
+
+这个时候我严重怀疑是m_byteBuffer对象被多个线程操作了，于是找到了saveMask()有修改m_byteBuffer的（因为write方法会修改pos）。马上Find Usages 立刻发现有个异步线程在死循环的调用saveMask方法
+
+这就能解释了为什么debug的情况下有很大的概率能复现问题，因为main线程被断点了，异步run方法还能继续执行，调用saveMask方法能修改m_byteBuffer的position变量，然后主线程main初始化的时候pos被修改成了16，getLong读取8个字节接报错了！！！ 不在debug环境下的时候，Main的初始化速度一般是能早于异步线程ChannelManager.run的执行完成，所以这就能解释大部分情况下是没有问题了！！！！ 至此真相大白，所有的问题和现象都能解释的通了！！！！！！
+
+
+2.2源码分析
+
+MessageIdFactory.initialize()
+
+public void initialize(String domain) throws IOException {
+  ...... 省略其他代码
+  m_markFile = new RandomAccessFile(mark, "rw");
+  m_byteBuffer = m_markFile.getChannel().map(MapMode.READ_WRITE, 0, 20);
+  if (m_byteBuffer.limit() > 0) {
+    // 断点在此处，position变量很容易被异步线程修改掉，导致pos=16的时候，getLong就会报错BufferUnderflowException
+    int index = m_byteBuffer.getInt();
+    long lastTimestamp = m_byteBuffer.getLong();
+    ....
+  }
+  saveMark();
+}
+
+ChannelManager.run
+
+@Override
+public void run() {
+  while (m_active) {
+    // 异步线程执行saveMark，会向m_byteBuffer中write值
+    m_idfactory.saveMark();
+    .....省略其他代码
+  }
+}
+
+
+3、问题解决
+
+
+3.1修改
+
+这个bug 我觉得并不是线程安全问题，而是main线程初始化一定要先于异步线程。所以增加一个volatile init变量，在初始化完成之后修改init=true
+
+m_markFile = new RandomAccessFile(mark, "rw");
+m_byteBuffer = m_markFile.getChannel().map(MapMode.READ_WRITE, 0, 20);
+if (m_byteBuffer.limit() > 0) {
+  int index = m_byteBuffer.getInt();
+  long lastTimestamp = m_byteBuffer.getLong();
+}
+saveMark();
+m_init = true;
+
+异步线程ChannelManager增加一个是否初始化完成的判断
+
+public void run() {
+  while (m_active) {
+    // 增加是否初始的判断
+    if(m_idfactory.isInit()){
+      m_idfactory.saveMark();
+      .....
+   }
+ }
+}
+
+
+4、开源回馈
+
+本问题已经提交到cat官方issue和pr
+
+issue
+ pr
+

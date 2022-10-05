@@ -1,0 +1,29 @@
+1：Your python: python=3.9.5
+ If python is on the left-most side of the chain, that’s the version you’ve asked for.When python appears to the right, that indicates that the thing on the left is somehow not available for the python version you are constrained to. Note that conda will not change your python version to a different minor version unless you explicitly specify that.
+ 解决方法：
+ 1）删除环境
+ envname为conda环境名称
+
+conda remove -n envname --all
+
+2）重新指定python版本安装环境
+ envname 建议取与之前不同的名字
+
+conda create --name envname python=3.5
+
+具体安装参考
+ 2.重新按照上面链接安装时在import numpy import pytorch时出现错误（因为我还用的原来的名字应该是这个问题导致的
+
+Original error was: DLL load failed: 找不到指定的模块。
+ 
+ 解决方法：
+ 先卸载numpy
+
+pip uninstall numpy
+
+再重新下载
+
+pip install numpy
+
+重新引入就成功了没有出错
+

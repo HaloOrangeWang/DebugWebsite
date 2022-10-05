@@ -1,0 +1,97 @@
+本文主要介绍了Python3.9.0a1安装pygame出错解决全过程，分享给大家，具体如下：
+
+
+解决方法
+
+先说一下经验教训：pygame最后终于安装成功了，但由于操作了一下午和一晚上的时间，查询了许多网页，操作了许多条命令，无法追溯到底是哪一步操作起关键性的作用。后来我推测是因为没有安装visual C++2014的缘故。
+
+先把我推测的解决方法亮出来，后面再附上我出错的详细流程，希望跟我面临同样错误的人可以减少试错的次数。
+
+
+1、python环境
+
+操作系统：Win10，64位操作系统。
+
+python版本：3.9.0a1。（有网友说，python是32位版本还是64位版本，看下图中[MSVC v.1916 64 bit(AMD64)]中间的数字是64bit还是32bit，64对应64位，32位对应32位版本。所以我的python应该是64位版本。
+
+（查询版本信息，CMD进入命令行，输入python，回车即可）
+
+
+2、查找自己python适合的pygame版本
+
+电脑必须联网。
+
+运行——cmd，进入命令行，不用切换目录，直接输入pip install pygame。
+
+它不会安装成功，成功的话就不用下面这些折腾了。但可以显示最适合你的python版本的pygame版本。
+
+
+3、安装方法
+
+先给个链接：参照这个网页执行步骤。这上面有VC++的安装链接。你最好先仔细看一下相关内容，再看我后面的内容。我实际上按这3个步骤执行并没有成功，但它引导我安装了一些必要的插件。http://www.pygame.org/wiki/CompileWindows
+
+步骤1：获取一个C/C++编译器。
+
+该网页上有VC++安装工具的下载链接build-tools-for-visual-studio-2017。下载它（Microsoft Build Tools for Visual Studio 2017. ），再安装。（但我没有下载它，我直接下载了一个visualcppbuildtools full.exe工具，使用的默认安装。安装的时候注意勾选最新版本的VC++和Win10SDK。）事后，从网页https://wiki.python.org/moin/WindowsCompilers才发现，不同版本的python必须使用指定版本的Visual C++。
+
+安装完visual C++后，运行——cmd，进入命令行，不用切换目录，直接输入：
+
+pip install setuptools -U
+
+这条命令是下载必要的依赖插件和build for SDL2(experimental) or SDL1.其实我也不知道具体是干嘛，反正网页上说要执行，我就执行了。
+
+步骤2：从github上找到合适的pygame模块压缩包
+
+点击网页上的链接：https://github.com/pygame/pygame
+
+如果直接点击打不开的话，就复制地址，粘贴到浏览器里，把https的s去掉。
+
+下翻网页，你会看到***Instatllation*** 部分内容，点击这部分内容给出的链接地址：https://www.pygame.org/download.shtml
+
+下载pygame-1.9.6.tar.gz.（之所以下载它，是因为我在命令行输入pip install pygame命令后，显示自动下载该安装包），我将下载的压缩包放在了C:\myapp 目录下，下载完成后，利用普通压缩软件WinRAR解压它。
+
+步骤3：运行pygame安装命令
+
+网页给出了SDL1、SDL2两种情况下的命令。我是按照第一种SDL1执行的。
+
+第一句命令git clone https://github.com/pygame/pygame.git应该是用来下载pygame压缩包的，不需要执行。因为我已经下载了。
+
+直接执行第二条命令：cd pygame
+
+这条命令需要根据你下载的pygame压缩包的存放目录更改。我pygame-1.9.6.tar.gz.解压缩后的目录是：C:\myapp\pygame-1.9.6,所以我的执行命令是：
+
+cd C:\myapp\pygame-1.9.6
+
+执行：
+
+pip install setuptools requests -U
+python -m buildconfig
+
+没有出现错误。
+
+执行python setup.py install，出现错误。具体错误代码忘了截屏了，大致是VC2014的cl.exe出问题。我重新安装了visualcppbuildtools full.exe，点击修复。然后根据要求重启电脑。
+
+重启电脑后，我并没有再执行上述步骤。而是进入命令行，先执行了一次
+
+pip install pygame。
+
+仍然显示错误，如下：
+
+接着，我又执行了命令：
+
+pip install pygame==2.0.0.dev6
+
+成功了。注意，是双等号，前后不要有空格。
+
+这纯粹是无意尝试的。为什么会执行这条命令？我是在https://github.com/pygame/pygame页面，点击release时查询最新pygame的发行版本时：
+
+进入
+
+https://github.com/pygame/pygame/releases，该网页显示最新发布的pygame版本。
+
+发现如下使用命令安装时可以在pygame后面添加版本号：
+
+其实这条命令在我上述步骤执行之前，我也执行过，但仍然是失败的。执行完上述步骤1、2、3之后，这次却成功了。所以我也不知道哪一步才是关键性步骤了
+
+到此这篇关于Python3.9.0 a1安装pygame出错解决全过程(小结)的文章就介绍到这了,更多相关Python3.9.0 a1安装pygame内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

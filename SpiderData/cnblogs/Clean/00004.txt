@@ -1,0 +1,66 @@
+1、ImportError:
+ No module named skimage.io
+
+>>> import caffe
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "caffe/__init__.py", line 1, in <module>
+
+from .pycaffe import Net, SGDSolver, NesterovSolver, AdaGradSolver, RMSPropSolver, AdaDeltaSolver, AdamSolver, NCCL, Timer
+
+File "caffe/pycaffe.py", line 15, in <module>
+
+import caffe.io
+
+File "caffe/io.py", line 2, in <module>
+
+import skimage.io
+
+ImportError: No module named skimage.io
+
+解决方案：
+
+缺乏skimage工具箱
+
+pip install scikit-image
+
+2、ImportError: dynamic module does not define module export function (PyInit__caffe)
+
+>>> import caffe
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "/home/wangxiao/Downloads/project/caffe-master/python/caffe/__init__.py", line 1, in <module>
+
+from .pycaffe import Net, SGDSolver, NesterovSolver, AdaGradSolver, RMSPropSolver, AdaDeltaSolver, AdamSolver
+
+File "/home/wangxiao/Downloads/project/caffe-master/python/caffe/pycaffe.py", line 13, in <module>
+
+from ._caffe import Net, SGDSolver, NesterovSolver, AdaGradSolver, \
+
+ImportError: dynamic module does not define module export function (PyInit__caffe)
+
+>>>
+
+发现是 Python  3.5 导致的，因为版本较高的 Python 和 caffe 不一定兼容；
+
+　　caffe 官网 (http://caffe.berkeleyvision.org/ ) 上也提示说,
+ 只是较好的支持 caffe 2.7 版本；对于其他的版本，需要自己进行摸索咯。
+
+3、ImportError: No module named google.protobuf.internal
+
+解决方案：
+
+sudo pip install protobuf
+
+4、ImportError: No module named caffe
+
+解决方案：把caffe目录下的python目录，添加到环境变量中
+
+export PYTHONPATH=/work/project/caffe/python:$PYTHONPATH
+

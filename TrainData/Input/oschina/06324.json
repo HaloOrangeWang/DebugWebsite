@@ -1,0 +1,29 @@
+{
+    "err_msg": {
+        "text": "ERROR 29 (HY000): File '/opt/data/slow_query.log' not found (Errcode: 13 - Permission denied)",
+        "lines": [9],
+        "weight": [1]
+    },
+    "scene": [
+        {
+            "text": "mysql开启慢查询",
+            "lines": ["title"],
+            "weight": [1]
+        },
+        {
+            "text": "进入mysql命令行：#mysql -uroot -p123456,执行下面的命令开启慢查询",
+            "lines": [1],
+            "weight": [1]
+        },
+        {
+            "text": "set global slow_query_log=on;\n\nset global long_query_time=1;#设置记录查询超过多长时间的sql\n\nset global slow_query_log_file='/opt/data/slow_query.log';#设置mysql慢查询日志路径",
+            "lines": [3, 5, 7],
+            "weight": [1, 1, 1]
+        }
+    ],
+    "solve": {
+        "text": "将原来的文件slow_query.log删除，再重新新建一个文件slow_query.log，然后再赋予权限：\n\n#cd /opt/data\n\n#rm -rf slow_query.log\n\n#touch slow_query.log\n\n#chown mysql slow_query.log\n\n重启mysql：#/opt/lampp/lampp restart\n\n4.进入mysql：开启慢查询：",
+        "lines": [19, 21, 23, 25, 27, 29, 31],
+        "weight": [1, 0.5, 0.5, 0.5, 0.5, 1, 1]
+    }  
+}

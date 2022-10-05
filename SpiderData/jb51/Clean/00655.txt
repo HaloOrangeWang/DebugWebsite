@@ -1,0 +1,101 @@
+如何实现自定义一个异常
+
+python内置了许多异常类，为编写代码划定红线，才使调试代码时能及时发现错误。那么我们编写一个模块也可以为使用此模块者划定红线，来约束使用者可用哪些数据，这就需要自定义异常类型。
+
+首先需要了的是自定义类是的父类：
+
+python说明文档中是这样说 exception Exception：
+
+所有内置的非系统退出类异常都派生自此类。 所有用户自定义异常也应当派生自此类。
+
+那么就可以通过直接或间接的继承Exception就可以自定义一个异常类，当然也可以间接的继承python内置的异常类。
+
+通常的做法是，先为自己的模块创建一个基类，然后再从此基类派生其他异常类，这样不但清晰明了，也方便管理：
+
+例如：
+
+class MyErorr(Exception):
+  pass
+class AaErorr(MyErorr):
+  pass
+class BbErorr(MyErorr):
+  pass
+
+其次要了解 raise 语句：意为抛出异常。
+
+raise 语句允许在写代码的时候强制发生指定的异常。
+
+写法是：raise 后跟要抛出的异常。这个异常必须是异常实例或者是一个异常类。
+
+步骤：
+
+自定义异常类：
+
+例如：写一个只接收整数的加法计算器，当输入的不是整数时引发异常。
+
+class CalcErorr(Exception)
+  pass
+class NumErorr(CalcErorr)
+  def __init__(self,numA,numB)
+    self.numA=numA
+    self.numB=numB
+  def __str__(self)
+    return f"本计算器只接收整数!"
+
+两个魔法方法：
+
+def __init__(self)，异常类对象的初始化属性。
+
+def __str__(self)，返回异常类对象说明信息。
+
+引发异常：
+
+定义一个计算函数，函数体按try语句规则，在try子句内引发异常。
+
+def calculator(a,b)
+  try:
+    if type(a)!=int or type(b)!=int:
+      raise NumErorr(a,b) 
+  except Exception as e:
+    print(e)
+  else:
+    c=a+b
+    return c
+
+捕获异常：
+
+try语句的except子句来捕获异常，并返回描述信息。
+
+except Exception as e: 
+  print(e)
+
+else子句：
+
+在输入正确的情况下，不会引发异常，执行else子句执行计算。
+
+这是一个简单的自定义的异常类。当有其他用户使用时，如果输入错误就会引发异常。下面两个例子来检验一下。
+
+用户调用：（错误数据）
+
+sA=calculator(33.3,66)
+
+print(sA)
+
+---本计算器只接收整数!
+
+---None
+
+输入的时小数，所以引发异常。
+
+用户调用：（正确数据）
+
+sA=calculator(33,66)
+
+print(sA)
+
+---99
+
+输入正确计算出结果
+
+总结：以上就是关于Python自定义异常类的实操方法，感谢大家的阅读和对脚本之家的支持。
+

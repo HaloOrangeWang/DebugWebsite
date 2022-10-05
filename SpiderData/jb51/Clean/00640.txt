@@ -1,0 +1,90 @@
+请看如下代码，执行后，思考生成的两个二维码为什么不一样？
+
+# -*- coding:utf-8 -*-
+from tkinter import *
+from tkinter import ttk
+from PIL import ImageTk
+import qrcode
+class QRcodeImage(object):
+  '''生成二维码图片类'''
+
+def __init__(self, content, fcolor=None, bcolor=None, size=None):
+    '''
+    参数说明：
+    content：二维码图片的文本内容
+    fcolor：二维码图片的前景色
+    bcolor：二维码图片的背景色
+    size:二维码大小
+    '''
+    qr = qrcode.QRCode(version=2,
+              error_correction=qrcode.constants.ERROR_CORRECT_L, #容错率
+              box_size=8,
+              border=2) # 实例化QRCode类，得到qr对象
+    qr.add_data(content) # 二维码内容添加到图片中
+    qr.make(fit=True) # 图片中的二维码大小自适应，以保证二维码内容能完整绘制
+    if fcolor == None: fcolor = 'black' #默认前景色为黑色
+    if bcolor == None:bcolor = 'white' #默认背景色为白色
+    img = qr.make_image(fill_color=fcolor,
+              back_color=bcolor) #生成彩色二维码图片
+    img = img.convert(mode="RGBA") # 将图片的模式转换为彩色透明模式
+    if size == None: size = 150 #默认图片大小
+    self.img = img.resize((size, size))
+
+def getPhotoImage(self):
+    '''转换为PhotoImage'''
+    tkimg = ImageTk.PhotoImage(self.img)
+    return tkimg
+def cvfill():
+  cv.create_window(200, 50, window=lbimg1, width=155, height=155,
+           anchor=NW,
+           )
+  cv.create_window(50, 50, window=lbimg2, width=155, height=155,
+         anchor=NW,
+         )
+  global img1
+  img1 = QRcodeImage(content).getPhotoImage()
+  lbimg1.config(image=img1)
+  content1='''BEGIN:VCARD
+  FN:steven
+  TITLE:Drector
+  TEL;TYPE=CELL:15201011234
+  NOTE:
+  END:VCARD '''
+  global img2
+  img2=QRcodeImage(content1).getPhotoImage()
+  lbimg2.config(image=img2)
+root = Tk()
+
+cv = Canvas(root, width='94m', height='54m', bg='#F0F8FF',
+    highlightbackground='gold',
+    highlightthickness=2,
+    )
+cv.pack(pady=10)
+
+lbimg1 = Label()
+lbimg2 = Label()
+content='''BEGIN:VCARD
+FN:steven
+TITLE:Drector
+TEL;TYPE=CELL:15201011234
+NOTE:
+END:VCARD '''
+cvfill()
+mainloop()
+
+执行上述代码，结果如下图所示：
+
+明显两个二维码图片不同，而出现这样的差异的原因就出现在全局变量content和局部变量content1的赋值上。
+
+content的赋值后的结果为：
+
+content = BEGIN:VCARD\nFN:steven\nTITLE:Drector\nTEL;TYPE=CELL:15201011234\nNOTE:\nEND:VCARD
+
+而content1的赋值后的结果为：
+
+content1 = BEGIN:VCARD\n  FN:steven\n  TITLE:Drector\n  TEL;TYPE=CELL:15201011234\n  NOTE:\n  END:VCARD
+
+明显content和content1的值的内容不一样，content1多了很多空格字符。造成这样结果的原因就是因为在函数cvfill()中，三引号'''中的内容从第二行开始进行了缩进，导致增加了很多缩进的空格，这是很容易犯的一个小错误，并且不易被注意到。
+
+以上就是python 使用三引号时容易犯的小错误的详细内容，更多关于python 三引号的资料请关注脚本之家其它相关文章！
+

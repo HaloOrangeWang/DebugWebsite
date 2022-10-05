@@ -1,0 +1,24 @@
+安装 MySQL-python 时报错：EnvironmentError: mysql_config not found
+
+解决方式：
+
+没能安装成功的原因是： 没有安装libmysqlclient-dev
+
+安装命令：
+
+sudo apt-get install libmysqlclient-dev
+
+是用如下命令找到 mysql_config 的路径
+
+sudo  updatedb; locate mysql_config
+
+在mysql-config的位置： /usr/bin/mysql_config
+
+在mysql-python 的源码包中寻找 setup_posix.py文件中，修改文件中mysql_config.path 的路径：/usr/bin/mysql_config.
+
+python setup.py build
+
+python setup.py install
+
+注意： 以上执行环境在ROOT 用户下
+

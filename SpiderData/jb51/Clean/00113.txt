@@ -1,0 +1,158 @@
+#coding:utf-8
+
+from wsgiref.simple_server import make_server
+
+def RunServer(environ, start_response):
+  start_response('200 OK', [('Content-Type', 'text/html')])
+  return '<h1>Hello, web!</h1>'
+
+if __name__ == '__main__':
+  httpd = make_server('localhost', 8000, RunServer)
+  print ("Serving HTTP on port 8000...")
+  httpd.serve_forever()
+
+这段代码在python2.7中可以运行，到python3.4中运行，就开始报错，报错内容如下：
+
+Serving HTTP on port 8000...
+127.0.0.1 - - [12/Apr/2016 16:44:17] "GET / HTTP/1.1" 200 0
+Traceback (most recent call last):
+File "C:\Python34\lib\wsgiref\handlers.py", line 138, in run
+self.finish_response()
+File "C:\Python34\lib\wsgiref\handlers.py", line 181, in finish_response
+self.write(data)
+File "C:\Python34\lib\wsgiref\handlers.py", line 267, in write
+"write() argument must be a bytes instance"
+AssertionError: write() argument must be a bytes instance
+127.0.0.1 - - [12/Apr/2016 16:44:17] "GET / HTTP/1.1" 500 59
+Traceback (most recent call last):
+File "C:\Python34\lib\wsgiref\handlers.py", line 138, in run
+self.finish_response()
+File "C:\Python34\lib\wsgiref\handlers.py", line 181, in finish_response
+self.write(data)
+File "C:\Python34\lib\wsgiref\handlers.py", line 267, in write
+"write() argument must be a bytes instance"
+AssertionError: write() argument must be a bytes instance
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+File "C:\Python34\lib\wsgiref\handlers.py", line 141, in run
+self.handle_error()
+File "C:\Python34\lib\wsgiref\handlers.py", line 369, in handle_error
+self.finish_response()
+File "C:\Python34\lib\wsgiref\handlers.py", line 181, in finish_response
+self.write(data)
+File "C:\Python34\lib\wsgiref\handlers.py", line 275, in write
+self.send_headers()
+File "C:\Python34\lib\wsgiref\handlers.py", line 332, in send_headers
+if not self.origin_server or self.client_is_modern():
+File "C:\Python34\lib\wsgiref\handlers.py", line 345, in client_is_modern
+return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
+TypeError: 'NoneType' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 60566)
+File "C:\Python34\lib\socketserver.py", line 305, in _handle_request_noblock
+self.process_request(request, client_address)
+File "C:\Python34\lib\socketserver.py", line 331, in process_request
+self.finish_request(request, client_address)
+File "C:\Python34\lib\socketserver.py", line 344, in finish_request
+self.RequestHandlerClass(request, client_address, self)
+File "C:\Python34\lib\socketserver.py", line 673, in __init__
+self.handle()
+File "C:\Python34\lib\wsgiref\simple_server.py", line 133, in handle
+handler.run(self.server.get_app())
+File "C:\Python34\lib\wsgiref\handlers.py", line 144, in run
+self.close()
+File "C:\Python34\lib\wsgiref\simple_server.py", line 35, in close
+self.status.split(' ',1)[0], self.bytes_sent
+AttributeError: 'NoneType' object has no attribute 'split'
+----------------------------------------
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 60568)
+----------------------------------------
+127.0.0.1 - - [12/Apr/2016 16:44:18] "GET / HTTP/1.1" 200 0
+Traceback (most recent call last):
+File "C:\Python34\lib\wsgiref\handlers.py", line 138, in run
+self.finish_response()
+File "C:\Python34\lib\wsgiref\handlers.py", line 181, in finish_response
+self.write(data)
+File "C:\Python34\lib\wsgiref\handlers.py", line 267, in write
+"write() argument must be a bytes instance"
+AssertionError: write() argument must be a bytes instance
+127.0.0.1 - - [12/Apr/2016 16:44:18] "GET / HTTP/1.1" 500 59
+Traceback (most recent call last):
+File "C:\Python34\lib\wsgiref\handlers.py", line 138, in run
+self.finish_response()
+File "C:\Python34\lib\wsgiref\handlers.py", line 181, in finish_response
+self.write(data)
+File "C:\Python34\lib\wsgiref\handlers.py", line 267, in write
+"write() argument must be a bytes instance"
+AssertionError: write() argument must be a bytes instance
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+File "C:\Python34\lib\wsgiref\handlers.py", line 141, in run
+self.handle_error()
+File "C:\Python34\lib\wsgiref\handlers.py", line 369, in handle_error
+self.finish_response()
+File "C:\Python34\lib\wsgiref\handlers.py", line 181, in finish_response
+self.write(data)
+File "C:\Python34\lib\wsgiref\handlers.py", line 275, in write
+self.send_headers()
+File "C:\Python34\lib\wsgiref\handlers.py", line 332, in send_headers
+if not self.origin_server or self.client_is_modern():
+File "C:\Python34\lib\wsgiref\handlers.py", line 345, in client_is_modern
+return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
+TypeError: 'NoneType' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+File "C:\Python34\lib\socketserver.py", line 305, in _handle_request_noblock
+self.process_request(request, client_address)
+File "C:\Python34\lib\socketserver.py", line 331, in process_request
+self.finish_request(request, client_address)
+File "C:\Python34\lib\socketserver.py", line 344, in finish_request
+self.RequestHandlerClass(request, client_address, self)
+File "C:\Python34\lib\socketserver.py", line 673, in __init__
+self.handle()
+File "C:\Python34\lib\wsgiref\simple_server.py", line 133, in handle
+handler.run(self.server.get_app())
+File "C:\Python34\lib\wsgiref\handlers.py", line 144, in run
+self.close()
+File "C:\Python34\lib\wsgiref\simple_server.py", line 35, in close
+self.status.split(' ',1)[0], self.bytes_sent
+AttributeError: 'NoneType' object has no attribute 'split'
+
+猛地一看，这么多报错，一下就蒙圈了，各种google百度，各种查，google到时能查到一些，
+
+但是英文不好，也看不太明白，百度查到的都是垃圾，根本就没用，最后硬着头皮，一点一点看源码。
+
+首先，根据第一行的提示：
+
+File "C:\Python34\lib\wsgiref\handlers.py", line 138, in run
+self.finish_response()
+
+我这里用的编辑器是pycharm，找到handlers.py文件的138行，按住ctrl点击文件中的finish_response()方法，
+
+就找到self.finish_response()定义的位置了。根据第二条提示：
+
+File "C:\Python34\lib\wsgiref\handlers.py", line 181, in finish_response
+self.write(data)
+
+发现是write方法出现错误，再按住ctrl点击write方法，找到定义write方法的位置，发现第一行就定义了一条报错：
+
+assert type(data) is bytes, \
+"write() argument must be a bytes instance"
+
+对照上面的报错信息，发现可能是变量data的类型，不是bytes，所以在handlers.py181行代码self.write(data)上面加一句：
+
+data=data.encode(),再次刷新程序，发现所有报错居然都没了，程序正常运行。
+
+以上这篇解决python3中自定义wsgi函数,make_server函数报错的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

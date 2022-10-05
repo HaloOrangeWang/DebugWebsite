@@ -1,0 +1,15 @@
+两次遇到使用这个函数传入图像的数据类型匹配问题，在这里记录一下
+
+这个报错显示当使用 cv2.RETR_EXTERNAL模式时，只支持CV_8UC1类型的图像，不能使用CV_32SC1，对应的数据类型为uint8 和 float32
+
+直接使用astype修改为np.uint8未成功
+
+
+解决方法：
+
+在使用SimpleITK读入时就使用sitk.sitkUInt8类型读取，这样得到np.array的数据类型就为np.uint8
+
+查看数据类型
+
+同样，在使用cv2中的函数有些需要转成float32，可以在SimpleITK读取的时候就使用sitk.sitkFloat32
+

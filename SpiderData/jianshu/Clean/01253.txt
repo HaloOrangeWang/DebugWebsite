@@ -1,0 +1,48 @@
+报错内容：
+
+D:\software\Python3.6\python.exe D:/work_space/python_space/zkj_test/Util/oper_mysql.py
+
+Traceback (most recent call last):
+
+File "D:/work_space/python_space/zkj_test/Util/oper_mysql.py", line 24, in <module>
+
+oper_mysql(host,trans_no)
+
+File "D:/work_space/python_space/zkj_test/Util/oper_mysql.py", line 13, in oper_mysql
+
+charset='utf8'
+
+File "D:\software\Python3.6\lib\site-packages\pymysql_init_.py", line 94, in Connect
+
+return Connection(*args, **kwargs)
+
+File "D:\software\Python3.6\lib\site-packages\pymysql\connections.py", line 325, in init
+
+self.connect()
+
+File "D:\software\Python3.6\lib\site-packages\pymysql\connections.py", line 589, in connect
+
+self.host_info = "socket %s:%d" % (self.host, self.port)
+
+TypeError: %d format: a number is required, not str
+
+Process finished with exit code 1
+
+由于端口传为了字符串类型，修改为数字即可解决该问题
+
+connent=pymysql.connect(
+
+host=host,
+
+port=3306,
+
+user="root",
+
+password='123456',
+
+db='testdb',
+
+charset='utf8'
+
+)
+

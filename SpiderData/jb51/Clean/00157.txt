@@ -1,0 +1,54 @@
+错误描述：
+
+1、保存模型：model.save_weights('./model.h5')
+
+2、脚本重启
+
+3、加载模型：model.load_weights('./model.h5')
+
+4、模型报错：ValueError: You are trying to load a weight file containing 12 layers into a model with 0 layers.
+
+问题分析：
+
+模型创建后还没有编译，一般是在模型加载前调用model.build(input_shape), 但我通过Dataset将输入已经变为dict格式了，暂时没找这样输入怎么匹配input_shape参数
+
+解决方法：
+
+model.fit(train_dataset, epochs=0)
+
+将epochs设为0，这样模型在编译的同时不会训练数据，减少耗费的时间，之后就可以正常加载保存的参数了
+
+补充知识：调用Kears中kears.model.load_model方法遇到的问题和解决方法
+
+之前一直使用tf和pytorch，就算是tf也是tf.estimator用得比较多，很少使用keras，最近尝试使用kears快速训练和部署一些分类任务,在使用load_model的时候遇到一些问题
+
+问题1：
+
+SystemError: unknown opcode
+
+原因是因为模型定义用到了lambda
+
+gap = Lambda(lambda x: x[0]/x[1], name = 'RescaleGAP')([gap_features, gap_mask])
+
+我在python3.5的环境训练的模型，python3.6的环境load模型。两个环境的lambda有差异，这个问题。
+
+问题2：
+
+ValueError: Unknown metric function:****
+
+我的错误是
+
+ValueError: Unknown metric function:top_2_accuracy
+
+因为在构建模型时，使用了自己定义的top_2_accuracy方法，所以在load_model时需要将top_2_accuracy做为参数传进去
+
+from keras.models import load_model
+from keras.metrics import top_k_categorical_accuracy
+ 
+def top_2_accuracy(in_gt, in_pred):
+  return top_k_categorical_accuracy(in_gt, in_pred, k=2)
+ 
+model = load_model("model.h5",custom_objects={'top_2_accuracy': top_2_accuracy})
+
+以上这篇解决Tensorflow2.0 tf.keras.Model.load_weights() 报错处理问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

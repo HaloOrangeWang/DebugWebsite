@@ -1,0 +1,49 @@
+Where?
+
+　　运行Python程序，报错出现在这一行 return "Unknow Object of %s" % value
+
+Why?
+
+　　　%s 表示把 value变量装换为字符串，然而value值是Python元组，Python中元组不能直接通过%s 和 % 对其格式化，则报错
+
+Way?
+
+　　使用 format 或 format_map 代替 % 进行格式化字符串
+
+出错代码
+
+def use_type(value):
+    if type(value) == int:
+        return "int"
+    elif type(value) == float:
+        return "float"
+    else:
+        return "Unknow Object of %s" % value
+
+if __name__ == '__main__':
+    print(use_type(10))
+    # 传递了元组参数
+    print(use_type((1, 3)))
+
+改正代码
+
+def use_type(value):
+    if type(value) == int:
+        return "int"
+    elif type(value) == float:
+        return "float"
+    else:
+        # format 方式
+        return "Unknow Object of {value}".format(value=value)
+        # format_map方式
+        # return "Unknow Object of {value}".format_map({
+        #     "value": value
+        # })
+
+if __name__ == '__main__':
+    print(use_type(10))
+    # 传递 元组参数
+    print(use_type((1, 3)))
+
+　　
+

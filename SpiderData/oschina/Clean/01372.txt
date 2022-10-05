@@ -1,0 +1,55 @@
+[root@linux-node1 桌面]# salt-key
+[ERROR ] 'ascii' codec can't decode byte 0xe6 in position 6: ordinal not in range(128)
+Traceback (most recent call last):
+File "/usr/lib/python2.7/site-packages/salt/utils/parsers.py", line 210, in parse_args
+process_option_func()
+File "/usr/lib/python2.7/site-packages/salt/utils/parsers.py", line 386, in process_saltfile
+saltfile = os.path.join(os.getcwd(), 'Saltfile')
+File "/usr/lib64/python2.7/posixpath.py", line 80, in join
+path += '/' + b
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe6 in position 6: ordinal not in range(128)
+Usage: salt-key [options]
+
+salt-key: error: Error while processing <bound method SaltKey.process_saltfile of <salt.cli.key.SaltKey object at 0x7f4734a5ae50>>: Traceback (most recent call last):
+File "/usr/lib/python2.7/site-packages/salt/utils/parsers.py", line 210, in parse_args
+process_option_func()
+File "/usr/lib/python2.7/site-packages/salt/utils/parsers.py", line 386, in process_saltfile
+saltfile = os.path.join(os.getcwd(), 'Saltfile')
+File "/usr/lib64/python2.7/posixpath.py", line 80, in join
+path += '/' + b
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe6 in position 6: ordinal not in range(128)
+
+SaltStack管理工具允许管理员对多个操作系统创建一个一致的管理系统，包括VMware vSphere环境。
+
+在安装saltstack的过程中，执行到 salt-key（在master中查看所有key的状态）的时候，遇到上述报错。
+
+超
+
+齐
+
+全
+
+的
+
+解
+
+决
+
+攻
+
+略
+
+　　1. 在python的安装路径下找到     \Lib\mimetypes.py文件
+
+　　2. 在导包下面加入以下代码，将编码格式改成gbk
+
+　　　　
+
+# -*- coding: utf-8 -*-
+
+if sys.getdefaultencoding() != 'gbk': 
+    reload(sys) 
+    sys.setdefaultencoding('gbk')
+
+就是这样
+

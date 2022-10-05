@@ -1,0 +1,52 @@
+
+转载自勤奋的小青蛙
+本文链接地址: 【已解决】pyinstaller UnicodeDecodeError: ‘utf-8’ codec can’t decode byte 0xce in position 110: invalid continuation byte
+
+pyinstaller打包的时候，报错如下：
+
+File "D:\Python34\lib\site-packages\PyInstaller\hooks\hook-zmq.py", line 18, in <module>
+hiddenimports.extend(collect_submodules('zmq.backend'))
+File "D:\Python34\lib\site-packages\PyInstaller\utils\hooks\__init__.py", line 619, in collect_submodules
+repr(pkg_dir), package))
+File "D:\Python34\lib\site-packages\PyInstaller\utils\hooks\__init__.py", line 90, in exec_statement
+return __exec_python_cmd(cmd)
+File "D:\Python34\lib\site-packages\PyInstaller\utils\hooks\__init__.py", line 77, in __exec_python_cmd
+txt = exec_python(*cmd, env=pp_env)
+File "D:\Python34\lib\site-packages\PyInstaller\compat.py", line 549, in exec_python
+return exec_command(*cmdargs, **kwargs)
+File "D:\Python34\lib\site-packages\PyInstaller\compat.py", line 356, in exec_command
+out = out.decode(encoding)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xce in position 110: invalid continuation byte
+
+这个错误，后来通过Google之后，解决方案如下：
+
+https://stackoverflow.com/questions/47692960/error-when-using-pyinstaller-unicodedecodeerror-utf-8-codec-cant-decode-byt
+
+其实就是：
+
+修改D:\Python34\Lib\site-packages\PyInstaller\compat.py文件中
+
+?
+
+?
+
+1
+
+out = out.decode(encoding)
+
+out = out.decode(encoding)
+
+为：
+
+?
+
+?
+
+1
+
+out = out.decode(encoding, errors='ignore')
+
+out = out.decode(encoding, errors='ignore')
+
+然后再次运行脚本就不会报错了。
+

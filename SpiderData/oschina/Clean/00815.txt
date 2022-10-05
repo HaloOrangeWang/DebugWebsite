@@ -1,0 +1,30 @@
+一、部署 Django 到远程 Linux 服务器
+
+利用 xshell 通过 ssh 连接到 Linux服务器，常规的启动命令是
+
+python3 manage.py runserver 0.0.0.0:80
+
+但是，关闭 xshell 后，就访问不了 Django 了。
+
+这时候需要使用 nohup 命令启动（概念：如果你正在运行一个进程，而且你觉得在退出帐户时该进程还不会结束，那么可以使用nohup命令。该命令可以在你退出帐户/关闭终端之后继续运行相应的进程）
+
+这时输入
+
+nohup python3 manage.py runserver 0.0.0.0:80
+
+此时会报错
+
+nohup: ignoring input and appending output to ‘nohup.out’
+
+二、解决办法
+
+1、原因
+
+是因为使用 nohup 会产生日志文件，默认写入到 nohup.out
+
+2、解决
+
+将 nohup 的日志输出到 /dev/null，这个目录会让所有到它这的信息自动消失
+
+nohup python3 manage.py runserver 0.0.0.0:80 > /dev/null 2> /dev/null &
+

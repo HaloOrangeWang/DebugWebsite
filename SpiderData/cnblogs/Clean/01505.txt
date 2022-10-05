@@ -1,0 +1,44 @@
+作为一个刚接触python的小白，开始学习Django注定前路漫漫，记录一下学习过程中的问题和解决方案。
+
+感谢“自强学堂”的无私奉献，根据教程安装了Django 1.9.12后，尝试新建项目，此时使用python manage.py startapp app-name 一直无法建立app。错误的最后一行是“django.core.exceptions.ImproperlyConfigured: Error loading either pysqlite2 or sqlite3 modules (tried in that order): No module named _sqlite3”作为小白，直接百度了一下这句话，发现没有sqlite数据库。不对，我要连接的应该是mysql数据库。
+
+继续百度。
+
+Django中对数据库的设置是在settings.py这个文件中。打开该文件发现里面主要的配置均带有官网的链接，果断上官网，找到数据库配置如下：
+
+# Database
+# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+根据官网的指导，将数据库引擎改成mysql，并做了相关配置。
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': '***',    #数据库名
+        'USER': '****',   #数据库用户名
+        'PASSWORD': '*******',    #数据库密码
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
+
+备份了原文件并修改之后，尝试执行python manage.py startapp app-name    继续报错。。。。“No module named MySQLdb” 。好吧我已经安装了pymysql了，要不装个MySQLdb吧。各种yum/pip  安装不成功。不怎么有耐心，主要是pymysql是mysqldb的升级版，应该可以用才对。
+
+继续百度。
+
+找到方法。
+
+在站点的__init__.py文件中，添加如下代码：
+
+1 import pymysql
+2 pymysql.install_as_MySQLdb()
+
+配置之后，执行python manage.py startapp app-name   不再报错，打开文件夹，app已建立。问题解决。
+

@@ -1,0 +1,24 @@
+问题说明
+
+引用模块与被引用模块在同一个目录下，经测试在Python3的情况下，有时会报错，
+
+ModuleNotFoundError: No module named '被引用模块名'
+
+解决办法，
+
+在引用的地方，把被引用模块所在的目录添加到 sys.path 中。
+
+即在引用之前，先要添加如下
+
+import sys
+
+#被引用模块所在的路径
+
+sys.path.append("D:\python_project\src")
+
+#然后再引用模块
+
+import moduleName
+
+在Python 2的情况下，不用这样也不会报错，只要引用模块与被引用模块在同一个目录下即可。
+

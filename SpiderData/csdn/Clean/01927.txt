@@ -1,0 +1,114 @@
+本文转载自公众号“读芯术”(ID：AI_Discovery)。
+
+写代码必然会出现错误，而错误处理可以针对这些错误提前做好准备。通常出现错误时，脚本会停止运行，而有了错误处理，脚本就可以继续运行。为此，我们需要了解下面三个关键词：
+
+try：这是要运行的代码块，可能会产生错误。
+
+except：如果在try块中出现错误，将执行这段代码。
+
+finally：不管出现什么错误，都要执行这段代码。
+
+现在，我们定义一个函数“summation”，将两个数字相加。该函数运行正常。
+
+>>>defsummation(num1,num2):
+
+print(num1+num2)>>>summation(2,3)
+
+5
+
+接下来，我们让用户输入其中一个数字，并运行该函数。
+
+>>>num1=2
+
+>>>num2=input("Enter number: ")
+
+Enter number: 3>>>summation(num1,num2)>>>print("Thisline will not be printed because of the error")
+
+---------------------------------------------------------------------------
+
+TypeError                                Traceback (most recent call last)
+
+in
+
+---->1 summation(num1,num2)
+
+2 print("This line will notbe printed because of the error")
+
+in summation(num1, num2)
+
+1 def summation(num1,num2):
+
+---->2     print(num1+num2)
+
+TypeError: unsupported operand type(s) for +:  int  and  str
+
+“TypeError”错误出现了，因为我们试图将数字和字符串相加。请注意，错误出现后，后面的代码便不再执行。所以我们要用到上面提到的关键词，确保即使出错，脚本依旧运行。
+
+>>try:
+
+summed=2+  3
+
+except:
+
+print("Summation is not ofthe same type")Summation is not of the same type
+
+可以看到，try块出现错误，except块的代码开始运行，并打印语句。接下来加入“else”块，来应对没有错误出现的情况。
+
+>>>try:
+
+summed=2+ 3
+
+except:
+
+print("Summation is not ofthe same type")
+
+else:
+
+print("There was no errorand result is: ",summed)There was no error and result is:  5
+
+接下来我们用另外一个例子理解。这个例子中，在except块我们还标明了错误类型。如果没有标明错误类型，出现一切异常都会执行except块。
+
+>>>try:
+
+f=open( test , w )
+
+f.write("This is a testfile")
+
+except TypeError:
+
+print("There is a typeerror")
+
+except OSError:
+
+print("There is an OSerror")
+
+finally:
+
+print("This will print evenif no error")This will print even if no error
+
+现在，故意创造一个错误，看看except块是否与finally块共同工作吧!
+
+>>>try:
+
+f=open( test , r )
+
+f.write("This is a testfile")
+
+except TypeError:
+
+print("There is a typeerror")
+
+except OSError:
+
+print("There is an OSerror")
+
+finally:
+
+print("This will print evenif no error")There is an OS error
+
+This will print even if no error
+
+【责任编辑：赵宁宁 TEL：(010)68476606】
+
+点赞 0
+

@@ -1,0 +1,60 @@
+在Linux系统跑程序时，出现错误
+ python: can’t open file ‘src_nq/create_examples.py’: [Errno 2] No such file or directory
+ 可能的原因及解决方法：
+
+
+1.在该路径下没有对应文件
+
+解决方法：
+ 查看目录结构，发现该文件存在
+ 或者在终端进入该文件所在文件夹，输入
+
+dir
+
+查看该文件夹下包含的文件，发现要运行的文件确实存在，这个原因排除。
+
+
+2.Python命令中空格需要为英文状态
+
+运行代码中的空格应该为英文状态
+
+python src_nq/create_examples.py
+
+
+3.后缀名问题
+
+检查文件名称是否正确，是否隐藏文件后缀名
+
+python src_nq/create_examples   #错误
+python src_nq/create_examples.py#正确
+
+
+4.运行文件的位置
+
+举个例子：
+ 要想正确运行create_examples.py，首先要进入包含create_examples.py文件的***上一层目录***，然后在执行命令，比如，create_examples.py
+ 的路径为src_nq/create_examples.py
+ 操作如下
+
+cd src_nq
+python create_examples.py
+
+
+5."/"与“\”
+
+在Linux或者OS X系统中，使用绝对路径打开文件的时候应该使用斜杠/，在Windows中的时候，应该使用反斜杠\。
+
+
+6.绝对路径与相对路径
+
+可以尝试将相对路径改为绝对路径（尝试未成功）
+
+
+7.后缀问题
+
+检查后缀是否重复，一般后缀会默认添加，自己加的有可能重复，比如下面这个，多一个后缀.py
+
+f=open(src_nq/python create_examples.py.py)
+
+大概总结以上几点，如果有新的发现，欢迎大家补充！
+

@@ -1,0 +1,111 @@
+
+文章目录
+
+1. IndexError: list assignment index out of range2.(unicode error) 'unicodeescape' codec can't decode bytes inposition 2-3: truncated wUXXXXXXXX escape3.打开UTF-8编码格式的记事本，里面的中文内容出现乱码4.PermissionError: [Errno 13] Permission denied: 'C:\\Users\\hao\\Desktop\\test.xlsx'
+
+1. IndexError: list assignment index out of range
+
+2.(unicode error) 'unicodeescape' codec can't decode bytes inposition 2-3: truncated wUXXXXXXXX escape
+
+3.打开UTF-8编码格式的记事本，里面的中文内容出现乱码
+
+4.PermissionError: [Errno 13] Permission denied: 'C:\\Users\\hao\\Desktop\\test.xlsx'
+
+
+1. IndexError: list assignment index out of range
+
+原因：
+ 1.向空列表，直接按索引值向其中添加东西时，会报错，因为空的列表不能直接指定其位置, 即空列表索引值不确定；声明了一个空的列表 li = []，你肯定不会认为 li[0] 是合法的吧？
+
+bug 代码：
+
+li = []
+li[0] = 1
+print(li)
+
+报错信息：
+ 
+ 解决办法
+
+用append(()方法
+
+li = []
+li.append(2021)
+print(li)
+
+拓展：
+ 想想其他的空容器，装东西（赋值）同理
+
+
+2.(unicode error) ‘unicodeescape’ codec can’t decode bytes inposition 2-3: truncated wUXXXXXXXX escape
+
+参考链接
+
+bug 代码：
+
+with open("C:\Users\donghuochong\Desktop\test\26.txt", "r") as f:
+    print(f.read())
+
+报错信息：
+ 
+ 原因：
+ 1.在文件夹中复制地址时，文件夹中的地址是用 \ 来分隔不同文件夹的，而程序地址中出现转义字符，进而报错，Python识别地址时只能识别用 / 分隔的地址（？摘自网络，有待检验）。
+
+解决办法
+
+1.在字符串前加上r或R
+
+即：
+
+with open(r"C:\Users\donghuochong\Desktop\test\26.txt", "r") as f:
+    print(f.read())
+
+其中r或R表示该字符串是非转义的原始字符串。
+
+2.在“\”前加上”\”实现转义。
+
+即：
+
+with open("C:\\Users\\donghuochong\\Desktop\\test\\26.txt", "r") as f:
+    print(f.read())
+
+3.将“\”换为“/”
+
+即：
+
+with open("C:/Users/donghuochong/Desktop/test/26.txt", "r") as f:
+    print(f.read())
+
+最后：补充一下python字符串前缀的知识：
+ 1、在字符串前加上r或R表示该字符串是非转义的原始字符串。
+ 2、在字符串前加上u或U表示该字符串是unicode字符串。
+
+
+3.打开UTF-8编码格式的记事本，里面的中文内容出现乱码
+
+bug 代码：
+
+运行环境：IDLE(Python 3.9 64-bit)
+
+with open("C:\Users\donghuochong\Desktop\test\26.txt", "r") as f:
+    print(f.read())
+
+报错如下：
+ 
+ 原因
+ 编码格式不一致，本系统IDLE默认GBK编码格式（有待检验），而记事本格式UTF-8。
+
+解决办法
+
+open函数里面参数添加“ encoding=‘UTF-8’ ”
+
+with open("C:/Users/donghuochong/Desktop/test/26.txt", "r", encoding='UTF-8') as f:
+    print(f.read())
+
+
+4.PermissionError: [Errno 13] Permission denied: ‘C:\Users\hao\Desktop\test.xlsx’
+
+参考链接
+
+权限拒绝，一般这种情况 是由于代码中用到的某些文件正在被其他软件所使用，不能更改或读取
+

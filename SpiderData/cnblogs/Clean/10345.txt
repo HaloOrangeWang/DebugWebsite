@@ -1,0 +1,266 @@
+
+语法错误
+
+
+异常
+
+运行检测到的错误称为异常
+
+NameError：命名错误
+
+NameError：命名错误
+
+TypeError：类型错误
+
+TypeError：类型错误
+
+ZeroDivisionError：被除数为0错误
+
+ZeroDivisionError：被除数为0错误
+
+ValueError：数值错误
+
+ValueError：数值错误
+
+
+异常处理
+
+
+try|except|else|finally|raise
+
+try：当我们认为一段代码可能会报错时，就可以使用 try 来运行这段代码，如果执行的代码出现错误，则后续代码就不会执行。
+
+except：如果 try 中的代码出现错误，则程序不会执行 try 后续的代码，而是会跳到 except 代码块，执行完except代码块。
+
+else：当try中的代码没有错误时，不执行except的代码，而会执行else的代码
+
+finally：不管程序是否出现错误， finally 代码块的语句最终一定会被执行。
+
+as：取别名。
+
+raise：抛出异常，
+
+
+try...except...
+
+异常捕获可以使用 try...except... 语句
+
+①一个 try语句可能包含多个except语句，分别来处理不同的特定异常。
+
+②最多只有一个分支会被执行
+
+③处理程序将只针对对应的try子句中的异常进行处理，而不是其他的try的处理程序中的异常。
+
+④一个except子句可以同时处理多个异常，这些异常将被放在一个()中作为元组。
+
+⑤最后一个 except子句可以忽略异常名称，他将被当做通配符来使用
+
+
+try...except...else
+
+try/except语句还有一个可选的 else子句，如果使用了 else子句，那么此else 子句必须放在所有的 except子句之后
+
+try/except语句还有一个可选的 else子句，如果使用了 else子句，那么此else 子句必须放在所有的 except子句之后
+
+else子句将在 try子句没有发生任何异常的时候执行。
+
+else子句将在 try子句没有发生任何异常的时候执行。
+
+
+try...except...else...finally...
+
+finally语句无论是否发生异常都将执行最后的代码。
+
+
+raise
+
+因为错误是class，捕获一个错误就是捕获到该class的一个实例。
+
+触发异常：python使用 raise语句抛出一个指定的异常。
+
+
+异常的参数
+
+①一个异常可以带上参数，可以作为输出的异常信息参数。
+
+②可以通过 except语句来捕获异常的参数
+
+③变量接收的异常值通常包含在异常的语句中。
+
+④在元组的表单中变量可以接收一个或者多个值
+
+⑤元组通常包含错误字符串，错误数字，错误位置
+
+
+用户自定义异常
+
+①可以通过创建一个新的异常类来拥有自己的异常。
+
+②异常类继承自 Exception类，可以直接继承，也可以间接继承
+
+③大多数异常名称都以 Error结尾
+
+
+预定义清理行为
+
+关键字 with语句可以保证注入文件之类的对象在使用完之后一定会正确执行它的清理方法。
+
+
+调用栈
+
+如果错误没有被捕获，它就会一直往上抛，最后被Python解释器捕获，打印一个错误信息，然后程序退出。
+
+
+记录错误
+
+如果不捕获错误，虽然可以让Python解释器来打印错误堆栈，但是程序也被结束了。可以使用捕获错误，打印错误堆栈，然后分析错误产生原因，同时，让程序继续进行。
+
+Python的loging模块可以记录错误信息
+
+使用：
+
+​    4. 同样是出错，但使用logging,程序打印完错误信息后会继续执行，并正常退出。
+
+
+调试
+
+调试：跟踪程序的运行，查看变量的值是否正确，这个过程称为调试
+
+
+print（不推荐）
+
+使用print把可能出现问题的变量打印出来
+
+
+断言
+
+assert用于一个表达式，在表达式为False时触发异常：AssertError
+
+凡是用print()来辅助查看的地方，都可以使用assert替换
+
+启动Python解释器时可以添加 -O 参数关闭assert
+
+
+logging
+
+第一步导入logging ：import logging
+
+第一步导入logging ：import logging
+
+凡是用print()来辅助查看的地方，都可以使用logging.替换
+
+凡是用print()来辅助查看的地方，都可以使用logging.替换
+
+logging不会抛出错误，但可以把错误写到指定文件中
+
+logging.basicConfig()：指定输出级别
+
+level=logging.DEBUG：指定后，logging.debug()|logging.info()|logging.warning()|logging.error()就可以使用了
+level=logging.INFO：指定后，logging.debug()就不起作用了
+level=logging.WARNING：指定后，logging.debug()|logging.info()就不起作用了
+level=logging.ERROR：
+
+logging.info()：输出一段文本
+
+logging不会抛出错误，但可以把错误写到指定文件中
+
+logging.basicConfig()：指定输出级别
+
+level=logging.DEBUG：指定后，logging.debug()|logging.info()|logging.warning()|logging.error()就可以使用了
+level=logging.INFO：指定后，logging.debug()就不起作用了
+level=logging.WARNING：指定后，logging.debug()|logging.info()就不起作用了
+level=logging.ERROR：
+
+level=logging.DEBUG：指定后，logging.debug()|logging.info()|logging.warning()|logging.error()就可以使用了
+
+level=logging.INFO：指定后，logging.debug()就不起作用了
+
+level=logging.WARNING：指定后，logging.debug()|logging.info()就不起作用了
+
+level=logging.ERROR：
+
+logging.info()：输出一段文本
+
+
+pdb
+
+启动调试器pdb：让程序单步执行
+
+启动命令：python -m pdb file.py
+
+使用参数启动后，定位到下一步输入命令：
+
+l：查看代码
+n：单步执行代码
+
+l：查看代码
+
+n：单步执行代码
+
+任何时候查看变量，输入命令：p 变量
+
+import pdb
+
+pdb.set_trace()：设置断点，运行到断点处，自动暂停
+
+pdb.set_trace()：设置断点，运行到断点处，自动暂停
+
+
+IDE
+
+
+单元测试
+
+
+编写单元测试
+
+单元测试：
+
+单元测试：
+
+导入单元测试模块：import uinttest
+
+导入单元测试模块：import uinttest
+
+导入所需要测试的模块：
+
+导入所需要测试的模块：
+
+编写测试类：从unittest.TestCase继承
+
+编写测试方法：以test开头的方法
+
+编写测试类：从unittest.TestCase继承
+
+编写测试方法：以test开头的方法
+
+assertEqual()：断言相等
+
+assertTrue()：断言正确
+
+assertRaises()：期待抛出指定异常
+
+
+运行单元测试
+
+方法1：在单元测试后面添加：
+if __name__ = '__main__':
+	unittest.main()
+
+方法1：在单元测试后面添加：
+
+方法2：命名行通过参数-m unittest直接运行
+
+方法2：命名行通过参数-m unittest直接运行
+
+setUp与tearDown
+
+setUp()：在调用测试方法之前被执行
+tearDown()：在调用测试方法之后被执行
+
+setUp与tearDown
+
+setUp()：在调用测试方法之前被执行
+
+tearDown()：在调用测试方法之后被执行
+

@@ -1,0 +1,40 @@
+
+解决python pip安装慢的问题
+
+提示：有的时候我们用pip安装一些python的常用库的时候，我们会发现，总是10kb/s的速度在下载，很影响我们的python库的使用，下面介绍几种快速下载python通用库的方法。
+
+pip下载超时处理
+ aise ReadTimeoutError(self._pool, None, ‘Read timed out.’)
+
+方案一：对于比较小的库，可以延时处理
+ -------- pip --default-timeout=100 install -U pip
+ -------- pip --default-timeout=100 install 第三方库名
+ 方案二：更换安装源
+ 可以用https://pypi.tuna.tsinghua.edu.cn/simple/
+ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyecharts
+ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple 库名
+ 出错使用这种 ：pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple/ lightgbm
+
+方案三：下载离线包
+ python所有库：(https://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml)
+ ---------然后通过pip install 保存路径/加上下载的文件名 进行安装
+ （如pip install C:\Users\HP\Desktop\scikit_image-0.14.1-cp37-cp37m-win32.whl）
+
+
+下面是一个例子
+
+首先打开cmd
+
+这里我们就用下载pyperclip库作为例子
+
+按下回车之后，很明显，在几秒钟内，已经完成了需要下载的库的下载。
+
+
+附带pip升级命令
+
+防止有些小伙伴pip version太低不好处理
+
+代码如下：
+
+python -m pip install --upgrade pip
+

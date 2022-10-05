@@ -1,0 +1,31 @@
+
+问题
+
+
+Centos数据库安装成功，启动项目时报错如下：
+
+libmysqlclient.so.18: cannot open shared object file: No such file
+
+
+解决
+
+如果是这种情况：
+
+find / -name libmysqlclient.so*
+
+唯独没有libmysqlclient.so.18
+
+那么问题肯定是出在了安装mysql
+
+查询得知缺少mysql-community-libs-compat-5.7.22-1.el7.x86_64.rpm
+
+下载
+
+wget https://downloads.mysql.com/archives/get/file/mysql-community-libs-compat-5.7.22-1.el7.x86_64.rpm
+
+安装
+
+rpm -ivh mysql-community-libs-compat-5.7.22-1.el7.x86_64.rpm
+
+再启动项目就可以了。
+

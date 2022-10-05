@@ -1,0 +1,28 @@
+【本地环境】
+
+运行系统：Windows 10
+
+Python版本：v 3.7.0
+
+opencv-contrib-python 版本：4.0.1
+
+
+The function/feature is not implemented
+
+在Windows 10 命令行下使用Airtest自定义的启动器运行脚本时，出现以下报错信息：
+
+cv2.error: OpenCV(4.0.1) D:\Build\OpenCV\opencv_contrib-4.0.1\modules\xfeatures2d\src\sift.cpp:1207: error: (-213:The function/feature is not implemented) This algorithm is patented and is excluded in this configuration; Set OPENCV_ENABLE_NONFREE CMake option and rebuild the library in function 'cv::xfeatures2d::SIFT::create'
+
+遇到此类问题，第一反应是安装的第三方库不完整，所以尝试卸载opencv-contrib-python后重新安装，但是重新安装后此问题仍然存在。在网上查了一下，貌似是因为cv::xfeatures2d::SIFT::create算法申请了专利保护，所以调用时会报错，需要将opencv版本退到3.4.2之前即可解决，推荐的版本是3.4.2.16 ，于是卸载高版本后再指定此版本安装，但接下来出现了更严重的问题。
+
+
+Import Error: DLL load failed 找不定指定的模块
+
+opencv-contrib-python版本降低到3.4.2.16 后，运行脚本直接出现此错误：
+
+继续卸载旧本3.4.5.20安装3.4.2.16，运行脚本还是继续提示DLL load failed，然后在github上搜索opencv，比较幸运看到了这个项目：skvark/opencv-python ，里面的Frequently Asked Questions中就给出了出现以上问题的解决办法：
+
+先去控制面板->已安装的程序里面，确认Visual C++ redistributable 2015 已经安装，然后又按照提示下载了Dependencies ，不过它上面给出的路径在我本地电脑上并不存在，我使用Everything用模糊搜索了一下，发现在库的安装目录下就存在这个文件：
+
+总结： 解决问题的方法很重要！！
+

@@ -1,0 +1,100 @@
+错误如下：
+
+E:\pargram>python
+Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  5 2016, 11:41:13) [MSC v.1900 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> import cx_Oracle
+
+Traceback (most recent call last):  File "<stdin>", line 1, in <module>
+
+ImportError: No module named 'cx_Oracle'
+
+执行过
+
+　　pip install cx_Oracle
+
+还是报错。
+
+最后只能选择
+
+安装cx_Oracle-7.1.3.tar.gz
+
+执行python setup.py install
+
+报错如下：
+
+cxoModule.obj : warning LNK4197: export 'PyInit_cx_Oracle' specified multiple times;
+
+using first specification   Creating library build\temp.win-amd64-3.5\Release\src\cx_Oracle.cp35-win_amd64.lib
+
+and object build\temp.win-amd64-3.5
+
+\Release\src\cx_Oracle.cp35-win_amd64.expGenerating codeFinished generating code
+
+LINK : fatal error LNK1158: cannot run 'rc.exe'
+
+error: command 'C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\BIN\\x86_amd64
+
+\\link.exe' failed with exit status 1158
+
+解决办法：
+把目录C:\Program Files (x86)\Windows Kits\8.1\bin\x86目录下rc.exe(还是不行加上rcdll.dll)
+拷贝到C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin目录下。
+在执行python setup.py install后可以了。
+
+可是import cx_Oracle
+
+D:\>pythonPython 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  5 2016, 11:41:13)
+
+[MSC v.1900 64 bit (AMD64)] on win32Type "help", "copyright", "credits" or "license" for
+
+more information.
+
+>>> import cx_Oracle
+
+但是
+
+>>> conn=cx_Oracle.connect('scott/scott@192.168.48.102:1521/orcl')
+
+Traceback (most recent call last):  File "<stdin>", line 1, in <module>cx_Oracle.DatabaseError:
+
+Error while trying to retrieve text for error ORA-01804
+>>>
+
+发现应该是Oracle client问题。
+
+安装了oracle11g client终于成功了
+
+简单验证：
+
+E:\>python
+
+Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  5 2016, 11:41:13) [MSC v.1900 64 bit (AMD64)] on win32
+
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> import cx_Oracle
+
+>>> conn=cx_Oracle.connect('scott/scott@192.168.48.102:1521/orcl')
+
+>>> curs=conn.cursor()
+
+>>> sql='select * from dept'
+
+>>> curs.execute (sql)
+
+>>> row=curs.fetchone()
+
+>>> print(row[0])
+
+10
+
+>>> print(row[1])
+
+ACCOUNTING
+
+>>> curs.close()
+
+>>> conn.close()
+

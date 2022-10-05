@@ -1,0 +1,132 @@
+
+异常处理
+
+错误：python当中一般有两种错误，第一个就是语法错误，例如打print少了个t，这是很致命的，也是最不可犯的。第二个就是逻辑错误，逻辑错误就例如 res = 1 / 0   。这根本无法求解
+
+异常：异常要与错误分割开，异常是根据错误发生的信号
+
+
+异常的种类
+
+在python中不同的异常可以用不同的类型（python中统一了类与类型，类型即类）去标识，一个异常标识一种错误
+
+AttributeError 试图访问一个对象没有的树形，比如foo.x，但是foo没有属性x
+IOError 输入/输出异常；基本上是无法打开文件
+ImportError 无法引入模块或包；基本上是路径问题或名称错误
+IndentationError 语法错误（的子类） ；代码没有正确对齐
+IndexError 下标索引超出序列边界，比如当x只有三个元素，却试图访问x[5]
+KeyError 试图访问字典里不存在的键
+KeyboardInterrupt Ctrl+C被按下
+NameError 使用一个还未被赋予对象的变量
+SyntaxError Python代码非法，代码不能编译(个人认为这是语法错误，写错了）
+TypeError 传入对象类型与要求的不符合
+UnboundLocalError 试图访问一个还未被设置的局部变量，基本上是由于另有一个同名的全局变量，
+导致你以为正在访问它
+ValueError 传入一个调用者不期望的值，即使值的类型是正确的
+
+
+异常处理
+
+什么是异常处理？ 异常处理就是为了让程序不奔溃
+
+异常的引起可由python解释器检测到错误，引起异常，也可以由程序员自己引起异常，异常是由程序错误引起，语法上的错误跟异常处理无关，必须在程序运行前修正
+
+处理异常有很多种方式，但用if是由很多缺点的，python为每一种异常定制了一个类型，然后提供了一种特殊的语法结构用来进行异常处理
+
+try：
+    被检测的代码块
+
+except 异常类型：
+    #try一旦检测到异常，就执行这个位置的逻辑
+
+#excep负责捕捉异常，一旦出现except中指定异常类型，就运行上方逻辑
+
+指定异常类只能处理一种异常，若想处理所有异常，将异常类改为exception即可。若想处理指定多个异常类，那就多分支几个except
+
+1 异常类只能用来处理指定的异常情况，如果非指定异常则无法处理。
+s1 = 'hello'
+try:
+    int(s1)
+except IndexError as e: # 未捕获到异常，程序直接报错
+    print e
+
+#2 多分支
+s1 = 'hello'
+try:
+    int(s1)
+except IndexError as e:
+    print(e)
+except KeyError as e:
+    print(e)
+except ValueError as e:
+    print(e)
+
+#3 万能异常Exception
+s1 = 'hello'
+try:
+    int(s1)
+except Exception as e:
+    print(e)
+
+#4 多分支异常与万能异常
+#4.1 如果你想要的效果是，无论出现什么异常，我们统一丢弃，或者使用同一段代码逻辑去处理他们，那么骚年，大胆的去做吧，只有一个Exception就足够了。
+#4.2 如果你想要的效果是，对于不同的异常我们需要定制不同的处理逻辑，那就需要用到多分支了。
+
+#5 也可以在多分支后来一个Exception
+s1 = 'hello'
+try:
+    int(s1)
+except IndexError as e:
+    print(e)
+except KeyError as e:
+    print(e)
+except ValueError as e:
+    print(e)
+except Exception as e:
+    print(e)
+
+#6 异常的其他机构
+s1 = 'hello'
+try:
+    int(s1)
+except IndexError as e:
+    print(e)
+except KeyError as e:
+    print(e)
+except ValueError as e:
+    print(e)
+#except Exception as e:
+#    print(e)
+else:
+    print('try内代码块没有异常则执行我')
+finally:
+    print('无论异常与否,都会执行该模块,通常是进行清理工作')
+
+#7 主动触发异常
+try:
+    raise TypeError('类型错误')
+except Exception as e:
+    print(e)
+
+#8 自定义异常
+class EgonException(BaseException):
+    def __init__(self,msg):
+        self.msg=msg
+    def __str__(self):
+        return self.msg
+
+try:
+    raise EgonException('类型错误')
+except EgonException as e:
+    print(e)
+
+#9 断言:assert 条件
+assert 1 == 1  
+assert 1 == 2
+
+#10 总结try..except
+
+1：把错误处理和真正的工作分开来
+2：代码更易组织，更清晰，复杂的工作任务更容易实现；
+3：毫无疑问，更安全了，不至于由于一些小的疏忽而使程序意外崩溃了；
+

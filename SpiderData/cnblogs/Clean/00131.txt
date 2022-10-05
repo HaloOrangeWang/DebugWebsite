@@ -1,0 +1,31 @@
+写出一个不是code的bug,很烦恼，解决了挺长时间，都翻到外文来看，不过还是解决了，只尝试了一种简单可观的方法，希望对大家有用
+
+我正在使用Django与Keras(tensorflow)来训练一个模型来识别python中的图像。在python中使用print（）时，raw write（）返回无效的长度，
+
+即使我想把print()注释掉，也时不时的蹦出来,错误如下：
+
+原因：可能与最近的Windows 10更新有关。我有版本1709（操作系统版本16299.64）,
+
+　　我认为这可能是unicode字符的返回值（正常长度的两倍）？
+
+　　我实际上可以在外部powershell.exe中重现此错误，所以这本身不是Code相关的。
+
+　　总的来说，与win10系统、版本有关系，踩中雷区了（本人win10,版本    10.0.16299 版本 16299）
+
+　　可以cmd一下,输入msinfo32，就能看到版本情况
+
+解决方案：写入以下代码到报错提示的python的中，写在开头
+
+事先要看你是否pip  win_unicode_console,没有，就赶快动手
+
+import win_unicode_console
+win_unicode_console.enable()
+
+如下：
+
+参考：https://github.com/Microsoft/vscode/issues/39149
+
+https://qiita.com/non0/items/4014b81f5a2d232ae22f
+
+https://stackoverflow.com/questions/47356993/oserror-raw-write-returned-invalid-length-when-using-print-in-python
+

@@ -1,0 +1,48 @@
+最近用python的lxml库解析了个html文件，在windows python3.8下面运行没什么问题，但是在centOS python2.7环境下一直报错 ImportError: cannot import name etree
+
+网上有人说lxml版本不一样，有的没带etree模块，所以我准备安成3.7.1版本的，结果安装报错了
+
+安装gcc编译器
+
+yum install -y gcc
+
+还是报错
+
+安装python dev
+
+yum install python-devel
+
+这里要用devel 不然也会报错
+
+叒报错
+
+/tmp/xmlXPathInitK4VuBC.c:1:26: fatal error: libxml/xpath.h: No such file or directory
+
+接着安
+
+yum install libxml2-devel libxslt-devel
+
+终于安上了！
+
+但是运行仍旧报错。。
+
+因为lxml是第三方的库，所以在Linux下面运行会有点问题。
+
+后面我依次试了手动安装、搭建环境、修改系统变量等等一系列操作，都仍然报这个错，人都要裂开了
+
+后来经同事提醒才发现，是我的文件命名有问题！因为io是其中的模块，所以识别错误。
+
+把文件名称改了就好了！比如改成ioio.py。。
+
+虽然搜的时候看到了有人说命名成了关键字：https://blog.csdn.net/Amberdreams/article/details/80548742
+
+但他用的关键字是lxml，我没想到io也是关键字，以后所有的python文件命名我必须多加几个下划线，浪费我一上午加一中午，靠！
+
+但是中间的搭建环境、手动安装等操作我不知道到底有没有用，但我觉得手动安装和搭建环境应该还是有用的，因为没设置的时候我直接在命令行输入from lxml import etree 都不行，之后可以了，但是文件运行不了。
+
+官方地址：https://lxml.de/2.1/build.html
+
+主要就是下载并解压tar.gz文件然后在解压的lxml目录运行：
+
+python setup.py  build_ext -i
+

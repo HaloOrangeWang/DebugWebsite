@@ -1,0 +1,124 @@
+背景：工作需要，使用 python 操作 hive sql 查询数据使用。
+
+目标：使用pyhive连接上hive，并正常读取数据。
+
+
+一、准备工作
+
+首先安装几个简单的包
+
+pip install thrift
+pip install thrift-sasl
+pip install PyHive
+
+接下来安装sasl，直接运行
+
+pip install sasl
+
+但是我们在安装sasl的时候可能会报错，导致安装不上，这个时候就得去sasl下载地址下载我们所需要的sasl。
+
+需要下载对应的版本，例如python3.7 对应 sasl-0.2.1-cp37-cp37m-win_amd64.whl
+
+否则会报错 :
+whl is not a supported wheel on this platform
+
+下载完成后，执行命名 pip install sasl-0.2.1-cp37-cp37m-win_amd64.whl
+
+如果连接404可以由此下载
+
+
+二、运行中的坑
+
+安装完成后，直接输入命令 from pyhive import hive 时候可能会报错
+
+cannot import name 'constants' from 'TCLIService' (unknown location)
+
+这个时候需要进一步安装
+
+pip install --upgrade pyzmq
+
+安装完成后，测试运行无误
+
+
+三、连接Hive
+
+开始尝试连接hive
+
+from pyhive import hive
+
+host='188.158.11.59'
+username='hdfs'
+password='hdfs%123'
+port=2181
+data_base_name='test'
+
+conn = hive.Connection(host=host,
+                       port=port,
+                       auth="CUSTOM",
+                       database=data_base_name,
+                       username=username,
+                       password=password)
+
+这个时候会报错
+
+Could not start SASL: b'Error in sasl_client_start (-4) SASL(-4): no mechanism available: Unable to find a callback: 2'
+
+在linux下执行如下两条命令中的一条便可以解决问题，windows下暂未解决
+
+yum install cyrus-sasl-plain  cyrus-sasl-devel  cyrus-sasl-gssapi
+
+sudo yum install apache-maven ant asciidoc cyrus-sasl-devel cyrus-sasl-gssapi gcc gcc-c++ krb5-devel libxml2-devel libxslt-devel make mysql mysql-devel openldap-devel python-devel sqlite-devel gmp-devel
+
+windows下尝试去https://sourceforge.net/projects/saslwindows/下载了Cyrus-SASL for Windows的安装文件，但是没有安装成功。
+
+
+四、终极解决方案
+
+在Windows中使用管理员权限打开控制台，在控制执行一段命令即可，操作如下。
+
+C:\Windows\system32> FOR /F "usebackq delims=" %A IN (`python -c "from importlib import util;import os;print(os.path.join(os.path.dirname(util.find_spec('sasl').origin),'sasl2'))"`) DO (
+  REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Carnegie Mellon\Project Cyrus\SASL Library" /v SearchPath /t REG_SZ /d "%A"
+)
+
+解决原理参考  Windows下pyhive无法使用的解决方案（https://blog.csdn.net/wenjun_xiao/article/details/104458940）
+
+from pyhive import hive
+from impala.dbapi import connect as impalaConn
+from impala.util import as_pandas
+import pandas as pd
+
+conn = hive.Connection(host='192.168.10.99',
+                       port=10000,
+                       auth="CUSTOM",
+                       database='test',
+                       username='hive',
+                       password='hive')
+cur =conn.cursor()
+cur.execute('show tables')
+row =cur.fetchall()
+
+if row: 
+    print(row)
+
+conn.close
+
+
+五、使用pandas读取数据
+
+from pyhive import hive
+from impala.dbapi import connect as impalaConn
+from impala.util import as_pandas
+import pandas as pd
+
+conn = hive.Connection(host='192.168.10.99',
+                       port=10000,
+                       auth="CUSTOM",
+                       database='test',
+                       username='hive',
+                       password='hive')
+
+sql_order = 'select * from u_data limit 10' 
+df = pd.read_sql(sql_order, conn)
+
+conn.close
+

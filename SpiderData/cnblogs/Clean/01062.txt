@@ -1,0 +1,41 @@
+问题的根本：windows读取文件可以用\，但在字符串里面\被作为转义字符使用，
+ 
+python在描述路径时有两种方式：
+
+'d:\\a.txt'，转义的方式
+r'd:\a.txt'，声明字符串不需要转义
+
+问题的根本：windows读取文件可以用\，但在字符串里面\被作为转义字符使用，
+
+python在描述路径时有两种方式：
+
+'d:\\a.txt'，转义的方式
+r'd:\a.txt'，声明字符串不需要转义
+
+这样就实现了python在windows系统中用\来访问；
+
+'d:\\a.txt'，转义的方式
+
+r'd:\a.txt'，声明字符串不需要转义
+
+其实这样比较麻烦的是不是，下面对几种情况说明：
+
+问题1：其实python中文件的绝对路径可以直接复制window的路径，
+如：C:\Users\Administrator\Desktop\python\source.txt  这个路径是没有问题的，但是，其实你的绝对路径正确，但是执行报错，那么就是你文件名的问题，如：
+
+C:\Users\Administrator\Desktop\python\t1.txt  这个路径绝对会报错，因为 \t被转义了
+
+C:\Users\Administrator\Desktop\python\t1.txt  这个路径绝对会报错，因为 \t被转义了
+
+python就会解析为C:\Users\Administrator\Desktop\python 1.txt  这个时候肯定会报错的
+
+若果你改成下面的写法就不会报错啦（推荐使用此写法“/"，可以避免很多异常）
+
+C:/Users/Administrator/Desktop/python/t1.txt
+
+参考：https://blog.csdn.net/jusulysunbeamy/article/details/51290080
+
+C:/Users/Administrator/Desktop/python/t1.txt
+
+参考：https://blog.csdn.net/jusulysunbeamy/article/details/51290080
+

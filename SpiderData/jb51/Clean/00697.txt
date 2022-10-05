@@ -1,0 +1,51 @@
+问题
+
+mysql 查询出现错误
+
+error: (2014, "Commands out of sync; you can't run this command now")1
+
+查询
+
+mysql文档中的解释
+
+If you get Commands out of sync; you can't run this command now in your client code, you are calling client functions in the wrong order.
+
+This can happen, for example, if you are using mysql_use_result() and try to execute a new query before you have called mysql_free_result(). It can also happen if you try to execute two queries that return data without calling mysql_use_result() or mysql_store_result() in between.
+
+调用顺序错误，同一个连接，发出2个查询请求，第一个请求发出之后没有等到mysql返回就发出第二个请求
+
+背景 思考
+
+我这里的程序是这样的，在django框架中起了一个定时任务，这个任务中有个循环，主线程循环查询mysql然后在循环体中生成了子进程，子进程中也有mysql查询。
+
+我测试了下不实用多进程的情况没有问题，使用多进程就会出现这个问题。
+
+对照上面的文档，其实不难想到，错误应该是这样的
+
+父进程和mysql建立的连接A，循环中fork出一个子进程
+
+子进程保持了父进程的变量，也就是拥有mysql连接A
+
+子进程去用连接A查询mysql，父进程这个时候也并发的使用连接A访问mysql
+
+这样很容易出现了上面Mysql提到的情况，结果就报错了
+
+解决
+
+解决的方案其实很容易想到，就是当我们fork一个进程之后，让他从新获取一个和mysql的连接C或者D就好了嘛，
+
+结果几个测试，得到如下的方案。
+
+在父进程的loop中，创建子进程之前关闭mysql连接，这样子进程中就会重新连接mysql。
+
+from django import db
+  db.close_connection()
+  p = Process(target=ap5mintes_scan, args=(ac, details, mtime))
+  p.start()
+
+其实就是状态copy的问题，本来多个线程同时并发调用一个connection也不对.
+
+后面做了个测试 ，多进程的情况下查看mysql processlist，的确使用建立多个mysql 连接。
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

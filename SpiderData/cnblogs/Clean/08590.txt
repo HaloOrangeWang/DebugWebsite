@@ -1,0 +1,84 @@
+安装完爬虫框架pyspider出现的问题总结：
+
+1、报错图片
+
+Python-Command "python setup.py egg_info" failed with error code 10 in c:\users\liujun~1\appdata\local\temp\pip-install-sfbkdg\pycurl\
+
+解决方法：
+
+1、安装：pip install wheel
+
+2、下载对应的curl
+
+python版本：python-2.7.13.msi
+
+curl版本：pycurl-7.43.0.3-cp27-cp27m-win32.whl
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#pycurl
+
+3、放到自己指定目录，然后执行
+
+pip install C:\install\python\pycurl-7.43.0.3-cp27-cp27m-win32.whl
+
+4、按照pyspider
+
+pip install pyspider
+
+5、出现报错
+
+Could not find a version that satisfies the requirement u-msgpack-python>=1.6 (from pyspider) (from versions: )
+No matching distribution found for u-msgpack-python>=1.6 (from pyspider)
+
+6、先卸载，然后安装
+
+pip uninstall C:\install\python\pycurl-7.43.0.3-cp27-cp27m-win32.whl
+pip install C:\install\python\pycurl-7.43.0.3-cp27-cp27m-win32.whl
+
+7、pip install pyspider
+
+8、安装成功
+
+9、启动pyspider
+
+命令：pyspider all
+
+出现错误：
+
+ValueError: Invalid configuration:
+  - Deprecated option 'domaincontroller': use 'http_authenticator.domain_controller' instead.
+
+解决方法：
+
+把webdav.pv的209行：
+
+地址：XXX\python\Lib\site-packages\pyspider\webui\webdav.py　
+
+'domaincontroller': NeedAuthController(app),
+
+修改为：
+
+'http_authenticator.domain_controller': NeedAuthController(app),
+
+10、再次启动pyspider all
+
+　　出现错误：
+
+　　from werkzeug.wsgi import DispatcherMiddleware
+　　ImportError: cannot import name DispatcherMiddleware
+
+解决方法：
+
+目前知道原因：
+
+1、没有安装werkzeug
+
+2、werkzeug的版本为1.0.0，这个版本中没有DispatcherMiddleware方法
+
+解决办法：
+
+卸载werkzeug，重新安装低版本的werkzeug
+
+11、再次启动pyspider all
+
+12、访问本地http://localhost:5000/
+

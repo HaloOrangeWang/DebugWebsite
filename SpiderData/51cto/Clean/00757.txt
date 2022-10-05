@@ -1,0 +1,26 @@
+报错：
+
+经过查看集群的jps如下：
+
+查看日志：
+
+状况：
+
+所有namenode都是standby，即ZK服务未生效
+
+尝试一：手动强制转化某个namenode为active
+
+操作：在某台namenode上，执行 hdfs haadmin -transitionToActive --forcemanual nn1 (nn1是你的某台nameservice-id)
+
+结果：nn1被成功转为active。但是在stop-dfs.sh后再一次start-dfs.sh后，所有namenode仍然都是standby
+
+结论：果然因该是ZK的问题
+
+尝试二：初始化ZK
+
+操作：在某台namenode上，执行 hdfs zkfc -formatZK
+
+结果：重新 start-dfs.sh后，一切正常
+
+NOTE： Zk初始化必须要启动ZK，否则报错
+

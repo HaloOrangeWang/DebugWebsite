@@ -1,0 +1,26 @@
+在用conda安装包时，有时会报错。 例如此处的tophat包的安装：
+
+仔细看报错信息，这里的原因是python版本发生了冲突。对于我这个包来说需要python2.7，但我这个环境创建的是python3.0.这种情况怎么办呢？
+
+其实很简单，先退出当前环境，再重新创建一个python2.7的环境,进入2.7的环境进行此包的下载和运行即可 （我取名为rna2.7，你可以根据你的习惯进行取名字）。
+
+conda deactivate
+
+conda create -y -n  rna2.7  python=2.7
+
+conda activate rna2.7
+
+conda install -c bioconda tophat
+
+安装结果：
+
+这个时候就安装成功了，但tophat的运行需要依赖bowtie2，所以我们还需要下载bowtie2
+
+conda install -c bioconda bowtie2
+
+bowtie2 -version
+
+结果如下：
+
+再次尝试运行tophat，成功！
+

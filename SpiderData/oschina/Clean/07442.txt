@@ -1,0 +1,19 @@
+vue路由跳转：
+
+setTimeout(function () {
+console.log(this);
+this.$router.push("/login");
+},800)
+
+语法没问题但是报错：
+
+MyFollow.vue?c93c:119 Uncaught TypeError: Cannot read property 'push' of undefined
+
+这时候说明this指向不一样了，要打印一下this 看看。
+发现setTimeout函数里的this指向的不是vue对象而是window,改为箭头函数即可解决
+
+settimeout 的function会改变this指向并指向全局window,如果不改变this指向 ，这里要使用箭头函数
+setTimeout(()=>{
+this.$router.push("/login");
+},100)
+

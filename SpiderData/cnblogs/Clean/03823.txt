@@ -1,0 +1,59 @@
+环境介绍
+
+Django (2.1)  Python 3.5.5
+
+mysqlclient (1.4.2.post1)
+
+Mysql 5.6.28
+
+RHEL 7.3
+
+在migrate时候报错
+
+model代码如下
+
+这个表在migrate时候出现BLOB/TEXT column 'id' used in key specification without a key length"
+
+BLOB/TEXT不能被用作索引，所以报错
+
+于是修改key字段
+
+key = models.CharField(max_length=255, verbose_name="键")
+
+然后makemigration 继续migrate没问题
+
+当修改key的 max_length
+
+key = models.CharField(max_length=1024, verbose_name="键")
+
+出现报错：
+
+django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 767 bytes')
+
+索引用的字段长度不能大于255
+
+发现：
+
+表在migrate时候会添加 application_id 和key两个字段的唯一联合索引
+
+名：paas_environmentvariable_application_id_key_0838cfb7_uniq        拦位 application_id,key  索引类型 Unique  索引方法BTREE
+
+解决：在数据库表设计里面去掉拦位key的索引
+
+观察了数据库里面其它用户所创建的表都是两个字段做的唯一联合索引
+
+思考：Django model里面有个db_index=True 的参数是够可以解决停止在migrate时候把key这个字段加入索引
+
+Django所用（傻瓜式，支持多种数据库类型）数据库操作模块在migrate索引添加机制原理分析，最好能分析源代码
+
+参考：
+
+https://github.com/aschn/drf-tracking/issues/29#issuecomment-264030924
+
+https://github.com/victorx98/drf-tracking/commit/efc2350b202d78cc2db9aed2763e381bb84ccae1
+
+有人在model加了这个
+
+class Meta:
+        unique_together = ("application", "key")
+

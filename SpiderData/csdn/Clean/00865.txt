@@ -1,0 +1,48 @@
+assert用于判断一个表达式，在表达式结果为 False 的时候触发异常。若表达式结果为True，则不做任何反应。
+
+代码示例1：
+
+In[1]中 assert 2>1 判断为True，所以可以继续执行下面的程序。
+ In[2]中 assert 1>2 判断为False，所以报错AssertionError，程序中断。
+
+
+1、设置assert报错语句
+
+python也支持自己设置AssertionError的提示语句。格式为：
+
+assert + 空格 + 要判断语句，“报错语句”
+
+代码示例2：
+
+设置AssertionError的报错提示语句为“常数比较大小出错”，在执行这条语句报错时候就可以很快知道bug出在哪。
+
+实际应用的小例子：assert判断文件是否存在。
+
+import os
+path_txt = "test.txt"
+assert os.path.exists(path_txt), "Not found text.txt"
+
+程序路径中没有test.txt文件，因此会报错：
+
+Traceback (most recent call last):
+  File "F:/PycharmProjects/test_assert.py", line 3, in <module>
+    assert os.path.exists(path_txt), "Not found text.txt"
+AssertionError: Not found text.txt
+
+
+2、assert a,b
+
+还有一种格式是 assert a,b
+
+表示判断表达式 a ，如果为 False，则输出表达式 b 的 值。
+
+代码示例3：
+
+在报错提示 AssertionError 的后面输出了 a 的值 1.2
+
+代码示例4：
+
+在报错提示 AssertionError 的后面输出了 type(a) ：<class ‘float’>
+
+总结：assert语句可以帮助程序员设置报错提醒，及时中止程序，找到bug。
+

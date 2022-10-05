@@ -1,0 +1,31 @@
+昨晚想Eclipse转IDEA，谁知道在tomcat就卡住了，难受。今天一下就解决了，记录一下（没有保存错误信息的截图[/敲打]）。
+
+
+问题描述：
+
+运行的时候tomcat卡在Deployment of web application directory apache-tomcat-7.0.73\webapps\manager has finished in 151 ms
+
+终止运行报错：Unable to ping server at localhost:1099 （这个错提示在Even log里）
+
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in
+
+
+版本：
+
+IDEA 2019.2
+
+apache-tomcat-7.0.73
+
+jdk1.8.0_181 具体的配置过程我这里不再赘述，网上搜到的以下解决方法对本人的问题无效
+
+修改host
+
+创建的JavaWeb工程依赖的jdk应该与tomcat配置时设置的jre为同一个
+
+把default VM arguments中MaxPermSize参数给删掉(IDEA里找不到这个参数，答案是eclipse解决的)
+
+
+解决方法
+
+我的tomcat是免安装版，之前重装C盘，忘记给tomcat配置环境变量了。eclipse使用不需要配置环境变量就可以使用IDEA不行，而且去tomcat根目录点击startup.bat仍然可以运行，我也不知道为什么。所以一定记得配环境变量啊~ 配置完环境变量之后还不行重启一下就可以了，这里我正好想换tomcat8.5了，所以索性将环境变量换成了8.5，IDEA正常配置就好。 最后就是启动完成了。  输出台好像乱码了。。
+

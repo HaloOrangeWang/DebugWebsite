@@ -1,0 +1,167 @@
+在开发过程中，针对用户输入的不合法信息，我们应该在后端进行数据验证，并抛出相关的异常传递到前端来提示用户。
+
+可是如何进行自定义抛出异常信息呢？通常处理方法有三种，我将依次介绍这三种方法。
+
+第一种方法：
+
+这种方法最为简单，只需要创建一个字典对象，通过render传到前端即可。
+
+字典对象如下：
+
+result = {'code':'', 'message':''}
+
+render(request, 'xxx.html', result:result)
+
+第二种方法：
+
+需要继承Exception类， 代码如下：
+
+# 利用继承自定义异常提示信息
+class MyException(Exception):
+  def __init__(self, code, error, data):
+    self.code = code
+    self.error = error
+    self.data = data
+try:
+  if not 1 < 0:
+    raise MyException(1001, '你的说法错误', '1不小于0')
+except MyException as e:
+  pass
+
+第三种方法：
+
+自定义一个继承 object 的类
+
+class MyTest(object):
+  def __init__(self):
+    # 自定义状态码
+    self.code = 1000
+    self.error = ''
+    self.data = ''
+ 
+  @property
+  def dict(self):
+    return self.__dict__
+
+在你需要自定义异常的时候，创建一个对象，并制定相关信息。
+
+# 创建实例对象
+one = MyTest()
+one.code = 1001
+one.error = '你错了'
+one.data = '请再次检查'
+ 
+print(one.dict)
+
+综上所述是笔者常用来在后端检验数据并抛出相关异常信息的三种方法。
+
+补充知识：Django rest framework 自定义异常处理
+
+1.
+
+在settings.py中需要添加的配置
+
+1.install app中添加  'rest_framework',
+
+2.在settings中的 添加这个配置
+
+REST_FRAMEWORK = {
+
+'EXCEPTION_HANDLER':'common.restframework.xd_exceptions.custom_exception_handler', #这是使用自定制异常处理
+
+}
+
+xd_exceptions.py这里是异常处理函数
+
+from rest_framework.views import exception_handler
+
+def custom_exception_handler(exc, context):
+  # Call REST framework's default exception handler first,
+  # to get the standard error response.
+  response = exception_handler(exc, context)
+
+# Now add the HTTP status code to the response.
+  if response is not None:
+    response.data['status_code'] = response.status_code
+    print(response.data)
+    # response.data['message'] =response.data['detail']  #增加message这个key
+    # response.data['message'] ='方法不对'  #增加message这个key
+
+return response
+
+自定义异常类 在主动抛出异常的时候就可以抛出一个下边类型的异常
+
+my_errors.py
+
+from rest_framework import status
+from rest_framework.exceptions import APIException
+from common.tools import xd_status
+
+# class ParseError(APIException):
+#   status_code = xd_status.HTTP_400_BAD_REQUEST
+#   default_detail = '这是.default_detail========'
+#   default_code = 'parse_error'
+#
+
+class XdError(APIException):
+  pass
+
+class ParamError(XdError):
+  status_code = 400
+
+class Unauthorized(XdError):
+  status_code = 401
+
+class PermissionDenied(XdError):
+  status_code = 403
+
+class ObjectNotFound(XdError):
+  status_code = 404
+
+class ServerError(XdError):
+  status_code = 500
+
+class ErrorCode:
+  UNAUTHORIZED = 10000 # 未登录
+  PERMISSION_DENIED = 10001 # 无权限
+  PARAM_ERROR = 40000 # 参数验证错误
+  DATA_NOT_FOUND = 40001 # 未找到数据
+  DATA_NOT_VALID = 40002 # 数据错误
+  REPEAT_POST = 40003 # 重复提交
+  EEEE = 40003 # 新型错误
+
+在视图或函数中主动抛出异常，
+
+class SupserUserDetailView(APIView):
+  # authentication_classes = []
+  permission_classes = [SupserPermisson,]
+
+def put(self,request,pk):
+    if not request.user.is_superuser:
+      if request.user.id != pk:
+        raise ParamError('用户没有修改权限', ErrorCode.EEEE)  #这就是抛出自定义异常， 然后自己的异常捕获方式就能捕获这个异常
+    user = User.objects.filter(id=pk)
+    if not user:
+      raise ParamError('被修改的用户不存在', ErrorCode.EEEE)
+    data = handel_c_user(request.data)
+    user_obj = Creat_newuser_serializers(data=data, instance=user.first())
+
+if user_obj.is_valid():
+      user_obj.save()
+      res={'status':"修改成功"}
+
+return JsonResponse(data=res, code=200, desc="success", status=status.HTTP_200_OK)
+    res = {'status':user_obj.errors}
+
+return JsonResponse(data=res,code=200,desc="success",status=status.HTTP_200_OK)
+
+工作流程
+
+访问触发异常
+
+自动抛出自定制异常
+
+自定义异常捕获函数捕获到异常并将用户友好的数据返回给前端
+
+以上这篇Django 解决开发自定义抛出异常的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

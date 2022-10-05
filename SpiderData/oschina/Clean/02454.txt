@@ -1,0 +1,47 @@
+
+听说js是一样很BT的语言，今天真是有点领教到了。
+
+
+用python3.6+django2.0开发网站时，遇到了一个坑中之坑！
+
+
+在异步数据提交Ajax的运用中，不免在回调函数中使用到JSON.parse(data)
+
+
+浏览器控制台Console报错：
+
+VM493:1 Uncaught SyntaxError: Unexpected token ' in JSON at position 1
+    at JSON.parse (<anonymous>)
+    at Object.success ((index):400)
+    at j (jquery.min.js:2)
+    at Object.fireWith [as resolveWith] (jquery.min.js:2)
+    at x (jquery.min.js:5)
+    at XMLHttpRequest.b (jquery.min.js:5)
+success @ (index):400
+j @ jquery.min.js:2
+fireWith @ jquery.min.js:2
+x @ jquery.min.js:5
+b @ jquery.min.js:5
+XMLHttpRequest.send (async)
+send @ jquery.min.js:5
+ajax @ jquery.min.js:5
+(anonymous) @ (index):392
+dispatch @ jquery.min.js:4
+r.handle @ jquery.min.js:4
+
+
+在网上找了半天的帖子，基本上都是驴唇不对马嘴。
+
+
+正当我万般无奈之时，回想起了我自学的老男孩全栈教学视频中，武sir老师曾在课上笑称JS是一门最为BT的语言，你以为会报错的地方，往往不报错，你看不出哪里错了的地方，它没准儿就给你报错，于是我尝试着将后台原本传过来的字符串
+
+return HttpResponse("{'status':'fail','msg':'提交错误}")
+
+
+改成了：
+
+return HttpResponse('{"status":"fail","msg":"提交错误"}')
+
+
+就不报错了。。。是的，如你所见，就是把双引号包着单引号，变成了单引号包着双引号，就解决啦！
+

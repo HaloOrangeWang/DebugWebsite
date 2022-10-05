@@ -1,0 +1,363 @@
+
+异常和错误
+
+
+part1:程序中难免出现错误,而错误分成两种
+
+1. 语法错误(这种错误,根本过不了Python解释器的语法检测,必须在程序执行前就改正)
+
+# 语法错误示范一
+if
+
+# 语法错误示范二
+def test:
+    pass
+
+# 语法错误示范三
+print(haha
+
+2. 逻辑错误(逻辑错误)
+
+1 # 用户输入不完整(比如输入为空)或者输入非法(输入不是数字)
+2 num  = input(">>:")
+3 int(num)
+4 
+5 # 无法完成计算
+6 res1 = 1/0
+7 res2 = 1+"str"
+
+
+part2: 什么是异常
+
+异常就是程序运行时发生错误的信号,在Python中,错误出发的异常如下
+
+
+
+
+
+
+part3:Python中的异常种类
+
+在Python中不同的异常可以用不用的类型(Python中统一了类与类型,类型即类)去标识,不同的类对象标识不同的异常,一个异常标识一种错误
+
+1 l = ["haha","你好"]
+2 l[5]
+
+1 dic = {"use":"name"}
+2 dic ["pw"]
+
+1 s='hello'
+2 int(s)
+
+
+常用的异常处理
+
+1 AttributeError 试图访问一个对象没有的树形，比如foo.x，但是foo没有属性x
+ 2 IOError 输入/输出异常；基本上是无法打开文件
+ 3 ImportError 无法引入模块或包；基本上是路径问题或名称错误
+ 4 IndentationError 语法错误（的子类） ；代码没有正确对齐
+ 5 IndexError 下标索引超出序列边界，比如当x只有三个元素，却试图访问x[5]
+ 6 KeyError 试图访问字典里不存在的键
+ 7 KeyboardInterrupt Ctrl+C被按下
+ 8 NameError 使用一个还未被赋予对象的变量
+ 9 SyntaxError Python代码非法，代码不能编译(个人认为这是语法错误，写错了）
+10 TypeError 传入对象类型与要求的不符合
+11 UnboundLocalError 试图访问一个还未被设置的局部变量，基本上是由于另有一个同名的全局变量，
+12 导致你以为正在访问它
+13 ValueError 传入一个调用者不期望的值，即使值的类型是正确的
+
+1 ArithmeticError
+ 2 AssertionError
+ 3 AttributeError
+ 4 BaseException
+ 5 BufferError
+ 6 BytesWarning
+ 7 DeprecationWarning
+ 8 EnvironmentError
+ 9 EOFError
+10 Exception
+11 FloatingPointError
+12 FutureWarning
+13 GeneratorExit
+14 ImportError
+15 ImportWarning
+16 IndentationError
+17 IndexError
+18 IOError
+19 KeyboardInterrupt
+20 KeyError
+21 LookupError
+22 MemoryError
+23 NameError
+24 NotImplementedError
+25 OSError
+26 OverflowError
+27 PendingDeprecationWarning
+28 ReferenceError
+29 RuntimeError
+30 RuntimeWarning
+31 StandardError
+32 StopIteration
+33 SyntaxError
+34 SyntaxWarning
+35 SystemError
+36 SystemExit
+37 TabError
+38 TypeError
+39 UnboundLocalError
+40 UnicodeDecodeError
+41 UnicodeEncodeError
+42 UnicodeError
+43 UnicodeTranslateError
+44 UnicodeWarning
+45 UserWarning
+46 ValueError
+47 Warning
+48 ZeroDivisionError
+
+
+异常处理
+
+
+什么是异常
+
+异常发生之后
+异常之后的代码就不执行了
+
+
+什么是异常处理
+
+Python解释器检测到错误,触发异常(也允许程序员自己触发异常)
+
+程序员编写特定的代码,专门用来捕捉这个异常(这段代码与程序员逻辑无关,与异常处理有关)
+
+如果捕捉成功则进入另外一个处理分支,执行你为其定制的逻辑,使程序不会崩溃,这就是异常处理
+
+
+为什么要进行异常处理?
+
+Python解析器去执行程序，检测到了一个错误时，触发异常，异常触发后且没被处理的情况下，程序就在当前异常处终止，后面的代码不会运行，谁会去用一个运行着突然就崩溃的软件。
+
+所以你必须提供一种异常处理机制来增强你程序的健壮性与容错性
+
+
+如何进行异常处理?
+
+
+首先须知,异常是由程序的错误引起的,语法上的错误跟异常处理无关,必须在程序运行前就修正
+
+
+一: 使用if判断式
+
+1 num1=input('>>: ') #输入一个字符串试试
+2 int(num1)
+
+1 num1=input('>>: ') #输入一个字符串试试
+ 2 if num1.isdigit():
+ 3     int(num1) #我们的正统程序放到了这里,其余的都属于异常处理范畴
+ 4 elif num1.isspace():
+ 5     print('输入的是空格,就执行我这里的逻辑')
+ 6 elif len(num1) == 0:
+ 7     print('输入的是空,就执行我这里的逻辑')
+ 8 else:
+ 9     print('其他情情况,执行我这里的逻辑')
+10 
+11 '''
+12 问题一：
+13 使用if的方式我们只为第一段代码加上了异常处理，但这些if，跟你的代码逻辑并无关系，这样你的代码会因为可读性差而不容易被看懂
+14 
+15 问题二：
+16 这只是我们代码中的一个小逻辑，如果类似的逻辑多，那么每一次都需要判断这些内容，就会倒置我们的代码特别冗长。
+17 '''
+
+总结:
+
+1. if判断式的异常处理只能针对某一段代码,对于不同的代码段的相同类型的错误你需要些重复的if来进行处理
+
+2.在你的程序中频繁的写与程序本身无关，与异常处理有关的if，会使得你的代码可读性极其的差
+
+3.if是可以解决异常的，只是存在1,2的问题，所以，千万不要妄下定论if不能用来异常处理。
+
+1 def test():
+2     print('test running')
+3 choice_dic={
+4     '1':test
+5 }
+6 while True:
+7     choice=input('>>: ').strip()
+8     if not choice or choice not in choice_dic:continue #这便是一种异常处理机制啊
+9     choice_dic[choice]()
+
+
+二 :  Python为每一种异常定制了一个类型,然后提供了一种特定的语法结构用来进行异常处理
+
+
+part1: 基本语法
+
+try:
+    被检测的代码块
+except  异常类型:
+        try中一旦检测到异常,就执行这个位置的逻辑
+
+1 f = open('a.txt')
+2 
+3 g = (line.strip() for line in f)
+4 for line in g:
+5     print(line)
+6 else:
+7     f.close()
+
+1 try:
+ 2     f = open('a.txt')
+ 3     g = (line.strip() for line in f)
+ 4     print(next(g))
+ 5     print(next(g))
+ 6     print(next(g))
+ 7     print(next(g))
+ 8     print(next(g))
+ 9 except StopIteration:
+10     f.close()
+11 
+12 '''
+13 next(g)会触发迭代f，依次next(g)就可以读取文件的一行行内容，无论文件a.txt有多大，同一时刻内存中只有一行内容。
+14 提示：g是基于文件句柄f而存在的，因而只能在next(g)抛出异常StopIteration后才可以执行f.close()
+15 '''
+
+
+part2:异常类只能用来出来指定的异常情况,如果非指定异常则无法处理
+
+1 # 未捕获到异常，程序直接报错
+2  
+3 s1 = 'hello'
+4 try:
+5     int(s1)
+6 except IndexError as e:
+7     print e
+
+
+part3:多分支
+
+1 s1 = 'hello'
+2 try:
+3     int(s1)
+4 except IndexError as e:
+5     print(e)
+6 except KeyError as e:
+7     print(e)
+8 except ValueError as e:
+9     print(e)
+
+
+part4:万能异常在Python的异常中,又以一个万能异常:
+
+
+Exception: 他可以捕获任意异常,即:
+
+s1 = 'hello'
+try:
+    int(s1)
+except Exception as e:
+    print(e)
+
+有万能异常我们分两种情况去看
+
+1.如果你想要的效果是，无论出现什么异常，我们统一丢弃，或者使用同一段代码逻辑去处理他们，只有一个Exception就足够了。
+
+1 s1 = 'hello'
+2 try:
+3     int(s1)
+4 except Exception,e:
+5     '丢弃或者执行其他逻辑'
+6     print(e)
+7 
+8 #如果你统一用Exception，没错，是可以捕捉所有异常，但意味着你在处理所有异常时都使用同一个逻辑去处理（这里说的逻辑即当前expect下面跟的代码块）
+
+2.如果你想要的效果是，对于不同的异常我们需要定制不同的处理逻辑，那就需要用到多分支了。
+
+1 s1 = 'hello'
+2 try:
+3     int(s1)
+4 except IndexError as e:
+5     print(e)
+6 except KeyError as e:
+7     print(e)
+8 except ValueError as e:
+9     print(e)
+
+1 s1 = 'hello'
+ 2 try:
+ 3     int(s1)
+ 4 except IndexError as e:
+ 5     print(e)
+ 6 except KeyError as e:
+ 7     print(e)
+ 8 except ValueError as e:
+ 9     print(e)
+10 except Exception as e:
+11     print(e)
+
+
+part5:异常的其他方式
+
+1 s1 = 'hello'
+ 2 try:
+ 3     int(s1)
+ 4 except IndexError as e:
+ 5     print(e)
+ 6 except KeyError as e:
+ 7     print(e)
+ 8 except ValueError as e:
+ 9     print(e)
+10 #except Exception as e:
+11 #    print(e)
+12 else:
+13     print('try内代码块没有异常则执行我')
+14 finally:
+15     print('无论异常与否,都会执行该模块,通常是进行清理工作')
+
+
+part6:主动触发异常
+
+try:
+    raise TypeError('类型错误')
+except Exception as e:
+    print(e)
+
+
+part7:自定义异常
+
+1 class EvaException(BaseException):
+ 2     def __init__(self,msg):
+ 3         self.msg=msg
+ 4     def __str__(self):
+ 5         return self.msg
+ 6 
+ 7 try:
+ 8     raise EvaException('类型错误')
+ 9 except EvaException as e:
+10     print(e)
+
+
+part8: 断言
+
+# assert 条件
+ 
+assert 1 == 1
+ 
+assert 1 == 2
+
+
+part9: try....except ... 的方式比较if的方式的好处
+
+try..except这种异常处理机制就是取代if那种方式，让你的程序在不牺牲可读性的前提下增强健壮性和容错性
+
+异常处理中为每一个异常定制了异常类型（python中统一了类与类型，类型即类），对于同一种异常，一个except就可以捕捉到，可以同时处理多段代码的异常（无需‘写多个if判断式’）减少了代码，增强了可读性
+
+使用try...except... 的方式
+
+1:把错误处理和真正额工作分开来
+
+2: 打码更易组织,更清晰,复杂的工作任务更容易实现;
+
+3:毫无疑问,更安全了,不至于由于一些小的疏忽而使程序意外崩溃了;
+

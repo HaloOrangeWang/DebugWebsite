@@ -1,0 +1,37 @@
+
+问题概述：
+
+刚从github拉下来的jhipster-registry-master直接运行，访问http://localhost:8761会发现会空白页，但是网页的title显示正常，本文目的是解决这个问题
+
+
+解决过程：
+
+项目已经拉下来请忽略步骤1
+
+1、假设你还没有拉项目 命令行cd到目标文件夹，执行git clone https://github.com/jhipster/jhipster-registry.git
+
+2、cd jhipster-registry-master
+
+3、./mvnw或者mvnw运行起来这个项目，会自动build项目，启动成功如图
+
+ctrl + c 停止运行
+
+4、安装python，python环境配置（自动添加变量的方法，推荐先看）：http://jingyan.baidu.com/article/eb9f7b6da950c4869364e8f5.html
+python下载地址：www.python.org/downloads/
+
+5、运行yarn构建项目前端部分，依次输入执行
+
+yarn
+yarn add node-sass
+yarn start
+
+yarn add node-sass 是为了安装依赖的node-sass包，在安装yarn时，如果node-sass没有安装成功，前端构建会报错。
+
+yarn start 会自动启动这个项目并打开浏览器页面，如图
+
+出现的这个页面是无法登录的，ctrl +c 停止运行
+
+6、重新./mvnw或mvnw启动项目，访问http://localhost:8761/
+
+如图，问题解决。
+

@@ -1,0 +1,35 @@
+之前习惯用pycharm来开发python程序，但是pycharm打开的速度实在是太感人了，所以想转用vscode编辑器来写python，毕竟python作为一个脚本语言，用编辑器写也不会有太大的问题。
+但是在vscode下写python程序的时候以为发现一个问题，在pycharm下能正常使用的程序，在vscode下就无法正常使用了，其中的一个问题就是会出现
+
+FileNotFoundError: [Errno 2] No such file or directory: 'xxx.xxx'
+
+首先我的文件路径是这样的。
+
+之前习惯用pycharm来开发python程序，但是pycharm打开的速度实在是太感人了，所以想转用vscode编辑器来写python，毕竟python作为一个脚本语言，用编辑器写也不会有太大的问题。
+
+但是在vscode下写python程序的时候以为发现一个问题，在pycharm下能正常使用的程序，在vscode下就无法正常使用了，其中的一个问题就是会出现
+
+FileNotFoundError: [Errno 2] No such file or directory: 'xxx.xxx'
+
+首先我的文件路径是这样的。
+
+文件路径.png
+
+现在test2.py里面有这行代码，也是这行代码报错。
+
+file = open('data_baidu.txt', 'r', encoding='utf-8')
+
+找了一下原因，发现如果直接在split_test文件目录下用命令行运行python test2.py不会有问题，但是在其他目录下运行就会报上面的FileNotFoundError的错误。
+
+用命令行运行代码
+
+这样一来，谜题解决了，pycharm运行python程序的时候是在相应的文件目录下运行的，而vscode是在相应的工程目录下运行的。可以看看vscode里面的launch.json的配置，这里的${file}的意思是vscode所打开的文件夹的路径。
+
+Paste_Image.png
+
+这个原因找了一个晚上，分享给大家吧。另外，如果大家想用virtualenv创建出来的python虚拟环境，把python.path修改到你的virtualenv的路径下的python.exe就可以了。我的env的路径在d盘的env35中。
+
+"python.pythonPath": "D:\\env35\scripts\\python.exe",
+
+顺便安利一下，vscode是世界上最强的编辑器！！！哈哈哈
+

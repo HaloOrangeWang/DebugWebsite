@@ -1,0 +1,20 @@
+
+Pycharm使用Python3.9解释器失败
+
+python 3.9已经发布，其中与之前版本有些不同。
+ 如果你使用的是pycharm社区版（2018），需要注意的是:
+ “The unescape() method in the html.parser.HTMLParser class has been removed (it was deprecated since Python 3.4). html.unescape() should be used for converting character references to the corresponding unicode characters.”
+ 官方文档https://docs.python.org/3.9/whatsnew/3.9.html
+
+在python3.9中，html.parser.HTMLParser 已经被弃用了，取而代之的是html.unescape() 。
+
+如果直接在pycharm中引入python3.9作为解释器，会报错，提示html.parser.HTMLParser has no attribute unescape。
+
+通过具体报错信息，你会发现，发生错误的代码行在pycharm的setuptools工具中，这个工具会在C盘创建一个临时路径和文件setup.py 用来创建虚拟环境（env），你是无法找到这个路径的。
+ 它的原文件路径在X:****\PyCharm Community Edition 2018.3.5\helpers\setuptools-39.1.0.tar.gz 中的setuptools-39.1.0\setuptools\py33compat.py( 位置仅供参考，py33compat.py 还是其他py3xcompat.py根据报错信息来判断）
+
+修改文件最后一行即可
+
+unescape = getattr(html, 'unescape', html_parser.HTMLParser().unescape)
+unescape = getattr(html, 'unescape', html_parser.unescape)
+

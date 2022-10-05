@@ -1,0 +1,33 @@
+jupyter notebook 打开出现内核错误，在执行代码的时候不会执行，cmd窗口有报错信息，会直接退出jupyter notebook，导致jupyter notebook无法正常使用。
+
+
+报错现象：
+
+浏览器打开jupyter notebook提示内核错误；
+
+cmd环境中出现错误信息，拒绝访问之类的提示；
+
+执行命令没有返回值
+
+直截取了cmd环境下的报错截图
+
+
+报错截图：
+
+
+解决思路：
+
+jupyter 卸载重新安装，但是未解决问题；
+
+查看报错信息，在网络上说到可能权限的问题，检查“C:\Users\ThinkPad\AppData\Roaming\jupyter”该目录权限，发现权限正常，该目录针对每个用户都具有完全控制的权限，该处理方法也被pass掉。
+
+经咨询其它人士，在每次打开jupyter时，先执行set JUPYTER_ALLOW_INSECURE_WRITES=1，经测试可以正常使用。但是每次打开jupyter都要执行该代码，显得比较繁琐，尝试添加的全局环境变量中，测试可行，但时cmd环境中每次都会有相关的提示信息，感觉未根本解决问题；
+
+根据报错信息
+
+File "D:\Python\lib\site-packages\jupyter_core\paths.py", line 435, in secure_write      win32_restrict_file_to_user(fname)    File "D:\Python\lib\site-packages\jupyter_core\paths.py", line 377, in win32_restrict_file_to_user      win32security.SetFileSecurity(fname, win32security.DACL_SECURITY_INFORMATION, sd)  pywintypes.error: (5, 'SetFileSecurity', '拒绝访问。')
+
+查看paths.py代码文件，找到第435行，将win32_restrict_file_to_user(fname)进行注释，然后进行保存退出，重新运行jupyter进行测试，未发现问题，运行正常
+
+改后截图如下：
+

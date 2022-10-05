@@ -1,0 +1,45 @@
+
+写在前面
+
+最近学习Tensorflow，成功地完成了第一个例子——基于一个模拟数据集，训练一个神经网络来完成一个简单的二分类问题。但是在编写程序的过程中，还是遇到这个小问题，查阅了一下还是挺常见的，就记录一下。
+
+
+Buy提示
+
+print sess.run(w1)
+             ^
+SyntaxError: invalid syntax
+
+
+Bug原因
+
+主要参考这篇文章：Invalid syntax when using “print”? [duplicate]
+
+根据这篇文章所说，造成这个Bug的主要原因是在Python3中，以前的print “语句”替换成了print “函数”，
+
+根据What’s New In Python 3.0 中所说，有如下代码：
+
+Old: print "The answer is", 2*2
+New: print("The answer is", 2*2)
+
+Old: print x,           # Trailing comma suppresses newline
+New: print(x, end=" ")  # Appends a space instead of a newline
+
+Old: print              # Prints a newline
+New: print()            # You must call the function!
+
+Old: print >>sys.stderr, "fatal error"
+New: print("fatal error", file=sys.stderr)
+
+Old: print (x, y)       # prints repr((x, y))
+New: print((x, y))      # Not the same as print(x, y)!
+
+简而言之，就是Python3中的print不再是一个类似命令的语句，而是一个函数，所以应该要加一个括号。
+
+
+解决方法
+
+给print后面的语句整体加一个括号就好了。之前的错误就应该修改为：
+
+print (sess.run(w1))
+

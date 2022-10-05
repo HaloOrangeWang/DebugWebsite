@@ -1,0 +1,22 @@
+运行别人的项目出现报错
+
+Error running 'train_frcnn': Cannot run program "C:\Users\Administrator\anaconda\envs\py3\bin\python" (in directory "E:\xxx\xxxxx"): CreateProcess error=2, 系统找不到指定的文件。
+
+此报错乃是运行环境有问题，找到项目目录下的.idea目录，在目录里有个workspace.xml的文件
+
+进入文件，搜索 py3,跟报错中的“C:\Users\Administrator\anaconda\envs\py3\bin\python” 的环境保持一致（注意加粗字体），
+
+会看到如下的配置
+
+<option name="SDK_HOME" value="$USER_HOME$/anaconda/envs/py3/bin/python" />
+
+把 value的值设置为空就行了，如下所示
+
+<option name="SDK_HOME" value="" />
+
+有几个就删掉几个，然后重启，再运行就ok了
+
+主要是别人的环境跟本地的项目环境不一致导致的，如上修改配置就ok了
+
+也可尝试删掉.idea目录
+

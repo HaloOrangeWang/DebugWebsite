@@ -1,0 +1,95 @@
+　　环境：win7
+
+　　背景：跟着菜鸟教程学习python3进行到 python3 mysql(mysql-connector)，然后安装mysql-8.0.16，照着示例程序运行python，遇到这个大大的问题：authentication plugin 'calling_sha2_password' is not supported.
+
+　　在网上找了无数答案，现在来总结一下。
+
+　　根目录下新建my.ini文件，设置MySQL 复制以下配置信息到新建的my.ini文件中。
+
+[mysqld]
+# 设置3306端口
+port = 3306
+# 设置mysql的安装目录
+basedir=D:\\web\\mysql-8.0.16-winx64
+# 设置 mysql数据库的数据的存放目录，MySQL 8+ 不需要以下配置，系统自己生成即可，否则有可能报错
+# datadir=D:\\web\\sqldata
+# 允许最大连接数
+max_connections=20
+# 服务端使用的字符集默认为8比特编码的latin1字符集
+character-set-server=utf8
+# 创建新表时将使用的默认存储引擎
+default-storage-engine=INNODB
+# 默认使用“mysql_native_password”插件认证
+default_authentication_plugin=mysql_native_password
+[mysql]
+# 设置mysql客户端默认字符集
+default-character-set=utf8
+[client]
+# 设置mysql客户端连接服务端时默认使用的端口
+port=3306
+default-character-set=utf8
+
+　　在MySQL 8.0中验证插件和密码加密方式发生了变化，caching_sha2_password是默认的身份验证插件而不是之前版本的mysql_native_password.
+
+　　使用指令：
+
+use mysql;
+
+select plugin,authentication_string from user;
+
+　　查看，显示：
+
+　　因此如果需要保持之前的验证方式并保持之前版本的密码加密方式需要在配置文件中修改，暂不支持动态修改，需要重启生效。即：
+
+# 默认使用“mysql_native_password”插件认证
+default_authentication_plugin=mysql_native_password　
+
+将8.0已有的sha2密码修改为sha1的模式：
+
+　　　　#修改加密规则为永不过期
+
+　　　　#注意：password改为你的密码，别老老实实照抄，之前本人便以为password指代密码不用改变，结果一通指令下去，mysql登不上了，只好重新初始化数据库
+
+　　　　ALTER USER 'root'@'localhost' IDENTIFIED BY 'password' PASSWORD EXPIRE NEVER;
+
+　　　　#更新一下用户的密码加密方式为之前版本的方式
+
+　　　　ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';　　　　
+
+　　　　FLUSH PRIVILEGES; #刷新权限
+
+重启，这是再看，已经修改了身份验证插件：
+
+这时再稍稍修改实例程序，便可以连接了:
+
+import mysql.connector
+
+mydb=mysql.connector.connect(
+    host="localhost",
+    user="ly",
+    passwd="123456",
+    auth_plugin='mysql_native_password'
+)
+
+print(mydb)
+
+解决问题时捎带了解的一些需要注意的知识：
+
+使用root创建用户及授权：
+
+create user ly identified by '123';#创建用户的语法: create user 用户名 identified by '密码'
+
+grant all on *.* to 'ly'@'localhost';#分配权限语法： grant 操作 on 数据库名称 to '用户名'
+
+#*.*     :    代表所有数据库的全部表格
+
+#也可以指定特定操作到数据库中特定的表格
+
+#grant select ,update ,delete ,insert on htai.student to 'ly'@'localhost';
+
+#grant all ： 代表全部权限 （execute ,select,delete,update,insert..）
+
+show grants for "ly";#查看权限
+
+完。
+

@@ -1,0 +1,68 @@
+执行：
+
+ceph-deploy mon create-initial
+
+报错：
+
+[ceph_deploy][ERROR ] KeyNotFoundError: Could not find keyring file: /etc/ceph/ceph.client.admin.keyring on host node1
+
+[ceph_deploy][ERROR ] KeyNotFoundError: Could not find keyring file: /etc/ceph/ceph.client.admin.keyring on host node2
+
+[ceph_deploy][ERROR ] KeyNotFoundError: Could not find keyring file: /etc/ceph/ceph.client.admin.keyring on host node3
+
+解决：
+
+ceph auth get-or-create client.admin mon ‘allow *’ mds ‘allow *’ osd ‘allow *’ –o /etc/ceph/ceph.client.admin.keyring
+
+或者
+
+ceph-create-keys --id node1
+
+ceph-create-keys --id node2
+
+ceph-create-keys --id node3
+
+报错2：
+
+[ceph_deploy.mon][ERROR]Some monitors have still not reached quorum:
+
+[ceph_deploy.mon][ERROR]node1
+
+解决：
+
+暂时解决不了，从头来过就搞定了报错3：
+
+-------------------------------------------------------------------------------------
+
+执行：rbd list
+
+报错3：
+
+2018-08-19 10:31:08.047481 7f1f6c1d7700 0 -- 192.168.4.1:0/3336722177 >> 192.168.4.2:6804/9634 pipe(0x55db04d46b20 sd=4 :0 s=1 pgs=0 cs=0 l=1 c=0x55db04d45db0).fault
+
+排错：
+
+[root@node1 ceph-cluster]# ll /dev/vdb{1,2}
+brw-rw----. 1 root disk 252, 17 Aug 19 10:24 /dev/vdb1
+brw-rw----. 1 root disk 252, 18 Aug 19 10:24 /dev/vdb2
+
+问题所在：/dev/vdb1 /dev/vdb2 所有者不是ceph
+
+解决：
+
+[root@node1 ceph-cluster]# ll /dev/vdb{1,2}
+brw-rw----. 1 ceph ceph 252, 17 Aug 19 10:24 /dev/vdb1
+brw-rw----. 1 ceph ceph 252, 18 Aug 19 10:24 /dev/vdb2
+
+chown ceph.ceph /dev/vdb{1,2}
+
+[root@node1 ceph-cluster]# ll /dev/vdb{1,2}
+brw-rw----. 1 ceph ceph 252, 17 Aug 19 10:24 /dev/vdb1
+brw-rw----. 1 ceph ceph 252, 18 Aug 19 10:24 /dev/vdb2
+
+[root@node1 ceph-cluster]# ceph-deploy osd activate node1:/dev/vdc1 node1:/dev/vdd1
+
+[root@node1 ceph-cluster]# ceph-deploy osd activate node2:/dev/vdc1 node2:/dev/vdd1
+
+[root@node1 ceph-cluster]# ceph-deploy osd activate node3:/dev/vdc1 node3:/dev/vdd1
+

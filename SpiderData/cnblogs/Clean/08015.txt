@@ -1,0 +1,20 @@
+在学习使用selenium的时候，进行元素定位时总是报selenium.common.exceptions.InvalidSelectorException: Message: invalid selector: An invalid or illegal selector was specified的错误。
+
+定位元素xpath路径如下
+
+//*[@id="3001"]/div[1]/h3/a
+
+python语句:
+
+driver.find_element_by_css_selector('#3001 h3 a').click()
+
+报错
+
+改为
+
+driver.find_element_by_css_selector("[id='3001'] h3 a").click()
+
+问题解决。
+
+原因是用By.cssSelector来定位组件时，# 后面的id不能是数字开头的，数字开头会报错
+

@@ -1,0 +1,20 @@
+昨晚折腾的1个多钟，直到3点多才睡，感觉自己也是热爱代码了，敲3个多钟一点也不累（其实是为了凌晨6点起来抢票回家了^_^）
+
+练习python中select进行异步通信-防止socket。recv方法阻塞线程
+
+rs, ws, es = select.select(inputs, [], []) --报错error 10022
+
+http://blog.sina.com.cn/s/blog_6ffee9410100pqdt.html这篇博客的意思是socket连接时候没有绑定端口，所以就报错。
+
+然而我检查了下我端口是有设定了
+
+我这个端口查了下不会发生端口冲突，这个localhost地址会映射到127.0.0.1
+
+基于上面情况下百度的一大堆，发现找不到，想google但是ss又过期了。只能自己想办法解决了
+
+看了网上找的关于select的例子，发现他们通常会将serverSocket添加到inputs队列中，而我的inputs初始化是空了直接做select方法的参数。
+
+参数都是空了，select怎么可能监听有哪个socket是可以读了，这是逻辑问题，肯定要报错了。
+
+解决办法：将serverSocket添加到inputs队列中再调用select.select(inputs, [], [])这个语句就不会报错了
+

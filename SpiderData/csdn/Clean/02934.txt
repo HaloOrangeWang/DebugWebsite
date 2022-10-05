@@ -1,0 +1,18 @@
+python环境：
+ python3.7.5
+ pyinstaller 3.5
+ TensorFlow 2.0
+ requests 2.10
+ 最近在用pyinstaller打包exe，经常出错，查了好多资料，
+ 最开始是用pyinstaller -F code.py打包，但是打开exe就会出错，报“failed to execute script XXX”错误。
+ 一直查资料，没有找到直接的解决办法，发现使用pyinstaller -D code.py可以间接解决。
+ 这样打包EXE文件之后，在CMD下执行code.exe文件，可以在窗口发现错误。
+ 在多次调试后，发现了新的错误ModuleNotFoundError: No module named ‘tensorflow.python.platform’。
+ 百度和国外的网站查了好多，一直没找到解决办法，在TensorFlow里没有发现python.platform，之后在群里问了一下，有大佬给出了方法，在他的cmd命令里tensorflow.python.platform没有出错，这时我才发现是版本问题，之前发现了这个问题，在TensorFlow最高版本2.0降到1.15，以为没有问题了，直到群里的大佬给出了回答后，我才发现TensorFlow的版本还是太高了，所以把TensorFlow降到了1.13.1，在重新打包，完美执行，问题解决。
+ 解决后更新python环境：
+ python3.7.5
+ pyinstaller 3.5
+ TensorFlow 1.13.1
+ requests 2.10
+ 最后：感谢群里大佬@美梦潇洒，第一次发这个，有点啰嗦，各位见谅。
+

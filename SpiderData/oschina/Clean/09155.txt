@@ -1,0 +1,156 @@
+先上代码：
+
+table = tablexx.select('*).tablexx.groupBy('x).select('x, xx.count )
+    
+tableEnvironment
+  // declare the external system to connect to
+  .connect(
+    new Kafka()
+      .version("0.10")
+      .topic("test-input")
+      .startFromEarliest()
+      .property("zookeeper.connect", "localhost:2181")
+      .property("bootstrap.servers", "localhost:9092")
+  )
+
+// declare a format for this system
+  .withFormat(
+    new Json().deriveSchema()
+  )
+
+// declare the schema of the table
+  .withSchema(
+    new Schema()
+      .field("rowtime", Types.SQL_TIMESTAMP)
+        .rowtime(new Rowtime()
+          .timestampsFromField("timestamp")
+          .watermarksPeriodicBounded(60000)
+        )
+      .field("user", Types.LONG)
+      .field("message", Types.STRING)
+  )
+
+// specify the update-mode for streaming tables
+  .inUpsertMode()
+
+// register as source, sink, or both and under a name
+  .registerTableSource("outputTable"); 
+  table.insertInto("outputTable")
+
+直接上报错信息：
+
+The program finished with the following exception:
+
+org.apache.flink.client.program.ProgramInvocationException: The main method caused an error.
+    at org.apache.flink.client.program.PackagedProgram.callMainMethod(PackagedProgram.java:546)
+    at org.apache.flink.client.program.PackagedProgram.invokeInteractiveModeForExecution(PackagedProgram.java:421)
+    at org.apache.flink.client.program.ClusterClient.run(ClusterClient.java:427)
+    at org.apache.flink.client.cli.CliFrontend.executeProgram(CliFrontend.java:813)
+    at org.apache.flink.client.cli.CliFrontend.runProgram(CliFrontend.java:287)
+    at org.apache.flink.client.cli.CliFrontend.run(CliFrontend.java:213)
+    at org.apache.flink.client.cli.CliFrontend.parseParameters(CliFrontend.java:1050)
+    at org.apache.flink.client.cli.CliFrontend.lambda$main$11(CliFrontend.java:1126)
+    at java.security.AccessController.doPrivileged(Native Method)
+    at javax.security.auth.Subject.doAs(Subject.java:422)
+    at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1836)
+    at org.apache.flink.runtime.security.HadoopSecurityContext.runSecured(HadoopSecurityContext.java:41)
+    at org.apache.flink.client.cli.CliFrontend.main(CliFrontend.java:1126)
+Caused by: org.apache.flink.table.api.NoMatchingTableFactoryException: Could not find a suitable table factory for 'org.apache.flink.table.factories.StreamTableSourceFactory' in
+the classpath.
+
+Reason: No context matches.
+
+The following factories have been considered:
+org.apache.flink.table.sources.CsvBatchTableSourceFactory
+org.apache.flink.table.sources.CsvAppendTableSourceFactory
+org.apache.flink.table.sinks.CsvBatchTableSinkFactory
+org.apache.flink.table.sinks.CsvAppendTableSinkFactory
+
+at org.apache.flink.table.factories.TableFactoryService$.filterByContext(TableFactoryService.scala:214)
+    at org.apache.flink.table.factories.TableFactoryService$.findInternal(TableFactoryService.scala:130)
+    at org.apache.flink.table.factories.TableFactoryService$.find(TableFactoryService.scala:81)
+    at org.apache.flink.table.factories.TableFactoryUtil$.findAndCreateTableSource(TableFactoryUtil.scala:49)
+    at org.apache.flink.table.descriptors.ConnectTableDescriptor.registerTableSource(ConnectTableDescriptor.scala:46)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke(Method.java:498)
+    at org.apache.flink.client.program.PackagedProgram.callMainMethod(PackagedProgram.java:529)
+    ... 12 more
+
+报错信息是找不到合适的table factory，查询报错类TableFactoryService.scala 源码214行（报错信息中报错位置）
+
+/**
+    * Filters for factories with matching context.
+    *
+    * @return all matching factories
+    */
+  private def filterByContext[T](
+      factoryClass: Class[T],
+      properties: Map[String, String],
+      foundFactories: Seq[TableFactory],
+      classFactories: Seq[TableFactory])
+    : Seq[TableFactory] = {
+
+val matchingFactories = classFactories.filter { factory =>
+      val requestedContext = normalizeContext(factory)
+
+val plainContext = mutable.Map[String, String]()
+      plainContext ++= requestedContext
+      // we remove the version for now until we have the first backwards compatibility case
+      // with the version we can provide mappings in case the format changes
+      plainContext.remove(CONNECTOR_PROPERTY_VERSION)
+      plainContext.remove(FORMAT_PROPERTY_VERSION)
+      plainContext.remove(METADATA_PROPERTY_VERSION)
+      plainContext.remove(STATISTICS_PROPERTY_VERSION)
+
+// check if required context is met
+      plainContext.forall(e => properties.contains(e._1) && properties(e._1) == e._2)
+    }
+
+if (matchingFactories.isEmpty) {
+      throw new NoMatchingTableFactoryException(
+        "No context matches.",
+        factoryClass,
+        foundFactories,
+        properties)
+    }
+
+matchingFactories
+  }
+
+主要是对比 requestedContext 中的必需属性，在 properties 中是否有
+
+requestedContext 必需属性如下：
+
+connector.type kafka
+
+update-mode append
+
+connector.version,0.10
+
+connector.property-version,1
+
+这些属性properties中都有，只是“update-mode”，我这里是 "upsert", 将方法 “inUpsertMode()” 改为 “.inAppendMode()”，执行，这个错就解决了。
+
+(找问题的时候，看到个大哥的，properties 里面没有 connector.type，不过好像用的是1.7的dev版本)
+
+结论是，遇到这个问题，debug进去，看下到底那个属性对应不上，然后针对解决。
+
+--------------------------
+
+你以为这样就解决了吗，不可能的
+
+新的报错如下： "AppendStreamTableSink requires than Table has only insert changes"，意思是 AppendStreamTableSink 需要表只有插入（不能update），
+
+去掉表上面的groupBy()，就不会报错了。。。
+
+table = tablexx.select('*).tablexx.groupBy('x).select('x, xx.count )
+改为：
+
+table = tablexx.select('*)
+是不会报错，但是，我要group 啊。。。
+没办法，只有先转成stream，再输出了
+使用 toRetractStream()， 转成stream，结果发现，一直想用的flink的撤回功能就在这里了。
+group 字段的 count 值变化的时候，会产生两条数据，一条是旧数据，带着false标示，一条是新数据，带着true标示
+

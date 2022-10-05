@@ -1,0 +1,59 @@
+
+一、报错
+
+今天测试区debug程序遇到如下报错，数据落库失败。
+
+mysql Caused by: java.sql.SQLException: The table 'tablename' is full
+
+
+二、解决
+
+保证error之后参考了前辈的文章。
+
+排查MySQL的 information_schema 数据库中的TABLES 该表所占的空间。
+
+使用指令： show table status like 'm_rtm_rule_d%';
+
+m_rtm_rule_d	InnoDB	10	Compact	178387	430	76824576	0	0	6291456	577693	2019-10-31 13:51:35			utf8_unicode_ci
+
+如下sql查询某个数据库的表碎片化情况。或者data_free超过50M大小的表。
+
+data_free: 该参数与mysql碎片有关，如果是共享表空间，该字段表示共享表空间的大小而非数据的大小。只有使用独占表空间时，该字段才表示该表的剩余空间；
+
+table 该字段超过50MB 代表碎片大小
+
+select concat( table_schema, '.', table_name ) as TABLE_NAME, engine as TABLE_ENGINE, table_type as TABLE_TYPE, table_rows as TABLE_ROWS, concat( round( data_length /( 1024 * 1024 ), 2 ), 'M' ) as TB_DATA_SIZE, concat( round( index_length /( 1024 * 1024 ), 2 ), 'M' ) as TB_IDX_SIZE, concat( round(( data_length + index_length )/( 1024 * 1024 ), 2 ), 'M' ) as TOTAL_SIZE, case
+when data_length = 0 then 0
+else round( index_length / data_length, 2 )
+end as TB_INDX_RATE, concat( round( data_free / 1024 / 1024, 2 ), 'MB' ) as TB_DATA_FREE, case
+when( data_length + index_length )= 0 then 0
+else round( data_free /( data_length + index_length ), 2 )
+end as TB_FRAG_RATE
+from information_schema.TABLES
+where round( DATA_FREE / 1024 / 1024, 2 )>= 50
+order by data_free desc;
+
+查询完之后发现表没占多少空间，data_free确实有点多。
+
+接优化表
+
+optimize table m_rtm_rule_d,m_rtm_sub_rule_d;
+
+不支持.....让使用analyze 来代替使用
+
+分析完之后发现data_free 还是很高。
+
+另外一个方法:
+
+可以先drop table然后重建即可。先建立新表然后导入数据，然后rename。
+
+这一波操作袭来，再查看时data_free变成了0.
+
+然而问题还在法还在发生。
+
+最后发现是mysql 数据文件的文件系统磁盘使用率 100%了。
+
+发现一个134GB 的怪物。这个文件里面存放的是当时分析redis的rdb dump文件。
+
+把不用的数据清除掉之后，报错消失了。
+

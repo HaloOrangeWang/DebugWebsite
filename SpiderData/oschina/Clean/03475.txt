@@ -1,0 +1,21 @@
+原本的代码：
+
+from selenium import webdriver
+driver = webdriver.Chrome()
+driver.get('https://www.baidu.com')
+
+但是报出错误：
+
+selenium.common.exceptions.WebDriverException: Message: unknown error: cannot find Chrome binary
+
+这个错误是因为没有找到chrome的文件，需要自己指定
+ 解决方法：
+
+from selenium import webdriver
+options = webdriver.ChromeOptions()
+options.binary_location = r"D:\Software\Google\Chrome\Application\chromecsx.exe"
+browser = webdriver.Chrome(options=options)
+browser.get('https://www.baidu.com')
+
+这样就好了
+

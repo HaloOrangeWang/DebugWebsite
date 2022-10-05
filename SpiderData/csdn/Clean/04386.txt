@@ -1,0 +1,776 @@
+廖雪峰Python基础教程和慕课网视频笔记
+
+在程序运行过程中，总会遇到各种各样的错误。
+
+1.有的错误是程序编写有问题造成的，比如本来应该输出整数结果输出了字符串，这种错误我们通常称之为bug，bug是必须修复的。
+
+2.有的错误是用户输入造成的，比如让用户输入email地址，结果得到一个空字符串，这种错误可以通过检查用户输入来做相应的处理。
+
+3.还有一类错误是完全无法在程序运行过程中预测的，比如写入文件的时候，磁盘满了，写不进去了，或者从网络抓取数据，网络突然断掉了。这类错误也称为异常，在程序中通常是必须处理的，否则，程序会因为各种问题终止并退出。
+
+Python内置了一套异常处理机制，来帮助我们进行错误处理。
+
+此外，我们也需要跟踪程序的执行，查看变量的值是否正确，这个过程称为调试。Python的pdb可以让我们以单步方式执行代码。
+
+最后，编写测试也很重要。有了良好的测试，就可以在程序修改后反复运行，确保程序输出符合我们编写的测试。
+
+1.错误和异常的处理方式
+
+语法错误：代码不符合解释器或者编译器语法。 
+ 逻辑错误：不完整或者不合法输入或者计算出现问题。
+
+异常：执行过程中出现问题导致程序无法执行。
+
+程序遇见逻辑或算法问题
+
+运行过程中计算机错误（内存不够或者IO错误）
+
+错误：
+
+代码运行前的语法或逻辑错误
+
+语法错误在执行前修改，逻辑错误无法修改
+
+异常分为两个步骤：
+
+异常产生，检查到错误且解释器认为是异常，抛出异常
+
+异常处理，截获异常，忽略或终止程序处理异常
+
+常见错误：
+
+name Error 变量没定义
+
+Systax Error 语法错误
+
+IO Error 文件错误
+
+Zero DivisionError 10/0,除零错误
+
+Value Error 值错误，例如a = int（‘aa’）
+
+keyboard Interrupt 强制终止程序产生，ctrl+c强制终止程序运行
+
+使用try_except处理异常：
+
+语法格式：
+
+try:
+    try_suite        #要处理的逻辑代码
+except Exception[e]: #Exception是要处理的异常类，e用于保存出现异常的类型
+    exception_block  #处理捕获异常之后的逻辑
+
+try用来捕获try_suite中的操作，并且将错误交给except处理。
+except用来处理异常，如果处理异常和设置异常一致，使用exception_block处理异常，不一致的话就会被解释器处理，如果有e设置时，这个错误就会保存在e中。
+
+代码示例：
+
+#coding=utf-8
+
+try:
+    a
+except NameError , e:
+    print 'Error:',e
+
+print 'over'
+
+#输出结果
+Error: name 'a' is not defined
+over
+
+try-except捕获异常分析：
+
+try:
+    undef
+except:
+    print "catch an except"
+
+#异常可以捕获，因为是运行时错误
+
+try:
+    if undef
+except:
+    print "catch an except"
+#不能捕获异常，因为是语法错误，运行前错误（因为代码运行前解释器会对语法进行检查，有错误就抛出，这时代码还没有真正运行）
+
+try-except捕获异常分析：
+
+try:
+    undef
+except NameError,e:
+    print "catch an except",e
+
+#输出结果，catch an except name 'undef' is not defined
+
+try:
+    undef
+except IOError,e:
+    print "catch an except",e
+
+#输出结果，报错，错误是NameError: name 'undef' is not defined
+#不能捕获异常，因为设置IOError，不会处理NameError，会把异常抛给解释器进行处理
+
+代码示例：
+
+import random
+num = random.randint(0,100)
+
+while True:
+    try:
+        guess = int(raw_input("Enter 1-100"))
+    except ValueError,e:
+        print "Enter 1-100"
+        continue
+    if guess > num:
+        print "guess Bigger:",guess
+    elif guess < num:
+        print "guess Smaller:",guess
+    else:
+        print "Guess OK,Game Over"
+    print "\n"
+
+try-except：处理多个异常
+
+try:
+    try-suite
+except Exception1[e]:
+    exception_block1
+except Exception2[e]:
+    exception_block2
+except ExceptionN[e]:
+    exception_blockN
+
+try-except–else：
+
+处理多个异常(没有捕获异常就执行else语句)
+
+try:
+    try-suite
+except Exception1[e]:
+    exception_block1
+else:
+    none-exception
+
+try_finally使用：
+
+（try_finally语句不是处理异常使用，主要是做清理工作）
+
+try:
+    try_suite
+finally:
+    do_finally
+
+1.如果try语句没有捕获错误，代码执行do_finally语句
+2.如果try语句捕获错误，程序首先执行do_finally语句，然后将捕获到的错误交给python解释器处理
+
+try:
+    f = open('1.txt')
+    print int(f.read())
+finally:
+    print "file close"
+    f.close()
+
+# 输出结果
+file close
+Traceback (most recent call last): #这就是将捕获到的错误交给python解释器处理
+    File "finally.py", line 3 in <module>
+        print int(f.read())
+ValueError:invalid literal for int() with base 10: 'd0\n'
+
+try-finally语句：
+
+规则：try-finally无论是否检测到异常，都会执行finally代码
+
+作用：为异常处理事件提供清理机制，用来关闭文件或者释放系统资源
+
+try-except-finally使用：
+
+1.若try语句没有捕获异常，执行完try代码段后，执行finally 
+ 2.若try捕获异常，首先执行except处理错误，然后执行finally
+
+try:
+    try_suite
+except Exception[e]:
+    exception_block
+finally:
+    do_finally
+
+实例：
+
+try:
+    f = open('1.txt')
+    line = f.read(2)
+    num = int(line)
+    print 'read num=%d' % num
+except IOError, e:
+    print 'catch IOError:', e
+except ValueError, e:
+    print 'catch ValueError:', e
+
+finally:
+    print 'close file'
+    f.close()
+
+# 运行结果
+catch ValueError: invalid literal for int() with base 10: 'd0'
+close file
+
+try:
+    f = open('2.txt')
+    line = f.read(2)
+    num = int(line)
+    print 'read num=%d' % num
+except IOError, e:
+    print 'catch IOError:', e
+except ValueError, e:
+    print 'catch ValueError:', e
+
+finally:
+    print 'close file'
+    f.close()
+
+# 运行结果
+catch ValueError: [Error 2] No such file or directory:'2.txt' 
+close file
+Trackeback(most recent call last):
+    File 'error.py', line 12, in <module>
+        f.close()
+NameError:name 'f' is not defined
+# 因为执行finally时，f不存在，因为上面执行到open('2.txt')就出错了。
+
+# 所以可以在finally里面再加一个异常的处理
+finally:
+    try:
+        print 'close file'
+        f.close()
+    exception NameError, e:
+        print 'catch Error:', e
+
+try-except-else-finally使用：
+
+没有异常 try->else->finally
+
+有异常 try->expect->finally
+
+实例：
+
+#coding:utf-8
+try:
+    f = open('2.txt')
+    num = int(f.read())
+    print("read num=%d" % num)
+except Exception as e:
+    print("catch Error1:",e)
+else:
+    print("No Error")
+finally:
+    try:
+        print("close file")
+        f.close()
+    except Exception as e:
+        print("catch Error2",e)
+
+with语句：
+
+可以参考文章：https://www.cnblogs.com/DswCnblog/p/6126588.html
+
+with context[as var]:
+    with_suite
+
+with语句用来替代try-except-finally语句，使代码更加简洁；
+
+context表达式返回是一个对象
+
+var用来保存context返回对象，单个返回值或者元组
+
+with_suite使用var 变量来对context返回对象进行操作
+
+with open('1.txt') as f:
+    for line in f.readlines():
+        print line
+
+1.打开1.txt文件 
+ 2.f变量接收文件对象返回的对象 
+ 3.with中的代码执行完成后，关闭文件，遇见错误和异常也是先进行关闭再进行异常处理，没有错误和异常就自动关闭。
+
+try-except-finally和with语句比较
+
+# try-except-finally 语句
+try:
+    f = open('1.txt')
+    print "in try f.read():", f.read(2)
+except IOError, e:
+    print "catch IOError:", e
+except ValueError, e:
+    print "catch ValueError:", e
+finally:
+    f.close()
+
+print "try-finally:", f.closed
+
+# with 语句
+with open('1.txt') as f:
+    print "in with f.read:", f.read()
+except ValueError, e:
+    print "in with catch IOError:" e
+    print "with:", f.closed
+
+with语句实质是上下文管理：
+
+1.上下文管理协议：包含方法enter()和__exit()，支持该协议的对象要实现这这两个方法
+
+2.上下文管理器：定义执行with语句时 要建立的运行时上下文，负责执行with语句块上下文中的进入与退出操作
+
+3.进入上下文管理器：调用管理器enter方法，如果设置as var语句，var变量接受enter()方法返回值
+
+4.退出上下文管理器：调用管理器exit方法
+
+实例：
+
+class Mycontex(object):
+    def __init__(self,name):
+        self.name = name
+
+def __enter__(self):
+        print "__enter__"
+        return self
+
+def do_self(self):
+        print "do_self"
+
+def __exit__(self,exc_type,exc_value,traceback):
+        print "__exit__"
+        print "Error:", exc_type, "info:", exc_value
+
+if __name__ == '__main__':
+    with Mycontex('test context') as f:
+        print f.name
+        f.do_self()
+
+with语句应用场景：
+
+文件操作
+
+进程线程之间互斥对象，例如互斥锁
+
+支持上下文的其他对象
+
+附注：
+
+使用try…except捕获错误还有一个巨大的好处，就是可以跨越多层调用，比如函数main()调用foo()，foo()调用bar()，结果bar()出错了，这时，只要main()捕获到了，就可以处理：
+
+def foo(s):
+    return 10 / int(s)
+
+def bar(s):
+    return foo(s) * 2
+
+def main():
+    try:
+        bar('0')
+    except Exception as e:
+        print('Error:', e)
+    finally:
+        print('finally...')
+
+也就是说，不需要在每个可能出错的地方去捕获错误，只要在合适的层次去捕获错误就可以了。这样一来，就大大减少了写try...except...finally的麻烦。
+
+调用栈：
+
+如果错误没有被捕获，它就会一直往上抛，最后被Python解释器捕获，打印一个错误信息，然后程序退出。来看看err.py：
+
+# err.py:
+def foo(s):
+    return 10 / int(s)
+
+def bar(s):
+    return foo(s) * 2
+
+def main():
+    bar('0')
+
+main()
+
+执行，结果如下：
+
+$ python3 err.py
+Traceback (most recent call last):
+  File "err.py", line 11, in <module>
+    main()
+  File "err.py", line 9, in main
+    bar('0')
+  File "err.py", line 6, in bar
+    return foo(s) * 2
+  File "err.py", line 3, in foo
+    return 10 / int(s)
+ZeroDivisionError: division by zero
+
+出错并不可怕，可怕的是不知道哪里出错了。解读错误信息是定位错误的关键。我们从上往下可以看到整个错误的调用函数链：
+
+错误信息第1行：
+
+Traceback (most recent call last):
+
+告诉我们这是错误的跟踪信息。
+
+第2~3行：
+
+File "err.py", line 11, in <module>
+    main()
+
+调用main()出错了，在代码文件err.py的第11行代码，但原因是第9行：
+
+File "err.py", line 9, in main
+    bar('0')
+
+调用bar(‘0’)出错了，在代码文件err.py的第9行代码，但原因是第6行：
+
+File "err.py", line 6, in bar
+    return foo(s) * 2
+
+原因是return foo(s) * 2这个语句出错了，但这还不是最终原因，继续往下看：
+
+File "err.py", line 3, in foo
+    return 10 / int(s)
+
+原因是return 10 / int(s)这个语句出错了，这是错误产生的源头，因为下面打印了：
+
+ZeroDivisionError: integer division or modulo by zero
+
+根据错误类型ZeroDivisionError，我们判断，int(s)本身并没有出错，但是int(s)返回0，在计算10 / 0时出错，至此，找到错误源头。
+
+出错的时候，一定要分析错误的调用栈信息，才能定位错误的位置。
+
+记录错误：
+
+如果不捕获错误，自然可以让Python解释器来打印出错误堆栈，但程序也被结束了。既然我们能捕获错误，就可以把错误堆栈打印出来，然后分析错误原因，同时，让程序继续执行下去。
+
+Python内置的logging模块可以非常容易地记录错误信息：
+
+# err_logging.py
+
+import logging
+
+def foo(s):
+    return 10 / int(s)
+
+def bar(s):
+    return foo(s) * 2
+
+def main():
+    try:
+        bar('0')
+    except Exception as e:
+        logging.exception(e)
+
+main()
+print('END')
+
+同样是出错，但程序打印完错误信息后会继续执行，并正常退出：
+
+$ python3 err_logging.py
+ERROR:root:division by zero
+Traceback (most recent call last):
+  File "err_logging.py", line 13, in main
+    bar('0')
+  File "err_logging.py", line 9, in bar
+    return foo(s) * 2
+  File "err_logging.py", line 6, in foo
+    return 10 / int(s)
+ZeroDivisionError: division by zero
+END
+
+通过配置，logging还可以把错误记录到日志文件里，方便事后排查。
+
+抛出错误：
+
+2.标准异常和自定义异常
+
+raise语句：
+
+raise语句用于主动抛出异常
+
+语法格式：raise [exception [,args]]
+
+exception：异常
+
+args：描述异常信息的元组
+
+raise TypeError "Test Error"
+> Test Error
+
+raise IOError "File Not Exist"
+> File Not Exist
+
+assert语句：
+
+断言语句：assert语句用于检测表达式是否为真，如果为假，引发AssertionError错误。
+
+语法：assert expression [,args]
+
+expression：表达式
+
+args：判断条件的描述信息
+
+assert 0, 'test assert'
+
+> AssertionError: test assert
+
+python3的写法:
+
+1.arise IOError(‘描述文字’)
+
+2.assert 表达式,’描述文字’
+
+标准异常：Python内建异常，程序执行前就已经存在。
+
+自定义异常：
+
+1.python允许自定义异常，用于描述python中没有涉及的异常情况
+
+2.自定义异常必须继承Exception类
+
+3.自定义异常只能主动触发
+
+自定义异常实例：
+
+# 自定义异常
+# 因为IOError继承自Exception，所以没问题
+class FileError(IOError):
+    pass
+
+# 产生自定义异常
+asserte FileError, ''file Error''
+
+>> FileError: file Error
+
+try…catch…捕获异常：
+
+try:
+    raise FileError, 'Test FileError'
+exceptFileError, e:
+    print e
+
+> Test FileError
+
+更复杂的实例：
+
+class CustomError(Exception):  #定义了一个继承于Exception 的类
+    def __init__(self,info):   #重改了init方法，重改之后，首先传入了一个参数info-错误信息的描述，这样就可以直接把用户定义的一些错误信息，直接使用这个类，统一的接口把它传进来，这样可以使用这个类描述任何错误信息
+        Exception.__init__(self) #首先调用了Exception的init方法去完成自己的一个初始化
+        self.errorinfo =info #新添加了一个变量
+        print id(self)
+
+def __str__(self):#这个方法是为了支撑print语句，打印出用户自己定义的错误信息
+        return "CustomError:%s" % self.errorinfo
+
+try: #对以上定义的类进行测试
+    raise CustomError("test CustomError") #使用参数的形式“”，将错误信息test CustomError传进来，来构建Custom异常对象
+
+except CustomError, e:
+     print "ErrorInfo:%d,%s" %(id(e),e)
+
+>
+139918882121840
+ErrorInfo:139918882121840, CustionError:test CustomError
+
+#输出 id(self)=id(e)
+#当我们主动产生异常，或者因为代码错误引发了标准异常，这时，会首先创建一个异常类的对象，然后再把这个异常抛出来交给python解释器或者try-except语句
+#如果用try-except语句来设置捕获到的异常，这时所产生的异常就会被except处理，异常类的对象就会保存在变量e中，就可以用变量e来分析异常信息
+#以上是异常产生-抛出-截获-分析的过程
+
+3.调式
+
+assert断言：
+
+凡是用print()来辅助查看的地方，都可以用断言（assert）来替代：
+
+def foo(s):
+    n = int(s)
+    assert n != 0, 'n is zero!'
+    return 10 / n
+
+def main():
+    foo('0')
+
+assert的意思是，表达式n != 0应该是True，否则，根据程序运行的逻辑，后面的代码肯定会出错。
+
+如果断言失败，assert语句本身就会抛出AssertionError：
+
+$ python err.py
+Traceback (most recent call last):
+  ...
+AssertionError: n is zero!
+
+logging：
+
+import logging
+logging.basicConfig(level=logging.INFO)
+
+s = '0'
+n = int(s)
+logging.info('n = %d' % n)
+print(10 / n)
+
+# 输出结果
+$ python err.py
+INFO:root:n = 0
+Traceback (most recent call last):
+  File "err.py", line 8, in <module>
+    print(10 / n)
+ZeroDivisionError: division by zero
+
+这就是logging的好处，它允许你指定记录信息的级别，有debug，info，warning，error等几个级别，当我们指定level=INFO时，logging.debug就不起作用了。同理，指定level=WARNING后，debug和info就不起作用了。这样一来，你可以放心地输出不同级别的信息，也不用删除，最后统一控制输出哪个级别的信息。
+
+logging的另一个好处是通过简单的配置，一条语句可以同时输出到不同的地方，比如console和文件。
+
+pdb和pdb.set_trace()：
+
+调试器pdb，让程序以单步方式进行。
+
+pdn.set_trace()，我们只需要import pdb，然后，在可能出错的地方放一个pdb.set_trace()，就可以设置一个断点：
+
+# err.py
+import pdb
+
+s = '0'
+n = int(s)
+pdb.set_trace() # 运行到这里会自动暂停
+print(10 / n)
+
+运行代码，程序会自动在pdb.set_trace()暂停并进入pdb调试环境，可以用命令p查看变量，或者用命令c继续运行。
+
+4.单元测试
+
+如果你听说过“测试驱动开发”（TDD：Test-Driven Development），单元测试就不陌生。
+
+单元测试是用来对一个模块、一个函数或者一个类来进行正确性检验的测试工作。
+
+比如对函数abs()，我们可以编写出以下几个测试用例：
+
+1.输入正数，比如1、1.2、0.99，期待返回值与输入相同；
+
+2.输入负数，比如-1、-1.2、-0.99，期待返回值与输入相反；
+
+3.输入0，期待返回0；
+
+4.输入非数值类型，比如None、[]、{}，期待抛出TypeError。
+
+把上面的测试用例放到一个测试模块里，就是一个完整的单元测试。
+
+如果单元测试通过，说明我们测试的这个函数能够正常工作。如果单元测试不通过，要么函数有bug，要么测试条件输入不正确，总之，需要修复使单元测试能够通过。
+
+单元测试通过后有什么意义呢？如果我们对abs()函数代码做了修改，只需要再跑一遍单元测试，如果通过，说明我们的修改不会对abs()函数原有的行为造成影响，如果测试不通过，说明我们的修改与原有行为不一致，要么修改代码，要么修改测试。
+
+这种以测试为驱动的开发模式最大的好处就是确保一个程序模块的行为符合我们设计的测试用例。在将来修改的时候，可以极大程度地保证该模块行为仍然是正确的。
+
+5.文档测试
+
+如果你经常阅读Python的官方文档，可以看到很多文档都有示例代码。比如re模块就带了很多示例代码：
+
+>>> import re
+>>> m = re.search('(?<=abc)def', 'abcdef')
+>>> m.group(0)
+'def'
+
+可以把这些示例代码在Python的交互式环境下输入并执行，结果与文档中的示例代码显示的一致。
+
+这些代码与其他说明可以写在注释中，然后，由一些工具来自动生成文档。既然这些代码本身就可以粘贴出来直接运行，那么，可不可以自动执行写在注释中的这些代码呢？
+
+答案是肯定的。
+
+当我们编写注释时，如果写上这样的注释：
+
+def abs(n):
+    '''
+    Function to get absolute value of number.
+
+Example:
+
+>>> abs(1)
+    1
+    >>> abs(-1)
+    1
+    >>> abs(0)
+    0
+    '''
+    return n if n >= 0 else (-n)
+
+无疑更明确地告诉函数的调用者该函数的期望输入和输出。
+
+并且，Python内置的“文档测试”（doctest）模块可以直接提取注释中的代码并执行测试。
+
+doctest严格按照Python交互式命令行的输入和输出来判断测试结果是否正确。只有测试异常的时候，可以用…表示中间一大段烦人的输出。
+
+让我们用doctest来测试上次编写的Dict类：
+
+# mydict2.py
+class Dict(dict):
+    '''
+    Simple dict but also support access as x.y style.
+
+>>> d1 = Dict()
+    >>> d1['x'] = 100
+    >>> d1.x
+    100
+    >>> d1.y = 200
+    >>> d1['y']
+    200
+    >>> d2 = Dict(a=1, b=2, c='3')
+    >>> d2.c
+    '3'
+    >>> d2['empty']
+    Traceback (most recent call last):
+        ...
+    KeyError: 'empty'
+    >>> d2.empty
+    Traceback (most recent call last):
+        ...
+    AttributeError: 'Dict' object has no attribute 'empty'
+    '''
+    def __init__(self, **kw):
+        super(Dict, self).__init__(**kw)
+
+def __getattr__(self, key):
+        try:
+            return self[key]
+        except KeyError:
+            raise AttributeError(r"'Dict' object has no attribute '%s'" % key)
+
+def __setattr__(self, key, value):
+        self[key] = value
+
+if __name__=='__main__':
+    import doctest
+    doctest.testmod()
+
+运行python mydict2.py：
+
+$ python mydict2.py
+
+什么输出也没有。这说明我们编写的doctest运行都是正确的。如果程序有问题，比如把getattr()方法注释掉，再运行就会报错：
+
+$ python mydict2.py
+**********************************************************************
+File "/Users/michael/Github/learn-python3/samples/debug/mydict2.py", line 10, in __main__.Dict
+Failed example:
+    d1.x
+Exception raised:
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'Dict' object has no attribute 'x'
+**********************************************************************
+File "/Users/michael/Github/learn-python3/samples/debug/mydict2.py", line 16, in __main__.Dict
+Failed example:
+    d2.c
+Exception raised:
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'Dict' object has no attribute 'c'
+**********************************************************************
+1 items had failures:
+   2 of   9 in __main__.Dict
+***Test Failed*** 2 failures.
+
+注意到最后3行代码。当模块正常导入时，doctest不会被执行。只有在命令行直接运行时，才执行doctest。所以，不必担心doctest会在非测试环境下执行。
+

@@ -1,0 +1,21 @@
+本文参考于运行docker logs -f 容器名时报错，报错信息“cannot touch ‘/var/jenkins_home/copy_reference_file.log
+
+docker 启动jenkins报错：
+
+cannot touch ‘/var/jenkins_home/copy_reference_file.log’: Permission denied
+Can not write to /var/jenkins_home/copy_reference_file.log. Wrong volume permissions?
+
+解决办法：
+
+在docker运行容器的时候加上这么一个参数：-u 0 ，例如:
+
+docker run -d --name lianxi -v /home/lianxi/data:/var/jenkins_home -u 0 jenkins/jenkins
+
+原因：
+
+因为Jenkins镜像内部使用的用户是jenkins，但是我们启动容器时的账号是root，导致没有权限操作内部目录，所以加上参数 -u 0 就能解决了：
+
+-u ：覆盖容器中内置的账号
+
+0：root账号id
+

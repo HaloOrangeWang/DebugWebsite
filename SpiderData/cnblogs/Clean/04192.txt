@@ -1,0 +1,25 @@
+相信很多人写完接口，不管是post还是get请求自己脚本去调用都是正常返回，但是到前端调用就会碰到各种各样的问题，如下图所展示，我这边是python环境。
+
+这时候有两种改法：
+
+第一种是把请求头的两个参数进行设置，修改请求头的返回结果
+
+'headers': {'Access-Control-Allow-Origin': 'http://localhost:3000', "access-control-allow-credentials": "true"}
+
+但是上面那种修改之后发现可以使用了，只能是在前端的本地进行调试，换一个请求的域名，则又会报错。比如说现在的前端环境从本地编程测试环境，你的域名“http://localhost:3000”就要变成相应测试站的域名，这样子改来改去非常麻烦。像我每改一点东西，就要重新将代码上传lambda，贼麻烦。
+
+接下来就说第二种办法：
+
+第二种方法：也是修改请求头，设置如下：
+
+'headers': {'Access-Control-Allow-Origin': '*',
+                    "access-control-allow-credentials": "true"}
+
+但是这么设置前端调用还是会报错，报错的类型：Access-Control-Allow-Origin不能为 * ,当请求的证书模式为“include”时
+
+这时候任务不是接口的问题了，而是前端一个参数的问题，只要设置成false就可以了，因为它默认是true
+
+withCredentials: false
+
+这时候后端前端都可以了，就可以很愉快的使用接口了，结果也可以很愉快的返回了！
+

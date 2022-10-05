@@ -1,0 +1,45 @@
+
+报错原因，找不到 ssl_match_hostname
+
+网上的解决办法是：pip install --upgrade backports.ssl_match_hostname
+实际上并没有用，会提示该模块已经安装在/usr/local/lib/python2.7/dist-packages
+
+root@kali~:#pip2 install --upgrade backports.ssl_match_hostname
+Requirement already up-to-date: 
+backports.ssl_match_hostname in /usr/local/lib/python2.7/dist-packages (3.7.0.1)
+
+卸载重装docker-compose，emmmmm，也是没有用处的。
+
+
+最终问题原因是：
+
+**/usr/local/lib/python2.7/distpackages/docker/transport/ssladapter.py **
+在包路径下找不到 backports包里的ssl_match_hostname模块，
+既然如此，那就让脚本能找到该模块。
+
+
+最终解决办法：
+
+
+方法一：复制模块到包路径下【成功】。
+
+#进入backports模块路径
+cd /usr/local/lib/python2.7/dist-packages
+#复制整个包到transport包路径下
+cp -r backports /usr/local/lib/python2.7/dist-packages/docker/transport
+
+
+问题二
+
+ImportError: No module named shutil_get_terminal_size
+
+
+解决方法
+
+sudo apt install ipython
+
+
+查看版本
+
+sudo docker-compose version
+

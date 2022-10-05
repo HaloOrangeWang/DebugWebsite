@@ -1,0 +1,38 @@
+
+报错日志
+
+ERROR: org.apache.hadoop.hbase.PleaseHoldException: Master is initializing
+        at org.apache.hadoop.hbase.master.HMaster.checkInitialized(HMaster.java:2977)
+        at org.apache.hadoop.hbase.master.HMaster.disableTable(HMaster.java:2524)
+        at org.apache.hadoop.hbase.master.MasterRpcServices.disableTable(MasterRpcServices.java:726)
+        at org.apache.hadoop.hbase.shaded.protobuf.generated.MasterProtos$MasterService$2.callBlockingMethod(MasterProtos.java)
+        at org.apache.hadoop.hbase.ipc.RpcServer.call(RpcServer.java:413)
+        at org.apache.hadoop.hbase.ipc.CallRunner.run(CallRunner.java:130)
+        at org.apache.hadoop.hbase.ipc.RpcExecutor$Handler.run(RpcExecutor.java:324)
+        at org.apache.hadoop.hbase.ipc.RpcExecutor$Handler.run(RpcExecutor.java:304)
+
+
+原因分析
+
+
+解决
+
+<!--进入zk客户端-->
+ZK_HOME/zkCli.sh
+<!--清空hbase-->
+rmr /hbase
+<!--重启hbase-->
+stop-hbase.sh 
+start-hbase.sh
+
+
+验证
+
+<!--进入shell命令-->
+hbase shell
+<!--查看表-->
+list
+
+<!--disable表-->
+disable 'test'
+

@@ -1,0 +1,75 @@
+总结：
+
+在程序中设置的sum属于全局变量,而在函数中没有sum的定义,根据python访问局部变量和全局变量的规则：当搜索一个变量的时候，python先从局部作用域开始搜索，如果在局部作用域没有找到那个变量，那样python就在全局变量中找这个变量，如果找不到抛出异常(NAMEERROR或者Unbound-LocalError，这取决于python版本。)
+
+如果内部函数有引用外部函数的同名变量或者全局变量,并且对这个变量有修改.那么python会认为它是一个局部变量,又因为函数中没有sum的定义和赋值，所以报错。
+
+从下面两个程序看单独的访问或者修改全局变量，并不报错~
+
+#访问全局变量
+#!/usr/bin/python
+importsys
+sum=5
+defadd(a=1,b=3):
+    printa,b
+    print sum  #仅仅访问 
+add(4,8)
+printsum
+[root@rac3python]# python local.py
+48
+5
+5
+
+#修改同名的全局变量，则认为是一个局部变量
+#!/usr/bin/python
+importsys
+sum=5
+defadd(a=1,b=3):
+    print a,b
+         #内部函数有引用外部函数的同名变量或者全局变量,并且对这个变量有修改.那么python会认为它是一个局部变量
+    sum=b+a #在函数内部修改
+    print sum
+add(4,8)
+[root@rac3python]# python local.py
+4 8
+12
+下面的程序就会因为“如果内部函数有引用外部函数的同名变量或者全局变量,并且对这个变量有修改.那么python会认为它是一个局部变量,又因为函数中没有sum的定义和赋值，所以报错
+#!/usr/bin/python
+import sys
+sum=5
+defadd(a=1,b=3):
+    print a,b
+    printsum  #内部函数引用同名变量，并且修改这个变量。python会认为它是局部变量。因为在此处print之前，没有定义sum变量，所以会报错（建议与情况一比较，备注：此处只是比上例先print sum）
+    sum=b+a
+    printsum
+add(4,8)
+print sum
+[root@rac3python]# python local.py
+48
+Traceback(mostrecentcalllast):
+ File"local.py",line10,in?
+   add(4,8)
+ File"local.py",line6,inadd
+   printsum
+UnboundLocalError:localvariable'sum'referencedbeforeassignment
+
+遇到在程序中访问全局变量并且要修改全局变量的值的情况可以使用：global关键字，在函数中声明此变量是全局变量
+#!/usr/bin/python
+importsys
+sum=5
+print'改变之前：sum=',sum
+defadd(a=1,b=3):
+    globalsum
+    print'add 函数中:sum=',sum
+    sum=b+a
+    print'函数中改变之后:sum= ',sum
+add(4,8)
+print'改变之后 sum=',sum
+[root@rac3python]# vim local.py
+改变之前：sum=5
+add函数中:sum=5
+函数中改变之后:sum= 12
+改变之后sum=12
+
+转自 http://blog.csdn.net/my2010sam/article/details/17735159
+

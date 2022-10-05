@@ -1,0 +1,134 @@
+最近想要试用python的一个包Django来搭建一下小网站，选择使用mysql作为数据库，因为之前有在Mac电脑中安装过mysql了，所以按照网上的攻略应该是直接安装mysqlclient就好。
+
+python版本：3.6
+
+mysql版本：8.0.11
+
+命令：pip3 install mysqlclient
+
+报错：
+
+Collecting mysqlclient
+
+Using cached https://files.pythonhosted.org/packages/6f/86/bad31f1c1bb0cc99e88ca2adb7cb5c71f7a6540c1bb001480513de76a931/mysqlclient-1.3.12.tar.gz
+
+Complete output from command python setup.py egg_info:
+
+/bin/sh: mysql_config: command not found
+
+Traceback (most recent call last):
+
+File "<string>", line 1, in <module>
+
+File "/private/var/folders/6z/j_pqvx2d4_g3srblxxd4s6h40000gq/T/pip-install-jel7t89e/mysqlclient/setup.py", line 17, in <module>
+
+metadata, options = get_config()
+
+File "/private/var/folders/6z/j_pqvx2d4_g3srblxxd4s6h40000gq/T/pip-install-jel7t89e/mysqlclient/setup_posix.py", line 44, in get_config
+
+libs = mysql_config("libs_r")
+
+File "/private/var/folders/6z/j_pqvx2d4_g3srblxxd4s6h40000gq/T/pip-install-jel7t89e/mysqlclient/setup_posix.py", line 26, in mysql_config
+
+raise EnvironmentError("%s not found" % (mysql_config.path,))
+
+OSError: mysql_config not found
+
+----------------------------------------
+
+Command "python setup.py egg_info" failed with error code 1 in /private/var/folders/6z/j_pqvx2d4_g3srblxxd4s6h40000gq/T/pip-install-jel7t89e/mysqlclient/
+
+报错中找不到mysql_config，同样在网上查时发现我之前安装好mysql后并未添加环境变量，so，在 ~/.bashrc文件中添加一行
+
+export PATH=/usr/local/mysql/bin:$PATH
+
+将mysql加到环境变量中。
+
+再次安装时却报了另一个错误：
+
+Collecting mysqlclient
+
+Using cached https://files.pythonhosted.org/packages/6f/86/bad31f1c1bb0cc99e88ca2adb7cb5c71f7a6540c1bb001480513de76a931/mysqlclient-1.3.12.tar.gz
+
+Installing collected packages: mysqlclient
+
+Running setup.py install for mysqlclient ... error
+
+Complete output from command /Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6 -u -c "import setuptools, tokenize;__file__='/private/var/folders/6z/j_pqvx2d4_g3srblxxd4s6h40000gq/T/pip-install-1rvo8f_1/mysqlclient/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /private/var/folders/6z/j_pqvx2d4_g3srblxxd4s6h40000gq/T/pip-record-lef9wgf_/install-record.txt --single-version-externally-managed --compile:
+
+running install
+
+running build
+
+running build_py
+
+creating build
+
+creating build/lib.macosx-10.6-intel-3.6
+
+copying _mysql_exceptions.py -> build/lib.macosx-10.6-intel-3.6
+
+creating build/lib.macosx-10.6-intel-3.6/MySQLdb
+
+copying MySQLdb/__init__.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb
+
+copying MySQLdb/compat.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb
+
+copying MySQLdb/connections.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb
+
+copying MySQLdb/converters.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb
+
+copying MySQLdb/cursors.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb
+
+copying MySQLdb/release.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb
+
+copying MySQLdb/times.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb
+
+creating build/lib.macosx-10.6-intel-3.6/MySQLdb/constants
+
+copying MySQLdb/constants/__init__.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb/constants
+
+copying MySQLdb/constants/CLIENT.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb/constants
+
+copying MySQLdb/constants/CR.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb/constants
+
+copying MySQLdb/constants/ER.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb/constants
+
+copying MySQLdb/constants/FIELD_TYPE.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb/constants
+
+copying MySQLdb/constants/FLAG.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb/constants
+
+copying MySQLdb/constants/REFRESH.py -> build/lib.macosx-10.6-intel-3.6/MySQLdb/constants
+
+running build_ext
+
+building '_mysql' extension
+
+creating build/temp.macosx-10.6-intel-3.6
+
+/usr/bin/clang -fno-strict-aliasing -Wsign-compare -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -arch i386 -arch x86_64 -g -Dversion_info=(1,3,12,'final',0) -D__version__=1.3.12 -I/usr/local/mysql/include -I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m -c _mysql.c -o build/temp.macosx-10.6-intel-3.6/_mysql.o
+
+_mysql.c:1894:3: error: use of undeclared identifier 'my_bool'
+
+my_bool recon = reconnect;
+
+^
+
+_mysql.c:1895:58: error: use of undeclared identifier 'recon'
+
+mysql_options(&self->connection, MYSQL_OPT_RECONNECT, &recon);
+
+^
+
+2 errors generated.
+
+error: command '/usr/bin/clang' failed with exit status 1
+
+----------------------------------------
+
+Command "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6 -u -c "import setuptools, tokenize;__file__='/private/var/folders/6z/j_pqvx2d4_g3srblxxd4s6h40000gq/T/pip-install-1rvo8f_1/mysqlclient/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /private/var/folders/6z/j_pqvx2d4_g3srblxxd4s6h40000gq/T/pip-record-lef9wgf_/install-record.txt --single-version-externally-managed --compile" failed with error code 1 in /private/var/folders/6z/j_pqvx2d4_g3srblxxd4s6h40000gq/T/pip-install-1rvo8f_1/mysqlclient/
+
+参考网上博文：https://www.cnblogs.com/JiangLe/p/7839910.html
+
+说是mysql版本原因，遂将8.0.11版本的mysql删除，重新下载5.7.22版本，安装完成后重新运行命令“pip3 install mysqlclient”，安装成功。
+

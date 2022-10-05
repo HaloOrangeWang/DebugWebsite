@@ -1,0 +1,379 @@
+使用Pycharm，遇到unresolved reference的解决办法
+
+在编程过程中，遇到很多错误，提示都是unresolved reference。
+
+问题原因：Pycharm默认该项目的根目录为source目录，每次import都是从source目录开始查找
+
+解决步骤：
+
+在进行问题排查后，从stackoverflow上的相关问题得到启发，具体步骤如下：
+
+1、点击菜单栏上的File -> Setting ->Build,Executing,Development ->Console -> Python Console
+
+2、将Add source roots to PYTHONPATH勾选上
+
+3、点击Apply
+
+如下：
+
+也可以参考这个朋友写的办法：https://www.cnblogs.com/lesleysbw/p/6825671.html
+
+1. 将A文件夹 设置为source，
+
+2. 确保将soucers加入到PYTHONPATH：
+
+如果还没有解决，需要继续按下面方法处理：
+
+1.检查一下看到底用的是python2还是python3；
+
+2.如果用的是python3，则这么写：
+
+from urllib.request import urlopen
+req = urlopen(...)
+
+或者：
+
+import urllib.request
+req = request.urlopen(...)
+
+3.如果用的是python3，则这么写：
+
+from urllib import urlopen
+
+或者：
+
+urllib.urlopen
+
+代码如下：
+
+import urllib
+import json
+
+request  = urllib.urlopen("http://api.example.com/endpoint?client_id=id&client_secret=secret")
+response = request.read()
+json = json.loads(response)
+
+if json['success']:
+     ob = json['response']['ob']
+     print ("The current weather in Seattle is %s with a temperature of %d") % (ob['weather'].lower(), ob['tempF'])
+
+else:
+     print ("An error occurred: %s") % (json['error']['description'])
+
+request.close()
+
+关于爬虫，这里有一些可以学习参考，以下内容摘自：https://www.jianshu.com/p/d4ebace4ddcf：
+
+抓取网页
+ 1）直接抓取网页法
+
+import urllib.request
+response=urllib.request.urlopen("http://www.baidu.com") 
+print (response.read())                     
+# 一定要有服务协议，http://，在文件协议file:中最后要有/
+
+注意导入模块一定要写成urllib.request，urllib.parse等等。urllib2模块在Python3已拆分更名为urllib.request和urllib.error。
+ 写成import urllib会出错：'module' object has no attribute 'request'，因为程序中具体调用到了urlopen类，urllib里面是没有的，要用具体的urllib.request模块来调用它。
+
+写成from urllib import request，也错误： name 'urllib' is not defined。要写成如下形式：
+
+from urllib.request import urlopen
+response=urlopen("http://www.baidu.com ")  
+#不能写成response=urllib.request.urlopen("http://www.baidu.com ")
+print (response.read())
+
+参见NameError: name 'urlopen' is not defined
+
+写成具体的如from urllib.request import Request ，Request是模块中的一个类。
+ 因为urllib是一个包，request是里面具体的一个模块，而urlopen、Request是request里面的一个方法。
+
+2）构造Request法：
+
+import urllib.request
+req = urllib.request.Request('http://python.org/')  #构造请求
+response = urllib.request.urlopen(req)          #服务器响应请求
+the_page = response.read()
+
+urlopen参数可以传入一个Request请求对象,用你要请求的地址url或表单数据data创建一个Request对象，通过调用urlopen并传入Request对象，将返回一个相关请求response对象，这个应答对象如同一个文件对象，所以你可以在Response中调用.read()。
+
+python模块导入及属性
+ Python 2和3在包内import时的语法差异问题
+ 让你的python程序同时兼容python2和python3
+ Python之美[从菜鸟到高手]--urllib源码分析
+ urllib2模块 异常处理
+
+数据传输
+ 1）GET方式：GET方式是直接以链接形式访问，链接中包含了所有的参数，参数要写到网址上面，直接构建一个带参数的URL出来即可。
+
+import urllib.request
+import urllib.parse
+values={
+'act':'login',
+'login[email]':"923123551@qq.com", "login[password]":"xxxx"} data=urllib.parse.urlencode(values) #编码工作 url="http://www.jianshu.com/sign_in" req=url+"?"+data response=urllib.request.urlopen(req).read() #发送请求、接受反馈信息、读取反馈的信息。这是由直接抓取网页法实现抓取网页 data=response.decode('UTF-8') #解码 print (data.encode('gb18030')) print (urllib.request.urlopen(req).geturl()) #返回获取的真实的URL
+
+问题：TypeError: Can't convert 'dict' object to str implicitly”
+ 这是尝试连接非字符串值与字符串导致的。当req=url+"?"+data时，data是个字典类型，前面都是字符串，所以才有data=urllib.parse.urlencode(values)对其它数据类型的编码工作。
+ 17个新手常见Python运行时错误1
+ URL中“#” “？” &“”号的作用
+
+2）POST方法
+
+import urllib.request
+import urllib.parse
+values={'username':"12345671@qq.com",'password':'xxxx'} data=urllib.parse.urlencode(values) binary_data=data.encode('utf-8') req=urllib.request.Request("http://www.jianshu.com/sign_in",binary_data) #发送请求，传送表单数据，这是用构造Request法来抓取网页的 response=urllib.request.urlopen(req) #接受反馈的信息 data=response.read() #读取反馈信息 data=data.decode('UTF-8') print (data.encode('gb18030')) print (response.geturl()) #返回获取的真实的URL
+
+Python3中urllib详细使用方法(header,代理,超时,认证,异常处理)
+
+错误：
+ 1） urllib2.HTTPError:HTTP Error 502：Bad Gateway
+ 可能是那个网站阻止了这类的访问，只要在请求中加上伪装成浏览器的header就可以了
+
+2）POST data should be bytes or an iterable of bytes. It cannot be of type str.
+ 所以要加binary_data=data.encode('utf-8')这句。
+ python3爬虫POST传递参数问题
+
+encode the text data into bytes data，he online example is in Python 2, where str and bytes are essentially the same thing.
+ Briefly, in Python 3 you need explicit conversion between str (which is a Unicode string) and bytes (which is an encoded string). That's one of the major differences between Python 2.x and 3.x.
+
+3） 参见：UnicodeEncodeError: 'gbk' codec can't encode character ...
+ 网络数据流的编码： 比如获取网页，那么网络数据流的编码就是网页的编码。需要使用decode解码成unicode编码。f.write(txt) ，其中那么txt是一个字符串，它是通过decode解码过的字符串。
+ 目标文件的编码：要将网络数据流的编码写入到新文件，那么我么需要指定新文件的编码。在windows下面，新文件的默认编码是gbk，这样的话，python解释器会用gbk编码去解析我们的网络数据流，这样就产生了矛盾。
+ 记住目标文件的编码是导致很多编码问题的罪魁祸首，解决的办法就是，改变目标文件的编码：
+ 如f = open("out.html","w",encoding='utf-8') ，获得系统的默认编码，用import sys print sys.getdefaultencoding()。
+ 例如如果你用的是python3，那么要输出到“控制台”，或者是输出到文件时均要编码。编码成"gb18030",比如s="中文"print s.encode("gb18030")。
+ 如上例中，如果写成如下这样，有时会有gbk的错误，则要先解码，再编码。而有时如下却正确，这就要测试不同的网址了，因为不同的服务器有自己的编码格式。
+
+response = urllib.request.urlopen(req)
+the_page = response.read()
+print(the_page.decode("utf8"))
+
+注意print(response.read())与print(response.read().decode("utf-8"))输出显示的格式不同，后者解码后显示，更加直观。
+ bytes' object has no attribute 'encode' ,这个有时就要看decode('UTF-8')与encode('gb18030')是否都运用上了。
+
+发送数据和Headers：
+ agent就是请求的身份，如果没有写入请求身份，那么服务器不一定会响应，所以可以在headers中设置agent.agent的值可以在网页审查元素的network查看，可以刷新。
+
+import urllib.request
+import urllib.parse
+values={'user_name':'80945763@qq.com', 'pass_word':'xinxin'} user_agent='Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36' headers={"User-agent":user_agent,'referer':"https://passport.csdn.net/account/login?ref=toolbar"} url="https://passport.csdn.net/account/login?ref=toolbar" data=urllib.parse.urlencode(values) #注意只是针对values进行了解码，而headers没有。 bianary_data=data.encode('utf-8') req=urllib.request.Request(url,bianary_data,headers) response=urllib.request.urlopen(req,timeout=10) print (response.read().decode("utf-8")) print(response.geturl())
+
+其中headers加入了referer是反盗链，对付防盗链，服务器会识别headers中的referer是不是它自己，如果不是，有的服务器不会响应，所以我们还可以在headers中加入referer。timeout=10 是超时设定。
+
+headers还有一些属性，这些有必要可以审查浏览器的headers内容，在构建时写入同样的数据即可。
+
+使用代理
+ 可以在程序前面加上如下代码，就可以使用代理，也可不用null_proxy_handler那语句。有些网站会检测某一段时间某个IP 的访问次数，如果访问次数过多，它会禁止你的访问，而使用代理服务器，会常换ip，绕过网站的防御。
+
+enable_proxy=True
+proxy_handler=urllib.request.ProxyHandler({"http":"1.9.110.1:8080"}) 
+ #代理处理程序，代理对象，注意函数调用对象的大小写
+null_proxy_handler=urllib.request.ProxyHandler({})
+if enable_proxy: opener=urllib.request.build_opener(proxy_handler) else: #构建代理 opener=urllib.request.build_opener(null_proxy_handler) urllib.request.install_opener(opener) #运行代理
+
+代理服务器有很多：'sock5': 'localhost:1080'，有个疑问，自己把代理写错，还是可以运行，why？怎么确保自己登陆上了？
+
+超时
+ urlopen方法为urlopen(url, data, timeout)，第三个参数就是timeout的设置，可以设置等待多久超时，为了解决一些网站实在响应过慢而造成的影响。
+ urlopen('http://www.baidu.com', timeout=10)
+ 或者
+
+import socket
+import urllib.request
+# timeout in seconds
+timeout = 2
+socket.setdefaulttimeout(timeout)
+# this call to urllib.request.urlopen now uses the default timeout # we have set in the socket module req = urllib.request.Request('http://www.baidu.com') print(urllib.request.urlopen(req).read().decode('utf-8'))
+
+其它DebugLog、PUT方法等。
+
+其它DebugLog、PUT方法等。
+
+异常处理：
+ URLError可能产生的原因：网络无连接，即本机无法上网；连接不到特定的服务器；服务器不存在。
+ HTTPError是URLError的子类，在urlopen方法发出一个请求时，服务器上都会对应一个应答对象response，其中它包含一个数字”状态码”。HTTPError实例产生后会有一个code属性，这就是是服务器发送的相关错误号。
+
+异常处理：
+ URLError可能产生的原因：网络无连接，即本机无法上网；连接不到特定的服务器；服务器不存在。
+ HTTPError是URLError的子类，在urlopen方法发出一个请求时，服务器上都会对应一个应答对象response，其中它包含一个数字”状态码”。HTTPError实例产生后会有一个code属性，这就是是服务器发送的相关错误号。
+
+import urllib.request
+from urllib.error import HTTPError,URLError  #要调用urllib.error模块
+req = urllib.request.Request('http://www.xxx.com') try: response=urllib.request.urlopen(req) except HTTPError as e: #注意HTTPError别写错了， print("http error:",e.reason) print("httperror code:",e.code) except URLError : print("url error:",URLError.reason) else: print(response.read().decode('utf-8'))
+
+cookie
+ cookielib模块的主要作用是提供可存储cookie的对象，可以利用本模块的CookieJar类的对象来捕获cookie并在后续连接请求时重新发送，比如可以实现模拟登录功能。该模块主要的对象有CookieJar、FileCookieJar、MozillaCookieJar、LWPCookieJar
+
+1）利用CookieJar对象实现获取cookie的功能，并存储到变量中，打印变量。
+
+import urllib.request
+import http.cookiejar
+cookie=http.cookiejar.CookieJar() #声明一个CookieJar对象实例来保存cookie
+handler=urllib.request.HTTPCookieProcessor(cookie)
+# 利用urllib.request库的HTTPCookieProcessor对象来创建cookie
+opener=urllib.request.build_opener(handler)
+# 通过handler来构建opener response=opener.open("http://www.jianshu.com/") # 此处的open方法同urllib.request的urlopen方法，也可以传入request for item in cookie: print('name=',item.name) print('value=',item.value)
+
+零基础自学用Python 3开发网络爬虫(四): 登录
+ 注意pytohn3中是加载http.cookiejar，http.cookies模块，不是python2中的import cookielib。
+ 注意CookieJar()是属于http.cookiejar模块，而不是http.cookies模块，否则会报错： 'module' object has no attribute 'CookieJar'
+
+2）保存Cookie到文件，用FileCookieJar模块
+
+import urllib.request
+import http.cookiejar
+filename=('chen.txt')  #设置保存cookie的文件，必须放在同级目录下
+cookie=http.cookiejar.MozillaCookieJar(filename)
+handler=urllib.request.HTTPCookieProcessor(cookie)
+opener=urllib.request.build_opener(handler)
+response=opener.open("http://www.baidu.com/") cookie.save(ignore_discard=True, ignore_expires=True) #保存cookie到文件 for item in cookie: print('name=',item.name) print('value=',item.value)
+
+保存的文件，可以写清具体地址：filename=('c:\python34\xxx.txt')
+ 如果没有save语句，cookies不会写入文件里，在python文档中有这样一条：FileCookieJar implements the following additional methods：
+ FileCookieJar.save(filename=None,ignore_discard=False, ignore_expires=False)，所以save对象就是Save cookies to a file.
+ ignore_discard的意思是即使cookies将被丢弃也将它保存下来，ignore_expires的意思是如果在该文件中cookies已经存在，则覆盖原文件写入。
+
+当我这样来调用save时：
+ http.cookiejar.MozillaCookieJar.save(filename,ignore_discard=True, ignore_expires=True)，
+ 报错：AttributeError: 'str' object has no attribute 'filename'
+ 最后点击提示地方，找到了save函数，其中有如下内容：
+
+def save(self, filename=None, ignore_discard=False, ignore_expires=False) if self.filename is not None: filename = self.filename
+
+原来是MozillaCookieJar方法忘记添加了(),以及filename：
+ http.cookiejar.MozillaCookieJar(filename).save(ignore_discard=True, ignore_expires=True)
+
+3）从文件中获取Cookie并访问
+ 把Cookie保存到文件中了，如果以后想使用，可以利用下面的方法来读取cookie并访问网站，这个方法就是模拟一个人的账号登录网站。
+
+import urllib.request
+import http.cookiejar
+filename="c:\python34\ccode1.txt"
+cookie=http.cookiejar.MozillaCookieJar()
+#创建MozillaCookieJar实例对象
+cookie.load(filename,ignore_discard=True,ignore_expires=True) #从文件中读取cookie内容到变量 req=urllib.request.Request('http://www.jianshu.com') handler=urllib.request.HTTPCookieProcessor(cookie) opener=urllib.request.build_opener(handler) response=opener.open(req) print (response.read())
+
+4）利用cookie模拟网站登录
+ 创建一个带有cookie的opener，在访问登录的URL时，将登录后的cookie保存下来，然后利用这个cookie来访问其他网址。
+
+import urllib.request
+import http.cookiejar
+import urllib.parse
+filename='chen.txt'
+cookie=http.cookiejar.MozillaCookieJar(filename)
+value={'user_name':"xiaomin","password":"xinxin"} url="http://www.baidu.com/login_in" data=urllib.parse.urlencode(value) req=url+'?'+data handler=urllib.request.HTTPCookieProcessor(cookie) response=urllib.request.build_opener(handler).open(req) #模拟登录，并把cookie保存到变量 cookie.save(ignore_discard=True,ignore_expires=True) #保存cookie到文件中 print(response.read()) cookie.load(ignore_discard=True,ignore_expires=True) new_url="http://www.baidu.com/news/login_in" # 利用cookie请求访问另一个网址 result=urllib.request.build_opener(handler).open(new_url) print("now the new request is:") print(result.read())
+
+正则表达式
+ 正则表达式的语法规则，规则字符串用来表达对字符串的一种过滤逻辑。
+ 规则:字符、预定字符集、数量词、边界匹配、逻辑分组、特殊构造。
+ 特点：Python里数量词默认是贪婪的，我们一般使用非贪婪模式来提取。
+ 反斜杠、
+ 1）re.match(pattern, string[, flags])：在参数中我们传入了原生字符串对象，re.compile方法编译生成一个pattern对象，然后我们利用这个对象来进行进一步的匹配。match还有很多属性。
+
+import re
+pattern=re.compile(r"good")  # 将正则表达式编译成Pattern对象
+result=re.match(pattern,"goodo job") 
+#使用re.match匹配文本，获得匹配结果，无法匹配时将返回None if result: print (result.group()) # 使用Match获得分组信息 else: print("match fail")
+
+2）re.search(pattern, string[, flags])
+ match()函数只检测re是不是在string的开始位置匹配，search()会扫描整个string查找匹配，match（）只有在0位置匹配成功的话才有返回，如果不是开始位置匹配成功的话，match()就返回None。
+
+out=re.search(r'(\w+) (\w+).',"hello world!")
+print(out.group())                  》hello world!
+print (out.string)                    》hello world!
+print(out.lastgroup)               》none
+pattern=re.compile(r"good")
+print(pattern.search("xgoodo job").group()) #pattern.search调用 》good
+
+3）re.split(pattern, string[, maxsplit])
+ 按照能够匹配的子串将string分割后返回列表。maxsplit用于指定最大分割次数，不指定将全部分割。
+ re.findall:搜索string，以列表形式返回全部能匹配的子串;
+ re.finditer搜索string，返回一个顺序访问每一个匹配结果（Match对象）的迭代器。
+ re.sub(pattern, repl, string[, count])
+ 使用repl替换string中每一个匹配的子串后返回替换后的字符串。
+ re.subn(pattern, repl, string[, count])
+ 返回 (sub(repl, string[, count]), 替换次数)。
+
+result=re.split(r'(\d+)',"we4fdsf7fef89eli")
+print (result)
+》》》['we', '4', 'fdsf', '7', 'fef', '89', 'eli'] out=re.findall(r'(\d+)',"we4fdsf7fef89eli") print (out) 》》》['4', '7', '89'] out1=re.finditer(r'(\d+)',"we4fdsf7fef89eli") for i in out1: print(i.group(),end=' ') #输出空格 》》》4 7 89 s="we4f wobik,good job" pattern=re.compile(r'(\w+) (\w+)') outcome=re.sub(pattern,r'\2 \1',s) print (outcome) 》》》wobik we4f,job good print (re.subn(pattern,r'\1 \2',s)) 》》》('we4f wobik,good job', 2) def func(m): return m.group(1).title() + ' '+m.group(2).title() 》》》We4F Wobik,Good Job
+
+注意title要有括号，否则：
+ unsupported operand type(s) for +: 'builtin_function_or_method' and 'str'
+ 注意group()也要有括号，否则会打印出地址：
+ built-in method group of _sre.SRE_Match object at 0x01830F20>
+ 4）
+
+
+实战
+
+爬取丑事百科
+ |@|获取网页HTML代码
+
+import urllib.request
+url="http://www.qiushibaike.com/hot/page/1"
+req=urllib.request.Request(url)
+response=urllib.request.urlopen(req)
+print (response.read().encode('utf-8'))
+
+1）结果： HTTP Error 500: Internal Server Error, 内部服务器错误，可能是headers验证的问题，所以加headers。
+ 解决方法：
+
+import urllib.request
+import urllib.parse
+url="http://www.qiushibaike.com/hot/page/1"
+user_agent="Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36"
+headers={'User_Agent':user_agent,'Referer':'http://www.qiushibaike.com/hot/page/1'} req=urllib.request.Request(url) response=urllib.request.urlopen(req,headers) print (response.read().encode('utf-8'))
+
+2）错误：
+ ValueError: Content-Length should be specified for iterable data of type <class 'dict'>
+ 原来是headers用法用错了，放在了urlopen的位置，也没有弄懂Request类的调用方法。在调试中查看该类，才知道其用法。
+ 并且在Traceback顶部还有一个错误：TypeError: memoryview: dict object does not have the buffer interface，这已经指明了是个类型错误。
+ 解决方法：
+
+Headers={xxxxx}
+req=urllib.request.Request(url,headers=Headers)
+
+参见：Content-Length should be specified for iterable data of type <class 'dict'>
+ TypeError: 'str' does not support the buffer interface
+ 3）结果：
+ urllib.error.HTTPError: HTTP Error 500: Internal Server Error
+ 最后输入了其它网址却可以输出结果？用静觅的代码访问却可以？这个只是如下的不同，为何有这个差异呢？
+
+user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
+
+当我模仿她的写法，删掉了user_agent后面的AppleWebKit等内容，运行成功！
+ 根据User Agent参数的各个字段Mozilla/5.0/4.0-AppleWebKit/Chrome/Safar来确定/判断客户端使用什么浏览器
+ HTTP协议之http状态码详解
+
+from urllib.error import HTTPError, URLError
+import urllib.request
+page = 1
+url = 'http://www.qiushibaike.com/hot/page/' + str(page) user_agent="Mozilla/5.0 (Windows NT 6.1)" Headers={'User-Agent':user_agent,'referer':'http://pos.baidu.com/wh/o.htm?ltr=&cf=u'} req=urllib.request.Request(url,headers=Headers) try : response=urllib.request.urlopen(req) data=response.read().decode('utf-8') print (data.encode('gb18030')) except HTTPError as e: print (e.code,e.reason) except URLError as e: print (e.reason)
+
+4）结果
+ 仔细验证，其实不是AppleWebKit的问题，而是用户代理的问题：
+ 'User_Agent':user_agent，应该写成'User-Agent':user_agent，
+ 变量名写错了，是小横杠呀！不然用下划线对于有些网站有时会出问题：500！
+
+|@|提取页面文字内容
+ 1）用浏览器的审查元素，分析内容元素属性，发现网站段子内容有如下格式：
+ 每一个段子都是<div class=”article [block] untagged mb15″ id=”…”>…</div>
+ 我们想获取其中的发布人，发布日期，段子内容，以及点赞的个数，就会用到正则表达式来匹配筛选。
+
+.*? 是一个固定的搭配，.和*代表可以匹配任意无限多个字符，加上？表示使用非贪婪模式进行匹配，也就是我们会尽可能短地做匹配。 (.*?)代表一个分组，在这个正则表达式中我们匹配了五个分组，在后面的遍历item中，item[0]就代表第一个(.*?)所指代的内容，item[1]就代表第二个(.*?)所指代的内容，以此类推。 re.S 标志代表在匹配时为点任意匹配模式，点 . 也可以代表换行符。
+ 2）结果如下：
+
+import urllib.request
+import re
+from urllib.error import HTTPError,URLError
+page = 1 url = 'http://www.qiushibaike.com/hot/page/' + str(page) user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)' headers = { 'User-Agent' : user_agent } try: request = urllib.request.Request(url,headers = headers) response = urllib.request.urlopen(request) content = response.read().decode('utf-8') #解码 pattern = re.compile('<div.*?author">.*?<a.*?<img.*?>(.*?)</a>.*?<div.*?'+ 'content">(.*?)<!--(.*?)-->.*?</div>(.*?)<div class="stats.*?class="number">(.*?)</i>',re.S) # +是连接两行的字符串 items = re.findall(pattern,content) #全文匹配 for item in items: #外层的for是针对items每个用户集 haveImg = re.search("img",item[3]) if not haveImg: #item[i]是针对每个具体用户内部的属性 print (item[0],item[1],item[2],item[4]) #剔除带有图片的内容，判断item[3]中是否含有img标签 except HTTPError as e: print (e.code) except URLError as e: print (e.reason)
+
+关于正则表达式的书写，以及item[ ]层次多少，可以宏观看网页整体的层次结构，看每一级的内容，元素，看哪些要，哪些不要。
+
+3）代码优化与封装
+ 采用面向对象模式，引入类和方法，将代码做一下优化和封装。并对程序进行人性化设计。
+
+本文参考：静觅 Python爬虫学习系列教程
+
+</end>
+

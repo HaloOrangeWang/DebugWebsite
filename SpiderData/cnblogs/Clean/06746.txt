@@ -1,0 +1,97 @@
+
+python3.7.3安装
+
+CentOS 7上默认安装的python版本是2.7.5，系统自带的旧版本python被系统很多其他软件环境依赖，因此不能卸载原Python，但可以再安装另一个Python版本
+
+
+安装前的准备
+
+
+修改Setup文件，启动ssl模块
+
+
+安装python3
+
+在./configure过程中，如果没有加上--with-ssl参数时，默认安装的软件涉及到ssl的功能不可用，但pip3过程需要ssl模块
+
+
+安装pip
+
+一般情况下，Linux系统自带的Python2没有安装pip，Python3.7.3自带pip，可以进入python3.7.3的bin目录下进行查看
+
+
+安装虚拟环境 Virtualenv
+
+什么是Virtualenv
+
+Virtualenv用于创建虚拟的Python环境，一个专属于项目的Python环境，不同的项目可以创建不同的Pthon环境（依赖项和版本等），各个环境之间完全隔离，不需要担心和其他项目的Python环境以及全局的Python环境发生冲突。
+
+
+使用pip命令安装virtualenv模块
+
+
+新建虚拟环境
+
+直接使用命令virtualenv可以创建一个独立的Python运行环境，加上参数--no-site-packages，已经安装到系统Python环境中的第三方包都不复制到独立环境中
+
+
+运行虚拟环境
+
+
+退出虚拟环境
+
+
+其他命令
+
+查看当前虚拟机环境目录 worken
+
+切换虚拟环境 workon venv2
+
+退出虚拟环境 deactivate
+
+删除虚拟环境 rmvirtualenv venv
+
+
+虚拟环境管理工具
+
+
+问题与解决
+
+（1） ./Modules/_ssl.c:57:25: 致命错误：openssl/rsa.h：没有那个文件或目录
+
+错误原因 尝试编译的程序使用OpenSSL，但是缺少和OpenSSL链接的文件（库和头文件）
+
+解决办法 yum install openssl-devel
+
+（2）pip install -i virtualenv DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7
+
+已停止维护，用pip3 https://www.jianshu.com/p/7f1b9a203045
+
+（3）Python3.7安装后pip pip3 pip3.7的区别
+
+https://blog.csdn.net/u013077984/article/details/85333713
+
+（4）执行virtualenv --version命令提示-bash: virtualenv: command not found
+
+按照如下方式找到virtualenv并创建软链接，再执行上述查询版本信息的命令
+
+（5）安装虚拟环境/usr/bin/python: No module named virtualenvwrapper
+
+错误原因 系统上安装了2.7和3.x两个版本的python，在安装时使用的是sudo pip3 install virtualenvwrapper，在运行的时候默认使用的是python2.x，但在python2.x中不存在对应的模块
+
+在bashrc文件里面加入如下命令
+
+（6）AttributeError: module 'enum' has no attribute 'IntFlag'
+
+错误原因 国内源更新不及时，安装的包少东西
+
+（7）python安装虚拟环境出现错误：Error while finding module specification for 'virtualenvwrapper.hook_loader'
+
+解决办法1 python3 -m pip install --user virtualenvwrapper --upgrade
+
+解决办法2 没遇到问题（5）需要用本方法解决
+
+因为在virtualenvwrapper.sh中有如下代码，脚本会默认使用python2环境，但是virtualenvwrapper装在了python3环境中，所以会有上面的报错
+
+直接将VIRTUALENVWRAPPER_PYTHON默认值修改为/usr/bin/python3即可
+

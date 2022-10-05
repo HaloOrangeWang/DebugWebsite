@@ -1,0 +1,6 @@
+加载checkpoint文件时，报错
+
+tensorflow.python.framework.errors_impl.NotFoundError: /home/xzw/models/research/object_detection/remove_coach/runs/1555550450/checkpoints; No such file or directory
+
+据错误提示，本人推测：将本地checkpoint目录传入 tf.train.latest_checkpoint() 后，会调用 get_matching_files() 返回checkpoint路径，而此路径是绝对路径，迁移学姐代码需要修改为本地路径，故编辑checkpoint文件修改路径
+

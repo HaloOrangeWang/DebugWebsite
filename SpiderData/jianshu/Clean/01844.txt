@@ -1,0 +1,27 @@
+某天在Sublime Text上安装MagicPython，按照说明在ignore_package里面添加了python，也就是禁用了默认python语法渲染改用了MagicPython。
+
+然后想要方便运行Python，安装了SublimeREPL，设置好快捷键RUN current file，然后报错了：
+
+error loading syntax file: packages/Python/python.tmlanguage, file not found.
+
+猜测应该是Python语法渲染被禁用了，repl找不到这个组件来渲染结果，修改SublimeREPL的代码，路径为：Packages\SublimeREPL\sublimerepl.py。看到代码160行：
+
+# class ReplView (结果窗口)
+if syntax:
+    view.set_syntax_file(syntax)
+
+set_syntax_file的作用应该就是指定语法渲染使用的配置文件，这里可以添加个if == python.tmlanguage判断，为了简单直接改为：
+
+view.set_syntac_file("Package/Text/Plain text.tmLanguage")
+
+保存测试，运行Python文件没有出现报错信息了，结果页面也是按照Plain的方式进行渲染的，问题解决。
+
+2019-1-25 修改配置看到还有个办法
+
+路径Packages\SublimeREPL\config\Python\Main.sublime-menu，代码53行开始：
+
+# 修改默认python
+"cmd": ["C:\\Anaconda2\\python.exe", "-u", "$file_basename"],
+# 55行修改渲染语法
+"syntax": "Packages/Text/Plain text.tmLanguage",
+

@@ -1,0 +1,105 @@
+写在前面，rabbitmq因为版本问题，传入的参数的位置可能不同，可以查看源码，一一对应进行传入。
+
+send.py
+
+# encoding: utf-8
+# Date: 2019/11/25 20:43
+
+__author__ = 'ryan.liu'
+
+import pika
+
+def test(hash_value):
+    # 1， 连接RabbitMq服务器
+    rabbit_username = 'admin'
+    rabbit_password = 'admin'
+    credentials = pika.PlainCredentials(rabbit_username, rabbit_password)
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='127.0.0.1', port=5672, credentials=credentials))
+
+# channel是进行消息读写的通道
+    channel = connection.channel()
+
+# 2，创建名为queue的队列
+    channel.queue_declare(queue='queue')
+
+# 3，配置basic_pulish
+    channel.basic_publish(
+        '',
+        'queue',
+        hash_value)
+
+# 4，关闭连接
+    connection.close()
+    # return make_response({})
+
+receive.py
+
+# encoding: utf-8
+# Date: 2019/11/25 20:43
+
+__author__ = 'ryan.liu'
+
+import pika
+
+rabbit_username = 'admin'
+rabbit_password = 'admin'
+credentials = pika.PlainCredentials(rabbit_username, rabbit_password)
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='127.0.0.1', port=5672, credentials=credentials))
+channel = connection.channel()
+
+# 声明队列
+channel.queue_declare(queue='queue')
+
+# 3，定义一个回调函数，当获得消息时，Pika库调用这个回调函数来处理消息
+def callback(ch, method, properties, body):
+    print("receive.py: receive message", body)
+
+# 4，从队列接收消息
+# channel.basic_consume(
+#     queue='queue',
+#     callback,
+#     no_ack=True)
+
+channel.basic_consume(
+    "queue",
+    callback,
+    auto_ack=True
+)
+
+# 5，等待消息
+channel.start_consuming()
+
+今天犯了个错，导致mq一直报错，错误提示为：
+
+OSError: [Errno 9] Bad file descriptor
+
+错误代码如下：
+
+rabbit_username = 'admin'
+rabbit_password = 'admin'
+credentials = pika.PlainCredentials(rabbit_username, rabbit_password)
+connection = pika.BlockingConnection(
+  pika.ConnectionParameters(host='127.0.0.1', port=5672, credentials=credentials))
+
+channel = connection.channel()
+
+channel.queue_declare(queue='queue')
+
+def test(hash_value):
+    channel.basic_publish(
+        '',
+        'queue',
+        hash_value)
+
+connection.close()
+    # return make_response({})
+
+这是python基础的作用域的问题。
+
+rabbitmq报错
+
+pika.exceptions.IncompatibleProtocolError: StreamLostError: ('Transport indicated EOF',)
+
+因为我是用docker起的rabbitMQ服务，我把端口映射到8181端口，但事实上docker启动MQ的时候，会自动启动5672端口，所以在配置的时候，port使用默认的即可，而不是8181。
+

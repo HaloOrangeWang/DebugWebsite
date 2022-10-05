@@ -1,0 +1,21 @@
+Python 报错：ValueError: binary mode doesn't take an encoding argument
+
+在运行文件操作相关功能时报错：ValueError: binary mode doesn't take an encoding argument
+
+上代码：
+
+>>> fp = open("a.txt","rb+",encoding="utf-8")#rb+操作时不支持指定encoding参数
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: binary mode doesn't take an encoding argument
+
+原因分析：rb+操作时不支持指定encoding参数
+
+解决：
+
+改成如下方法即可
+
+>>> fp = open("a.txt","rb+")#注意：a.txt文件编码格式需为“ANSI”
+>>> fp.close()
+

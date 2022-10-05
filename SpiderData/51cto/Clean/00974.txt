@@ -1,0 +1,18 @@
+​
+
+今天准备将某SQLite数据库的内容导出到文本文档(*.txt)中，设计的Python程序如下：
+
+代码上面应该没有什么问题，Python使用的是版本2.7，但是在运行的时候出现了异常错误UnicodeEncodeError：
+
+本来以为数据读取错误，我特将fp.write改成print，结果数据全部读取并显示在命令控制台上了，证明代码是没有问题的，仔细看了下异常信息，貌似是因为编码问题：Unicode编码与ASCII编码的不兼容，其实这个Python脚本文件是由utf-8编码的，同时SQlite3数据库存取的也是UTF-8格式，Python默认环境编码通过下面的方法可以获取：
+
+基本上是ascii编码方式，由此Python自然调用ascii编码解码程序去处理字符流，当字符流不属于ascii范围内，就会抛出异常（ordinal not in range(128)）。
+
+解决的方案很简单，修改默认的编码模式，很多朋友会想到setdefaultencoding，是的，我们可以通过sys.setdefaultencoding(‘utf-8′)来将当前的字符处理模式修改为utf-8编码模式，值得注意的是，如果单纯这么调用的话，Python会抛出一个AttributeError异常：
+
+竟然说sys没有setdefaultencoding的方法，其实sys是有这个方法的，但是要请出她老人家需要调用一次reload(sys)，很奇怪，是么？如果有谁知道原因的话，还望不吝赐教。
+
+好了，通过上面短短的三行，我们算是很好的解决了这个问题了，同样的方式也可以应用到UnicodeDecodeError上。当然这个技巧来自于网络，我还找到其他特别的办法，但是感觉还是这个比较靠谱，有童鞋说：我们将Python 2.x系列升级到Python 3.x系列就可以了，小小的问题犯不着升级吧，毕竟2到3还是要有个过渡的。
+
+最后，我将文章一开始的代码更改如下：
+

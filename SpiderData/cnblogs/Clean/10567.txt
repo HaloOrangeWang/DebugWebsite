@@ -1,0 +1,21 @@
+在使用PyCharm时，在PyCharm的Python Console中 import matplotlib.pyplot as plt时，会出现:
+
+Backend Qt5Agg is interactive backend. Turning interactive mode on.
+
+或者其他跟Qt5Agg相关的错误，导致程序中断。
+
+虽然现在还不得而知Qt5Agg的问题如何解决，但是一种可以绕过这种问题（我的环境是：PyCharm 2020.3、PyQt5 5.9、 PyQt4 5.15.2、matplotlib 3.3.2、 ipython 7.19.0、Python 3.8.6 ）。
+
+解决方案：
+
+修改matplotlibrc 文件。该文件位于：
+
+“C:\Program Files\Python\Python38\Lib\site-packages\matplotlib\mpl-data"
+
+“C:\Program Files\Python\Python38\Lib\site-packages\matplotlib\mpl-data"
+
+如果想在import matplotlib.pylab as plt 时，不出现Backend Qt5Agg is interactive backend. Turning interactive mode on.
+可以修改上述文件中大致101行，将#interactive : False 修改为interactive : True 保存即可。
+
+重启PyCharm，再次import matplotlib.pylab as plt 时，不会再报错。
+

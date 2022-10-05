@@ -1,0 +1,68 @@
+
+eval()介绍
+
+eval()函数十分强大，官方demo解释为：将字符串str当成有效的表达式来求值并返回计算结果。
+
+它可以把list,tuple,dict和string相互转化。
+
+在接口自动化中经常用到。
+
+比如啊，我们把测试数据写成数组的格式存放于excle表中，当读取出来时就是str格式，此时用eval，就可以把取到的值转换为正常的数组或者字典的格式了。
+
+
+NameError: name ‘null’ is not defined是怎么出现的
+
+a = "{"a":1,"b":2,"c":null}"
+a = eval(a)
+print(a)
+
+在转换的字符串中，存在null时，就会出现NameError: name ‘null’ is not defined这个错误。
+
+
+解决方法
+
+巧用 replace()方法。
+
+将字符串中的null替换掉！
+
+str = "{"a":1,"b":2,"c":null}"
+str.replace("null", "123456")
+a = eval(str)
+print(a)
+
+这样子就能够将字符串中的null替换掉了。就能够正常的转换了。
+
+
+应用场景
+
+我为什么要这么做呢？
+
+因为我在做自动化测试的时候，需要在数据库中取出一个
+
+[{"a":1,"b":2,"c":null},{"a":1,"b":2,"c":null},{"a":1,"b":2,"c":null}]
+
+这样子格式的数据来和预期值做对比。
+
+我的预期值只是a,所以我要在这个数据中，把a取出来。
+
+所以就需要上述的这种操作了！
+
+a = "[{"a":1,"b":2,"c":null},{"a":1,"b":2,"c":null},{"a":1,"b":2,"c":null}]"
+hlist = eval(a)
+
+在这一步的时候因为有null存在，所以报错。
+
+a = "[{"a":1,"b":2,"c":null},{"a":1,"b":2,"c":null},{"a":1,"b":2,"c":null}]"
+a = a.replace("null", "123456")
+hlist = eval(a)
+testhope = 1
+if testhope == hlist[0]["a"]:
+    pass
+
+这样子就可以了，因为null被替换为了123456.
+
+
+竟然还有这种操作！
+
+为我的机智点个赞！
+

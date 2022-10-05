@@ -1,0 +1,74 @@
+一、前言
+
+相信大家在使用 selenium 做网页自动化时，会遇到如下这样的一个场景：
+
+在你使用 get 访问某一个网址时，会在页面中弹出如上图所示的弹出框。
+
+首先想到是利用 Alert 类来处理它。
+
+然而，很不幸，Alert 类处理的结果就是没有结果，并不能够将这个弹出框关闭掉。
+
+无法用处理 alert 的方式来关闭该弹出框，不关闭又无法对页面进行其他操作，怎么办呢？
+
+二、解决方案
+
+用键盘的 Enter 键来关闭该弹出框。由于 send_keys 方法只能是针对元素来发送 selenium 的 key 值，而当前案例无法定位到该弹出框。所以使用 PyKeyboad 来实现用 python 操作键盘
+
+(一) 具体解决步骤
+
+步骤 1、想要使用 PyKeyboard，需要先安装：pywin32->pyHook->PyUserInput
+
+(1) 安装 pywin32
+
+安装国外源的 pywin32，会经常遇到因为超时导致安装失败。因此建议用国内源来安装。
+
+可通过 cmd 来安装国内源的 pywin32，指令如下：
+
+pip install pypiwin32
+
+(2) 如何安装 pyHook
+
+下载对应版本的 pyHook 后，通过 cmd 进入到该 pyHook 的文件夹路径后，输入：
+
+pip install PyHook3-1.6.1-cp37-cp37m-win_amd64.whl
+
+说明：我使用的是python3.7，匹配的pyhook版本为PyHook3-1.6.1-cp37-cp37m-win_amd64.whl，对应的版本可以去github上https://github.com/JiangweiX/pyhook3进行下载【感谢作者提供的安装包】
+
+(3) 如何安装 PyUserInput
+
+通过 cmd，输入：
+
+pip install PyUserInput
+
+说明：如果报错请更新pip版本
+
+当在执行pip更新时，出现失败或警告，再次执行pip命令报错时，分别按顺序执行以下2条命令即可完成修复（使用管理员打开cmd去执行以下命令）。
+python -m ensurepip
+python -m pip install --upgrade pip
+
+步骤 2、py 文件中导入 PyKeyboard，并输入 Enter 键：
+
+#导入PyKeyboard
+
+from pykeyboard import PyKeyboard
+
+说明：在导入的时候提示没有PyKeyboard类，ImportError: cannot import name ‘PyKeyboard‘ from ‘pykeyboard‘报错解决办法，可参考以下文章解决：https://blog.csdn.net/ljm1972/article/details/114230557
+
+#实例化对象
+
+k=PyKeyboard()
+
+#按下Enter键
+
+k.press_key(k.return_key) # 其中return_key就是Enter键
+
+若需要按下其他键，可选中 PyKeyboard 后，按 ctrl+b，查看 special_key_assignment 函数下的属性的说明。
+
+本文最开头截图完整的处理代码如下：
+
+相关资源：python实现浏览器自动化_python浏览器自动化,python浏览器自动...
+
+————————————————
+版权声明：本文为CSDN博主「丁当响」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_31995251/article/details/114400240
+

@@ -1,0 +1,43 @@
+ubuntu下，默认的python环境是 python --version  ==>>2.7.x   python3 --version ==> 3.5.2
+
+krdoc只支持python2.7.x
+
+升级 pip(python2.7的)==>>导致报错。
+
+sudo gedit /usr/bin/pip  ==》对比改
+
+from pip import __main__
+if __name__ == '__main__':
+ sys.exit(__main__._main())
+
+django.db.utils.OperationalError: attempt to write a readonly database 错误。
+
+1.看看setting文件下
+
+DATABASES = { 
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }   
+}
+
+2.将django项目中的数据库文件(db.sqlite3)和数据库文件所在文件夹提升权限
+
+chmod 777 db.sqlite3
+
+cd ..
+
+chmod 777  *
+
+python manage.py migrate
+
+创建用户名：
+
+python manage.py createsuperuser
+
+运行项目：sudo ./manage.py runserver 0.0.0.0:8000
+
+构建：
+
+mkdocs build
+

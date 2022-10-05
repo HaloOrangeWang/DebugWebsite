@@ -1,0 +1,68 @@
+错误过程：当“make”编译文件时报错No rule to make target `/usr/lib/libpython2.7.so', needed by `python/_pywraps2.so'.  Stop.
+
+解决过程：
+
+1、首先输入命令以下代码获取其出错原因
+
+make --debug
+
+错误提示如下，很明显是项目工程找不到它，原因有两个，一是系统没有装libpython2.7.os；二是装了，路径错误，或者名字不对
+
+File '/usr/lib/libpython2.7.so' does not exist.
+Must remake target '/usr/lib/libpython2.7.so'.
+
+2、解决
+
+首先测试问题属于哪一种，使用以下代码去模糊查找可以参考链接：https://blog.csdn.net/Robot_Starscream/article/details/88564694
+
+2、1第一种错误解决
+
+apt-cache search libpython2.7*
+
+找到：“libpython2.7-dev”进行安装
+
+sudo apt-get install libpython2.7-dev
+
+安装成功后查看安装结果，如果出现
+
+0 upgraded, 0 newly installed, 0 to remove and 754 not upgraded.
+
+则说明你已经安装，则属于第二种错误；如果之前没有安装，现在安装后可以重新进行make编译，应该会通过：https://blog.csdn.net/Robot_Starscream/article/details/88564694
+
+2、2第二种错误解决
+
+第二种错误，即路径错误，或者名字不对。
+
+首先确认你安装的libpython2.7.so的位置；
+
+#cd /usr
+#locate libpython2.7.so
+
+我的环境会输出：
+
+/usr/lib/python2.7/config-x86_64-linux-gnu/libpython2.7.so
+/usr/lib/x86_64-linux-gnu/libpython2.7.so.1
+/usr/lib/x86_64-linux-gnu/libpython2.7.so.1.0
+
+linux系统有个功能叫软连接，不懂得可以百度，大概就是通过软连接可以访问不在同一个文件夹下的文件。
+
+建立一个软链接：
+
+sudo ln -s /usr/lib/python2.7/config-x86_64-linux-gnu/libpython2.7.so /usr/lib/libpython2.7.so
+
+如果出现错误： ln: failed to create symbolic link '/usr/lib/x86_64-linux-gnu/libGL.so' : File exists
+
+则删除已有链接： sudo rm  /usr/lib/x86_64-linux-gnu/libGL.so
+
+重新执行“建立一个软连接”下的代码。
+
+再次编译就会通过。
+
+本文参考链接：https://blog.csdn.net/Robot_Starscream/article/details/88564694
+
+以下博客我都尝试过，没有成功，但列出来供大家参考：
+
+https://blog.csdn.net/m_zhangJingDong/article/details/81100218
+
+https://blog.csdn.net/vbLittleBoy/article/details/21012991
+

@@ -1,0 +1,20 @@
+启动服务器时:python manage.py runserver 
+ 错误信息: 
+ Traceback (most recent call last): 
+ File “manage.py”, line 10, in 
+ execute_from_command_line(sys.argv) 
+ File “/usr/local/lib/python2.7/dist-packages/django/core/management/init.py”, line 385, in execute_from_command_line 
+ utility.execute() 
+ File “/usr/local/lib/python2.7/dist-packages/django/core/management/init.py”, line 354, in execute 
+ django.setup() 
+ File “/usr/local/lib/python2.7/dist-packages/django/init.py”, line 21, in setup 
+ apps.populate(settings.INSTALLED_APPS) 
+ File “/usr/local/lib/python2.7/dist-packages/django/apps/registry.py”, line 89, in populate 
+ “duplicates: %s” % app_config.label) 
+ django.core.exceptions.ImproperlyConfigured: Application labels aren’t unique, duplicates: admin 
+ 注:错误提示和c/c++不一样，最后一条记录是最准确的。如上黑体加粗部分。 
+ 解决思路:项目目录下settings.py 文件，注释掉其中重复的django.contrib.admin即可。
+
+
+另外，第一次执行python manage.py runserver时，先需要执行python manage.py migrate,数据库迁移。
+

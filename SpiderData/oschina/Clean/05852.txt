@@ -1,0 +1,8 @@
+curl报错，一般是DNS解析问题，修改linux的DNS  vi  /etc/resolv.conf
+
+Can't use function return value in write context
+
+通过定位代码行发现，这个实际是php的empty()函数报错，PHP5.5版本以后，empty函数参数必须为variable(变量)，不能是其它函数的返回值，包括str_replace,trim等等
+
+所以只要把里面的函数赋值给一个变量，再用empty(变量) 进行判断就好了，以前经常用PHP5.3的朋友应该不会遇到这种错误
+

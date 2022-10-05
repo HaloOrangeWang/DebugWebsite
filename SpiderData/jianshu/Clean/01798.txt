@@ -1,0 +1,80 @@
+
+mysqlclient ( MySQLdb ) 缺少libmysqlclient.18.dylib 报错
+
+
+报错： image not found
+
+mac 10.11.6 系统上，当 django 进行 makemigrations/migrate 的过程中。如果在 使用 python2 对应的 mysql-python 库，或者使用 python3 对应的 mysqlclient 库的时候，会出现报错 image not found ，主要是因为libmysqlclient.18.dylib没有加载。
+
+import _mysql
+ImportError: dlopen(/usr/local/lib/python2.7/site-packages/_mysql.so, 2): Library not loaded: /usr/local/lib/libmysqlclient.18.dylib
+  Referenced from: /usr/local/lib/python2.7/site-packages/_mysql.so
+  Reason: image not found
+
+
+image not found 解决办法
+
+解决办法是找到 libmysqlclient.18.dylib，再用sudo ln -s命令软连接到 /usr/local/lib下面去。（注意这里使用的是mac os 10.11.6，mysql 5.6）
+
+在终端中输入
+mdfind libmysqlclient | grep .18.
+
+返回
+/usr/local/mysql-5.6.35-macos10.12-x86_64/lib/libmysqlclient.18.dylib
+
+拷贝这个文件地址
+
+在终端中输入
+
+mdfind libmysqlclient | grep .18.
+
+返回
+
+/usr/local/mysql-5.6.35-macos10.12-x86_64/lib/libmysqlclient.18.dylib
+
+拷贝这个文件地址
+
+使用软连接
+sudo ln -s [刚才查到并拷贝的地址] /usr/local/lib/libmysqlclient.18.dylib
+
+比如可以填为：
+sudo ln -s /usr/local/mysql/lib/libmysqlclient.18.dylib /usr/local/lib/libmysqlclient.18.dylib
+
+如果/usr/local/ 目录下没有 /lib/ 目录的话，就新建一个该目录。
+$ cd /usr/local/
+$ sudo mkdir lib
+
+至此就可以在 django 中使用 mysql-python（python2) 或者 mysqlclient （python3）迁移数据了。
+
+使用软连接
+
+sudo ln -s [刚才查到并拷贝的地址] /usr/local/lib/libmysqlclient.18.dylib
+
+比如可以填为：
+
+sudo ln -s /usr/local/mysql/lib/libmysqlclient.18.dylib /usr/local/lib/libmysqlclient.18.dylib
+
+如果/usr/local/ 目录下没有 /lib/ 目录的话，就新建一个该目录。
+
+$ cd /usr/local/
+$ sudo mkdir lib
+
+至此就可以在 django 中使用 mysql-python（python2) 或者 mysqlclient （python3）迁移数据了。
+
+
+以下为参考内容：
+
+If encountered a problem with lacking of libmysqlclient.18.dylib:
+
+download mysql 5.6 from official link: https://dev.mysql.com/downloads/mysql/
+
+install it
+
+in terminal - mdfind libmysqlclient | grep .18.
+
+copy the output
+
+sudo ln -s [the output from previous command] /usr/local/lib/libmysqlclient.18.dylib
+
+http://stackoverflow.com/questions/34536914/pythons-mysqldb-can-t-find-libmysqlclient-dylib-with-homebrewed-mysql
+

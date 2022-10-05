@@ -1,0 +1,13 @@
+一台ubuntu 16.04服务器（事后证明阿里云上的FreeBSD 10.1版本也是一样），在经历了update之后，忽然在用navicat for MySQL连接时报错无法连接（SSH终端连接正常），错误信息为：Server does not support diffie-hellman group1-sha1 for keyexchange，谷歌一番找到几个方法，最终用下面的方法解决。
+
+打开/etc/ssh/sshd-config文件，在适当位置加入
+
+KexAlgorithms diffie-hellman-group1-sha1,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
+Ciphers 3des-cbc,blowfish-cbc,aes128-cbc,aes128-ctr,aes256-ctr
+
+保存后运行
+
+ssh-keygen -A
+
+最后重启ssh 服务，问题解决。
+

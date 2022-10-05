@@ -1,0 +1,63 @@
+目录一.[服务端]，报错：error: Unable to use libevent二.[服务端]，有mailx12-4，报OpenSSL错误解决方法三.[服务端]，报错configure: error: Unable to use libpcre (libpcre check failed)四.[服务端]，WEB页面php参数部分修改后不刷新五.[服务端]web界面错误，无法访问数据库
+
+目录
+
+一.[服务端]，报错：error: Unable to use libevent
+
+二.[服务端]，有mailx12-4，报OpenSSL错误解决方法
+
+三.[服务端]，报错configure: error: Unable to use libpcre (libpcre check failed)
+
+四.[服务端]，WEB页面php参数部分修改后不刷新
+
+五.[服务端]web界面错误，无法访问数据库
+
+
+一.[服务端]，报错：error: Unable to use libevent
+
+编译安装zabbix-3.4.1或以上 ./confgure的时候出现以下错误
+
+configure: error: Unable to use libevent (libevent check failed)
+
+解答：
+
+需要devel包进行编译
+
+yum install libevent-devel 即可
+
+
+二.[服务端]，有mailx12-4，报OpenSSL错误解决方法
+
+更新补丁：
+
+wget http://www.linuxfromscratch.org/patches/blfs/7.6/mailx-12.4-openssl_1.0.0_build_fix-1.patch
+
+patch -Np1 -i mailx-12.4-openssl_1.0.0_build_fix-1.patch
+
+
+三.[服务端]，报错configure: error: Unable to use libpcre (libpcre check failed)
+
+解决方法：
+
+yum -y install pcre* libpcre*
+
+
+四.[服务端]，WEB页面php参数部分修改后不刷新
+
+需要重启php-fpm和web服务器，比如nginx或者httpd。
+
+如果还不行，可以编写phpinfo文件
+
+vim var/www/html/phpinfo.php
+
+访问http://127.0.0.1/phpinfo.php
+
+查看修改的参数是否对应，如果不对应，则证明php-fpm没有读取/etc/php.ini，一般源码安装的php-fpm会这样。
+
+那就find查找php.ini，去看它读取的是哪个。修改那个
+
+
+五.[服务端]web界面错误，无法访问数据库
+
+提供Web服务器用户对conf /目录具有写入权限，配置文件将被自动保存，并且可以立即进入下一步。
+

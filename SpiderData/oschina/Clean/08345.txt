@@ -1,0 +1,112 @@
+
+1.
+
+　　提示Check if the DISPLAYvariable is set.    Failed<<<<
+
+　　
+
+　　解决方案：
+
+　　#xhost +  //切换到root用户输入
+
+　　#su – Oracle  //切换到oracle用户
+
+　　$./runInstaller  //执行安装程序
+　　xhost 是用来控制X server访问权限的。通常当你从hostA登陆到hostB上运行hostB上的应用程序时，
+
+　　做为应用程序来说，hostA是client,但是作为图形来说，是在hostA上显示的，需要使用hostA的Xserver,所以hostA是
+
+　　server.因此在登陆到hostB前，需要在hostA上运行xhost + 来使其它用户能够访问hostA的Xserver.
+
+　　xhost + 是使所有用户都能访问Xserver.
+
+　　xhost + ip使ip上的用户能够访问Xserver.
+
+　　xhost + nis:user@domain使domain上的nis用户user能够访问
+
+　　xhost + inet:user@domain使domain上的inet用户能够访问。
+
+
+2.报错内容OUI-10035，OUI-10033
+
+　　1.OUI-10035:You do not have permission to write to the inventory location.
+
+　　OR
+
+　　2.OUI-10033:The inventory location /u01/app/oraInventory set by the previousinstallation session is no longer 　　　　　　accessible. Do you still want to continue bycreating a new inventory? Note that you may lose the products installed in 　　theearlier session.
+
+
+　　2-1 报错原因
+
+　　导致出现这个问题的原因已经在提示中说得非常明确，原因是“存放inventory的位置权限不足”。
+
+　　问题处理也同样简单，将/u01/app目录的读写权限授权给oracle用户。
+
+
+　　2-2 处理方法
+
+　　$chown -R oracle:oinstall /u01/app
+
+　　$chmod -R 755 /u01/app
+
+　　然后重新启动OUI进行安装即可。
+
+
+3.安装的过程出现OUI-25031的错误界面
+
+　　主要是IP地址和主机名不对应，因为oracle不是直接获取IP地址的，而是通过解析主机名来获取IP的
+
+　　修改2个地方：
+
+　　#vi /etc/sysconfig/network
+
+　　hostname=newhostname
+
+　　#vi /etc/hosts
+
+名字要对应
+
+
+4.安装过程中遇到乱码：
+
+　　这是因为oracle不支持中文造成的。你可以先使用命令
+
+　　export将环境临时换成英文，然后再安装。这个环境变量的修改只是临时的，重启后或者使用oracle用户登录时会自己换回来的
+
+
+5.安装过程中出现INS-32031，INS-32033错误：
+
+　　[INS-32031]Invalid inventorylocation
+
+　　[INS-32033]Central Inventorylocation is not vritable
+
+　　解决办法：修改/home/oracle_11的权限
+
+　　chown -R grid. /oracle/app/ 就行
+
+
+6.安装过程中出现INS 41112
+
+　　配置互信节点
+
+　　关闭防火墙 selinux
+
+　　centos7 关闭
+
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config　　
+
+　　[root@rac1 ~]# setenforce 0
+
+　　systemctl stop firewalld.service
+
+　　systemctl disable firewalld.service
+
+　　systemctl status firewalld.service
+
+　　centos 6
+
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
+service iptables stop
+
+　
+

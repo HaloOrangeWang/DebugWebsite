@@ -1,0 +1,71 @@
+问题描述：使用CIFAR-10彩色图像数据集进行训练，按照定义图片输入数据的方式来定义输入层。根据图片的大小，输入层的形状设置成[1, 32, 32]，结果在训练的时候报错。
+
+问题描述：使用CIFAR-10彩色图像数据集进行训练，按照定义图片输入数据的方式来定义输入层。根据图片的大小，输入层的形状设置成[1, 32, 32]，结果在训练的时候报错。
+
+报错信息：
+
+报错信息：
+
+<ipython-input-5-fb9e47c67b84> in train(use_cuda, train_program, params_dirname)
+     37         num_epochs=EPOCH_NUM,
+     38         event_handler=event_handler,
+---> 39         feed_order=['pixel', 'label'])
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/contrib/trainer.py in train(self, num_epochs, event_handler, reader, feed_order)
+    403         else:
+    404             self._train_by_executor(num_epochs, event_handler, reader,
+--> 405                                     feed_order)
+    406 
+    407     def test(self, reader, feed_order):
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/contrib/trainer.py in _train_by_executor(self, num_epochs, event_handler, reader, feed_order)
+    481             exe = executor.Executor(self.place)
+    482             reader = feeder.decorate_reader(reader, multi_devices=False)
+--> 483             self._train_by_any_executor(event_handler, exe, num_epochs, reader)
+    484 
+    485     def _train_by_any_executor(self, event_handler, exe, num_epochs, reader):
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/contrib/trainer.py in _train_by_any_executor(self, event_handler, exe, num_epochs, reader)
+    510                                       fetch_list=[
+    511                                           var.name
+--> 512                                           for var in self.train_func_outputs
+    513                                       ])
+    514                 else:
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in run(self, program, feed, fetch_list, feed_var_name, fetch_var_name, scope, return_numpy, use_program_cache)
+    468 
+    469         self._feed_data(program, feed, feed_var_name, scope)
+--> 470         self.executor.run(program.desc, scope, 0, True, True)
+    471         outs = self._fetch_data(fetch_list, fetch_var_name, scope)
+    472         if return_numpy:
+
+EnforceNotMet: Enforce failed. Expected framework::slice_ddim(x_dims, 0, rank + 1) == framework::slice_ddim(label_dims, 0, rank + 1), but received framework::slice_ddim(x_dims, 0, rank + 1):384 != framework::slice_ddim(label_dims, 0, rank + 1):128.
+Input(X) and Input(Label) shall have the same shape except the last dimension. at [/paddle/paddle/fluid/operators/cross_entropy_op.cc:37]
+PaddlePaddle Call Stacks:
+
+问题复现：在定义输入层的时候，使用输入层接口fluid.layers.data定义图像输入层，参数shape设置成[1, 32, 32]，结果就会报错。错误代码如下：
+
+def inference_network():
+    images = fluid.layers.data(name='pixel', shape=[1, 32, 32], dtype='float32')
+    predict = vgg_bn_drop(images)
+    return predict
+
+解决问题：使用输入层接口fluid.layers.data定义图像输入层时，shape参数要满足输入格式是[通道数, 宽, 高]，出现上面的错误是因为通道数写错了。彩色图是有三个通道的，所以因为是3而不是1。
+
+def inference_network():
+    images = fluid.layers.data(name='pixel', shape=[3, 32, 32], dtype='float32')
+    predict = vgg_bn_drop(images)
+    return predict
+
+问题拓展：图片有单通道的灰度图，还要三通道的彩色图，所以在定义输入层的形状的时候要根据图片是否是彩色图片来设置图片的通道数。彩色图的三个通道分别是RGB，分别表示红色、绿色、蓝色。
+
+问题拓展：图片有单通道的灰度图，还要三通道的彩色图，所以在定义输入层的形状的时候要根据图片是否是彩色图片来设置图片的通道数。彩色图的三个通道分别是RGB，分别表示红色、绿色、蓝色。
+
+问题分析：神经网络在处理图像数据时，通常将图像数字看成相应的多维矩阵，此时不同维度的含义就很重要的了，维度弄错了，神经网络处理的数据就完成不一样了，此时训练出来的模型就完全与自身预期不相符。
+
+问题分析：神经网络在处理图像数据时，通常将图像数字看成相应的多维矩阵，此时不同维度的含义就很重要的了，维度弄错了，神经网络处理的数据就完成不一样了，此时训练出来的模型就完全与自身预期不相符。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

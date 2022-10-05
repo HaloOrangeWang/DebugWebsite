@@ -1,0 +1,22 @@
+1、报错：
+
+　　File "D:\Python\Python37-32\lib\site-packages\django\views\debug.py", line 332, in get_traceback_html
+
+　　t = DEBUG_ENGINE.from_string(fh.read())　　
+
+　　UnicodeDecodeError: 'gbk' codec can't decode byte 0xa6 in position 9737: illegal multibyte sequence
+
+2、解决：
+
+　　打开django/views下的debug.py文件，转到line331行：
+
+　　　with Path(CURRENT_DIR, 'templates', 'technical_500.html').open() as fh
+
+　　将其改成：
+
+　　　　with Path(CURRENT_DIR, 'templates', 'technical_500.html').open(encoding="utf-8") as fh
+
+就成功了。
+
+　
+

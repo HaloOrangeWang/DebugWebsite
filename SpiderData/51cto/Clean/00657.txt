@@ -1,0 +1,50 @@
+花了好长时间一直在搞这个
+
+源代码：
+
+一直报如下错误：
+
+分析原因：
+
+总以为没有导入requests库，一直在网上搜索各种的导入库方法（下载第三方的requests库，用各种命令工具安装），还是报错
+
+后来找到一个命令pip install requests，说明安装python3的时候，已经自动勾选安装了requests库了
+
+进入python的安装目录查看，pip等均已自带了（太浪费精力了）
+
+后来无意间看到有人说，如果各种都配置好了，还是报错，有可能你的python程序目录中某个文件名字与库名字一样，
+
+所以试着改了下文件名，把之前与库名相同的文件删除，再次允许，成功了
+
+代码：
+
+#!/usr/bin/env python
+
+#coding:utf-8
+
+import requests
+
+url = 'http://www.baidu.com'
+
+data = requests.get(url)
+
+print(data)
+
+print(data.text)  #这里.text等同于read()
+
+code = data.encoding
+
+print(code)
+
+page_status = data.status_code
+
+print(page_status)
+
+再次执行：
+
+---------------------
+
+作者：jiaoli82
+
+版权声明：本文为博主原创文章，转载请附上博文链接！
+

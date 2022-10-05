@@ -1,0 +1,14 @@
+最近在使用paramiko,原本好好的代码，突然在连接linux报错下面这个问题，百度下，好像都没有一个实际的解决办法，简单追了下代码，顺手写一下解决办法，如何你有更好的解决办法，欢迎评论，
+
+报错问题如下
+
+一个 workaround 办法如下
+
+原因大致如下：
+
+paramiko 认为它正在连接一个ssh agent，并尝试使用该ssh agent连接报错，通过加入allow_agent=False ,可以绕过这个问题
+
+2021-12-6 后续原因追查
+
+paramiko的sshclient   会识别环境变量里的 SSH_AUTH_SOCK参数，然后尝试去启动agent ,就出错了
+

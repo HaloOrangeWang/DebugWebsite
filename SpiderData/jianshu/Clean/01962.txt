@@ -1,0 +1,41 @@
+这个错误提示是没有模块django，为什么会抱着个错误呢。
+
+首先检查是否安装了django，没有的话自己安装，安装的教程很多，不解释
+
+如果已经安装，那么在你的/Library/Python/2.7/site-packages/目录下会看到你的django模块。
+
+如果没有的话，有两种可能：
+
+1、你电脑有多个python版本，Django和其他版本的python关联了，解决方法是保留一个版本的python
+
+2、你Mac安装了anaconda，anaconda是Python版本管理工具。而你安装的django关联到了anaconda下的python，既然这样workspace setting下的路径修改为
+
+"python.pythonPath": "/anaconda2/bin/python"
+
+当然task.json也要做出相应的修改。
+
+当然首先确定anaconda下是否有安装python，
+
+执行命令
+
+conda info --envs
+
+查看是否安装有python，没有的话，就要在anaconda下先安装python了
+
+安装方法：
+
+# 添加Anaconda的TUNA镜像
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+# TUNA的help中镜像地址加有引号，需要去掉
+
+# 设置搜索时显示通道地址
+conda config --set show_channel_urls yes
+# 创建一个名为python27的环境
+conda create --name python27 python=2.7
+
+# 安装好后，使用activate激活某个环境
+activate python27 # for Windows
+source activate python27 # for Linux & Mac
+
+然后返回vscdoe开发环境就不回有报错了
+

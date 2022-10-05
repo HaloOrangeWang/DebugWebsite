@@ -1,0 +1,74 @@
+
+导入包报错的解决方法
+
+参考链接
+
+首先，知道一下几个概念：
+
+项目：就是整个大文件夹，项目
+
+包：下一级文件夹，不过包都要有__init__.py，这样才是一个包
+
+模块：模块就是.py文件
+
+├─project
+│  │  test2.py
+│  │  test3.py
+│  │  
+│  ├─package
+│  │      __init__.py
+│  │      test1.py
+│  │      test4.py
+│  │      
+│  └─package2
+│          __init__.py
+│          test5.py
+
+如上所示，其中project就是项目；package和package2就是包，因为它们有__init__.py；test1.py和test4.py是包package中的模块，且是同级模块；test5是包package2中的模块；test2.py和test3.py是和package同级的模块
+
+各种情况分析：
+
+模块处于同级目录，并且不在包下（test3调用test2）：
+ 如test2中有一个常数a=2，test3要调用test2中的a。可以用import test2.a或者from test2 import a。
+ import后面必须是模块的名字（import module name）（from 模块名字 import 变量）
+
+模块处于同级目录，并且不在包下（test3调用test2）：
+ 如test2中有一个常数a=2，test3要调用test2中的a。可以用import test2.a或者from test2 import a。
+ import后面必须是模块的名字（import module name）（from 模块名字 import 变量）
+
+模块处于同级目录，并且在同一个包下（test4调用test1）：
+ 如test1中有a=‘i am sucess!’，test4要调用test1中的a。
+ 在pycharm中，直接import package.test1 as test1，然后再使用a就可以了，这是因为pycharm有默认设置，但是如果使用vscode或者命令行就不可以，所以要自己添在test4中加代码。如下：
+
+模块处于同级目录，并且在同一个包下（test4调用test1）：
+ 如test1中有a=‘i am sucess!’，test4要调用test1中的a。
+ 在pycharm中，直接import package.test1 as test1，然后再使用a就可以了，这是因为pycharm有默认设置，但是如果使用vscode或者命令行就不可以，所以要自己添在test4中加代码。如下：
+
+import sys, os
+base_path = os.path.dirname(os.path.dirname(
+                            os.path.abspath(__file__)))
+sys.path.append(base_path)
+
+两个同级包下的两个模块（test5调用test1）：
+ 如test5要调用test1中的东西，也要添加上面那段代码，不然也是会报错
+
+两个同级包下的两个模块（test5调用test1）：
+ 如test5要调用test1中的东西，也要添加上面那段代码，不然也是会报错
+
+包和模块同级，包引用模块下的包（test3调用test1）：
+ 如test3引用test1中的东西，这个可以直接引用，不需要上面的代码。from package.test1 import a或者别的方法，反正就是可以正常引用。
+
+包和模块同级，包引用模块下的包（test3调用test1）：
+ 如test3引用test1中的东西，这个可以直接引用，不需要上面的代码。from package.test1 import a或者别的方法，反正就是可以正常引用。
+
+包和模块同级，模块下的包引用外面的包（test1调用test3）：
+ 如test1引用test3下的东西，还是要加上面的代码
+
+包和模块同级，模块下的包引用外面的包（test1调用test3）：
+ 如test1引用test3下的东西，还是要加上面的代码
+
+相对引入
+ 在test4中引用test1，采用相对引入的方法：from .test1 import a，这样还是会报错，即使加上上面的代码还是会报错。但是如果在test2中调用test4，test4用这种相对引用的方法调用test1，就不会报错。也就是说，python对于相对引入来说，主动引入的函数不能作为主体去运行。
+
+后面还有写内容见参考网站！！！
+

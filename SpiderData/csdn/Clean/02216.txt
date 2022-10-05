@@ -1,0 +1,55 @@
+
+问题：
+
+在使用pycharm运行python程序时报错：
+
+ImportError: No module named 'tensorflow'
+
+
+环境：
+
+win10 64
+
+python版本：3.8.0
+
+
+原因：
+
+输入pip list并未显示tensorflow相关的包
+
+之前安装过tensorflow，但应该是未安装成功，需要重新安装
+
+
+解决过程中遇到的问题：
+
+在cmd脚本中输入：pip uninstall tensorflow，显示如下报错：
+
+WARNING: Skipping tensorflow as it is not installed.
+
+原因还是tensorflow未安装成功。
+
+于是输入安装命令pip install --upgrade --ignore-installed tensorflow，出现如下报错：
+
+ERROR: Could not find a version that satisfies the requirement tensorflow
+ERROR: No matching distribution found for tensorflow
+
+看到这条报错，才回过头看了一下anaconda里自带的python是3.8.0版本，tensorflow版本目前还不支持Python3.7以上版本，真的心累了。。。
+
+现在开始降级，参考解决TensorFlow安装问题: Could not find a version that satisfies the requirement tensorflow中给出的方法，将Python版本降级为3.6：
+
+打开anaconda prompt，输入如下代码：
+
+conda install python=3.6
+
+等待提示（y/n?）输入：y
+
+等待降级过程，大约15分钟左右，会提示done
+
+命令行输入：python
+
+提示Python版本降级为3.6.2了，然后进行TensorFlow的安装。
+
+安装完成后，测试一下：
+
+终于解决了！
+

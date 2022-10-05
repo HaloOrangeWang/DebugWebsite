@@ -1,0 +1,17 @@
+
+1.错误出现
+
+搜索关键字：光州半片鸭 冻品（9.5KG/箱）、会报错错误代码：
+
+org.apache.lucene.queryparser.classic.ParseException: Cannot parse '光州半片鸭 冻品（9.5KG/箱）': Lexical error at line 1, column 20.  Encountered: <EOF> after : "/\u7bb1\uff09"
+	at org.apache.lucene.queryparser.classic.QueryParserBase.parse(QueryParserBase.java:123) ~[lucene-queryparser-5.3.1.jar:5.3.1 1703449 - noble - 2015-09-17 01:39:04]
+
+
+2.问题解决
+
+经排查是因为搜索关键字中包含：“/”就出现错误。通过一下链接地址： 问题解决链接网址
+
+使用一下代码：
+
+Query query = parser.parse(QueryParser.escape(key));
+

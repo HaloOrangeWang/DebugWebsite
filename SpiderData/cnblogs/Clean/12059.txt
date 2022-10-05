@@ -1,0 +1,31 @@
+
+详细报错信息如下：
+
+ImportError: cannot import name 'DoReplace' from partially initialized module 'common.do_replace' (most likely due to a circular import) (D:\workxxx\\xxxx_work\common\do_replace.py)
+
+python-BaseException
+
+报错的意思：
+
+most likely due to a circular import：很多可能是循环引用导致失败
+
+开始对这个错误没有概念，什么是循环引用导致引入失败
+
+后面通过一篇文章，大致了解到循环引入，大概是两个导入A和B，A引用了B，B又引用了 A，导致了循环
+
+参考文章：https://blog.csdn.net/weixin_44858471/article/details/107134456?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-5.pc_relevant_default&spm=1001.2101.3001.4242.4&utm_relevant_index=7
+
+解决方案：
+
+调整代码的位置，解决循环引用的关系
+
+去掉DoReplace()，里面引用HttpOms()的代码
+
+将HttpOms()，放回到当前文件里面使用
+
+修改前：
+
+修改后
+
+调整后的HttpOms()的代码
+

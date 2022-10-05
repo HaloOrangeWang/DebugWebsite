@@ -1,0 +1,26 @@
+github上有提供安装方法，但是实际安装部署过程中，各种报错。。。
+
+https://github.com/guohongze/adminset
+
+后经过不断调试，总算安装成功。特此记录一下报错解决步骤
+
+错误1：
+ERROR: pyasn1-modules 0.2.8 has requirement pyasn1<0.5.0,>=0.4.6, but you'll have pyasn1 0.4.1 which is incompatible.
+
+解决方法：
+
+安装新版pyasn1。方法如下：
+下载符合版本要求的pyasn1源码压缩包，解压，进入文件夹
+python setup.py build
+python setup.py install
+修改requirements.txt中pyasn1的版本
+admin/abc123xyz
+
+错误2：
+ERROR: Cannot uninstall 'requests'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.
+解决方法——》request模块会报错，修改requirements.txt直接注释掉该模块即可
+
+可以看一下我修改后的文件requirements.txt
+
+修改完成后，就可以正常安装了
+

@@ -1,0 +1,73 @@
+[问题描述]在Win10下训练YOLOv5时报错: [WinError 1455] The paging file is too small for this operation to complete，如下图所示
+
+[原因分析]YOLOv5的dataloader workers数量默认是8，当batch-size大而内存不够时，会发生上述错误。
+
+[解决方案一，可以解决问题，但会降低训练速度] 训练时添加参数 --workers 1, 即将dataloader workers数量设置为1，这种方式虽然解决了报错问题，但又引入了训练速度陡降的问题！
+
+
+那么，如何在Win10上，高效率的运行PyTorch的多进程呢？
+
+用下面的代码测试
+
+# multi_processes_demo.py
+from subprocess import Popen
+import sys
+
+procs = []
+for seed in range(50):
+    procs.append(Popen([sys.executable, "ml_model.py", str(seed)]))
+
+for proc in procs:
+    proc.wait()
+
+# ml_model.py
+import torch
+import time
+time.sleep(10)
+
+上面的demo说明：当 Python 导入“torch”时，它会加载这些CUDA的DLL，并将其映射到内存中。每个加载这些 DLL 的 Python 进程都会提交几 GB 的内存来加载这些 DLL。因此，如果 1 个 Python 进程正在浪费 2GB 的内存，运行 8 个工作线程，则需要 16GB 的内存来加载 DLL
+
+[解决方法二，不能解决问题]不要勾选“自动管理所有驱动器的分页大小”，然后重启计算机。
+
+python train.py --img 640 --batch-size 16 --epochs 3 --data coco.yaml --weights yolov5s.pt  --optimizer Adam --workers 6
+
+测试结果：失败：
+
+[解决方法三，最优]
+
+Python Script to disable ASLR and make nv fatbins read-only to reduce memory commit
+
+下载：https://gist.github.com/cobryan05/7d1fe28dd370e110a372c4d268dcb2e5 到本地，然后安装依赖包：
+
+python -m pip install pefile
+
+并执行下面的命令，用于修改报信息错路径下面的*.dll
+
+python fixNvPe.py --input C:\Users\Administrator\anaconda3\envs\pytorch\Lib\site-packages\torch\lib*.dll
+
+然后运行：
+
+python train.py --img 640 --batch-size 16 --epochs 3 --data coco.yaml --weights yolov5s.pt  --optimizer Adam --workers 6
+
+小tips: 调试时，运行: wandb disabled， 把wandb先关掉
+
+总结：
+
+DataLoader 中设置的workers数量与创建的 Python 进程的数量直接相关
+
+每个 Python 进程导入 pytorch 时，它都会加载相关的 DLL。这些 DLL 中有很大一部分数据并没有真正使用，但无论如何都会在内存中为它们保留空间。
+
+在Linux上不会遇到上述问题，是因为Linux会为内存请求保留内存空间，即便请求的内存空间大于实际的物理空间，只要没有使用，就不会有问题
+
+在Win10上会遇到上述问题，是因为即便没有使用，只要请求的内存空间大于实际的物理控件，Windows 就会报错。因此，在 Windows 上 必须满足：NumPythonProcesses x MemoryPerProcess < RAM + PageFileSize
+
+解决方案一，降低 workers数量是减少 NumPythonProcesses，可以解决，但降低了训练速度
+
+解决方案二，修改页面文件大小是增加 PageFileSize，实测没作用
+
+解决方案三，使用 FixNvPe.py 脚本是减少了 MemoryPerProcess，可以解决，不会降低训练速度！
+
+参考资料：
+
+https://github.com/ultralytics/yolov3/issues/1643
+

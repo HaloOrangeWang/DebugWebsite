@@ -1,0 +1,30 @@
+本文链接：https://blog.csdn.net/Granery/article/details/89787348
+
+在使用python3连接MySQL的时候出现了 ‘ModuleNotFoundError: No module named ‘MySQLdb’’错误。
+【解决步骤】
+既然缺少 MySQLdb 这个模块，于是安装mysqldb模块的包——MySQL-python，执行
+
+pip3 install MySQL-python
+
+运行程序后缺报错 ImportError: No module named ‘ConfigParser’。
+
+查找原因，这是因为 MySQL-python 不支持 Python3
+python3使用mysqlclient模块替代了python2的 mysqldb模块
+
+【解决方法1】
+安装mysqlclient模块
+
+pip3 install mysqlclient
+
+然后就可以正常运行了
+
+【解决方法2】
+安装pymysql模块
+
+pip3 install pymysql
+
+修改SQLALCHEMY_DATABASE_URI = ‘mysql://root:123456@127.0.0.1:3306/db_python’ 为：
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql: / /root:123456@127.0.0.1:3306/db_python '
+
+原文链接：https://blog.csdn.net/Granery/article/details/89787348
+

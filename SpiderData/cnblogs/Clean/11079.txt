@@ -1,0 +1,49 @@
+1.安装失败
+
+原因：没有管理员权限，需要用powershell（管理员）来安装
+
+2.安装完成后运行失败
+
+出现下面的情况
+
+PS C:\WINDOWS\system32> node-red
+node-red : 无法加载文件 C:\Users\Administrator\AppData\Roaming\npm\node-red.ps1，因为在此系统上禁止运行脚本。
+有关详细信息，请参阅 https:/go.microsoft.com/fwlink/?LinkID=135170 中的 about_Execution_Policies。
+所在位置 行:1 字符: 1
++ node-red
++ ~~~~~~~~
+    + CategoryInfo          : SecurityError: (:) []，PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+
+原因：win10默认策略会禁止运行脚本
+
+方法：如下，使用set-ExecutionPolicy RemoteSigned命令，改变脚本运行策略
+PS C:\WINDOWS\system32> set-ExecutionPolicy RemoteSigned
+
+执行策略更改
+执行策略可帮助你防止执行不信任的脚本。更改执行策略可能会产生安全风险，如
+https:/go.microsoft.com/fwlink/?LinkID=135170 中的 about_Execution_Policies 帮助主题所述。是否要更改执行策略?
+[Y] 是(Y)  [A] 全是(A)  [N] 否(N)  [L] 全否(L)  [S] 暂停(S)  [?] 帮助 (默认值为“N”): y
+
+3.安装串口节点失败
+
+出现下面情况
+
+18 Oct 16:46:37 - [info] 安装模块：node-red-node-serialport，版本：0.14.1
+
+18 Oct 16:47:07 - [warn] 模块node-red-node-serialport安装失败：
+18 Oct 16:47:07 - [warn] ------------------------------------------
+18 Oct 16:47:07 - [warn] prebuild-install WARN install read ECONNRESET
+gyp ERR! find Python
+gyp ERR! find Python Python is not set from command line or npm configuration
+gyp ERR! find Python Python is not set from environment variable PYTHON
+gyp ERR! find Python checking if "python" can be used
+gyp ERR! find Python - "python" is not in PATH or produced an error
+gyp ERR! find Python checking if "python2" can be used
+gyp ERR! find Python - "python2" is not in PATH or produced an error
+。。。
+
+原因：缺乏对应环境
+
+方法:在PowerShell中输入以下命令：npm install --global --production windows-build-tools@4.0.0，等候一会，安装好对应环境之后，再安装其他节点就没有再报错了。
+

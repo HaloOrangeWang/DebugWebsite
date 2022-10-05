@@ -1,0 +1,61 @@
+
+vue执行npm install报错： Can‘t find Python executable “python“, you can set the PYTHON env variable
+
+
+一、描述
+
+从网上下载的一个Vue模板项目，导入VsCode，执行npm install命令后，报错了，报错的信息是node-sass安装失败，同时提示需要python环境的错误信息，这是因为安装node-sass失败了，而node-sass依赖于Python环境，node-sass安装失败是因为默认是从国外线路下载，这些大家都是知道的，在网速不好的情况下，失败率很高。
+
+
+1.核心错误日志如下：
+
+1
+
+
+2.控制台错误信息截图：
+
+
+二、原因
+
+npm源速度慢。
+
+node-sass除了npm部分的代码，还会下载二进制文件binding.node，默认源是github，国内访问较慢,特殊时期甚至无法访问。
+
+node版本与node-sass版本不兼容。
+
+缓存中binding.node版本不一致。
+
+安装失败后重新安装。
+
+提示没有安装python、build失败，假如拉取binding.node失败，node-sass会尝试在本地编译binding.node，过程就需要python。
+
+没有安装python或node-sass 。那么安装失败的问题，是因为被墙了，npm 安装 node-sass 依赖时，会从 github.com 上下载 .node 文件。由于国内网络环境的问题，这个下载时间可能会很长，甚至导致超时失败。
+这是使用 sass 的开发者可能都会遇到的郁闷的问题。
+
+最方便的解决方式就是更换npm镜像源为淘宝镜像以及卸载node-sass依赖重新下载就好啦
+
+
+三、解决方式(方式一)
+
+切换镜像源： 切换镜像源为国内的淘宝镜像源，然后卸载node-sass依赖重新下载就好了。
+
+
+1.设置全局淘宝镜像源
+
+1
+
+
+2.安装node-sass
+
+1
+
+
+3. 启动vue项目
+
+1
+
+将镜像源设置为国内的淘宝之后，再随后执行npm run dev 启动开发环境服务即正常，完美解决问题。
+
+
+四、完美解决Sass不能安装(第二种解决方式)
+

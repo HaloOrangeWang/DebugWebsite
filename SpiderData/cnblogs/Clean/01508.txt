@@ -1,0 +1,42 @@
+使用python的suds包调用webservice服务接口，报错：AttributeError: 'Document' object has no attribute 'set'
+
+调用服务接口代码：
+
+#coding=utf-8
+from suds.client import Client
+
+client = Client('http://port.patentstar.cn/bns/PtDataSvc.asmx?wsdl')
+print client
+
+pt = client.factory.create('PatentDataType')
+res = client.service.GetPatentData('DE10327589B4',pt.PDFFileUrl)
+print res
+
+WSDL服务结构：
+
+报错信息：
+
+解决方法：
+
+通过上图错误信息，错误指定到了appender.py 中的append函数 （此函数注释是我自己更改的）
+
+以下是报暴出错误，的函数：
+
+通过，对该函数分析，如果传过来的参数以_下止划线开头，会进行一个特列处理。
+
+服务接口函数，两个参数都是以下划线开头。
+
+报错的行为：parent.set(attr,value)
+
+我们服务接口，参数名都是以下划线开头。于是分析之后，将关于处理下划线的代码行注释掉。
+
+更改了suds,包中的文件后，重新调用服务接口。
+
+结果如下：成功返回正确结果
+
+至此，问题解决了，问题原因，应该是suds包的作者，没有考虑到其它服务接口，参数以下划线开头。
+
+因为在python中下划线开头的变量，有特殊意义，是私有的。
+
+以上是个人理解，如果个位大神，分析出有其它原因，分享一下。多谢谢。
+

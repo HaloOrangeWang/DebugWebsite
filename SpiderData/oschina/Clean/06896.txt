@@ -1,0 +1,105 @@
+
+Tomcat 部署 Jenkins 启动页面报错
+
+1、系统平台
+
+Ubuntu 20.04.3 LTS
+
+JDK  Version
+
+2、正常启动 Tomcat 服务
+
+可以看到 Tomcat 服务是正常启动了，Tomcat 进程也都正常，下面通过浏览器访问 Tomcat 服务。
+
+Tomcat 访问是正常的，下面访问部署的 Jenkins  系统及其他系统。
+
+结果报错了， 报错显示信息如下：
+
+AWT is not properly configured on this server. Perhaps you need to run your container with "-Djava.awt.headless=true"? See also: https://jenkins.io/redirect/troubleshooting/java.awt.headless
+
+访问 probe 系统也报错
+
+3、处理解决问题
+
+对提示报错  Could not initialize class java.awt.Toolkit  问题进行处理。
+
+报错原因是：对于一个 Java 服务器来说经常要处理一些图形元素，例如地图的创建或者图形和图表等。这些API基本上总是需要运行一个 X-server 以便能使用AWT（Abstract Window Toolkit，抽象窗口工具集）。
+
+首先：停止 Tomcat 服务。
+
+修改 catalina.sh 文件 或  startup.sh 文件
+
+$ sudo vim catalina.sh
+
+修改如下，在 # OS specific support.  $var _must_ be set to either true or false.   行之上添加如下的一行代码。
+
+JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true"
+
+#################################################################################################
+
+修改 startup.sh 文件
+
+$ sudo vim startup.sh
+
+在 #!/bin/sh 行下面，添加如下一行代码。
+
+export CATALINA_OPTS=" -Djava.awt.headless=true"
+
+修改好文件，保存退出即可。
+
+4、正常启动 Tomcat  服务
+
+Using CATALINA_OPTS:    -Djava.awt.headless=true
+
+可以看到 Tomcat 服务正常启动，Tomcat 进程也都正常，下面通过浏览器访问 Tomcat 服务。
+
+Tomcat 访问也是正常的，下面访问 Jenkins  系统及其他系统，看看是否还会报上面的错。
+
+可以看到，上面的 Jenkins 系统已能正常访问了。
+
+在看看 probe 系统是否也能正常访问，访问显示如下：
+
+5、优化设置 JVM 及端口
+
+在 catalina.sh 文件中，找到  # OS specific support. $var _must_ be set to either true or false.   这行，在这行的上面添加下面几行代码：
+
+设置 Tomcat 端口参数，打开 server.xml 文件，找到如下代码，按下面参数进行设置。
+
+<Connector port="18080" maxThreads="150" minSpareThreads="25" enableLookups="false" maxHttpHeaderSize="8192"
+                acceptCount="100" disableUploadTimeout="true" URIEncoding="UTF-8" useBodyEncodingForURI="true"
+                protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443"/>
+
+6、系统环境变量配置
+
+/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*
+
+JAVA_HOME=/usr/local/jdk1.8.0_261
+ JRE_HOME=/usr/local/jdk1.8.0_261/jre
+
+CATALINA8_BASE=/usr/local/tomcat8.5.64
+ CATALINA8_HOME=/usr/local/tomcat8.5.64
+ export CATALINA8_BASE CATALINA8_HOME
+
+CATALINA9_BASE=/usr/local/tomcat9.0.43
+ CATALINA9_HOME=/usr/local/tomcat9.0.43
+ export CATALINA9_BASE CATALINA9_HOME
+
+#MAVEN_HOME=/usr/local/maven3.5.2
+ MAVEN_HOME=/usr/local/maven3.6.3
+ M2_HOME=/usr/local/maven3.6.3
+ #MAVEN_HOME=/usr/local/maven3.3.9
+ #M2_HOME=/usr/local/maven3.3.9
+ ANT_HOME=/usr/local/ant1.9.9
+ SONAR_SCANNER_HOME=/usr/local/SonarScanner4.6.1
+
+PATH=PATH:JAVA_HOME/bin:JREHOME/bin:CATALINA8_HOME/bin:CATALINA9HOME/bin:MAVEN_HOME/bin:M2HOME/bin:ANT_HOME/bin:${SONAR_SCANNER_HOME}/bin
+ CLASSPATH=.:JAVAHOME/lib/dt.jar:JAVA_HOME/lib/tools.jar:$JRE_HOME/lib
+ export JAVA_HOME JRE_HOME CATALINA8_HOME CATALINA9_HOME MAVEN_HOME M2_HOME ANT_HOME SONAR_SCANNER_HOME PATH CLASSPATH
+ export JENKINS_HOME=/date/jenkins
+
+/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*
+
+这样就全部设置完成，部署的其他系统也都正常了，说明对提示报错  Could not initialize class java.awt.Toolkit  问题的处理已解决。
+
+希望看过的小伙伴们给个小红心，支持支持，非常感谢。
+

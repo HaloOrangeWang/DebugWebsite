@@ -1,0 +1,177 @@
+
+文章目录
+
+安装新版本Python
+
+Linux系统【以Ubuntu16.04为例】Windows系统【Win10】
+
+Linux系统【以Ubuntu16.04为例】
+
+Windows系统【Win10】
+
+pip换源
+
+Linux系统Windows系统
+
+Linux系统
+
+Windows系统
+
+
+安装新版本Python
+
+
+Linux系统【以Ubuntu16.04为例】
+
+参考
+ 【Ubuntu16.04自带python2.7和python3.5两个版本，略略有点过时】
+
+1. 安装一些依赖项（apt慢可以更新一下源）
+
+sudo apt install zlib1g-dev libbz2-dev libssl-dev libncurses5-dev libsqlite3-dev
+
+2. 官网下载需要的版本（推荐3.8，不推荐3.10，理由一会讲）
+
+3. 解压后进入相应目录执行安装命令
+
+./configure prefix=/usr/local/python3
+
+make && make install
+
+此处如果报错那可能是缺依赖项，别管报啥先装一遍试试。
+
+sudo apt install python-dev libffi-dev libssl-dev
+ sudo apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev
+
+4. 设置默认Python版本（配置全局变量）
+
+备份原来的链接文件（直接删掉也可以）
+
+mv /usr/bin/python /usr/bin/python.bak
+
+配置新的软链接
+
+ln -s /usr/local/python3/bin/python3 /usr/bin/python
+
+5. 检验安装配置结果
+
+python --version
+
+6. 安装更新pip（3.10的坑来了）
+
+安装有两种方法：
+
+Ⅰ. 直接apt安装
+
+sudo apt install python3-pip
+
+Ⅱ. 在这里下载get-pip.py后
+
+python get-pip.py
+
+升级
+
+sudo pip3 install --upgrade pip
+
+过程中可能会报错，主要有两种：
+
+① 一种是File "/usr/bin/pip", line 9, in <module>巴拉巴拉的，然后一般会给出解决方案：
+
+python -m pip install --upgrade pip
+
+②另一种是File "/usr/bin/pip", line 7, in <module>巴拉巴拉的，这个就有趣了，说可能是python版本太多给pip整不会了，用上面的法Ⅱ重装一下就好了。但是，我的还是不行，甚至去看报错文件各种都没用，去查了各种最后发现似乎是python3.10的专属错误，原因暂且不得而知，但只要换个版本就万事大吉了。【再一次告诫我，不要搞太新版本的东西，没什么好下场】
+
+
+Windows系统【Win10】
+
+【win10就简单多了，比起搞了我一下午的Ubuntu可以说光速搞完】
+
+1. 官网下载需要的版本，找到相应的可执行文件下载。（虽然似乎好像没什么坑，但是我怕了，还是建议大家3.8这种稳定点的非最新版本）
+
+2. 点击运行，记得要勾上下面的Add Python 3.x to PATH，会省很多事。
+
+在Customize installation里面有一些自动勾上的选项，包括：
+
+Documentation：创建python的文档文件
+
+pip
+
+tcl/tk and IDLE：python自带的编译学习IDE（新手推荐、有其他编译器不装也可），还有GUI库；
+
+Python test suite：标准测试套件
+
+py launcher：启动器
+
+然后是下一页进阶选项Advanced Options：
+
+记得勾上第一个Install for all users，为所有用户安装；
+
+其他默认就行；
+
+安装路径不太建议修改，后期容易出很多有的没的的问题，要额外设置不少内容。
+
+P.S. 安装完成之后可能会提示环境变量路径长度限制什么的，顺手点击修改一下。
+
+3. 进入power shell或cmd检查是否安装成功：
+
+python --version
+
+会出现版本号，证明安装成功。
+ 失败的话可以去检查一下环境变量什么的，应该不太会出问题……的吧。
+
+
+pip换源
+
+参考
+
+pip下有些大的包可能会很慢，那可以使用国内的镜像，比如：
+
+清华源：https://pypi.tuna.tsinghua.edu.cn/simple
+ 豆瓣源 ：http://pypi.douban.com/simple
+ 腾讯源：http://mirrors.cloud.tencent.com/pypi/simple
+ 阿里源：https://mirrors.aliyun.com/pypi/simple
+ 科大源：https://pypi.mirrors.ustc.edu.cn/simple
+
+使用方法be like：
+
+pip install balabala -i http://pypi.douban.com/simple
+
+但是每次这样就很麻烦，所以来配置一下让它自动用这些源，一劳永逸！
+
+
+Linux系统
+
+修改配置文件~/.pip/pip.conf，没有的话就创建一下（一般好像都没用）：
+
+sudo mkdir ~/.pip
+ sudo gedit ~/.pip/pip.conf
+
+修改里面的内容为你喜欢的源，例如：
+
+[global]
+index-url = https://pypi.douban.com/simple
+[install]
+trusted-host = https://pypi.douban.com
+
+检查配置结果：
+
+pip3 config list
+
+【配置成功出现的内容和下面win的一样】
+
+
+Windows系统
+
+在当前用户目录下（C:\Users\balabala）创建一个pip文件，然后在里面创建一个pip.ini文件：
+
+[global]
+index-url = https://pypi.douban.com/simple
+[install]
+trusted-host = https://pypi.douban.com
+
+检查配置结果：
+
+pip config list
+
+出现这个就是成功啦~
+

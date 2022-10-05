@@ -1,0 +1,39 @@
+1.创建目录python和yum用以存放rpm包：
+
+mkdir /usr/local/src/python
+mkdir /usr/local/src/yum
+
+2.使用wget分别下载python以及yum的rpm包（注意：一定要和系统的版本号对应）地址：http://vault.centos.org
+
+（1）下载python的rpm包：
+
+cd /usr/local/src/python 
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/python-2.7.5-34.el7.x86_64.rpm
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/python-iniparse-0.4-9.el7.noarch.rpm
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/python-pycurl-7.19.0-17.el7.x86_64.rpm
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/python-devel-2.7.5-34.el7.x86_64.rpm
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/python-libs-2.7.5-34.el7.x86_64.rpm
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/python-urlgrabber-3.10-7.el7.noarch.rpm
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/rpm-python-4.11.3-17.el7.x86_64.rpm
+
+（2）下载yum的rpm包：
+
+cd /usr/local/src/yum
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/yum-3.4.3-132.el7.centos.0.1.noarch.rpm
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/yum-metadata-parser-1.1.4-10.el7.x86_64.rpm
+wget http://vault.centos.org/7.2.1511/os/x86_64/Packages/yum-plugin-fastestmirror-1.1.31-34.el7.noarch.rpm
+
+3.安装python以及yum的rpm包
+
+（1）安装python:
+
+rpm -ivh python-*   rpm-python-* --nodeps --force
+--nodeps --force     为不考虑依赖包，强制安装。
+
+（2）安装yum:
+
+cd /usr/local/src/yum
+rpm -ivh yum-*
+
+yum重新安装成功
+

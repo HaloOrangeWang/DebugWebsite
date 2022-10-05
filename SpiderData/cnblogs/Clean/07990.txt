@@ -1,0 +1,70 @@
+
+今天在服务器上安装paddle的GPU版时报错
+
+报错截图如下：
+
+其实报错已经提示的很明显了，就是要添加一个环境变量。但我想到我之前并没有在全局环境下安装cudnn，以为是这个原因。因为之前安装pytorch环境时，cudnn可以直接在conda中安装。但是明显paddle不行，我为paddle单独新建了一个conda虚拟环境，在虚拟环境中安装cudnn还是报了这样的错误。
+
+所以我重新在全局环境中安装了cudnn，这里安装教程参考了一些博客。
+
+
+1.cudnn安装
+
+首先去官网下载cudnn的安装包，由于官网需要注册下载，所以我去找了一些百度网盘资源进行下载。
+
+首先去官网下载cudnn的安装包，由于官网需要注册下载，所以我去找了一些百度网盘资源进行下载。
+
+然后将其解压会得到如下的文件结构：
+
+然后将其解压会得到如下的文件结构：
+
+然后参考一些博客的内容将cudnn相关的文件复制到之前安装的cuda目录下：
+
+cp cuda/include/cudnn.h    /usr/local/<cuda_version>/include
+
+cp cuda/lib64/libcudnn*    /usr/local/<cuda_version>/lib64
+
+chmod a+r /usr/local/<cuda_version>/include/cudnn.h
+
+chmod  a+r /usr/local/<cuda_version>/lib64/libcudnn*
+
+注意<cuda_version>对应于你自己实际的安装的cuda版本。
+
+这样就安装好了cudnn，但是在paddle-GPU还是不能使用。报错中提示设置环境变量。
+
+然后参考一些博客的内容将cudnn相关的文件复制到之前安装的cuda目录下：
+
+cp cuda/include/cudnn.h    /usr/local/<cuda_version>/include
+
+cp cuda/lib64/libcudnn*    /usr/local/<cuda_version>/lib64
+
+chmod a+r /usr/local/<cuda_version>/include/cudnn.h
+
+chmod  a+r /usr/local/<cuda_version>/lib64/libcudnn*
+
+注意<cuda_version>对应于你自己实际的安装的cuda版本。
+
+这样就安装好了cudnn，但是在paddle-GPU还是不能使用。报错中提示设置环境变量。
+
+
+2.按照报错信息设置环境变量
+
+需要在 .bashrc中添加如下信息。
+
+首先：
+
+vim ~/.bashrc
+
+在最后一行加入：
+
+export LD_LIBRARY_PATH=/usr/local/<cuda_vesion>/lib64
+
+同样这里的cuda_version对应于自己实际的cuda安装版本的文件夹。
+
+
+3.测试
+
+进入python解释器，输入import paddle.fluid ，再输入 paddle.fluid.install_check.run_check()。
+
+如果出现 Your Paddle Fluid is installed successfully!，说明您已成功安装。
+

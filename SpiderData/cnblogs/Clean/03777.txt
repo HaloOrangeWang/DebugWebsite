@@ -1,0 +1,11 @@
+kudu安装后运行不正常，master中找不到任何tserver，查看tserver日志发现有很多报错：
+
+Failed to heartbeat to master:7051: Invalid argument: Failed to ping master at master:7051: Client connection negotiation failed: client connection to master:7051: unable to find SASL plugin: PLAIN
+
+解决方法：
+
+yum install gcc python-devel
+yum install cyrus-sasl*
+
+然后重启kudu，如果还有impala，也需要重启；
+

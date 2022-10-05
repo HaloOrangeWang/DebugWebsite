@@ -1,0 +1,19 @@
+
+jupyter notebook中导入py文件，报错：ordinal not in range(128)
+
+原因：这是python中汉字编码出问题导致的报错。
+
+解决方法：是在python代码所在的文件头加上如下语句块
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+但是如上代码块又会引入新的问题，那就是python中print函数失灵，解决方法是将如上代码块替换为如下代码块
+
+import sys #这里只是一个对sys的引用，只能reload才能进行重新加载
+stdi,stdo,stde=sys.stdin,sys.stdout,sys.stderr 
+reload(sys) #通过import引用进来时,setdefaultencoding函数在被系统调用后被删除了，所以必须reload一次
+sys.stdin,sys.stdout,sys.stderr=stdi,stdo,stde 
+sys.setdefaultencoding('utf-8')
+

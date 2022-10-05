@@ -1,0 +1,59 @@
+python程序运行出错，出错的两行主要信息如下：
+
+ImportError: DLL load failed: 找不到指定的模块
+
+ImportError: numpy.core.multiarray failed to import
+
+（但是import numpy包又没问题，估计是使用numpy的第三方出问题了。反正numpy逃不了责任！）
+
+--------------------------------------------------------
+
+在网上一番搜索，发现对于第一个错误而且有import numpy报错：ImportError: DLL load failed: 找不到指定的模块。
+
+有篇博客讲的很详细，大家可以参考一下：
+
+https://blog.csdn.net/zhangpeterx/article/details/84872125
+
+但是并没有解决我的问题（哭）；
+
+然后针对第二个错误搜索一番，发现另一篇博客：
+
+https://blog.csdn.net/Mr_sdhm/article/details/79157075
+
+-------------------------------------------------------下面重点来了
+
+参考上面博客，我的解决方法如下：
+
+（PS:一定要把Anaconda环境自带的包 和Anaconda目录env下tensorflow环境中安装的区分开！）
+
+如果是Anaconda下的tensorflow环境中的程序出错，则
+
+1.打开anaconda prompt，输入激活tensorflow的语句，一般是：
+
+conda activate tensorflow #windows (换成你安装tensorflow时创建的环境名称，默认一般是tensorflow)
+
+source activate tensorflow #linux (tfenv换成你安装tensorflow的环境名称)
+
+在tensorfllow环境下，使用python：
+
+import numpy
+print(numpy.__path__)
+
+打印出的就是numpy安装的路径，注意：Anaconda环境下也有一个numpy，和这个是两个不同的。
+
+-----------------------------------------------------------
+
+　
+
+----------------------------------------------------------------------
+
+2.根据这个路径，找到numpy包，删除掉
+
+3.再回到刚刚已经激活tensorflow环境的prompt中，使用python，输入：
+
+pip install -U numpy
+
+安装numpy包，再运行程序就没有报错了。
+
+　
+

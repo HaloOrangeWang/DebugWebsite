@@ -1,0 +1,40 @@
+
+文章目录
+
+一、python运行报错
+
+二、报错原因
+
+三、解决方法
+
+
+一、python运行报错
+
+ModuleNotFoundError： ModuleNotFoundError: No module named 'step_defss’
+
+
+二、报错原因
+
+在python中，一个.py文件就是一个模块，导入模块等于导入文件
+ 是文件，就有文件路径，所以这个情况，本质上就是找不到文件
+
+1、很多时候在pycharm运行一切正常，但是到命令行中运行py文件，就会报错
+ 原因：
+ pycharm在每次运行时，都会检索整个工程目录，把目录都添加到sys.path中，运行的时候，就能够找到对应的模块.py文件
+
+2、命令行找不到模块
+ 原因：
+ 命令行执行时，往往都是直接运行某个.py文件，缺少路径检索的步骤（需要我们自己代码加上自动检索）
+
+
+三、解决方法
+
+在需要执行的.py文件中，加上以下这段代码,就是在import模块文件前，先将模块路径，添加到sys.path，就能够正常引入模块
+
+import os
+import sys
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+from step_defss.scenario_steps import *
+#接后续代码
+

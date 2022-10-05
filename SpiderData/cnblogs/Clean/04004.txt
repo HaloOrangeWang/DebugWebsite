@@ -1,0 +1,52 @@
+
+解决Python报错：local variable 'xxx' referenced before assignment（引）
+
+解决Python报错：local variable 'xxx' referenced before assignment（引）
+
+
+解决Python报错：local variable 'xxx' referenced before assignment（引）
+
+这个问题很囧，在外面定义了一个变量 xxx ，然后在python的一个函数里面引用这个变量，并改变它的值，结果报错local variable 'xxx' referenced before assignment，代码如下：
+
+view plaincopy to clipboardprint?
+
+这个问题很囧，在外面定义了一个变量 xxx ，然后在python的一个函数里面引用这个变量，并改变它的值，结果报错local variable 'xxx' referenced before assignment，代码如下：
+
+view plaincopy to clipboardprint?
+
+view plaincopy to clipboardprint?
+
+xxx = 23
+
+def PrintFileName(strFileName):
+
+if xxx == 23:
+
+print strFileName
+
+xxx = 24
+
+PrintFileName("file")
+
+错误的意思就是xxx这个变量在引用前还没有定义，这上面不是定义了么？但是后来我把xxx = 24这句去掉之后，又没问题了，后来想起python中有个global关键字是用来引用全局变量的，尝试了一下，果然可以了：
+
+view plaincopy to clipboardprint?
+
+view plaincopy to clipboardprint?
+
+xxx = 23
+
+def PrintFileName(strFileName):
+
+global xxx
+
+if xxx == 23:
+
+print strFileName
+
+xxx = 24
+
+PrintFileName("file")
+
+原来在python的函数中和全局同名的变量，如果你有修改变量的值就会变成局部变量，在修改之前对该变量的引用自然就会出现没定义这样的错误了，如果确定要引用全局变量，并且要对它修改，必须加上global关键字。
+

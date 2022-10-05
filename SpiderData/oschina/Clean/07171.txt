@@ -1,0 +1,469 @@
+版权声明：本文为博主（Jimchen）原创文章，未经博主允许不得转载。
+
+ttps://www.cnblogs.com/jimchen1218/p/11611975.html
+
+前言：
+
+Tensorflow交叉编译的过程是一个心塞的过程，其中会出现各种各样的错误，个中滋味，只有经历过的人才能体会。
+
+特意记录下所有碰到的问题，一来作为这段时间的一个小结，二来可以给他人提供些帮助。
+
+先上一张图，主要是针对各软件包之间的版本对应性：
+
+　　　实测发现，当前Ｔｅｎｓｏｒｆｌｏｗ版本为１．１０．０，Ｂａｚｅｌ版本只能在０．１８．１～０．１９．２之间
+
+正文：
+
+现将已知问题列表如下，如碰到相同现象，可依此方法解决：
+
+问题1：
+
+错误现象：
+
+编译过程中，提示exp("/home/jim/tf2arm/sysroots/x86_64-linux/arm-poky-linux-gnueabi-gcc") :no such file or directory
+
+原因分析：
+
+我在该目录下可以该目录，但是打开shell运行时，提示却一样：no such file or directory。（这个交叉编译SDK是从别人电脑（UBUNTU系统版本14.04）上拷贝过来了，在他的电脑上可以正常执行），原因可能是由于系统与平台的差异性，导致在一台电脑上可以正常执行，在另一台电脑上却无法执行。
+
+百度查了各种方法：
+
+1） chmod 777 -R sysroots  添加可执行权限，不行
+
+2） sudo apt-get install lsb-core  添加对32位系统的兼容支持，不行
+
+3） sudo apt-get install ia32-libs   添加对32位系统的兼容支持，不行
+
+解决方法：
+
+用别人生成的SDK不行，那个自己编译一个，方法可参考如下链接：手动编译用于i.MX6系列的交叉编译SDK
+
+问题2：
+
+错误现象：
+
+拷贝新生成的两个可执行包到相应目录：
+
+opt/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poly-linux-gnueabi
+
+opt/sysroots/x86_64-pokysdk-linux/usr/libexec/arm-poky-linux-gnueabi/gcc
+
+再次编译bash build_arm_poky.sh
+
+报错：error:target CPU does not support ARM mode
+
+原因分析：
+
+查看目标芯片参数：Cortex-M4对应ARMv7E-M，也就是-march=armv7-a  ,-mtune=cortex-a9
+
+如果使用--mcpu=cortex-m3选项时，需要与-mthumb选项搭配。未解决！
+
+通过报错时的提示信息，发现：环境变量里有两条记录：-march=armv7-a和-march=armv7
+
+解决方法：
+
+执行脚本 :./configure
+
+其它的选项都选No，-march选项使用armv7-a即可。
+
+问题3：
+
+错误现象：
+
+BUILD：tensorflow/WORKSPACE:3:1:name 'http_archive' is not defined
+
+原因分析：
+
+怀疑是包不兼容导致，当前bazel 0.25.2,tensorflow 1.10
+
+解决方法：
+
+当前tensorflow  1.10最高只能支持Bazel0.19.2，所以，降Bazel版本到0.18.1
+
+问题4：
+
+问题现象：
+
+arm-poky-linux-gnueabi/usr/include/gnu/stubs.h:7:29:fatal error: gnu/stubs-soft.h :No such file or directory
+
+compilation terminated
+
+原因分析：
+
+在编译生成的包中未查找到该文件，但找到一个类似文件：stubs_hard.h，查看该文件内容，只是些宏定义。
+
+解决方法：
+
+直接复制文件stubs-hard.h,更名为为stubs-soft.h
+
+　　　　　　根本原因：
+
+　　　　　　　　在交叉编译包的ＣＲＯＳＳＴＯＯＬ文件中，缺少了两句话：
+
+compiler_flag:"-mfloat-abi=hard"
+
+compiler_flat:"-mfpu=vfpv3"
+
+问题5：
+
+问题现象：
+
+extern/asm/nasm/error.c,找不到error.h
+
+原因分析：
+
+源代码查找error.h， 位于extern/asm/include，应该是编译路径包含不对导致。
+
+解决方法：
+
+1、 ll  ~/.cache/bazel       列出bazel_jim(当前主目录)
+
+2、 ll  ~/.cache/bazel/bazel_jim  列出各文件夹，其中包含自动生成的随机文件夹，如果包含多个，可通过时间来判断。找到最新的即可。
+
+3、本文中随机文件夹为：7924169126bef9c95805dc831e19e9c3，进入该文件夹下extern/nasm/：
+
+直接复制到当前文件：cp include/error.h .
+
+问题6：
+
+问题现象1：
+
+/home/jim/.cache/bazel/_bazel_jim/76ef6e7a149f324cd1b97025fe5e3e28/external/protobuf_archive/BUILD:645:1:undeclared inclusion(s) in rule '''@protobuf_archive??:python/google/protobuf/internal/_api_implementation.so’：
+
+this rule is missing dependency declarations for the following files included by 'external/protobuf_archive/python/google/protobuf/internal/api_implementation.cc':
+
+'usr/include/python2.7/Python.h'
+
+...
+
+'usr/include/python2.7/pyfpe.h'
+
+原因分析：
+
+编译当前文件时，找不到支持该文件编译的相应头文件；
+
+解决方法：
+
+在CROSSTOOL中添加
+
+1. cxx_builtin_include_directory:"usr/include/python2.7"
+
+问题现象2：
+
+/home/lyra/.cache/bazel/_bazel_lyra/76ef6e7a149f324cd1b97025fe5e3e28/external/com_google_absl/absl/base/BUILD.bazel:115:1: undeclared inclusion(s) in rule '@com_google_absl//absl/base:base':
+this rule is missing dependency declarations for the following files included by 'external/com_google_absl/absl/base/internal/cycleclock.cc':
+  '/usr/lib/gcc/x86_64-linux-gnu/5/include/stddef.h'
+  '/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed/limits.h'
+
+解决方法：
+
+add path in  arm_compiler/CROSSTOOL
+
+cxx_builtin_include_directory:"usr/lib/gcc/x86_64-linux-gnu/5/include/stddef.h"
+
+cxx_builtin_include_directory:"usr/lib/gcc/x86_64-linux-gnu/5/include_fixed/limits.h"
+
+问题7：
+
+问题现象：
+
+tensorflow/python/lib/core/py_func.cc:355:39 :error: invalid conversion from 'const char*' to 'char*' [-fpermissive]
+
+解决方法：
+
+根据错误提示文件，找到对应错误处，在接口返回值处添加(char *)
+
+此处问题较多，有7，8处，需修改多次。
+
+问题8：
+
+问题现象：
+
+external/gif_archive/lib/egif_lib.c:62:6:error:'S_IREAD' undeclared(first use in this function)
+
+external/gif_archive/lib/egif_lib.c:62:16:error:'S_IWRITE' undeclared(first use in this function)
+
+原因分析：
+
+错误原因可能是没有编译Android，因为在external/gif_archive下BUILD.bazel里有定义
+
+解决方法：
+
+方法1：
+
+修改S_IREAD为S_IRUSR
+
+修改S_IWRITE为S_IWUSR
+
+方法2：
+
+在gif_lib.h中定义
+
+#define S_IREAD S_IRUSR
+
+#define S_IWRITE S_IWUSR
+
+问题9：
+
+现象描述：
+
+external/png_archive/pngpriv.h:911:4 :error:#error ZLIB_VERNUM!= PNG_ZLIB_VERNUM " -I (include path) error:see the notes in pngpriv.h
+
+#error ZLIB_VERNUM != PNG_ZLIB_VERNUM
+
+原因分析：
+
+Zlib库与libpng版本号不一致
+
+查看Zlib版本：
+
+find /usr/ -name zlib.pc   搜索结果:/usr/lib/x86_64-linux-gnu/pkgconfig/zlib.pc
+
+cat /usr/lib/x86_64-linux-gnu/pkgconfig/zlib.pc  版本信息会显示出来 当前版本是Version:1.2.8
+
+查看libpng版本：
+
+find /usr/ -name libpng  （当前版本1.2）
+
+与Zlib:1.2.8之对应的libpng版本应该是1.5
+
+解决方法：
+
+方法1：
+
+找到源码，直接注释掉。
+
+方法2：(按此方法，问题依旧，最后直接用了方法1，有空再研究此方法)
+
+安装libpng：(需要先卸载老版本：libpng12, sudo apt-get remove libpng12-dev)
+
+下载地址：  https://sourceforge.net/projects/libpng/files/
+
+tar -xzvf  libpng-1.5.30.tar.gz
+
+cd libpng-1.5.30.tar.gz
+
+./configure
+
+make check
+
+sudo make install
+
+sudo ldconfig
+
+问题10：
+
+现象描述：
+
+home/jim/miniconda3/include/python3.7m/pyport.h: 886:2:error:#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)
+
+原因分析：
+
+编译前的./configure设置使用的是anaconda2(python2.7)，在编译时却使用了python3.7m。
+
+解决方法：
+
+去除高级别的Python。
+
+问题11：
+
+现象描述：
+
+external/boringssl/src/include/openssl/base.h:240:13: error: conflicting declaration 'typedef int CRYPTO_THREADID'
+
+解决方法：
+
+重命名交叉编译SDK目录x86_64_linux/boringssl为boringssl_old，以使代码不编译该包。
+
+问题12：
+
+现象描述：
+
+external/boringssl/src/crypto/internal.h:432:3: error: unknown type name 'pthread_rwlock_t'
+
+解决方法：
+
+去除编译选项 --conlyopt="-std=c99"
+
+没有显示指定-std，gcc默认使用gnu89或gnu90标准，pthread_rwlock_t是gnu extension的一部分，指定使用c99会把gnu extension 禁用，造成pthread_rwlock_t未定义。
+
+问题13：
+
+现象描述：
+
+import enum # pylint:disable=g-bad-import-order
+
+ImportError:No module named enum
+
+解决方法：
+
+sudo apt-get install python-enum34
+
+问题14：
+
+现象描述：
+
+import mock # pylint:disable=g-bad-import-order
+
+ImportError:No module named mock
+
+解决方法：
+
+sudo apt-get install mock
+
+问题15：
+
+现象描述：
+
+更新SDK版本后，有编译残留信息，之前的路径已更新，但在新路径中并不存在。
+
+解决方法：
+
+1、 ll  ~/.cache/bazel       列出bazel_jim(当前主目录)
+
+2、 ll  ~/.cache/bazel/bazel_jim  列出各文件夹，其中包含自动生成的随机文件夹，如果包含多个，可通过时间来判断。找到最新的即可。
+
+3、rm rf 之前生成的文件夹
+
+4、sudo gedit /usr/include/python2.7/pyconfig.h
+
+更新相应文件路径
+
+问题16：
+
+现象描述：
+
+opt/fsl-bsp-x11/x86_64_linux/usr/include/python2.7/python.h:找不到python2.7/python-config32.h
+
+解决方法：
+
+找到指定目录，里面只有python-config64.h，直接复制一个文件，更名为python-config32.h
+
+也可以找到定义WORDSIZE=32的地方，将 该值
+
+问题17：
+
+Executing genrule @bazel_tools//tools/android:no_android_sdk_rpository_erro
+
+在tensorflow的WORKSPACE文件夹下添加如下信息：
+
+android_sdk_repository(
+
+name="androidsdk",
+
+api_level=28,//  设置为你安装的SDK的最高版本，对应修改manifest.xml和target.
+
+build_tools_version="28.0.1",
+
+path="/home/jim/Android/Sdk",)
+
+问题18：
+
+在某些ARM平台，需要地址对齐，否则在程序运行时，访问内存奇数地址或者未对齐地址，导致Crash
+
+sudo gedit tensorflow/core/lib/gtl/inlined_vector.h +288
+
+将T* unused_aligner 替换为  uint64_t unused_aligner   ，强制为8字节对齐。
+
+问题19：
+
+问题现象：
+
+/home/jim/tf2arm/sysroots/x86_64-linux/usr/libexec/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/5.3.0/ld:cannot find crti.o:No such file or directory
+
+/home/jim/tf2arm/sysroots/x86_64-linux/usr/libexec/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/5.3.0/ld:cannot find crtbeginS.o:No such file or directory
+
+原因分析：
+
+在SDK包中查找这两个文件，都可以正常找到，记录下相应的全路径；
+
+CRT（C runtime）
+
+尝试方法1：
+
+进入该目录：/home/jim/tf2arm/sysroots/x86_64-linux/usr/libexec/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/5.3.0/ld，打开一个新的CMD窗口
+
+建立软连接：ln -s /home/jim/tf2arm/sysroots/x86_64-linu/cortexa9hf/usr/lib/arm-poky-linux-gnueabi/5.3.0/crtbeginS.o .
+
+ln -s /home/jim/tf2arm/sysroots/x86_64-linu/cortexa9hf/usr/lib/crti.o .
+
+再次编译失败！
+
+尝试方法2：
+
+sudo find /usr/ -name crti*,找到相应的文件路径：/usr/lib/x86_64-linux-gnu/  ,在CROSSTOOL里添加cxx_builtin_include_directory:"usr/lib/x8_64-linux-gnu"。
+
+再次编译失败！
+
+　　              尝试方法3：
+
+根据https://community.nxp.com/thread/391237，链接中有提供一些解决方法，但并未解决我的问题。
+
+尝试方法4：
+
+根据https://stackoverflow.com/questions/40233088/ld-cannot-find-crt1-o-no-such-file-or-directory，
+
+需要在交叉编译环境设置--sysroot=${STAGING_DIR_TARGET}/，调试了两天，终于找到了设置的地方：
+
+在CROSSTOOL的toolchain，设置builtin_sysroot：“/opt/fsl-imx-x11/4.1.15-2.1.0/x86_64_polysdk-linux/cortexa9hf-neon-poky-linux-gnueabi”
+
+可以在编译的环境变量里看到--sysroot=/opt/fsl-imx-x11/4.1.15-2.1.0/x86_64_polysdk-linux/cortexa9hf-neon-poky-linux-gnueabi
+
+问题得以解决！
+
+问题20：
+
+/opt/fsl-imx-x11/4.1.15-2.1.0/x86_64_polysdk-linux/usr/libexec/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/5.3.0/ld:error: bazel-out/armv7-opt/bin/tensorflow/python/framework/fast_tensor_util.so uses VFP register arguments,bazel-out
+
+/opt/fsl-imx-x11/4.1.15-2.1.0/x86_64_polysdk-linux/usr/libexec/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/5.3.0/ld:failed to merge target specific data of file bazel-out/armv7-opt/bin/tensorflow/python/_objs/framework/fast_tensor_util.so/fast_tensor_util.pic.o
+
+解决方法：
+
+在CROSSTOOL的ARM toolchain，增加几行编译标志：
+
+compiler_flag: "-mfloat-abi=hard"
+
+compiler_flag: "-mfpu=vfpv3"           #具体内容需要对应具体ARM芯片，当前IMX6：armv7-a cortex-a9 vfpv3
+
+compiler_flag: "-funsafe-math-optimizations"
+
+问题21：
+
+undefined reference to 'void tensorflow:ConcatCPU<tensorflow::bfloat16>
+
+解决方法：
+
+在tensorflow/core/kernels/list_kernels.h中，注释掉128行：ConcatCPU...
+
+问题２２：
+
+　　　　　　　在一台电脑上编译通过的ｔｅｎｓｏｒｆｌｏｗ拷贝到另外一台电脑上，无法编译通过．
+
+　　　　　　　bazel编译pc版本ｔｅｎｓｏｒｆｌｏｗ时，碰到两个错误：
+
+第１个:external/nasm/include/error.h 找不到，需执行命令：sudo cp external/nasm/include/error.h  external/nasm/
+
+　　　　　　　　　　  第２个：int_max_32 :redifinition in in　/usr/include/google/protobuf/
+
+bazel编译arm版本ｔｅｎｓｏｒｆｌｏｗ时，碰到以下错误：
+
+　　　　　　　　　　　．/configure   配置python环境为：/usr/bin/python2.7
+
+　　　　　　　　　　　第一个：/home/jim/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/5.3.0/include-fixed/openssl/bn.h：fatal error: openssl/e_os2.h: No such file or directory
+
+　　　　　　　　　　修改目录：/home/jim/sysroots/x86_64-pokysdk-linux/usr/lib/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/5.3.0/include-fixed/openssl 为openssl_old
+
+/home/jim/sysroots/x86_64-pokysdk-linux/cortexa9hf-neon-poky-linux-gnueabi/usr/include/openssl 为openssl_old
+
+　　　　　　　　　　　第二个：int_max_32 :redifinition in in　/usr/include/google/protobuf/
+
+　　　　　　　　　　　　　　　修改目录：/usr/include/google/protobuf　为protobuf_old
+
+第三个：/usr/include/python2.7/pyconfig.h:24:54: fatal error: arm-linux-gnueabihf/python2.7/pyconfig.h: No such file or directory
+
+　　　　　　　　　　　　　　打开文件：/usr/include/python2.7/pyconfig.h，　去掉前缀：arm-linux-gnueabihf/
+
+用了一周时间终于解决完所有编译问题，上张图，在此MARK一下！
+
+注：bazel clean --expunge   （尽量少用，使用后，会清除生成的文件~/.cache/bazel/bazel_jim/7924169126bef9c95805dc831e19e9c3）
+

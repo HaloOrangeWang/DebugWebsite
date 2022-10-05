@@ -1,0 +1,322 @@
+
+on namespace ceilometer.$cmd failed: Authentication failed.
+
+
+UserNotFound: Could not find user ceilometer@ceilometer
+
+
+背景介绍
+
+1、Ceilometer 项目是 OpenStack 中用来做计量计费功能的一个组件，后来又逐步发展增加了部分监控采集、告警的功能。
+
+2、MongoDB 是一个基于分布式文件存储的数据库。由 C++ 语言编写。旨在为 WEB 应用提供可扩展的高性能数据存储解决方案。
+
+3、前几年的一个项目就使用到了 Ceilometer 和 MongoDB（3.2.9版本） 结合，用于存储性能和告警数据。
+
+
+问题说明
+
+最近，在某个现场环境上，MongoDB 挂载的存储设备出现了故障。但是，存储设备故障恢复后，MongoDB服务无法正常启动。
+
+启动日志报错如下：
+
+2019-10-31T16:33:27.651+0800 I CONTROL  [main] ***** SERVER RESTARTED *****
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten] MongoDB starting : pid=5097 port=27017 dbpath=/var/lib/mongodb 64-bit host=ubuntu
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten] db version v3.2.9
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten] git version: 22ec9e93b40c85fc7cae7d56e7d6a02fd811088c
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1f 6 Jan 2014
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten] allocator: tcmalloc
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten] modules: none
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten] build environment:
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten]     distmod: ubuntu1404
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten]     distarch: x86_64
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten]     target_arch: x86_64
+2019-10-31T16:33:27.658+0800 I CONTROL  [initandlisten] options: { config: "/etc/mongod.conf", net: { bindIp: "0.0.0.0", port: 27017 }, storage: { dbPath: "/var/lib/mongodb", engine: "wiredTiger", journal: { enabled: true }, wiredTiger: { collectionConfig: { blockCompressor: "snappy" }, engineConfig: { directoryForIndexes: true, journalCompressor: "snappy" }, indexConfig: { prefixCompression: true } } }, systemLog: { destination: "file", logAppend: true, path: "/var/log/mongodb/mongod.log" } }
+2019-10-31T16:33:27.676+0800 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=13G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2019-10-31T16:33:29.185+0800 E STORAGE  [initandlisten] WiredTiger (-31803) [1572510809:185119][5097:0x7f1a16a0bcc0], txn-recover: Recovery failed: WT_NOTFOUND: item not found
+2019-10-31T16:33:29.195+0800 I -        [initandlisten] Assertion: 28595:-31803: WT_NOTFOUND: item not found
+2019-10-31T16:33:29.195+0800 I STORAGE  [initandlisten] exception in initAndListen: 28595 -31803: WT_NOTFOUND: item not found, terminating
+2019-10-31T16:33:29.195+0800 I CONTROL  [initandlisten] dbexit:  rc: 100
+
+截图如下：
+
+报错的大致意思就是 MongoDB 挂载的存储设备出现了异常，item not found。MongoDB服务终止，并退出。
+
+查询不到mongo的进程，截图如下：
+
+由于 Ceilometer 依赖MongoDB服务，导致 Ceilometer的服务启动也是异常的。
+
+最终结果：整个性能采集功能基本瘫痪了。。。
+
+
+问题处理
+
+由于是现场环境，并且 MongoDB 中已经存了近 300 GB 的性能数据，现场同事还是希望能尽量恢复下 MongoDB的服务。
+
+我们的环境是使用Vmware 开的虚拟机，并且现场同事会定期对现场机器做“快照”（Snapshot）备份。
+
+Plan A：让MongoDB所在的机器恢复到 存储设备出现故障前几天。
+
+Plan B：在 Plan A 失败的情况下，重装 MongoDB服务。
+
+
+【Plan A】：抢救 MongoDB
+
+1、当MongoDB所在机器，恢复到故障前几天的虚拟机快照。
+
+MongoDB 服务启动依然异常。错误日志如下：
+
+2019-11-01T10:05:39.171+0800 I CONTROL  [main] ***** SERVER RESTARTED *****
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten] MongoDB starting : pid=1992 port=27017 dbpath=/var/lib/mongodb 64-bit host=ubuntu
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten] db version v3.2.9
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten] git version: 22ec9e93b40c85fc7cae7d56e7d6a02fd811088c
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1f 6 Jan 2014
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten] allocator: tcmalloc
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten] modules: none
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten] build environment:
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten]     distmod: ubuntu1404
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten]     distarch: x86_64
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten]     target_arch: x86_64
+2019-11-01T10:05:39.178+0800 I CONTROL  [initandlisten] options: { config: "/etc/mongod.conf", net: { bindIp: "0.0.0.0", port: 27017 }, storage: { dbPath: "/var/lib/mongodb", engine: "wiredTiger", journal: { enabled: true }, wiredTiger: { collectionConfig: { blockCompressor: "snappy" }, engineConfig: { directoryForIndexes: true, journalCompressor: "snappy" }, indexConfig: { prefixCompression: true } } }, systemLog: { destination: "file", logAppend: true, path: "/var/log/mongodb/mongod.log" } }
+2019-11-01T10:05:39.196+0800 W -        [initandlisten] Detected unclean shutdown - /var/lib/mongodb/mongod.lock is not empty.
+2019-11-01T10:05:39.196+0800 W STORAGE  [initandlisten] Recovering data from the last clean checkpoint.
+2019-11-01T10:05:39.196+0800 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=13G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2019-11-01T10:05:39.206+0800 E STORAGE  [initandlisten] WiredTiger (0) [1572573939:206772][1992:0x7fbc63db5cc0], file:WiredTiger.wt, connection: WiredTiger.turtle: encountered an illegal file format or internal value
+2019-11-01T10:05:39.206+0800 E STORAGE  [initandlisten] WiredTiger (-31804) [1572573939:206917][1992:0x7fbc63db5cc0], file:WiredTiger.wt, connection: the process must exit and restart: WT_PANIC: WiredTiger library panic
+2019-11-01T10:05:39.206+0800 I -        [initandlisten] Fatal Assertion 28558
+2019-11-01T10:05:39.206+0800 I -        [initandlisten]
+
+***aborting after fassert() failure
+
+2019-11-01T10:05:39.224+0800 F -        [initandlisten] Got signal: 6 (Aborted).
+
+0x13225f2 0x1321749 0x1321f52 0x7fbc62a32340 0x7fbc62692f79 0x7fbc62696388 0x12a8662 0x10a28b3 0x1a88fcc 0x1a8944d 0x1a89834 0x1a509bf 0x1a4f42e 0x1a0b5e1 0x1a87f17 0x1a88459 0x1a8857b 0x1a1a208 0x1a850b5 0x1a4ed4f 0x1a4ee4e 0x1a07e63 0x108a81f 0x1086ad3 0xfafb38 0x9b61ed 0x9b87b0 0x96f4ad 0x7fbc6267dec5 0x9b2af7
+----- BEGIN BACKTRACE -----
+{"backtrace":[{"b":"400000","o":"F225F2","s":"_ZN5mongo15printStackTraceERSo"},{"b":"400000","o":"F21749"},{"b":"400000","o":"F21F52"},{"b":"7FBC62A22000","o":"10340"},{"b":"7FBC6265C000","o":"36F79","s":"gsignal"},{"b":"7FBC6265C000","o":"3A388","s":"abort"},{"b":"400000","o":"EA8662","s":"_ZN5mongo13fassertFailedEi"},{"b":"400000","o":"CA28B3"},{"b":"400000","o":"1688FCC","s":"__wt_eventv"},{"b":"400000","o":"168944D","s":"__wt_err"},{"b":"400000","o":"1689834","s":"__wt_panic"},{"b":"400000","o":"16509BF","s":"__wt_turtle_read"},{"b":"400000","o":"164F42E","s":"__wt_metadata_search"},{"b":"400000","o":"160B5E1","s":"__wt_conn_btree_open"},{"b":"400000","o":"1687F17","s":"__wt_session_get_btree"},{"b":"400000","o":"1688459","s":"__wt_session_get_btree"},{"b":"400000","o":"168857B","s":"__wt_session_get_btree_ckpt"},{"b":"400000","o":"161A208","s":"__wt_curfile_open"},{"b":"400000","o":"16850B5"},{"b":"400000","o":"164ED4F","s":"__wt_metadata_cursor_open"},{"b":"400000","o":"164EE4E","s":"__wt_metadata_cursor"},{"b":"400000","o":"1607E63","s":"wiredtiger_open"},{"b":"400000","o":"C8A81F","s":"_ZN5mongo18WiredTigerKVEngineC2ERKSsS2_S2_mbbb"},{"b":"400000","o":"C86AD3"},{"b":"400000","o":"BAFB38","s":"_ZN5mongo20ServiceContextMongoD29initializeGlobalStorageEngineEv"},{"b":"400000","o":"5B61ED"},{"b":"400000","o":"5B87B0","s":"_ZN5mongo13initAndListenEi"},{"b":"400000","o":"56F4AD","s":"main"},{"b":"7FBC6265C000","o":"21EC5","s":"__libc_start_main"},{"b":"400000","o":"5B2AF7"}],"processInfo":{ "mongodbVersion" : "3.2.9", "gitVersion" : "22ec9e93b40c85fc7cae7d56e7d6a02fd811088c", "compiledModules" : [], "uname" : { "sysname" : "Linux", "release" : "3.13.0-24-generic", "version" : "#46-Ubuntu SMP Thu Apr 10 19:11:08 UTC 2014", "machine" : "x86_64" }, "somap" : [ { "elfType" : 2, "b" : "400000", "buildId" : "78E57AF736DDF3E8C558F60DB63F68BCF686D70A" }, { "b" : "7FFFC96FE000", "elfType" : 3, "buildId" : "6755FAD2CADACDF1667E5B57FF1EDFC28DD1C976" }, { "b" : "7FBC63942000", "path" : "/lib/x86_64-linux-gnu/libssl.so.1.0.0", "elfType" : 3, "buildId" : "70F9A7F3734C01FF8D442C21A03B631588C2FECD" }, { "b" : "7FBC63568000", "path" : "/lib/x86_64-linux-gnu/libcrypto.so.1.0.0", "elfType" : 3, "buildId" : "8D6FFA819931E68666BCEF4424BA6289838309D7" }, { "b" : "7FBC63360000", "path" : "/lib/x86_64-linux-gnu/librt.so.1", "elfType" : 3, "buildId" : "92FCF41EFE012D6186E31A59AD05BDBB487769AB" }, { "b" : "7FBC6315C000", "path" : "/lib/x86_64-linux-gnu/libdl.so.2", "elfType" : 3, "buildId" : "C1AE4CB7195D337A77A3C689051DABAA3980CA0C" }, { "b" : "7FBC62E56000", "path" : "/lib/x86_64-linux-gnu/libm.so.6", "elfType" : 3, "buildId" : "574C6350381DA194C00FF555E0C1784618C05569" }, { "b" : "7FBC62C40000", "path" : "/lib/x86_64-linux-gnu/libgcc_s.so.1", "elfType" : 3, "buildId" : "CC0D578C2E0D86237CA7B0CE8913261C506A629A" }, { "b" : "7FBC62A22000", "path" : "/lib/x86_64-linux-gnu/libpthread.so.0", "elfType" : 3, "buildId" : "FE662C4D7B14EE804E0C1902FB55218A106BC5CB" }, { "b" : "7FBC6265C000", "path" : "/lib/x86_64-linux-gnu/libc.so.6", "elfType" : 3, "buildId" : "B571F83A8A6F5BB22D3558CDDDA9F943A2A67FD1" }, { "b" : "7FBC63BA0000", "path" : "/lib64/ld-linux-x86-64.so.2", "elfType" : 3, "buildId" : "9F00581AB3C73E3AEA35995A0C50D24D59A01D47" } ] }}
+ mongod(_ZN5mongo15printStackTraceERSo+0x32) [0x13225f2]
+ mongod(+0xF21749) [0x1321749]
+ mongod(+0xF21F52) [0x1321f52]
+ libpthread.so.0(+0x10340) [0x7fbc62a32340]
+ libc.so.6(gsignal+0x39) [0x7fbc62692f79]
+ libc.so.6(abort+0x148) [0x7fbc62696388]
+ mongod(_ZN5mongo13fassertFailedEi+0x82) [0x12a8662]
+ mongod(+0xCA28B3) [0x10a28b3]
+ mongod(__wt_eventv+0x42C) [0x1a88fcc]
+ mongod(__wt_err+0x8D) [0x1a8944d]
+ mongod(__wt_panic+0x24) [0x1a89834]
+ mongod(__wt_turtle_read+0x2AF) [0x1a509bf]
+ mongod(__wt_metadata_search+0xBE) [0x1a4f42e]
+ mongod(__wt_conn_btree_open+0x61) [0x1a0b5e1]
+ mongod(__wt_session_get_btree+0xE7) [0x1a87f17]
+ mongod(__wt_session_get_btree+0x629) [0x1a88459]
+ mongod(__wt_session_get_btree_ckpt+0xAB) [0x1a8857b]
+ mongod(__wt_curfile_open+0x218) [0x1a1a208]
+ mongod(+0x16850B5) [0x1a850b5]
+ mongod(__wt_metadata_cursor_open+0x5F) [0x1a4ed4f]
+ mongod(__wt_metadata_cursor+0x7E) [0x1a4ee4e]
+ mongod(wiredtiger_open+0x1433) [0x1a07e63]
+ mongod(_ZN5mongo18WiredTigerKVEngineC2ERKSsS2_S2_mbbb+0x77F) [0x108a81f]
+ mongod(+0xC86AD3) [0x1086ad3]
+ mongod(_ZN5mongo20ServiceContextMongoD29initializeGlobalStorageEngineEv+0x598) [0xfafb38]
+ mongod(+0x5B61ED) [0x9b61ed]
+ mongod(_ZN5mongo13initAndListenEi+0x10) [0x9b87b0]
+ mongod(main+0x15D) [0x96f4ad]
+ libc.so.6(__libc_start_main+0xF5) [0x7fbc6267dec5]
+ mongod(+0x5B2AF7) [0x9b2af7]
+-----  END BACKTRACE  -----
+
+2、步骤1中出现的问题，网上说是需要删除 mongod.lock文件，重启MongoDB。
+
+但是，删除了 mongod.lock文件后，MongoDB服务启动依然报错。报错日志如下：
+
+2019-11-01T10:09:28.872+0800 I CONTROL  [main] ***** SERVER RESTARTED *****
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten] MongoDB starting : pid=2032 port=27017 dbpath=/var/lib/mongodb 64-bit host=ubuntu
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten] db version v3.2.9
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten] git version: 22ec9e93b40c85fc7cae7d56e7d6a02fd811088c
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1f 6 Jan 2014
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten] allocator: tcmalloc
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten] modules: none
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten] build environment:
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten]     distmod: ubuntu1404
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten]     distarch: x86_64
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten]     target_arch: x86_64
+2019-11-01T10:09:28.879+0800 I CONTROL  [initandlisten] options: { config: "/etc/mongod.conf", net: { bindIp: "0.0.0.0", port: 27017 }, storage: { dbPath: "/var/lib/mongodb", engine: "wiredTiger", journal: { enabled: true }, wiredTiger: { collectionConfig: { blockCompressor: "snappy" }, engineConfig: { directoryForIndexes: true, journalCompressor: "snappy" }, indexConfig: { prefixCompression: true } } }, systemLog: { destination: "file", logAppend: true, path: "/var/log/mongodb/mongod.log" } }
+2019-11-01T10:09:28.897+0800 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=13G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2019-11-01T10:09:28.908+0800 E STORAGE  [initandlisten] WiredTiger (0) [1572574168:908112][2032:0x7ffdfc075cc0], file:WiredTiger.wt, connection: WiredTiger.turtle: encountered an illegal file format or internal value
+2019-11-01T10:09:28.908+0800 E STORAGE  [initandlisten] WiredTiger (-31804) [1572574168:908264][2032:0x7ffdfc075cc0], file:WiredTiger.wt, connection: the process must exit and restart: WT_PANIC: WiredTiger library panic
+2019-11-01T10:09:28.908+0800 I -        [initandlisten] Fatal Assertion 28558
+2019-11-01T10:09:28.908+0800 I -        [initandlisten]
+
+***aborting after fassert() failure
+
+2019-11-01T10:09:28.925+0800 F -        [initandlisten] Got signal: 6 (Aborted).
+
+0x13225f2 0x1321749 0x1321f52 0x7ffdfacf2340 0x7ffdfa952f79 0x7ffdfa956388 0x12a8662 0x10a28b3 0x1a88fcc 0x1a8944d 0x1a89834 0x1a509bf 0x1a4f42e 0x1a0b5e1 0x1a87f17 0x1a88459 0x1a8857b 0x1a1a208 0x1a850b5 0x1a4ed4f 0x1a4ee4e 0x1a07e63 0x108a81f 0x1086ad3 0xfafb38 0x9b61ed 0x9b87b0 0x96f4ad 0x7ffdfa93dec5 0x9b2af7
+----- BEGIN BACKTRACE -----
+{"backtrace":[{"b":"400000","o":"F225F2","s":"_ZN5mongo15printStackTraceERSo"},{"b":"400000","o":"F21749"},{"b":"400000","o":"F21F52"},{"b":"7FFDFACE2000","o":"10340"},{"b":"7FFDFA91C000","o":"36F79","s":"gsignal"},{"b":"7FFDFA91C000","o":"3A388","s":"abort"},{"b":"400000","o":"EA8662","s":"_ZN5mongo13fassertFailedEi"},{"b":"400000","o":"CA28B3"},{"b":"400000","o":"1688FCC","s":"__wt_eventv"},{"b":"400000","o":"168944D","s":"__wt_err"},{"b":"400000","o":"1689834","s":"__wt_panic"},{"b":"400000","o":"16509BF","s":"__wt_turtle_read"},{"b":"400000","o":"164F42E","s":"__wt_metadata_search"},{"b":"400000","o":"160B5E1","s":"__wt_conn_btree_open"},{"b":"400000","o":"1687F17","s":"__wt_session_get_btree"},{"b":"400000","o":"1688459","s":"__wt_session_get_btree"},{"b":"400000","o":"168857B","s":"__wt_session_get_btree_ckpt"},{"b":"400000","o":"161A208","s":"__wt_curfile_open"},{"b":"400000","o":"16850B5"},{"b":"400000","o":"164ED4F","s":"__wt_metadata_cursor_open"},{"b":"400000","o":"164EE4E","s":"__wt_metadata_cursor"},{"b":"400000","o":"1607E63","s":"wiredtiger_open"},{"b":"400000","o":"C8A81F","s":"_ZN5mongo18WiredTigerKVEngineC2ERKSsS2_S2_mbbb"},{"b":"400000","o":"C86AD3"},{"b":"400000","o":"BAFB38","s":"_ZN5mongo20ServiceContextMongoD29initializeGlobalStorageEngineEv"},{"b":"400000","o":"5B61ED"},{"b":"400000","o":"5B87B0","s":"_ZN5mongo13initAndListenEi"},{"b":"400000","o":"56F4AD","s":"main"},{"b":"7FFDFA91C000","o":"21EC5","s":"__libc_start_main"},{"b":"400000","o":"5B2AF7"}],"processInfo":{ "mongodbVersion" : "3.2.9", "gitVersion" : "22ec9e93b40c85fc7cae7d56e7d6a02fd811088c", "compiledModules" : [], "uname" : { "sysname" : "Linux", "release" : "3.13.0-24-generic", "version" : "#46-Ubuntu SMP Thu Apr 10 19:11:08 UTC 2014", "machine" : "x86_64" }, "somap" : [ { "elfType" : 2, "b" : "400000", "buildId" : "78E57AF736DDF3E8C558F60DB63F68BCF686D70A" }, { "b" : "7FFFBA0FE000", "elfType" : 3, "buildId" : "6755FAD2CADACDF1667E5B57FF1EDFC28DD1C976" }, { "b" : "7FFDFBC02000", "path" : "/lib/x86_64-linux-gnu/libssl.so.1.0.0", "elfType" : 3, "buildId" : "70F9A7F3734C01FF8D442C21A03B631588C2FECD" }, { "b" : "7FFDFB828000", "path" : "/lib/x86_64-linux-gnu/libcrypto.so.1.0.0", "elfType" : 3, "buildId" : "8D6FFA819931E68666BCEF4424BA6289838309D7" }, { "b" : "7FFDFB620000", "path" : "/lib/x86_64-linux-gnu/librt.so.1", "elfType" : 3, "buildId" : "92FCF41EFE012D6186E31A59AD05BDBB487769AB" }, { "b" : "7FFDFB41C000", "path" : "/lib/x86_64-linux-gnu/libdl.so.2", "elfType" : 3, "buildId" : "C1AE4CB7195D337A77A3C689051DABAA3980CA0C" }, { "b" : "7FFDFB116000", "path" : "/lib/x86_64-linux-gnu/libm.so.6", "elfType" : 3, "buildId" : "574C6350381DA194C00FF555E0C1784618C05569" }, { "b" : "7FFDFAF00000", "path" : "/lib/x86_64-linux-gnu/libgcc_s.so.1", "elfType" : 3, "buildId" : "CC0D578C2E0D86237CA7B0CE8913261C506A629A" }, { "b" : "7FFDFACE2000", "path" : "/lib/x86_64-linux-gnu/libpthread.so.0", "elfType" : 3, "buildId" : "FE662C4D7B14EE804E0C1902FB55218A106BC5CB" }, { "b" : "7FFDFA91C000", "path" : "/lib/x86_64-linux-gnu/libc.so.6", "elfType" : 3, "buildId" : "B571F83A8A6F5BB22D3558CDDDA9F943A2A67FD1" }, { "b" : "7FFDFBE60000", "path" : "/lib64/ld-linux-x86-64.so.2", "elfType" : 3, "buildId" : "9F00581AB3C73E3AEA35995A0C50D24D59A01D47" } ] }}
+ mongod(_ZN5mongo15printStackTraceERSo+0x32) [0x13225f2]
+ mongod(+0xF21749) [0x1321749]
+ mongod(+0xF21F52) [0x1321f52]
+ libpthread.so.0(+0x10340) [0x7ffdfacf2340]
+ libc.so.6(gsignal+0x39) [0x7ffdfa952f79]
+ libc.so.6(abort+0x148) [0x7ffdfa956388]
+ mongod(_ZN5mongo13fassertFailedEi+0x82) [0x12a8662]
+ mongod(+0xCA28B3) [0x10a28b3]
+ mongod(__wt_eventv+0x42C) [0x1a88fcc]
+ mongod(__wt_err+0x8D) [0x1a8944d]
+ mongod(__wt_panic+0x24) [0x1a89834]
+ mongod(__wt_turtle_read+0x2AF) [0x1a509bf]
+ mongod(__wt_metadata_search+0xBE) [0x1a4f42e]
+ mongod(__wt_conn_btree_open+0x61) [0x1a0b5e1]
+ mongod(__wt_session_get_btree+0xE7) [0x1a87f17]
+ mongod(__wt_session_get_btree+0x629) [0x1a88459]
+ mongod(__wt_session_get_btree_ckpt+0xAB) [0x1a8857b]
+ mongod(__wt_curfile_open+0x218) [0x1a1a208]
+ mongod(+0x16850B5) [0x1a850b5]
+ mongod(__wt_metadata_cursor_open+0x5F) [0x1a4ed4f]
+ mongod(__wt_metadata_cursor+0x7E) [0x1a4ee4e]
+ mongod(wiredtiger_open+0x1433) [0x1a07e63]
+ mongod(_ZN5mongo18WiredTigerKVEngineC2ERKSsS2_S2_mbbb+0x77F) [0x108a81f]
+ mongod(+0xC86AD3) [0x1086ad3]
+ mongod(_ZN5mongo20ServiceContextMongoD29initializeGlobalStorageEngineEv+0x598) [0xfafb38]
+ mongod(+0x5B61ED) [0x9b61ed]
+ mongod(_ZN5mongo13initAndListenEi+0x10) [0x9b87b0]
+ mongod(main+0x15D) [0x96f4ad]
+ libc.so.6(__libc_start_main+0xF5) [0x7ffdfa93dec5]
+ mongod(+0x5B2AF7) [0x9b2af7]
+-----  END BACKTRACE  -----
+
+3、经过步骤1，2，依旧不可以，网上说是执行 mongod --repair 命令 可以解决。
+
+但是，执行后，MongoDB服务启动依然报错。报错日志如下：
+
+2019-11-01T10:24:56.685+0800 I CONTROL  [main] ***** SERVER RESTARTED *****
+2019-11-01T10:24:56.691+0800 I CONTROL  [initandlisten] MongoDB starting : pid=2158 port=27017 dbpath=/var/lib/mongodb 64-bit host=ubuntu
+2019-11-01T10:24:56.691+0800 I CONTROL  [initandlisten] db version v3.2.9
+2019-11-01T10:24:56.691+0800 I CONTROL  [initandlisten] git version: 22ec9e93b40c85fc7cae7d56e7d6a02fd811088c
+2019-11-01T10:24:56.691+0800 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1f 6 Jan 2014
+2019-11-01T10:24:56.691+0800 I CONTROL  [initandlisten] allocator: tcmalloc
+2019-11-01T10:24:56.691+0800 I CONTROL  [initandlisten] modules: none
+2019-11-01T10:24:56.691+0800 I CONTROL  [initandlisten] build environment:
+2019-11-01T10:24:56.691+0800 I CONTROL  [initandlisten]     distmod: ubuntu1404
+2019-11-01T10:24:56.692+0800 I CONTROL  [initandlisten]     distarch: x86_64
+2019-11-01T10:24:56.692+0800 I CONTROL  [initandlisten]     target_arch: x86_64
+2019-11-01T10:24:56.692+0800 I CONTROL  [initandlisten] options: { config: "/etc/mongod.conf", net: { bindIp: "0.0.0.0", port: 27017 }, storage: { dbPath: "/var/lib/mongodb", engine: "wiredTiger", journal: { enabled: true }, wiredTiger: { collectionConfig: { blockCompressor: "snappy" }, engineConfig: { directoryForIndexes: true, journalCompressor: "snappy" }, indexConfig: { prefixCompression: true } } }, systemLog: { destination: "file", logAppend: true, path: "/var/log/mongodb/mongod.log" } }
+2019-11-01T10:24:56.711+0800 E NETWORK  [initandlisten] Failed to unlink socket file /tmp/mongodb-27017.sock errno:1 Operation not permitted
+2019-11-01T10:24:56.711+0800 I -        [initandlisten] Fatal Assertion 28578
+2019-11-01T10:24:56.711+0800 I -        [initandlisten]
+
+***aborting after fassert() failure
+
+4、经过前三步的测试验证，证明抢救无效。MongoDB官网上说是，针对此类挂载存储设备故障引发的服务不能正常重启的问题，在做改善。
+
+但是，目前个人还没有找到完美的抢救方案。断断续续地折腾了两三天，最后无奈宣布 “MongoDB 抢救无效！！！”。
+
+为了尽快回复现场大环境的正常功能使用，再者虽然是300GB的性能数据，但也是历史性能数据，不具有太多的使用价值，不再做无用功。
+
+决定启动 Plan B。（此情此景，有感而发：往者不可谏，来者犹可追！不念过去，珍惜当下，展望未来。。。）
+
+
+【Plan B】： 重装MongoDB
+
+1、准备一台虚拟机，和现有虚拟机操作系统和 IP 一致，保证 MongoDB 服务的兼容性和其他服务的依赖性，免得修改其他服务的MongoDB的连接信息。
+
+2、往往事情不会一蹴而就的解决，总会磕磕绊绊。这不，按照步骤1重装后，MongoDB 和 Ceilometer-api 服务启动均出现异常。报错日志分别如下：
+
+1）MongoDB服务启动日志如下（UserNotFound: Could not find user ceilometer@ceilometer）：
+
+2019-11-04T14:28:46.130+0800 I CONTROL  [signalProcessingThread] dbexit:  rc: 0
+2019-11-04T14:28:53.758+0800 I CONTROL  [main] ***** SERVER RESTARTED *****
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten] MongoDB starting : pid=2586 port=27017 dbpath=/var/lib/mongodb 64-bit host=ubuntu
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten] db version v3.2.9
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten] git version: 22ec9e93b40c85fc7cae7d56e7d6a02fd811088c
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1f 6 Jan 2014
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten] allocator: tcmalloc
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten] modules: none
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten] build environment:
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten]     distmod: ubuntu1404
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten]     distarch: x86_64
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten]     target_arch: x86_64
+2019-11-04T14:28:53.765+0800 I CONTROL  [initandlisten] options: { config: "/etc/mongod.conf", net: { bindIp: "0.0.0.0", port: 27017 }, storage: { dbPath: "/var/lib/mongodb", engine: "wiredTiger", journal: { enabled: true }, wiredTiger: { collectionConfig: { blockCompressor: "snappy" }, engineConfig: { directoryForIndexes: true, journalCompressor: "snappy" }, indexConfig: { prefixCompression: true } } }, systemLog: { destination: "file", logAppend: true, path: "/var/log/mongodb/mongod.log" } }
+2019-11-04T14:28:53.783+0800 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=13G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2019-11-04T14:28:58.241+0800 I FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/var/lib/mongodb/diagnostic.data'
+2019-11-04T14:28:58.241+0800 I NETWORK  [HostnameCanonicalizationWorker] Starting hostname canonicalization worker
+2019-11-04T14:28:58.241+0800 I NETWORK  [initandlisten] waiting for connections on port 27017
+2019-11-04T14:28:59.019+0800 I NETWORK  [initandlisten] connection accepted from 10.117.26.104:44085 #1 (1 connection now open)
+2019-11-04T14:28:59.272+0800 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:59823 #2 (2 connections now open)
+2019-11-04T14:28:59.417+0800 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:59824 #3 (3 connections now open)
+2019-11-04T14:28:59.418+0800 I ACCESS   [conn3] SCRAM-SHA-1 authentication failed for ceilometer on ceilometer from client 127.0.0.1 ; UserNotFound: Could not find user ceilometer@ceilometer
+2019-11-04T14:28:59.802+0800 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:59825 #4 (4 connections now open)
+2019-11-04T14:29:09.420+0800 I ACCESS   [conn3] SCRAM-SHA-1 authentication failed for ceilometer on ceilometer from client 127.0.0.1 ; UserNotFound: Could not find user ceilometer@ceilometer
+2019-11-04T14:29:19.421+0800 I ACCESS   [conn3] SCRAM-SHA-1 authentication failed for ceilometer on ceilometer from client 127.0.0.1 ; UserNotFound: Could not find user ceilometer@ceilometer
+2019-11-04T14:29:29.423+0800 I ACCESS   [conn3] SCRAM-SHA-1 authentication failed for ceilometer on ceilometer from client 127.0.0.1 ; UserNotFound: Could not find user ceilometer@ceilometer
+
+2）Ceilometer 服务启动日志如下（on namespace ceilometer.$cmd failed: Authentication failed）：
+
+2019-11-04 14:41:59.875 2324 TRACE ceilometer Traceback (most recent call last):
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/bin/ceilometer-api", line 10, in <module>
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     sys.exit(main())
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/ceilometer/api/app.py", line 131, in build_server
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     app = load_app()
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/ceilometer/api/app.py", line 127, in load_app
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     return deploy.loadapp("config:" + cfg_file)
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 247, in loadapp
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     return loadobj(APP, uri, name=name, **kw)
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     app = load_app()
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/ceilometer/api/app.py", line 127, in load_app
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     return deploy.loadapp("config:" + cfg_file)
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 247, in loadapp
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     return loadobj(APP, uri, name=name, **kw)
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 272, in loadobj
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     return context.create()
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 710, in create
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     return self.object_type.invoke(self)
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 203, in invoke
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     app = context.app_context.create()
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 710, in create
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     return self.object_type.invoke(self)
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/paste/deploy/loadwsgi.py", line 146, in invoke
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     return fix_call(context.object, context.global_conf, **context.local_conf)
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/paste/deploy/util.py", line 55, in fix_call
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     val = callable(*args, **kw)
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/ceilometer/api/app.py", line 152, in app_factory
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     return VersionSelectorApplication()
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/ceilometer/api/app.py", line 104, in __init__
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     self.v2 = setup_app(pecan_config=pc)
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/ceilometer/api/app.py", line 65, in setup_app
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     hooks.DBHook(),
+2019-11-04 14:41:59.875 2324 TRACE ceilometer   File "/usr/lib/python2.7/dist-packages/ceilometer/api/hooks.py", line 53, in __init__
+2019-11-04 14:41:59.875 2324 TRACE ceilometer     ', '.join(['metering', 'event', 'alarm']))
+2019-11-04 14:41:59.875 2324 TRACE ceilometer Exception: Api failed to start. Failed to connect to databases, purpose:  metering, event, alarm
+2019-11-04 14:41:59.875 2324 TRACE ceilometer
+2019-11-04 14:42:00.427 2337 INFO ceilometer.api.app [-] Full WSGI config used: /etc/ceilometer/api_paste.ini
+2019-11-04 14:42:00.467 2337 INFO ceilometer.storage.mongo.utils [-] Connecting to mongodb on [('127.0.0.1', 27017)]
+2019-11-04 14:43:30.497 2337 ERROR ceilometer.api.hooks [-] Failed to connect to db, purpose metering retry later: command SON([('saslStart', 1), ('mechanism', 'SCRAM-SHA-1'), ('payload', Binary('n,,n=ceilometer,r=ODUxNzE5MDAwMjM3', 0)), ('autoAuthorize', 1)]) on namespace ceilometer.$cmd failed: Authentication failed.
+
+3、mongodb服务重装后，ceilometer-api服务连接mongodb的时候，日志报认证失败，导致8777端口一直用不了。
+
+1）【问题原因】是因为mongodb 缺少ceilometer账号。
+
+2）【解决方案】
+
+在ceilometer库中新建用户ceilometer，如下三条命令:
+
+mongo
+use ceilometer;
+db.createUser( { user: "ceilometer", pwd: "password",roles: [ "readWrite", "dbAdmin" ] } );
+
+具体命令操作，截图如下：
+
+【注意】
+
+如上图所示，3.2.9版本的MongoDB，不再支持 db.addUser() 方法创建用户，需要使用 db.createUser() 方法进行创建用户。
+
+
+总结
+
+以上，是个人根据自己最近几天现场问题的处理情况。
+
+最终使 MongoDB 和 Ceilometer 服务可以正常使用。
+
+处理过程中，有所感悟，做下心得记录，希望能帮到有需要的同学。
+

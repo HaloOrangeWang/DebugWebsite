@@ -1,0 +1,26 @@
+centos7 +  python3.6.4
+
+我使用
+
+pip3 install opencv-python
+
+安装了opencv-python  之后，在使用 import cv2  报错如下
+
+报错原因： 缺少共享库
+
+使用如下命令查看缺少得共享库
+
+yum whatprovides libSM.so.6
+
+使用以下命令解决：
+
+yum install libSM-1.2.2-2.el7.x86_64 --setopt=protected_multilib=false
+
+校验一下： 输入以下命令来查看 opencv得版本
+
+python
+import cv2
+cv2.__version__
+
+至此，已成功！
+

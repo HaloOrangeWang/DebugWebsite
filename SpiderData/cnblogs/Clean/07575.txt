@@ -1,0 +1,23 @@
+在使用YOLO v5进行自己数据集的训练的时候（python3 train.py），报了如下的错误：
+
+从Traceback我们可以看到这个错误是YOLO调用了pytorch，pytorch又调了Tensorflow，最后由Tensorflow报出的错误，于是根据报错，我们前往
+
+/home/riddleli/.local/lib/python3.6/site-packages/tensorboard/summary/writer/event_file_writer.py
+
+这一地址（当然你要修改成你实际报错的位置），看看这个python文件的76行写了什么内容
+
+这两行代码很好理解，意思就是检查一下有没有叫做logdir的文件夹，如果没有的话就创建一个，但是似乎由于tensorflow版本的原因，tf.io.gfile这里出现了报错，一个最简单的思路就是使用Python自带的os.path和os.makedirs来替换掉这两个函数，将这两行程序改成如下所示：
+
+if not os.path.exists(logdir):
+　　os.makedirs(logdir)
+
+随后我们还可以看到91行处也有类似的代码，如果不管它一会也会报错
+
+self._general_file_writer = tf.io.gfile.GFile(self._file_name, "wb")
+
+这里我们采用另外一种方案，经过查阅资料，我们得知：出现这个问题的根本原因在于tensorflow的新版本与旧版本的不兼容（真是有毒），在这一版tensorflow中，gfile不是tf.io的，而是直接是tf的，所以我们按照如下代码进行修改即可（当然你仍然可以使用Python自带的os类来实现这一个功能）
+
+self._general_file_writer = tf.gfile.GFile(self._file_name, "wb")
+
+修改完后保存，重新运行，错误消除√
+

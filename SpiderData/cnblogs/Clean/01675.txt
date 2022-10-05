@@ -1,0 +1,49 @@
+一、常见问题及解决方法
+
+1、在利用一些期刊提供的模板（比如ieeeaccess.cls和IEEEtran.cls），在最初winedt10无法访问这些模板，可以用TexWorks先编译一次，TexWorks会将这些模板拷贝到MikTex的C:\Program Files\MiKTeX 2.9\tex\latex\ieeetran中，然后再次用winedt10编译tex源文件就不会报错了。
+
+2、出现\begin{python}....\end{python}的frame一定要要加上[fragile]，一定要出现在block（或exampleblock,alertblock）对的中意，比如
+
+\begin{frame}[fragile]
+
+.................
+
+\begin{block}
+
+\begin{python}{}
+
+..................
+
+\end{python}
+
+\end{block}
+
+\end{frame}
+
+别外还要注意：（1）不能让\begin{python}....\end{python}出现在\only<1->{}中，否则会报错。
+
+（2）在\begin{python}....\end{python}中不能出现中文，否则会报错
+
+二、快捷键
+
+可以winedt 10的help菜单找到winedt manual ，然后搜索Default Shortcuts Overview。就可看到winedt的所有快捷键。比如F9是编译，F9+Shift是编译选中的块，对选中块进行语法检查的快捷键是Alt+F12，对选中文本进行括号匹配检查的快捷键是 Ctrl+Shift+F12。如果想查看与编译相关的所有快捷键，可以按下ctrl+f，然后输入complie，并按回车即可。
+
+（1）
+
+若输入的内容为：
+
+\begin{XXX}
+文本内容
+\end{YYY}
+
+则在 \begin{XXX} 后输入 > 则会弹出提示将后面的 YYY 替换为 XXX，直接点确定即可替换。
+
+（2）
+
+若输入的内容为：
+
+\begin{XXX}
+文本内容
+
+则在内容后面输入 \end{{ 则会自动变成  \end{XXX}
+

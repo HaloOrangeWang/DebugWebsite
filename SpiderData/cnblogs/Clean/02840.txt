@@ -1,0 +1,34 @@
+python3.6.7编译安装完成后，执行生成的pip3 search virtualenv 时，HTTPS 服务错
+
+pip is configured with locations that require TLS/SSL， however the ssl module in Python is not avaiable.
+
+命令行下执行python3,
+
+import ssl
+
+报没有模块名为SSL，
+
+命令行下进入python2
+
+import ssl 没有报错
+
+解决办法：
+
+1.删除已经编译的新版本python3
+
+2.重新编译python3，
+
+首先安装openssl-devel
+
+yum install openssl-devel -y
+
+编译参数：./configure --prefix=/usr/local/python37 --with-ssl
+
+make && make install
+
+3.再执行pip3 插件安装
+
+pip3 install virtualenv
+
+执行正常了
+

@@ -1,0 +1,32 @@
+
+（1） 背景
+
+环境： win7 + eclipse oxgen + pydev插件+ python3.6.5
+
+python代码里面使用win32con,pydev插件报错：
+
+
+（2） 分析
+
+win32con属于pywin32，开发环境里面已经安装pywin32包；而且程序也可以正常执行。
+
+问题应该是出现在pydev插件没有找到win32con，这个也是pydev插件做的不好的地方，程序查找lib只是在当前文件夹中查找并不会查找子级目录。
+
+
+（3） 解决办法
+
+Preferences -> PyDev -> Interpreters -> Python Interpreters, 点击New Folder,添加 %PYTHON_HOME%\Lib\site-packages\win32\lib 路径, 如下图所示即可解决报错。
+
+
+（4）附Python已停止工作的解决办法
+
+应用并保存配置，系统会弹出很多错误对话框:Python已停止工作
+
+没有找到错误原因，网上搜索了一些解决办法： https://www.zhihu.com/question/53088037
+
+其中设置防火墙的办法并不能工作, 修改注册表的办法亲测有效：
+
+在Windows7下，运行中输入“Regedit”并执行，运行注册表编辑器，依次定位到HKEY_CURRENT_USER＼Software＼Microsoft＼Windows＼Windows Error Reporting，在右侧窗口中找到并双击打开DontshowUI，然后在弹出的窗口中将默认值“0”修改为“1”。
+
+在Windows7下，运行中输入“Regedit”并执行，运行注册表编辑器，依次定位到HKEY_CURRENT_USER＼Software＼Microsoft＼Windows＼Windows Error Reporting，在右侧窗口中找到并双击打开DontshowUI，然后在弹出的窗口中将默认值“0”修改为“1”。
+

@@ -1,0 +1,106 @@
+安装scrapy报错: c/cffi1_module.c:92: 错误：‘included_ffis’未声明
+
+环境: CentOS6.8
+
+执行命令: pip install scrapy 报错
+
+解决方案，安装以下软件包
+
+[root@iZwz9e75q2nzsxqdr0ll5yZ ~]# yum install -y python-devel
+[root@iZwz9e75q2nzsxqdr0ll5yZ ~]# yum install -y libffi-devel
+[root@iZwz9e75q2nzsxqdr0ll5yZ ~]# yum install -y libxml2-devel
+[root@iZwz9e75q2nzsxqdr0ll5yZ ~]# yum install -y libxslt-devel
+
+没有安装python-devel导致的编译错误
+
+错误：Python.h：没有那个文件或目录
+
+47     Complete output from command /usr/bin/python -c "import setuptools, tokenize;__file__='/tmp/pip-build-Fiv1fw/cryptography/setup.py';exec(compile(geta     ttr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" install --record /tmp/pip-YrugWW-record/install-record.txt --sing     le-version-externally-managed --compile:
+48     c/_cffi_backend.c:2:20: 错误：Python.h：没有那个文件或目录
+49     c/_cffi_backend.c:3:26: 错误：structmember.h：没有那个文件或目录
+50     In file included from c/_cffi_backend.c:92:
+51     c/malloc_closure.h: 在函数‘emutramp_enabled_check’中:
+52     c/malloc_closure.h:38: 错误：‘FILE’未声明(在此函数内第一次使用)
+53     c/malloc_closure.h:38: 错误：(即使在一个函数内多次出现，每个未声明的标识符在其
+54     c/malloc_closure.h:38: 错误：所在的函数内也只报告一次。)
+55     c/malloc_closure.h:38: 错误：‘f’未声明(在此函数内第一次使用)
+56     c/malloc_closure.h:40: 警告：隐式声明函数‘fopen’
+57     c/malloc_closure.h:45: 警告：隐式声明函数‘getline’
+58     c/malloc_closure.h:46: 警告：隐式声明函数‘strncmp’
+
+没有安装libffi-devel导致的编译错误
+
+‘included_ffi’未声明(在此函数内第一次使用)
+
+...
+c/cffi1_module.c:92: 错误：‘included_ffis’未声明(在此函数内第一次使用)
+c/cffi1_module.c:92: 警告：赋值时将整数赋给指针，未作类型转换
+c/cffi1_module.c:93: 错误：‘included_libs’未声明(在此函数内第一次使用)
+c/cffi1_module.c:93: 警告：赋值时将整数赋给指针，未作类型转换
+c/cffi1_module.c:97: 警告：语句不起作用
+c/cffi1_module.c:99: 错误：‘PyObject’未声明(在此函数内第一次使用)
+c/cffi1_module.c:99: 错误：‘included_ffi’未声明(在此函数内第一次使用)
+c/cffi1_module.c:99: 错误：双目运算符 * 操作数(‘void **’和‘void **’)无效
+c/cffi1_module.c:99: 错误：‘included_lib’未声明(在此函数内第一次使用)
+c/cffi1_module.c:99: 警告：逗号表达式的左操作数不起作用
+c/cffi1_module.c:99: 警告：语句不起作用
+c/cffi1_module.c:100: 错误：‘m’未声明(在此函数内第一次使用)
+c/cffi1_module.c:100: 错误：双目运算符 * 操作数(‘void **’和‘void **’)无效
+c/cffi1_module.c:100: 警告：隐式声明函数‘PyImport_ImportModule’
+c/cffi1_module.c:100: 警告：语句不起作用
+c/cffi1_module.c:104: 警告：隐式声明函数‘PyObject_GetAttrString’
+c/cffi1_module.c:104: 警告：语句不起作用
+c/cffi1_module.c:108: 警告：条件表达式中指针/整数类型不匹配
+c/cffi1_module.c:108: 警告：语句不起作用
+c/cffi1_module.c:115: 警告：隐式声明函数‘PyObject_TypeCheck’
+c/cffi1_module.c:115: 错误：‘FFI_Type’未声明(在此函数内第一次使用)
+c/cffi1_module.c:116: 错误：‘Lib_Type’未声明(在此函数内第一次使用)
+c/cffi1_module.c:116: 警告：比较指针和整数
+c/cffi1_module.c:118: 错误：自增操作数必须是左值
+c/cffi1_module.c:118: 警告：语句不起作用
+c/cffi1_module.c:123: 错误：‘PyExc_ImportError’未声明(在此函数内第一次使用)
+c/cffi1_module.c: 在文件层：
+c/cffi1_module.c:132: 错误：expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+c/cffi1_module.c:154: 错误：expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+c/_cffi_backend.c:7307: 错误：expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘init_cffi_backend’
+...
+
+没有安装libxml2-devel导致的编译错误
+
+错误：libxml/xpath.h：没有那个文件或目录
+
+...
+src/lxml/etree.c:247423: 错误：expected ‘)’ before ‘value’
+src/lxml/etree.c:247485: 错误：expected ‘)’ before ‘value’
+src/lxml/etree.c:247578: 错误：expected ‘)’ before ‘value’
+Compile failed: command 'gcc' failed with exit status 1
+creating tmp
+cc -I/usr/include/libxml2 -c /tmp/xmlXPathInitPTnyau.c -o tmp/xmlXPathInitPTnyau.o
+/tmp/xmlXPathInitPTnyau.c:1:26: 错误：libxml/xpath.h：没有那个文件或目录
+*********************************************************************************
+Could not find function xmlCheckVersion in library libxml2. Is libxml2 installed?
+*********************************************************************************
+error: command 'gcc' failed with exit status 1
+...
+
+没有安装libxslt-devel 导致的编译错误
+
+ERROR: /bin/sh: xslt-config: command not found
+
+nize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" install --record /tmp/pip-QFc4iV-record/install-record.txt --single-versi     on-externally-managed --compile:
+  39     Building lxml version 4.1.1.
+  40     Building without Cython.
+  41     ERROR: /bin/sh: xslt-config: command not found
+  42
+  43     ** make sure the development packages of libxml2 and libxslt are installed **
+  44
+  45     Using build configuration of libxslt
+  46     running install
+  47     running build
+  48     running build_py
+  49     creating build
+  50     creating build/lib.linux-x86_64-2.6
+  51     creating build/lib.linux-x86_64-2.6/lxml
+  52     copying src/lxml/cssselect.py -> build/lib.linux-x86_64-2.6/lxml
+  53     copying src/lxml/usedoctest.py -> build/lib.linux-x86_64-2.6/lxml
+

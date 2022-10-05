@@ -1,0 +1,65 @@
+什么是json？
+
+json（JavaScript Object Notation，js对象标记）是一种轻量级的数据交换格式。易于人阅读和编写。json的数据格式其实就是python里面的字典格式，里面可以包含方括号括起来的数组，也就是python里面的列表。
+
+使用json函数需要导入json库： import json
+
+在python中，有专门处理json格式的模块---json和pickle模块
+
+json 模块提供了四个方法：dumps、dump、loads、load
+
+pickle 模块也提供了四个功能：dumps、dump、loads、load
+
+1、json.dumps()
+
+json.dumps()用于将dict类型的数据转换成str，因为如果直接将dict类型的数据写入json文件中会发生报错，因此在将数据写入时需要用到该函数。
+
+#json dumps
+import json
+
+name_emb = {'a':'111','b':'112','c':'113','d':'114'}
+jsobj = json.dumps(name_emb)
+print(name_emb)
+print(jsobj)
+print(type(name_emb))
+print(type(jsobj))
+
+运行结果
+
+{'a': '111', 'b': '112', 'c': '113', 'd': '114'}
+{"a": "111", "b": "112", "c": "113", "d": "114"}
+<class 'dict'>
+<class 'str'>
+
+2、json.loads()
+
+json.laods()用于将str类型的数据转换成dict
+
+import json
+name_emb = {'a':'111','b':'112','c':'113','d':'114'}
+jsobj1 = json.dumps(name_emb)
+jsobj2 = json.loads(jsobj1)
+print(name_emb)
+print(jsobj1)
+print(jsobj2)
+print(type(name_emb))
+print(type(jsobj1))
+print(type(jsobj2))
+
+输出结果：
+
+{'a': '111', 'b': '112', 'c': '113', 'd': '114'}
+{"a": "111", "b": "112", "c": "113", "d": "114"}
+{'a': '111', 'b': '112', 'c': '113', 'd': '114'}
+<class 'dict'>
+<class 'str'>
+<class 'dict'>
+
+3、json.dump()
+
+json.dump()用于将dict类型的数据转换成str，并写入到json文件中。
+
+4、json.load()
+
+json.load()用于从json文件中读取数据。
+

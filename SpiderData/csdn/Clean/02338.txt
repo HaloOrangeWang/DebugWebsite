@@ -1,0 +1,27 @@
+请按顺序进行依次执行.
+ 1、更新pip：
+
+python -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+2.、强制更新pip
+
+python -m pip install -U --force-reinstall pip
+
+3、安装依赖，示例：安装sip库：
+
+pip install sip -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+4、如何还是不行，就要具体分析一下报错信息了 ，比如博主后来遇到的一些情况：
+
+说是编码不对，点进去看一下
+
+接着往前追溯，看看encoding是从哪来的
+
+原来编码是None，程序肯定是采用默认的GBK，所以这里我改一下他的默认编码为：UTF-8
+
+重新安装依赖：
+
+pip install -r D:\yolov5-master\requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+成功！
+

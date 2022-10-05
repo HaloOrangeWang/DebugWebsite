@@ -1,0 +1,35 @@
+升级到ubuntu17.10，发现安装pyspider出现不少依赖问题。
+
+
+缺少packaging
+
+ImportError: The 'packaging' package is required;
+
+解决方法：
+
+sudo pip3 install packaging
+
+
+缺少pycurl
+
+再安装pyspider，报错
+
+src/pycurl.h:170:13: fatal error: openssl/crypto.h: 没有那个文件或目录
+
+安装pycrurl又报错，缺少openssl包下的文件
+
+src/pycurl.h:170:13: fatal error: openssl/crypto.h: 没有那个文件或目录
+
+解决方法： 先安装libssl-dev，再安装pyopenssl，然后安装pycurl
+
+sudo apt install libssl-dev
+sudo pip3 install pyopenssl
+pip3 install pycurl
+
+
+最后成功安装pyspider
+
+注意pyspider的依赖很多，安装过程中会下载很多python包，最好是重复执行安装命令2到3次，确认全部包下载安装成功。
+
+sudo pip3 install pyspider
+

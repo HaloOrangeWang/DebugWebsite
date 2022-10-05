@@ -1,0 +1,24 @@
+centos系统查看本机IP地址，输入 ifconfig -a查看
+
+昨天解决完数据库跨权限操作后，今天打开项目突然报错了，然后重启数据库时，报 ERROR! MySQL server PID file could not be found!，命令行链接数据库时也报 Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock' (2)，网上找了一些资料，居然都是相互抄袭的，并且并没有解决问题。然后自己摸索了一下，问题就解决了，下面是我的解决方案，以便和我一样遇到问题的童鞋们参考并解决问题。
+
+首先查看一下进程
+
+ps aux |grep mysq*
+
+如果看到上面的红色圈出的部分，那说明，Mysql的进程卡死了，这时用就要把这些卡死的进程都关闭。
+
+kill 27664
+
+kill 28873
+
+kill 30041
+
+kill 30597
+
+然后重启mysql
+
+service mysql start
+
+OK，解决问题就这么简单。
+

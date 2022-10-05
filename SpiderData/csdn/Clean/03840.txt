@@ -1,0 +1,149 @@
+
+
+记一次npm安装依赖奇怪的gyp报python错误
+
+@[TOC](记一次npm安装依赖奇怪的gyp报python错误
+
+错误一
+
+错误一解决
+
+错误二
+
+错误二解决
+
+
+错误一
+
+C:\Users\yuanz\Desktop\project\xxxxx\node_modules\fibers>if not defined npm_config_node_gyp (node "C:\Program Files\nodejs\node_modules\npm\node_modules\npm-lifecycle\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js" rebuild --release )  else (node "C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\bin\node-gyp.js" rebuild --release ) 
+gyp ERR! find Python 
+gyp ERR! find Python Python is not set from command line or npm configuration  
+gyp ERR! find Python Python is not set from environment variable PYTHON        
+gyp ERR! find Python checking if "python" can be used
+gyp ERR! find Python - "python" is not in PATH or produced an error
+gyp ERR! find Python checking if "python2" can be used
+gyp ERR! find Python - "python2" is not in PATH or produced an error
+gyp ERR! find Python checking if "python3" can be used
+gyp ERR! find Python - "python3" is not in PATH or produced an error
+gyp ERR! find Python checking if the py launcher can be used to find Python 2  
+gyp ERR! find Python - "py.exe" is not in PATH or produced an error
+gyp ERR! find Python checking if Python is C:\Python27\python.exe
+gyp ERR! find Python - "C:\Python27\python.exe" could not be run
+gyp ERR! find Python checking if Python is C:\Python37\python.exe
+gyp ERR! find Python - "C:\Python37\python.exe" could not be run
+gyp ERR! find Python 
+gyp ERR! find Python **********************************************************
+gyp ERR! find Python You need to install the latest version of Python.
+gyp ERR! find Python Node-gyp should be able to find and use Python. If not,   
+gyp ERR! find Python you can try one of the following options:
+gyp ERR! find Python - Use the switch --python="C:\Path\To\python.exe"
+gyp ERR! find Python   (accepted by both node-gyp and npm)
+gyp ERR! find Python - Set the environment variable PYTHON
+gyp ERR! find Python - Set the npm configuration variable python:
+gyp ERR! find Python   npm config set python "C:\Path\To\python.exe"
+gyp ERR! find Python For more information consult the documentation at:        
+gyp ERR! find Python https://github.com/nodejs/node-gyp#installation
+gyp ERR! find Python **********************************************************
+gyp ERR! find Python
+gyp ERR! configure error 
+gyp ERR! stack Error: Could not find any Python installation to use
+gyp ERR! stack     at PythonFinder.fail (C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\lib\find-python.js:307:47)
+gyp ERR! stack     at PythonFinder.runChecks (C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\lib\find-python.js:136:21)
+gyp ERR! stack     at PythonFinder.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\lib\find-python.js:225:16)
+gyp ERR! stack     at PythonFinder.execFileCallback (C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\lib\find-python.js:271:16)
+gyp ERR! stack     at exithandler (child_process.js:315:5)
+gyp ERR! stack     at ChildProcess.errorhandler (child_process.js:327:5)
+gyp ERR! stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:275:12)
+gyp ERR! stack     at onErrorNT (internal/child_process.js:465:16)
+gyp ERR! stack     at processTicksAndRejections (internal/process/task_queues.js:80:21)
+gyp ERR! System Windows_NT 10.0.18363
+gyp ERR! command "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\node_modules\\node-gyp\\bin\\node-gyp.js" "rebuild" "--release"
+gyp ERR! cwd C:\Users\yuanz\Desktop\project\Zhilin-Tools-Live-FrondEnd\node_modules\fibers
+gyp ERR! node -v v14.15.1
+gyp ERR! node-gyp -v v5.1.0
+gyp ERR! not ok
+node-gyp exited with code: 1
+Please make sure you are using a supported platform and node version. If you
+would like to compile fibers on this machine please make sure you have setup your
+build environment--
+Windows + OS X instructions here: https://github.com/nodejs/node-gyp
+Ubuntu users please run: `sudo apt-get install g++ build-essential`
+RHEL users please run: `yum install gcc-c++` and `yum groupinstall 'Development Tools'`
+Alpine users please run: `sudo apk add python make g++`
+'nodejs' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+npm WARN ajv-keywords@3.4.1 requires a peer of ajv@^6.9.1 but none is installed. You must install peer dependencies yourself.
+npm WARN raw-loader@4.0.2 requires a peer of webpack@^4.0.0 || ^5.0.0 but none is installed. You must install peer dependencies yourself.
+npm WARN style-loader@1.0.1 requires a peer of webpack@^4.0.0 but none is installed. You must install peer dependencies yourself.
+npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.9 (node_modules\fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.9: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
+
+npm ERR! code ELIFECYCLE
+npm ERR! errno 1
+npm ERR! fibers@4.0.2 install: `node build.js || nodejs build.js`
+npm ERR! Exit status 1
+npm ERR!
+npm ERR! Failed at the fibers@4.0.2 install script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     C:\Users\yuanz\AppData\Roaming\npm-cache\_logs\2020-12-11T09_22_18_287Z-debug.log
+PS C:\Users\yuanz\Desktop\project\Zhilin-Tools-Live-FrondEnd> npm install
+
+> fibers@4.0.2 install C:\Users\yuanz\Desktop\project\Zhilin-Tools-Live-FrondEnd\node_modules\fibers
+> node build.js || nodejs build.js
+
+
+错误一解决
+
+使用管理员运行powershell执行
+
+npm install --global --production windows-build-tools
+
+
+错误二
+
+C:\Users\yuanz\Desktop\project\xxxxx\node_modules\fibers>if not defined npm_config_node_gyp (node "C:\Program Files\nodejs\node_modules\npm\node_modules\npm-lifecycle\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js" rebuild --release )  else (node "C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\bin\node-gyp.js" rebuild --release )
+gyp WARN install got an error, rolling back install
+gyp ERR! configure error
+rs
+gyp ERR! node -v v14.15.1
+gyp ERR! node-gyp -v v5.1.0
+gyp ERR! not ok
+node-gyp exited with code: 1
+would like to compile fibers on this machine please make sure you have setup your
+build environment--
+Windows + OS X instructions here: https://github.com/nodejs/node-gyp
+Ubuntu users please run: `sudo apt-get install g++ build-essential`
+RHEL users please run: `yum install gcc-c++` and `yum groupinstall 'Development Tools'`
+Alpine users please run: `sudo apk add python make g++`
+'nodejs' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+npm WARN ajv-keywords@3.4.1 requires a peer of ajv@^6.9.1 but none is installed. You must install peer dependencies yourself.
+npm WARN raw-loader@4.0.2 requires a peer of webpack@^4.0.0 || ^5.0.0 but none is installed. You must install peer dependencies yourself.
+npm WARN style-loader@1.0.1 requires a peer of webpack@^4.0.0 but none is installed. You must install peer dependencies yourself.
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.9: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
+
+npm ERR! code ELIFECYCLE
+npm ERR! errno 1
+npm ERR! fibers@4.0.2 install: `node build.js || nodejs build.js`
+npm ERR! Exit status 1
+npm ERR!
+npm ERR! Failed at the fibers@4.0.2 install script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR!     C:\Users\yuanz\AppData\Roaming\npm-cache\_logs\2020-12-11T09_28_44_179Z-debug.log
+PS C:\Users\yuanz\Desktop\project\Zhilin-Tools-Live-FrondEnd> npm install
+
+> fibers@4.0.2 install C:\Users\yuanz\Desktop\project\Zhilin-Tools-Live-FrondEnd\node_modules\fibers
+> node build.js || nodejs build.js
+
+
+错误二解决
+
+管理员运行cmd执行
+
+setx ATOM_NODE_URL http://gh-contractor-zcbenz.s3.amazonaws.com/atom-shell/dist /M
+
+以上解决方法来自网络，侵删。
+

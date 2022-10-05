@@ -1,0 +1,17 @@
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xb9 in position 7: ordinal not in range(128)
+
+这是编码问题，需要在你的python安装目录下
+
+这是我的安装目录C:\Python27\Lib\site-packages
+
+添加sitecustomize.py文件
+
+文件内容添加
+
+import sys
+sys.setdefaultencoding('gb2312')
+
+之后在执行pip install -U selenium安装就不会报错啦
+
+sys.setdefaultencoding是python设置系统默认编码，python会在下次自动运行这个文件sitecustomize.py
+

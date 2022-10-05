@@ -1,0 +1,39 @@
+本文主要介绍的是flask中主动抛出异常及统一异常处理的相关内容，具体如下。
+
+在开发时，后台出现异常 ，但不想把异常显示给用户或者要统一处理异常时，可以使用abort主动抛出异常，再捕获异常返回美化后的页面。
+
+主动抛出异常：
+
+@user.route('/testError') 
+def testError(): 
+  print ('testError') 
+  abort(404)
+
+使用装饰器errorhandler捕获异常：
+
+@user.errorhandler(404) 
+def error(e): 
+  return render_template('exception/404.html')
+
+这样可以自定义异常页面。如果使用error_handler,那么只有本蓝本中的错误才会触发，想要全局异常处理，需要使用app_errorhandler。
+
+将所有异常处理写在一个蓝本中。
+
+#coding:utf-8 
+#error 
+from flask import Blueprint, render_template, redirect,session,request,abort 
+exception = Blueprint('exception',__name__) 
+@exception.app_errorhandler(404) 
+def error(e): 
+  return render_template('exception/404.html')
+
+在view.py中注册蓝本
+
+app.register_blueprint(exception, url_prefix='/error')
+
+这样，所有蓝本触发的异常都可以处理了。
+
+总结
+
+以上就是本文关于flask中主动抛出异常及统一异常处理代码示例的全部内容，希望对大家有所帮助。感兴趣的朋友可以继续参阅本站其他相关专题，如有不足之处，欢迎留言指出。感谢朋友们对本站的支持！
+

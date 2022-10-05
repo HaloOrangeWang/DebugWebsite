@@ -1,0 +1,104 @@
+1.mysqlclient 目前不支持高版本python3
+
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+原因是由于 mysqlclient 目前不支持高版本python，出现这个错误之后可以根据错误提示找到文件位置，打开 base.py 文件，找到以下代码：将 if 语句注释掉之后在执行命令就不会再报错。
+
+
+启动django时报错:
+
+1.Watching for file changes with StatReloader（使用状态加载程序监视文件更改
+
+原因：可能是Django版本和Python版本或者PyMysql版本不一致
+
+解决办法：https://www.jianshu.com/p/c44b0c88fafe
+
+2.报如下错：
+
+原因：跟路由没修改，我这里出的错是crm/urls.py中url(r'^$', views.dashboard ),--把$去掉就好了。
+
+解决https://www.cnblogs.com/guokaifeng/p/11084997.html
+
+3.Django 中创建Model时报以下错误：
+
+TypeError: init() missing 1 required positional argument: ‘on_delete’
+
+解决方案： 定义外键的时候需要加上 on_delete=; 即：contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+
+原因如下： django 升级到2.0之后,表与表之间关联的时候,必须要写on_delete参数,否则会报异常:
+
+4.添加menus菜单时报错：
+
+Exception Value:  no such table: crm_menus
+
+解决:python manage.py makemigrations crm
+
+python manage.py migrate
+
+5.Django报错Exception Value: no such table xx
+
+执行以下两步骤： python manage.py makemigrations app_name python manage.py migrate
+
+6.django数据迁移时报错;TypeError: object supporting the buffer API required
+
+解决:settings.py中密码必须为字符串类型
+
+7.pycharm 换成2019之后连接数据库用户名密码数据库名字都没错，就是连接不上去:
+
+Connection to nb_crm@localhost failed. [08001] Could not create connection to database server. Attem
+
+解决办法：
+
+解决：执行如下命令更改时区：
+
+show variables like '%time_zone%'; set global time_zone = '+8:00' ; 设置完以后，退出mysql,重新登录，检查时间是否被修改,结束后就退出cmd，去pycharm里面重新连接看看
+
+8.FieldError at /crm/consult_record_list/
+
+9.报错：django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+解决：原因是由于 mysqlclient 目前不支持高版本python，出现这个错误之后可以根据错误提示找到文件位置，打开 base.py 文件，找到以下代码：将 if version 语句注释掉之后在执行命令就不会再报错。
+
+version = Database.version_info # if version < (1, 3, 13): # raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+
+
+10.启动django时报错Watching for file changes with StatReloader（使用状态加载程序监视文件更改 ）
+
+INFO autoreload 598 Watching for file changes with StatReloader
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "/root/.virtualenvs/meiduo_mall/lib/python3.6/site-packages/django/template/utils.py", line 66, in __getitem__
+    return self._engines[alias]
+KeyError: 'django'
+
+............
+
+return [self[alias] for alias in self]
+  File "/root/.virtualenvs/meiduo_mall/lib/python3.6/site-packages/django/template/utils.py", line 90, in <listcomp>
+    return [self[alias] for alias in self]
+  File "/root/.virtualenvs/meiduo_mall/lib/python3.6/site-packages/django/template/utils.py", line 81, in __getitem__
+    engine = engine_cls(params)
+  File "/root/.virtualenvs/meiduo_mall/lib/python3.6/site-packages/django/template/backends/django.py", line 27, in __init__
+    self.engine = Engine(self.dirs, self.app_dirs, **options)
+TypeError: __init__() got an unexpected keyword argument 'environment'
+
+原因：可能是Django版本和Python版本或者PyMysql版本不一致
+解决：升级或者降级Django版本
+
+如：命令如下：
+
+pip install django==2.1.7  #django==版本号
+
+10.启动项目报错:-----更换jinja2模板引擎的问题
+
+ERRORS: ?: (admin.E403) A 'django.template.backends.django.DjangoTemplates'
+
+解决：
+
+解决办法：
+不修改原有引擎配置，新增引擎jinja2, 即在settings.py中
+
+11.图形验证码出不来，看下图效果：
+
+从上图中可看出请求头中有meiduo.site又是127.0.0.0这样肯定出不来---因为我是在本地127请求，所以先去找我js中的host代码，把host代码改成127如下即可:
+

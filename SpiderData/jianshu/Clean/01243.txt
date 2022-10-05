@@ -1,0 +1,63 @@
+
+摘要
+
+今天在安装导致matplotlib包的时候报错如下，提示如下报错
+
+>>> import matplotlib.pyplot as plt
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/lib64/python2.7/site-packages/matplotlib/pyplot.py", line 115, in <module>
+    _backend_mod, new_figure_manager, draw_if_interactive, _show = pylab_setup()
+  File "/usr/lib64/python2.7/site-packages/matplotlib/backends/__init__.py", line 32, in pylab_setup
+    globals(),locals(),[backend_name],0)
+  File "/usr/lib64/python2.7/site-packages/matplotlib/backends/backend_tkagg.py", line 6, in <module>
+    from six.moves import tkinter as Tk
+  File "/usr/lib/python2.7/site-packages/six.py", line 203, in load_module
+    mod = mod._resolve()
+  File "/usr/lib/python2.7/site-packages/six.py", line 115, in _resolve
+    return _import_module(self.mod)
+  File "/usr/lib/python2.7/site-packages/six.py", line 82, in _import_module
+    __import__(name)
+ImportError: No module named Tkinter
+>>> from Tkinter import *
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: No module named Tkinter
+
+
+环境
+
+root@pts/1 $ cat /etc/redhat-release
+CentOS Linux release 7.1.1503 (Core)
+i-hruu3270 [~] 2017-05-10 15:11:00
+root@pts/1 $ python -V
+Python 2.7.5
+
+
+Tkinter VS tkinter
+
+根据Python介绍发现 在Python2 和Python3 中该包名称是不一样的，在 python2中叫Tkinter； 在python3中叫tkinter
+
+Refer to
+
+Tkinter — Python interface to Tcl/Tk
+
+Note Tkinter has been renamed to tkinter  in Python 3. 
+The 2to3 tool will automatically adapt imports when converting your 
+sources to Python 3.
+
+
+Fix
+
+install tkinter under centoer by yum
+
+yum install -y tkinter
+
+
+Verify
+
+>>>
+>>> import Tkinter
+>>> import matplotlib.pyplot as plt
+>>>
+

@@ -1,0 +1,34 @@
+今天想用pycharm打开图像，但是import scipy的时候报错了，报错内容如下：
+
+我以为是自己的包过时了呢，就卸载了，结果pycharm提示uninstall scipy failed
+
+？？？
+
+然后我从cmd进入python目录，然后切换到scripts目录下，在这个目录下执行pip install requests
+
+可以安装成功，重启pycharm之后可以正确卸载，然而我又装回了scipy，依旧报错。
+
+解决方法：还是在上面那个目录下输入
+
+pip install --upgrade --force-reinstall scipy
+
+又报错了，PermissionError
+
+解决方法：
+
+pip install --upgrade --user --force-reinstall scipy
+
+虽然提示 安装成功，但是 import scipy依旧报错。我还是换个包吧
+
+但是在window下使用pip install pandas会显示：could not find a version. No matching distribution found
+
+解决方法：使用
+
+python -m pip install [Package_to_install]
+
+就可以了。
+
+如果嫌弃网慢，可以用清华镜像
+
+在pip后添加 -i https://pypi.tuna.tsinghua.edu.cn/simple
+

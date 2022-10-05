@@ -1,0 +1,113 @@
+
+python自定义异常
+
+
+raise
+
+​ python的异常有两种，一种是python自带的异常，当我们写的代码在语法或其他功能的调用上有误时，如果没有异常捕捉的话代码运行会直接报错的，都算这一类。另一种就是当我们觉得，仅仅只是针对语法方面的报错已经不能满足我们的要求了，我们希望在某些逻辑的环节上，虽然语法没有错，但也要主动报错，以避免按照错误的逻辑继续执行，后面这一种就属于自定义异常，为的就是在我们需要的时候抛出一个异常。
+
+​ 凡是自定义异常就绕不开一个关键词——raise，其作用就是主动抛出异常。raise 语句有如下三种常用的用法：
+
+raise：单独一个 raise。该语句引发当前上下文中捕获的异常（比如在 except 块中），或默认引发 RuntimeError 异常。
+
+raise 异常类名称：raise 后带一个异常类名称，表示引发执行类型的异常。
+
+raise 异常类名称(描述信息)：在引发指定类型的异常的同时，附带异常的描述信息。
+
+# 用法一：
+>>> raise
+Traceback (most recent call last):
+  File "<pyshell#1>", line 1, in <module>
+    raise
+RuntimeError: No active exception to reraise
+
+# 用法二：
+>>> raise ZeroDivisionError
+Traceback (most recent call last):
+  File "<pyshell#0>", line 1, in <module>
+    raise ZeroDivisionError
+ZeroDivisionError
+
+# 用法三：
+>>> raise ZeroDivisionError("除数不能为零")
+Traceback (most recent call last):
+  File "<pyshell#2>", line 1, in <module>
+    raise ZeroDivisionError("除数不能为零")
+ZeroDivisionError: 除数不能为零
+
+​ 实际上用得比较多的是第三种，这样的用法意味着我们可以在原有的异常类型中，将报错信息修改成我们想要的内容；也意味着我们可以自己写一个报错类型，然后根据不同情景抛出不同的报错信息。
+
+
+下面简单写一个阶乘的函数来展示raise不同的应用方式：
+
+
+基于基类修改报错信息，直接放在一个逻辑中
+
+def factorial(num):
+    try:
+        if num < 0 or type(num) != int:
+            raise Exception("该数不能阶乘")
+    	else:
+            return num * factorial(num-1)
+    except Exception as e:
+        print(e)
+
+就正常的逻辑来讲，当参数小于零或者不是整型时，代码也是可以继续往下执行的，但得到的并不是我们想要的结果，所以要结束掉 然后再给一个反馈。raise语句其中的作用就是引发一个报错，再让外部的异常捕捉机制来处理。
+
+
+定义一个新的异常类
+
+class NewException(Exception):
+    def __init__(self,errorinfo):
+        super().__init__(self)
+        self.errorinfo = errorinfo
+    def __str__(self):
+        return self.errorinfo
+    
+def factorial(num):
+    try:
+        if num < 0 or type(num) != int:
+            raise NewException("我说你错了，你就是错了")
+    	else:
+            return num * factorial(num-1)
+    except Exception as e:
+        print(e)
+
+这种方式是常用的，而且上面的这个类NewException是一个通用的模板，你可以把你想要抛出的异常全部归到这里来，然后不同场景添加不同的报错信息就是了。在这里顺便提一下异常的继承关系，Exception是异常处理过程中所有异常的基类。所有的异常捕捉可以直接指定捕捉某一个具体的异常（如：except NameError:），也可以直接笼统地捕捉所有异常（except Exception:），我们定义新的类也是继承自Exception，继承更上级或更下级类也可以，没多大必要。
+
+（图片来自网络：https://www.jianshu.com/p/24e6fb03d6d6）
+
+
+写一个装饰器
+
+这种形式只是我最近刚整理完装饰器的知识，在这里融汇贯通一下，写着玩的。不常用，也不推荐。
+
+def decator(fun):
+    def inner(num):
+        try:
+            if num < 0 or type(num) != int:
+            	raise Exception("我说你错了，你就是错了")
+            else:
+               return fun(num)
+        except Exception as e:
+            print(e)
+    return inner
+
+@decator
+def factorial(num):
+    return 1 if num == 0 or num == 1 else num * factrial(num-1)
+
+
+assert断言
+
+​ 断言语句也是一种主动抛出异常的方式，是我个人用得比较多的方式。其原理为，如果断言给出的命题为真则继续往下执行，否则直接抛出异常AssertionError。另外，断言语句也可以自定义报错信息，其写法为：assert 判断语句 [,报错信息]
+
+def factorial(num):
+    assert num >=0 and type(num) == int,"该数不能阶乘"
+    return 1 if num == 0 or num == 1 else num * factorial(num-1)
+
+ssert num >=0 and type(num) == int,“该数不能阶乘”
+ return 1 if num == 0 or num == 1 else num * factorial(num-1)
+
+此外，assert断言语句也可以跟raise语句结合使用，大家有兴趣的话也可以找其他帖子了解一下，本文不再赘述
+

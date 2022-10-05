@@ -1,0 +1,51 @@
+　　今天写项目时，遇到报错信息如下：
+
+　　主要报错就可以看这条：There are multiple modules with names that only differ in casing.This can lead to unexpected behavior when compiling on a filesystem with other case-semantic，貌似说的是语义错误。
+
+　　并且提示了报错的地方：./components/MavonEditor/index.vue
+
+
+一、问题背景：
+
+　　npm启动报警告WARN：There are multiple modules with names that only differ in casing.                             friendly-errors 18:34:32
+
+This can lead to unexpected behavior when compiling on a filesystem with other case-semantic.
+
+Use equal casing. Compare these module identifiers:
+
+　　这个警告问题之前也遇到过，就是文件名大小写的问题。比如我的文件名取的是：topicModal，但是在 import 的时候写的是：import TopicModal from './TopicModal'，这样就会报这个警告。
+
+　　这个在window下是警告，可以正常运行；但是在 Linux 服务器上却是会报错，导致运行不了的。
+
+
+二、详细解释：
+
+There are multiple modules with names that only differ in casing.
+
+有多个模块同名仅大小写不同
+
+This can lead to unexpected behavior when compiling on a filesystem with other case-semantic.
+
+这可能导致在一些文件系统中产生不是预期的行为
+
+Use equal casing.
+
+使用唯一的写法
+
+　　文件系统说的就是nodejs里import文件时的文件系统的行为。
+
+　　原因：可能是你的项目文件的父组件文件使用了驼峰式起名的写法导致报错
+
+
+三、问题处理
+
+　　经过排查，最后发现问题所在：在引用时，路径大小写不对导致的。这种问题就是在window下可以识别，会报警告；但是在linux下就不会只报警告了，而是直接打包错误。其中jekins自动部署就会经常遇到这样的问题，所以我们需要特别注意。
+
+　　排查原因：
+
+　　1 、在引用组件时，路径大小写不对也会造成此报错，看例子：下面的MavonEditor其实文件里是mavonEditor，因为从前面复制的，所以导致写成了大写的。
+
+　　2、在组件使用vuex时，引用vuex大小写错误
+
+　　其实在做项目时，多注意下细节就可以避免这种错误。
+

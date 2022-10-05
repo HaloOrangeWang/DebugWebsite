@@ -1,0 +1,15 @@
+
+报错
+
+UnicodeEncodeError: 'latin-1' codec can't encode characters in position 674-675: Body ('烟台') is not valid Latin-1. Use body.encode('utf-8') if you want to send it encoded in UTF-8.
+
+
+解决方法参考资料
+
+数据在网络中都是通过字节数据进行传输的, 在发送数据时, requests 模块需要将字符串编码成 bytes 进行传输.
+
+而请求体 body 里面有汉字，requests里边的 URL 编码方式默认是 拉丁 编码，无法对中文内容进行编码解决方式就是手动使用 utf-8 字符集对 data 进行编码.
+
+with requests.Session() as session:
+    resp = session.post(url, data=param_json.encode("utf-8"), timeout=HTTP_POST_TIMEOUT, headers=headers, **kwargs)
+

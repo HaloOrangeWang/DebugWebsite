@@ -1,0 +1,57 @@
+现象：
+
+  今天写了个insert mysql的python脚本，结果报错了 报错如下图：
+
+python版本
+
+Python 3.6.6
+
+解决办法：
+
+  使用mysql-connector-python包替代pymysql包；
+
+  使用pip3安装：
+
+pip3 install mysql-connector-python
+
+  修改脚本：
+
+  原脚本：
+
+#!/usr/bin/python3
+# -*- coding:utf-8 -*-
+
+import re
+import pymysql as MySQLdb
+
+def run_insert_sql(mysql_ip, database, insert_sql):
+    db = MySQLdb.connect(mysql_ip, 'root', 'root', database, charset='utf8' )
+    cursor = db.cursor()
+    try:
+        cursor.execute(insert_sql)
+        db.commit()
+    except:
+        db.rollback()
+    db.close()
+
+  修改为：
+
+#!/usr/bin/python3
+# -*- coding:utf-8 -*-
+
+import re
+#import pymysql as MySQLdb
+import mysql.connector  as mysqlcon
+
+def run_insert_sql(mysql_ip, db_name, insert_sql):
+    db = mysqlcon.connect(host = mysql_ip, user = 'root', password = 'root', database = db_name, charset='utf8' )
+    cursor = db.cursor()
+    try:
+        cursor.execute(insert_sql)
+        db.commit()
+    except:
+        db.rollback()
+    db.close()
+
+  解决！
+

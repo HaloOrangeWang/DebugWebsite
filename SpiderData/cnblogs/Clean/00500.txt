@@ -1,0 +1,22 @@
+　　flask项目写到一半，准备试着放在服务器上跑跑，一想生产环境不能用 app.run()，百度了一下要使用Ngix+uwsgi。
+
+　　本着一路pip的原则，首先来了一个漂亮的
+
+pip3 install uwsgi
+
+　　不幸报错
+
+　　一看找不到python.h，肯定是依赖问题，网上一搜，基本答案都是安装 python-dev  和 build-essential，我试着yum了一下，发现居然没有找到包
+
+　　想想自己是python3，换个姿势
+
+　　这就迷了
+
+　　后来无意中翻到 http://blog.csdn.net/dingqingsong/article/details/77651414 ，虽然报错不太一致，但好歹都是 找不到 <python.h>
+
+　　
+
+yum install python34-devel
+
+　　安装完后，接着pip安装uwsgi，一路顺风。
+

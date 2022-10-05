@@ -1,0 +1,90 @@
+hello，最近很多同学都在群里问很多错误是怎么回事，其实他们都是python非常基础的错误，并且错误也告诉你很清楚，只需要针对错误去解决就好了。那么我今天针对常见的错误进行一个总结，希望对大家有帮助。
+
+一般一个错误分为错误类型:具体原因。其中错误类型基本不变，具体原因会顺序万变，我们拿出常见的给大家作为一个参考，注明：具体原因中引号内的信息是为了方便举例写的，真实你出现的错误并不一定和我引号里的内容一致，恩甚至说应该是肯定不一样的～
+
+1、IndentationError: unindent does not match any outer indentation level
+
+解释：缩进错误，python不是通过{}包裹代码，而是进行tab或者空格的方式对代码进行缩进，如果
+
+缩进前后没有对齐，就会报这个错误
+
+2、NameError：name 'test' is not defined
+
+解释：你没有定义一个叫test的变量，就直接使用test去执行业务逻辑，就会报这个错误
+
+3、SyntaxError: invalid syntax
+
+解释：语法错误。唯一的不是在运行时发生的错误.
+
+它代表 Python 代码中有一个不正确的结构, 在它改正之前程序无法执行
+
+还有比如 新手常见的 SyntaxError: EOL while scanning string literal,表示你的字符串没有用引号封装好
+
+4、IndexError：list index out of range
+
+解释：索引超出序列范围，比如li=['a', 'b', 'c'],索引为0,1,2，当你访问了li[3]就会报错
+
+5、KeyError：'test'
+
+解释：字典里没有test这个key，a = {'name': 'jack'} 当你调用a['age']就会抛这个错误
+
+6、IOError：[Errno 2] no such file or directory:"/home/a.txt"
+
+解释：没有找到/home/a.txt这个路径或文件，当你使用open或其他读取系统路径文件的时候出现
+
+7、AttributeError：'a' object object has no attribute 'b'
+
+解释：一个实例化的 a 对象里 如果没有这个b 而你调用了，比如 a.b 就会报这个错误
+
+8、TypeError: 'NoneType' object is not callable
+
+解释：当前你调用的是一个None，而你企图对这个None对象 进行一些 如 None() 等操作，同时
+
+和 7 类似 如果一个None对象你调用了属性 比如 None.b 也会报7的错误。
+
+该错误通常发生在应该返回一个可用对象并进行操作，而返回了None你没有验证***作
+
+再比如有一个函数 def a(name):... 的函数 如果你没有传参数或少传了参数也会报Typeerror
+
+比如 TypeError: a() missing 1 required positional argument: 'name'
+
+再比如TypeError: Can’t convert ‘int’ object to str implicitly
+
+说明你企图让一个整数和字符串相加
+
+9、ValueError: invalid literal for int() with base 10: 'abc'
+
+解释：传给的对象的参数类型不准确造成，比如有一个对象 a = 'abc' 你企图对他 进行 int(a)
+
+就会出现这个错误
+
+10、FileNotFoundError: [Errno 2] No such file or directory: '/home/helloworld.py'
+
+解释：和6类似，当对文件进行读取的时候，也有可能抛出这个错误，标明没有找到路径或文件
+
+11、io.UnsupportedOperation: not writable
+
+解释：当你对一个文件进行操作的时候，如果没有相关的权限，就会报这个错误
+
+12、ImportError: No module named 'requests'
+
+解释：你没有导入这个requests包 但是在业务里使用了这个包
+
+再比如 我企图从requests里导入一个不存在的方法 from requests from aa
+
+就会报 ImportError: cannot import name 'aa'
+
+在这里有一个槽点，比如我们在test.py 路径下执行 python test.py
+
+但是在test.py 中 有调用 当前路径上一层其他路径的包或者函数，也会报相关的importerror，
+
+原则上是你执行当前py位置上的错误，在当前路径下执行，代码里只会以当前路径为启示路径进行寻找。
+
+所以最好是在更上层进行执行，或者在当前py下把需要导入的报的地址 加入到sys.path中
+
+以上就是常见的python的错误，我也会不断的更新这个书记。大家也要练习看错误信息，根据错误信息自己去解决问题，才是一个合格的程序员～ 比心～
+
+················
+
+欢迎关注课程：
+

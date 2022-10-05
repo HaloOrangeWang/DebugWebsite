@@ -1,0 +1,88 @@
+　　错误提示：
+
+C:\Users\Dmail\AppData\Local\Programs\Python\Python37\python.exe "E:/s9/day60/06 jinja2版web服务端示例.py"
+我再8090等你哦...
+Traceback (most recent call last):
+  File "C:\Users\Dmail\AppData\Local\Programs\Python\Python37\lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "C:\Users\Dmail\AppData\Local\Programs\Python\Python37\lib\wsgiref\handlers.py", line 184, in finish_response
+    self.write(data)
+  File "C:\Users\Dmail\AppData\Local\Programs\Python\Python37\lib\wsgiref\handlers.py", line 279, in write
+    "write() argument must be a bytes instance"
+AssertionError: write() argument must be a bytes instance
+127.0.0.1 - - [29/Sep/2019 13:13:30] "GET /index/ HTTP/1.1" 500 59
+127.0.0.1 - - [29/Sep/2019 13:13:30] "GET /favicon.ico HTTP/1.1" 200 14
+
+　　错误代码：
+
+from wsgiref.simple_server import make_server
+from jinja2 import Template
+
+def index():
+    with open('06jinja2版web框架.html','r',encoding='utf-8')as f:
+        data = f.read()
+    template = Template(data) # 生成模板文件
+    ret = template.render({"name":"Dmail","hobby_list":['编程','大宝剑']}) #把数据填充到模板里面
+    return [ret.encode('utf-8'),]
+
+　　
+
+run_server函数执行到
+response = func():
+...
+ return [ret.encode('utf-8'),]
+得到的返回值是一个列表
+发现返回值给错了，应该是给一个bytes
+将最后给返回值的代码改成
+return ret.encode('utf-8')
+访问:127.0.0.1:8090/index/之后可以正常访问了，但还是会报错
+再将
+run_server函数里的return改一下
+return [response,]
+好了，可以正常访问了，而且没有报错。
+修改后的代码：
+
+from wsgiref.simple_server import make_server
+from jinja2 import Template
+
+def index():
+    with open('06jinja2版web框架.html','r',encoding='utf-8')as f:
+        data = f.read()
+    template = Template(data) # 生成模板文件
+    ret = template.render({"name":"Dmail","hobby_list":['编程','大宝剑']}) #把数据填充到模板里面
+    return ret.encode('utf-8')
+
+url_func = [
+    ('/index/',index)]
+
+def run_server(environ,star_response):
+    star_response('200 OK',[('Content-Type','text/html;charset=urf-8')])
+    url = environ['PATH_INFO'] #取到用户输入的url
+    #print(url)
+    func = None
+    for i in url_func:
+        if i[0] == url:
+            func = i[1]
+            break
+    if func:
+        response = func()
+    else:
+        response = b'404 not found!'
+    return [response,]
+
+if __name__ == '__main__':
+    httpd = make_server('127.0.0.1',8090,run_server)
+    print('我再8090等你哦...')
+    httpd.serve_forever()
+
+　　服务端日志：
+
+C:\Users\Dmail\AppData\Local\Programs\Python\Python37\python.exe "E:/s9/day60/06 jinja2版web服务端示例.py"
+我再8090等你哦...
+127.0.0.1 - - [29/Sep/2019 13:27:37] "GET /index/ HTTP/1.1" 200 213
+127.0.0.1 - - [29/Sep/2019 13:27:37] "GET /favicon.ico HTTP/1.1" 200 14
+127.0.0.1 - - [29/Sep/2019 13:27:40] "GET /index/ HTTP/1.1" 200 213
+127.0.0.1 - - [29/Sep/2019 13:27:40] "GET /favicon.ico HTTP/1.1" 200 14
+
+　　PS：报错啥原因我也一脸懵逼，不太清楚，反正搜索谷歌，百度啊，修修改改就改好了。emmm，记个博客吧，怕以后遇到类似的错误。
+

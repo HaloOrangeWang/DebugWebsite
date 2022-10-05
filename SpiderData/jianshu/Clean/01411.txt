@@ -1,0 +1,26 @@
+今天在升级pip的过程中，出了一个这样的报错：
+
+《ImportError: cannot import name 'PackageFinder' from 'pip._internal.index' (F:\python3.7.6\lib\site-packages\pip\_internal\index\__init__.py)》
+
+在网上查了一些方法，最终找到一个适用的，大家可以参考一下。
+
+解决方法如下：
+
+1）在Python\Lib\site-packages目录下删除原版本pip文件夹（共删除两个，例如：pip和pip-7.1.1.dist-info）；
+
+另外如果安装了Anconda3的，记得Anconda3\Lib\site-packages目录下pip文件夹也要删除
+
+2）以管理员身份运行cmd
+
+3）键入python -m ensurepip命令
+
+4）键入python -m pip install --upgrade pip命令
+
+5）等待下载完成即可。
+
+如果中途出现以下红色报错：
+
+《pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.》
+
+一般为网络问题，重新键入命令，等待下载即可。
+

@@ -1,0 +1,69 @@
+
+文件编码问题
+
+如果Python文件中存在中文注释，在运行时报错“SyntaxError: Non-ASCII character '\xe7' in file”。
+
+解决办法：
+
+在文件的开始的地方写上# -*- coding: utf-8 -*-即可，明确指定文件编码类型。
+
+
+生成项目的依赖包文件
+
+方法1：
+
+方法2:
+
+通过popreq生成，首先需要安装pipreq包：pip install popreq。
+
+然后进入到项目根目录下，执行如下命令：
+
+“--encoding=utf8”选项参数用于避免出现报错：“UnicodeDecodeError: 'gbk' codec can't decode byte 0xb0 in position 52: illegal multibyte sequence”。
+
+“--force”选项用于强制覆盖已经存在的“requirements.txt”文件
+
+通常选择方法2打包项目自己依赖的包即可。
+
+
+CentOS 7安装python-Levenshtein报错
+
+python-Levenshtein库用于计算字符串的差异度，安装：pip3 install python-Levenshtein。
+
+在Python3环境下安装可能会包如下错误信息：
+
+解决办法：
+
+先安装python-devel再安装python-Levenshtein：
+
+参考：
+
+https://blog.csdn.net/u013414502/article/details/79531509  Centos7 "fatal error: Python.h: No such file or directory "commmand 'gcc' failed with exit status 1
+
+
+pip指定镜像源
+
+在通过pip命令下载项目依赖模块时，有时候会出现请求超时的问题，此时可以通过明确指定镜像源来解决。
+
+参考：
+
+https://www.jianshu.com/p/80bc0457c20b  如何添加国内源，使pip install更快
+
+
+解决模块找不到的问题
+
+场景1：
+
+在Python3环境下，虽然已经使用命令pip install xxx安装了模块，但是在执行时还是“找不到指定模块”。
+
+解决办法：
+
+使用pip3 install xxx重新安装一下就好了。
+
+场景2：
+
+引入自定义模块在运行时提示“找不到指定模块”。
+
+解决办法：
+
+在运行之前将程序目录添加到PYTHONPATH变量中即可。
+

@@ -1,0 +1,18 @@
+现象：在图形界面运行脚本时不报错，但是在非GUI模式下运行时报错：
+
+[jmeter] Error in NonGUIDriver org.apache.jorphan.util.JMeterStopTestException: ModuleController:*** has no selected Controller (did you rename some element in the path to target controller?), test was shutdown as a consequence
+
+分析：报错信息提示很明确，是说模块控制器***没有选中目标控制器。因此，我在脚本中对于出现该模块控制器的地方进行逐一排查，发现都选中了目标控制器。
+
+进一步分析：为了定位是jmeter本身的bug，还是脚本的错误，于是我新建了一份脚本，想模拟同样的场景。在模拟的过程中，发现原脚本里有路径很深的被禁用的模块控制器没有选中有效的目标控制器！！！如下图。
+
+解决方案：将所有禁用的***模块控制器都排查了一遍，并赋值有效的路径。
+
+验证：在非GUI模式下进行运行，成功！
+
+进一步猜想：如果整个线程组被禁用了，那该线程组下被禁用的模块控制器如果没有选中有效的目标控制器的话，会报错吗？
+
+进一步验证：经过进一步验证，发现即使整个线程组被禁用了，如果模块控制器如果没有选中有效的目标控制器的话，仍然会报错。
+
+结论：模块控制器不论启用或是禁用，一定要选中有效的目标控制器，否则，在非GUI模式下会报错！
+

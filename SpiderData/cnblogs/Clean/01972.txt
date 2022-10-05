@@ -1,0 +1,33 @@
+一、开放端口
+
+sudo firewall-cmd --zone=public --add-port=3000/tcp --permanent
+sudo firewall-cmd --reload
+
+　　
+
+二、关闭防火墙
+
+　　
+
+三、查看防火墙规则
+
+firewall-cmd --list-all
+
+　　
+
+四、执行 systemctl start firewalld 命令后出现Failed to start firewalld.service: Unit is masked
+
+执行命令，即可实现取消服务的锁定
+
+# systemctl unmask firewalld
+
+下次需要锁定该服务时执行
+
+# systemctl mask firewalld
+
+　　
+
+五。常见问题：
+
+　　firewall-cmd --list-ports
+

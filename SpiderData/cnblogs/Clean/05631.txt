@@ -1,0 +1,35 @@
+
+运行脚本时具体报错如下：
+
+Traceback (most recent call last):
+
+File "main.py", line 21, in
+
+from uttk.sskl import qteue
+
+File "/home/ssl.py", line 15, in
+
+from PIL import Image
+
+File "/home/Image.py", line 64, in
+
+from . import _imaging as core
+
+ImportError: cannot import name '_imaging'
+
+
+大致的报错意思就是：
+
+在ssl.py的第15行的from PIL import Image执行时报错，原因是Image.py文件中无法导入'_imaging'，
+
+百度方案：在ssl.py中直接导入'_imaging'（未解决问题），即改为from PIL import _imaging， Image。
+
+
+实际解决方法：
+
+查看了下自己的python版本是python3.5.0
+
+在网上找到与之相对应的安装包源pillow-xx-none-any.whl,重新安装，解决问题。
+
+总结原因：属于python版本和pillow包版本不一致导致。
+

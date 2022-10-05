@@ -1,0 +1,26 @@
+问题描述：想把自编码器中间过程可视化，可是调用下面代码时报错 
+ from mpl_toolkits.mplot3d import Axes3D 
+  
+ 但是我又确实都有这些包文件 
+  
+ 如果是没有这些文件的建议更新或者重新安装一次matplotlib到最新版就好。 
+ 网上也有说是版本不兼容的原因，但是我没有找到这方面的原因，所以不是从这个角度解决。
+
+报错原因：（猜测） 
+ 我单独实验了一下呈现3D图像的demo，完全没有问题，但是在我的代码中就不行了。后来发现可能是TensorFlow与matplotlib同时引用的冲突。 
+ 修改前代码：
+
+import tensorflow as tf
+from mpl_toolkits.mplot3d import Axes3D
+...
+
+解决方法：
+
+from mpl_toolkits.mplot3d import Axes3D
+import tensorflow as tf
+...
+
+就是这么简单，调换两个库的引入顺序可以暂时避免这个错误，并且可以正常输出3D图像。但是具体根本原因还不清楚，因为用其他同学的编辑器同时引入没有这个错误，如果有大神知道其中原因和根本解决方法，请告诉小弟一下。
+
+补充一下环境：Python3.5，matplotlib 2.2.2
+

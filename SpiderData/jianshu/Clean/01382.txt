@@ -1,0 +1,27 @@
+问题 在使用python对xml文件进行读取时，提示ValueError: multi-byte encodings are not supported
+
+xml是用gb2312编码的。
+
+<?xml version="1.0" encoding="gb2312"?>
+
+很多贴子上说把xml的编码格式改为utf-8，就可以正常执行了。
+
+<?xml version="1.0" encoding="utf-8"?>
+
+但是这里有一个问题，xml原先的编码格式和encoding字段显示的编码格式都是gb2312，如果只改了encoding字段，之后再使用这个xml文件，就会按utf-8解析gb2312，会造成不可预知的后果。
+
+第二个问题就是指改一个xml文件还好，但是有几百上千的时候，改这个就不方便了。
+
+解决方案 用parseString函数
+
+python提供了两种xml的输入方式，一种是文件，一种是字符串。我们可以先将xml文件读入内存，然后关闭文件。再将xml字符串中的gb2312用replace改为utf-8，然后用parseString解析，这样就不会报错。
+
+file_object = open("C:\\Users\\huzy\\Desktop\\600xmls\\xmls\\0\\1573035834.xml")
+ori_xml = file_object.read()
+file_object.close()
+pro_xml = ori_xml.replace("utf-8", "gb2312")
+JJ_priority = 0
+DOMTree = xml.dom.minidom.parseString(pro_xml)
+
+注意事项 如果文件过大，有可能内存不够，所以适用于小的xml文件。注意要把不使用的文件给close掉，以免占用文件描述符。
+

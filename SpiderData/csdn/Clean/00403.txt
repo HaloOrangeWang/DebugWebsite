@@ -1,0 +1,22 @@
+jxmain.py文件直接通过指令：
+
+python jxmain.py 运行没问题，通过如下指令打包成exe文件
+
+
+pip install pyinstaller
+pyinstaller -F -w jxmain.py
+
+
+但生成的exe文件却不能运行，于是乎删除参数 -w，显示命令行窗口，重新编译
+
+pyinstaller jxmain.py
+
+找到编译好的exe文件，双击运行，看到如下信息
+
+Fatal Python error: initfsencoding: unable to load the file system codec
+ zipimport.ZipImportError: can't find module 'encodings'
+
+通过度娘知道是因为我用的python3.7版本，目前与pyinstaller并不兼容导致的，方法是更改python版本，我工程使用的是pycharm编译的，按照下面的方法更改python版本，重新编译运行OK
+
+https://jingyan.baidu.com/article/c910274bb7155acd361d2d30.html
+

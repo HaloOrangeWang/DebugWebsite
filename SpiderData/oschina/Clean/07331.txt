@@ -1,0 +1,51 @@
+
+Django报错：提交表单报错---RuntimeError: You called this URL via POST, but the URL doesn’t end in a slash and you have APPEND_SLASH set.
+
+django提交表单的时候报错
+
+RuntimeError: You called this URL via POST, but the URL doesn’t end in a slash and you have APPEND_SLASH set.
+提示form的action地址最后不是/结尾的，而且APPEND_SLASH的值是Ture
+
+将from的action地址改为/结尾的就可以了
+
+或者
+修改settings:APPEND_SLASH=False
+
+下面是我使用Jquery的两种提交方式：
+
+get
+
+post
+
+<script>
+        function submitForm1() {
+        <!--获取值-->
+            var u=$('#username').val();
+            var p=$('#password').val();
+
+$.ajax({
+                url:'/ajax2.html',
+                type:'GET',
+                data:{username:u,password:p},
+                success:function(arg){
+                    console.log(arg);
+            }
+            })
+        }
+         function submitForm2() {
+            var val1=$('#value1').val();
+            var val2=$('#value2').val();
+            console.log(val1+val2)
+           $.ajax({
+                url:'/ajax3.html/',
+                type:'POST',
+                data:{value1:val1,value2:val2},
+                success:function(arg){
+                    $('#res').val(arg)
+            }
+            })
+
+}
+
+　　
+

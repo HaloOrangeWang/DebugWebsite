@@ -1,0 +1,48 @@
+
+Unix & Linux 平台安装 Python
+
+以下为在 Unix & Linux 平台上安装 Python 的简单步骤：
+
+打开 WEB 浏览器访问https://www.python.org/downloads/source/
+
+选择适用 于Unix/Linux 的源码压缩包。
+
+下载及解压压缩包。
+
+如果你需要自定义一些选项修改Modules/Setup
+
+执行 ./configure 脚本
+
+make
+
+make install
+
+执行以上操作后，Python 会安装在 /usr/local/bin 目录中，Python 库安装在 /usr/local/lib/pythonXX，XX 为你使用的 Python 的版本号。
+
+执行make遇到以下问题：
+
+gcc -pthread -Xlinker -export-dynamic -o python Programs/python.o libpython3.6m.a -lpthread -ldl -lutil -lrt -lm
+ ./python -E -S -m sysconfig –generate-posix-vars ;\
+ if test $? -ne 0 ; then \
+ echo “generate-posix-vars failed” ; \
+ rm -f ./pybuilddir.txt ; \
+ exit 1 ; \
+ fi
+ Fatal Python error: Py_Initialize: Unable to get the locale encoding
+ LookupError: unknown encoding: GB2312
+
+Current thread 0x00007fd09a00f700 (most recent call first):
+ /bin/sh: line 5: 15089 ????? ./python -E -S -m sysconfig –generate-posix-vars
+ generate-posix-vars failed
+ make: *** [pybuilddir.txt] ?? 1
+
+解决方法：
+
+在 ./configure 操作前，先进行配置：
+
+export LANGUAGE=en_US.UTF-8
+
+export LANG=en_US.UTF-8
+
+export LC_ALL=en_US.UTF-8
+

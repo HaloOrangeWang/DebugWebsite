@@ -1,0 +1,13 @@
+
+问题描述
+
+filesql = "INSERT INTO groupmsg(user,type,filename,msgtime) VALUES ('98coder', 'file','asw.png','"+datetime.datetime.now()+"')"
+TypeError: can only concatenate str (not "datetime.datetime") to str
+
+
+解决方案
+
+问题是因为时间格式不正确，更换为
+
+dt=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+

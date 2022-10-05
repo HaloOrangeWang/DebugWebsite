@@ -1,0 +1,40 @@
+近期准备学习 python 爬虫，安装 scrapy 报错
+
+首先是 pip install scrapy，报错
+
+看到报错，第一反应是去下载提示里面的 VC++ 14.0 build tools。
+
+打开链接，原来是 VS2015 的 build tools。这下明白了，VS 2015 才是报错里面说的 VC++ 14.0。
+
+下载了一个在线安装包，然后打开，准备，微软告诉我大概需要 5GB 的硬盘空间……
+
+我电脑里已经有 VS2012 了，这玩意已经把我的 C 盘空间塞的满满的，还要再装个 VS2015，WTF?
+
+这里说一下，虽然我电脑里有 VS2012，但是因为要求的是 VC++ 14.0，版本不对，所以是无效的。
+
+不过可以确定的是，安装 vs2015 build tools 是可以解决问题的，可以看下 stackoverflow 的解决办法：
+
+https://stackoverflow.com/questions/29846087/microsoft-visual-c-14-0-is-required-unable-to-find-vcvarsall-bat
+
+此方法放弃，开始百度……
+
+很多人说可以下载scrapy的whl文件，离线安装，于是下载了一个，报错依旧。
+
+这里就不贴链接了，因为这种方法是无效的。
+
+但是确实有很多人通过安装whl文件成功，于是我开始仔细分析报错，终于发现端倪……
+
+图中红框内显示在构建 twisted 时出错，那我手动安装 twisted 的离线包不就可以了？
+
+于是在 http://www.lfd.uci.edu/~gohlke/pythonlibs 找到 twisted 安装包
+
+Twisted-18.9.0-cp37-cp37m-win_amd64.whl
+
+直接 pip install 这个离线 whl，果然成功了。
+
+大致思路就是，安装 A 报错，找到 can’t build 的那个东西 B，然后手动去安装 B 的离线的 whl，如果安装 B 过程中又报错了，
+
+那就再往下一层去找，直到安装成功。
+
+via：https://blog.csdn.net/u013078422/article/details/79014745
+

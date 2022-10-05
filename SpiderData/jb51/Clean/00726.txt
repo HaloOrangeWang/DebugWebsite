@@ -1,0 +1,396 @@
+
+概述
+
+在项目中统一异常处理，可以防止代码中有未捕获的异常出现。本文介绍如何在 Django 项目中进行统一异常的处理，再结合状态码枚举类对项目异常信息进行日志记录。
+
+
+Django 统一异常处理
+
+在 Django 项目中可以自定义 中间件类 继承 django.middleware.common 下的 MiddlewareMixin 中间件类，重写 process_exception 方法的异常处理逻辑，然后在项目配置下的 中间件中注册 即可进行全局异常处理。
+
+我是在项目自定义的 utils 包下 middlewares.py 模块中下进行中间件的编写。
+
+# middlewares.py
+
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+# @Author: Hui
+# @Desc: { 项目中间件模块 }
+# @Date: 2021/09/24 8:18
+from django.middleware.common import MiddlewareMixin
+
+这里暂时先简单进行异常输出，来模拟异常处理。最后不要忘记 在配置文件中注册中间件。django 项目默认的配置文件是 settings.py 我这里只是把配置文件单独放到了 settings 包下然后改了文件名。
+
+process_exception 方法介绍
+
+process_exception 方法只有在视图函数中出现异常了才执行。该方法的返回值可以是一个 None 也可以是一个 HttpResponse 对象。
+
+返回值是 None，页面会报 500 状态码错误，视图函数不会执行。
+
+返回值是 HttpResponse 对象，则是对应的响应信息，页面不会报错。
+
+中间件中的方法
+
+下面一图就能比较好的呈现 django 整个处理流程逻辑
+
+更多的中间件细节可以去 Django 官方文档 进行了解。
+
+
+统一异常处理具体设计
+
+结合自定义的异常和状态码枚举类，进行异常日志信息和业务逻辑的处理。
+
+
+自定义异常模块
+
+# exceptions.py
+
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+# @Author: Hui
+# @Desc: { 项目异常模块 }
+# @Date: 2021/09/24 8:14
+
+class CommonException(Exception):
+    """公共异常类"""
+
+def __init__(self, enum_cls):
+        self.code = enum_cls.code
+        self.errmsg = enum_cls.errmsg
+        self.enum_cls = enum_cls	# 状态码枚举类
+        super().__init__()
+
+class BusinessException(CommonException):
+    """业务异常类"""
+    pass
+
+class APIException(CommonException):
+    """接口异常类"""
+    pass
+
+
+自定义状态码枚举类
+
+# enums.py
+
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+# @Author: Hui
+# @Desc: { 项目枚举类模块 }
+# @Date: 2021/09/23 23:37
+
+from enum import Enum
+
+class StatusCodeEnum(Enum):
+    """状态码枚举类"""
+
+OK = (0, '成功')
+    ERROR = (-1, '错误')
+    SERVER_ERR = (500, '服务器异常')
+
+IMAGE_CODE_ERR = (4001, '图形验证码错误')
+    THROTTLING_ERR = (4002, '访问过于频繁')
+    NECESSARY_PARAM_ERR = (4003, '缺少必传参数')
+    USER_ERR = (4004, '用户名错误')
+    PWD_ERR = (4005, '密码错误')
+    CPWD_ERR = (4006, '密码不一致')
+    MOBILE_ERR = (4007, '手机号错误')
+    SMS_CODE_ERR = (4008, '短信验证码有误')
+    ALLOW_ERR = (4009, '未勾选协议')
+    SESSION_ERR = (4010, '用户未登录')
+    REGISTER_FAILED_ERR = (4011, '注册失败')
+
+DB_ERR = (5000, '数据库错误')
+    EMAIL_ERR = (5001, '邮箱错误')
+    TEL_ERR = (5002, '固定电话错误')
+    NODATA_ERR = (5003, '无数据')
+    NEW_PWD_ERR = (5004, '新密码错误')
+    OPENID_ERR = (5005, '无效的openid')
+    PARAM_ERR = (5006, '参数错误')
+    STOCK_ERR = (5007, '库存不足')
+
+@property
+    def code(self):
+        """获取状态码"""
+        return self.value[0]
+
+@property
+    def errmsg(self):
+        """获取状态码信息"""
+        return self.value[1]
+
+自定义的异常类用于区分系统异常和业务来进行单独处理。
+
+状态码枚举则是用来记录对应的异常信息。
+
+状态码枚举类的设计可以查阅 巧用Python 枚举类设计状态码信息
+
+
+响应信息统一结果的封装
+
+统一前后端交互数据和异常信息结果。
+
+# result.py
+
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+# @Author: Hui
+# @Desc: { 项目信息返回结果模块 }
+# @Date: 2021/09/23 22:10
+from .enums import StatusCodeEnum
+
+class R(object):
+    """
+    统一项目信息返回结果类
+    """
+
+def __init__(self):
+        self.code = None
+        self.errmsg = None
+        self._data = dict()
+
+@staticmethod
+    def ok():
+        """
+        组织成功响应信息
+        :return:
+        """
+        r = R()
+        r.code = StatusCodeEnum.OK.code
+        r.errmsg = StatusCodeEnum.OK.errmsg
+        return r
+
+@staticmethod
+    def error():
+        """
+        组织错误响应信息
+        :return:
+        """
+        r = R()
+        r.code = StatusCodeEnum.ERROR.code
+        r.errmsg = StatusCodeEnum.ERROR.errmsg
+        return r
+
+@staticmethod
+    def server_error():
+        """
+        组织服务器错误信息
+        :return:
+        """
+        r = R()
+        r.code = StatusCodeEnum.SERVER_ERR.code
+        r.errmsg = StatusCodeEnum.SERVER_ERR.errmsg
+        return r
+
+@staticmethod
+    def set_result(enum):
+        """
+        组织对应枚举类的响应信息
+        :param enum: 状态枚举类
+        :return:
+        """
+        r = R()
+        r.code = enum.code
+        r.errmsg = enum.errmsg
+        return r
+
+def data(self, key=None, obj=None):
+        """统一后端返回的数据"""
+
+if key:
+            self._data[key] = obj
+
+context = {
+            'code': self.code,
+            'errmsg': self.errmsg,
+            'data': self._data
+        }
+        return context
+
+
+完善统一异常处理逻辑
+
+# middlewares.py
+
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+# @Author: Hui
+# @Desc: { 项目中间件模块 }
+# @Date: 2021/09/24 8:18
+import logging
+
+from django.db import DatabaseError
+from django.http.response import JsonResponse
+from django.http import HttpResponseServerError
+from django.middleware.common import MiddlewareMixin
+
+from meiduo_mall.utils.result import R
+from meiduo_mall.utils.enums import StatusCodeEnum
+from meiduo_mall.utils.exceptions import BusinessException
+
+logger = logging.getLogger('django')
+
+class ExceptionMiddleware(MiddlewareMixin):
+    """统一异常处理中间件"""
+
+def process_exception(self, request, exception):
+        """
+        统一异常处理
+        :param request: 请求对象
+        :param exception: 异常对象
+        :return:
+        """
+        if isinstance(exception, BusinessException):
+            # 业务异常处理
+            data = R.set_result(exception.enum_cls).data()
+            return JsonResponse(data)
+
+elif isinstance(exception, DatabaseError):
+            # 数据库异常
+            r = R.set_result(StatusCodeEnum.DB_ERR)
+            logger.error(r.data(), exc_info=True)
+            return HttpResponseServerError(StatusCodeEnum.SERVER_ERR.errmsg)
+
+elif isinstance(exception, Exception):
+            # 服务器异常处理
+            r = R.server_error()
+            logger.error(r.data(), exc_info=True)
+            return HttpResponseServerError(r.errmsg)
+        
+        return None
+
+
+应用场景
+
+
+注册校验
+
+让我们来看一段注册校验功能业务逻辑
+
+def verify_params(self, request):
+        """
+        校验注册信息
+        :param request: 注册请求对象
+        :return: response_ret
+        """
+        # 接受参数
+        self.username = request.POST.get('username')
+        self.password = request.POST.get('password')
+        self.confirm_pwd = request.POST.get('confirm_pwd')
+        self.mobile = request.POST.get('mobile')
+        self.allow = request.POST.get('allow')
+
+if not all(all_args):
+            # raise BusinessException(StatusCodeEnum.PARAM_ERR)
+            response_ret = http.HttpResponseForbidden('参数错误')
+            return response_ret
+
+# 用户名 5-20个字符
+        if not re.match(r'^[a-zA-Z0-9_]{5,20}', self.username):
+            response_ret = http.HttpResponseForbidden('用户名不规范')
+            return response_ret
+
+# 密码 8-20个字符
+        if not re.match(r'^[a-zA-Z0-9]{8,20}', self.password):
+            response_ret = http.HttpResponseForbidden('密码不规范')
+            return response_ret
+
+# 两次密码一致性
+        if self.password != self.confirm_pwd:
+            response_ret = http.HttpResponseForbidden('两次密码不一致')
+            return response_ret
+
+# 手机号合法性
+        if not re.match(r'^1[3-9]\d{9}$', self.mobile):
+            response_ret = http.HttpResponseForbidden('手机号码不合法')
+            return response_ret
+
+# 是否勾选用户协议
+        if self.allow != 'on':
+            response_ret = http.HttpResponseForbidden('请勾选用户协议')
+            return response_ret
+
+return response_ret
+
+通过抛异常和设置状态码枚举来处理
+
+def verify_params(self, request):
+        """
+        校验注册信息
+        :param request: 注册请求对象
+        :return: response_ret
+        """
+        # 接受参数
+        self.username = request.POST.get('username')
+        self.password = request.POST.get('password')
+        self.confirm_pwd = request.POST.get('confirm_pwd')
+        self.mobile = request.POST.get('mobile')
+        self.allow = request.POST.get('allow')
+
+# 校验参数
+        all_args = [self.username, self.password, self.confirm_pwd, self.mobile, self.allow]
+        if not all(all_args):
+            raise BusinessException(StatusCodeEnum.PARAM_ERR)
+
+# 用户名 5-20个字符
+        if not re.match(r'^[a-zA-Z0-9_]{5,20}', self.username):
+            raise BusinessException(StatusCodeEnum.USER_ERR)
+
+# 密码 8-20个字符
+        if not re.match(r'^[a-zA-Z0-9]{8,20}', self.password):
+            raise BusinessException(StatusCodeEnum.PWD_ERR)
+
+# 两次密码一致性
+        if self.password != self.confirm_pwd:
+            raise BusinessException(StatusCodeEnum.CPWD_ERR)
+
+# 手机号合法性
+        if not re.match(r'^1[3-9]\d{9}$', self.mobile):
+            raise BusinessException(StatusCodeEnum.MOBILE_ERR)
+
+# 是否勾选用户协议
+        if self.allow != 'on':
+            raise BusinessException(StatusCodeEnum.ALLOW_ERR)
+
+减少 try ... except ... 代码块
+
+例如在对数据库进行操作时，为了防止数据库发生了意外的异常导致系统崩溃，通常加上 try ... except ...来记录异常信息。然而配置了全局异常处理，则可以不用管理。
+
+# 创建用户
+try:
+    user = User.objects.create_user(
+        username=self.username,
+        password=self.password,
+        mobile=self.mobile,
+    )
+except DatabaseError as e:
+    logger.error(e)
+    
+    
+# 有了全局的异常处理
+user = User.objects.create_user(
+        username=self.username,
+        password=self.password,
+        mobile=self.mobile,
+    )
+
+注意：如果需要通过异常捕获来处理一些业务信息，则不可避免，如事务回滚等
+
+
+源代码
+
+可能通过文章方式不好理解其思想，大家可以通过项目源代码的方式来参考。
+
+美多商城 https://gitee.com/huiDBK/meiduo_project/tree/master
+
+
+尾语
+
+✍ 用 Code 谱写世界，让生活更有趣。❤️
+
+✍ 万水千山总是情，点赞再走行不行。❤️
+
+✍ 码字不易，还望各位大侠多多支持。❤️
+
+到此这篇关于python中通过Django捕获所有异常的处理的文章就介绍到这了,更多相关python Django捕获异常内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

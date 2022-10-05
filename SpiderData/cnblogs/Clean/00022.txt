@@ -1,0 +1,26 @@
+问题报错提示：
+
+selenium.common.exceptions.WebDriverException: Message: A new session could not be created. (Original error: Command failed: C:\Windows\system32\cmd.exe /s /c "D:\AutoTest\adt-bundle-windows-x86-20140702\sdk\platform-tools\adb.exe -s GWY0216A22013956 install "D:\AutoTest\appium\Appium\node_modules\appium\build\unicode_ime_apk\UnicodeIME-debug.apk""
+Failed to install D:\AutoTest\appium\Appium\node_modules\appium\build\unicode_ime_apk\UnicodeIME-debug.apk: Failure [INSTALL_FAILED_ALREADY_EXISTS: Attempt to re-install io.appium.android.ime without first uninstalling.]
+)
+
+问题原因：
+
+　　Appium在真机上运行时会自动在手机中安装2个apk，分别为:settings_apk-debug.apk和unlock_apk-debug.apk，此2个apk在电脑中存放的路径为：D:\AutoTest\appium\Appium\node_modules\appium\build 文件夹下（本人电脑存放的路径），真机上运行完一次脚本，需要再次运行时，要手动删除掉安装在手机上的settings_apk-debug.apk和unlock_apk-debug.apk，删除完成有一定的 遗留，所以删除后直接运行出现如上报错。
+
+问题分析：
+
+　　1、cmd命令框输入：adb shell pm list packages查看手机中安装的apk
+
+　　　　
+
+　　2、将会查看到如上命令执行完确实存在一个：io.appium.android.ime
+
+　　　　
+
+解决方案：
+
+　　重启手机
+
+卸载了手机
+

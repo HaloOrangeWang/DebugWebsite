@@ -1,0 +1,57 @@
+一时兴起想挂载服务器上的共享文件夹。使用的是centos7  竟然报错，一直报错，怎么都无法解决，网上查各做资料，最后还是被我查到了，首先我使用的是sentos7  最小版本的安装，不是最小版本的可能没有这种问题。
+下面附上问题及方案！
+mount -t cifs -o username=guolh,password=glh123? //192.168.0.229 /mnt/
+报错如下：
+mount: 文件系统类型错误、选项错误、//192.168.0.229 上有坏超级块、
+缺少代码页或助手程序，或其他错误
+(对某些文件系统(如 nfs、cifs) 您可能需要
+一款 /sbin/mount.<类型> 助手程序)
+
+有些情况下在 syslog 中可以找到一些有用信息- 请尝试
+   dmesg | tail  这样的命令看看。
+
+综合查询 是因为最小安装的原因 缺少包cifs-utils包导致，yum安装后，一切正常！
+
+mount -t cifs -o username=guolh,password=glh123? \192.168.0.229/软件共享 /mnt/windows/
+mount.cifs: bad UNC (\192.168.0.229/软件共享)
+这个是wei因为反斜杠打错了，\192.168.0.229 应该换成//192.168.0.229
+mount -t cifs -o username=guolh,password=glh123? //192.168.0.229/软件共享 /mnt/windows/
+mount error(16): Device or resource busy
+Refer to the mount.cifs(8) manual page (e.g. man mount.cifs)
+这个因为是已经挂载好了；
+cd /mnt/windows/
+[root@localhost windows]# ls
+6.1 pdm客户安装端  PDF阅读器                    浏览器      通讯工具
+Debug              windows                      驱动        外网、腾讯通、AM申请单.xlsx
+Debug西区分包      wpsoffice2016_66868.com      软件        西区看图
+huitu              wpsoffice2016_66868.com.rar  扫码程序    西区扫码
+java.net           播放器                       杀毒软件    资料恢复
+lmtghost3.0.exe    电子锯程序                   输入法
+office             解压缩                       腾讯通.exe
+最后设置开机自动挂载试试：
+
+
+
+/etc/fstab
+
+
+Created by anaconda on Thu May 31 18:04:35 2018
+
+
+
+Accessible filesystems, by reference, are maintained under '/dev/disk'
+
+
+See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+
+
+/dev/mapper/centos-root /                       xfs     defaults        0 0
+UUID=d27fc527-1914-4d31-b8c4-bcca34de1aad /boot                   xfs     defaults        0 0
+/dev/mapper/centos-swap swap                    swap    defaults        0 0
+//192.168.0.229/软件共享 /mnt/windows cifs username=guolh,password=glh123? 0 0
+~
+
+然后重启中........
+
+还在....
+

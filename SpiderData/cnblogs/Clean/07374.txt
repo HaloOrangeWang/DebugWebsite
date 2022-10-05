@@ -1,0 +1,58 @@
+环境 mac
+
+本人下载mysql 是采用brew 下载，所以安装路径在/usr/local/Cellar/mysql/8.0.19_1/
+
+brew install mysql
+
+brew install mysql-connector-c
+
+sudo sed -i -e 's/libs="$libs -l "/libs="$libs -lmysqlclient -lssl -lcrypto"/g' /usr/local/mysql/bin/mysql_config
+
+下载mysql-client
+
+brew install mysql-client
+
+路径在：/usr/local/Cellar/mysql-client/8.0.19/
+
+采用Django启动项目报错
+
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module.
+
+Did you install mysqlclient?
+
+下载mysqlclient
+
+pip install mysqlclient
+
+下载时报错
+
+报错 1：
+
+_mysql.c:29:10: fatal error: 'my_config.h' file not found
+
+解决办法：
+
+export DYLD_LIBRARY_PATH="/usr/local/Cellar/mysql/8.0.19_1/lib"
+
+本人是采用brew 下载mysql 的，所以。存储路径是/usr/local/Cellar/mysql/8.0.19_1/ 。
+
+报错2
+
+File "/private/var/folders/wy/4v8w8ht90m7_1xzxklx1tnsm0000gn/T/pip-install-bbm57hwr/mysqlclient/setup_posix.py", line 47, in get_config
+
+ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+
+解决办法：
+
+export PATH=$PATH:/usr/local/Cellar/mysql/8.0.s19_1/bin
+
+报错3：
+
+ld: library not found for -lssl
+
+解决办法：
+
+export PATH="/usr/local/Cellar/mysql-client/8.0.19/bin:$PATH"
+
+至此下载成功。
+

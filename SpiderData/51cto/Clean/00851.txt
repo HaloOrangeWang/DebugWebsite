@@ -1,0 +1,92 @@
+没错，玩自动化测试时，又报错了。
+
+日常测试中，经常会使用py的 set 和 dict，set 是用 dict 实现，因为本身 dict 的 key 就是会被去重，value 设置为 None 即可作为 set 使用。
+
+Python 中的 dict 内部使用了哈希表的方式实现，所以对于 key 的要求就是需要计算哈希值。在 Python 的类型体系中，有些类型是支持计算哈希值，有些并不支持。所以我们可以知道，使用不支持计算哈希值的类型作为 dict 或 set 的 key 就会报错。
+
+以下皆报错 TypeError: unhashable type: 'list'
+
+# list 作为 dict 的 key
+key = ["news", "hot"]
+news = {}
+news[key] = ["news_1", "news_2"]
+
+# list 作为 set 的 key 来去重
+categories = [["news", "hot"], ["sports", "nba"]]
+categories = set(categories)
+
+我们现在知道了这个错误的原因，那么 Python 内置类型中哪些支持哈希计算，哪些不支持了。
+
+下面我们测试一下 Python 内置的类型。
+
+import sys
+
+def check_hash(x):
+    if x.__hash__ is not None:
+        print type(x), 'hashable:', hash(x)
+        return True
+    else:
+        print type(x), 'unhashable'
+        return False
+
+# int
+i = 5
+check_hash(i)
+# long
+l = sys.maxint + 1
+check_hash(l)
+# float
+f = 0.5
+check_hash(f)
+# string
+s = "hello"
+check_hash(s)
+# unicode
+u = u"中国"
+check_hash(u)
+# tuple
+t = (i, l, f, s, u)
+check_hash(t)
+# object
+o = object()
+check_hash(o)
+
+# list
+l1 = [i, l, f, s, u]
+check_hash(l1)
+# set
+s1 = {i, l, f, s, u}
+check_hash(s1)
+# dict
+d1 = {s: i, u: l}
+check_hash(d1)
+
+# output:
+<type 'int'> hashable: 5
+<type 'long'> hashable: -9223372036854775808
+<type 'float'> hashable: 1073741824
+<type 'str'> hashable: 840651671246116861
+<type 'unicode'> hashable: 2561679356228032696
+<type 'tuple'> hashable: 1778989336750665947
+<type 'object'> hashable: 270043150
+<type 'list'> unhashable
+<type 'set'> unhashable
+<type 'dict'> unhashable
+
+set、list、dict 三个类型是不可哈希的。对于可变的类型计算哈希值是不可靠的，当数据发生变化时哈希值也要变化。哈希计算的意义在于用哈希值来区分变量，哈希值会随着变量内容而变化，所以对于这类可变类型来说，不支持哈希值是合理的。
+
+下面介绍下上述示例代码的一些细节，对于 Python 的深入理解有一定帮助。
+
+定义 set
+ 定义 set 的方法，这里需要单独说一下。set 有多种定义的方法，一般使用 set(list) 或 set(tuple) 的方式来定义，但是还有个花括号的方法可以定义，这个大家使用的较少会被忽略，就是上述示例中的方式。
+
+l = ['a', 'b', 'a', 'c']
+s = set(l)
+
+# 使用花括号来定义
+s = {'a', 'b', 'a', 'c'}
+
+参考
+
+http://icejoywoo.github.io/2019/03/16/python-unhashable-type-error.html
+

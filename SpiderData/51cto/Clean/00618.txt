@@ -1,0 +1,21 @@
+
+之前在使用py2neo连接neo4j数据库的时候出现了报错——ValueError: The following settings are not supported: {'username': 'neo4j'}，我简直一头雾水，后来看了py2neo的最新官方连接配置文件（Connection profiles）才明白在新版中py2neo连接方式就已经变了。官方给的案例：
+
+from py2neo import Graph
+g = Graph("http://localhost:7474", auth=("neo4j", "123456"))
+
+
+或者
+
+from py2neo import Graph
+g = graph = Graph("http://localhost:7474", auth='neo4j:123456')
+
+
+注：这里面无论双引号还是单引号都可以。
+
+
+而不是旧版的
+
+from py2neo import Graph
+g = Graph('http://localhost:7474/',username='neo4j',password='123456')
+

@@ -1,0 +1,155 @@
+文章目录
+
+
+文章目录
+
+在VScode中安装python插件
+
+解决报错SyntaxError: Non-ASCII character '\xef' in file
+
+解决报错"No module named 'xxx' "
+
+VScode上使用Jupyter Notebook的方法
+
+20.02.26 最新方法：Code Runner插件一键安装
+
+终端目录切换问题
+
+运行文件先自动保存
+
+
+在VScode中安装python插件
+
+选择合适的解释器
+
+运行python文件
+
+此时可能会出现一些报错，下面会一一解决
+
+
+解决报错SyntaxError: Non-ASCII character ‘\xef’ in file
+
+在程序第一行加上这句话# -*- coding: utf-8 -*即可
+
+
+解决报错"No module named ‘xxx’ "
+
+这个问题的解决方法我主要参考了下面的博客
+VScode Python no module的解决方法
+
+这博客写的很好，主要是说VScode这个工具本身是有Bug的，但是通过修改launch.json文件就可以解决报错
+
+如果找不到launch.json文件，可以点调试键，然后它会自动生成一个launch.json文件
+
+（ps：以我的经验，以后如果换个workplace，可能要重新生成下这个文件）
+
+然后把里面的代码替换成下面的代码，保存并重启VScode就可以解决上述问题了
+
+代码如下
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+19
+
+这时再运行python就不会出现导入包报错了，也不会有中文字符报错的问题了（后来不知道为什么，第一行不加# -*- coding: utf-8 -*，也不会出现字符报错了，神奇！）
+
+至此VScode的python开发环境配置完成！
+
+说明：
+pythonPath的设置是根据你设置的解释器为止而定的
+
+
+VScode上使用Jupyter Notebook的方法
+
+在命令面板上创建一个Jupyter Notebook文件
+
+效果如下
+
+这样就可以不用通过终端输入jupyter notebook，然后在浏览器打开了，直接可以在VScode中运行Jupyter Notebook，美滋滋！
+
+参考资料
+
+用VScode配置Python开发环境
+
+官方VScode配置 英文
+
+官方VScode配置 中文翻译
+
+
+20.02.26 最新方法：Code Runner插件一键安装
+
+使用Code Runner插件即可完成多种环境的搭建，如C++, python
+你只需要在设置中添加正确的路径即可
+
+在settings.json（全局）中添加正确的路径即可
+
+运行快捷键我自定义为Command + B
+
+说明：
+
+使用coderunner的好处时，执行不同C++文件时只会生成一个a.exe文件，不会生成多个问题的可执行文件
+
+
+终端目录切换问题
+
+当我设置的是"python": "/usr/local/bin/python3"时，运行python文件时，终端不会切换到这个文件所在的目录，这会导致有时你要输出一个文件，结果这个输出文件被保存在了之前的终端目录中，这是让人不爽的
+
+当我设置的是"python": "/usr/local/bin/python3"时，运行python文件时，终端不会切换到这个文件所在的目录，这会导致有时你要输出一个文件，结果这个输出文件被保存在了之前的终端目录中，这是让人不爽的
+
+解决方法：将上面的python设置代码替换为"python": "cd $dir && python3 $fileName"
+即可先进入当前文件所在目录，再用python3执行当前文件，这样输出文件就会保存在当前文件了
+
+解决方法：将上面的python设置代码替换为"python": "cd $dir && python3 $fileName"
+即可先进入当前文件所在目录，再用python3执行当前文件，这样输出文件就会保存在当前文件了
+
+
+运行文件先自动保存
+
+在settings.json中添加如下代码
+
+1
+
+2
+
+关闭之前用的python插件，可以看到底部的python版本就没有了
+
+两种方法都行，一个是python插件（只能运行python），一个是code-runner插件（可以运行c++、python、java等）
+
+其他说明
+
+使用 VSCode 在 Mac 上配置 C/C++ 调试环境
+

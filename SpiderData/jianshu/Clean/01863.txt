@@ -1,0 +1,48 @@
+
+报错情景
+
+在基于centos的镜像的容器中.python程序import pandas会import bz2,报错信息:
+
+File "/usr/local/python3/lib/python3.6/site-packages/pandas/io/common.py", line 3, in <module>
+    import bz2
+  File "/usr/local/python3/lib/python3.6/bz2.py", line 23, in <module>
+    from _bz2 import BZ2Compressor, BZ2Decompressor
+ModuleNotFoundError: No module named '_bz2'
+
+
+解决办法:
+
+安装zlib跟bz2相关库(但是我记得我装过了), 缺了哪些选择安装
+
+RUN yum -y install zlib bzip2 zlib-devel bzip2-devel libffi-devel openssl openssl-devel ncurses-devel sqlite sqlite-devel readline-devel tk-devel gcc make wget mesa-libGL.x86_64 lzma ncurses xz xz-devel gdbm gdbm-devel tk tk-devel
+
+重新编译
+
+RUN cd /usr/local/python3/Python-3.6.9 && make distclean && ./configure --prefix=/usr/local/python3 --enable-optimizations  && make && make install
+
+其中/usr/include里有bzlib.h，/usr/lib64里有libbz2.so
+
+最后在/usr/local/python3/lib/python3.6/lib-dynload/得到一个_bz2.cpython-36m-x86_64-linux-gnu.so
+
+然后import pandas会有警告
+
+>>> import pandas
+/usr/local/python3/lib/python3.6/site-packages/pandas/compat/__init__.py:120: UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
+  warnings.warn(msg)
+
+安装
+
+yum install -y xz-devel python-backports-lzma
+pip install backports.lzma
+
+进入/usr/local/python3/lib/python3.6/lzma.py
+
+line27行修改如何下：
+
+try:
+    from _lzma import *
+    from _lzma import _encode_filter_properties, _decode_filter_properties
+except ImportError:
+    from backports.lzma import *
+    from backports.lzma import _encode_filter_properties, _decode_filter_properties
+

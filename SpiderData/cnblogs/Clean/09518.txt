@@ -1,0 +1,28 @@
+SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 2-3: truncated \UXXXXXXXX escape）
+
+在windows系统当中读取文件路径可以使用\,但是在python字符串中\有转义的含义，
+
+如\t可代表TAB，\n代表换行，
+
+所以我们需要采取一些方式使得\不被解读为转义字符。目前有3个解决方案
+
+
+1、在路径前面加r，即保持字符原始值的意思。
+
+1 file = r'C:\Users\Administrator\Desktop\world_data.txt'
+
+
+2、替换为双反斜杠
+
+1 file = r'C:\\Users\\Administrator\\Desktop\\world_data.txt'
+
+
+3、替换为双正斜杠
+
+1 file = r'C://Users//Administrator//Desktop//world_data.txt'
+
+
+4、替换为单正斜杠
+
+1 file = r'C:/Users/Administrator/Desktop/world_data.txt'
+

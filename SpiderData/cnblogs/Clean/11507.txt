@@ -1,0 +1,21 @@
+
+python-关于request模块post方法上传文件报错"the request was rejected because no multipart boundary was found"
+
+
+报错情景
+
+在浏览器的控制台查看发送文件的Post请求，可以发现在请求头中会有参数“Content-Type”，值为“multipart/form-data”
+
+在对接口进行自测的时候，用requests发送带文件的post请求，在请求头中添加'Content-Type': 'multipart/form-data'会返回
+
+{"timestamp":"2021-11-10T08:53:26.840+00:00","status":500,"error":"Internal Server Error","message":"","path":"/file"}
+
+这个查看后台，发现报org.apache.tomcat.util.http.fileupload.FileUploadException: the request was rejected because no multipart boundary was found的错误
+
+这个时候我想到去请求头添加一个 boundary，但是结果还是解决不了问题，后台依旧报错，获取不到上传的文件
+
+
+解决方法
+
+不在headers里面加content-type，去掉之后，再尝试，发现后台成功收到了发送的文件。应该是requests模块根据上传文件自动添加了请求头中的内容
+

@@ -1,0 +1,13 @@
+使用Jsoup下载图片时，报错：不支持MimeType异常。
+
+Response request = Jsoup.connect(url)
+				.referrer(url).userAgent("Mozilla/5.0 ...")
+				.execute();
+
+后面，在connect(url)后面加了一行：ignoreContentType(true)：Ignore the document's Content-Type when parsing the response. 文档意思是当解析请求的时候忽略ContentType。
+
+Response request = Jsoup.connect(url)
+				.ignoreContentType(true)// 此处解决UnsupportedMimeTypeException异常
+				.referrer(url).userAgent("Mozilla/5.0 ...")
+				.execute();
+

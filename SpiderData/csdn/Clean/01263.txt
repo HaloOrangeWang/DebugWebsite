@@ -1,0 +1,202 @@
+python的错误提示非常人性化，通常报错时就会提供解决办法，比如一些syntax error就很容易解决，整理了一下遇到的稍微麻烦一些的：
+
+按住Ctrl+F在本页搜索
+
+1.  Matplotlib Deprecation Warning: The finance module has been deprecated in mpl 2.0 and will be removed in mpl 2.2. Please use the module mpl_finance instead.
+
+原因：输入import mpl_finance as finance，程序说没有这个模块。因为新版本mpl 2.2中，finance才会被替换成mpl_finance，目前import matplotlib.finance是不会影响使用的。为了兼容新版本，可以下载mpl_finance这个模块，这样才可以import
+
+解决：
+
+windows: 命令行输入：pip install https://github.com/matplotlib/mpl_finance/archive/master.zip
+
+linux: sudo pip install https://github.com/matplotlib/mpl_finance/archive/master.zip
+
+__________________________________________________________________________________________________________________________________________________
+
+2. Python IndexError: list assignment index out of range
+
+原因：通常是因为直接对空的list进行赋值，比如A=[];A[0]=1
+
+解决：A.append(1)
+
+__________________________________________________________________________________________________________________________________________________
+
+3. IndexError: list index out of range
+
+原因：用pandas.read_excel读取excel文件时报错，可能是有未显示的多余列
+
+解决：将excel的内容拷贝到一个新的文件内
+
+__________________________________________________________________________________________________________________________________________________
+
+4. If using all scalar values, you must pass an index
+
+原因：在将dict转为dataframe格式时，未指定index
+
+解决：df=pd.dataframe(dict,index=[0]),这里index的值由dict内的格式决定
+
+__________________________________________________________________________________________________________________________________________________
+
+5. JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+原因：用okcoin的api获取数据时出现，原因不明
+
+解决：在url前面添加https://解决
+
+__________________________________________________________________________________________________________________________________________________
+
+6. TypeError: can’t multiply sequence by non-int of type ‘float’
+
+原因：用dataframe进行数据类型转换(object转np.int)时遇到，python的int无限制,但C的int和long都会溢出,因为python的很多函数底层用C实现的,所以python有时也会出现这种错误
+
+解决：将np.int改成np.float，再转换过来
+
+__________________________________________________________________________________________________________________________________________________
+
+7.Keyerror：(某个数字)
+
+原因：在dataframe过滤或删除一些行以后，index不连续，这样在遍历的时候会出现keyerror
+
+解决：可以换成其他index，也可以创建新的连续的索引
+
+df['index']=range(len(df['direction']))
+
+df=df.set_index(df['index'])
+
+__________________________________________________________________________________________________________________________________________________
+
+8. A value is trying to be set on a copy of a slice from a DataFrame
+
+原因：在对dataframe的某一行某一列进行改动时，其他程序正在对dataframe占用，通常是因为代码的逻辑位置不对
+
+解决：调整代码逻辑，或者另外拷贝一份dataframe进行改动
+
+不要直接对dataframe的某一个位置进行赋值
+
+或者新建一个list，将需要增加的数据添加，然后将dataframe列的数据改成list的数据a.append(x);pd.Dataframe(a)
+
+__________________________________________________________________________________________________________________________________________________
+
+9. PermissionError: [WinError 5] 拒绝访问。: ‘C:/Users/xxx/Desktop/’
+
+原因：用os.remove()删除文件夹下的文件时，文件或文件夹在被占用
+
+解决：改用send2trash模块(把文件移到回收站)或者shutil模块(这个会连文件夹一起直接删除)
+
+import send2trash
+
+send2trash.send2trash(file_dir)
+
+import shutil
+
+shutil.rmtree(file_dir)
+
+__________________________________________________________________________________________________________________________________________________
+
+10. second must be in 0..59 & ValueError: unconverted data remains: .0
+
+原因：在将数字转化成datetime格式时，second有大于59的数，判断大于59时，在minutes+1，报第二个error
+
+解决：对于大于59的时间数字直接赋值为59，然后可选择去重
+
+__________________________________________________________________________________________________________________________________________________
+
+11. No module named ‘psycopg2._psycopg
+
+原因：即使已经安装psycopg，正常使用过，也有可能会报这个错
+
+解决：重新安装
+
+pip uninstall psycopy2
+
+pip install psycopg2
+
+__________________________________________________________________________________________________________________________________________________
+
+12. TypeError: unsupported operand type(s) for /: ‘method’ and ‘int’
+
+原因：method不能用在运算符的地方，通常是因为method忘记括号
+
+解决：加上括号，比如sum()等容易忘记的地方
+
+__________________________________________________________________________________________________________________________________________________
+
+13. TypeError: only list-like objects are allowed to be passed to isin(), you passed a [int]
+
+原因：对dataframe进行筛选时筛选值是int，不能用df.isin(list)
+
+解决：
+
+df=df[column name].isin(list name) #筛选对象是list
+
+df=df[df[column name]==i] #筛选对象是int
+
+__________________________________________________________________________________________________________________________________________________
+
+14. TypeError: unhashable type: ‘slice
+
+原因：对dataframe切片错误
+
+解决：将df[:,i]改成df.iloc[:,i]
+
+__________________________________________________________________________________________________________________________________________________
+
+15. JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+原因：request网页信息，转换成json格式时报错
+
+解决：如果检测json转换的信息没有错的话，可能是页面拒绝request类型的访问
+
+__________________________________________________________________________________________________________________________________________________
+
+16. ValueError: dictionary update sequence element #0 has length 7; 2 is required
+
+原因：将list转换成dict时直接用了dict(list)
+
+解决：改用eval(list)
+
+__________________________________________________________________________________________________________________________________________________
+
+17. ValueError: No engine for filetype: ”
+
+原因：pandas输出文件时未指定文件后缀名
+
+解决：filename后加.xls或者.csv
+
+__________________________________________________________________________________________________________________________________________________
+
+18.  redis exception  connectionError :error -2 connecting to redis:6379. name or service not known.
+
+redis.exceptions.ConnectionError: Error 11001 connecting to host:6379. getaddrinfo failed.
+
+原因：检查redis连接的host名称，通常都是因为拼写之类的错误
+
+解决：
+
+__________________________________________________________________________________________________________________________________________________
+
+19. ValueError: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all()
+
+原因：对dataframe的值进行判断并提取时使用了错误的格式：df [df.a>1 and df.b<0]
+
+解决：改成：df [df.a>1 & df.b<0]
+
+__________________________________________________________________________________________________________________________________________________
+
+20. IndexError: single positional indexer is out-of-bounds
+
+原因：索引出界
+
+解决：检查dataframe实际列数行数
+
+__________________________________________________________________________________________________________________________________________________
+
+21. UnicodeDecodeError: ‘utf-8’ codec can’t decode byte 0xce in position 3: invalid continuation byte
+
+原因：用pandas读取csv文件时报错，csv文件里有中文，utf-8不能解析
+
+解决：
+
+df = pd.read_csv('path' + 'filename.csv', encoding='GB2312')
+

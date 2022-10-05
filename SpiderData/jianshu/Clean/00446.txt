@@ -1,0 +1,36 @@
+
+问题背景
+
+下午使用hive还是正常的，但xshell自动退出了，我重新登录xhsell，然后再登录hive的时候，使用hive指令提示报错
+
+hive> show databases;
+FAILED: SemanticException org.apache.hadoop.hive.ql.metadata.HiveException: 
+java.lang.RuntimeException: Unable to instantiate org.apache.hadoop.hive.ql.metadata.SessionHiveMetaStoreClient
+
+百思不得其解，查阅了很多资料都不行
+
+
+解决方案
+
+1 根据以往经验，我尝试查看hive的进程，果然发现了问题的所在，有两个hive进程，一个是我重新开启xshell启动的，一个是之前启动的
+
+ps -ef | grep hive
+
+2 查找到问题了，把这个两个进程删掉，重新启动hive
+
+kill -9 1588 31303
+
+3 测试hive们可以正常访问了
+
+show databases;
+
+
+总结
+
+饭吃着吃着，bug就出来了
+
+作为程序员第 104 篇文章，每次写一句歌词记录一下，看看人生有几首歌的时间，wahahaha ...
+
+
+Lyric：    请不要把分手当做你的请求
+

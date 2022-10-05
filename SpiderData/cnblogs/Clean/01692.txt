@@ -1,0 +1,38 @@
+1.hive-client 无法安装
+
+一直报错(symlink target  already exists and it is not a symlink.)，hive-client 已经存在且不是符号连接，查看确实如此
+
+试了很多种办法，比如重新安装，比如手动删除，手动连接，都没有奏效
+
+DO:
+
+最后通过查看错误日志，拿到执行报错的脚本(ambari-python-wrap /usr/bin/hdp-select set hive-client 2.6.5.0-292),删除存在的目录后，再执行该脚本，最后重新在前台管理界面进行重试安装-----------成功。
+
+2.无法查找到 accumulo_$ 包名，后续就无法安装，这种情况大多是本地源没有配置成功，或则有错误指向。
+
+DO:
+
+　a.配置本地源，包括ambari,hdp,hdp-util
+
+b.修改 /etc/yum.repos.d 下的 ambari.repo 和 hdp.repo 为上面设置的本地源
+
+c.执行 yum clean all ,yum makecache,yum repolist
+
+在此之后再走离线安装的程序。
+
+3.spark2 thrift server 无法启动，报错 hdp.version is not set while running Spark under HDP
+
+DO:
+
+在配置文件Advanced spark2-env 中的 content 中配置 export HDP_VERSION=2.6.5.0-292 重启即可解决。
+
+4.livy for spark2 server 无法启动，报错，can not mkdir /livy2-recovery
+
+DO:
+
+手动创建该目录，重启即可解决。
+
+5.ambari 服务删除
+
+curl -u admin:admin -H "X-Requested-By: ambari" -X DELETE http://hadoop-001:8080/api/v1/clusters/youlanad/services/PIG
+

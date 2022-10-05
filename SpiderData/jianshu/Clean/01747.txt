@@ -1,0 +1,20 @@
+问题：利用Pandas包读取中文路径报错，面对此问题，经过一些资料查找，整理了修复过程
+
+错误代码：
+
+import pandas as pd
+
+df = pd.read_csv('E:\项目\文件名.csv', encoding='utf-8') #包含中文路径名和文件名
+
+运行情况：
+
+运行后报错：OSError: Initializing from file failed
+
+修正代码：
+
+df = pd.read_csv('E:\项目\文件名.csv', engine='python', encoding='utf-8')
+
+修正运行情况：
+
+正常运行
+

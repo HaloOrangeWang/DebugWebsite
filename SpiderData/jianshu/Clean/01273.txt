@@ -1,0 +1,160 @@
+输入命令行：pip search blade
+
+报错信息如下：
+
+<code python>
+
+Exception:
+
+Traceback (most recent call last):
+
+File "/usr/lib/python2.6/site-packages/pip/basecommand.py", line 139, in main
+
+status = self.run(options, args)
+
+File "/usr/lib/python2.6/site-packages/pip/commands/search.py", line 38, in run
+
+pypi_hits = self.search(query, index_url)
+
+File "/usr/lib/python2.6/site-packages/pip/commands/search.py", line 53, in search
+
+hits = pypi.search({'name': query, 'summary': query}, 'or')
+
+File "/usr/lib64/python2.6/xmlrpclib.py", line 1199, in call
+
+return self.__send(self.__name, args)
+
+File "/usr/lib64/python2.6/xmlrpclib.py", line 1491, in __request
+
+verbose=self.__verbose
+
+File "/usr/lib64/python2.6/xmlrpclib.py", line 1243, in request
+
+headers
+
+ProtocolError: <ProtocolError for pypi.python.org/pypi: 403 Must access using HTTPS instead of HTTP>
+
+</code>
+
+Google上搜索了很多解决方案，例如替换某个文件中http为https（我的安装目录根本就没有那个文件，如何替换）、安装xx包（安装了，然并软）等等，都没有解决我的问题。
+
+先说解决方法：
+
+修改文件pip/commands/search.py
+
+<code python>
+
+50     def search(self, query, index_url):
+
+51         #pypi = xmlrpclib.ServerProxy(index_url, pip.download.xmlrpclib_transport)
+
+52         pypi = xmlrpclib.ServerProxy(index_url)
+
+53         print ""10,index_url
+
+54         hits = pypi.search({'name': query, 'summary': query}, 'or')
+
+55         return hits
+
+</code>
+
+就是修改pypi的初始化方式，因为ServerProxy类里面会根据传入的URL自动选择是创建http实例还是HTTPS实例
+
+下面是具体的逻辑解析，不感兴趣的可以直接跳过了
+
+终极大法，追踪源码，最后发现如下代码。
+
+xmlrpclib.py文件中，有一个ServerProxy类，init方法中，有如下内容：
+
+<code python>
+
+1457     def init(self, uri, transport=None, encoding=None, verbose=0,
+
+1458                  allow_none=0, use_datetime=0):
+
+1459         # establish a "logical" server connection
+
+1460
+
+1461         # get the url
+
+1462         import urllib
+
+1463         type, uri = urllib.splittype(uri)
+
+1464         if type not in ("http", "https"):
+
+1465             raise IOError, "unsupported XML-RPC protocol"
+
+1466         self.__host, self.__handler = urllib.splithost(uri)
+
+1467         if not self.__handler:
+
+1468             self.__handler = "/RPC2"
+
+1469         print "transport:", transport
+
+1470         if transport is None:
+
+1471             if type == "https":
+
+1472                 transport = SafeTransport(use_datetime=use_datetime)
+
+1473             else:
+
+1474                 transport = Transport(use_datetime=use_datetime)
+
+1475         self.__transport = transport
+
+1476         print "isinstance SafeTransport:",isinstance(self.__transport, SafeTransport)
+
+1477         self.__encoding = encoding
+
+1478         self.__verbose = verbose
+
+1479         self.__allow_none = allow_none
+
+</code>
+
+在1471到1474行中，创建了两个transport，如果type为https，则创建SafeTransport（HTTPS的实例），于是跟踪传进来的uri，发现是HTTPS的头，但是，并没有创建SafeTransport实例，再次回头跟踪，发现传进来的参数transport并不是None，于是再往回跟踪，发现上方调用层，
+
+pip/commands/search.py 代码如下：
+
+<code python>
+
+50     def search(self, query, index_url):
+
+51         pypi = xmlrpclib.ServerProxy(index_url, pip.download.xmlrpclib_transport)
+
+53         print ""10,index_url
+
+54         hits = pypi.search({'name': query, 'summary': query}, 'or')
+
+55         return hits
+
+</code>
+
+如此可知，已经被指定了，我们再来看看指定的是个啥东东
+
+pip/download.py
+
+<code python>
+
+24 all = ['xmlrpclib_transport', 'get_file_content', 'urlopen',
+
+25            'is_url', 'url_to_path', 'path_to_url', 'path_to_url2',
+
+26            'geturl', 'is_archive_file', 'unpack_vcs_link',
+
+27            'unpack_file_url', 'is_vcs_url', 'is_file_url', 'unpack_http_url']
+
+28
+
+29
+
+30 xmlrpclib_transport = xmlrpclib.Transport()
+
+</code>
+
+到此就明了了，由于指定了Transport，所以，不再重新创建transport，而Transport和SafeTransport的区别（源码我就不贴了，源码在xmlrpclib.py文件的，主要就一个make_connection方法的实现。），就是SafeTransport是Transport的子类，是HTTPS的实现。
+

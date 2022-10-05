@@ -1,0 +1,16 @@
+报如下错误：
+
+报如下错误：
+
+TypeError: ufunc did not contain a loop with signature matching types dtype('U32')
+
+TypeError: ufunc did not contain a loop with signature matching types dtype('U32')
+
+首先我在想会不会是这两个矩阵的元素类型不同，不允许相加减呀？但是明明浮点数和整数是可以相加减的。
+
+首先我在想会不会是这两个矩阵的元素类型不同，不允许相加减呀？但是明明浮点数和整数是可以相加减的。
+
+然后上网搜了搜，原来如此，是因为这两个矩阵的dtype不同，可能一个是float64，一个是|S32，在numpy里，当数组或矩阵的dtype不相同时，是不允许相加减的，会报上面的错误，所以只需像y = y.astype('float64')这样转换类型就好，注意y.astype('float64')是没有用的，本质y的dtype是没有改变的，你需要重现将y指向y.astype('float64')内容才行；
+
+然后上网搜了搜，原来如此，是因为这两个矩阵的dtype不同，可能一个是float64，一个是|S32，在numpy里，当数组或矩阵的dtype不相同时，是不允许相加减的，会报上面的错误，所以只需像y = y.astype('float64')这样转换类型就好，注意y.astype('float64')是没有用的，本质y的dtype是没有改变的，你需要重现将y指向y.astype('float64')内容才行；
+

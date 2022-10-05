@@ -1,0 +1,90 @@
+【持续更新】
+
+
+python
+
+1、【RuntimeWarning: invalid value encountered in multiply】
+
+{乘法中遇到无效值，比如 inf 或者 nan 等} {其他invalid问题类似}
+
+2、【non-default argument follows default argument】
+
+{原因是将没有默认值的参数在定义时放在了有默认值的参数的后面} →→解决→→{将没有default值的参数放在前面}
+
+{python中规定：函数调用的时候，如果第一个参数使用了关键字绑定，后面的参数也必须使用关键字绑定}
+
+3、【list index out of range】
+
+{ list[index] index超出范围 ////////  list是一个空的 没有一个元素 进行list[0]就会出现该错误 }
+
+4、【ValueError: there aren't any elements to reflect in axis 0 of 'array'】
+
+{numpy中数组padding操作处报错，当输入数据(list or ndarray)长度为0时触发，详见 \Lib\site-packages\numpy\lib\arraypad.py}
+
+{详细讨论参见GitHub上numpy中的issue}
+
+{解决：已知是input data为空导致的，追溯到数据处理阶段debug即可，可以使用ipdb工具追踪}
+
+5、import torchvision时报错【ImportError: cannot import name 'PILLOW_VERSION' from 'PIL'】
+
+参考CSDN博客，torchvision在运行时要调用PIL模块，调用PIL模块的PILLOW_VERSION函数。但是PILLOW_VERSION在Pillow 7.0.0之后的版本被移除了，Pillow 7.0.0之后的版本使用__version__函数代替PILLOW_VERSION函数。
+
+{解决：根据报错的最后一行提示，打开function.py文件，使用from PIL import Image, ImageOps, ImageEnhance, __version__ 替换文件中from PIL import Image, ImageOps, ImageEnhance,PILLOW_VERSION这句，保存。}
+
+
+GPU
+
+1、【RuntimeError: CUDA out of memory.】
+
+{训练时报错，之前1.2G数据可训练，现在7.8G数据报错}{训练时，使用CUDA_VISIBLE_DEVICES分配给一块16G的显卡}
+
+{最简单粗暴方法就是减少batch_size，解决}{也可以查看代码有无bug}
+
+{batchNorm简单来说就是批规范化，这个层类似于网络输入进行零均值化和方差归一化的操作，BN层的统计数据更新是在每一次训练阶段model.train()后的forward()方法中自动实现的。}
+
+StackOverFlow中相关问题：How to fix this strange error: “RuntimeError: CUDA error: out of memory”
+
+关于该问题的更详细解释：pytorch坑之Runtime error:CUDA RUN OUT OF MEMORY
+
+
+pytorch
+
+1、【invalid argument 0: Sizes of tensors must match except in dimension 0.】
+
+{出现在 torch.utils.data.DataLoader 输出的 batch data 读取处}  {DataLoader里面数据读取有误，准确来说，是image类型数据读取，要注意通道数和尺寸的统一性} {将输入的图片transform为统一尺寸和通道}
+
+2、【THCudaCheck FAIL file=/pytorch/aten/src/THC/generic/THCTensorMathPointwise.cu line=207 error=710 : device-side assert triggered】
+
+【RuntimeError: CUDA error: device-side assert triggered】
+
+当模型在GPU上运行的时候其实是没办法显示出真正导致错误的地方的（按照PyTorch Dev的说法：“Because of the asynchronous nature of cuda, the assert might not point to a full correct stack trace pointing to where the assert was triggered from.”即这是CUDA的特性，他们也没办法），所以可以通过将模型改成在CPU上运行来检查出到底是哪里出错（因为CPU模式下会有更加细致的语法/程序检查）。但是当训练网络特别大的时候，这个方法通常是不可行的，转到CPU上训练的话可能会花费很长时间[1]。
+
+{连续训练若干个task，每个task的类别数目不一致，训练第二个task的时候报错} {即网络输出的类比和实际类别数目不符合}
+
+【有人说可以在命令前加上CUDA_LAUNCH_BLOCKING=1】【之后运行】
+
+【跑完第一个task的所有epoch后UserWarning】【task2的epoch1仍旧报错，THCudaCheck FAIL file=/pytorch/aten/src/THCUNN/generic/ClassNLLCriterion.cu line=110 error=710 : device-side assert triggered】
+
+/pytorch/aten/src/THCUNN/ClassNLLCriterion.cu:106: void cunn_ClassNLLCriterion_updateOutput_kernel(Dtype *, Dtype *, Dtype*, long *, Dtype *, int, int, int, int, long) [with Dtype = float, Acctype = float]: block: [0,0,0], thread: [31,0,0] Assertion `t >= 0 && t < n_classes` failed.
+THCudaCheck FAIL file=/pytorch/aten/src/THCUNN/generic/ClassNLLCriterion.cu line=110 error=710 : device-side assert triggered
+
+[2]中提出：基本上来说，device-side assert triggered意味着有数组的越界问题了。
+
+另，发现出现这个报错的问题挺多的，但是具体原因不一定是相同的，要仔细看报错的细节信息。
+
+
+win10
+
+1、【UnicodeDecodeError: 'gbk' codec can't decode byte 0xad in position 86: illegal multibyte sequence】【可以正常使用，会报错，强迫症need to fix it】
+
+{打开报错的倒数第三行的history.py文件，定位到82行，添加代码[,encoding='utf-8']即可}
+
+参考： 解决Python报错UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 658: illegal multibyte_个人博客-CSDN博客_python报错gbk
+
+
+参考
+
+[1] 关于贫僧在使用PyTorch时遇到了runtime error(59):device-side assert triggered at XXX这样神奇的BUG的事_Geek_of_CSDN的博客-CSDN博客
+
+[2] ERROR device side assert triggered | Horseee
+

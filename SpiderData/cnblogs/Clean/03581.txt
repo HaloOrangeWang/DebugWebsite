@@ -1,0 +1,34 @@
+使用yum命令报错File "/usr/bin/yum", line 30 except KeyboardInterrupt, e:
+
+解决办法：
+
+修改yum配置文件，将python版本指向以前的旧版本
+
+# vi /usr/bin/yum
+
+#!/usr/bin/python2.7
+
+修改urlgrabber-ext-down文件，更改python版本
+
+# vi /usr/libexec/urlgrabber-ext-down
+
+#!/usr/bin/python2.7
+
+注：当安装2个python版本时，可在/usr/bin目录下执行ls -l python*命令
+
+此命令显示python对应的版本及路径
+
+2、CentOS 7 编译安装 Python 3.7 错误解决方法
+
+CentOS 7 系统下外部函数库（libffi）的开发链接库软件包是 libffi-devel，只要安装此软件包即可解决 ModuleNotFoundError: No module named '_ctypes' 错误。
+
+CentOS 7 系统下使用如下命令安装 libffi-devel 软件包：
+
+sudo yum -y install libffi-devel
+
+安装 libffi-devel 软件包后，重新编译安装，即可完成 Python 3.7 的安装。
+
+https://blog.csdn.net/weixin_39842311/article/details/79873798
+
+Centos7 Python3 和pip3 pip 安装
+

@@ -1,0 +1,133 @@
+本篇主要讲两方面，错误和异常以及模块。在编程时遇见错误信息在所难免，Python中会也有很多种错误信息，常见的两种就是语法错误和逻辑错误，逻辑错误的种类有很多，占据了异常中大部分位置，下面就开始介绍一下这两个概念的相关知识。
+
+
+错误和异常
+
+
+语法错误
+
+语法错误英文表示为SyntaxError，后面会跟着一些关于错误的解释信息，方便你查找语句中的bug，如下：
+
+In [5]: print('naitangmao)
+  File "<ipython-input-5-d5b793a8884b>", line 1
+    print('naitangmao)
+                      ^
+SyntaxError: EOL while scanning string literal
+
+语法错误顾名思义就是你的代码语句写错了，比如上面这个语句的错误就是少了一个引号。发生错误后，解释器会给出文件的名字和错误行号，以及在错误行下面有一个"^"，这个提示你代码出错的位置，一般会位于箭头前面，这些提示会便于编写者尽快找出错误。
+
+
+异常
+
+有的时候一行代码在语法上可能没有什么错误，但是执行的时候解释器也会报红，这种错误信息可以称为异常，和语法错误相比，异常的种类更多也更加常见。
+
+举两个简单的例子：
+
+In [6]: print(1/0)
+---------------------------------------------------------------------------
+ZeroDivisionError                         Traceback (most recent call last)
+<ipython-input-6-2fc232d1511a> in <module>
+----> 1 print(1/0)
+
+ZeroDivisionError: division by zero
+
+都知道0是不能作为分母出现的，所以Python就会给出一个ZeroDivisionError，并提醒你这是一个零除错误。
+
+In [9]: 1+'1'
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-9-d3bd1e37a107> in <module>
+----> 1 1+'1'
+
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+
+整形与字符串之间不存在加法运算，解释器分析出后会给出一个TypeError，这是一个类型错误，并且在后面给出错误的解释。
+
+
+异常处理
+
+对于Python解释器而言，如果一段程序中某个部分出现了异常，那么其后面的代码将不会被运行，但Python中有方法可以对异常进行处理，让异常不报红，进而帮助整个程序完成运行，这种行为称作捕获异常，以try … except语句组合实现。
+
+In [11]: a = 1;b = '2'
+In [12]: try:
+    ...:     print(a+b)
+    ...: except TypeError:
+    ...:     print('类型错误！')
+类型错误！
+
+捕获异常实现的过程：
+
+1.执行try和except关键字之间的部分
+
+2.如果没有异常发生，except子句在try语句执行完毕后就被忽略了。
+
+3.如果在 try 子句执行过程中发生了异常，那么该子句其余的部分就会被忽略。如果异常匹配于except关键字后面指定的异常类型，就执行对应的except子句。然后继续执行try/except语句之后的代码。
+
+4.如果发生了一个异常，在except子句中没有与之匹配的分支，它就会传递到上一级try语句中。如果最终仍找不到对应的处理语句，它就成为一个未处理异常，终止程序运行，显示提示信息。
+
+为了避免第4条情况产生，在except语句中可以使用所有异常的父类Exception，这样就囊括了所有异常可能发生的状况：
+
+In [15]: try:
+    ...:     print(a+b)
+    ...: except Exception as e:
+    ...:     print(e)
+unsupported operand type(s) for +: 'int' and 'str'
+
+
+抛出异常
+
+利用raise语句可以主动抛出一个异常，但抛出的异常必须是要继承于Exception的异常类或者异常示例。
+
+In [16]: raise NameError('naitangmao')
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-16-b751158801b2> in <module>
+----> 1 raise NameError('naitangmao')
+
+NameError: naitangmao
+
+除此上面介绍之外，用户还可以根据自己的需求自己定义异常，不再过多介绍，建议掌握的部分是每种异常出现的原因以及异常处理的方法。
+
+
+模块
+
+第二部分就是模块，我们有时可能会在不同文件之间利用同一个函数，笨一点的做法就是copy来copy去，Python提供了一个机制可以在将一个文件中的内容导入另一个文件中使用，这样的文件就可以称为模块，需要注意的是并不是任何一个文件都可以当做模块，而必须是包含Python定义和声明的文件。
+
+举一个简单的小例子帮助理解上面这段话，首先可以创建一个odd_num.py文件，然后这个文件中只有一个函数，功能是实现过滤掉一个范围内的偶数：
+
+In [18]: def odd(n):
+    ...:     result = []
+    ...:     for i in range(n):
+    ...:         if i % 2 != 0:
+    ...:             result.append(i)
+    ...:     return result
+
+然后我们可以在另一个文件中导入这个模块，如果我们想使用这个函数的话，就可以通过模块名.函数名的方法调用该函数，如下：
+
+In [20]: import odd_num
+In [21]: odd_num.odd(20)
+Out[21]: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+
+如果你只想用一个模块中的某个子模块，那么在导入时就可以指明需要导入的部分，这样子模块就可以单独使用，不必在以模块名.函数名的形式：
+
+In [22]: from odd_num import odd
+In [23]: odd(20)
+Out[23]: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+
+如果你还想偷懒的话，可以利用’*'的形式导入,这种写法是导入一个模块中的所有子模块：
+
+In [24]: from odd_num import *
+
+这种方法往往是不被推荐的，因为会让代码的可读性变差。
+
+如果你有很多自定义的模块，为了更加规范、易找，那么你就可以将这些模块存入一个"包"中，需要注意的是，这个包中比如要有一个名为__init__.py的文件，这个文件可以为空但必须存在，然后导入包中模块的方式就是包名.模块名。
+
+Python本身也有自带的模块库，有一部分模块是内置于解释器之中，然后用户可以直接访问这类模块的接口，很大程度上提高了效率，比如time、sys等等。如果你对于一个模块比较陌生，你可以利用dir()函数搜索某个模块的定义，返回的结果是一个列表，其中包括模块内的方法、可供调用的接口等等。
+
+In [24]:dir(time)
+Out[24]:['_STRUCT_TM_ITEMS', '__doc__', '__loader__','__name__','__package__','__spec__','altzone','asctime','ctime','daylight',
+'get_clock_info','gmtime','localtime','mktime','monotonic','monotonic_ns','perf_counter','perf_counter_ns','process_time',
+'process_time_ns','sleep','strftime','strptime','struct_time','thread_time','thread_time_ns','time','time_ns','timezone','tzname']
+
+综上是对错误和异常、模块两方面常用知识的一些概括，如果你对更高阶的使用感兴趣可以查找Python的官方文档，里面会有更加详细的介绍。
+

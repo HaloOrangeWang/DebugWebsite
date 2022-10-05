@@ -1,0 +1,36 @@
+出现报错：
+
+ansible 1.9.4 has requirement pycrypto>=2.6, but you'll have pycrypto 2.4.1 which is incompatible.
+
+这个好弄（坑），直接去官网下载源码包安装就可以了（无语，还是太年轻），你猜到了结果还是不行继续报错，报错还是一模一样。。。。。。。。。。。。。。。
+
+使用pip  list   查看确实已经跟新版本了，但是为啥还报错呢？
+
+使用pip  uninstall 卸载这个pycrypto包提示
+
+Cannot uninstall 'pycrypto'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.，妈蛋的着了半天没找到方法。
+
+结果看pip文档发现下面的这段话。。。。。。。。。。。。
+
+ip is able to uninstall most installed packages. Known exceptions are:
+
+- Pure distutils packages installed with ``python setup.py install``, which
+
+leave behind no metadata to determine what files were installed.
+
+- Script wrappers installed by ``python setup.py develop``.
+
+明白了吧，pip不能够卸载使用源码包安装的扩展。。。。。。。。。。。。
+
+找到源码包安装后的路径,直接删除掉
+
+rm -rf /usr/lib64/python2.7/site-packages/pycrypto-2.6.1-py2.7.egg-info
+
+在用pip list 查看版本已经降下来了成为2.4的了。。。。吼吼
+
+pip uninstall pycrypto 卸载掉，在用pip  install pycrypto  重新安装，默认就是2.6版本了（python2.7目前是这样的2018/5/8）
+
+这个问题解决了：
+
+总结：pip 不可以卸载使用源码安装的扩展，最好使用pip install 安装需要的扩展！！！！！！！！！！！
+

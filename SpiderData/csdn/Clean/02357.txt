@@ -1,0 +1,67 @@
+
+文章目录
+
+报错代码
+
+代码目标
+
+解决思路
+
+报错原因
+
+数据源 data：
+
+
+报错代码
+
+import pandas as pd
+import numpy as np
+
+data['是否为A'] = np.where( data[data['成绩'] == 'A'], 1,0)
+
+报错：raise ValueError(ValueError: Length of values does not match length of index)
+
+
+代码目标
+
+在data中新增一列
+ data['是否为A'] =
+
+对每一条数据做判断，这条数据中成绩列若为A，“是否为A”返回1，反之，返回 0
+ np.where(data['成绩'] == 'A', 1,0)
+
+
+解决思路
+
+把data[data['成绩'] == 'A'] 换成data['成绩'] == 'A'
+
+正确代码：
+
+import pandas as pd
+import numpy as np
+
+data['是否为A'] = np.where(data['成绩'] == 'A', 1,0)
+
+
+报错原因
+
+np.where的输入变量性质错误 np.where ( 判断逻辑,  逻辑验证为True的时候返回的值, 逻辑验证为False的时候返回的值 )
+
+判断逻辑一定是一个输出 True 和 False 布尔值Series的方程式
+
+np.where的输入变量性质错误
+
+np.where ( 判断逻辑,  逻辑验证为True的时候返回的值, 逻辑验证为False的时候返回的值 )
+
+判断逻辑一定是一个输出 True 和 False 布尔值Series的方程式
+
+data['成绩'] == 'A' vs data[data['成绩'] == 'A'] 区别
+data['成绩'] == 'A' 返回布尔值Series
+ data[data['成绩'] == 'A'] 返回DataFrame表格
+
+data['成绩'] == 'A' vs data[data['成绩'] == 'A'] 区别
+
+data['成绩'] == 'A' 返回布尔值Series
+
+data[data['成绩'] == 'A'] 返回DataFrame表格
+

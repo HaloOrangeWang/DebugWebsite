@@ -1,0 +1,25 @@
+报错提示
+
+ImportError while importing test module 'D:\python_syy\web自动化\web_html_po模式\TestCases\test_loan.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+TestCases\test_loan.py:4: in <module>
+    from TestDatas.loan_testdata import *
+E   ImportError: No module named 'TestDatas'
+
+
+原因：
+
+pytest使用的环境与python运行的环境不一致
+
+解决办法：
+
+使用conftest.py文件
+新建conftest.py
+内容如下：
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+每次运行pytest前先运行conftest.py
+

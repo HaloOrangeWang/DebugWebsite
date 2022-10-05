@@ -1,0 +1,54 @@
+是因为服务器系统为64位，但是交叉编译工具链是32位。
+
+重装glibc
+
+yum  install glibc.i686
+
+遇到报错
+
+There was a problem importing one of the Python modules
+required to run yum. The error leading to this problem was:
+
+/usr/lib64/python2.7/site-packages/pycurl.so: undefined symbol: CRYPTO_num_locks
+
+Please install a package which provides this module, or
+verify that the module is installed correctly.
+
+It's possible that the above module doesn't match the
+current version of Python, which is:
+2.7.5 (default, Aug  7 2019, 00:51:29) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-39)]
+
+If you cannot solve this problem yourself, please go to 
+the yum faq at:
+  http://yum.baseurl.org/wiki/Faq
+
+查看依赖关系 ldd /usr/lib64/python2.7/site-packages/pycurl.so
+
+发现异常依赖路径libcurl.so.4 => /usr/local/lib/libcurl.so.4 (0x00007f25fbb43000)
+
+然后查看libcurl 安装信息 ldconfig -p|grep curl
+
+libcurl.so.4 (libc6,x86-64) => /usr/local/lib/libcurl.so.4
+    libcurl.so.4 (libc6,x86-64) => /lib64/libcurl.so.4
+
+发现有两个libcurl
+
+最简单方式 去掉看起来路径不正常那个/usr/local/lib/libcurl.so.4
+
+继续安装glibc
+
+yum  install glibc.i686
+
+等待结束后如果报error while loading shared libraries: libstdc++.so.6: cannot open shared object file: No such file or directory
+
+继续安装libstdc++
+
+yum install libstdc++.so.6
+
+如果继续报错 error while loading shared libraries: libz.so.1: cannot open shared object file: No such
+
+就继续装libz
+
+yum install zlib.i686
+

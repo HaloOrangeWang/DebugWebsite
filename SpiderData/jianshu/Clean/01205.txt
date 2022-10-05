@@ -1,0 +1,41 @@
+
+【问题描述】
+
+安装环境：centos 7.6
+
+python版本：python3.7.4
+
+报错信息：
+
+ModuleNotFoundError:
+
+No module named '_ctypes'
+
+
+【问题分析】
+
+提示缺少模块，ctypes模块
+
+（模块ctypes是Python内建的用于调用动态链接库函数的功能模块，一定程度上可以用于Python与其他语言的混合编程。由于编写动态链接库，使用C/C++是最常见的方式，故ctypes最常用于Python与C/C++混合编程之中）
+
+网上查找后发现3.7之后的版本需要一个新的依赖包libffi-devel，安装后再次进行编译安装
+
+（关于libffi-devel网上没有查到特别多信息）
+
+
+【解决办法】
+
+命令：
+
+yum install libffi-devel -y
+
+make install
+
+如果在安装前移除了/usr/bin下python的文件链接依赖，有可能导致yum无法正常使用，需要手动下载安装。
+
+官网地址
+
+http://mirror.centos.org/centos/7/os/x86_64/Packages/
+
+32位，64位
+

@@ -1,0 +1,9 @@
+
+报错内容：org.springframework.validation.BeanPropertyBindingResult: 1 errors Field error in object 'price' on field 'endTime': rejected value [2018-07-31]; codes [typeMismatch.price.endTime,typeMismatch.endTime,typeMismatch.java.util.Date,typeMismatch]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [price.endTime,endTime]; arguments []; default message [endTime]]; default message [Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'endTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@javax.persistence.Column java.util.Date] for value '2018-07-31'; nested exception is java.lang.IllegalArgumentException: Parse attempt failed for value [2018-07-31]]
+
+SpringMvc配置时，默认将接受的时期格式化为yyyy-MM-dd HH：mm：ss。而因为使用的日期插件中就是年月日格式的。所以出现Spring转化Date转化失败的问题。
+
+这里出现一个问题，希望以后的我知道怎么回事吧？在此期间我在配置中打了断点，但是只有在项目启动时进入的断点，但是在后来调用接口的时候并没有进入断点。这里有一个猜测。在Spring中，配置只有在项目启动的时候初始化了一遍，而之后在调用的时候哦不进入初始化配置的方法中。
+
+解决问题的方法：既然是映射的过程中无法将Spring转化为Date，而又和总配置有关。并不想改总配置，于是我用HttpServletRequest直接取得参数。就不会出现问题。接受的参数直接就是Spring，需要自己转化为Date
+

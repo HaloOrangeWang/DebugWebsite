@@ -1,0 +1,33 @@
+  docker-compose是 docker 容器的一种单机编排服务,docker-compose 是一个管理多个容器的工具，比如可以解决容器之间的依赖关系，当在宿主机启动较多的容器时候，如果都是手动操作会觉得比较麻烦而且容器出错，这个时候推荐使用 dockerd的单机编排工具 docker-compose。
+
+
+centos7安装docker-compose:
+
+首先需要安装python-pip包
+
+使用pip安装docker-compose
+
+发生如报如下错误：
+
+原因：系统python环境缺少组件包
+
+解决办法:
+
+执行pip install docker-compose 继续报错如下：
+
+原因：使用pip安装docker-compose依赖python3环境，而centos7系统默认自带的Python版本是2.7.5，第一次执行pip install docker-compose失败后，安装python-subprocess32包后，系统中Python环境对应的信息记录文件并未更新，需要删除后，让系统重新自动生成。
+
+解决办法：
+
+再次执行安装，#pip install docker-compose ，终于成功
+
+验证一下docker-compose版本:
+
+其他解决办法：
+
+在安装pip工具的时候，直接选择安装pip3版本，
+
+使用pip3安装docker-compose即不会发生以上问题
+
+在Ubuntu18.04系统上也不会发生上述问题，因为Ubuntu18.04默认自带的Python环境是3.6.8。
+

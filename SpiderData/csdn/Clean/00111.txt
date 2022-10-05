@@ -1,0 +1,52 @@
+编码问题可能导致python读取中文路径时出错
+
+解决方法一：路径拆分单独编码
+
+import os
+
+root_path = 'E:\\project\\sk_man-master\\SK\\static\\sk\\new_clothes\\'+u'裤子'
+
+for file in os.listdir(root_path):
+
+print file.decode('gbk')
+
+方法二：对全部路径用unicode格式编码
+
+root_path = unicode('E:\\project\\sk_man-master\\SK\\static\\sk\\new_clothes\\裤子','utf-8')
+
+补充：python读取word路径出错
+
+python读取doc文档不方便，所以上文链接中把doc文件转存成docx，但是我在使用这个代码时，路径一直出错还会报一些奇怪的错误
+
+pywintypes.com_error: (-2147023174, 'rpc 服务器不可用。', none, none)
+
+查询得知这只是一个乱码，指示路径不可用
+
+但我在尝试各种路径的写法后发现都有错误，
+
+遂使用 os.path.abspath的方法获取到绝对路径
+
+rootdir = 'E:\python project\英语六级'
+
+def doSaveAas():
+
+word = wc.Dispatch('Word.Application')
+
+out_name = filename.replace("doc", r"docx")
+
+in_file = os.path.abspath(rootdir + "\\" + filename)
+
+out_file = os.path.abspath(rootdir + "\\" + out_name)
+
+doc = word.Documents.Open(in_file) # 目标路径下的文件
+
+doc.SaveAs(out_file, 12, False, "", True, "", False, False, False, False) # 转化后路径下的文件
+
+doc.Close()
+
+word.Quit()
+
+这样修改之后就好了
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持。如有错误或未考虑完全的地方，望不吝赐教。
+

@@ -1,0 +1,44 @@
+今天使用zabbix监控时，zabbx 可用性显示灰色，点到主机名称的监控项里面，提示zabbix Value "<body" of type "string" is not suitable for value type "Numeri：unsupported item key，有点莫名其妙，根本没有改动过。连上zabbix-server使用脚本测试
+
+其一般有以下几种原因。
+
+1.有时候使用自定义脚本监控，修改了zabix-agentd.conf之后，并没有将其重新启动，故会报错。
+
+解决方法：重启zabbix-agent
+
+1.重启agent 服务
+
+systemctl restart  zabbix-agent.service
+
+2.检查防火墙
+
+使用zabbix监控服务器时，由于zabbix agent与zabbix server通过10050端口通信。server端侦听在10051端口，客户端侦听在10050端口，所以我们要将端口暴露出来。有时服务器并没有将10050端口开启，进而导致报错。
+
+3.使用Zabbix的时候往往会自定义Item。但是经常会遇到自定义的Item动不动就Not Supported了。其实原因很简单。Zabbix Agent默认的超时时间是3秒。往往我们自定义的Item由于各种原因返回时间会比较长。所以建议统一修改一个适合自己实际的值。
+
+修改操作如下：
+
+vim /etc/zabbix/zabbix_agent.conf
+
+#Range: 1-30
+
+Timeout=8
+
+修改完毕后重启zabbix-agent
+
+4.zabbix_get能获取到值，但是item依旧为Not Supported。如果你的值类型设置没错的话，我自己就是这个问题，在监控的机子上执行脚本返回没有问题，但是在zabbix_server上执行就会报错ZBX_NOTSUPPORTED: Unsupported item key.
+
+那有如下解决方法：
+
+—a. 等10分钟，zabbix会去重新check一次当前item的Supported状态。
+
+—b.删掉当前item，重新创建
+
+—c.修改zabbix重新check的时间，例如改成10分钟，点击administration—>General—>右侧下拉条选择”other”—>Refresh unsupported items (in sec)改为60（单位为秒）—->update。
+
+5.zabbix_agentd版本兼容性导致item_key不支持的故障
+
+有可能是自己升级了客户端或者服务端导致两个端口版本不一致，进而产生错误。
+
+解决版本;升级客户端或者服务端到相同的版本
+

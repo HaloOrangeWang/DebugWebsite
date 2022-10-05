@@ -1,0 +1,12 @@
+python在抓取制定网站的错误提示：
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self signed certificate in certificate chain (_ssl.c:1056)
+
+解决方式：
+在使用请求方法时添加一个参数verify = false就行了，如下：
+
+response = self.lagou_session.get(url=url,headers=self.header,verify=False)
+
+或
+
+res = requests.post(url, data = textmod,  headers = header_dict, verify=False)
+

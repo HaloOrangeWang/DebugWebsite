@@ -1,0 +1,33 @@
+
+一、背景
+
+　　springboot的出现，让项目搭建变得更方便快捷，同时简化掉很多的样板化配置代码，提高开发效率。
+
+　　通过idea生成springboot项目，启动报错：Failed to configure a DataSource: 'url' attribute is not specified and no embedded datasource could be configured.
+
+通过错误不难看出是因为dataSource的url配置缺失导致，但是新生成的项目并没有使用到jdbc，为什么会报出这个问题呢？
+
+
+二、分析
+
+其实这就是spring boot最核心的内容：自动配置
+
+由于在生成项目的过程中勾选了mybatis以及mysql，所以pom中引入myBatis的jar包：
+
+spring boot就会默认加载org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration类， 在该类中我们可以看到加载了datasource的相关配置
+
+
+三、解决
+
+知道问题的原因后，解决方法有两种：
+
+1、配置正确的数据源信息，在application.yml中增加如下内容：
+
+启动项目，成功。
+
+2、在看SpringBootApplication源码的时候发现，其实是有“exclude”属性的，那我们是否可以通过该属性指定排除加载类呢？
+
+答案是肯定的，如下所示
+
+服务启动成功。
+

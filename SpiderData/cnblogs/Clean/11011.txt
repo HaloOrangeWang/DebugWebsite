@@ -1,0 +1,46 @@
+
+一、前提：
+
+python中使用pytesseract图片识别，报错误：
+
+pytesseract.pytesseract.TesseractNotFoundError: tesseract is not installed or it's not in your path
+
+
+二、解决办法
+
+问题原因：
+
+使用pip安装了pytesseract，但忘记安装tesseract二进制文件。
+
+首先进入pytesseract.py文件中找到
+
+tesseract_cmd
+
+修改一下路径
+
+修改为：
+
+【转】
+
+
+1､Linux上安装命令
+
+sudo apt update
+sudo apt install tesseract-ocr
+sudo apt install libtesseract-dev
+
+
+2､Mac安装命令
+
+brew install tesseract
+
+
+3､Windows上安装命令
+
+从https://github.com/UB-Mannheim/tesseract/wiki下载二进制文件。然后添加pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe'到脚本中。（如有必要，须替换tesseract二进制文件的路径）
+
+
+文章参考：
+
+感谢levi的文章：《Python中使用pytesseract(tesseract OCR)报错(TesseractNotFoundError)解决方法》
+

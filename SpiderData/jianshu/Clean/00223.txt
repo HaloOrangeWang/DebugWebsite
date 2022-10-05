@@ -1,0 +1,51 @@
+最近工作中遇到的问题，分享出来，仅供参考！
+
+
+一、
+
+dyld: launch, loading dependent libraries
+DYLD_LIBRARY_PATH=/usr/lib/system/introspection
+DYLD_INSERT_LIBRARIES=/Developer/usr/lib/libBacktraceRecording.dylib:/Developer/usr/lib/libMainThreadChecker.dylib:/Developer/Library/PrivateFrameworks/DTDDISupport.framework/libViewDebuggerSupport.dylib
+
+（1）报错原因是在target--Genaral->Frameworks,Libraries,and Embedded Content中，第三方库的Embed选择的Do Not Embed,如下图
+
+（2）解决方案是将Embed设置未的Embed&Sign,如下图
+
+Embed，嵌入，对于静态库选择Do Not Embed，动态链接选择Embed。
+
+Sign，签名，如果代码没有签名则选择Embed & Sign，否则Embed Without Signing。
+
+参考
+
+iOS framework之Embed、Signing
+
+三方库引入报错
+
+
+二、“ld: library not found for -l xxx”
+
+报错信息，如下图
+
+方案二：target--Build Setting--Library search path将报错的三方库拖到Library search path中，如下图
+
+参考 顽固的 “ld: library not found for -l xxx”
+
+
+三、Xcode报错：Target ‘‘ (project ‘‘) has copy command from''
+
+解决方案
+
+在Build Phases中的Copy Bundle Resources中把对应文件删除即可
+
+参考Xcode报错：Target ‘‘ (project ‘‘) has copy command from''
+
+
+四、xcode编译错误:The Legacy Build System will be removed in a future release.
+
+解决方案：
+
+The Legacy Build System will be removed in a future release. You can configure the selected build system and this deprecation message in File > Workspace Settings.
+解决方法:
+file -> Workspace Settings ->Build System:Legacy Build System (Deprecated) 改成 :New Build System
+如下图
+

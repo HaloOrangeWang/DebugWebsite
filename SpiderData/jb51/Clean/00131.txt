@@ -1,0 +1,31 @@
+pip安装matplotlib
+
+在centos6.5 64bit上用pip安装matplotlib时候报错：
+
+* The following required packages can not be built:
+            * freetype, png
+error: Setup script exited with 1
+
+这是因为pip不能安装操作系统的依赖库导致的，需要用yum手动安装：
+
+$ yum -y install freetype-devel libpng-devel
+
+如果不知道这些库需要安装的包名，可以查一下：
+
+$ yum search freetype | grep devel
+  freetype-devel.i686 : FreeType development libraries and header files
+  freetype-devel.x86_64 : FreeType development libraries and header files
+$ yum search png | grep devel
+  libpng-devel.i686 : Development tools for programs to manipulate PNG image
+  libpng-devel.x86_64 : Development tools for programs to manipulate PNG image
+
+referance：
+
+matplotlib简介,安装和简单实例代码
+
+python的numpy模块安装不成功简单解决方法总结
+
+总结
+
+以上就是本文关于pip matplotlib报错equired packages can not be built解决的全部内容，希望对大家有所帮助。感兴趣的朋友可以继续参阅本站其他相关专题，如有不足之处，欢迎留言指出。感谢朋友们对本站的支持！
+

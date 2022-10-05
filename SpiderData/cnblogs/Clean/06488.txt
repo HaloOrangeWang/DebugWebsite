@@ -1,0 +1,55 @@
+基本使用：
+
+1.安装文件中的包
+
+pip install -r requirements.txt
+
+问题：
+
+　　1. pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out
+
+　　原因: 默认的pip的超时时间为15秒, 需要进行超时时间设置
+
+pip install --default-timeout=100 SQLAlchemy==1.3.13
+
+　　
+
+　　2. ERROR: Cannot uninstall 'requests'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.
+
+解决：
+
+sudo pip install --ignore-installed requests
+
+3.OSError: mysql_config not found
+
+原因：缺少依赖包
+
+【ubuntu】
+
+apt-get install libmysqlclient-dev
+
+【Centos】
+
+yum install mysql-devel  gcc gcc-devel python-devel
+
+4.在windows下升级pip版本， 导致升级失败， 但是同时pip也被卸载
+
+解决：
+
+1.执行命令
+
+python -m ensurepip
+
+顺利安装完成pip之后， 但是执行相关命令还是会报错：
+
+
+ModuleNotFoundError: No module named 'pip._internal.cli.main
+
+解决：
+
+执行命令：
+
+python -m pip install --upgrade pip setuptools wheel
+
+搞定， 又可以愉快的使用pip了
+

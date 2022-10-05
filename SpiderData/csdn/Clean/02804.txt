@@ -1,0 +1,27 @@
+import出错是个常见的问题，正在慢慢学习Python的过程中，会不停的更新常见的import出错解决方案。
+
+1、在使用scikit-learn包计算文本的tf-idf分词权重时
+
+import出现如下错误：Traceback (most recent call last):
+
+Traceback (most recent call last):
+  File "D:/Python_WorkSpace/TF_IDF_Demo_01.py", line 10, in <module>
+    from sklearn import feature_extraction
+  File "D:\Python\lib\site-packages\sklearn\feature_extraction\__init__.py", line 10, in <module>
+    from . import text
+  File "D:\Python\lib\site-packages\sklearn\feature_extraction\text.py", line 29, in <module>
+    from ..preprocessing import normalize
+  File "D:\Python\lib\site-packages\sklearn\preprocessing\__init__.py", line 6, in <module>
+    from .data import Binarizer
+  File "D:\Python\lib\site-packages\sklearn\preprocessing\data.py", line 25, in <module>
+    from ..utils.sparsefuncs import (inplace_column_scale, mean_variance_axis)
+ImportError: cannot import name inplace_column_scale
+
+解决方案： 
+ 删除所安装的python路径下的“sparsefuncs.pyd”： 
+ 我的路径如下：
+
+python27\Lib\site-packages\sklearn\utils\sparsefuncs.pyd
+
+因为我昨天下载安装了最新的scikit-learn包，import时，python会在sparsefuncs.pyd中查找实现，所以还是实现的旧的版本，但是我使用了新的函数，而这个函数在旧的版本里是没有的，所以出错了。
+

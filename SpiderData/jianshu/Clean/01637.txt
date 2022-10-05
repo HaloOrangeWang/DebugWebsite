@@ -1,0 +1,161 @@
+一、预备工作：
+
+1、首先安装对应的包，直接用terminal：
+
+pip install openpyxl#用来读取xl的包
+pip install pandas
+pip install numpy
+
+2、数据格式与文件：
+
+df1
+
+df2
+
+实现过程：
+
+import openpyxl
+import pandas as pd
+import numpy as np
+##读取数据
+df1 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet1'))
+df2 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet2'))
+print(df1)
+print(df2)
+result = pd.merge(df1, df2, how='inner')
+print(result)
+writer = pd.ExcelWriter('C:/Users/Mr.R/Desktop/result3.xlsx')
+result.to_excel(writer,index=False)
+writer.save()
+
+结果为：
+
+2、1）left的方法：
+
+Left join: Left join operation provides all the rows from 1st dataframe and matching rows from the 2nd dataframe. If the rows are not matched in the 2nd dataframe then they will be replaced by NaN.
+
+import openpyxl
+import pandas as pd
+import numpy as np
+
+df1 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet1'))
+df2 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet2'))
+print(df1)
+print(df2)
+result = pd.merge(df1, df2, how='left')
+print(result)
+writer = pd.ExcelWriter('C:/Users/Mr.R/Desktop/left1.xlsx')
+result.to_excel(writer,index=False)
+writer.save()
+
+2、2）left方法：
+
+import openpyxl
+import pandas as pd
+import numpy as np
+
+df1 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet1'))
+df2 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet2'))
+print(df1)
+print(df2)
+result = pd.merge(df2, df1, how='left')
+print(result)
+writer = pd.ExcelWriter('C:/Users/Mr.R/Desktop/left2.xlsx')
+result.to_excel(writer,index=False)
+writer.save()
+
+即：正是我们一开始想要的结果，如下：
+
+3、right 方法
+
+Right join: Right join is somewhat similar to left join in which the output dataframe will consist of all the rows from the 2nd dataframe and matching rows from the 1st dataframe. If the rows are not matched in 1st row then they will be replaced by NaN
+
+import openpyxl
+import pandas as pd
+import numpy as np
+
+df1 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet1'))
+df2 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet2'))
+print(df1)
+print(df2)
+result = pd.merge(df2, df1, how='right')
+print(result)
+writer = pd.ExcelWriter('C:/Users/Mr.R/Desktop/right1.xlsx')
+result.to_excel(writer,index=False)
+writer.save()
+
+或者：
+
+import openpyxl
+import pandas as pd
+import numpy as np
+
+df1 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet1'))
+df2 = pd.DataFrame(pd.read_excel('C:/Users/Mr.R/Desktop/rashidin.xlsx',sheet_name = 'Sheet2'))
+print(df1)
+print(df2)
+result = pd.merge(df1, df2, how='right')
+print(result)
+writer = pd.ExcelWriter('C:/Users/Mr.R/Desktop/right2.xlsx')
+result.to_excel(writer,index=False)
+writer.save()
+
+对于vlookup报错问题的解决方法+对特定列的数据进行删除：
+
+
+对于vlookup报错问题的解决方法+对特定列的数据进行删除：
+
+vlookup报错：是因为列中存在缺失值，或者是存在空白值 ，这时候，进行merge就会报错！！！！！ 注意不能有空值！
+
+
+vlookup报错：是因为列中存在缺失值，或者是存在空白值 ，这时候，进行merge就会报错！！！！！ 注意不能有空值！
+
+进行vlookup 并删除部分列，比如不需要的数据列：
+
+进行vlookup 并删除部分列，比如不需要的数据列：
+
+import openpyxl
+import pandas as pd
+import numpy as np
+
+# 删除某几个列
+
+from openpyxl import *
+
+filename = r'G:/GCMS-TABLE/Splited_SPME/Sheet28-161.xlsx'
+
+wb = load_workbook(filename)
+print(filename)
+
+ws = wb.active
+ws.delete_cols(2, 5) #删除第 13 列数据
+ws.delete_cols(7, 29)
+
+# ws.delete_rows(9) #删除第 3行数据
+wb.save('G:/GCMS-TABLE/AAAA.xlsx')
+
+# df1位查找列，df2是要复制过来的文件
+df1 = pd.DataFrame(pd.read_excel('G:/GCMS-TABLE/Splited_SPME/SPME-MergedFile1-161.xlsx'))
+df2 = pd.DataFrame(pd.read_excel('G:/GCMS-TABLE/AAAA.xlsx'))
+print(df1)
+print(df2)
+result = pd.merge(df2, df1, how='left')
+print(result)
+writer = pd.ExcelWriter('G:/GCMS-TABLE/AA2.xlsx')
+result.to_excel(writer,index=False)
+writer.save()
+
+filename = r'G:/GCMS-TABLE/AA2.xlsx'
+
+wb = load_workbook(filename)
+print(filename)
+
+ws = wb.active
+ws.delete_cols(3, 31) #删除第 13 列数据
+#ws.delete_cols(7, 29)
+
+# ws.delete_rows(9) #删除第 3行数据
+wb.save('G:/GCMS-TABLE/AA2.xlsx')
+
+运行结果为：
+

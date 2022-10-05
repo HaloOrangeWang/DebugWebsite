@@ -1,0 +1,102 @@
+
+故事
+
+今天准备使用wxWidgets重写以前的MFC项目，按照 Visual Studio2019 配置 wxWidgets 3.1.4 [原创]的教程，从wxwidgets官网下载了源码wxWidgets-3.1.5，打开2019工程，使用Release|x64编译好静态库，默认生成的lib如下图所示：
+
+错误 : 项目“F:\tgit\cppprojects\minigamecli\app\app\app.vcxproj”配置“Debug|Win32”的 Designtime 生成失败。IntelliSense 可能不可用。
+    设置环境变量 TRACEDESIGNTIME = true 并重启 Visual Studio 以进行调查。
+错误 : 项目“F:\tgit\cppprojects\minigamecli\app\app\app.vcxproj”配置“Debug|Win32”的 Designtime 生成失败。IntelliSense 可能不可用。
+    设置环境变量 TRACEDESIGNTIME = true 并重启 Visual Studio 以进行调查。
+错误 : 项目“F:\tgit\cppprojects\minigamecli\app\app\app.vcxproj”配置“Debug|Win32”的 Designtime 生成失败。IntelliSense 可能不可用。
+    设置环境变量 TRACEDESIGNTIME = true 并重启 Visual Studio 以进行调查。
+blabla...
+
+一开始我以为是没有按照教程所示，没有添加环境变量WXWIN导致，因为我不想使用环境变量，这样不利于项目的移植，我想直接配置项目属性来达到同样的目的。于是我添加上环境变量，结果依旧。
+
+于是，按照错误提示，设置环境变量TRACEDESIGNTIME = true，重启VS~
+
+错误 : 项目“F:\tgit\cppprojects\minigamecli\app\app\app.vcxproj”配置“Debug|Win32”的 Designtime 生成失败。IntelliSense 可能不可用。
+    检查 %TEMP% 目录中的 *.designtime.log 文件。
+错误 : 项目“F:\tgit\cppprojects\minigamecli\app\app\app.vcxproj”配置“Debug|Win32”的 Designtime 生成失败。IntelliSense 可能不可用。
+    检查 %TEMP% 目录中的 *.designtime.log 文件。
+错误 : 项目“F:\tgit\cppprojects\minigamecli\app\app\app.vcxproj”配置“Debug|Win32”的 Designtime 生成失败。IntelliSense 可能不可用。
+    检查 %TEMP% 目录中的 *.designtime.log 文件。
+blabla...
+
+日志文件很多，随便打开一个日志所示如图
+
+关键语句：
+
+正在使用工具版本“Current”进行生成。
+已跳过目标“CheckWXLibs”。以前的生成不成功。
+
+已完成生成项目“app.vcxproj”的操作 - 失败。
+
+看起来说了跟没说一样，也没说清楚失败原因。百度一下，没人有类似的遭遇。那就打开wxWidgets-3.1.5\wxwidgets.props看一下~往下拉，可以看到报错的地方：
+
+<Target Name="CheckWXLibs">
+    <Error
+      Condition="'$(wxUsingDll)$(wxUsingLib)' == ''"
+      Text="wxWidgets libraries not found under &quot;$(MSBuildThisFileDirectory)lib&quot;." />
+  </Target>
+
+也就是说$(wxUsingDll)和$(wxUsingLib)都没有定义~由于我是要用静态库，那就看看$(wxUsingLib)在哪定义的，拉到开头发现有三种情况会定义$(wxUsingLib)，都是类似的检查lib文件存不存在，比如：
+
+<When Condition="Exists('$(MSBuildThisFileDirectory)lib\vc$(wxToolsetVerABICompat)$(wxArchSuffix)_lib$(wxCfg)\$(wxBaseLibNamePrefix).lib')">
+      <PropertyGroup Label="UserMacros">
+        <wxUsingVersionABICompat>1</wxUsingVersionABICompat>
+        <wxUsingLib>1</wxUsingLib>
+        <wxLibOrDllDir>$(MSBuildThisFileDirectory)lib\vc$(wxToolsetVerABICompat)$(wxArchSuffix)_lib$(wxCfg)</wxLibOrDllDir>
+      </PropertyGroup>
+    </When>
+
+你还可以继续看看其中的几个变量$(wxToolsetVerABICompat)/$(wxArchSuffix)/$(wxCfg)的定义。那也就是说导入属性表失败的原因正是找不到库文件。可是我明明编译出来了呀~那说明查找的路径和默认编译出来的路径不匹配~于是修改Error信息，把查找的路径打印出来：
+
+<Target Name="CheckWXLibs">
+    <Error
+      Condition="'$(wxUsingDll)$(wxUsingLib)' == ''"
+      Text="wxWidgets libraries not found under &quot;$(MSBuildThisFileDirectory)lib&quot; vc$(wxToolsetVerABICompat)$(wxArchSuffix)_lib$(wxCfg)\$(wxBaseLibNamePrefix).lib, vc$(wxToolsetVersion)$(wxArchSuffix)_lib$(wxCfg)\$(wxBaseLibNamePrefix).lib, vc$(wxArchSuffix)_lib$(wxCfg)\$(wxBaseLibNamePrefix).lib." />
+  </Target>
+
+再重启VS重新导入，重新查看日志：
+
+正在使用工具版本“Current”进行生成。
+文件“F:\tgit\lib\wxWidgets-3.1.5\wxwidgets.props”中的目标“CheckWXLibs”:
+  任务“Error”
+    F:\tgit\lib\wxWidgets-3.1.5\wxwidgets.props(111,5): error : wxWidgets libraries not found under "F:\tgit\lib\wxWidgets-3.1.5\lib" vc14x_lib\wxbase31ud.lib, vc142_lib\wxbase31ud.lib, vc_lib\wxbase31ud.lib.
+  已完成执行任务“Error”的操作 - 失败。
+已完成在项目“app.vcxproj”中生成目标“CheckWXLibs”的操作 - 失败。
+
+已完成生成项目“app.vcxproj”的操作 - 失败。
+
+于是失败原因总算知道了，这也许是wxWidgets的迭代过程中忘了维护vc工程或者忘了维护属性表导致的一个小bug。
+
+其一：导入属性表时查找的是wxbase31ud.lib，也就是debug版本，而我只build了release版本。于是我又使用Debug|x64生成了一遍。
+
+其二：默认生成出来的静态包目录为wxWidgets-3.1.5\lib\vc_x64_lib，而导入属性表时查找的是wxWidgets-3.1.5\lib\vc14x_lib, wxWidgets-3.1.5\lib\vc142_lib, wxWidgets-3.1.5\lib\vc_lib。也就是说实际生成的目录名称中是没有vc版本信息的，但是有架构信息，而查找的目录名称中有vc版本信息，而没有架构信息。于是手动复制文件夹wxWidgets-3.1.5\lib\vc_x64_lib到wxWidgets-3.1.5\lib\vc14x_lib，因为我用的是VS2019，默认对应14x。
+
+重新导入，成功！
+
+
+导入wxWidgets属性表的正确姿势
+
+
+环境
+
+widgets-3.1.5
+
+VS2019
+
+希望使用静态库
+
+64位机器
+
+
+步骤
+
+在前述 Visual Studio2019 配置 wxWidgets 3.1.4 [原创]教程的基础上~
+
+同时生成Release|x64和Debug|x64静态库文件
+
+复制默认生成的文件夹wxWidgets-3.1.5\lib\vc_x64_lib到wxWidgets-3.1.5\lib\vc14x_lib
+

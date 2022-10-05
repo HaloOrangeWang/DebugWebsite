@@ -1,0 +1,138 @@
+1.做些软链接和virtualenv的基本使用：
+
+django-admin startproject monitor1 创建一个项目
+
+python manage.py startapp show 创建一个app
+
+2.初始化数据库
+
+python manage.py migrate
+
+一、报错：django.db.utils.NotSupportedError: URIs not supported
+
+版本问题，sqlite3.7.5竟然没有URLs文件，sqlite3 -version
+
+我的版本是3.6.20，更低，直接舍弃，转用MySQL(Linux环境)
+
+二、再执行，报错：
+
+django.core.exceptions.ImproperlyConfigured:
+
+Error loading MySQLdb module.Did you install mysqlclient?
+
+你认为这是让你去安装mysqlclient么？
+
+这是让你去装python连接mysql数据库的驱动程序,首先，需要安装mysql的开发包
+
+三、报这个错:ModuleNotFoundError: No module named 'pymysql'
+
+是因为我的真实环境安装了PyMySQL,虚拟目录没有安装。
+
+四、报这个错；"Access denied for user 'django'@'localhost' (using password: YES)"
+
+是因为授权有问题,应该这样授权(不是127.0.0.1):
+
+grant all on information.* to django@localhost identified by 'qwerQWER1234!@#$';
+
+五、执行,报错:django.db.utils.InternalError: (1366, "Incorrect string value:
+
+'\\xE4\\xBC\\x81\\xE4\\xB8\\x9A...' for column 'name' at row 1")，
+
+是因为字符集的原因,数据库默认是latin1,
+
+查看数据库字符集:show variables like 'character%';
+
+查看某个库的表的字符集:show table status from information;
+
+首先修改字符集-vi /etc/my.cnf 添加 character_set_server=utf8,重启数据库,发现不行;
+
+这是因为之前创建的这个information字符集是latin1,需要删除它重新建一个,重复之前的步骤即可解决.
+
+六、执行，报错： django.db.utils.InternalError: (1049, "Unknown database 'information'")
+
+这是因为数据库中没有这个表
+
+七、数据库常用操作:
+
+alter user 'root'@'localhost' identified by 'Root123!@#'; 重置centos7-mysql5.7.24重置密码
+CREATE USER 'django' IDENTIFIED BY 'qwerQWER1234!@#$';  创建用户,其实不用创建,授权的时候直接就创建了
+delete from user where user='django';  删除用户
+
+drop database information;
+
+create database information; 下面这句仅当参考
+
+CREATE DATABASE IF NOT EXISTS db default character set utf8 COLLATE utf8_general_ci;
+
+delete from show_company where id=1;
+
+update show_company set domaim_name='t2.linkdood.cn',ipaddress='1.1.1.2' where id=2;
+
+insert into show_company (domaim_name,ipaddress,use_type,register_date) values ('*','*','*','*');
+
+手动插入数据每个字段都要写,你django里有默认的都不行
+
+在models中设置了install_date不能为空,用install.objects.create不加这个字段还是能创建,
+
+install.objects.filter(id=1).delete()
+
+install.objects.filter(id=1).update(result_type='failure')
+
+联合唯一测试成功-unique_together = ('user', 'install_date')
+
+3.解决无法访问的问题：
+
+报错:Error: That IP address can't be assigned to.
+
+是因为:我用这样的方式启动-python manage.py runserver 192.168.165.4:8000
+
+windows本机IP是192.168.165.4,但我的虚拟机用的是NAT模式,虚拟机IP是192.168.150.10,
+
+django不识别windows本机IP,你用127.0.0.1启动不会报错,但是windows访问不了,正确启动方式:
+
+python manage.py runserver 192.168.150.10:8000 用虚拟机IP启动
+
+4.时间问题：
+
+auto_now无论是你添加还是修改对象，时间为你添加或者修改的时间，
+
+auto_now_add为添加时的时间，更新对象时不会有变动。
+
+from show.models import company
+
+a=company.objects.create(name="中国建设银行003",identify="003")
+
+数据库里的时间差8个小时，需要注释一行，修改一行，添加一行：
+
+将数据库中的时间格式化为常见格式：用python的方式这么实现：
+
+a.date.strftime( '%Y-%m-%d %H:%M:%S' )
+
+模板内置date这么玩：{{ date | date:"Y-m-d H:i:s" }}
+
+5.在Django中如何正确完整地删除一个App(这个我没试过)
+
+6.virtualenvwrapper的基本使用
+
+1.把所有的虚拟环境都放在一个地方；2.包装用于管理虚拟环境（创建，删除，复制）；3.使用一个命令来环境之间进行切换。
+
+每次要想使用virtualenvwrapper 工具时，都必须先激活virtualenvwrapper.sh,另外，如果创建前要将虚拟环境保存到Envs中，就要先设置一下环境变量：export WORKON_HOME=~/Envs，再搭建。貌似必须搭建到这个~/Envs目录下，要不然管理不到。
+
+7.Django几个小点：
+
+①模板中自定义style中class用点号'.'，id用'#'
+
+②values方法可以获取number字段的字典列表；values_list可以获取number的元组列表。
+
+values_list方法加个参数flat=True可以获取number的值列表。
+
+③models中有用到choices的，想在模板中获取到它对应的中文，用--obj.get_字段名称_display。
+
+8.pycharm激活码地址--http://idea.lanyus.com/，日期只到19年5月4号，有时间可以破解个补丁...,
+
+据说这两个网站可以免费破解win10,
+
+技术流:https://blog.csdn.net/u014044812/article/details/82729151
+
+激活码:https://blog.csdn.net/WangJiankun_ls/article/details/79475947?utm_source=blogxgwz1
+

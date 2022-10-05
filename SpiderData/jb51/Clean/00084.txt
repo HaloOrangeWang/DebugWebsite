@@ -1,0 +1,123 @@
+在阿里云服务器上，用virtualenv创建虚拟环境时，报了个错误
+
+root@iZwz982qla1uxm1s5dnyo7Z:/usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info# virtualenv -p python3 venv
+Running virtualenv with interpreter /usr/bin/python2
+New python executable in /usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info/venv/bin/python2
+Not overwriting existing python script /usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info/venv/bin/python (you must use /usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info/venv/bin/python2)
+Please make sure you remove any previous custom paths from your /root/.pydistutils.cfg file.
+ 1 [global]
+Installing setuptools, pkg_resources, pip, wheel...
+ Complete output from command /usr/lib/python3/dis...nfo/venv/bin/python2 - setuptools pkg_resources pip wheel:
+ Collecting setuptools
+ Downloading http://mirrors.aliyun.com/pypi/packages/ff/f4/385715ccc461885f3cedf57a41ae3c12b5fec3f35cce4c8706b1a112a133/setuptools-40.0.0-py2.py3-none-any.whl (567kB)
+Collecting pkg_resources
+Exception:
+Traceback (most recent call last):
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/basecommand.py", line 209, in main
+ status = self.run(options, args)
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/commands/install.py", line 328, in run
+ wb.build(autobuilding=True)
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/wheel.py", line 748, in build
+ self.requirement_set.prepare_files(self.finder)
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/req/req_set.py", line 360, in prepare_files
+ ignore_dependencies=self.ignore_dependencies))
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/req/req_set.py", line 512, in _prepare_file
+ finder, self.upgrade, require_hashes)
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/req/req_install.py", line 273, in populate_link
+ self.link = finder.find_requirement(self, upgrade)
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 442, in find_requirement
+ all_candidates = self.find_all_candidates(req.name)
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 400, in find_all_candidates
+ for page in self._get_pages(url_locations, project_name):
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 545, in _get_pages
+ page = self._get_page(location)
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 648, in _get_page
+ return HTMLPage.get_page(link, session=self.session)
+ File "/usr/share/python-wheels/pip-8.1.1-py2.py3-none-any.whl/pip/index.py", line 760, in get_page
+ resp.raise_for_status()
+ File "/usr/lib/python3/dist-packages/virtualenv-15.0.1.egg-info/venv/share/python-wheels/requests-2.9.1-py2.py3-none-any.whl/requests/models.py", line 840, in raise_for_status
+ raise HTTPError(http_error_msg, response=self)
+HTTPError: 404 Client Error: Not Found for url: http://mirrors.aliyun.com/pypi/simple/pkg-resources/
+----------------------------------------
+...Installing setuptools, pkg_resources, pip, wheel...done.
+Traceback (most recent call last):
+ File "/usr/lib/python3/dist-packages/virtualenv.py", line 2363, in <module>
+ main()
+ File "/usr/lib/python3/dist-packages/virtualenv.py", line 719, in main
+ symlink=options.symlink)
+ File "/usr/lib/python3/dist-packages/virtualenv.py", line 988, in create_environment
+ download=download,
+ File "/usr/lib/python3/dist-packages/virtualenv.py", line 918, in install_wheel
+ call_subprocess(cmd, show_stdout=False, extra_env=env, stdin=SCRIPT)
+ File "/usr/lib/python3/dist-packages/virtualenv.py", line 812, in call_subprocess
+ % (cmd_desc, proc.returncode))
+OSError: Command /usr/lib/python3/dis...nfo/venv/bin/python2 - setuptools pkg_resources pip wheel failed with error code 2
+
+看到HTTPError: 404 Client Error: Not Found for url: http://mirrors.aliyun.com/pypi/simple/pkg-resources/以为是阿里云的安全组配置没配好，折腾了半天，原来是访问PyPI镜像源出了问题，将pip的默认的源地址改为国内源即可。
+
+
+具体操作如下：
+
+vim ~/.pip/pip.conf打开pip配置文件:
+
+写入
+
+[global]
+index-url = http://e.pypi.python.org/simple
+
+以下这几个国内源都可以
+
+e.pypi.python.org
+
+pypi.douban.com
+
+pypi.hustunique.com
+
+补充：使用virtualenv创建Python3.7虚拟环境时报错ModuleNotFoundError: No module named '_ctypes'的解决方法
+
+使用virtualenv创建Python3.7.6版本虚拟环境时，遇到了标题中的报错，记录一下解决过程。
+
+
+出现这种情况一般是因为缺少依赖包libffi-devel
+
+在安装3.7以上版本时，需要一个新的libffi-devel包做依赖
+
+使用yum安装依赖
+
+yum install libffi-devel -y
+
+删除之前安装的报错的虚拟环境目录
+
+rm -f venv
+
+重新编译安装系统Python3.7.6（需要先找到安装时的Python源码包，cd到目录中）
+
+./configure --prefix=/usr/local/python3
+make && make install
+
+删除之前建立的软连接
+
+rm -rf /usr/bin/python3
+rm -rf /usr/bin/pip3
+
+重新建立软连接
+
+ln -s /usr/local/python3/bin/python3.7 /usr/bin/python3
+ln -s /usr/local/python3/bin/pip3.7 /usr/bin/pip3
+
+到此Python3重新安装完成，可以用python3、pip3命令测试一下是否安装成功。
+
+进入虚拟目录将要存放的目录，使用新安装的Python3创建虚拟环境。此处需要使用-p参数指定Python版本路径，否则默认创建Python2的环境。
+
+virtualenv -p /usr/bin/python3 venv
+
+测试进入创建好的虚拟环境中
+
+source venv/bin/activate
+
+退出环境
+
+deactivate
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

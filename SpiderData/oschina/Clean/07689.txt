@@ -1,0 +1,28 @@
+由于ET6.0最新版本设计还未完善，导致有些功能使用报错，这里是我遇到的关于资源文件更新报错的解决方法.
+
+在此前将资源打包（Tools->打包工具）随后打开资源服务器  （Tools->web资源服务器），然后Unity宏定义添加：ASYNC 。宏定义添加步奏：File->BuildSettings->Player Settings->Other Settings ->Scripting Define Symbols 然后添加新的宏 ASYNC ，各个定义使用 ';'隔开。
+
+为了看清效果，先将Unity工程中的StreamAssets文件夹内的文件清空，只保留Version文件并将其内容改为：
+
+{"Version":0,"TotalSize":0,"FileInfoDict":{}}
+
+1.运行unity，第一个报错
+
+解决方法：将报错的那行this.Parent.RemoveComponent<BundleDownloaderComponent>();提到base.Dispose();前面一行
+
+2.再次运行Unity ，再次报错
+
+解决方法：找到
+
+将UnityWebRequestAsync request = EntityFactory.Create<UnityWebRequestAsync>(this.Domain)改为using (UnityWebRequestAsync webRequestAsync = EntityFactory.Create<UnityWebRequestAsync>(ETModel.Game.Scene))
+
+同理，将StartAsync()和DownloadAsync() 剩下的全部改为上面的语句，应该共三处需要修改.
+
+3.再在运行Unity，报错
+
+找到出错代码：Game.EventSystem.Run(EventIdType.LoadingBegin); 查找EventIdType.LoadingBegin的引用可以发现ETModel.LoadingBeginEvent_CreateLoadingUI类使用了此属性，并且该类继承AEvent<Entity> 对应Run方法应该是Run<A>(string type, A a)
+
+解决方法：将Game.EventSystem.Run(EventIdType.LoadingBegin)改为Game.EventSystem.Run<Entity>(EventIdType.LoadingBegin,ETModel.Game.Scene);
+
+4.最后运行Unity，发现没有报错，并且跳转到登陆界面，说明成功了。此时再次刷新Unity工程，发现StreamAssets文件夹下多了服务器下载来的文件。
+

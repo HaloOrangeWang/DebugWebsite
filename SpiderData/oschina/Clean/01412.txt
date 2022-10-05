@@ -1,0 +1,45 @@
+1. 运行aapt:
+
+bash: ./aapt: /lib/ld-linux.so.2: bad ELF interpreter: No such file or directory
+
+2. 安装glibc.i686
+
+yum install glibc.i686
+
+3.再次运行aapt
+
+aapt: error while loading shared libraries: libz.so.1: cannot open shared object file: No such file or directory
+
+4.安装zlib.i686
+
+yum install zlib.i686
+
+报错： Protected multilib versions: zlib-1.2.7-17.el7.i686 != zlib-1.2.7-15.el7.x86_64
+
+解决：yum install zlib.i686 --setopt=protected_multilib=false
+
+5. 接着运行aapt
+
+aapt: error while loading shared libraries: libstdc++.so.6: cannot open shared object file: No such file or directory
+
+6.安装libstdc++.i686
+
+yum install libstdc++.i686
+
+依然报错： Protected multilib versions: libstdc++-4.8.5-28.0.1.el7.i686 != libstdc++-4.8.5-4.el7.x86_64
+
+因此使用： yum install libstdc++.i686 --setopt=protected_multilib=false
+
+接着报错：
+
+Transaction check error:
+   file /usr/share/gcc-4.8.2/python/libstdcxx/v6/printers.py from install of libstdc++-4.8.5-28.0.1.el7.i686 conflicts with file from package libstdc++-4.8.5-4.el7.x86_64
+   file /usr/share/gcc-4.8.2/python/libstdcxx/v6/printers.pyc from install of libstdc++-4.8.5-28.0.1.el7.i686 conflicts with file from package libstdc++-4.8.5-4.el7.x86_64
+   file /usr/share/gcc-4.8.2/python/libstdcxx/v6/printers.pyo from install of libstdc++-4.8.5-28.0.1.el7.i686 conflicts with file from package libstdc++-4.8.5-4.el7.x86_64
+
+解决：yum update libstdc++-4.8.5-4.el7.x86_64
+
+再次运行： yum install libstdc++.i686 安装成功
+
+问题解决！
+

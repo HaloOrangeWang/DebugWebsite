@@ -1,0 +1,53 @@
+在ubuntu16.04上跑放在virtualenv虚拟环境里的python2.7版本的代码，需要用到matplotlib：
+
+import matplotlib.pyplot as plt
+
+报错：ImportError: No module named matplotlib.pyplot
+
+查资料尝试在虚拟环境里安装该模块，终端输入指令：
+
+sudo apt-get install python-matplotlib
+
+再次运行代码，报错不变；
+
+尝试在虚拟环境里换个指令安装该模块：
+
+sudo pip install matplotlib
+
+安装过程里有一大堆Requirement already satisfied ，最后安装结果如下：
+
+Installing collected packages: cycler, kiwisolver, subprocess32, backports.functools-lru-cache, matplotlib
+  Found existing installation: cycler 0.9.0
+    Not uninstalling cycler at /usr/lib/python2.7/dist-packages, outside environment /usr
+  Running setup.py install for subprocess32 ... done
+
+Successfully installed backports.functools-lru-cache-1.5 cycler-0.10.0 kiwisolver-1.0.1 matplotlib-2.2.2 subprocess32-3.2.7
+
+还安装了一堆依赖包
+
+然而运行代码，报错不变。
+
+卸载重装：
+
+sudo apt-get remove python-matplotlib
+
+sudo apt-get install python-matplotlib
+
+运行代码，报错不变
+
+最后看到教程尝试：
+
+先 pip install scipy
+
+然后卸载：pip uninstall matplotlib
+
+再次安装：pip install matplotlib
+
+运行代码，成功～
+
+总结起来是对sudo apt-get install和pip install安装的异同认识还不够，在python虚拟环境virtualenv里应该使用pip install安装才有效。
+
+参考文献：https://blog.csdn.net/mr_sdhm/article/details/79119300
+
+pip和apt-get安装区别：https://blog.csdn.net/rona_lin/article/details/45028277
+

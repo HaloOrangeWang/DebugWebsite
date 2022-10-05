@@ -1,0 +1,37 @@
+python 报错 invalid type comparison 解决办法
+
+报错信息：
+
+TypeError: invalid type comparison
+
+代码如下：
+
+import pandas as pd
+tst_data = 'tst_data.txt'
+tst_df = pd.read_csv(tst_data, sep='\t')
+tst_df
+tst_df[tst_df['Head2'] == "False"]
+
+具体报错：
+
+要筛选的列的值类型转换：字符串类型转换为Bool值：
+
+tst_df[tst_df['Head2'] == False]
+
+可通过df.dtypes 查看各列默认值的类型：
+
+如果想改变该列的数据类型，可使用astype(type)： type可取值 int/float/str …
+ 
+ 也可同时改变所有列，为同一种数据类型：
+
+总结：
+ 在筛选某列指定值时，需要先明确该列值的类型，如果类型与默认不符，则会报错invalid type comparison。可通过修改筛选时的值类型，或者在定义dataframe时，修改指定列的数据类型。
+
+一般pandas读取csv文件，会自动识别数据。
+
+如果某列的数据都是相同类型（如示例，都是布尔值），则会默认为某种类型；
+
+如果某列既有布尔值，也有其他字符串类型的，则会把该列定义为Object类型；
+
+如果想将布尔值类型进行转换，可使用 serise.astype() [转换某一列] 或 datafreame.astype() [转换所有列] 。
+

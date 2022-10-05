@@ -1,0 +1,210 @@
+
+⼀、TypeError：类型错误，对象⽤来表示值的类型⾮预期类型时发⽣的错误。
+
+错误例⼦：
+
+age=18
+
+print(‘我的年龄是’+age)
+
+报错信息：TypeError: can only concatenate str (not "int ") to str
+
+这是类型错误，提示必须是⼀个字符串，不能是数字。
+
+解决⽅法：在使⽤“+”做拼接的时候，必须使⽤字符串，或者把数字转化成字符串。
+
+正确代码：
+
+age=18
+
+print(‘我的年龄是’+str(age))
+
+
+⼆、AttributeError：属性错误，特性引⽤和赋值失败时会引发属性错误
+
+tp=('1','3','5')
+
+tp.append('7')
+
+print(tp)
+
+报错信息：AttributeError: 'tuple' object has no attribute 'append'
+
+提示：属性错误：元组对象没有“append”的属性，简单来说元组是不可变对象
+
+解决⽅法：把元组换成列表。
+
+
+三、NameError：试图访问的变量名不存在。
+
+举个简单的例⼦，只运⾏⼀⾏print(a)，会报错：NameError: name 'a' is not defifined。简单来说，就是变量a没有定义，解决⽅法是在前⾯给a赋值，⽐如加上⼀⾏a=''。
+
+还有⼀种需要⼩⼼处理的是：变量或者函数名拼写错误。如：
+
+name= '卡⻄'
+
+print('My name is ' + nane)
+
+报错信息和上⾯⼀样：NameError: name 'nane' is not defifined。
+
+这类错误只要根据报错信息，细⼼检查下拼写，就能很快解决~
+
+
+四、SyntaxError：语法错误，代码形式错误
+
+if name = '小李'
+
+print('hello')
+
+报错信息为：SyntaxError: invalid syntax
+
+提示是：语法错误，⾮法的语法。
+
+当报错的时候，要注意回到错误信息的那⼀⾏，然后从下往上，慢慢查找，此处这个程序就是因为if语法忘了在判断语句后⾯加“：”，所以导致的错误。
+
+另外，初学者写代码时注意：使⽤英⽂符号哦~
+
+
+五、KeyError：在读取字典中的key和value时，如果key不存在，就会触发KeyError错误。
+
+举个⼩例⼦：
+
+dict={'a':1,'b':2,'c':3}
+
+print(dict['d'])
+
+报错信息为：KeyError: 'd'。
+
+第⼀种解决⽅法，⾸先测试key是否存在，然后才进⾏下⼀步操作，如：
+
+if 'd' in t:
+
+print(t['d'])
+
+else:
+
+print('not exist')
+
+第⼆种，利⽤dict内置的get(key[,default])⽅法，如：print(dict['d'])改为print(dict.get('d'))
+
+如果key存在，则返回其value，否则返回None;使⽤这个⽅法永远不会触发KeyError。
+
+
+六、IndexError：索引错误，使⽤的索引不存在，常索引超出序列范围，序列中没有此索引(index)
+
+list1 = [2,3,4,5,6]
+
+print(list1[7])
+
+报错信息：IndexError: list index out of range
+
+提示：索引错误，列表索引超出了范围。
+
+**解决办法：回头看列表的⻓度，索引是要⼩于列表的⻓度的。上⾯的列表⻓度是5，⽽索引却要打印第七个，所以是超出了列表的⻓度。
+
+**
+
+
+七、IndentationError：缩进错误
+
+a = 1
+
+b = 2
+
+if a<b:
+
+print a
+
+报错：IndentationError: expected an indented block
+
+原因：缩进有误，Python的缩进⾮常严格，⾏⾸多个空格，少个空格都会报错。
+
+由于不熟悉python编码规则，不易查找，所以会成为新⼿常犯的⼀个错误。像def，class，if，for，while等代码块都需要缩进。
+
+
+⼋、TabError: Tab 和空格混⽤
+
+相邻的两句的缩进需要统⼀使⽤tab或统⼀使⽤空格，不能混⽤。否则就会出现以下报错：
+
+TabError: inconsistent use of tabs and spaces in indentation。
+
+tab键本质上是制表符，⽽不是缩进符，不同的⽂本编辑器中制表符代表的空格宽度不⼀，如果代码需要跨平台或跨编辑器读写，建议不要使⽤制表符（tab键）。
+
+
+九、最常见的报错解释
+
+
+SyntaxError: invalid syntax
+
+遗漏标点符号/拼写错误或者遗漏关键字/变量名使用了关键字或使用关键字定义函数/英文中的单引号引起误会
+
+
+SyntaxError: unexpected EOF while parsing
+
+语法错误，多了无法解析的符号，检查一下是否多了或者少了括号
+
+
+SyntaxError: invalid character in identifier
+
+语法错误有无效标识符，检查一下中文符号
+
+
+IndexError: list index out of range
+
+索引错误，超出索引范围，检查一下列表是否为空
+
+
+TypeError: must be str, not int
+
+数据类型错误，该数据不是正确的数据类型，比如字符串和数字直接拼接，检查一下数据类型
+
+
+IndentationError: expected an indented block
+
+缩进错误，检查一下代码的缩进是否正确
+
+
+KeyError:  'fond'
+
+键错误，字典中没有该的key对应的值，检查一下键名或者字典数据是否正确
+
+
+ValueError: substring not found
+
+值错误，输入的数据类型跟要求的不符合
+
+
+NameError: name 'a' is not defined
+
+未初始化对象，变量没有被定义
+
+
+AttributeError: 'tuple' object has no attribute 'remove'
+
+属性错误，该对象没有这个属性、方法，检查一下数据类型
+
+
+AttributeError: 'NoneType' object has no attribute 'find_all'
+
+被禁止爬取，需添加headers
+
+
+SystemExit
+
+解释器请求退出，出现在exit()函数后
+
+
+IOError
+
+输入/输出操作失败
+
+
+ImportError
+
+导入模块/对象失败，检查一下模块是否能够正常使用
+
+
+UnicodeDecodeError/UnicodeEncodeError/UnicodeTranslateError
+
+Unicode 解码/编码/转换/时的错误
+

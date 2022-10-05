@@ -1,0 +1,11 @@
+首先这个AttributeError: ‘module’ object has no attribute ‘cut’ 报错的原因是因为有jieba.py这个文件存在，或者jieba这样命名的文件存在，很多新人使用结巴 来分词的时候命名直接为jieba.py，但是其实官方给的教程代码里有import jieba，这样就会引用到你自己这个教程文件jieba.py，而没有引用官方的库，这样自然cut这个方法就没有，所以报错。
+解决方法：
+1、不要使用jieba.py来命名你的测试文件。
+2、你一开始就是用jieba.py来命名，出现错误之后，会产生一个jieba.pyc文件，如果你现在改了文件名，将jieba.py改为jieba_Test.py，这个时候运行还出错，那么原因就是因为jieba.pyc这个文件你没有删除，你需要删除这个jieba.pyc文件，然后你继续运行，就不会出错了。
+
+改为：
+
+这样就不会报错了
+
+参考文档：https://blog.csdn.net/randompeople/article/details/73927943
+

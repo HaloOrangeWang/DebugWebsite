@@ -1,0 +1,75 @@
+404 for http://mirrors.cloud.aliyuncs.com/centos/8/AppStream/x86_64/os/repod
+
+——————————————
+
+
+问题描述
+
+阿里云服务器，CentOS8，yum安装报错
+
+——————————————
+
+
+解决办法
+
+登录CentOS 8系统的ECS实例。具体操作。
+
+登录CentOS 8系统的ECS实例。具体操作。
+
+运行以下命令备份之前的repo文件。
+rename '.repo' '.repo.bak' /etc/yum.repos.d/*.repo
+
+运行以下命令备份之前的repo文件。
+
+rename '.repo' '.repo.bak' /etc/yum.repos.d/*.repo
+
+运行以下命令下载最新的repo文件。
+wget https://mirrors.aliyun.com/repo/Centos-vault-8.5.2111.repo -O /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+wget https://mirrors.aliyun.com/repo/epel-archive-8.repo -O /etc/yum.repos.d/epel-archive-8.repo
+
+运行以下命令下载最新的repo文件。
+
+wget https://mirrors.aliyun.com/repo/Centos-vault-8.5.2111.repo -O /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+wget https://mirrors.aliyun.com/repo/epel-archive-8.repo -O /etc/yum.repos.d/epel-archive-8.repo
+
+运行以下命令替换repo文件中的链接。
+sed -i 's/mirrors.cloud.aliyuncs.com/url_tmp/g'  /etc/yum.repos.d/Centos-vault-8.5.2111.repo &&  sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo && sed -i 's/url_tmp/mirrors.aliyun.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/epel-archive-8.repo
+
+运行以下命令替换repo文件中的链接。
+
+sed -i 's/mirrors.cloud.aliyuncs.com/url_tmp/g'  /etc/yum.repos.d/Centos-vault-8.5.2111.repo &&  sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo && sed -i 's/url_tmp/mirrors.aliyun.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/epel-archive-8.repo
+
+运行以下命令重新创建缓存。
+yum clean all && yum makecache
+
+yum源和epel源切换完成后，即可使用yum install命令在实例上安装您所需要的软件包。
+
+运行以下命令重新创建缓存。
+
+yum clean all && yum makecache
+
+yum源和epel源切换完成后，即可使用yum install命令在实例上安装您所需要的软件包。
+
+——————————————
+
+
+官方回复原文
+
+您好！
+
+您反馈的问题从报错现象看，是因为“2022年1月1日起CentOS官方将不再对CentOS 8提供服务支持”导致的yum无法正常使用，具体的您可以看下这个公告：
+
+https://help.aliyun.com/noticelist/articleid/1060980265.html
+
+如果您的服务目前不方便迁移或者迁移需要一定的时间，需要继续使用centos 8，那么针对这个yum的报错问题，您可以创建快照备份后参考这个方法来做下处理，处理之后即可正常使用yum
+
+https://help.aliyun.com/document_detail/405635.html
+
+另外，因为centos系列后续将停止维护，从系统的稳定性和安全性等方面考虑，我们推荐您结合业务实际情况，尽快安排系统的升级迁移，比如阿里云提供的Alibaba Cloud Linux系列操作系统。
+
+具体迁移过程您可以参考这个方法来实现，操作前建议您做好数据备份。
+
+https://help.aliyun.com/document_detail/370865.htm?spm=a2c4g.11186623.0.0.58863201lhpfjW#task-2156316
+

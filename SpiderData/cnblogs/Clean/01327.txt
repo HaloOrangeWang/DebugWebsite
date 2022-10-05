@@ -1,0 +1,28 @@
+对于写python的人来说，这个异常一点不陌生，只要涉及到中文字符串的操作，一不小心就会出错。关于这个问题的解释，找到一篇好文，分享一下。
+
+原文地址：https://blog.csdn.net/u011350541/article/details/78683682
+
+在解决错误之前，首先要了解unicode和utf-8的区别。
+
+unicode指的是万国码，是一种“字码表”。而utf-8是这种字码表储存的编码方法。unicode不一定要由utf-8这种方式编成bytecode储存，也可以使用utf-16,utf-7等其他方式。目前大多都以utf-8的方式来变成bytecode。
+
+其次，Python中字符串类型分为byte string 和 unicode string两种。
+
+如果在python文件中指定编码方式为utf-8(#coding=utf-8)，那么所有带中文的字符串都会被认为是utf-8编码的byte string（例如：mystr=”你好”），但是在函数中所产生的字符串则被认为是unicode string。
+
+问题就出在这边，unicode string 和 byte string 是不可以混合使用的，一旦混合使用了，就会产生这样的错误。例如：
+
+self.response.out.write(“你好”+self.request.get(“argu”))
+
+其中，”你好”被认为是byte string，而self.request.get(“argu”)的返回值被认为是unicode string。由于预设的解码器是ascii，所以就不能识别中文byte string。然后就报错了。
+
+以下有两个解决方法：
+
+最后再补充点，出现报错后，将byte string转化为Unicode string的方法
+
+apply_content = unicode(dict[‘apply_content’], ‘utf-8’)
+
+直接将str变成unicode
+
+另外可以用type(string)检查字符串的类型是Unicode还是str类型
+

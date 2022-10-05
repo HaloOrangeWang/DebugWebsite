@@ -1,0 +1,350 @@
+简介： 本文将就MaxCompute Spark开发环境搭建、常用配置、作业迁移注意事项以及常见问题进行深入介绍。
+
+
+一. MaxCompute Spark 介绍
+
+MaxCompute Spark是MaxCompute提供的兼容开源的Spark计算服务。它在统一的计算资源和数据集权限体系之上，提供Spark计算框架，支持用户以熟悉的开发使用方式提交运行Spark作业，以满足更丰富的数据处理分析场景。
+
+
+1.1  关键特性
+
+支持原生多版本Spark作业
+
+社区原生Spark运行在MaxCompute里，完全兼容Spark的API，支持多个Spark版本同时运行
+
+统一的计算资源
+
+像MaxCompute SQL/MR等任务类型一样，运行在MaxCompute项目开通的统一计算资源中
+
+统一的数据和权限管理
+
+遵循MaxCompute项目的权限体系，在访问用户权限范围内安全地查询数据
+
+与开源系统相同的使用体验
+
+提供原生的开源实时Spark UI和查询历史日志的功能
+
+
+1.2 系统结构
+
+原生Spark通过MaxCompute Cupid平台能够在MaxCompute中运行
+
+
+1.3 约束与限制
+
+目前MaxCompute Spark支持以下适用场景：
+
+离线计算场景：GraphX、Mllib、RDD、Spark-SQL、PySpark等
+
+Streaming场景
+
+读写MaxCompute Table
+
+引用MaxCompute中的文件资源
+
+读写VPC环境下的服务，如RDS、Redis、HBase、ECS上部署的服务等
+
+读写OSS非结构化存储
+
+使用限制
+
+不支持交互式类需求Spark-Shell、Spark-SQL-Shell、PySpark-Shell等
+
+不支持访问MaxCompute外部表，函数和UDF
+
+只支持Local模式和Yarn-cluster模式运行
+
+
+二. 开发环境搭建
+
+
+2.1 运行模式
+
+通过Spark客户端提交
+
+Yarn-Cluster模式，提交任务到MaxCompute集群中
+
+Local模式
+
+通过Dataworks提交
+
+本质上也是Yarn-Cluster模式，提交任务到MaxCompute集群中
+
+
+2.2 通过客户端提交
+
+
+2.2.1 Yarn-Cluster模式
+
+下载MC Spark客户端
+
+Spark 1.6.3
+
+Spark 2.3.0
+
+环境变量配置
+
+## JAVA_HOME配置
+# 推荐使用JDK 1.8
+export JAVA_HOME=/path/to/jdk
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export PATH=$JAVA_HOME/bin:$PATH
+
+## SPARK_HOME设置
+# 下载上文提到的MaxCompute Spark客户端并解压到本地任意路径
+# 请不要直接设置SPARK_HOME等于以下路径下述路径仅做展示用途
+# 请指向正确的路径
+export SPARK_HOME=/path/to/spark_extracted_package
+export PATH=$SPARK_HOME/bin:$PATH
+
+## PySpark配置Python版本
+export PATH=/path/to/python/bin/:$PATH
+
+参数配置
+
+将$SPARK_HOME/conf/spark-defaults.conf.template 重命名为 spark-defaults.conf
+
+参数配置参考下文
+
+准备项目工程
+
+git clone https://github.com/aliyun/MaxCompute-Spark.git
+cd spark-2.x
+mvn clean package
+
+任务提交
+
+// bash环境
+cd $SPARK_HOME
+bin/spark-submit --master yarn-cluster --class com.aliyun.odps.spark.examples.SparkPi \
+/path/to/MaxCompute-Spark/spark-2.x/target/spark-examples_2.11-1.0.0-SNAPSHOT-shaded.jar
+
+// 在windows环境提交的命令
+cd $SPARK_HOME/bin
+spark-submit.cmd --master yarn-cluster --class com.aliyun.odps.spark.examples.SparkPi
+\path\to\MaxCompute-Spark\spark-2.x\target\spark-examples_2.11-1.0.0-SNAPSHOT-shaded.jar
+
+IDEA调试注意
+
+IDEA运行Local模式是不能直接引用spark-defaults.conf里的配置，需要手动在代码里指定相关配置
+
+一定要注意需要在IDEA里手动添加MaxCompute Spark客户端的相关依赖（jars目录），否则会出现以下报错：
+
+the value of spark.sql.catalogimplementation should be one of hive in-memory but was odps
+
+参考文档
+
+
+2.3 通过DataWorks提交
+
+
+2.3.1 资源上传
+
+本质上MC Spark节点的配置对应于spark-submit命令的参数和选项
+
+ODPS SPARK节点spark-submit主Java、Python资源app jar or python file配置项--conf PROP=VALUEMain Class--class CLASS_NAME参数[app arguments]选择JAR资源--jars JARS选择Python资源--py-files PY_FILES选择File资源--files FILES选择Archives资源
+
+--archives
+
+上传资源：
+
+0～50MB：可以直接在DataWorks界面创建资源并上传
+
+50MB～500MB：可以先利用MaxCompute客户端(CMD)上传，然后在DataWorks界面添加到数据开发，参考文档
+
+资源引用：
+
+资源提交后，可以在DataWorks Spark节点界面选择需要的资源（jar/python/file/archive）
+
+任务运行时：资源文件默认会上传到Driver和Executor的当前工作目录
+
+
+2.3.2 参数和配置
+
+Spark 配置项：对应于spark-submit命令的--conf选项
+
+accessid，accesskey，projectname，endpoint，runtime.end.point，task.major.version无需配置
+
+除此之外，需要将spark-default.conf中的配置逐条加到dataworks的配置项中
+
+给主类传参数(如bizdate)
+
+首先在调度->参数中添加参数，然后在Spark节点“参数”栏引用该参数。多个参数用空格分隔
+
+该参数会传给用户主类，用户在代码中解析该参数即可
+
+参考文档
+
+
+三. 配置介绍
+
+
+3.1 配置的位置
+
+
+3.1.1 Spark配置的位置
+
+用户使用Maxcompute Spark通常会有几个位置可以添加Spark配置，主要包括：
+
+位置1：spark-defaults.conf，用户通过客户端提交时在spark-defaults.conf文件中添加的Spark配置
+
+位置2：dataworks的配置项，用户通过dataworks提交时在配置项添加的Spark配置，这部分配置最终会在位置3中被添加
+
+位置3：配置在启动脚本spark-submit --conf选项中
+
+位置4：配置在用户代码中，用户在初始化SparkContext时设置的Spark配置
+
+Spark配置的优先级
+
+用户代码 > spark-submit --选项 > spark-defaults.conf配置 > spark-env.sh配置 > 默认值
+
+
+
+3.1.2 需要区分的两种配置
+
+一种是必须要配置在spark-defaults.conf或者dataworks的配置项中才能生效（在任务提交之前需要），而不能配置在用户代码中，这类配置主要的特征是：
+
+与Maxcompute/Cupid平台相关：一般参数名中都会带odps或者cupid，通常这些参数与任务提交/资源申请都关系：
+
+显而易见，一些资源获取（如driver的内存，core，diskdriver，maxcompute资源），在任务执行之前就会用到，如果这些参数设置在代码中，很明显平台没有办法读到，所以这些参数一定不要配置在代码中
+
+其中一些参数即使配置在代码中，也不会造成任务失败，但是不会生效
+
+其中一些参数配置在代码中，可能会造成副作用：如在yarn-cluster模式下设置spark.master为local
+
+访问VPC的参数：
+
+这类参数也与平台相关，打通网络是在提交任务时就进行的
+
+一种是在以上三种位置配置都可以生效，但是在代码配置的优先级最高
+
+推荐把任务运行与优化相关的参数配置在代码中，而与资源平台相关的配置都配置在spark-defaults.conf或者dataworks的配置项中。
+
+
+
+3.2 资源相关的参数
+
+
+3.3 平台相关的参数
+
+
+四. 作业诊断
+
+
+4.1 Logview
+
+
+4.1.1 Logview 介绍
+
+在任务提交时会打印日志: 日志中含有logview链接 (关键字 logview url)
+
+Master以及Worker的StdErr打印的是spark引擎输出的日志，StdOut中打印用户作业输出到控制台的内容
+
+
+
+4.1.2 利用Logview 排查问题
+
+拿到Logview，一般首先看Driver的报错，Driver会包含一些关键性的错误
+
+如果Driver中出现类或者方法找不到的问题，一般是jar包打包的问题
+
+如果Driver中出现连接外部VPC或者OSS出现Time out，这种情况一般要去排查一下参数配置
+
+如果Driver中出现连接不到Executor，或者找不到Chunk等错误，通常是Executor已经提前退出，需要进一步查看Executor的报错，可能存在OOM
+
+根据End Time做排序，结束时间越早，越容易是发生问题的Executor节点
+
+根据Latency做排序，Latency代表了Executor的存活的时间，存活时间越短的，越有可能是根因所在
+
+Spark UI的使用与社区原生版是一致的，可以参考文档
+
+注意
+
+Spark UI需要鉴权，只有提交任务的Owner才能打开
+
+Spark UI仅在作业运行时才能打开，如果任务已经结束，那么Spark UI是无法打开的，这时候需要查看Spark History Server UI
+
+
+五. 常见问题
+
+
+1. local模式运行的问题
+
+问题一：the value of spark.sql.catalogimplementation should be one of hive in-memory but was odps
+
+原因在于用户没有正确地按照文档将Maxcompute Spark的jars目录添加到类路径，导致加载了社区版的spark包，需要按照文档将jars目录添加到类路径
+
+问题二：IDEA Local模式是不能直接引用spark-defaults.conf里的配置，必须要把Spark配置项写在代码中
+
+问题三：访问OSS和VPC：
+
+Local模式是处于用户本机环境，网络没有隔离。而Yarn-Cluster模式是处于Maxcompute的网络隔离环境中，必须要要配置vpc访问的相关参数
+
+Local模式下访问oss的endpoint通常是外网endpoint，而Yarn-cluster模式下访问vpc的endpoint是经典网络endpoint
+
+
+2. jar包打包的问题
+
+java/scala程序经常会遇到Java类找不到/类冲突问题：
+
+类冲突：用户Jar包与Spark或平台依赖的Jar包冲突
+
+类没有找到：用户Jar包没有打成Fat Jar或者由于类冲突引起
+
+打包需要注意：
+
+依赖为provided和compile的区别：
+
+provided：代码依赖该jar包，但是只在编译的时候需要用，而运行时不需要，运行时会去集群中去寻找的相应的jar包
+
+compile：代码依赖该jar包，在编译、运行时候都需要，在集群中不存在这些jar包，需要用户打到自己的jar包中。这种类型的jar包一般是一些三方库，且与spark运行无关，与用户代码逻辑有关
+
+用户提交的jar包必须是Fat jar：
+
+必须要把compile类型的依赖都打到用户jar包中，保证代码运行时能加载到这些依赖的类
+
+需要设置为provided的jar包
+
+groupId为org.apache.spark的Jar包
+
+平台相关的Jar包
+
+cupid-sdk
+
+hadoop-yarn-client
+
+odps-sdk
+
+需要设置为compile的jar包
+
+oss相关的jar包
+
+hadoop-fs-oss
+
+用户访问其他服务用到的jar包：
+
+如mysql，hbase
+
+用户代码需要引用的第三方库
+
+
+3. 需要引入Python包
+
+很多时候用户需要用到外部Python依赖
+
+首先推荐用户使用我们打包的公共资源，包含了常用的一些数据处理，计算，以及连接外部服务（mysql，redis，hbase）的三方库
+
+## 公共资源python2.7.13
+spark.hadoop.odps.cupid.resources = public.python-2.7.13-ucs4.tar.gz
+spark.pyspark.python = ./public.python-2.7.13-ucs4.tar.gz/python-2.7.13-ucs4/bin/python
+
+## 公共资源python3.7.9
+spark.hadoop.odps.cupid.resources = public.python-3.7.9-ucs4.tar.gz
+spark.pyspark.python = ./public.python-3.7.9-ucs4.tar.gz/python-3.7.9-ucs4/bin/python3
+
+作者：亢海鹏
+
+原文链接
+
+本文为阿里云原创内容，未经允许不得转载
+

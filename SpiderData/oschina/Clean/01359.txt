@@ -1,0 +1,19 @@
+在启动vue项目的时候，安装node.js组件node-sass过程中报错了，错误提示如下
+ Error: Can’t find Python executable “python”, you can set the PYTHON env variable
+
+由错误提示可知：Node.js 在安装模块组件node-sass的时候，node.js缺少Visual Studio2015 Build Tools相关的组件和python的环境，如果安装了vs2015组件的小伙伴们就不用安装Visual Studio2015 Build Tools相应的组件，只用安装python2.7即可解决缺少的python组件的问题。
+
+欲安装python2.7，请至python官网：www.python.org 下载，然后配置好python的环境变量即可。
+
+不过博主我并不推荐上述的解决方案，因为对于程序员来说，效率第一，上述的问题一个命令就可以轻松解决你所遇到的麻烦，前面说了那么多，无非就是想告诉在看本篇博客的同仁们放下浮躁的心，遇到问题首先不是急着去解决问题，而是分析为什么会这样，然后才能水到聚成的去找到解决问题的方法。
+
+运行下面这个命令即可解决你们遇到的Error问题
+
+npm install --global --production windows-build-tools
+
+注：上面讲述了一堆就是为了讲述此命令是干嘛的，上面已经描述很详细了，就不再赘述了，该操作与上述的一堆操作无异，效果却是一样的。
+
+然后运气不好的小伙伴可能接着会遇到一个坑，那就是执行了：npm install --global --production windows-build-tools这个命令的人细心点会发现执行到一半就卡住了，这个卡住了没有红字重点提示，而且下方还有英文在等待中，粗心的小伙伴可能以为是命令执行完了，组件安装好了，其实不然，我这边已经解决了，就无法复现了，具体点就是中文的提示，提示我们由于有类似组件在运行或者下载导致无法继续下载安装组件了。稳妥点的解决办法是，将电脑重启，将底层正在运行的模块干掉，待电脑重启后再执行npm install --global --production windows-build-tools这条命令即可，博主我就是这样解决的，稳稳的幸福就会浮现在你面前如下图所示，你的可能和我不一样，因为我已经跑成功过一次了，没有你的那么多细节的log打印。
+
+然后就是在你的项目下shift+鼠标右击你的项目运行npm run dev即可启动vue项目了。
+

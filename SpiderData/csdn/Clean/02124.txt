@@ -1,0 +1,19 @@
+1、在Jenkins中运行python找不到自己自定义的包，就将项目加入到Jenkins的环境变量中，如果还找不到将python\Scripts也添加到环境变量，找不到浏览器二进制就将浏览器目录也加入到Jenkins环境变量中
+
+2、不想配置环境变量，将变量直接添加到代码
+
+from selenium.webdriver.chrome.options import Options
+# 导入项目文件到环境
+import sys
+sys.path.append(r"D:\Jenkins\workspace\项目名")
+# 导入项目文件的自定义模块到环境
+import sys
+sys.path.append(r"D:\Jenkins\workspace\项目名\自定义模块的包")
+
+如果找不到浏览器的二进制或者驱动：将驱动放在Chrome\Application目录下
+
+# 导入浏览器驱动和浏览器目录到环境
+    options = Options()
+    options.binary_location = r'自己的目录\Google\Chrome\Application\chrome.exe'
+    cls.driver = webdriver.Chrome(chrome_options=options,executable_path=r'自己的目录\Google\Chrome\Application\chromedriver.exe')
+

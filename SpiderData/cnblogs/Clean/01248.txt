@@ -1,0 +1,38 @@
+在接口测试过程中，为了取值将形如字典形式的字符串使用eval()方法转化成字典方便取值
+
+str={"code":100,"num":1,"data":5}
+
+当值不是null时可以使用eval(str)正常转为字典
+
+strnull={"code":100,"num":1,"data":[null]}
+
+而当值为null值时，再次使用eval(strnull)则报错：name 'null' is not defined
+
+如何处理这个报错呢？如何将值为null的字符串转化成字典类型呢？
+
+上网查询后得知：python无法处理null这样的字符串，python中的变量“空”，不是null，也不是NULL，而是None，所以报错
+
+解决办法如下：
+
+一、将null转化为空
+
+global null
+
+null = ''
+
+strnull={"code":100,"num":1,"data":[null]}
+
+strdict=eval(strnull)
+
+type(strdict)#dict
+
+print(strdict)#{'data': [''], 'code': 100, 'num': 1}
+
+这种办法可以正确转为字典类型了~~~~
+
+二、使用json模块的loads()方法
+
+from flask import json#引入json模块
+strdict=json.loads(strnull)
+print(strdict)#{'data': [None], 'num': 1, 'code': 100}
+

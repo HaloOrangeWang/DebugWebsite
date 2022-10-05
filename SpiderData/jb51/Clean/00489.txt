@@ -1,0 +1,31 @@
+Matplotlib是一个很好的作图软件，但是python下默认不支持中文，所以需要做一些修改，方法如下：
+
+1.在python安装目录的Lib目录下创建ch.py文件。
+
+文件中代码为：
+
+保存，以后通过以下代码调用：
+
+#-*-coding:utf-8-*- 
+#文件名: ch.py 
+def set_ch(): 
+ from pylab import mpl 
+ mpl.rcParams['font.sans-serif'] = ['FangSong'] # 指定默认字体 
+ mpl.rcParams['axes.unicode_minus'] = False # 解决保存图像是负号'-'显示为方块的问题
+
+打开python测试一下：
+
+#-*-coding:utf-8-*- 
+import ch 
+ch.set_ch()
+
+from matplotlib import pyplot as plt
+
+plt.title(u'显示中文')
+
+plt.show()
+
+以下是常用字体的对应名称：
+
+以上这篇完美解决Python matplotlib绘图时汉字显示不正常的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

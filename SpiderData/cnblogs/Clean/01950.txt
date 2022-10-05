@@ -1,0 +1,54 @@
+
+caffe SSD 代码编译运行流程及问题解决
+
+该文基于以下代码：
+
+https://github.com/weiliu89/caffe/tree/ssd
+
+down下来后，进入目录
+
+按照机器配置和环境的情况修改这两个文件，首先复制Makefile.config.example到Makefile.config
+
+在config文件里进行修改，如uncomment以下几项：
+
+USE_CUDNN :=1，因为我们需要调用CUDNN运行caffe代码
+
+OPENCV_VERSION :=3，因为机器上的opencv版本号是3.X
+
+CUDA_ARCH只保留这几项就行，这是和gpu的算力性能有关的项目，本机器用的是TITAN Xp，因此如果不把较小的注释掉就会报warning。
+
+加上hdf5的路径到include中。
+
+这样Makefile的配置文件基本完成。下面对Makefile修改。
+
+常见问题一般都是库找不到，因此主要关注这一段代码：
+
+第一行中的LIBRARIES += 。。。，如果报错某个库没有找到，可以加入到这一行，如boost_regex m hdf5_serial_hl hdf5_serial 都是添加上的。因为曾经报错boost_regex::XXX没有找到。
+
+
+报错与解决
+
+问题类型：【undefined reference to `boost::re_detail::】
+
+解决方案：看到一个说法是由于boost的版本过低，应该大于1.60，而本机的boost为1.58，所以手动下载一个boost进行安装，这里用的是1.68版本号的boost库，安装好之后问题解决。（安装boost参考本文：https://blog.csdn.net/this_capslock/article/details/47170313）
+
+另一个问题是在make pycaffe时候，出现：
+
+问题类型：【cannot find -lboost_python】，但是实际上在makefile中已经把boost_python 添加上了：
+
+这里的解决方案是吧上面一句改为：
+
+即将boost_python改为boost_python。
+
+最后caffe和pycaffe都编译成功，运行ssd的python脚步，报错：
+
+错误类型：【No module named XXX】，这种情况有两种可能的原因，一是没有make pycaffe；另一种是没有把pycaffe的路径加入环境变量。这里我们make过了pycaffe，因此需要手动用加入pycaffe到环境变量。
+
+这样就可以运行了。
+
+接下来就是讲lmdb数据换成需要训练的自己的数据集，对ssd的caffe模型进行训练了~
+
+2018年8月13日16:14:04
+
+你以为钟情于天使，其实是中了邪魔。 —— 剧作家，塞万提斯 【堂吉诃德】
+

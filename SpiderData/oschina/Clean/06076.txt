@@ -1,0 +1,26 @@
+在python3中socket传送文件只能传送‘bytes'类型，如下例子：
+
+import socket
+
+client = socket.socket()
+client.connect(("localhost",8808))
+client.send(b"Hello world!")
+
+在例子中“hello world"为字符串类型，所以要转换成”bytes"类型，所以前面加一个“b"就行了，
+但是，如何将“Hello world"改成中文就就会出错，因为这种形式只能将存在于Ascii码编码内的字
+符串和符号进行转换，当一个字符串不在Ascii码编码范围内例如中文，则用这种形式就会报错，所以
+当出现中文字符串时，要用encode进行编码，编码后字符串会变成为字节类型(bytes)，如下所示：
+
+decode              encode
+
+bytes ------> str(unicode)------>bytes
+
+这样之后，发送端就可以将信息以“bytes"类型发送，服务器接收到的也是编码后的二进制信息，要显
+示中文必须要采用decode解码。所以，如何是中文要采用如下形式：
+
+import socket
+
+client = socket.socket()
+client.connect(("localhost",8808))
+client.send("你好世界!".encode("utf-8"))
+

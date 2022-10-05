@@ -1,0 +1,42 @@
+简述
+
+从官网下载了Python3.7.4，直接编译安装后，使用pip3出现了报错信息： Can't connect to HTTPS URL because the SSL module is not available
+
+错误原因
+
+在Python3.7之后的版本，依赖的openssl，必须要是1.1或者1.0.2之后的版本，或者安装了2.6.4之后的libressl。
+
+image.png
+
+而本地的openssl依然是1.0.1e的。
+
+?
+
+解决方法
+
+上openssl官网下载1.0.2或者1.1之后的openssl包，编译安装。我选择的是1.0.2r。
+
+?
+
+注意：编译openssl1.0.2r的时候建议加上no-zlib，否则后面可能会出现undefined symbol: SSL_CTX_get0_param错误
+
+安装python3.7
+
+下载Python包，编译
+
+?
+
+编译完成后不要make，先修改Python源码包中ssl的参数
+
+打开源码解压目录中的 Modules/Setup ,直接搜索 SSL= ，将SSL=后面的目录改为前面openssl的安装目录，并把下面三行的注释去掉。
+
+?
+
+改完之后就在解压目录直接make就行了。
+
+?
+
+总结
+
+以上所述是小编给大家介绍的解决安装python3.7.4报错Can''t connect to HTTPS URL because the SSL module is not available,希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+

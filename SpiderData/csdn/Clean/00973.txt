@@ -1,0 +1,26 @@
+参考了这篇文章：调用自定义模块出现ModuleNotFoundError的问题 - 简书
+
+首先检查 conda 环境对不对，如果环境是对的，在命令行直接运行一下 py 文件看会不会报错；
+
+如果没报错，估计就是 python 解析器的问题（我就是这个原因导致了报错）
+
+VsCode 默认进行调试的 python 解析器可能并不是正确的 conda 环境下对应的那个解析器，需要在 launch.json 中手动指定：
+
+"configurations": [
+    {
+        "python": "/home/name/anaconda3/envs/xxx/bin/python3.7",
+        "name": "xxx",
+        "type": "python",
+        "request": "launch",
+        "program": "xxx.py",
+        "console": "integratedTerminal"
+        ......
+    }
+]
+
+再次调试，成功
+
+最后再补充一条：如果还是有报错，可以在上面 launch.json 的配置中设定工作目录，关键字是 "cwd"；在 import 包以及添加文件时，若使用相对路径，则是相对于这个 "cwd"。
+
+具体 launch.json 配置方法可以看 Vscode 官网和 VSCode配置项目launch.json文件_Mi5tAke的博客-CSDN博客_vscode配置launch.json
+

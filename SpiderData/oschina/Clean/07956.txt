@@ -1,0 +1,40 @@
+自定义返回给客户端的404错误页面
+
+1. 优化前，客户端使用浏览器访问不存在的页面，会提示404文件未找到
+
+client]# firefox http://192.168.4.5/xxxxx        //访问一个不存在的页面,会出现如下提示.
+
+为了更人性化,提示客户的访问体验,我们可以对404文件自定义.
+
+比如, 百度的自定义页面就比默认的页面体验好很多.
+
+2. 修改Nginx配置文件，自定义报错页面
+
+proxy]# vim /usr/local/nginx/conf/nginx.conf
+
+...
+
+charset utf-8;       //仅需要中文时需要改选项，可选项
+
+error_page 404 /404.html;    //自定义错误页面
+
+...
+
+3. 定义错误页面的内容
+
+proxy ]# vim /usr/local/nginx/html/404.html
+
+sorry,the page that you have logined is not real.    #这里是报错内容示范,需根据实际情况定义报错内容.
+
+proxy ]# /usr/local/nginx/sbin/nginx  -s reload      //重新加载配置
+
+4. 优化后，客户端使用浏览器访问不存在的页面，会提示自定义页面404.html里的内容
+
+client]# firefox http://192.168.4.5/xxxxx
+
+sorry,the page that you have logined is not real      //自定义页面404.html里的内容会显示在网页
+
+5. 常见的http状态码列表
+
+结束.
+

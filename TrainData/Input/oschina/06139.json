@@ -1,0 +1,24 @@
+{
+    "err_msg": {
+        "text": "卷积层输入的形状不为4维或者5维",
+        "lines": [1],
+        "weight": [1]
+    },
+    "scene": [
+        {
+            "text": "PaddlePaddle使用CIFAR-10彩色图片训练",
+            "lines": ["title"],
+            "weight": [1]
+        },
+        {
+            "text": "使用CIFAR-10彩色图片训练",
+            "lines": [1],
+            "weight": [1]
+        }
+    ],
+   "solve": {
+        "text": "在使用fluid.layers.data接口定义图片输入层时，设置shape应该的是[通道数, 宽, 高]，所以设置为[3, 32, 32]。正确代码如下：\n\ndef inference_network():\n    images = fluid.layers.data(name='pixel', shape=[3, 32, 32], dtype='float32')\n    predict = vgg_bn_drop(images)\n    return predict",
+        "lines": [57, 59, 60, 61, 62],
+        "weight": [1, 0.5, 0.5, 0.5, 0.5]
+    }
+}

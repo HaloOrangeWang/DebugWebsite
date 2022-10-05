@@ -1,0 +1,22 @@
+报错：
+
+InvalidRequestError: Could not evaluate current criteria in Python. Specify 'fetch' or False for the synchronize_session parameter.
+
+但是：
+
+都能得到正确的结果。为什么不能直接使用.delete()?
+
+我按下面的写法能正常工作。
+
+就是希望了解一下原理。为什么不能在使用_in的时候直接后面接delete()?
+
+为什么无法删除 in 操作查询出来的记录？
+
+抛出这样的异常：
+
+但这样是没问题的：
+
+搜了下找到《Sqlalchemy delete subquery》这个问题，提到了 delete 的一个注意点：删除记录时，默认会尝试删除 session 中符合条件的对象，而 in 操作估计还不支持，于是就出错了。解决办法就是删除时不进行同步，然后再让 session 里的所有实体都过期：
+
+此外，update 操作也有同样的参数，如果后面立刻提交了，那么加上 synchronize_session=False 参数会更快。
+

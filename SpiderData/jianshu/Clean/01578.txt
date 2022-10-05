@@ -1,0 +1,52 @@
+在centos 7.4 x86_64位 运行yum出现如图错误
+
+找了很久的原因，很多资料，国内外网站都没有人说。
+
+首先我们得在系统中找python2.7出来，我们去bin文件下寻找，发现全部都是anaconda的python，没有系统自带的python了。所以要重新安装。
+
+如果以前的python没有删除，直接重新建立软连接即可。
+
+如图我们运行python
+
+报错信息显示当前python没有yum这个module 无法import 所以需要找到原来版本。
+
+所以根本原因就是我自己安装anaconda把原来yum依赖的python覆盖了，我还删除了原来yum依赖的python。
+
+系统自身所带的python找不到了，所以要重新安装。
+
+centos 自带python下载地址：
+
+http://vault.centos.org/7.2.1511/os/x86_64/Packages/
+
+使用cat /etc/redhat-release 寻找自己对应的系统版本
+
+这个网站要等一阵子包名才会加载完全，可以点击name 倒序加快加载
+
+centos 下使用wget 进行下载 wget "LINKS"
+
+然后下载好需要的依赖
+
+下载完成以后进行安装 切记！ （单一python包是可以安装， 但是会仍然没有yum module）
+
+是rpm包 rpm安装方式
+
+rpm -Uvh --replacepkgs python*.rpm
+
+安装完以后我的一台服务器是可以使用了
+
+在这台服务器上
+
+python -V查看当前python的版本 可以发现python版本已经变成更改的版本
+
+如果不行还可以更改yum的版本
+
+vim /usr/bin/yum 修改 将python版本改为刚刚安装的
+
+接着再运行yum发现yum已经可以成功运行了。
+
+同样的问题，在另一台服务器上同样的操作
+
+我发现，我这样安装完的python还是没有yum
+
+这个问题我到现在还有解决。
+

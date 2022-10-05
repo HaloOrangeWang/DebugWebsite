@@ -1,0 +1,22 @@
+问题描述：
+
+有一个dict的结果需要转为str进行网络传输，在使用ujson.dumps函数的时候，报错maximum recursion depth exceeded while calling a Python object.
+
+当时报错的时候，错误只说是maximum recursion depth exceeded while calling a Python object，没有明确的说是因为ujson.dumps这个函数，实在调试的时候发现问题出在这里。
+
+解决思路
+
+百度查这个错误：发现百度的相关解释是因为太多的递归，但是我们的代码中不涉及到很多的递归。排除。
+
+尝试使用其他的库，比如json.dumps()函数。
+
+问题解决：
+
+使用json.dumps()继续运行之后，虽然也遭遇报错，但是json.dumps()函数的报错更加明确了：
+
+Object of type 'int64' is not JSON serializable
+
+按照网上说法，在python3中，数字整型类型只有int，而int64主要出现在numpy中，因此初步的思路是把dict中的元素逐个检查来源，如果是numpy中出来的参数，将它们都强制转换为int类型。
+
+然后就美滋滋啦~~~
+

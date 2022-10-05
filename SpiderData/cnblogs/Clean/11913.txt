@@ -1,0 +1,76 @@
+Python 3.X环境下搭建Robot Framework过程
+
+python3.X已经支持robot framework了，更新一版安装过程。总体来说安装过程简化了很多，但依然有一些小地方需要注意。
+
+一、基础RF环境搭建：
+
+1、安装python 3.X，并配置好python环境变量。（安装时可勾选“自动配置环境变量选项”）
+
+2、使用以下几个命令进行安装：
+
+pip install -U wxPython（wxPython已经不需要艰难的找对应版本的exe安装了）
+
+pip install -U pygments（代码高亮库，RIDE使用）
+
+pip install -U robotframework
+
+pip install -U https://github.com/robotframework/RIDE/archive/master.zip
+
+或者：
+
+pip install -U robotframework-ride
+
+3、插件安装：pip install robotframework-selenium2library
+
+几条命令下来Robot Framework基本达到可用状态。
+
+二、问题处理：
+
+问题一：Robotframework安装完成后，运行case报如下错误的处理方式：（Python2，3均有此问题，列子为py2，py3处理方式相同。）
+
+command: pybot.bat --argumentfile c:\users\18082192\appdata\local\temp\RIDEczqo0o.d\argfile.txt --listener “D:\Program Files\Python27\lib\site-packages\robotide\contrib\testrunner\TestRunnerAgent.py:51149:False” “D:\Program Files\Python27\RFTestCase\Test”
+
+[Error 2]
+
+解决方案：确认python安装目录下的\ Scripts下是否有pybot.bat这个文件，这才是解决这个问题的重点。在该目录下自己创建一个pybot.txt的文件，输入下面内容并保存修改为.bat后缀
+
+@Echo off
+
+python -m robot.run %*
+
+问题二：[ ERROR ]
+Suite 'Test' contains no tests matching name 'Test.Testsuite1.case1' in suite
+'Test.Testsuite1'.
+
+解决方案：创建suite的时候format直接使用默认的robot，不要刻意去选txt。python2默认是txt，python3默认是robot。其他诸如resource等依然可用txt格式。
+
+问题三：报错：Message: 'chromedriver' executable needs to be in
+PATH.Please see https://sites.google.com/a/chromium.org/chromedriver/home（基础共性问题）
+
+解决方案：下载相对应的chromedriver文件，放置于chrome同级文件夹下即可。
+
+问题四：RIDE安装后不存在快捷方式或者快捷方式点击无效。（基础共性问题）
+
+解决方案：自己创建一个快捷方式：py路径+主函数调用，例如：C:\Users\XXXXXX\AppData\Local\Programs\Python\Python38\pythonw.exe  -c "from robotide import main; main()
+
+问题五：RIDE启动时可能报错误提示：ImportError: No module named
+psutil
+
+解决方案：使用pip命令安装psutil即可：pip install psutil
+
+问题六：RIDE执行用例时控制台和日志均乱码
+
+解决方案：修改内容：Lib\site-packages\robotide\contrib\testrunner\testrunnerplugin.py
+
+将SYSTEM改成OUTPUT
+
+问题七：在使用pip install命令在线安装插件的时候，可能会出现安装失败的情况
+
+解决方案：可以重试几次，或者自己下载对应插件的源码进行安装或者指定用国内源进行安装：
+
+pip install robotframework -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+问题持续更新中…
+
+更多问题，可关注或加群参与讨论：
+

@@ -1,0 +1,84 @@
+
+python3.7环境下，安装了Celery==4.2.0，在启动celery任务的时候，报错
+
+根据Celery官方*   Getting Started »教程，首先创建了一个简单的tasks任务：
+
+文件名 tasks.py
+
+# coding: utf-8
+
+from celery import Celery
+broker = 'redis://127.0.0.1:6379/0'
+backend = 'redis://127.0.0.1:6379/0'
+
+app = Celery('tasks', broker=broker, backend=backend)
+
+@app.task
+def add(x, y):
+    return x + y
+
+在文件目录下，命令终端启动Celery，生产环境可用supervisor管理，这里只是简单演示，命令如下
+
+celery -A tasks worker --loglevel=info
+
+第一次我运行的时候报错了，如下：
+
+File "/Users/li/.venv/venv-myprojet/lib/python3.7/site-packages/celery/backends/redis.py", line 22
+    from . import async, base
+                      ^
+SyntaxError: invalid syntax
+
+搜索了一下错误原因，原来是async名称更换了，如下
+
+[Rename `async` to `asynchronous` (async is a reserved keyword in Python 3.7) #4879](https://github.com/celery/celery/pull/4879)
+
+开发人员已经处理了这个issue，合并了master，快速的解决方案是通过github安装celery，命令如下：
+
+pip install --upgrade https://github.com/celery/celery/tarball/master
+
+再次运次，那个应该可以看到如下正常输出：
+
+-------------- celery@lideMacBook-Pro.local v4.2.0 (windowlicker)
+---- **** ----- 
+--- * ***  * -- Darwin-16.7.0-x86_64-i386-64bit 2018-07-16 22:50:59
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasksex:0x1110f3a58
+- ** ---------- .> transport:   redis://127.0.0.1:6379/0
+- ** ---------- .> results:     redis://127.0.0.1:6379/0
+- *** --- * --- .> concurrency: 4 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+
+[tasks]
+  . tasks.add
+
+[2018-07-16 22:50:59,543: INFO/MainProcess] Connected to redis://127.0.0.1:6379/0
+[2018-07-16 22:50:59,551: INFO/MainProcess] mingle: searching for neighbors
+[2018-07-16 22:51:00,571: INFO/MainProcess] mingle: all alone
+[2018-07-16 22:51:00,583: INFO/MainProcess] celery@zhiliangdeMacBook-Pro.local ready.
+
+PS，redis这里选做Celery的broker和backend，如果没有配置backend，如果不需要处理结果，tasks也是可以正常运行，只是结果没有存储的地方，当你调用ready()函数的时候，就会报错，这里应当注意下。
+
+>>> from tasks import add
+>>> a=add.delay(1,5)
+>>> a
+<AsyncResult: 587c76ea-a441-417d-922f-1da860c07762>
+>>> a.ready()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/li/.venv/venv-myprojet/lib/python3.7/site-packages/celery/result.py", line 311, in ready
+    return self.state in self.backend.READY_STATES
+  File "/Users/li/.venv/venv-myprojet/lib/python3.7/site-packages/celery/result.py", line 471, in state
+    return self._get_task_meta()['status']
+  File "/Users/li/.venv/venv-myprojet/lib/python3.7/site-packages/celery/result.py", line 410, in _get_task_meta
+    return self._maybe_set_cache(self.backend.get_task_meta(self.id))
+  File "/Users/li/.venv/venv-myprojet/lib/python3.7/site-packages/celery/backends/base.py", line 359, in get_task_meta
+    meta = self._get_task_meta_for(task_id)
+AttributeError: 'DisabledBackend' object has no attribute '_get_task_meta_for'
+>>>
+
+这里只是需要配置上backend接收处理结果就可以。
+

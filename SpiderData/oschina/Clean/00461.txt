@@ -1,0 +1,20 @@
+解决TF升级到1.5之后seq2seq.py出现的引用报错：
+
+1.4时候使用rnn_cell_impl的_Linear没有问题的，TF升级到1.5之后这一行就运行不过去了，查到的方法是引用core_rnn_cell下的_Linear.
+
+1 from tensorflow.contrib.rnn.python.ops import core_rnn_cell
+ 2 from tensorflow.python.framework import dtypes
+ 3 from tensorflow.python.framework import ops
+ 4 from tensorflow.python.ops import array_ops
+ 5 from tensorflow.python.ops import control_flow_ops
+ 6 from tensorflow.python.ops import embedding_ops
+ 7 from tensorflow.python.ops import math_ops
+ 8 from tensorflow.python.ops import nn_ops
+ 9 from tensorflow.python.ops import rnn
+10 from tensorflow.python.ops import rnn_cell_impl
+11 from tensorflow.python.ops import variable_scope
+12 from tensorflow.python.util import nest
+13 
+14 # TODO(ebrevdo): Remove once _linear is fully deprecated.
+15 Linear = core_rnn_cell._Linear  # pylint: disable=protected-access,invalid-name
+

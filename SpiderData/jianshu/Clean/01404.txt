@@ -1,0 +1,53 @@
+
+前方Bug预警：xxx .py: error: the following arguments are required: -i/--image
+
+在学习opencv+python时，遇到下面这个Bug，查阅资料后终解决，现在将解决办法分享给大家。
+
+程序部分源码
+
+ap = argparse.ArgumentParser()
+
+ap.add_argument("-i", "--image", required=True,help="path to the input image")
+
+args = vars(ap.parse_args())
+
+
+bug:error: the following arguments are required: -i/--image
+
+本人的程序实在jupyter和pycharm都跑过。
+
+在网上也有网友出现过类似的问题：
+
+
+错误分析：
+
+1. 判断是因为在IDE中可能无法读取整个.py文件（python属于解释型语言，运行一句，解释一句）
+
+2. 需要在cmd终端，用python调用并传入参数即可解决（就是说需要的参数，不是在IDE里输入的，而是在cmd里输入的）
+
+
+解决：
+
+
+在 cmd 中输入代码：
+
+
+python argparser.py  --image  konglong.jpg
+
+
+效果如下图（cmd终端图 + 实现效果图）：
+
+注意：图中的路径可以修改，根据自己的来。
+
+查找问题中用到的-参考链接-：
+
+1.  http://tieba.baidu.com/p/4971726758?pid=103728845409&cid=0#103728845409
+
+2. https://zhidao.baidu.com/question/2271396862409494588.html
+
+3. https://blog.ixxoo.me/argparse.html
+
+4. 如果在cmd中没有python命令可用， 那么你需要添加一下环境变量了。参考这个链接：
+
+https://jingyan.baidu.com/article/8ebacdf02d3c2949f65cd5d0.html
+

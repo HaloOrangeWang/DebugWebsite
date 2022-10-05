@@ -1,0 +1,20 @@
+代码中，使用print函数打印中文，在windows下面正常，在linux下python3.5跑，print函数报错：
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-12: ordinal not in range(128)
+
+网上查了下，说是print函数默认编码的问题
+ 使用打印任意unicode字符都会报此错误，例如：
+
+print('\u00bb')
+
+使用如下代码修改默认输出的编码为utf8：
+
+import io  
+import sys  
+ 
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8') #改变标准输出的默认编码
+
+这样就可以了。
+
+思路来源于：博客
+

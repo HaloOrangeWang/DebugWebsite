@@ -1,0 +1,35 @@
+前阵子想爬点东西，结果一直提示错误UnicodeEncodeError: ‘gbk' codec can't encode character ‘\xa0' in position，在网上一查，发现是 Windows 的控制台的问题。控制台的编码是 GBK，Python 是 UTF-8，造成了冲突。下面给出三种解决方法。
+
+第一种方法：直接替换出错的内容
+
+import requests 
+url = 'https://blog.csdn.net/jianhong1990/article/details/17349537'
+print(requests.get(url).text.replace('\xa0', ' '))
+
+第二种方法：再解码
+
+先用 GBK 编码，加个 ignore 丢弃错误的字符，然后再解码。
+
+import requests
+url = 'https://blog.csdn.net/jianhong1990/article/details/17349537'
+print(requests.get(url).text.encode('gbk', 'ignore').decode('gbk')
+
+第三种方法：修改控制台编码
+
+新建一个 cmd.reg, 输入代码：
+
+Windows Registry Editor Version 5.00
+[HKEY_CURRENT_USER\Console\%SystemRoot%_system32_cmd.exe]
+"CodePage"=dword:0000fde9
+"FontFamily"=dword:00000036
+"FontWeight"=dword:00000190
+"FaceName"="Consolas"
+"ScreenBufferSize"=dword:232900d2
+"WindowSize"=dword:002b00d2
+
+保存后运行。如果 Ctrl+B 无效，用 python.exe 打开.py程序后再试一次。
+
+总结
+
+以上所述是小编给大家介绍的解决Python print 输出文本显示 gbk 编码错误问题，希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+

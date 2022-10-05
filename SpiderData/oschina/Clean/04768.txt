@@ -1,0 +1,259 @@
+psutil是一个特别好用来检查系统资源的一个包, 但是 在Mac安装却总是报错
+
+查看监控系统脚本, 点这里
+
+mac系统版本: Macos Mojave 10.14.3
+
+
+报错信息如下:
+
+WARNING: The directory '/Users/msw/Library/Caches/pip/http' or its parent directory is not owned by the current user and the cache has been disabled. Please check the permissions and owner of that directory. If executing pip with sudo, you may want sudo's -H flag.
+WARNING: The directory '/Users/msw/Library/Caches/pip' or its parent directory is not owned by the current user and caching wheels has been disabled. check the permissions and owner of that directory. If executing pip with sudo, you may want sudo's -H flag.
+Collecting psutil
+  Downloading https://files.pythonhosted.org/packages/03/9a/95c4b3d0424426e5fd94b5302ff74cea44d5d4f53466e1228ac8e73e14b4/psutil-5.6.5.tar.gz (447kB)
+     |████████████████████████████████| 450kB 153kB/s 
+Building wheels for collected packages: psutil
+  Building wheel for psutil (setup.py) ... error
+  ERROR: Command errored out with exit status 1:
+   command: /Library/Frameworks/Python.framework/Versions/3.6/bin/python3 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/private/tmp/pip-install-c9s3nce8/psutil/setup.py'"'"'; __file__='"'"'/private/tmp/pip-install-c9s3nce8/psutil/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' bdist_wheel -d /private/tmp/pip-wheel-v0_0pfgx --python-tag cp36
+       cwd: /private/tmp/pip-install-c9s3nce8/psutil/
+  Complete output (106 lines):
+  running bdist_wheel
+  running build
+  running build_py
+  creating build
+  creating build/lib.macosx-10.6-intel-3.6
+  creating build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/_pswindows.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/_common.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/__init__.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/_psosx.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/_psbsd.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/_psaix.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/_pslinux.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/_compat.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/_psposix.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  copying psutil/_pssunos.py -> build/lib.macosx-10.6-intel-3.6/psutil
+  creating build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_contracts.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_connections.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/runner.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_unicode.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_misc.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_posix.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_linux.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_sunos.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/__init__.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_aix.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_process.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_bsd.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_system.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_osx.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_memory_leaks.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/test_windows.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  copying psutil/tests/__main__.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+  running build_ext
+  building 'psutil._psutil_osx' extension
+  creating build/temp.macosx-10.6-intel-3.6
+  creating build/temp.macosx-10.6-intel-3.6/psutil
+  creating build/temp.macosx-10.6-intel-3.6/psutil/arch
+  creating build/temp.macosx-10.6-intel-3.6/psutil/arch/osx
+  /usr/bin/clang -fno-strict-aliasing -Wsign-compare -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -arch i386 -arch x86_64 -g -DPSUTIL_POSIX=1 -DPSUTIL_VERSION=565 -DPSUTIL_OSX=1 -I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m -c psutil/_psutil_common.c -o build/temp.macosx-10.6-intel-3.6/psutil/_psutil_common.o
+  /usr/bin/clang -fno-strict-aliasing -Wsign-compare -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -arch i386 -arch x86_64 -g -DPSUTIL_POSIX=1 -DPSUTIL_VERSION=565 -DPSUTIL_OSX=1 -I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m -c psutil/_psutil_posix.c -o build/temp.macosx-10.6-intel-3.6/psutil/_psutil_posix.o
+  /usr/bin/clang -fno-strict-aliasing -Wsign-compare -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -arch i386 -arch x86_64 -g -DPSUTIL_POSIX=1 -DPSUTIL_VERSION=565 -DPSUTIL_OSX=1 -I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m -c psutil/_psutil_osx.c -o build/temp.macosx-10.6-intel-3.6/psutil/_psutil_osx.o
+  In file included from psutil/_psutil_osx.c:36:
+  In file included from /System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:43:
+  In file included from /System/Library/Frameworks/CoreFoundation.framework/Headers/CFBase.h:72:
+  /usr/local/include/Block.h:16:3: error: Never include this file directly. Use <lzma.h> instead.
+  #       error Never include this file directly. Use <lzma.h> instead.
+          ^
+  /usr/local/include/Block.h:93:2: error: unknown type name 'lzma_check'
+          lzma_check check;
+          ^
+  /usr/local/include/Block.h:148:2: error: unknown type name 'lzma_vli'
+          lzma_vli compressed_size;
+          ^
+  /usr/local/include/Block.h:172:2: error: unknown type name 'lzma_vli'
+          lzma_vli uncompressed_size;
+          ^
+  /usr/local/include/Block.h:200:2: error: unknown type name 'lzma_filter'
+          lzma_filter *filters;
+          ^
+  /usr/local/include/Block.h:217:20: error: use of undeclared identifier 'LZMA_CHECK_SIZE_MAX'
+          uint8_t raw_check[LZMA_CHECK_SIZE_MAX];
+                            ^
+  /usr/local/include/Block.h:231:2: error: unknown type name 'lzma_vli'
+          lzma_vli reserved_int3;
+          ^
+  /usr/local/include/Block.h:232:2: error: unknown type name 'lzma_vli'
+          lzma_vli reserved_int4;
+          ^
+  /usr/local/include/Block.h:233:2: error: unknown type name 'lzma_vli'
+          lzma_vli reserved_int5;
+          ^
+  /usr/local/include/Block.h:234:2: error: unknown type name 'lzma_vli'
+          lzma_vli reserved_int6;
+          ^
+  /usr/local/include/Block.h:235:2: error: unknown type name 'lzma_vli'
+          lzma_vli reserved_int7;
+          ^
+  /usr/local/include/Block.h:236:2: error: unknown type name 'lzma_vli'
+          lzma_vli reserved_int8;
+          ^
+  /usr/local/include/Block.h:237:2: error: unknown type name 'lzma_reserved_enum'
+          lzma_reserved_enum reserved_enum1;
+          ^
+  /usr/local/include/Block.h:238:2: error: unknown type name 'lzma_reserved_enum'
+          lzma_reserved_enum reserved_enum2;
+          ^
+  /usr/local/include/Block.h:239:2: error: unknown type name 'lzma_reserved_enum'
+          lzma_reserved_enum reserved_enum3;
+          ^
+  /usr/local/include/Block.h:240:2: error: unknown type name 'lzma_reserved_enum'
+          lzma_reserved_enum reserved_enum4;
+          ^
+  /usr/local/include/Block.h:261:2: error: unknown type name 'lzma_bool'
+          lzma_bool ignore_check;
+          ^
+  /usr/local/include/Block.h:263:2: error: unknown type name 'lzma_bool'
+          lzma_bool reserved_bool2;
+          ^
+  /usr/local/include/Block.h:264:2: error: unknown type name 'lzma_bool'
+          lzma_bool reserved_bool3;
+          ^
+  fatal error: too many errors emitted, stopping now [-ferror-limit=]
+  20 errors generated.
+  error: command '/usr/bin/clang' failed with exit status 1
+  ----------------------------------------
+  ERROR: Failed building wheel for psutil
+  Running setup.py clean for psutil
+Failed to build psutil
+Installing collected packages: psutil
+    Running setup.py install for psutil ... error
+    ERROR: Command errored out with exit status 1:
+     command: /Library/Frameworks/Python.framework/Versions/3.6/bin/python3 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/private/tmp/pip-install-c9s3nce8/psutil/setup.py'"'"'; __file__='"'"'/private/tmp/pip-install-c9s3nce8/psutil/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record /private/tmp/pip-record-syvhpqg0/install-record.txt --single-version-externally-managed --compile
+         cwd: /private/tmp/pip-install-c9s3nce8/psutil/
+    Complete output (106 lines):
+    running install
+    running build
+    running build_py
+    creating build
+    creating build/lib.macosx-10.6-intel-3.6
+    creating build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/_pswindows.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/_common.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/__init__.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/_psosx.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/_psbsd.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/_psaix.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/_pslinux.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/_compat.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/_psposix.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    copying psutil/_pssunos.py -> build/lib.macosx-10.6-intel-3.6/psutil
+    creating build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_contracts.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_connections.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/runner.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_unicode.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_misc.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_posix.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_linux.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_sunos.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/__init__.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_aix.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_process.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_bsd.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_system.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_osx.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_memory_leaks.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/test_windows.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    copying psutil/tests/__main__.py -> build/lib.macosx-10.6-intel-3.6/psutil/tests
+    running build_ext
+    building 'psutil._psutil_osx' extension
+    creating build/temp.macosx-10.6-intel-3.6
+    creating build/temp.macosx-10.6-intel-3.6/psutil
+    creating build/temp.macosx-10.6-intel-3.6/psutil/arch
+    creating build/temp.macosx-10.6-intel-3.6/psutil/arch/osx
+    /usr/bin/clang -fno-strict-aliasing -Wsign-compare -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -arch i386 -arch x86_64 -g -DPSUTIL_POSIX=1 -DPSUTIL_VERSION=565 -DPSUTIL_OSX=1 -I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m -c psutil/_psutil_common.c -o build/temp.macosx-10.6-intel-3.6/psutil/_psutil_common.o
+    /usr/bin/clang -fno-strict-aliasing -Wsign-compare -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -arch i386 -arch x86_64 -g -DPSUTIL_POSIX=1 -DPSUTIL_VERSION=565 -DPSUTIL_OSX=1 -I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m -c psutil/_psutil_posix.c -o build/temp.macosx-10.6-intel-3.6/psutil/_psutil_posix.o
+    /usr/bin/clang -fno-strict-aliasing -Wsign-compare -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -arch i386 -arch x86_64 -g -DPSUTIL_POSIX=1 -DPSUTIL_VERSION=565 -DPSUTIL_OSX=1 -I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m -c psutil/_psutil_osx.c -o build/temp.macosx-10.6-intel-3.6/psutil/_psutil_osx.o
+    In file included from psutil/_psutil_osx.c:36:
+    In file included from /System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:43:
+    In file included from /System/Library/Frameworks/CoreFoundation.framework/Headers/CFBase.h:72:
+    /usr/local/include/Block.h:16:3: error: Never include this file directly. Use <lzma.h> instead.
+    #       error Never include this file directly. Use <lzma.h> instead.
+            ^
+    /usr/local/include/Block.h:93:2: error: unknown type name 'lzma_check'
+            lzma_check check;
+            ^
+    /usr/local/include/Block.h:148:2: error: unknown type name 'lzma_vli'
+            lzma_vli compressed_size;
+            ^
+    /usr/local/include/Block.h:172:2: error: unknown type name 'lzma_vli'
+            lzma_vli uncompressed_size;
+            ^
+    /usr/local/include/Block.h:200:2: error: unknown type name 'lzma_filter'
+            lzma_filter *filters;
+            ^
+    /usr/local/include/Block.h:217:20: error: use of undeclared identifier 'LZMA_CHECK_SIZE_MAX'
+            uint8_t raw_check[LZMA_CHECK_SIZE_MAX];
+                              ^
+    /usr/local/include/Block.h:231:2: error: unknown type name 'lzma_vli'
+            lzma_vli reserved_int3;
+            ^
+    /usr/local/include/Block.h:232:2: error: unknown type name 'lzma_vli'
+            lzma_vli reserved_int4;
+            ^
+    /usr/local/include/Block.h:233:2: error: unknown type name 'lzma_vli'
+            lzma_vli reserved_int5;
+            ^
+    /usr/local/include/Block.h:234:2: error: unknown type name 'lzma_vli'
+            lzma_vli reserved_int6;
+            ^
+    /usr/local/include/Block.h:235:2: error: unknown type name 'lzma_vli'
+            lzma_vli reserved_int7;
+            ^
+    /usr/local/include/Block.h:236:2: error: unknown type name 'lzma_vli'
+            lzma_vli reserved_int8;
+            ^
+    /usr/local/include/Block.h:237:2: error: unknown type name 'lzma_reserved_enum'
+            lzma_reserved_enum reserved_enum1;
+            ^
+    /usr/local/include/Block.h:238:2: error: unknown type name 'lzma_reserved_enum'
+            lzma_reserved_enum reserved_enum2;
+            ^
+    /usr/local/include/Block.h:239:2: error: unknown type name 'lzma_reserved_enum'
+            lzma_reserved_enum reserved_enum3;
+            ^
+    /usr/local/include/Block.h:240:2: error: unknown type name 'lzma_reserved_enum'
+            lzma_reserved_enum reserved_enum4;
+            ^
+    /usr/local/include/Block.h:261:2: error: unknown type name 'lzma_bool'
+            lzma_bool ignore_check;
+            ^
+    /usr/local/include/Block.h:263:2: error: unknown type name 'lzma_bool'
+            lzma_bool reserved_bool2;
+            ^
+    /usr/local/include/Block.h:264:2: error: unknown type name 'lzma_bool'
+            lzma_bool reserved_bool3;
+            ^
+    fatal error: too many errors emitted, stopping now [-ferror-limit=]
+    20 errors generated.
+    error: command '/usr/bin/clang' failed with exit status 1
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: /Library/Frameworks/Python.framework/Versions/3.6/bin/python3 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/private/tmp/pip-install-c9s3nce8/psutil/setup.py'"'"'; __file__='"'"'/private/tmp/pip-install-c9s3nce8/psutil/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record /private/tmp/pip-record-syvhpqg0/install-record.txt --single-version-externally-managed --compile Check the logs for full command output.
+
+
+解决方案如下:
+
+brew doctor
+rm /usr/local/include/block.h
+pip3 install psutil
+
+
+即可见到久违的安装成功提示
+
+Successfully installed psutil-5.6.5
+
+亲测有效哦!
+

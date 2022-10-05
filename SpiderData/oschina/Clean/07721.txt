@@ -1,0 +1,36 @@
+shell 中使用ssh -t hostIP cat filename | grep keywork | awk '{print $2}'方式获取远程文件中配置的值，并拿来进行大小比较或数学运算时，会出现错误。
+
+报错详情：
+
+通过 test/[] 判断两个数字变量的大小：
+
+if [ ${seqno} -eq ${seqno2} ];
+
+报错：
+
+: integer expression expected
+
+通过 bc 判断两个数字变量的大小：
+
+result=$(echo "${seqno}==${seqno2}" | bc)
+
+报错：
+
+(standard_in) 1: illegal character: ^M
+
+原因：
+
+通过ssh -t 执行返回的结果其换行符为"\r\n"
+
+shell 中test/[]/bc均无法进行处理，故而报错。
+
+解决办法：
+
+删除字符串中的\r即可
+
+ssh -t hostIP cat filename | grep keywork | awk '{print $2}' | tr -d $'\r'
+
+or
+
+ssh -t hostIP cat filename | grep keywork | awk '{print $2}' | sed 's/\r//g'
+

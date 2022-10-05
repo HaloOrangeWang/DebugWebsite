@@ -1,0 +1,44 @@
+Python UnicodeEncodeError 'ascii' codec can't encode character  错误解决方法
+
+by:授客 QQ：1033553122
+
+错误描述：
+
+python编程时(测试环境 Python 2.7)，遇到如下错误：
+
+Traceback (most recent call last):
+
+File "F:/project/1dcq-o2o-web/selenium2wd/main.py", line 37, in
+
+test_case.run()
+
+File "F:\project\1dcq-o2o-web\selenium2wd\test_case.py", line 111, in run
+
+test_case_step.run_tc_steps(tc_step, test_case_datagroup)
+
+File "F:\project\1dcq-o2o-web\selenium2wd\test_case_step.py", line 38, in run_tc_steps
+
+self.run_function_in_step(command, inparameters, test_case_datagroup)
+
+File "F:\project\1dcq-o2o-web\selenium2wd\test_case_step.py", line 51, in run_function_in_step
+
+inparameters = inparameters.decode('utf-8')
+
+File "D:\Program Files\python27\lib\encodings\utf_8.py", line 16, in decode
+
+return codecs.utf_8_decode(input, errors, True)
+
+UnicodeEncodeError: 'ascii' codec can't encode character u'\uff0c' in position 15: ordinal not in range(128)
+
+其中inparameters包含右侧字符：||，||   （说明：这里逗号使用的是中文逗号  ，
+
+解决方法：
+
+如下，代码开头处添加如下代码
+
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding('utf8')
+

@@ -1,0 +1,117 @@
+
+在ubuntu中建立django项目时，出现了错误，经过查阅相关资料及文档，总结了一下解决这种错误的办法，无论是在linux中，还是在windows或mac系统中，解决步骤都是相似的，就是文件的位置不同而已
+
+
+第一步：
+
+下载安装PyMySQL，并在与项目同名的工程文件中的__init__.py中添加下列代码。如果你的镜像源还没有换，可以参考Python切换pip镜像源，更改之后，下载速度会变快很多
+
+# 安装pymysql
+pip install pymysql
+
+# __init__.py
+import pymysql
+pymysql.install_as_MySQLdb()
+
+
+第二步：
+
+方法一：
+ 只需要降低django的版本就可以了。 # 进入终端,有时根据pip版本而定,需要用pip3
+# 输入pip uninstall django，卸掉django2.2
+C:\Users\Administrator>pip uninstall django 
+# 输入pip install django==2.1.4,安装版本的django
+C:\Users\Administrator>pip install django==2.1.4
+ 如果卸载不掉,直接安装也是可行的
+
+方法一：
+ 只需要降低django的版本就可以了。
+
+# 进入终端,有时根据pip版本而定,需要用pip3
+# 输入pip uninstall django，卸掉django2.2
+C:\Users\Administrator>pip uninstall django 
+# 输入pip install django==2.1.4,安装版本的django
+C:\Users\Administrator>pip install django==2.1.4
+
+如果卸载不掉,直接安装也是可行的
+
+方法二：
+ 继续使用当前版本(django=2.2) # 找到python 环境下的django包，然后进入到db下的backends下的mysql文件夹
+cd /home/wls/.local/lib/python3.6/site-packages/django/db/backends/mysql
+ 并不知道django的安装目录怎么办呢？继续向下阅读，办法立即呈现 # ubuntu系统或windows系统下
+# 进入终端，然后进入python，输入下面的命令
+wls@wls:~$ python3
+Python 3.6.8 (default, Jan 14 2019, 11:02:34) 
+[GCC 8.0.1 20180414 (experimental) [trunk revision 259383]] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import django
+>>> print(django.__path__)
+['/home/wls/.local/lib/python3.6/site-packages/django']
+
+# windows系统下进入终端
+C:\Users\Administrator>pip show django 
+......
+Location: f:\python\lib\site-packages 
+ 上面两种方法都可以找到django的安装路径，是不是很刺激
+
+方法二：
+ 继续使用当前版本(django=2.2)
+
+# 找到python 环境下的django包，然后进入到db下的backends下的mysql文件夹
+cd /home/wls/.local/lib/python3.6/site-packages/django/db/backends/mysql
+
+并不知道django的安装目录怎么办呢？继续向下阅读，办法立即呈现
+
+# ubuntu系统或windows系统下
+# 进入终端，然后进入python，输入下面的命令
+wls@wls:~$ python3
+Python 3.6.8 (default, Jan 14 2019, 11:02:34) 
+[GCC 8.0.1 20180414 (experimental) [trunk revision 259383]] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import django
+>>> print(django.__path__)
+['/home/wls/.local/lib/python3.6/site-packages/django']
+
+# windows系统下进入终端
+C:\Users\Administrator>pip show django 
+......
+Location: f:\python\lib\site-packages
+
+上面两种方法都可以找到django的安装路径，是不是很刺激
+
+
+第三步：
+
+在第二步方法二的基础上，找到base.py文件，并用vi或vim打开base.py文件,注释相关代码，如下图所示:
+
+# 注释 base.py 文件中的如下部分代码
+if version < (1, 3, 13):
+    raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+
+终于好了，大功告成，然后运行项目时还会出错，此时应该播放一首凉凉，更适合现在的氛围
+
+报错信息： 
+AttributeError: 'str' object has no attribute 'decode'
+
+同样是在上一步的目录中找到operations.py文件并用vi或vim打开operations.py文件，注释相关代码:
+
+# 注释 operations.py 文件中的如下部分代码(这个文件有点长，慢慢找)，将decode修改为encode
+# ubuntu  中 vim 用快捷键查找: ?decode
+if query is not None:
+    query = query.decode(errors='replace')
+return query
+# 修改为
+if query is not None:
+    query = query.encode(errors='replace')
+return query
+
+这下就大功告成了
+
+你可能感兴趣的文章
+
+python中print打印显示颜色
+
+Python之深浅拷贝
+
+您不知道的Python中global、nonlocal哪些事儿
+

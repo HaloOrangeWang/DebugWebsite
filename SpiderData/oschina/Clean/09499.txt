@@ -1,0 +1,275 @@
+Table is not an append-only table. Use the toRetractStream() in order to handle add and retract messages.
+
+这个是因为动态表不是append-only模式的,需要用toRetractStream(回撤流)处理就好了.
+
+tableEnv.toRetractStreamPerson.print()
+
+今天在启动Flink任务的时候报错Caused by: java.lang.RuntimeException: Couldn't deploy Yarn cluster,然后仔细看发现里面有这么一句话system times on machines may be out of sync,意思说是机器上的系统时间可能不同步.
+
+(1)安装ntpdate工具
+
+yum -y install ntp ntpdate
+
+(2)设置系统时间与网络时间同步
+
+ntpdate cn.pool.ntp.org
+
+在三台机器上分别执行完这个,在启动任务,发现可以了.
+
+Could not retrieve the redirect address of the current leader. Please try to refresh,Flink任务在运行了一段时间后,进程还在但是刷新UI界面提示报错,你把这个job杀掉,重新启动,还是会报这个错.
+
+解决方法是把这个目录下的文件删除,重启就可以了
+
+high-availability.zookeeper.path.root: /flink
+
+ZooKeeper节点根目录，其下放置所有集群节点的namespace。
+
+No data sinks have been created yet. A program needs at least one sink that consumes data. Examples are writing the data set or printing it.
+
+这个错是因为没有sink,解决方法是execute执行前面加上Sink就好了,例如:writeAsText
+
+could not find implicit value for evidence parameter of type org.apache.flink.api.common.typeinfo.TypeInformation[String]
+
+这个错是因为scala的隐式转换的问题. 导入这个包就好了.import org.apache.flink.streaming.api.scala._
+
+有时候在重启Flink作业的时候会抛出异常,Wrong / missing exception when submitting job,这个实际是Flink的一个BUG,已经修复了,具体的情况可以看下jira, https://issues.apache.org/jira/browse/FLINK-10312
+
+有时候在重启Flink作业的时候会抛出异常,Wrong / missing exception when submitting job,这个实际是Flink的一个BUG,已经修复了,具体的情况可以看下jira, https://issues.apache.org/jira/browse/FLINK-10312
+
+Flink启动的时候有时候会报这个错,
+
+Flink启动的时候有时候会报这个错,
+
+2019-02-23 07:27:53,093 ERROR org.apache.flink.runtime.rest.handler.job.JobSubmitHandler    - Implementation error: Unhandled exception.
+akka.pattern.AskTimeoutException: Ask timed out on [Actor[akka://flink/user/dispatcher#1998075247]] after [10000 ms]. Sender[null] sent message of type "org.apache.flink.runtime.rpc.messages.LocalFencedMessage".
+	at akka.pattern.PromiseActorRef$$anonfun$1.apply$mcV$sp(AskSupport.scala:604)
+	at akka.actor.Scheduler$$anon$4.run(Scheduler.scala:126)
+	at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:601)
+	at scala.concurrent.BatchingExecutor$class.execute(BatchingExecutor.scala:109)
+at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:599)
+at akka.actor.LightArrayRevolverScheduler$TaskHolder.executeTask(LightArrayRevolverScheduler.scala:329)
+at akka.actor.LightArrayRevolverScheduler$$anon$4.executeBucket$1(LightArrayRevolverScheduler.scala:280)
+at akka.actor.LightArrayRevolverScheduler$$anon$4.nextTick(LightArrayRevolverScheduler.scala:284)
+at akka.actor.LightArrayRevolverScheduler$$anon$4.run(LightArrayRevolverScheduler.scala:236)
+at java.lang.Thread.run(Thread.java:745)
+2019-02-23 07:27:54,156 ERROR org.apache.flink.runtime.rest.handler.legacy.files.StaticFileServerHandler  - Could not retrieve the redirect address.
+java.util.concurrent.CompletionException: akka.pattern.AskTimeoutException: Ask timed out on [Actor[akka://flink/user/dispatcher#1998075247]] after [10000 ms]. Sender[null] sent message of type "org.apache.flink.runtime.rpc.messages.LocalFencedMessage".
+at java.util.concurrent.CompletableFuture.internalComplete(CompletableFuture.java:205)
+at java.util.concurrent.CompletableFuture$ThenApply.run(CompletableFuture.java:723)
+at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:193)
+at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:2361)
+at org.apache.flink.runtime.concurrent.FutureUtils$1.onComplete(FutureUtils.java:772)
+at akka.dispatch.OnComplete.internal(Future.scala:258)
+at akka.dispatch.OnComplete.internal(Future.scala:256)
+at akka.dispatch.japi$CallbackBridge.apply(Future.scala:186)
+at akka.dispatch.japi$CallbackBridge.apply(Future.scala:183)
+at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:36)
+at org.apache.flink.runtime.concurrent.Executors$DirectExecutionContext.execute(Executors.java:83)
+at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:44)
+at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:252)
+at akka.pattern.PromiseActorRef$$anonfun$1.apply$mcV$sp(AskSupport.scala:603)
+at akka.actor.Scheduler$$anon$4.run(Scheduler.scala:126)
+at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:601)
+at scala.concurrent.BatchingExecutor$class.execute(BatchingExecutor.scala:109)
+at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:599)
+at akka.actor.LightArrayRevolverScheduler$TaskHolder.executeTask(LightArrayRevolverScheduler.scala:329)
+at akka.actor.LightArrayRevolverScheduler$$anon$4.executeBucket$1(LightArrayRevolverScheduler.scala:280)
+at akka.actor.LightArrayRevolverScheduler$$anon$4.nextTick(LightArrayRevolverScheduler.scala:284)
+at akka.actor.LightArrayRevolverScheduler$$anon$4.run(LightArrayRevolverScheduler.scala:236)
+at java.lang.Thread.run(Thread.java:745)
+
+找到了https://issues.apache.org/jira/browse/FLINK-8485,说是Flink的bug,显示已经修复了,但是我感觉还是有点问题,还是会出现这个问题.
+
+今天运行Flink的时候报了一个这个警告,找了半天没找到原因,最后发现了一个issues,其实这个是Flink的一个bug,在1.6.1版本已经修复了
+
+org.apache.flink.runtime.filecache.FileCache - improper use of releaseJob() without a matching number of createTmpFiles() calls for jobId b30ddc7e088eaf714e96a0630815440f
+
+具体的情况看下面的连接: https://issues.apache.org/jira/browse/FLINK-10283
+
+Caused by: java.lang.RuntimeException: Rowtime timestamp is null. Please make sure that a proper TimestampAssigner is defined and the stream environment uses the EventTime time characteristic.
+
+这句话的意思是说,Rowtime时间戳为null。请确保定义了正确的TimestampAssigner，并且流环境使用EventTime时间特性。就是说我们要先从数据源中提取时间戳,然后才能使用rowtime,在上面分配一下watermark就好了.
+
+flink.table.TableJob$person$3(name: String, age: Integer, timestamp: Long)' must be static and globally accessible
+
+这个报错是因为我们定义的case class类型必须是静态的,全局可访问的,就是说要把它放到main方法的外面就可以了
+
+The proctime attribute can only be appended to the table schema and not replace an existing field. Please move 'proctime' to the end of the schema
+
+这个报错的翻译为, proctime属性只能附加到表模式，而不能替换现有字段。请将'proctime'移到架构的末尾,我们在用proctime的时候要把他放到字段的最后一个位置.而不能放到其他的位置.
+
+12,No new data sinks have been defined since the last execution. The last execution refers to the latest call to 'execute()', 'count()', 'collect()', or 'print()'.
+
+报这个错是因为print()方法自动会调用execute()方法,造成错误,所以注释掉env.execute()就可以了
+
+13,Operator org.apache.flink.streaming.api.datastream.KeyedStream@290d210d cannot set the parallelism
+
+报这个错是因为在keyedstream之后设置了算子的并发度,这个是不支持的,下面的写法是错误的,删掉下面一行的代码就可以了
+
+.keyBy(_._1) .setParallelism(1)
+
+14,Found more than one rowtime field: [order_time, pay_time] in the table that should be converted to a DataStream. Please select the rowtime field that should be used as event-time timestamp for the DataStream by casting all other fields to TIMESTAMP
+
+这个报错是说在表中有多个rowtime字段,应该把某些字段强制转换为TIMESTAMP来选择应该用作DataStream的事件时间戳的行时字段,修改如下:
+
+cast(o.order_time as timestamp) as order_time_timestamp
+
+15,standalone模式下,任务运行一段时间taskmanager挂掉,报错如下:
+
+Task ‘Source: Custom Source -> Map -> Map -> to: Row -> Map -> Sink: Unnamed (1/3)’ did not react to cancelling signal for 30 seconds Task did not exit gracefully within 180 + seconds. 修改配置文件flink-conf.yaml,添加配置task.cancellation.timeout: 0
+
+这个配置的含义是,超时（以毫秒为单位），在此之后任务取消超时并导致致命的TaskManager错误。 值为0将禁用watch dog
+
+Task xxx did not react to cancelling signal in the last 30 seconds, but is stuck in method 两种可能
+
+第一种是程序30秒内没有做出反应导致taskmanager挂掉
+
+解决办法 在flink-conf.yaml中配置task.cancellation.timeout: 0
+
+第二种是任务被阻塞在某个方法里
+
+解决办法看日志找到被阻塞的方法进行解决
+
+16.Flink本地消费kafka的时候,报错如下,
+
+Unable to retrieve any partitions with KafkaTopicsDescriptor: Fixed Topics ([jason_flink])
+
+这个报错其实是kafka已经挂了,查看kafka的进程还在,但是连接不上,这是因为kafka出现假死了,具体假死的原因还在查,重启一下kafka集群就可以消费了.
+
+Caused by: org.apache.flink.core.fs.UnsupportedFileSystemSchemeException: Could not find a file system implementation for scheme 'hdfs'. The scheme is not directly supported by Flink and no Hadoop file system to support this scheme could be loaded.
+	at org.apache.flink.core.fs.FileSystem.getUnguardedFileSystem(FileSystem.java:403)
+	at org.apache.flink.core.fs.FileSystem.get(FileSystem.java:318)
+	at org.apache.flink.core.fs.Path.getFileSystem(Path.java:298)
+	at org.apache.flink.runtime.state.filesystem.FsCheckpointStorage.<init>(FsCheckpointStorage.java:58)
+	at org.apache.flink.runtime.state.filesystem.FsStateBackend.createCheckpointStorage(FsStateBackend.java:450)
+	at org.apache.flink.contrib.streaming.state.RocksDBStateBackend.createCheckpointStorage(RocksDBStateBackend.java:458)
+	at org.apache.flink.runtime.checkpoint.CheckpointCoordinator.<init>(CheckpointCoordinator.java:249)
+	... 19 more
+Caused by: org.apache.flink.core.fs.UnsupportedFileSystemSchemeException: Hadoop is not in the classpath/dependencies.
+	at org.apache.flink.core.fs.UnsupportedSchemeFactory.create(UnsupportedSchemeFactory.java:64)
+	at org.apache.flink.core.fs.FileSystem.getUnguardedFileSystem(FileSystem.java:399)
+	... 25 more
+
+这个报错是因为Flink缺少hadoop的依赖包,到官网下载对应版本的hadoop的包,放到Flink的lib目录下就可以了.
+
+2019-11-25 17:43:11,739 WARN  org.apache.flink.metrics.prometheus.PrometheusPushGatewayReporter  - Failed to push metrics to PushGateway with jobName flink91fe8a52a4c95959ce33476c21975ba5.
+java.io.IOException: Response code from http://storm1:9091/metrics/job/flink91fe8a52a4c95959ce33476c21975ba5 was 200
+	at org.apache.flink.shaded.io.prometheus.client.exporter.PushGateway.doRequest(PushGateway.java:297)
+	at org.apache.flink.shaded.io.prometheus.client.exporter.PushGateway.push(PushGateway.java:105)
+	at org.apache.flink.metrics.prometheus.PrometheusPushGatewayReporter.report(PrometheusPushGatewayReporter.java:76)
+	at org.apache.flink.runtime.metrics.MetricRegistryImpl$ReporterTask.run(MetricRegistryImpl.java:436)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+
+在用Flink1.9.1配置prometheus监控,把metrics数据上报到PushGateway1.0.0的时候报错,最后发现是因为版本不兼容的问题,把PushGateway的版本降到0.9.0就可以了
+
+org.apache.flink.runtime.jobmanager.scheduler.NoResourceAvailableException: Could not allocate all requires slots within timeout of 300000 ms. Slots required: 12, slots allocated: 4, previous allocation IDs: [], execution status: completed: Attempt #0 (Source: kafka-source -> Filter -> Map -> Timestamps/Watermarks (1/6)) @ org.apache.flink.runtime.jobmaster.slotpool.SingleLogicalSlot@30a1906c - [SCHEDULED], completed: Attempt #0 (Source: kafka-source -> Filter -> Map -> Timestamps/Watermarks (2/6)) @ org.apache.flink.runtime.jobmaster.slotpool.SingleLogicalSlot@75a3181c - [SCHEDULED], completed: Attempt #0 (Source: kafka-source -> Filter -> Map -> Timestamps/Watermarks (3/6)) @ org.apache.flink.runtime.jobmaster.slotpool.SingleLogicalSlot@578caf - [SCHEDULED], completed: Attempt #0 (Source: kafka-source -> Filter -> Map -> Timestamps/Watermarks (4/6)) @ org.apache.flink.runtime.jobmaster.slotpool.SingleLogicalSlot@449ca9a8 - [SCHEDULED], completed exceptionally: java.util.concurrent.CompletionException: java.util.concurrent.CompletionException: java.util.concurrent.TimeoutException/java.util.concurrent.CompletableFuture@788263a7[Completed exceptionally], incomplete: java.util.concurrent.CompletableFuture@158ce753[Not completed, 1 dependents], incomplete: java.util.concurrent.CompletableFuture@290233b9[Not completed, 1 dependents], incomplete: java.util.concurrent.CompletableFuture@8f20ed8[Not completed, 1 dependents], incomplete: java.util.concurrent.CompletableFuture@6386cb3a[Not completed, 1 dependents], incomplete: java.util.concurrent.CompletableFuture@11c21e66[Not completed, 1 dependents], incomplete: java.util.concurrent.CompletableFuture@2965781c[Not completed, 1 dependents], incomplete: java.util.concurrent.CompletableFuture@31793726[Not completed, 1 dependents]
+	at org.apache.flink.runtime.executiongraph.SchedulingUtils.lambda$scheduleEager$1(SchedulingUtils.java:194)
+	at java.util.concurrent.CompletableFuture.uniExceptionally(CompletableFuture.java:870)
+	at java.util.concurrent.CompletableFuture$UniExceptionally.tryFire(CompletableFuture.java:852)
+	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
+	at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:1977)
+	at org.apache.flink.runtime.concurrent.FutureUtils$ResultConjunctFuture.handleCompletedFuture(FutureUtils.java:633)
+	at org.apache.flink.runtime.concurrent.FutureUtils$ResultConjunctFuture.lambda$new$0(FutureUtils.java:656)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:760)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
+	at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:1977)
+	at org.apache.flink.runtime.jobmaster.slotpool.SchedulerImpl.lambda$internalAllocateSlot$0(SchedulerImpl.java:190)
+	at java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:760)
+	at java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:736)
+	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
+	at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:1977)
+	at org.apache.flink.runtime.jobmaster.slotpool.SlotSharingManager$SingleTaskSlot.release(SlotSharingManager.java:700)
+	at org.apache.flink.runtime.jobmaster.slotpool.SlotSharingManager$MultiTaskSlot.release(SlotSharingManager.java:484)
+	at org.apache.flink.runtime.jobmaster.slotpool.SlotSharingManager$MultiTaskSlot.lambda$new$0(SlotSharingManager.java:380)
+	at java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:822)
+	at java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:797)
+	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
+	at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:1977)
+	at org.apache.flink.runtime.concurrent.FutureUtils$Timeout.run(FutureUtils.java:998)
+	at org.apache.flink.runtime.rpc.akka.AkkaRpcActor.handleRunAsync(AkkaRpcActor.java:397)
+	at org.apache.flink.runtime.rpc.akka.AkkaRpcActor.handleRpcMessage(AkkaRpcActor.java:190)
+	at org.apache.flink.runtime.rpc.akka.FencedAkkaRpcActor.handleRpcMessage(FencedAkkaRpcActor.java:74)
+	at org.apache.flink.runtime.rpc.akka.AkkaRpcActor.handleMessage(AkkaRpcActor.java:152)
+	at akka.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:26)
+	at akka.japi.pf.UnitCaseStatement.apply(CaseStatements.scala:21)
+	at scala.PartialFunction$class.applyOrElse(PartialFunction.scala:123)
+	at akka.japi.pf.UnitCaseStatement.applyOrElse(CaseStatements.scala:21)
+	at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:170)
+	at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:171)
+	at scala.PartialFunction$OrElse.applyOrElse(PartialFunction.scala:171)
+	at akka.actor.Actor$class.aroundReceive(Actor.scala:517)
+	at akka.actor.AbstractActor.aroundReceive(AbstractActor.scala:225)
+	at akka.actor.ActorCell.receiveMessage(ActorCell.scala:592)
+	at akka.actor.ActorCell.invoke(ActorCell.scala:561)
+	at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:258)
+	at akka.dispatch.Mailbox.run(Mailbox.scala:225)
+	at akka.dispatch.Mailbox.exec(Mailbox.scala:235)
+	at akka.dispatch.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+	at akka.dispatch.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+	at akka.dispatch.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+	at akka.dispatch.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+
+这个报错信息非常的明显是因为集群的资源不够slot只有4个,但是FLink任务需要12个导致的,任务会在调度了几次之后就报错了,一直起不来,状态显示在调度中,如下图所示
+
+但是我本来是有两个tm的,每一个tm的slot是4,是可以启动这个任务的,中间不知道什么原因tm挂掉了一个,具体的原因还在找,就报了这个资源不够的错.
+
+20.java.lang.UnsupportedOperationException: Only supported for operators
+
+这个报错是因为Flink的name方法只能用在算子上面,不能用在其他方法上.
+
+21.Checkpoint was declined (tasks not ready)
+
+在Flink任务启动后第一个checkpoint的时候报错,这个是因为你的ck时间太短了,任务刚启动,还在分配资源的时候,就已经开始做ck了,所以就报task no ready,把ck的时间设置长一点就好了,特别是算子的并行度大的时候,分配资源比较慢.尽快把ck设置在分钟级别.
+
+Caused by: org.apache.kafka.common.config.ConfigException: Must set acks to all in order to use the idempotent producer. Otherwise we cannot guarantee idempotence.
+	at org.apache.kafka.clients.producer.KafkaProducer.configureAcks(KafkaProducer.java:501)
+	at org.apache.kafka.clients.producer.KafkaProducer.<init>(KafkaProducer.java:361)
+	... 14 more
+
+当幂等性开启的时候acks即为all。如果显性的将acks设置为0，-1，那么将会报错Must set acks to all in order to use the idempotent producer. Otherwise we cannot guarantee idempotence.不设置也会抛出这个错,必须设置为all才行.
+
+Flink常见异常和错误信息小结 周末了，不想搞长篇大论，就写写这样的流水账吧。
+
+Flink的常见异常众多，不可能面面俱到，所以想到哪儿写到哪儿，有漏掉的之后再补充。
+
+部署和资源问题 (0) JDK版本过低 这不是个显式错误，但是JDK版本过低很有可能会导致Flink作业出现各种莫名其妙的问题，因此在生产环境中建议采用JDK 8的较高update（我们使用的是181）。
+
+(1) Could not build the program from JAR file 该信息不甚准确，因为绝大多数情况下都不是JAR包本身有毛病，而是在作业提交过程中出现异常退出了。因此需要查看本次提交产生的客户端日志（默认位于$FLINK_HOME/logs目录下），再根据其中的信息定位并解决问题。
+
+(2) ClassNotFoundException/NoSuchMethodError/IncompatibleClassChangeError/... 一般都是因为用户依赖第三方包的版本与Flink框架依赖的版本有冲突导致。如果是采用Maven做项目管理的话，可参照我之前写的这篇文章来解决冲突。
+
+(3) Deployment took more than 60 seconds. Please check if the requested resources are available in the YARN cluster 就是字面意思，YARN集群内没有足够的资源启动Flink作业。检查一下当前YARN集群的状态、正在运行的YARN App以及Flink作业所处的队列，释放一些资源或者加入新的资源。
+
+(4) java.util.concurrent.TimeoutException: Slot allocation request timed out slot分配请求超时，是因为TaskManager申请资源时无法正常获得，按照上一条的思路检查即可。
+
+(5) org.apache.flink.util.FlinkException: The assigned slot <container_id> was removed TaskManager的Container因为使用资源超限被kill掉了。首先需要保证每个slot分配到的内存量足够，特殊情况下可以手动配置SlotSharingGroup来减少单个slot中共享Task的数量。如果资源没问题，那么多半就是程序内部发生了内存泄露。建议仔细查看TaskManager日志，并按处理JVM OOM问题的常规操作来排查。
+
+(6) java.util.concurrent.TimeoutException: Heartbeat of TaskManager with id <tm_id>timed out TaskManager心跳超时。有可能是TaskManager已经失败，如果没有失败，那么有可能是因为网络不好导致JobManager没能收到心跳信号，或者TaskManager忙于GC，无法发送心跳信号。JobManager会重启心跳超时的TaskManager，如果频繁出现此异常，应该通过日志进一步定位问题所在。
+
+Flink on YARN的其他问题，还可以参考这篇，非常有帮助。
+
+作业问题 (1) org.apache.flink.streaming.runtime.tasks.ExceptionInChainedOperatorException: Could not forward element to next operator 该异常几乎都是由于程序业务逻辑有误，或者数据流里存在未处理好的脏数据导致的，继续向下追溯异常栈一般就可以看到具体的出错原因，比较常见的如POJO内有空字段，或者抽取事件时间的时间戳为null等。
+
+(2) java.lang.IllegalStateException: Buffer pool is destroyed || Memory manager has been shut down 很多童鞋拿着这两条异常信息来求助，但实际上它们只是表示BufferPool、MemoryManager这些Flink运行时组件被销毁，亦即作业已经失败。具体的原因多种多样，根据经验，一般是上一条描述的情况居多（即Could not forward element to next operator错误会伴随出现），其次是JDK版本问题。具体情况还是要根据TaskManager日志具体分析。
+
+(3) akka.pattern.AskTimeoutException: Ask timed out on [Actor[akka://...]] after [10000 ms] Akka超时导致，一般有两种原因：一是集群负载比较大或者网络比较拥塞，二是业务逻辑同步调用耗时的外部服务。如果负载或网络问题无法彻底缓解，需考虑调大akka.ask.timeout参数的值（默认只有10秒）；另外，调用外部服务时尽量异步操作（Async I/O）。
+
+(4) java.io.IOException: Too many open files 这个异常我们应该都不陌生，首先检查系统ulimit -n的文件描述符限制，再注意检查程序内是否有资源（如各种连接池的连接）未及时释放。值得注意的是，Flink使用RocksDB状态后端也有可能会抛出这个异常，此时需修改flink-conf.yaml中的state.backend.rocksdb.files.open参数，如果不限制，可以改为-1。 关于文件描述符的一些有趣知识，可以参见之前我写的这一篇。
+
+(5) org.apache.flink.api.common.function.InvalidTypesException: The generic type parameters of '<class>' are missing 在Flink内使用Java Lambda表达式时，由于类型擦除造成的副作用（详情见这篇文章），注意调用returns()方法指定被擦除的类型。
+
+检查点和状态问题 (1) Received checkpoint barrier for checkpoint <cp_id> before completing current checkpoint <cp_id>. Skipping current checkpoint 在当前检查点还未做完时，收到了更新的检查点的barrier，表示当前检查点不再需要而被取消掉，一般不需要特殊处理。
+
+(2) Checkpoint <cp_id> expired before completing 首先应检查CheckpointConfig.setCheckpointTimeout()方法设定的检查点超时，如果设的太短，适当改长一点。另外就是考虑发生了反压或数据倾斜，或者barrier对齐太慢。具体思路不再赘述，看官可以参考这篇文章，非常详细。
+
+(3) org.apache.flink.util.StateMigrationException: The new state serializer cannot be incompatible 我们知道Flink的状态是按key组织并保存的，如果程序逻辑内改了keyBy()逻辑或者key的序列化逻辑，就会导致检查点/保存点的数据无法正确恢复。所以如果必须要改key相关的东西，就弃用之前的状态数据吧。
+
+(4) org.apache.flink.util.StateMigrationException: The new serializer for a MapState requires state migration in order for the job to proceed. However, migration for MapState currently isn't supported 在1.9之前的Flink版本中，如果我们使用RocksDB状态后端，并且更改了自用MapState的schema，恢复作业时会抛出此异常，表示不支持更改schema。这个问题已经在FLINK-11947解决，升级版本即可。
+

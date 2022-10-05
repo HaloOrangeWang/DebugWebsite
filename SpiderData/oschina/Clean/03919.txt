@@ -1,0 +1,27 @@
+　　在读取dbf文件时由于编码问题报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0xb5 in position 49: incomplete multibyte sequence
+
+　　
+
+from dbfread import DBF
+# f = open('beauty.DBF', encoding='gbk',errors="ignore")
+
+table = DBF('beauty.DBF',encoding='gbk')
+
+#遍历数据表中（没加删除标志）的记录
+
+index=1
+
+for record in table:
+    print(index)
+    for field in record:
+        print(field, "=", record[field], end=",")
+    print('\n')
+
+index+=1
+
+　　修改下
+
+　　table = DBF('beauty.DBF',encoding='gbk',char_decode_errors='ignore')
+
+　　就可以了
+

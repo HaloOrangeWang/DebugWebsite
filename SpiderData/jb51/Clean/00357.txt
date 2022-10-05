@@ -1,0 +1,62 @@
+python版本和ssl版本都会导致 requests在请求https网站时候会出一些错误，最好使用新版本。
+
+1 Python2.6x use requests
+
+一台老Centos机器上跑着古老的应用，加了一个新模块之后报错 报错 InsecurePlatformWarning: A true SSLContext object is not available.
+
+/usr/lib/python2.6/site-packages/requests/packages/urllib3/util/ssl_.py:132: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+
+InsecurePlatformWarning
+
+解决办法
+
+使用老版本的 requests
+
+$pip install requests==2.5.3
+
+或者这样安装
+
+$ pip install requests[security]
+
+2 SSL3_GET_SERVER_CERTIFICATE:certificate verify failed
+
+错误如下 版本 python2.7.5
+
+Traceback (most recent call last):
+
+File "./test.py", line 24, in <module>
+
+response = requests.get(url1, headers=headers)
+
+File "build/bdist.linux-x86_64/egg/requests/api.py", line 52, in get
+
+File "build/bdist.linux-x86_64/egg/requests/api.py", line 40, in request
+
+File "build/bdist.linux-x86_64/egg/requests/sessions.py", line 209, in request
+
+File "build/bdist.linux-x86_64/egg/requests/models.py", line 624, in send
+
+File "build/bdist.linux-x86_64/egg/requests/models.py", line 300, in _build_response
+
+File "build/bdist.linux-x86_64/egg/requests/models.py", line 611, in send
+
+requests.exceptions.SSLError: [Errno 1] _ssl.c:503: error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed
+
+解决方法
+
+可以禁用 verify
+
+>>> requests.get('https://google.com', verify=True)
+
+问题地址 python-requests-throwing-up-sslerror
+
+3 SSLError: bad handshake
+
+SSLError: bad handshake: Error([(‘SSL routines', ‘SSL3_GET_SERVER_CERTIFICATE', ‘certificate verify failed')],) python2.7.5
+
+pip uninstall -y certifi && pip install certifi==2015.04.28
+
+讨论参见： https://github.com/rackspace/pyrax/issues/601
+
+以上所述是小编给大家介绍的Python requests 报错方法集锦，希望对大家有所帮助，如果大家有任何疑问欢迎给我留言，小编会及时回复大家的！
+

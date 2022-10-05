@@ -1,0 +1,29 @@
+在使用git pull 时报错，错误信息如下：
+
+remote: Counting objects: 133, done.
+remote: Compressing objects: 100% (95/95), done.
+remote: Total 96 (delta 82), reused 0 (delta 0)
+error: insufficient permission for adding an object to repository database .git/objects
+
+fatal: failed to write object
+fatal: unpack-objects failed
+
+从错误信息上看，没权限！说明 .git/objects 肯能有别的用户创建的文件，可以用find 命令把这些文件搜出来
+
+find .git ! -user guonh
+
+命令输出结果：
+
+.git/objects/62
+.git/objects/62/431216ec6bf1ca4f0ee35f4f7da49ca4b0541d
+
+ll 看下原来是root 创建的。
+
+drwxr-xr-x. 2 root  root  4096 Jun 18 17:39 62
+
+把这几个文件的属主改成当前用户的。
+
+#chown guonh:guonh -R .git
+
+重新git pull OK！
+

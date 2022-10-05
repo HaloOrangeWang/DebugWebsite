@@ -1,0 +1,13 @@
+最近因工作需要在本地虚拟机里面安装了一个centos系统，在安装ipython过程中发现报错了如图1
+
+　　　　　　　　　　　　　　　　　　　　　　图1
+
+这个问题的原因是因为ipython6.0+不支持python2.7 ，而pip默认安装的是最新版本的，所以我们要指定一个6.0以下的版本比如5.8就可以了，命令如下 ：pip install ipython==2.8 在执行这条命令的时候有出错了，如图二
+
+　　　　　　　　　　　　　　　　　　　　图2
+
+"_scandir.c:14:20: 致命错误：Python.h：没有那个文件或目录 "  在网上做了一些解决方法 说是安装python-dev就可以了，但在执行yum install python-dev时显示
+
+“ 没有可用软件包 python-dev” 最后在慕课上看到原来在centos系统下python-dev包的名字不是这个 而是 python-devel，然后我们依次执行 yum install python-devel，
+yum install ipython==5.8 即可安装成功。
+

@@ -1,0 +1,514 @@
+
+一、__new__方法
+
+__init__()是初始化方法，__new__()方法是构造方法，创建一个新的对象
+
+实例化对象的时候，调用__init__()初始化之前，先调用了__new__()方法
+
+__new__()必须要有返回值，返回实例化出来的实例
+
+def __new__(cls, *args, **kwargs):
+
+例子
+
+class Foo:
+  ​
+      def __init__(self,name):
+          self.name = name
+  ​
+      def __new__(cls, *args, **kwargs):
+           obj = object.__new__(Foo)  #调用object创建新的空对象
+           obj.__init__(*args, **kwargs)  #调用对象的__init__方法对对象属性字典增加属性
+           return obj  #返回新创建的属性给f
+  ​
+  f = Foo("nick") #这里直接调用__call__方法
+  print(f.name)
+  print(f.__dict__)
+
+　　
+
+
+二、__len__方法
+
+如果一个类表现得像一个list，要获取有多少个元素，就得用 __len__() 函数。
+
+例子
+
+class Student():
+      def __init__(self,*args):
+          self.names = args
+  ​
+      def __len__(self):
+          return len(self.names)
+  ​
+  s = Student("nick","jack","pony")
+  print(len(s)) #用len直接调用__len__方法
+
+　　
+
+
+三、__eq__方法
+
+__eq__(slef,other) ，判断self对象是否等于other对象，使用==或者is调用此方法。
+
+例子
+
+class Foo:
+  ​
+      def __init__(self,name):
+          self.name = name
+  ​
+      def __eq__(self, other):
+          if self.name == other.name:  #判断如果对象的name属性相等就返回True
+              return True
+          else:
+              return False
+  ​
+  obj1 = Foo("nick")
+  obj2 = Foo("nicholas")
+  print(obj1 is obj2)
+
+　　
+
+
+四、__hash__方法
+
+获取取一个对象的哈希值，一般来说，对于对象的hash值是基于对象的内存地址生成的，但是重写__hash__方法可以自己定制hash取值的对象
+
+例子
+
+class Foo:
+  ​
+      def __init__(self,name,age):
+          self.name = name
+          self.age = age
+  ​
+      def __hash__(self):
+          return hash(self.name+str(self.age)) #这里基于对象的两个属性返回hash值
+  ​
+  ​
+  obj1 = Foo("nick",18)  #注意hash的对象不能是整数
+  obj2 = Foo("nick",18)
+  print(hash(obj1))
+  print(hash(obj2))
+
+　　
+
+
+五、经典代码分析
+
+例子1、纸牌游戏
+
+from collections import namedtuple
+  ​
+  Card = namedtuple("Card",["rank","suit"]) #这里相当于创建了一个名为Card的类，后面的列表里是类的类属性，没有函数属性
+                                            #
+  class FranchDeck:
+      ranks = [str(n) for n in range(2,11)] + list('JQKA')
+      suits = ['红心','方板','梅花','黑桃']
+  ​
+      def __init__(self):
+          self._cards = [Card(rank,suit) for rank in FranchDeck.ranks for suit in FranchDeck.suits] #这里是一个列表生成式，
+          #将第一个for循环里的值赋值给rank,将第二个for循环里的值赋给suit,这个类只要一实例化就自动生成了一副除了没有大小王的牌
+          #每张牌都是用元组来表示的
+      def __len__(self):
+          return len(self._cards) # choice()方法依赖__len__(self)
+  ​
+      def __getitem__(self, item):
+          return self._cards[item]
+  ​
+      def __setitem__(self, key, value):
+          self._cards[key] = value
+  ​
+  deck = FranchDeck()  #这里相当于创建了一副牌
+  print(deck[0]) #打印第一张牌
+  print(deck[2:5]) #打印第2-4张牌
+  from random import choice,shuffle
+  print(choice(deck))  #随机抽取一张牌
+  shuffle(deck) #洗牌
+  print("洗牌后的第一张",deck[0]) #打印第一张牌
+  ​
+  # 如果不实现,__getitem__(self, item)和__setitem__(self, key, value)
+  # 会报错:TypeError: 'FranchDeck' object does not support indexing,不支持下标索引,
+  # 因为这里的随机洗牌,会用到下标方式取牌和放牌.
+
+　　
+
+例子2
+
+去重，去除对象中名字、性别相同、但年龄不同的对象
+
+这里要用到set()函数，如果set函数参数为空，则返回一个空的set对象 如果参数是一个可迭代对象时，则返回去重的一个set对象。
+
+set()函数去重需要用到__eq__()、__hash__()内置方法。
+
+class People:
+  ​
+      def __init__(self,name,sex,age):
+          self.name = name
+          self.sex = sex
+          self.age = age
+  ​
+      def __eq__(self, other):
+          if self.name == other.name and self.sex == other.sex:
+              return True
+          return False
+  ​
+      def __hash__(self):
+          return hash(self.name+self.sex)
+  ​
+  obj1 = People("nick","male",18)
+  obj2 = People("nick","male",20)
+  print(set((obj1,obj2))) #注意set()函数传入的参数必须是可迭代对象，这里用的是元组
+  li = [obj1,obj2]
+  print(set(li))  #也可以用列表
+
+　　
+
+
+六、异常处理
+
+
+1、什么是异常
+
+异常就是程序运行时发生错误的信号（在程序出现错误时，则会产生一个异常，若程序没有处理它，则会抛出该异常，程序的运行也随之终止）
+
+错误分成两种：语法错误和逻辑错误
+
+语法错误是一些代码的标点符号错误等。逻辑错误有很多种。
+
+语法错误示例：
+
+#语法错误示范一
+  if
+  #语法错误示范二
+  def test:
+      pass
+  #语法错误示范三
+  class Foo
+      pass
+  #语法错误示范四
+  print(haha
+  ​
+  1.语法错误（这种错误过不了python解释器的语法检测，必须在程序执行前就改正）
+
+　　
+
+逻辑错误示例
+
+#TypeError:int类型不可迭代
+  for i in 3:
+      pass
+      
+  #ValueError
+  num=input(">>: ") #输入hello
+  int(num)
+  ​
+  #NameError
+  aaa
+  ​
+  #IndexError
+  l=['egon','aa']
+  l[3]
+  ​
+  #KeyError
+  dic={'name':'egon'}
+  dic['age']
+  ​
+  #AttributeError
+  class Foo:pass
+  Foo.x
+  ​
+  #ZeroDivisionError:无法完成计算
+  res1=1/0
+  res2=1+'str'
+  ​
+
+　　
+
+
+2、异常的种类
+
+常用异常
+
+AttributeError 试图访问一个对象没有的属性，比如foo.x，但是foo没有属性x
+  IOError 输入/输出异常；基本上是无法打开文件
+  ImportError 无法引入模块或包；基本上是路径问题或名称错误
+  IndentationError 语法错误（的子类） ；代码没有正确对齐
+  IndexError 下标索引超出序列边界，比如当x只有三个元素，却试图访问x[5]
+  KeyError 试图访问字典里不存在的键
+  KeyboardInterrupt Ctrl+C被按下
+  NameError 使用一个还未被赋予对象的变量
+  SyntaxError Python代码非法，代码不能编译，语法错误
+  TypeError 传入对象类型与要求的不符合
+  UnboundLocalError 试图访问一个还未被设置的局部变量，基本上是由于另有一个同名的全局变量，
+  导致你以为正在访问它
+  ValueError 传入一个调用者不期望的值，即使值的类型是正确的
+  ​
+
+　　
+
+其他异常
+
+异常名称    描述
+  BaseException    所有异常的基类
+  SystemExit    解释器请求退出
+  KeyboardInterrupt    用户中断执行(通常是输入^C)
+  Exception    常规错误的基类
+  StopIteration    迭代器没有更多的值
+  GeneratorExit    生成器(generator)发生异常来通知退出
+  StandardError    所有的内建标准异常的基类
+  ArithmeticError    所有数值计算错误的基类
+  FloatingPointError    浮点计算错误
+  OverflowError    数值运算超出最大限制
+  ZeroDivisionError    除(或取模)零 (所有数据类型)
+  AssertionError    断言语句失败
+  AttributeError    对象没有这个属性
+  EOFError    没有内建输入,到达EOF 标记
+  EnvironmentError    操作系统错误的基类
+  IOError    输入/输出操作失败
+  OSError    操作系统错误
+  WindowsError    系统调用失败
+  ImportError    导入模块/对象失败
+  LookupError    无效数据查询的基类
+  IndexError    序列中没有此索引(index)
+  KeyError    映射中没有这个键
+  MemoryError    内存溢出错误(对于Python 解释器不是致命的)
+  NameError    未声明/初始化对象 (没有属性)
+  UnboundLocalError    访问未初始化的本地变量
+  ReferenceError    弱引用(Weak reference)试图访问已经垃圾回收了的对象
+  RuntimeError    一般的运行时错误
+  NotImplementedError    尚未实现的方法
+  SyntaxError    Python 语法错误
+  IndentationError    缩进错误
+  TabError    Tab 和空格混用
+  SystemError    一般的解释器系统错误
+  TypeError    对类型无效的操作
+  ValueError    传入无效的参数
+  UnicodeError    Unicode 相关的错误
+  UnicodeDecodeError    Unicode 解码时的错误
+  UnicodeEncodeError    Unicode 编码时错误
+  UnicodeTranslateError    Unicode 转换时错误
+  Warning    警告的基类
+  DeprecationWarning    关于被弃用的特征的警告
+  FutureWarning    关于构造将来语义会有改变的警告
+  OverflowWarning    旧的关于自动提升为长整型(long)的警告
+  PendingDeprecationWarning    关于特性将会被废弃的警告
+  RuntimeWarning    可疑的运行时行为(runtime behavior)的警告
+  SyntaxWarning    可疑的语法的警告
+  UserWarning    用户代码生成的警告
+
+　　
+
+
+3、异常处理
+
+python解释器检测到错误，触发异常（也允许程序员自己触发异常）
+
+程序员编写特定的代码，专门用来捕捉这个异常（这段代码与程序逻辑无关，与异常处理有关）
+
+如果捕捉成功则进入另外一个处理分支，执行你为其定制的逻辑，使程序不会崩溃，这就是异常处理
+
+
+4、异常处理的意义
+
+python解析器去执行程序，检测到了一个错误时，触发异常，异常触发后且没被处理的情况下，程序就在当前异常处终止，后面的代码不会运行，所以你必须提供一种异常处理机制来增强你程序的健壮性与容错性。
+
+
+5、如何进行异常处理
+
+如果错误发生的条件是可预知的，我们需要用if进行处理：在错误发生之前进行预防
+
+AGE=10
+  while True:
+      age=input("请输入年龄: ").strip()
+      if age.isdigit(): #只有在age为字符串形式的整数时,下列代码才不会出错,该条件是可预知的
+          age=int(age)
+          if age == AGE:
+              print('you got it')
+              break
+
+　　
+
+如果错误发生的条件是不可预知的，则需要用到try...except：在错误发生之后进行处理
+
+
+try...except
+
+基本语法为
+  try:
+      被检测的代码块
+  except 异常类型：
+     try中一旦检测到异常，就执行这个位置的逻辑
+
+#举例
+  try:
+      f=open('a.txt')
+      g=(line.strip() for line in f)
+      print(next(g))
+      print(next(g))
+      print(next(g))
+      print(next(g))
+      print(next(g))
+  except StopIteration:
+      f.close()
+
+　　
+
+
+6、try...except的详细用法
+
+
+.异常类只能用来处理指定的异常情况，如果非指定异常则无法处理
+
+s1 = 'hello'
+  try:
+      int(s1)
+  except IndexError as e: # 未捕获到异常，程序直接报错
+      print e
+
+　　
+
+
+多分支与万能异常
+
+多分支
+
+s1 = 'hello'
+  try:
+      int(s1)  #这里产生那种错误就执行那个类型错误下的处理方式
+  except IndexError as e:
+      print("IndexError")
+      print(e)
+  except KeyError as e:
+      print("KeyError")
+      print(e)
+  except ValueError as e:  
+      print("ValueError")
+      print(e)
+
+　　
+
+万能异常
+
+万能异常是Exception，可以捕获任何异常。
+
+s1 = 'hello'
+  li = [1,2,3]
+  try:
+      int(s1)
+      print(li[4])
+  except Exception as e:
+      print(e)
+如果你想要的效果是，无论出现什么异常
+
+　　
+
+，我们统一丢弃，或者使用同一段代码逻辑去处理他们，那么直接用万能异常Exception处理就行。
+
+如果你想要的效果是，对于不同的异常我们需要定制不同的处理逻辑，那就需要用到多分支了。
+
+也可以在多分支的最后加一个Exception。
+
+
+try...except...else
+
+s1 = 'hello'
+  try:
+      int(s1)
+  except IndexError as e:
+      print(e)
+  except KeyError as e:
+      print(e)
+  except ValueError as e:
+      print(e)
+  #except Exception as e:
+  #    print(e)
+  else:
+      print('try内代码块没有异常则执行我')  #没有报异常就执行这个，与for..else类似
+  finally:
+      print('无论异常与否,都会执行该模块,通常是进行清理工作')  #收尾的finally
+
+　　
+
+
+主动触发异常
+
+raise 主动报出异常
+
+raise [Exception [, args [, traceback]]]
+
+语句中Exception是异常的类型（例如，NameError）参数是一个异常参数值。该参数是可选的，如果不提供，异常的参数是"None"。
+
+最后一个参数是可选的（在实践中很少使用），如果存在，是跟踪异常对象。主动触发的异常也可以被捕捉到。
+
+try:
+      raise TypeError('类型错误')
+  except Exception as e:
+      print(e)
+
+　　
+
+
+自定义异常
+
+自定义异常的两种方式
+
+# 方式一
+  class MYERROR(Exception):
+  ​
+      def __init__(self):
+          self.err = "自定义异常"
+  ​
+      def __str__(self):
+          return self.err
+  ​
+  e = MYERROR()
+  raise MYERROR
+  ​
+  #方式二
+  class MYERROR2(BaseException):
+  ​
+      def __init__(self,msg):
+          self.msg = msg
+      #继承BaseException类不再需要__str__方法，BaseException中已经实现了
+  try:
+      raise MYERROR2("自定义异常")
+  except Exception as e:
+      print("-----")
+      print(e）
+
+　　
+
+
+python的异常继承树
+
+
+
+7、assert
+
+assert是断言的意思,我断定这个程序执行之后或者之前会有这样的结果，如果不是，那就扔出一个错误。
+
+语法：
+
+assert expression [, arguments] 
+  assert 表达式 [, 参数]
+
+arguments是断言的值
+
+例子
+
+li = [1,2,3,4]
+  assert len(li) >= 5, '列表元素个数大于5'
+  ​
+  assert 1 != 1,"断言"
+
+　　
+
+
+8、什么时候用异常处理
+
+try...except应该尽量少用，因为给你的程序加了一种异常处理的逻辑，会导致代码可读性变差。
+
+而且异常处理，只有在有些异常无法预知的情况下，才加上try...except，其他的逻辑错误应该尽量修正。
+

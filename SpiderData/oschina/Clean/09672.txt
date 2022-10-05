@@ -1,0 +1,71 @@
+
+首先在项目根目录创建一个名叫.prettierrc的格式化配置项文件，文件内的格式为json格式。
+
+semi: falae 为true 格式化在行尾加分号，false不加分号
+
+singleQuote: true 为true表示格式化以单引号为主
+
+{
+  "semi": false,
+  "singleQuote": true
+}
+
+禁用某项eslint规则：
+
+在项目目录打开 .eslintrc.js 文件
+
+在rules对象添加报错的属性，并设置为0，表示禁用该项。
+
+一般在报错的error:  后面有个括号，把括号中的内容粘贴过来，放在reels中。
+
+案例：
+
+Failed to compile.
+
+./src/components/Login.vue
+Module Error (from ./node_modules/.pnpm/registry.npm.taobao.org/eslint-loader/2.2.1_eslint@5.16.0+webpack@4.41.2/node_modules/eslint-loader/index.js):
+error: Extra semicolon (semi) at src/components/Login.vue:54:51:
+
+以这个报错为例： error 后面的括号中有个 semi 把这个semi复制一下，打开项目根目录的.eslintrc.js 文件
+
+module.exports = {
+  root: true,
+  env: {
+    node: true
+  },
+  'extends': [
+    'plugin:vue/essential',
+    '@vue/standard'
+  ],
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+  },
+  parserOptions: {
+    parser: 'babel-eslint'
+  }
+}
+
+这里的rules，在后面添加一行 'semi':0
+
+module.exports = {
+  root: true,
+  env: {
+    node: true
+  },
+  'extends': [
+    'plugin:vue/essential',
+    '@vue/standard'
+  ],
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'semi':0
+  },
+  parserOptions: {
+    parser: 'babel-eslint'
+  }
+}
+
+这样就可以禁用某项eslint语法检测。
+

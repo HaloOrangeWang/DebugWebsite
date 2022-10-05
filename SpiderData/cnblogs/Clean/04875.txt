@@ -1,0 +1,20 @@
+最近遇到下面几个问题：（亲测有用）
+
+1. python写接口测试的时候，在mac上面执行脚本的时候一直报错
+
+self = <ssl.SSLSocket [closed] fd=-1, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0>, block = False
+
+2. jmeter运行脚本的时候一直报错
+
+可以看到都是和代理相关的问题
+
+项目背景：都需要使用shadowsocksFQ
+
+上面的报错就是因为终端（python, jmeter）走不了shadowsocks
+
+解决方法：
+
+1. python接口脚本中添加代码（还可以使用proxychains https://www.jianshu.com/p/5115ea84bb90）
+
+2. jmeter在http request上配置代理（可以配在http requests default上面）
+

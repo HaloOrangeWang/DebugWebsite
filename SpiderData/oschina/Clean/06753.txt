@@ -1,0 +1,25 @@
+[root@localhost home]# systemctl restart httpd
+
+Job for httpd.service failed. See ‘systemctl status httpd.service‘ and ‘journalctl -xn‘ for details.
+
+报错这个问题
+
+经多次排查，这次是yum 配置上出现问题
+
+[root@localhost ~]# vim /etc/yum.repos.d/rhcsa.repo
+ [rhcsa]
+ name=rhcsa
+ baseurl=file:///media/cdrom
+ enable=1
+ gpgcheck=0
+
+改为：
+ [root@localhost ~]# vim /etc/yum.repos.d/rhcsa.repo
+ [rhcsa]
+ name=rhcsa
+ baseurl=file:///media/cdrom
+ enabled=1
+ gpgcheck=0
+
+**enable改为enabled**
+

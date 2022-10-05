@@ -1,0 +1,41 @@
+首先使用 pip 命令来安装 mysql-connector：
+
+pip install mysql-connector
+
+新建mysql.py
+
+#!/usr/bin/python3
+
+import keyword;
+import mysql.connector;
+
+如果连接成功就会输出
+
+<mysql.connector.connection.MySQLConnection object at 0x000001712C9A2FA0>
+
+如果你的 MySQL 是 8.0 版本，mysql8的密码插件验证方式默认为caching_sha2_password，早期版本为 mysql_native_password
+
+执行会提示错误：
+
+mysql.connector.errors.NotSupportedError: Authentication plugin 'caching_sha2_password' is not supported
+
+可以新建一个用户，密码使用mysql_native_password加密方式就可以连接上。
+
+1、创建用户
+
+create user 'test'@'%' identified by '123456';
+
+2、授权权限
+
+grant all privileges on *.* to 'test'@'%';
+
+3、更新密码
+
+alter user 'test'@'%' identified with mysql_native_password by '123456';
+
+4、刷新权限
+
+flush privileges;
+
+连接时如果还是报错，就需要在连接时指定密码验证方式：
+

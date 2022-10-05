@@ -1,0 +1,33 @@
+一开始使用pip install pyautogui,报错,大概信息如下:
+
+Collecting pygetwindow (from pyautogui)
+  Using cached https://files.pythonhosted.org/packages/01/ed/56d4a369c6e18f6b239d9ef37b3222ba308bfebf949571b2611ff7d64f1d/PyGetWindow-0.0.4.tar.gz
+    ERROR: Complete output from command python setup.py egg_info:
+    ERROR: Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "C:\Users\lsw_p\AppData\Local\Temp\pip-install-n9ekvbwf\pygetwindow\setup.py", line 11, in <module>
+        long_description = fh.read()
+    UnicodeDecodeError: 'gbk' codec can't decode byte 0xa2 in position 905: illegal multibyte sequence
+    ----------------------------------------
+ERROR: Command "python setup.py egg_info" failed with error code 1 in C:\Users\lsw_p\AppData\Local\Temp\pip-install-n9ekvbwf\pygetwindow\
+
+然后使用下载了pyautogui对应的包再安装,还是报这个错
+
+最后看了一篇大神的博客,成功解决了这个问题:
+
+1.首先执行:  pip install PyGetWindow==0.0.1
+执行过程中可能会报错,但是没关系,不用管,我这边打印的信息如下:
+Collecting PyGetWindow==0.0.1
+  Downloading https://files.pythonhosted.org/packages/66/93/1229fa064cef5081b06a41512085ca590b93ac949e0af82341a488a4f596/PyGetWindow-0.0.1.tar.gz
+Building wheels for collected packages: PyGetWindow
+  Building wheel for PyGetWindow (setup.py) ... done
+  Stored in directory: C:\Users\lsw_p\AppData\Local\pip\Cache\wheels\2f\e2\4b\af020e98d7d3e76018ac9e7c420c3d37e1baca0904e3f5dbb5
+Successfully built PyGetWindow
+ERROR: pyautogui 0.9.42 requires Pillow, which is not installed.
+ERROR: pyautogui 0.9.42 requires pymsgbox, which is not installed.
+ERROR: pyautogui 0.9.42 requires pyscreeze>=0.1.20, which is not installed.
+ERROR: pyautogui 0.9.42 requires PyTweening>=1.0.1, which is not installed.
+Installing collected packages: PyGetWindow
+Successfully installed PyGetWindow-0.0.1
+2.接着再执行: pip install pyautogui,你就会发现,这次可以成功安装了.
+

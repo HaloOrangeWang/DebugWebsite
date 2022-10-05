@@ -1,0 +1,30 @@
+这几天在win7上安装scrapy，遇到了各种各样的依赖问题。如果在Linux下面搞，几乎不会遇到问题，但是在
+
+windows下面一切就不一样了。
+
+首先是使用pip安装各个依赖本身也没什么问题，都能安装 最后安装scrapy，但是启动的时候会报错
+
+_openssl无法导入，这个模块本身是cryptography的一部分，按理说cryptography都安装成功了_openssl
+
+是可以找到的，但是就是不行。事实证明pip或者easy_install并不是太靠谱，对于windows上面的深层依
+
+赖它并不能解决。先把cryptography卸载掉，下载源码手动安装，它会提示缺少“openssl/opensslv.h: No
+
+such file or directory"，这个东西是openssll的头文件，虽然安装了openssll，但是 "Microsoft Visual C++
+
+Compiler for Python 2.7"在编译cryptography的时候并不能找到这个头文件。因此需要把openssl的include
+
+文件夹的内容拷贝到编译器的vc\include里边，把lib的内容拷贝到Python安装目录的libs里边，这样编译的
+
+时候就能找到对应的头文件和库文件了。
+
+最后就是如果机器安装了Git，Git带的有openssl的命令行，如果在环境变量的配置里面git的环境变量在
+
+安装的openssl之前，也会遇到问题。需要把opensll的环境变量调整到git之前。这样再次安装cryptograph
+
+y就不会有问题，scrapy可以正常使用。
+
+windows在cmd执行``` where openssl
+
+opensll生效。
+

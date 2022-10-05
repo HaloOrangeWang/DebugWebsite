@@ -1,0 +1,215 @@
+
+参考论文
+
+Scalable graph-based bug search for firmware images
+
+https://github.com/qian-feng/Gencoding
+
+
+windows
+
+
+1.1 安装python2.7
+
+https://www.python.org/downloads/release/python-2716/   选择32位python 。并设置环境变量。
+
+注意，如果之前安装过python3，只需要在环境变量上移到3之上  （where python）
+
+
+1.2安装ida.
+
+参考 https://www.cnblogs.com/CoBrAMG/p/9198113.html 安装。
+
+最好按照对应版本的ida，如6.8.     注意，Genius源码是python2写的，需要环境为IDA6.8+PYTHON2.7（32位）
+
+若安装idapython7.0以上，自带idapython，可以跳过下面1.3-----但是只能用python3的脚本。而https://github.com/qian-feng/Gencoding提供的Genius源码是python2的，所以需要自己更改
+
+
+1.3 安装idapython
+
+ida6.8
+
+https://github.com/idapython/bin
+
+idapython-1.7.2_ida6.8_py2.7_win32.zip
+
+将IDAPython解压后的Python文件夹内的所有内容覆盖掉IDA原有Python文件夹（IDA安装目录下）下面的内容。
+
+将IDAPython解压后的Plugins文件夹的python.plw和python.p64拷贝到IDA原有Plugins文件夹（自定义，一般IDA安装目录下）下。
+
+将IDAPython解压后的python.cfg文件拷贝到IDA原有cfg文件夹（IDA安装目录下）下。
+
+然后打开ida,file--> script file
+
+报错
+
+解决：
+
+参考以下两个博客，没有解决问题
+
+http://spd.dropsec.xyz/2016/10/04/%E5%85%B3%E4%BA%8EIDA%E6%89%BE%E4%B8%8D%E5%88%B0%E6%8C%87%E5%AE%9A%E7%9A%84%E6%A8%A1%E5%9D%97%E7%9A%84%E6%83%85%E5%86%B5/
+
+https://hex-rays.com/blog/ida-and-common-python-issues/
+
+更换为安装版idapro6.8、添加dll高ida目录等，都没有解决问题
+
+最后解决问题参照的方法:
+
+https://blog.csdn.net/sdutstudent/article/details/116197661
+
+https://zhuanlan.zhihu.com/p/102655828
+
+idapython-1.7.2_ida6.8_py2.7_win32.zip
+
+其实idapython写的很清楚了，就是需要安装32位python。之前1.1中安装python时因为系统是64位win10，所以想当然的安装了64位python导致错误。更换为32位 python2.7即可
+
+注意更换后别忘了设置path，替换idapython/bin文件
+
+之后就完美运行了。和是不是安装版没有关系、
+
+
+1.4 安装相关python库
+
+可能还需要安装一些python的包。参考Genius的源码需要哪些库 https://github.com/qian-feng/Gencoding
+
+如 需要为python2.7 安装networkx
+
+首先安装pip
+
+因为安装的是2.7.16版本的python，自带pip，只需要添加相关系统变量即可
+
+注意如果安装了其他版本的python，需要将2.7对应的环境变量上移
+
+然后安装networkx。
+
+法一：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple networkx         目前采用法一
+
+法二：http://www.doczj.com/doc/6ad0e24976c66137ee06196c.html
+
+
+1.5 pycharm+ida 解决No module named _idaapi //尝试运行Genius Extractor
+
+https://github.com/qian-feng/Gencoding下载源码。ida打开一个binary文件，file->script file，运行相关脚本，有报错。分析后是没有传参
+
+直接用ida-file-script file，除非写死，不然不能传参，故用pycharm 调试 dapython
+
+https://www.programmerall.com/article/99121641505/
+
+interpreter选择之前安装的python2.7.复制相关文件到pycharm项目
+
+问题：
+
+报错
+
+解决思路：
+
+思路1：.尝试 使用ida命令行，提供ida上下文  // linux ida运行
+
+思路2：https://blog.csdn.net/lichao890427/article/details/52133712
+
+使用ida都知道idapython插件，提供idc.py idaapi.py idautils.py，可以直接import进来，可以在ida运行时使用内部python插件运行
+
+然而这几个函数在不使用ida上下文的时候是无法使用的，会提示找不到_idaapi模块，那么_idaapi又是哪里来的呢，
+
+通过搜索可以发现是ida\plugin\python.plw中声明的，因此把该文件放到%PYTHONROOT%\Lib\下面，
+
+https://answerrrrrrrrr.github.io/2016/09/20/idapython-commandline/
+
+http://h4ck.org.cn/2012/03/ida-batch-mode/
+
+思路三：
+
+看ida/python/idaapi.py的源代码
+
+目前采用思路一：
+
+在pycharmternminal
+
+E:\BaiduNetdiskDownload\IDA_Pro_v6.8\IDA_Pro_v6.8/idaq.exe -c -S"raw-feature-extractor/preprocessing_ida.py" hpcenter （hpcenter为固件，放在pycharm项目文件夹）
+
+还是报错但是至少可以跑了
+
+对应代码
+
+下一步就是 E:\BaiduNetdiskDownload\IDA_Pro_v6.8\IDA_Pro_v6.8/idaq.exe -c -S"raw-feature-extractor/preprocessing_ida.py --path XXX" hpcenter
+
+这样添加适当的参数即可
+
+
+1.6 IDA命令行执行 IDApython 脚本传参 // pycharm运行genius extractor
+
+使用命令行，执行：
+
+D:\IDA_Pro_68\idaq.exe -c -S"raw-feature-extractor/preprocessing_ida.py --path D:\pycharmproject\Genius\storefile" hpcenter
+
+报错和上面一样
+
+查了下 https://stackoverflow.com/questions/35591455/python-os-path-join-typeerror-object-of-type-nonetype-has-no-len
+
+查看splitdrive函数的原型。没解决问题
+
+添加打印信息
+
+发现binary_name成功识别，但是path 为None。没输入成功
+
+测试代码
+
+import os
+import argparse
+
+输出
+
+PS D:\pycharmproject\Genius> python main.py --path "D:\pycharmproject\Genius\storefile"
+D:\pycharmproject\Genius\storefile
+
+PS D:\pycharmproject\Genius> python main.py --path D:\pycharmproject\Genius\storefile
+D:\pycharmproject\Genius\storefile
+
+可以正常读取参数。说明命令行格式没问题，只是IDApython的问题导致不能读取参数
+
+D:\IDA_Pro_68\idaq.exe -c -S"raw-feature-extractor/preprocessing_ida.py --path D:\pycharmproject\Genius\storefile" hpcenter
+
+解决：
+
+思路一，没有解决问题，但是有些帮助：
+
+google  ida的命令行模式。
+
+idapython batch mode
+
+找到：
+
+https://hex-rays.com/products/ida/support/idadoc/417.shtml
+
+IDA的官方help。得到参数的输入格式
+
+It is possible to pass command line arguments after the script name.
+        For example: -S"myscript.idc argument1 \"argument 2\" argument3"
+
+思路二：
+
+又参考 idapython arguments
+
+https://reverseengineering.stackexchange.com/questions/8428/idapro-the-arguments-could-not-be-passed-to-the-python-script
+
+https://reverseengineering.stackexchange.com/questions/13286/executing-an-idapython-script-with-arguments-within-ida-pro
+
+命令行输入：
+
+PS C:\Program1\pycharmproject\Genius3> E:\BaiduNetdiskDownload\IDA_Pro_v6.8\IDA_Pro_v6.8\idaq.exe -c -S"raw-feature-extractor/preprocessing_ida.py --path C:\Program1\py
+charmproject\Genius3\new" hpcenter
+
+添加打印信息：
+
+print str(sys.argv) #['raw-feature-extractor/preprocessing_ida.py']
+    print str(idc.ARGV) #['raw-feature-extractor/preprocessing_ida.py', '--path', 'C:\\Program1\\pycharmproject\\Genius3\\new']
+
+输出：
+
+所以修改下代码对argv的引用：
+
+之后可以运行。对固件hpcenter提取信息如图
+
+
+linux
+

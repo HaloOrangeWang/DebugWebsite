@@ -1,0 +1,106 @@
+
+新手爬虫出现报错“ no such element: Unable to locate element”
+
+
+简介
+
+来自一个自学爬虫的Python小白的经历：通过网络上的教学视频，模仿编程。由于视频资源比较老旧，技术更新较快，所以有些方面难以做到用视频教学代码成功运行。此篇只记录产生的问题，包括已经解决和未解决的。再次申明，只是小白，只是简单的记录问题。
+
+
+案例：斗鱼直播板块主播页面照片地址，所属标签，热度值，以及主播名字
+
+初始代码如下:
+
+from selenium import webdriver
+import time
+
+class DouyuSpider:
+    def __init__(self):
+        self.start_url = "https://www.douyu.com/directory/all"
+        self.driver = webdriver.Chrome()
+
+def get_content_list(self):
+        # 分组
+        li_list = self.driver.find_elements_by_xpath("//ul[@class='layout-Cover-list']/li")
+        print(li_list)
+        content_list = list()
+        for li in li_list:
+            item = {}
+
+item["room_img"] = li.find_element_by_xpath(".//div[@class='LazyLoad is-visible DyImg DyListCover-pic']/img").get_attribute("src")
+            # print("+"*50)
+            item["room_title"] = li.find_element_by_xpath(".//div[@class='DyListCover-userName']")
+            # print("+"*50)
+            item["room_cate"] = li.find_element_by_xpath(".//div[@class='DyListCover-info']/span").text
+            item["author_name"] = li.find_element_by_xpath(".//div[@class='DyListCover-info']/h3").text
+            content_list.append(item)
+            print(item)
+        # 获取下一页
+        next_url = self.driver.find_elements_by_xpath("//span[@class='dy-Pagination-item-custom']")
+        next_url = next_url[0] if len(next_url)>0 else None
+        return content_list,next_url
+
+def save_content_list(self,content_list):
+        # 略过
+        pass
+
+def run(self):
+        # 1.获取start_url
+        # 2.发送请求，获取相应
+        self.driver.get(self.start_url)
+        # 3.提取数据，获取下一页的url
+        content_list, next_url = self.get_content_list()
+        # 4.保存数据
+        self.save_content_list(content_list)
+        # 5.点击下一页，循环
+        while next_url is not None:
+            next_url.click()
+            content_list, next_url = self.get_content_list()
+            self.save_content_list(content_list)
+
+if __name__ == "__main__":
+    douyuspider =   DouyuSpider()
+    douyuspider.run()
+
+运行结果如下:
+
+selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"xpath","selector":"./div/a/div[1]/div[1]/img"}
+  (Session info: chrome=88.0.4324.190)
+
+根据百度得知，需要设定等待时间。虽然在seleinum中会有设置等待时间的方法，具体不详。经试验可使用time模块的sleep方法，time.sleep（5），五秒左右测试即可。修改部分的代码如下：
+
+def run(self):
+        # 1.获取start_url
+        # 2.发送请求，获取相应
+        self.driver.get(self.start_url)
+
+time.sleep(5)
+        # 3.提取数据，获取下一页的url
+        content_list, next_url = self.get_content_list()
+        # 4.保存数据
+        self.save_content_list(content_list)
+        # 5.点击下一页，循环
+        while next_url is not None:
+            next_url.click()
+            time.sleep(5)
+            content_list, next_url = self.get_content_list()
+            self.save_content_list(content_list)
+
+通过sleep方法经测试可以解决此问题。
+
+之后运行代码，出现此问题
+
+selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"xpath","selector":".//div[@class='LazyLoad is-visible DyImg DyListCover-pic']/img"}
+  (Session info: chrome=88.0.4324.190)
+
+具体藐视：会在正常执行中报错。错误问题是指：找不到对应的element，xpath为.//div[@class='LazyLoad is-visible DyImg DyListCover-pic']/img。
+
+解决方法：  注：此方法自我寻找，xpath之间的差异不详，欢迎大佬指教
+
+在浏览器中复制对应的xpath，可在xpath helper中实验提取对应的部分。例如上述对应的xpath为./div/a/div[1]/div[1]/img经过测验可以解决这个问题。
+
+最后，再次声明来自一个Python小白的自学过程中出现的问题，及时交流与解决，如有不对地方，欢迎指教，不喜勿喷。
+
+
+搬运请注明出处！！！！
+

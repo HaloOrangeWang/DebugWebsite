@@ -1,0 +1,71 @@
+
+源码编译apache报错的解决方法
+
+
+问题介绍
+
+在源码编译安装httpd时，./configure执行无错误，到make时就报错，在网络上搜索了很多文章，很多方法如换apr-util的低版本并不能很好的解决该错误。经过不断的努力，我最终解决了该问题，现将方法记录。
+
+说明：apr/apr-util都是源码编译安装的
+
+错误如下：
+
+...
+/usr/local/apr-util/lib/libaprutil-1.so: undefined reference to `XML_StopParser'
+/usr/local/apr-util/lib/libaprutil-1.so: undefined reference to `XML_Parse'
+/usr/local/apr-util/lib/libaprutil-1.so: undefined reference to `XML_ErrorString'
+/usr/local/apr-util/lib/libaprutil-1.so: undefined reference to `XML_SetElementHandler'
+collect2: error: ld returned 1 exit status make[2]: *** [htpasswd] 错误 1 make[2]: 离开目录“/usr/local/src/httpd-2.4.28/support” make[1]: *** [all-recursive] 错误 1 make[1]: 离开目录“/usr/local/src/httpd-2.4.28/support” make: *** [all-recursive] 错误 1
+
+
+环境还原
+
+这是我报错之前进行的操作：
+
+源码安装前安装：yum install gcc gcc-c++ prce-devel expat-devel
+
+安装apr [root@localhost src]# tar -zxvf apr-1.6.3.tar.gz
+[root@localhost src]# cd apr-1.6.3/
+[root@localhost apr-1.6.3]# ./configure --prefix=/usr/local/apr [root@localhost apr-1.6.3]# make && make install
+
+[root@localhost src]# tar -zxvf apr-1.6.3.tar.gz
+[root@localhost src]# cd apr-1.6.3/
+[root@localhost apr-1.6.3]# ./configure --prefix=/usr/local/apr [root@localhost apr-1.6.3]# make && make install
+
+安装apr-util [root@localhost apr-1.6.3]# cd ../
+[root@localhost src]# tar -zxvf apr-util-1.6.1.tar.gz 
+[root@localhost src]# cd apr-util-1.6.1 [root@localhost apr-util-1.6.1]# ./configure --prefix=/usr/loca/apr-util --with-apr=/usr/local/apr
+
+[root@localhost apr-1.6.3]# cd ../
+[root@localhost src]# tar -zxvf apr-util-1.6.1.tar.gz 
+[root@localhost src]# cd apr-util-1.6.1 [root@localhost apr-util-1.6.1]# ./configure --prefix=/usr/loca/apr-util --with-apr=/usr/local/apr
+
+安装httpd
+
+[root@localhost apr-1.6.3]# cd ../
+[root@localhost src]# tar -zxvf httpd-2.4.28.tar.gz
+[root@localhost src]# cd httpd-2.4.28 [root@localhost httpd-2.4.28]# ./configure --prefix=/usr/local/apache2.4 --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr-util --enable-so --enable-mods-shared=most #在执行make时就报了错
+
+
+解决方法
+
+缺少了xml相关的库，需要安装libxml2-devel包。直接安装并不能解决问题，因为httpd调用的apr-util已经安装好了，但是apr-util并没有libxml2-devel包支持。
+
+安装libxml2-devel包
+
+[root@localhost ~]# yum install -y libxml2-devel
+
+删除apr-util安装目录，并重新编译安装
+
+[root@localhost ~]# rm -rf /usr/local/apr-util
+[root@localhost ~]# cd /usr/local/src/apr-util-1.6.1
+
+# 这一步很重要，必须清除之前配置时的缓存
+[root@localhost apr-util-1.6.1]# make clean # 源码安装三步走 [root@localhost apr-util-1.6.1]# ./configure --prefix=/usr/local/apr-util --with-apr=/usr/local/apr [root@localhost apr-util-1.6.1]# make [root@localhost apr-util-1.6.1]# make install
+
+重新编译安装httpd
+
+# 同样要清理之前的缓存十分重要
+[root@localhost src]# cd /usr/local/src/httpd-2.4.28
+[root@localhost httpd-2.4.28]# make clean [root@localhost httpd-2.4.28]# ./configure --prefix=/usr/local/apache2.4 --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr-util --enable-so --enable-mods-shared=most [root@localhost httpd-2.4.28]# make # 这时make没报错了 [root@localhost httpd-2.4.28]# make install
+

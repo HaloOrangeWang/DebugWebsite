@@ -1,0 +1,18 @@
+在Windows系统下执行python应用时，有时会遇到错误信息：
+
+ModuleNotFoundError: No module named ‘_curses’.
+
+然而查看Windows系统里python安装文件，发现在Lib文件夹里确实有一个名为curses的子文件夹，里面也存放了curses库对应的实现，为什么还是会报找不到_curses这个mobule的错误消息呢？
+
+原来，这个问题的根源是curses库不支持Windows操作系统，因此如果您用Windows操作系统并且确实需要用curses库，那得另想办法。
+
+我提供了一种解决方案。首先执行python命令，得到当前我的python版本是3.7.0.
+
+然后打开这个链接：
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#curses
+
+下载和您的python版本对应的curse库。对于我来说，因为我的python版本是3.7.0， 因此需要下载curses-2.2+utf8-cp37-cp37m-win32.whl.
+
+下载完毕后，使用pip install "curses-2.2+utf8-cp37-cp37m-win32.whl"进行安装，成功安装后问题解决。
+

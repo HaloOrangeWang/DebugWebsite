@@ -1,0 +1,26 @@
+原文地址
+
+在执行yum命令时忽然发现出现以下报错：
+
+原因：
+
+这是因为yum采用Python作为命令解释器，这可以从/usr/bin/yum文件中第一行#!/usr/bin/python发现。而python版本之间兼容性不太好，使得2.X版本与3.0版本之间存在语法不一致问题。而CentOS 7自带的yum采用的是python2.7，当系统将python升级到3.4后，出现语法解释错误。
+
+解决办法：
+
+一是升级yum。
+
+二是修改yum的解释器为旧版本python2.7，即将连接文件/usr/bin/python连接回/usr/bin/python2.7。治标不治本，不推荐。
+
+三是在设置里更改解释器设置，即修改/usr/bin/yum文件，指定使用python2.7作为yum的解释器：
+
+将第一行"#!/usr/bin/python" 改为 "#!/usr/bin/python2"即可。
+
+安装软件时又会出现另一种报错
+
+问题与前面一个一样，因此解决办法也是一样的：
+
+将第一行"#!/usr/bin/python" 改为 "#!/usr/bin/python2"即可。
+
+原文地址
+

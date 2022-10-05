@@ -1,0 +1,29 @@
+
+遇到问题
+
+将requests请求相应结果json()化时，提示 "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+
+
+解决方案：
+
+这个报错的原因有很多，我的原因是域名或者uri写错了。导致请求响应了404， 这个响应消息体无法被json格式化，从而报错。更多原因可以参考：JSONDecodeError：期望值：第 1 行第 1 列（字符 0）
+
+
+排查过程
+
+直接执行上面的脚本，发现报出上述报警，可以看出是json格式出问题了，所以打算先去除json格式化这个步骤，先打印出response
+
+去除json()
+
+运行结果如下
+
+resp: <Response [404]>
+
+发现响应了404， 说明可能是uri写错了, 排查uri之后，发现确实是写错了，改正uri之后，再次运行
+
+运行结果如下
+
+resp: <Response [200]>
+
+响应正常了，再加上json()格式化语句，不报上述提示 "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"问题了。说明是响应404导致响应体不能被json格式化，从而报错。
+

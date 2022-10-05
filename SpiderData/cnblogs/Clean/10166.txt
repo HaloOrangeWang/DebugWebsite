@@ -1,0 +1,18 @@
+
+python 多进程运行报错concurrent.futures.process.BrokenProcessPool: A process in the process pool was terminated abruptly while the future was running or pending.
+
+需要添加main
+
+
+使用pyinstaller 打包成exe
+
+对于pyinstaller 是不支持含有多进程的python打包，打包完毕后，不会执行子进程的内容，而是会一直创建进程，导致崩溃
+
+解决方法：
+
+multiprocessing.freeze_support()
+
+这句话一定要放在main下的第一行，如下所示
+
+然后就可以正常运行了
+

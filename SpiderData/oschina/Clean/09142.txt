@@ -1,0 +1,49 @@
+客户有个需求：某用户程序（含exp导出任务）报错EXP-00003，这个错误并不会影响整个导出任务的结束，但由于是晚上的定时任务，该错误会触发夜间告警。客户想通过数据库层面来规避掉此错误。
+ 事实上，这个错误是比较普遍的，我们知道Oracle 11g有一个延迟段创建的特性，这个特性在最佳实践一般是建议关闭的，但由于默认是开启，大部分环境还是默认值。如果我们直接通过网络去搜索这个错误，也会得到一些答案，给出的解决方案有两种，一是关闭该特性（但是这对之前的空表无效），二是给空表主动插入一条数据（这在实际生产环境实际是不现实的）。
+ 客户的数据库环境是11.2.0.4，我在自己测试环境顺手验证了下，结果发现并不会报错EXP-00003。
+ 依次确认：
+
+1.延迟段创建的参数是默认值，即没有关闭；
+
+2.实验的空表没有对应的段；
+
+--1.参数默认设置：
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+deferred_segment_creation            boolean     TRUE
+
+--2.查看两张测试表对应的段，发现T_NULL没有对应的段：
+sys@CRMDB> select segment_name, owner from dba_segments where owner='JINGYU' and segment_name in('T1','T_NULL');
+
+SEGMENT_NAME                   OWNER
+------------------------------ ------------------------------
+T1                             JINGYU
+
+但导出空表T_NULL（没有对应段）可以成功，并不会报错：EXP-00003
+
+[oracle@jystdrac2 ~]$ exp jingyu/jingyu file=test001.dmp tables=t_null,t1
+
+Export: Release 11.2.0.4.0 - Production on Mon Jul 27 17:09:43 2020
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Connected to: Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning, Real Application Clusters, Automatic Storage Management, OLAP,
+Data Mining and Real Application Tes
+Export done in AL32UTF8 character set and AL16UTF16 NCHAR character set
+
+About to export specified tables via Conventional Path ...
+. . exporting table                         T_NULL          0 rows exported
+. . exporting table                             T1          7 rows exported
+Export terminated successfully without warnings.
+
+难道说Oracle已经解决了这个问题？那客户遇到的情况呢？这是怎么回事？
+ 事实上，了解到客户程序用到的是windows平台，安装的是一个32位的Oracle 11.2.0.1 版本的Windows客户端。
+ 程序使用exp导出时调用的是这个客户端，还是会报错。
+ 那其实解决方案就简单了，结合客户一些其他需求，还是选择安装32位的客户端，只不过我们可以将版本换成11.2.0.4，这样再次测试，就不会再报错EXP-00003。
+ 而这个现象其实官方还有篇MOS文章有说明：
+
+Error During Schema Level Export - EXP-00003: no storage definition found for segment(0, 0) (Doc ID 1969081.1)
+
+很多客户对客户端的版本不太care，而事实上客户端版本选择稳定版也是有必要的，比如文中的问题，如果一开始就安装了11.2.0.4版本的客户端，就不会有这个问题了。
+

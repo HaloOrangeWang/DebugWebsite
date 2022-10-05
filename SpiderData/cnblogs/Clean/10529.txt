@@ -1,0 +1,22 @@
+今天在写代码的时候，报了错TypeError: sequence item 0: expected str instance, int found，我本来是想把json格式转为字符串，之后写入到json里面的，但是忽然间，就出现了问题。
+
+小例子：list1=[1,'two','three',4]
+
+print(' '.join(list1))
+
+以为会打印 1 two three 4
+
+结果报了错
+
+Traceback (most recent call last):
+  File "<pyshell#27>", line 1, in <module>
+    print(" ".join(list1))
+TypeError: sequence item 0: expected str instance, int found
+上网查了资料，说list包含数字，不能直接转化成字符串。
+
+解决办法：print(" ".join('%s' %id for id in list1))
+
+即遍历list的元素，把他转化成字符串。这样就能成功输出1 two three 4结果了。
+
+在使用了本办法之后，代码能够直接跑起来了。
+

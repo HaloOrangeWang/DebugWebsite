@@ -1,0 +1,38 @@
+https://blog.csdn.net/weixin_30600503/article/details/101811489
+
+在对vue项目进行cnpm i时，报错：RunScriptError: Run "C:\Windows\system32\cmd.exe /d /s /c node-gyp rebuild"
+
+我查看到关键词是“node-gyp"，于是我以系统管理员身份，打开cmd，
+
+
+为node-gyp配置安装python2.7以及VC++ build Tools依赖
+
+cmd输入以下命令
+
+　　　　 cnpm install -g node-gyp
+
+
+配置依赖
+
+　　cmd输入以下命令
+
+(1) 右键点击"计算机"，然后点击"属性"
+
+(2) 然后点击"高级系统设置"
+
+（3) 选择"系统变量"窗口下面的"Path",双击即可！
+
+（4) 然后在"Path"行，添加python安装路径即可(我的C:\Users\dida\.windows-build-tools\python27)。
+
+此时cmd输入python，可查看到版本号，说明安装成功
+
+但可能还会报错：未能加载Visual C++ 组件"VCBuild.exe"
+
+hack:执行node-gyp list，结果如下
+
+此时可观察到，倒数第二行报错，按提示输入命令node-gyp install
+
+再次执行，结果如下
+
+此时删除node-modules，在项目目录下，重新打开cmd，执行cnpm i，安装成功
+

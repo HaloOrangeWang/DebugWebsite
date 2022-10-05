@@ -1,0 +1,49 @@
+这个是使用pip安装django的报错
+
+root@ubuntu:/# pip install Django
+Collecting Django
+  Using cached Django-2.0.tar.gz
+    Complete output from command python setup.py egg_info:
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-build-vqeCP7/Django/setup.py", line 32, in <module>
+        version = __import__('django').get_version()
+      File "django/__init__.py", line 1, in <module>
+        from django.utils.version import get_version
+      File "django/utils/version.py", line 61, in <module>
+        @functools.lru_cache()
+    AttributeError: 'module' object has no attribute 'lru_cache'
+    
+    ----------------------------------------
+Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-build-vqeCP7/Django/
+
+错误的原因：pip版本是py2.7的管理器，而pip install django 默认是安装django的最新版本
+
+root@ubuntu:/# pip --version
+pip 9.0.1 from /usr/local/lib/python2.7/dist-packages (python 2.7)
+
+django的最新版本要支持py3，所以要用pip3（py3的包管理器）安装
+
+root@ubuntu:/# pip3 --version
+pip 8.1.1 from /usr/lib/python3/dist-packages (python 3.5)
+root@ubuntu:/# pip3 install django
+Collecting django
+  Downloading Django-2.0-py3-none-any.whl (7.1MB)
+    100% |████████████████████████████████| 7.1MB 190kB/s 
+Collecting pytz (from django)
+  Downloading pytz-2017.3-py2.py3-none-any.whl (511kB)
+    100% |████████████████████████████████| 512kB 2.6MB/s 
+Installing collected packages: pytz, django
+Successfully installed django-2.0 pytz-2017.3          #2.0版本需要py3支持
+
+而py2想安装之前版本的django则需要指定版本
+
+root@ubuntu:/# pip install django==1.10.6
+Collecting django==1.10.6
+  Downloading Django-1.10.6-py2.py3-none-any.whl (6.8MB)
+    100% |████████████████████████████████| 6.8MB 135kB/s 
+Installing collected packages: django
+Successfully installed django-1.10.6
+root@ubuntu:/# pip --version
+pip 9.0.1 from /usr/local/lib/python2.7/dist-packages (python 2.7)
+

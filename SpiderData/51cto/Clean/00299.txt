@@ -1,0 +1,14 @@
+今日Fedora从28升级到29后，进入Python的虚拟目录后，本来想使用pip更新下包，结果报错了，如下：
+
+Traceback (most recent call last):
+  File "/home/kowalski/Projects/rifm/venv/bin/pip", line 7, in <module>
+    from pip._internal import main
+ModuleNotFoundError: No module named 'pip'
+
+自己也没看出来有什么不一样的，为了赶时间就先强制重装了虚拟环境中的pip
+
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py --force-reinstall
+
+问题解决了，但还是稍微回顾了下，可能是fedora升级的时候把python3.6升级到了python3.7导致虚拟目录下没有对应的pip3.7，所以调用pip的时候会报错。不正之处请指证哈:)
+

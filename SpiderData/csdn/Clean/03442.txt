@@ -1,0 +1,6 @@
+TypeError: cannot serialize '_io.TextIOWrapper' object
+
+这个错误是使用python的内置pickle模块保存一个类对象出现的，由字面意思是无法序列化 '_io.TextIOWrapper'对象。百度了好多次都没有找到解决方法。
+
+后面在gihub中找到一条评论https://github.com/hyperopt/hyperopt-sklearn/issues/74，给了提示。原来被保存的类中有logger是无法进行pickle序列化保存对象的，因此在类的定义中删除了有关logger的代码，再次运行没有报错，并能保存这个类对象了。
+

@@ -1,0 +1,104 @@
+启动targetcli时遭遇ImportError: cannot import name ALUATargetPortGroup故障
+
+targetcli是一个iSCSI配置管理工具，该工具简单易用，可以直接替换scsi-target-utils。满心欢喜的装上它，正准备一睹为快，就杯具了。报错ImportError: cannot import name ALUATargetPortGroup。下面就这针对这个错误的解决方案。
+
+一、故障现象
+
+当前环境
+[root@centos7-router ~]# more /etc/redhat-release 
+CentOS Linux release 7.2.1511 (Core)
+
+安装targetcli工具包
+# yum install targetcli
+
+故障现象
+[root@centos7-router ~]# targetcli
+Traceback (most recent call last):
+ File "/usr/bin/targetcli", line 24, in <module>
+  from targetcli import UIRoot  ### Author : Leshami
+ File "/usr/lib/python2.7/site-packages/targetcli/__init__.py", line 18, in <module>
+  from .ui_root import UIRoot  ### Blog : http://blog.csdn.net/leshami
+ File "/usr/lib/python2.7/site-packages/targetcli/ui_root.py", line 30, in <module>
+  from .ui_backstore import complete_path, UIBackstores
+ File "/usr/lib/python2.7/site-packages/targetcli/ui_backstore.py", line 29, in <module>
+  from rtslib_fb import ALUATargetPortGroup
+ImportError: cannot import name ALUATargetPortGroup
+
+二、解决方案
+
+从上面的错误提示可知，python文件有问题。于是验证一下python是否已正确安装
+[root@centos7-router ~]# python
+Python 2.7.5 (default, Nov 20 2015, 02:00:19) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-4)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+python可以正常工作，继续google，原来是缺少python-rtslib这个包。
+
+[root@centos7-router ~]# yum install python-rtslib -y
+
+再次执行成功
+[root@centos7-router ~]# targetcli
+targetcli shell version 2.1.fb46
+Copyright 2011-2013 by Datera, Inc and others.
+For help on commands, type 'help'.
+
+/> help
+
+GENERALITIES
+============
+This is a shell in which you can create, delete and configure
+configuration objects.
+
+The available commands depend on the current path or target
+path you want to run a command in: different path have
+different sets of available commands, i.e. a path pointing at
+an iscsi target will not have the same availaible commands as,
+say, a path pointing at a storage object.
+
+The prompt that starts each command line indicates your
+current path. Alternatively (useful if the prompt displays
+an abbreviated path to save space), you can run the
+pwd command to display the complete current path.
+
+Navigating the tree is done using the cd command. Without
+any argument, cd will present you wil the full objects
+tree. Just use arrows to select the destination path, and
+enter will get you there. Please try help cd for navigation
+tips.
+
+COMMAND SYNTAX
+==============
+Commands are built using the following syntax:
+
+[TARGET_PATH] COMMAND_NAME [OPTIONS]
+
+The TARGET_PATH indicates the path to run the command from.
+If ommited, the command will be run from your current path.
+
+The OPTIONS depend on the command. Please use help
+COMMAND to get more information.
+
+AVAILABLE COMMANDS
+==================
+The following commands are available in the
+current path:
+
+- bookmarks action [bookmark] 
+ - cd [path] 
+ - clearconfig [confirm] 
+ - exit 
+ - get [group] [parameter...] 
+ - help [topic] 
+ - ls [path] [depth] 
+ - pwd 
+ - refresh 
+ - restoreconfig [savefile] [clear_existing] 
+ - saveconfig [savefile] 
+ - sessions [action] [sid] 
+ - set [group] [parameter=value...] 
+ - status 
+ - version
+
+如有疑问，请留言或者到本站社区交流讨论，感谢阅读，希望能帮助到大家，谢谢大家对本站的支持！
+

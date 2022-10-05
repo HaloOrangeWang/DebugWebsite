@@ -1,0 +1,96 @@
+1 print(5/0)2
+
+3 """
+
+4 Traceback (most recent call last):5 File "division.py", line 1, in 6 print(5/0)7 ZeroDivisionError: division by zero8 """
+
+2.处理NameError异常
+
+变量名错误
+
+1 """
+
+2 Traceback (most recent call last):3 File "new.py", line 4, in 4 print(5/num) # 错误代码行5 NameError: name 'num' is not defined6 """
+
+变量num没有定义，在使用变量前要先定义变量
+
+3.处理SyntaxError异常
+
+语法有错误
+
+1 """
+
+2 File "new.py", line 33 SyntaxError: Non-UTF-8 code starting with '\xb4' in file new.py on line 3, but n4 o encoding declared; see http://python.org/dev/peps/pep-0263/ for details5 """
+
+可尝试在文首添加代码：
+
+# incoding=gbk
+
+SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in
+
+position 30-31: truncated \UXXXXXXXX escape
+
+解决办法：在路径前面添加一个“r”即可
+
+4.处理 FileNotFoundError 异常
+
+找不到文件
+
+1 """
+
+2 Traceback (most recent call last):3 File "new.py", line 4, in 4 with open(filename) as f_obj:5 FileNotFoundError: [Errno 2] No such file or directory: 'alice.txt'6 """
+
+5.处理TypeError异常
+
+类型错误
+
+可使用int()、float()、str()等进行强制类型转换
+
+1 """
+
+2 Traceback (most recent call last):3 File "guest_book.py", line 11, in 4 print("The file "+file_name+" has about "+file_words_nums+" words.")5 TypeError: can only concatenate str (not "int") to str6 """
+
+只能将字符串和字符串连接，不能将数字和字符串连接　str (file_words_nums)
+
+1 """
+
+2 Traceback (most recent call last):3 File "test_name_function.py", line 7, in test_first_last_name4 formatted_name = get_formatted_name('line','vipper')5 TypeError: get_formatted_name() missing 1 required positional argument: 'middle'6 """
+
+缺少一个必不可少的位置实参 'middle'
+
+Traceback (most recent call last):
+
+File"num_28.py", line 19, in
+
+print("第%d个人%d岁。"%(i, age(i)))
+
+File"num_28.py", line 15, inage
+
+age= age(n-1) + 2TypeError:'int' object is not callable
+
+有变量名（age）与函数名（age）重复了
+
+6.处理AttributeError异常
+
+属性错误
+
+1 """
+
+2 Traceback (most recent call last):3 File "guest_book.py", line 15, in 4 file_name.count_words()5 AttributeError: 'str' object has no attribute 'count_words'6 """
+
+7.处理IndentationError异常
+
+缩进错误
+
+1 """
+
+2 File "remember_me.py", line 183 username = json.load(file_object)4 ^5 IndentationError: expected an indented block6 """
+
+8.处理ValueError异常
+
+强制转换时值错误，如int(str)，其中str不为整型字符串
+
+1 """
+
+2 Please input your favorite number: a3 Traceback (most recent call last):4 File "10_11.py", line 12, in 5 print(input_favorite_num())6 File "10_11.py", line 5, in input_favorite_num7 int(user_favorite_num)8 ValueError: invalid literal for int() with base 10: 'a'9 """
+

@@ -1,0 +1,15 @@
+项目在运行的过程中一直报错，在请求  sockjs-node/info?t=1623374286048  地址的内容
+
+解决办法：
+
+在 node_modules ->sockjs-client ->dist-sockjs.js 中找到 1609行，注释掉我注释掉的哪一行的代码
+
+try {
+    // self.xhr.send(payload);
+} catch (e) {
+    self.emit('finish', 0, '');
+    self._cleanup(false);
+}
+
+参考地址
+

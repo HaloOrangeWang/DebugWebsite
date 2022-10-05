@@ -1,0 +1,18 @@
+linux环境通过pip安装opencv后，导入cv2时报错：
+
+在centos和ubuntu环境下都遇到相同的问题。报错原因： 缺少共享库
+
+有两种解决办法：
+
+一.使用如下命令查看缺少得共享库
+
+yum whatprovides libSM.so.6
+
+使用以下命令解决：
+
+yum install libSM-1.2.2-2.el7.x86_64 --setopt=protected_multilib=false
+
+二.ubuntu上有时候yum不好用，可以用如下方法解决
+
+或者安装的时候用如下命令：
+

@@ -1,0 +1,218 @@
+忠告：放弃使用pip install来安装MySQL-python，下载项目文件解压然后使用下面的命令来安装，这样会让你避免浪费很多无意义的时间。
+
+$ python setup.py clean
+$ python setup.py build
+$ sudo python setup.py install
+$ pip list
+
+至于原因，我会慢慢道来。
+
+
+pip install MySQL-python
+
+$ pip install MySQL-python
+...
+IndexError: string index out of range
+Command "python setup.py egg_info" failed with error code 1 in /private/var/folders/g3/00_m0wqj3ql6f8zw8094j0y80000gq/T/pip-install-CZUbdT/MySQL-python/
+
+查到的第一个解决方案Can’t install mysql-python with pip on MacOS 10.12.4 - Stack Overflow是
+
+brew install mysql
+pip install MySQL-python
+
+但是mysql我已经安装了，所以上面提到的解决方法不能解决我所遇到的问题。
+
+$ which mysql
+/usr/local/mysql/bin/mysql
+
+再仔细看看报错的内容
+
+ollecting MySQL-python
+  Using cached https://files.pythonhosted.org/packages/a5/e9/51b544da85a36a68debe7a7091f068d802fc515a3a202652828c73453cad/MySQL-python-1.2.5.zip
+    Complete output from command python setup.py egg_info:
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/private/var/folders/g3/00_m0wqj3ql6f8zw8094j0y80000gq/T/pip-install-CZUbdT/MySQL-python/setup.py", line 17, in <module>
+        metadata, options = get_config()
+      File "setup_posix.py", line 53, in get_config
+        libraries = [ dequote(i[2:]) for i in libs if i.startswith(compiler_flag("l")) ]
+      File "setup_posix.py", line 8, in dequote
+        if s[0] in "\"'" and s[0] == s[-1]:
+    IndexError: string index out of range
+
+----------------------------------------
+Command "python setup.py egg_info" failed with error code 1 in /private/var/folders/g3/00_m0wqj3ql6f8zw8094j0y80000gq/T/pip-install-CZUbdT/MySQL-python/
+
+经过自己的一番寻找和并受到这篇mac _mysql.c:44:10: fatal error: ‘my_config.h' ... - 简书文章的启发，我找到的问题的原因。
+
+在说出原因之前，有一件事情需要事先强调，我本地是已经安装mysql的，并且安装路径是
+
+/usr/local/mysql/bin/mysql
+
+下载MySQL-python工程文件，解压后在pycharm中打开，在setup_posix.py中52行，第8行加上断点。
+
+library_dirs = [ dequote(i[2:]) for i in libs if i.startswith(compiler_flag("L")) ]
+libraries = [ dequote(i[2:]) for i in libs if i.startswith(compiler_flag("l")) ]
+
+[image:1FF8AF5C-F614-4A72-A1FB-A9ECC09EA263-46095-00027648D8997233/4444BDF5-C9B8-4CFA-9675-F7AC5DED6571.png]
+
+因为site.cfg中的mysql_config默认注释掉的，所以无法获取mysql_config的path,setup_posix.py中第34行不会执行if中给  mysql_config.path赋值的代码。
+
+if 'mysql_config' in options:
+    mysql_config.path = options['mysql_config']
+
+这也会导致后面libs赋值出现问题。
+
+site.cfg中的mysql_config注释前后mysql_config(what)获取的数值。
+
+# #mysql_config = /usr/local/bin/mysql_config
+<type 'list'>: ['-L/usr/local/Cellar/mysql-connector-c/6.1.11/lib', '-l']
+
+# mysql_config = /usr/local/mysql/bin/mysql_config
+<type 'list'>: ['-L/usr/local/mysql/lib', '-lmysqlclient', '-lssl', '-lcrypto']
+
+如何解决上面的问题？
+
+更改MySQL-python工程文件下的site.cfg。
+
+from
+#mysql_config = /usr/local/bin/mysql_config
+
+to
+mysql_config = /usr/local/mysql/bin/mysql_config
+
+在终端中切换到解压后MySQL-python工程文件目录下，执行下面代码
+
+$ python setup.py clean
+$ python setup.py build
+$ sudo python setup.py install
+$ pip list
+
+列表中显示MySQL-python 1.2.5已经安装。
+
+
+走过的弯路
+
+在没有找到正确的解决方法之前，我走了很多弯路，下面是列举的一些。
+
+
+mysql，mysql-connector-c
+
+ld: library not found for -lssl
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+    error: command 'cc' failed with exit status 1
+
+提取用于Google搜索的关键字。
+
+MySQL-python clang: error: linker command failed with exit code 1
+
+第一条pip - Error installing mysql-python: library not found for -lssl - Stack Overflow
+
+brew uninstall mysql
+brew install mysql-connector-c
+pip install mysql-python
+brew unlink mysql-connector-c
+brew install mysql
+
+结果是无效。
+
+File "setup_posix.py", line 8, in dequote
+        if s[0] in "\"'" and s[0] == s[-1]:
+    IndexError: string index out of range
+
+$ which mysql_config
+/usr/local/bin/mysql_config
+$ vim /usr/local/bin/mysql_config
+
+寻找Create options
+
+from
+libs="$libs -l"
+
+to
+libs="$libs -lmysqlclient -lssl -lcrypto"
+
+使用wq!保存只读的文件。
+
+然后继续执行pip install mysql-python。
+
+brew uninstall mysql
+brew install mysql-connector-c
+pip install mysql-python
+brew unlink mysql-connector-c
+brew install mysql
+
+仍旧是报错
+
+cc -bundle -undefined dynamic_lookup -Wl,-F. build/temp.macosx-10.14-intel-2.7/_mysql.o -L/usr/local/Cellar/mysql-connector-c/6.1.11/lib -lmysqlclient -lssl -lcrypto -o build/lib.macosx-10.14-intel-2.7/_mysql.so
+
+ld: library not found for -lssl
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+    error: command 'cc' failed with exit status 1
+
+关键词
+
+MySQL-python ld: library not found for -lssl
+
+添加软连接
+
+$ sudo ln -s /usr/local/mysql/lib /usr/local/mysql/lib/mysql
+$ sudo ln -s /usr/local/mysql/lib/libmysqlclient.21.dylib /usr/lib/libmysqlclient.21.dylib
+
+sudo ln -s /usr/local/mysql/lib /usr/local/mysql/lib/mysql
+
+没有解决办法。
+
+
+曾经一度怀疑是virtualenv的问题
+
+可能因为是在virtualenv的原因
+
+所以执行 deactivate 重新顺序执行上面的命令。
+
+$ deactivate
+$ which python
+/Users/ourtrip/anaconda2/bin/python
+
+
+小结
+
+使用pip install MySQL-python会报出两类错误。
+
+一类称之为：找不到ssl库的链接错误。
+
+ld: library not found for -lssl
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+    error: command 'cc' failed with exit status 1
+
+另一类是：
+
+File "setup_posix.py", line 8, in dequote
+        if s[0] in "\"'" and s[0] == s[-1]:
+    IndexError: string index out of range
+
+第一类问题解决不了。
+
+第二类可以通过编辑mysql_config来解决。
+
+所以目前无法通过pip命令来成功安装 MySQL-python，只能通过下载工程文件，然后在使用下面的命令来安装。
+
+$ python setup.py clean
+$ python setup.py build
+$ sudo python setup.py install
+$ pip list
+
+经过这番与MySQL-python的缠斗，学会了下面这些内容:
+
+python的虚拟环境的切换。
+
+MySQL-python安装过程中遇到的坑与virtualenv无关。
+
+MySQL-python在setup.py中通过读取metadata.cfg, site.cfg获取配置信息。
+
+使用which 命令知道当前活跃项目的路径which python;which mysql;which mysql_config;
+
+软件名 + 错误描述，提高Google搜索结果质量。
+
+不做整理，复盘，即使能够有一次的安装成功，却不能每次都能顺利安装成功。
+

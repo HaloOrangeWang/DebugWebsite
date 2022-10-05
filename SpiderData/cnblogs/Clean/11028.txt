@@ -1,0 +1,30 @@
+安装pip install pymysql碰到的问题
+
+报错信息：
+
+Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-build-vZoYWX/pip/
+You are using pip version 8.1.1, however version 21.2.4 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+操作过程：
+
+使用 pip install --upgrade pip 升级失败
+
+使用 python -m pip install --upgrade pip 升级失败
+
+使用 python -m pip install -U --force-reinstall pip 依然失败
+
+使用 pip install --user --upgrade pip 还是失败
+
+解决步骤：
+
+curl https://bootstrap.pypa.io/pip/3.5/get-pip.py -o get-pip.py  注：python命令的话用：https://bootstrap.pypa.io/pip/2.7/get-pip.py
+
+python3 get-pip.py --force-reinstall
+
+更新缓存：hash -r
+
+再执行：pip install pymysql
+
+成功解决！
+

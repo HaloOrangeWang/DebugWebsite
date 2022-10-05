@@ -1,0 +1,33 @@
+
+一、问题复现
+
+运行 Django 项目的时候报错：django.db.utils.ProgrammingError: (1146, "Table 'tmsdata.sysMgr_syslog' doesn't exist")。
+
+翻译一下就是表不存在的意思，其实就是数据库迁移出了问题，需要重新迁移一下。
+
+
+二、解决方法
+
+先找到报错数据表对应的 migrations 文件夹，保留 __pycache__ 和 __init__.py 文件，其他的都删掉。
+
+然后其他 migrations 文件夹，进行上述一样的操作。（把之前进行数据库迁移生成的文件记录全给删掉）
+
+再去数据库里面，把报错对应的记录也删除，如下图：
+
+最后，进行数据库迁移操作。我是用的 Pycharm 自带的这个：
+
+然后先执行下面这行命令：
+
+makemigrations
+
+再执行下面这行命令：
+
+migrate
+
+此时就表示数据库迁移成功，再运行项目，发现成功运行：
+
+
+三、参考
+
+django.db.utils.ProgrammingError: 1146 解决办法
+

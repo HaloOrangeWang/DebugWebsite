@@ -1,0 +1,60 @@
+
+前言
+
+最近在编写python程序的时候要用到matplotlib这个模块，但是老出错。每次去百度google上查呢，也查不到结果（没有一个合适的，没有一个能解决我的问题），这个困扰了我大概一周，最后在今天周五的早上茅塞顿开，故记录如下：
+
+
+环境
+
+Python 2.7
+
+Win10 64位中文版操作系统
+
+
+具体问题
+
+**我写的代码（片段）**如下：
+
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+
+运行之后错误信息如下：
+
+Traceback (most recent call last):
+ File “E:/2018��һ��ѧ��/�߼��������/����/OCR/raw code/ocr.py”, line 2, in 
+ import matplotlib.pyplot as plt
+ File “C:\Python27\lib\site-packages\matplotlib\pyplot.py”, line 71, in 
+ from matplotlib.backends import pylab_setup
+ File “C:\Python27\lib\site-packages\matplotlib\backends_init_.py”, line 16, in 
+ line for line in traceback.format_stack()
+ File “C:\Python27\lib\site-packages\matplotlib\backends_init_.py”, line 18, in 
+ if not line.startswith(‘File " frozen importlib._bootstrap’))
+ UnicodeDecodeError: ‘ascii’ codec can’t decode byte 0xd1 in position 15: ordinal not in range(128)
+
+
+最开始的解决方案（无效）
+
+1）找了很久都没在搜索引擎上找到对应的问题，最后找到了 [1] ，这里面说是什么Fedora系统的问题，但是我不是fedora系统啊。反正半天也搞不懂哪里错了
+
+2）在百度上说是Matplotlib这个模块和其他模块的来源不一样，要统一用pip2下载，或者统一去https://www.lfd.uci.edu/~gohlke/pythonlibs/ 下载。虽然我很懵逼，但是还是照做了，把matplotlib卸载了（用pip2 uninstall matplotlib指令）。然后重新都在这个网站下。但是还是报错。
+
+有点绝望。
+
+
+最后的解决方案（有效）
+
+答案很简单，就是在用matplotlib的时候，不要把你的python文件放在中文路径下（有中文的路径），否则必然报错。
+
+这个其实我之前就应该注意到的，很多代码编辑器似乎都不喜欢中文路径，所以常常把它们放在英文路径下是最保险的。（会少很多幺蛾子）
+
+所以在我把代码放到英文路径之后，一切就正常了。
+
+
+总结
+
+要多思考，勤学习，绝不停滞，勇于创新。
+
+[1] UnicodeDecodeError: ‘ascii’ codec can’t decode byte 0x8e in position 20: ordinal not in range(128) #9196. https://github.com/matplotlib/matplotlib/issues/9196
+
+写作时间：2018-06-29
+

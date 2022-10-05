@@ -1,0 +1,41 @@
+
+问题描述
+
+在将一个数组送入tensorflow训练时，报错如下：
+
+ValueError: Failed to convert a NumPy array to a Tensor (Unsupported object type numpy.ndarray)
+
+数组元素为数组，每个数组元素的shape不一致，示例如下：
+
+
+环境
+
+python 3.7.9
+
+tensorflow 2.6.0
+
+keras 2.6.0
+
+
+解决方法
+
+stackoverflow上有许多类似的报错，大概意思都是数据类型错误，转换的数据类型非报错中括号里的数据类型，如：
+
+Unsupported object type numpy.ndarray指cropImg数组元素不是numpy.ndarray类型。
+
+博主非常不解，尝试了许多方法，都显示cropImg数组元素数据类型为numpy.ndarray，但错误一直存在。
+
+后来突然转念，在生成cropImg数组时，有一个warning：
+
+cropImg数组元素为shape不一致的数组，这说明cropImg数组元素类型实际上为object，会不会是tensorflow不接受object类型的数据导致的？
+
+将cropImg数组元素转换为shape一致后，问题解决。
+
+参考链接
+
+https://stackoverflow.com/questions/62570936/valueerror-failed-to-convert-a-numpy-array-to-a-tensor-unsupported-object-type
+
+https://stackoverflow.com/questions/58636087/tensorflow-valueerror-failed-to-convert-a-numpy-array-to-a-tensor-unsupporte
+
+https://blog.csdn.net/liveshow021_jxb/article/details/112752145
+

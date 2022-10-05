@@ -1,0 +1,50 @@
+今天上手学习scrapy在建立虚拟环境后，pip安装scrapy出现如下报错：
+
+error: command ‘C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\x86_amd64\cl.exe’ failed with exit status -1073741515
+
+先说明本人使用win10，Python3.6，pycharm2017.3（因为pycharm方便一些新手安装第三方包和建立虚拟环境）.
+
+回看这个错误“error: command ‘C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\x86_amd64\cl.exe’ failed with exit status -1073741515”，显示的是一个VS组件加载失败退出，因该是缺少相应的dll文件。在google，Stack Overflow一波后，也看到不少解决办法：
+
+按照报错安装相应dll文件（应该可行）
+
+按照报错安装相应dll文件（应该可行）
+
+cmd下显示什么包没安装成功，就单独安装这个包，在重新安装scrapy
+
+cmd下显示什么包没安装成功，就单独安装这个包，在重新安装scrapy
+
+我使用了第二种解决方法，因为是无法安装twisted，所以先cd到虚拟环境的scripts目录下输入activate就能进入虚拟环境
+
+因为最初是twisted无法直接安装，所以直接pip安装也许会报错，推荐通过whl安装。安利一个网站Unofficial Windows Binaries for Python Extension Packages。
+
+1. 下载与系统对应的whl文件(下载到scripts目录下)
+
+2. 在scripts目录下，通过命令 pip install XXX.whl（XXX是下载的whl文件名）
+
+3. 安装成功后，pip install scrapy就行了
+
+4. 如果还有其他包无法安装，同上类似即可
+
+还有一个问题，有可能你安装scrapy时下载非常慢，导致连接超时。这里推荐使用豆瓣的镜像，使用pip install -i https://pypi.douban.com/simple scrapy命令安装就好了。（注意了是https）
+
+这里安利一波pycharm这款IDE，经常看到有同学无法成功安装第三方库，无法创建虚拟环境，还以此打趣，类似“安装个wordcould花费了一下午”，对此我只有一句话，
+
+然后对大多数人都建议使用pycharm这款神器（不用不知道o(￣︶￣)o
+
+pycharm中快捷键Ctrl + Alt +s
+
+搜索project Interpreter
+
+如下所示即可
+
+箭头一可以install各种包
+
+箭头二可以新建python环境，含虚拟环境
+
+箭头三可以选择当前项目环境
+
+还有在Project Structure中可以选择多个项目共存
+
+其实这些都不是问题，掌握了一些处理这类问题的经验，真心觉得sublime3才是最好的工具
+

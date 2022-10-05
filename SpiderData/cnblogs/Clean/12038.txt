@@ -1,0 +1,60 @@
+参考资料：
+
+针对django2.2报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0xa6 in position 9737: ill.... - 人生如梦，亦如幻 - 博客园 (cnblogs.com)
+
+django项目启动时报 'str' object has no attribute 'decode' - python黑客编程 - 博客园 (cnblogs.com)
+
+(1条消息) ,跪求大神解答。-Python-CSDN问答
+
+(1条消息) AttributeError: ‘str‘ object has no attribute ‘decode‘_待到春花烂漫时-CSDN博客
+
+
+项目版本
+
+Python：3.7
+
+Django：2.2
+
+
+问题描述
+
+在启动项目后，访问系统页面，报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0xa6 in position 9737: illegal multibyte sequence
+
+解决该报错后，再次访问，报错：AttributeError: 'str' object has no attribute 'decode'
+
+
+解决
+
+
+报错1：
+
+打开[python所在目录]\Lib\site-packages\django\views\debug.py文件，转到line331：
+
+将其改成：（加上encoding="utf-8"）
+
+即可解决。
+
+
+报错2：
+
+打开[python所在目录]\Lib\site-packages\django\db\backends\mysql\operations.py文件，转到line146，找到：
+
+将decode改成encode即可：
+
+
+ps:
+
+关于此报错，网上还有两种说法可解决：
+
+将query = query.decode(errors='replace')所在这一段注释（似乎不可以）
+
+更换django的版本：这是django2.2的一个bug，将django换成更高或更地的版本可以解决。
+
+
+
+总结
+
+这个错误主要是python版本和django版本不对应的问题，python3中没有decode方法，但是django还在用，因此造成了错误。在另一个环境中，用的python3.7+django3，就没有同样的错误。
+
+在python3里面，字符串要先encode手动指定其为某一编码的字节码之后，才能decode解码。比如：.encode('utf-8').decode('unicode_escape')
+

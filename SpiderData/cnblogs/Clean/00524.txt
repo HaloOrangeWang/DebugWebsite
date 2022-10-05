@@ -1,0 +1,79 @@
+SyntaxError at /blog/ news/story
+Non-ASCII character '\xe4' in file D:\MyPython\day23\HelloWorld\blog\views.py on line 42, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details (views.py, line 42)
+
+当使用中文时会报错：
+
+def introduce(req):
+    return HttpResponse("<h1>ok你</h1>")
+
+其解决方法是：在文件前面加入
+
+#coding:utf-8
+
+其实不止在Django，在python文件中开头为了支持中文我们都应该加上
+
+#coding:utf-8
+
+在初学时一直使用，只不过后来慢慢忘了，那时候使用的是：
+
+# -*- coding:utf-8 -*-
+
+当然，这两个都是可以使用的
+
+另外：该注释最好放在文件开始，不然会无效
+
+以上为回顾，下面开始重点！！！
+
+重点+补充：上面只是针对某个文件下对应功能的编码，对于整个项目则用处不大，需要重新调整
+
+在项目启动文件manage.py中修改系统的默认文件编码
+
+原来文件编码是：python安装目录的Lib文件夹下，有一个叫site.py的文件
+
+首先了解一下site.py模块： https://docs.python.org/2/library/site.html
+
+文中说到This module is automatically imported during initialization
+
+这个模块将在解释器启动的时候自动执行。
+
+所有开始了解这个模块：
+
+主函数：
+
+def main():
+    global ENABLE_USER_SITE
+
+先了解setencoding()：设置了默认编码为ASCII　　encoding = "ascii"
+
+可以看到默认文件编码是ASCII编码
+
+也可以使用sys模块中getdefaultencoding()获取默认编码
+
+print(sys.getdefaultencoding())#ascii
+
+重点：
+
+if hasattr(sys, "setdefaultencoding"):
+        del sys.setdefaultencoding
+
+因为这个site.py每次启动python解释器时会自动加载，所以main函数每次都会被执行，setdefaultencoding函数一出来就已经被删除了。
+
+所以通过import引用进来时其实已经没有了，所以必须reload一次sys模块，这样setdefaultencoding才会为可用，才能在代码里修改解释器当前的字符编码。
+
+当没有使用reload时：会无法找到setdefaultencoding该函数
+
+#AttributeError: 'module' object has no attribute 'setdefaultencoding'
+
+所有要想在项目中设置编码：
+
+需要在启动文件manage.py中设置：
+
+之后就可以在项目中肆无忌惮的使用中文了
+
+补充:使用的是python2.7　　Django1.11.11
+
+对于低版本Django1.8，使用过发现上面的reload和setdefaultencoding可以修改项目编码为utf-8，但是中文依旧显示不了
+
+
+python---补充django中文报错（2），Django3.5出错
+

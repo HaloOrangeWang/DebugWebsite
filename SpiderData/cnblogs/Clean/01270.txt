@@ -1,0 +1,87 @@
+
+CentOS7 Failed to start LSB: Bring up/down解决方法
+
+centos7.0中service network restart重启报错的问题
+
+报错信息：
+
+/etc/init.d/network restart
+
+Restarting network (via systemctl):  Job for network.service failed because the control process exited with error code. See "systemctl status network.service" and "journalctl -xe" for details.
+
+[失败]
+
+使用systemctl status network.service命令查看结果如下：
+
+network.service - LSB: Bring up/down networking
+
+Loaded: loaded (/etc/rc.d/init.d/network)
+
+Active: failed (Result: exit-code) since 三 2016-08-17 11:34:36 CST; 54s ago
+
+Docs: man:systemd-sysv-generator(8)
+
+Process: 3847 ExecStart=/etc/rc.d/init.d/network start (code=exited, status=1/FAILURE)
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn network[3847]: RTNETLINK answers: File exists
+
+8月 17 11:34:36 python.cn systemd[1]: network.service: control process exited, code=exited status=1
+
+8月 17 11:34:36 python.cn systemd[1]: Failed to start LSB: Bring up/down networking.
+
+8月 17 11:34:36 python.cn systemd[1]: Unit network.service entered failed state.
+
+8月 17 11:34:36 python.cn systemd[1]: network.service failed.
+
+查看系统日志，报错如下：
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python network: RTNETLINK answers: File exists
+
+Aug 17 11:34:36 python systemd: network.service: control process exited, code=exited status=1
+
+Aug 17 11:34:36 python systemd: Failed to start LSB: Bring up/down networking.
+
+Aug 17 11:34:36 python systemd: Unit network.service entered failed state.
+
+Aug 17 11:34:36 python systemd: network.service failed.
+
+Aug 17 11:36:28 python systemd: Starting LSB: Bring up/down networking...
+
+1 修改mac地址
+
+ip addr 找到mac地址，然后修改配置文件中的mac地址
+
+2 跟虚拟机自带的NetworkManager这个管理套件有关系，关掉就可以解决。
+
+systemctl stop NetworkManager
+
+systemctl disable NetworkManager
+
+systemctl start network.service
+

@@ -1,0 +1,43 @@
+1.报错原因：是由于某些错误造成唤起该任务的时间晚于本应执行的时间。例如本应9：00唤起的任务，在9：05才唤起。
+
+2.源码解读：
+
+以下源代码中会看到：
+
+difference=现在的时间 减去 run_time(本应唤起任务的时间)
+
+misfire_grace_time的源码解释为：多少秒后仍然允许任务允许（意思就是当唤起任务时，如果此时时间超出了本应运行的时间，在多少秒内依然可以运行）
+
+:param int misfire_grace_time: seconds after the designated runtime that the job is still
+            allowed to be run (or ``None`` to allow the job to run no matter how late it is)
+
+代码会检查misfire_grace_time这个参数与difference参数的大小。当difference大于misfire_grace_time这参数时，就会报错Run time of job "xxx" was missed by xxx。在别的博客中看到说这个misfire_grace_time参数是起允许任务最多允许多长时间，但实际上好像并不是那么回事。
+
+def run_job(job, jobstore_alias, run_times, logger_name):
+    """
+    Called by executors to run the job. Returns a list of scheduler events to be dispatched by the
+    scheduler.
+
+"""
+    events = []
+    logger = logging.getLogger(logger_name)
+    for run_time in run_times:
+        # See if the job missed its run time window, and handle
+        # possible misfires accordingly
+        if job.misfire_grace_time is not None:
+            difference = datetime.now(utc) - run_time
+            grace_time = timedelta(seconds=job.misfire_grace_time)
+            if difference > grace_time:
+                events.append(JobExecutionEvent(EVENT_JOB_MISSED, job.id, jobstore_alias,
+                                                run_time))
+                logger.warning('Run time of job "%s" was missed by %s', job, difference)
+                continue
+
+logger.info('Running job "%s" (scheduled at %s)', job, run_time)
+
+3.解决方案：
+
+设置misfire_grace_time参数。也就是当任务被唤起时，如果在misfire_grace_time时间差内，依然运行。
+
+不设置时默认为1。
+

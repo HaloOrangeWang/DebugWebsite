@@ -1,0 +1,28 @@
+项目中经常会遇到如下报错：
+
+严重:Error linstenerStart
+
+这种报错，我们看不出来到底是出现了什么问题。下面我们就一步一步来解决：
+
+（1）首先进入项目的classes目录下：
+
+（2）进入目录后，创建logging.properties 文件，并在文件中写入：
+
+handlers = org.apache.juli.FileHandler, java.util.logging.ConsoleHandler  
+      
+    ############################################################  
+    # Handler specific properties.  
+    # Describes specific configuration info for Handlers.  
+    ############################################################  
+      
+    org.apache.juli.FileHandler.level = FINE  
+    org.apache.juli.FileHandler.directory = ${catalina.base}/logs  
+    org.apache.juli.FileHandler.prefix = error-debug.  
+      
+    java.util.logging.ConsoleHandler.level = FINE  
+    java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+
+然后保存。
+
+保存后直接重新运行项目，我们就可以直接看见报错了。
+

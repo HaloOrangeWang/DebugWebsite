@@ -1,0 +1,37 @@
+1. https://blog.csdn.net/computerme/article/details/78645445
+
+这个很全，感谢作者
+
+2. 问题：我遇到的
+
+WITH_PYTHON_LAYER=1 make all -j&& make pycaffe
+
+问题
+
+CXX/LD -o python/caffe/_caffe.so python/caffe/_caffe.cpp touch python/caffe/proto/__init__.py touch
+
+ptyhon/caffe/proto __init__.py permission denied
+
+解决
+
+因为我不是在root下，没有使用
+
+sudo su
+
+我使用的是
+sudo make ...
+
+所有一直错，编译过去，还是出现importerror:no module named python_confmat
+
+在root下  
+vim ~/.bashrc 加入PYTHONPATH就行
+source ~/.bashrc
+
+3. 当时draw_net.py 也不能使用，在root下就可以使用了
+
+4. 必须记录一下！！在用pycharm远程python+tensorflow时候，一直报错说我没有写入、读取、等权限！！！PermissionError，permission denied
+
+这可能是因为我的tensorflow是在root下安装的，而pycharm连接远程的时候，只能触及到我的user用户，所以一直有权限问题！
+
+解决方法：使用绝对路径就可以，是指你要写入或是读取的路径要改为绝对路径就ok
+

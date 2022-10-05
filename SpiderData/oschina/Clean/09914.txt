@@ -1,0 +1,152 @@
+报错信息：[HY000](1652) [Oracle][ODBC][Ora]ORA-01652: 无法通过 128 (在表空间 TEMP 中) 扩展 temp 段
+
+原因分析：oracle临时表空间不足，事务执行一般将会报ora-01652无法扩展临时段的错误。因为oracle总是尽量分配连续空间，一旦没有足够的可分配空间或者分配不连续就会出现上述的现象。
+
+回忆下临时表空间的作用：
+
+　　临时表空间主要用途是在数据库进行排序运算[如创建索引、order by及group by、distinct、union/intersect/minus/、sort-merge及join、analyze命令]、管理索引[如创建索引、IMP进行数据导入]、访问视图等操作时提供临时的运算空间，当运算完成之后系统会自动清理。
+
+当临时表空间不足时，表现为运算速度异常的慢，并且临时表空间迅速增长到最大空间（扩展的极限），并且一般不会自动清理了。
+
+解决办法：我们知道由于ORACLE将表空间作为逻辑结构-单元，而表空间的物理结构是数据文件，数据文件在磁盘上物理地创建，表空间的所有对象也存在于磁盘上，为了给表空间增加空间，就必须增加数据文件。先查看一下指定表空间的可用空间，使用视图SYS.DBA_FREE_SPACE，视图中每条记录代表可用空间的碎片大小。当然也可以扩展表空间。
+
+1、增大临时表空间（或增加临时表空间文件）。
+
+2、设置临时数据文件自动扩展
+
+步骤：
+
+1、  查询临时表空间状态:  
+SQL> col file_name for a20;
+
+SQL> select tablespace_name,file_name,bytes/1024/1024file_size,autoextensible from dba_temp_files;
+
+2、  扩展临时表空间
+SQL> alter database tempfile '/u01/app/oracle/oradata/CP7PV1DB/temp01.dbf'resize 8192m;
+
+或也可增加临时表空间文件
+
+alter tablespace temp add tempfile‘/u01/app/oracle/oradata/CP7PV1DB/temp02.dbf’ size 8192m;
+
+注：临时表空间文件如果已经32G，达到最大文件大小，只能添加文件。
+
+SQL> alter tablespace temp add tempfile '/u01/app/oracle/oradata/CP7PV1DB/temp03.dbf' size 4G autoextend on next 128M maxsize 6G;
+
+SQL> ALTER TABLESPACE TEMP DROP TEMPFILE '/u01/app/oracle/oradata/CP7PV1DB/temp03.dbf';
+
+SQL> ALTER DATABASE TEMPFILE  '/u01/app/oracle/oradata/CP7PV1DB/temp03.dbf' RESIZE 6G;
+
+3、  设置自动扩展
+
+SQL> alter database tempfile'/u01/app/oracle/oradata/CP7PV1DB/temp01.dbf' autoextend on next 10m maxsizeunlimited;
+
+4、  扩展表空间时的报错
+
+ERROR atline 1:
+
+ORA-00376:file 201 cannot be read at this time
+
+ORA-01110:data file 201: '/u01/app/oracle/oradata/CP7PV1DB/temp01.dbf'
+
+原因是临时表空间不知道什么原因offline了，修改为online后修改成功。
+
+SQL>  alter database tempfile ‘/u01/app/oracle/oradata/CP7PV1DB/temp01.dbf’online;
+
+Database altered.
+
+5、  删除临时表空间（补充）
+
+SQL>drop tablespace temp01  including contents and datafiles;
+
+SQL> ALTER DATABASE TEMPFILE  '/u01/app/oracle/oradata/CP7PV1DB/temp01.dbf' DROPINCLUDING DATAFILES;
+
+Database altered.
+
+注意：删除临时表空间的临时数据文件时，不需要指定INCLUDING DATAFILES 选项也会真正删除物理文件，否则需要手工删除物理文件。也不能直接删除当前用户的默认表空间，否则会报ORA-12906错误。如果需要删除某一个默认的临时表空间，则必须先创建一个临时表空间，然后指定新创建的表空间为默认表空间，然后删除原来的临时表空间。
+
+6、  更改系统默认的临时表空间
+
+--查询默认临时表空间
+
+SQL> select *from database_properties where property_name='DEFAULT_TEMP_TABLESPACE';
+
+PROPERTY_NAME                  PROPERTY_VALUE       DESCRIPTION
+
+-------------------------------------------------- --------------------------------------------------
+
+DEFAULT_TEMP_TABLESPACE        TEMP       Name of default temporary tablespace
+
+--修改默认临时表空间
+
+SQL> alterdatabase default temporary tablespace temp02;
+
+Databasealtered.
+
+我们可以查询是否切换为TEMP02：
+
+SQL> select *from database_properties where property_name='DEFAULT_TEMP_TABLESPACE';
+
+PROPERTY_NAME                  PROPERTY_VALUE       DESCRIPTION
+
+-------------------------------------------------- ----------------------------------------
+
+DEFAULT_TEMP_TABLESPACE        TEMP02     Name of default temporary tablespace
+
+7、  查看临时表空间的使用率
+
+SQL>SELECT temp_used.tablespace_name,
+
+total - used as "Free",
+
+total as "Total",
+
+round(nvl(total - used, 0) * 100 /total, 3) "Free percent"
+
+FROM (SELECT tablespace_name,SUM(bytes_used) / 1024 / 1024 used
+
+FROM GV_$TEMP_SPACE_HEADER
+
+GROUP BY tablespace_name) temp_used,
+
+(SELECT tablespace_name, SUM(bytes) /1024 / 1024 total
+
+FROM dba_temp_files
+
+GROUP BY tablespace_name) temp_total
+
+WHEREtemp_used.tablespace_name = temp_total.tablespace_name;
+
+TABLESPACE_NAME                      Free      Total Free percent
+
+---------------------------------------- ---------- ------------
+
+TEMP                                 6876       8192       83.936
+
+8、  查找消耗资源比较多的sql语句
+
+Select se.username,
+       se.sid,
+       su.extents,
+       su.blocks * to_number(rtrim(p.value)) asSpace,
+       tablespace,
+       segtype,
+       sql_text
+  from v$sort_usage su, v$parameter p, v$session se, v$sql s
+ where p.name = 'db_block_size'
+   and su.session_addr = se.saddr
+   and s.hash_value = su.sqlhash
+   and s.address = su.sqladdr
+ order by se.username, se.sid;
+
+先创建一个临时表空间，把这个表空间设置为默认的临时表空间，然后把以前的临时表空间删掉，再把数据文件删掉，很简单。
+
+经验：
+
+Oracle表空间中的数据文件只能增加不能删除.;可以移动数据文件,把表空间的指针rename一下.默认的临时表空间不能脱机.
+
+Oracle表空间中的数据文件只能增加不能删除.;可以移动数据文件,把表空间的指针rename一下.默认的临时表空间不能脱机.
+
+本文同步分享在 博客“xjsunjie”（51CTO）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

@@ -1,0 +1,24 @@
+mkvirtualenv py35
+
+python新建虚拟环境报错，setuptools pip wheel failed with error code 2
+
+刚好昨天在CentOS安装的时候也总是报setuptools的问题。仔细看了一下报错，发现问题并不是在setuptools或pip中。
+
+准确的error信息应该在报错的上部(error的信息被覆盖找不到了，无法截图)。类似的错误见：http://www.aichengxu.com/python/11157459.htm
+
+仔细看了一下，发现真正的报错是 ReadTimeoutError: HTTPSConnectionPool(host='pypi.python.org', port=443)
+
+为网络问题报错。我也不清楚创建虚拟环境为什么需要连接到网络才能进行。
+
+公司网络总是各种问题不断，不过还是第一次在搞环境的时候碰到。
+
+将电脑网络切换到手机热点，重新mkvirtualenv py35. 一切顺利。速度比用公司网络快多了。
+
+如果是本身网络到源网络之间有问题，也可以通过配置pip来解决。
+
+一种建议是将源网络切换到国内网络。国内的源的话网络连接应该不成问题。
+
+另外可以通过修改pip超时时间来改进，让网络慢慢下。这种只适用于网络慢的情况。如果由于网络限制，根本就连不上源就没办法了。
+
+修改pip的配置参考：[segmentfault]pip安装python库总是下载超时，有什么解决方法吗？
+

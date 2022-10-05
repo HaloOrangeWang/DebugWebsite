@@ -1,0 +1,23 @@
+
+转义
+
+在Python使用sqlite3模块新增数据时，一般需要把引号转义，避免SQL报语法错误。sqlite3使用​​?​​​自动转义。
+ 举个例子，表结构如下：
+
+入库操作：
+
+如果数据里带有引号，就会报错：
+
+用​​?​​转义一下，就可以了：
+
+注意：表名、字段名不能转义，否则报错。表名、字段名可以用反引号(`)转义。
+
+OperationalError: near “?”: syntax error
+
+
+参考
+
+​​https://docs.python.org/2/library/sqlite3.html#converting-sqlite-values-to-custom-python-types​​​​ ​​
+
+​​https://stackoverflow.com/questions/35524719/python-sqlite-escape-string-select-column​​
+

@@ -1,0 +1,25 @@
+问题：
+
+　　今天脚本在Linux上执行的时候报错了。raise URLError(err)
+　　urllib2.URLError: <urlopen error [Errno -2] Name or service not known>
+
+解决：
+
+　　1.百度、Google后，没找到完全匹配的解决方法，但是都提到DNS解析，其中一个说是在/etc/resolv.conf中添加 nameserver  8.8.8.8。
+
+但是，我查看/etc/resolv.conf文件，已经是这样配置了，当时就排除了这个原因。
+
+　　后来换成用python的第三方库requests去请求，得到更详细的信息。
+
+看来是重定向请求到‘d。。.com’这个地址的时候，就报错的。
+
+　　然后试着在hosts文件中添加地址对应的ip，然后就能正常请求了。
+
+　　2.但是，配置、脚本都没改过，为什么之前没有修改hosts，都执行得好好的，今天就不行了呢？
+
+带着这个疑问，又百度了下nameserver，在这篇文章https://blog.csdn.net/u014453898/article/details/62426848中，提到8.8.8.8 这个IP是谷歌公司给出免费的DNS服务器。但由于是外国的，用起来可能会有网速慢的问题。
+
+　　然后，我把/etc/resolv.conf 中的nameserver 改成用本地的202.96.134.133，去掉之前配置的hosts，同样也能请求成功。
+
+　　所以，今天脚本不能正常请求的原因是nameserver的配置问题了，用8.8.8.8是国外的dns服务器，网络问题无法解析请求的域名。
+

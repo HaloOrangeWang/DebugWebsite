@@ -1,0 +1,19 @@
+mysql中字段包括date和datetime两种时间类型
+1、date类型
+
+date = datetime.datetime.now.strftime("%Y-%m-%d")
+sql = “INSERT INTO TABLE_NAME(字段) values(str_to_date(’%s’,’%%Y-%%m-%%d’))”%(date)
+
+2、datetime类型
+
+datetime = datetime.datetime.now.strftime("%Y-%m-%d %H:%M:%S")
+sql = “INSERT INTO TABLE_NAME(字段) values(str_to_date(’%s’,’%%Y-%%m-%%d %%H:%%i:%%S’))”%(datetime)
+
+例子:
+
+current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+online = 100
+"insert into ops_total_online(online,create_time) values('%s','%s')" %(online,current_time)
+
+　　
+

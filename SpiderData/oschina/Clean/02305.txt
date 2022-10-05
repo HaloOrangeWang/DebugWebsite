@@ -1,0 +1,120 @@
+根据开源代码SSD-Tensorflow，训练数据的时候遇到若干问题，记录如下。
+
+
+遇到的第一个问题
+
+这个bug 无关 SSD-Tensorflow 本身。
+
+首先制作 tfrecords 格式的数据，使用教程上指令：
+
+DATASET_DIR=./VOC2007/test/
+OUTPUT_DIR=./tfrecords
+python tf_convert_data.py \
+    --dataset_name=pascalvoc \
+    --dataset_dir=${DATASET_DIR} \
+    --output_name=voc_2007_train \
+    --output_dir=${OUTPUT_DIR}
+
+按照教程上的，写了一个 change.sh 脚本文件，然后运行sh change.sh。报错如下：
+
+matthew@DL:~/SSD-Tensorflow$ sh change.sh 
+Traceback (most recent call last):
+  File "tf_convert_data.py", line 59, in <module>
+    tf.app.run()
+  File "/home/matthew/tensorflow_5/lib/python3.5/site-packages/tensorflow/python/platform/app.py", line 48, in run
+    _sys.exit(main(_sys.argv[:1] + flags_passthrough))
+  File "tf_convert_data.py", line 49, in main
+    raise ValueError('You must supply the dataset directory with --dataset_dir')
+ValueError: You must supply the dataset directory with --dataset_dir
+change.sh: 4: change.sh: --dataset_name=pascalvoc: not found
+: not found5: change.sh: --dataset_dir=./VOC2007/test/
+change.sh: 6: change.sh: --output_name=voc_2007_train: not found
+: not found7: change.sh: --output_dir=./tfrecords
+
+这个不是脚本代码本身的错误，而是因为操作系统缘故。我本地电脑的无GPU （穷啊唉~），用的是 windows 系统，然后将代码上传到服务器的 ubuntu 系统上执行。
+
+windows 的默认换行是\n\r，而 linux 的换行是\n。linux 命令的续行符号\后面是不允许添加除换行以外符号的，空格都不允许。
+
+所以上面的报错主要原因是换行符号。解决方法如下：
+
+sed -i 's/\r$//g'  change.sh
+
+使用 sed 流编辑命令，将 change.sh 每个行末的\r替换成为空。
+
+
+遇到的第二个问题
+
+在完成数据文件 tfrecords 制作之后，按照指令运行 train_ssd_network.py。成功运行代码几秒后，报错如下：
+
+INFO:tensorflow:Error reported to Coordinator: <class 'tensorflow.python.framework.errors_impl.InvalidArgumentError'>, All bounding box coordinates must be in [0.0, 1.0]: 1.002
+	 [[Node: ssd_preprocessing_train/distorted_bounding_box_crop/sample_distorted_bounding_box/SampleDistortedBoundingBoxV2 = SampleDistortedBoundingBoxV2[T=DT_INT32, area_range=[0.1, 1], aspect_ratio_range=[0.6, 1.67], max_attempts=200, seed=0, seed2=0, use_image_if_no_bounding_boxes=true, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ssd_preprocessing_train/distorted_bounding_box_crop/Shape, ssd_preprocessing_train/distorted_bounding_box_crop/ExpandDims, ssd_preprocessing_train/distorted_bounding_box_crop/sample_distorted_bounding_box/SampleDistortedBoundingBoxV2/min_object_covered)]]
+INFO:tensorflow:Finished training! Saving model to disk.
+Traceback (most recent call last):
+  File "train_ssd_network.py", line 390, in <module>
+    tf.app.run()
+  File "/home/matthew/tensorflow_5/lib/python3.5/site-packages/tensorflow/python/platform/app.py", line 48, in run
+    _sys.exit(main(_sys.argv[:1] + flags_passthrough))
+  File "train_ssd_network.py", line 386, in main
+    sync_optimizer=None)
+  File "/home/matthew/tensorflow_5/lib/python3.5/site-packages/tensorflow/contrib/slim/python/slim/learning.py", line 775, in train
+    sv.stop(threads, close_summary_writer=True)
+  File "/home/matthew/tensorflow_5/lib/python3.5/site-packages/tensorflow/python/training/supervisor.py", line 792, in stop
+    stop_grace_period_secs=self._stop_grace_secs)
+  File "/home/matthew/tensorflow_5/lib/python3.5/site-packages/tensorflow/python/training/coordinator.py", line 389, in join
+    six.reraise(*self._exc_info_to_raise)
+  File "/usr/lib/python3/dist-packages/six.py", line 686, in reraise
+    raise value
+  File "/home/matthew/tensorflow_5/lib/python3.5/site-packages/tensorflow/python/training/queue_runner_impl.py", line 238, in _run
+    enqueue_callable()
+  File "/home/matthew/tensorflow_5/lib/python3.5/site-packages/tensorflow/python/client/session.py", line 1231, in _single_operation_run
+    target_list_as_strings, status, None)
+  File "/home/matthew/tensorflow_5/lib/python3.5/site-packages/tensorflow/python/framework/errors_impl.py", line 473, in __exit__
+    c_api.TF_GetCode(self.status.status))
+tensorflow.python.framework.errors_impl.InvalidArgumentError: All bounding box coordinates must be in [0.0, 1.0]: 1.002
+	 [[Node: ssd_preprocessing_train/distorted_bounding_box_crop/sample_distorted_bounding_box/SampleDistortedBoundingBoxV2 = SampleDistortedBoundingBoxV2[T=DT_INT32, area_range=[0.1, 1], aspect_ratio_range=[0.6, 1.67], max_attempts=200, seed=0, seed2=0, use_image_if_no_bounding_boxes=true, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ssd_preprocessing_train/distorted_bounding_box_crop/Shape, ssd_preprocessing_train/distorted_bounding_box_crop/ExpandDims, ssd_preprocessing_train/distorted_bounding_box_crop/sample_distorted_bounding_box/SampleDistortedBoundingBoxV2/min_object_covered)]]
+
+问题的主要原因是：
+
+数据集中的数据标记不规范，出现了bbox四个坐标值落到到图像外的情况。
+
+提供两条解决思路：
+
+写脚本，判断出有哪些图片标记出错了。然后，删除这些标记不规范的图片，重新制作数据集。
+
+修改 tfrecords 制作过程。
+
+首先，第一个方法是可行的，就是比较麻烦，要找到原来的图片，删除，重新制作成 tfrecord 格式。我写了一个简单的脚本，检查之后发现，我使用的数据集（1W张图片）中有200+图片标记有问题，都是 xmax 或 ymax 超出了边界几个像素。
+
+一些原因（嗯嗯嗯，主要是懒，2333），我不想再制作一遍数据集。决定找个相对优雅的方法解决这个问题。于是就有了第二个方案：
+
+追踪 tf_convert_data.py，发现主要使用 datasets/pascalvoc_to_tfrecords.py 执行数据格式转化工作。找到114-119行：
+
+bboxes.append((float(bbox.find('ymin').text) / shape[0],
+                       float(bbox.find('xmin').text) / shape[1],
+                       float(bbox.find('ymax').text) / shape[0],
+                       float(bbox.find('xmax').text) / shape[1]
+                       ))
+
+修改为：
+
+bboxes.append((max(float(bbox.find('ymin').text) / shape[0], 0.0),
+                       max(float(bbox.find('xmin').text) / shape[1], 0.0),
+                       min(float(bbox.find('ymax').text) / shape[0], 1.0),
+                       min(float(bbox.find('xmax').text) / shape[1], 1.0)
+                       ))
+
+然后使用命令，重新将数据集制作成 tfrecords 格式，问题便解决了。
+
+这样做是合理的，理由如下：
+
+标记员将坐标标记错误，跳出了图像范围，这时候识别目标应该就在图像边缘，所以选取图像边界作为目标的边界是合理的。
+
+
+主要参考链接
+
+https://github.com/balancap/SSD-Tensorflow/issues/37
+
+https://blog.csdn.net/lin_bingfeng/article/details/53750516
+
+写作不易，尊重原创，喜欢请点赞，评论，打赏~
+

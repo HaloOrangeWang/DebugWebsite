@@ -1,0 +1,83 @@
+Pyhton3.6， 使用的是Pycharm
+
+1、
+
+同级目录导入包可使用方式如下；（直接运行.py文件时）
+
+from test_import2 import Css2
+import test_import2                            （直接使用import）
+from testwork.test_import2 import Css2         (这种testwork下需要有__init__.py文件，才会把testwork作为一个python的包应用，文件可以是空的，）
+
+包结构如图
+
+代码文件
+
+test_import2
+
+class Css2():
+    def __init__(self):
+        pass
+
+def fun2(self):
+        print('t2')
+
+test_import1
+
+import sys
+from .test_import2 import Css2
+
+def aa():
+    print(sys.path)
+    Css2().fun2()
+
+if __name__ == '__main__':
+    print(sys.path)
+    Css2().fun2()
+
+test_import3
+
+from testwork import test_import1
+
+test_import1.aa()
+
+在test_import1使用from .test_import2 import Css2 时提示报错
+
+Traceback (most recent call last):
+  File "E:/pycharm/testwork/test_import1.py", line 3, in <module>
+    from .test_import2 import Css2
+ModuleNotFoundError: No module named '__main__.test_import2'; '__main__' is not a package
+
+__main__表示程序入口，这里也就是文件本身，意思是文件不是一个Python的包
+
+加"."后就报这个错误
+
+但网上看到其他的资料，和lib/site-pakages中在引用同级文件时也大量采用了 from .models import xx类似的形式；
+
+一番折腾下，特别是在site-pakages的requests库下添加测试文件，在使用类似requests的引用，发现也可以使用from .models import xx形式的；
+
+最后就像上面建了test_import3，调用test_import1，而test_import1使用from .models import xx形式调用test_import2
+
+发现test_import3可以正常使用；
+
+最后得出结论加"."的间接引用方式不能直接运行，但其它模块可用通过调用他来使用；
+
+2、
+
+像图片上这种，大量采用了--from pakages.models import xx 的引用同级目录文件方式；
+
+会出现报错，1、可能是包缺少__init__.py文件，不认可你的文件夹名是一个包
+
+2、可能是应为没有搜索路径不对
+
+使用 import sys  sys.path  查看系统搜索路径
+
+要有一个路径是包所在的父目录下，也就是图中“”“ethereum”这个目录的上一级目录；
+
+解决方法是配置搜索路径；（也可以直接把包扔到搜索路径下）
+
+简单的方法在sys.path展示的路径下（最好是选择一个类似这个C:\Python36\Lib\site-packages的路径，它第三方库管理存储的地方）添加xxx.pth文件（内容为你想要加载的包父目录）
+
+如图我的ethereum文件夹就在E:\go\wen这个路径下。
+
+以上都是个人实践总结，如有错误，欢迎大家指出
+

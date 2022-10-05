@@ -1,0 +1,148 @@
+
+前言
+
+异常处理是为了让程序更加健壮，让程序面对一下非法输入或者“呆子”有一定应对能力。python的异常处理跟java很像，java中把异常粗略划分为错误和运行异常。在这里统一叫Error
+
+
+常见的错误
+
+这里只列举常见的，更快的明白python异常处理逻辑才比较重要。
+
+
+NameError
+
+这是比较常见的一个错误，就是没有定义变量就把它拿来用。
+
+
+SyntaxError
+
+这是语法错误，少了个冒号啊，没有空格啊，都会出现这个错误。
+
+
+IO Error
+
+在做文件操作的时候常遇到的错误，这里介绍一下FileNotFoundError 就是做文件操作的时候文件不存在。在下面的例子我们会拿IO Error 做描述。因为这是最常见最典型的”运行时异常“。
+
+
+ZeroDivisionError
+
+在做数据处理和计算的时候会遇到这种错误就是除数是 0。
+
+
+ValueError
+
+数值错误，一般就是数值运算的时候发生的错误，这个错误也不是特别好避免。
+
+
+IndentationError
+
+这是新手常遇到的一种错误，就是缩进问题啦。
+
+
+处理
+
+上述的异常（错误）python的解释器都可以 捕获。不过等它捕获到了我们的 程序也就结束了。所以我们要在python解释器之前用自己的代码捕获这些异常处理掉，从而让自己的代码能够有效的按照我们理想的方向运行下去。
+
+
+try-except
+
+python中最基本的处理异常的语句块，相当于java中的try-catch. 
+ 基本语法格式
+
+try:
+    # 执行语句快
+    pass
+except : #异常名字
+    pass 
+    # 处理异常
+
+基本逻辑就是 让可能产生异常的代码正常的在try中运行。用except 去捕获异常，所以except 后面写的是异常的名称。如果捕获到了该异常那么就在下面的语句块去处理异常。
+
+实际例子
+
+try:
+    j
+except NameError as e:
+    print("catch Error")
+print("顺利到这")
+
+由上一个小结知道不定义j使用j会产生一个NameError 。如果直接写程序会提前结束，python解释器就会捕获到异常并且抛出。我们这里可以手动捕获，处理之后可以顺利到下文！
+
+注意 
+ 无论是python 的try-except，还是java的try-catch都只能捕获运行时异常。如果代码本身就是错的根本就不能运行更别谈怎么捕获异常。
+
+##try-except-else 
+ 如果有java基础的同学就知道try里面不能写一坨东西，还有就是不能疯狂的使用try-except。为了避免try语句块过长。弄了个try-except-else 
+ 基本语法
+
+try:
+    pass
+except:
+    pass
+else:
+    #没有错误可以去做别的事情
+    pass
+
+那么try里面就可以只写可能出错的语句，让程序更加精简。
+
+
+try-finally
+
+try:
+    pass
+finally:
+    #如果没有捕获到异常。代码执行。
+    #如果捕获到异常，先执行这个，然后丢给解释器进行处理异常。
+    #总之就是无论如何都会做这个操作。
+    pass
+
+先看一个没有异常的例子
+
+#1.txt里面的内容是print
+try:
+    f=open('1.txt')
+    print(f.read())
+finally:
+    print("finally")
+
+执行完了try立马会执行finally
+
+如果发生异常finally也会执行
+
+try:
+    f=open('12.txt')
+    print(f.read())
+finally:
+    print("finally")
+
+
+try-except-finally
+
+加一个异常处理
+
+try:
+    pass
+except:
+    #处理异常
+    pass
+finally:
+    #必须做的事
+    pass
+
+#1、如果try 没有捕获到异常，执行finally语句。
+#2、如果捕获到了异常先处理异常，然后执行finally
+
+例子
+
+try:
+    f
+except NameError as e:
+    print("catch error")
+finally:
+    print("必须做的事")
+
+
+try-except-else-finally
+
+终极大合体。。
+

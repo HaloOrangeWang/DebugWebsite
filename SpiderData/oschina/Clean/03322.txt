@@ -1,0 +1,19 @@
+问题:
+
+In [28]: os.system('./test_shell_no_para.sh') 
+sh: 1: ./test_shell_no_para.sh: Permission denied
+Out[28]: 32256
+
+解决办法:
+
+遇到该问题首先想到应该是没有执行权限。 
+    给bash脚本添加执行权限
+
+chmod +x xx.sh命令
+
+重新提交spark任务，如若还有该问题，则可能该脚本还需要可读或者可写 则设置该脚本所在的目录src权限，
+
+chmod 777 -R src
+
+这样问题就被解决了
+

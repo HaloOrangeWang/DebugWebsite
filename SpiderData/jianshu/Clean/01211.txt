@@ -1,0 +1,49 @@
+
+报错内容一:
+
+import MySQLdb
+## Reason: image not found
+
+一些平台的解决办法如下：
+
+1、建立软链接，说是动态库的问题（下面这个注意版本，可以自己去 /usr/local/mysql/lib/这个位置看看自己是18版本还是21 ，然后进行更改）
+
+sudo ln -s /usr/local/mysql/lib/libmysqlclient.18.dylib /usr/lib/libmysqlclient.18.dylib
+
+
+报错内容二：输入方法以后出现
+
+sudo ln -s /usr/local/mysql/lib/libmysqlclient.21.dylib /usr/lib/libmysqlclient.21.dylib
+
+### Operation not permitted
+
+2、一些解决办法说关闭csrutil
+
+也即重启电脑，重启过程中按cmd +R来到Recovery 模式，在终端输入
+
+‘csrutil diable’，再输入解决办法一的做法 ，但是会让你的电脑系统安全性没了
+
+
+最后解决办法！
+
+3、看帖子说其实只需要改变环境变量，本人成功了，终端版本是 zsh
+
+# zsh
+open ~/.zshrc
+#打开了上面的文件后在里面加入环境变量（注意版本注意版本），添加完后cmd + S保存
+export DYLD_LIBRARY_PATH=/usr/local/mysql-8.0.19-macos10.15-x86_64/lib/:$DYLD_LIBRARY_PATH
+
+source ~/.zshrc #使文件生效
+# bash 的话就是
+open ~/.bash_profile
+#添加环境变量
+source ~/.bash_profile
+
+最后在jupyter notebook 里面import MySQLdb就没有报错了～，写这篇的初衷是网上很多解决办法，但是存在论坛比较花时间，有一些解决办法代价还蛮高的，因此写了这篇帖子记录一下报错和解决的办法。
+
+解决方法参考网址：
+
+https://segmentfault.com/q/1010000000329095
+
+https://stackoverflow.com/questions/6383310/python-mysqldb-library-not-loaded-libmysqlclient-18-dylib#answer-13421926
+

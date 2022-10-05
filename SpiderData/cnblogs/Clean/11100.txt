@@ -1,0 +1,80 @@
+https://blog.csdn.net/weixin_39863616/article/details/110572663
+
+pip命令可以对python第三方包进行高效管理的工具。
+
+本文记录作者学习python以来常用的pip命令，并会不断更新。
+
+！！！在打开cmd时，请用管理员权限打开！！！
+
+
+常用pip命令语句如下：
+
+#查看python版本# python
+
+#查看python安装路径# where python
+
+#查看pip版本及pip安装路径# pip -V
+
+#查pip安装的库的默认安装路径# python -m site
+
+#查看已安装的库# pip list
+
+#查看可升级的库# pip list -o
+
+#升级pip版本（方法一 ）# python -m pip install --upgrade pip
+
+#升级pip版本（方法二 ）# pip install -U pip
+
+#下载XXXX库# pip install XXXX
+
+#查看XXXX库（已安装）的路径# pip install XXXX
+
+#下载XXXX库（解除时间限制）# pip --default-timeout=1000 install XXXX
+
+#卸载XXXX库# pip uninstall XXXX
+
+#更新XXXX库# pip install --upgrade XXXX
+
+#更新2.0版本的XXXX库（双等号中间和前后均无空格）# pip install XXXX==2.0
+
+#强制更新XXXX库# pip install --ignore-installed XXXX
+
+
+报错总结：
+
+在我们安装或升级某些库（XXXX）的时候，有时会出现如下报错：
+
+【1】Cannot uninstall 'XXXX'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.
+
+解决方案1：找到该目录C:Program FilesAnaconda3Libsite-packages下的XXXX.egg-info文件删除后，正常输入pip命令即可
+
+解决方案2：若不存在XXXX.egg-info文件，则在正常命令中加“--ignore-installed”即可。如“pip install --upgrade XXXX”→“pip install --upgrade --ignore-installed XXXX”
+
+【2】socket.timeout: The read operation timed out
+
+解决方案：提示操作超时，应该输入pip --default-timeout=1000 install XXXX
+
+另：如果更新pip提示超时，建议更换下载源（例子为豆瓣源）。输入：python -m pip install --upgrade pip -ihttp://pypi.douban.com/simple --trusted-host http://pypi.douban.com
+
+【3】Could not install packages due to an EnvironmentError: [WinError 5] 拒绝访问。: 'C:UsersAdministratorAppDataLocalTemppip-uninstall-olx6o3zbpip.exe'
+
+解决方案：在升级pip时提示环境错误，应该在pip命令中加入“--user”，即：修改pip更新命令为：pip install -U --user pip
+
+【4】Import Error:cannot import name 'tf_utils'
+
+解决方案：在安装TensorFlow(1.5.0)和Keras(2.3.1)的时候发生的报错，原因是Keras版本过高，即：降低Keras的版本为2.1.3
+
+【5】ERROR: XXXX-modules 0.2.7 has requirement XXXX<0.5.0,>=0.4.6, but you'll have XXXX 0.1.9 which is incompatible.
+
+解决方案：在安装某些库时，会出现类似上方报错，原因是XXXX库的版本不符合要求，更新XXXX库即可
+
+【6】ERROR: XXXX 3.3.6 requires YYYY<5.13; python_version >= "3", which is not installed.
+
+解决方案：在安装某些库时，提示YYYY库版本需低于5.13，且python版本需为python3，则需要将YYYY库降低版本至5.12即可。命令行参考：pip install YYYY==5.12.0
+
+欢迎关注~一个医学生（预防医学）的数据成长之路。。。
+
+相关资源：解决Python安装后pip不能用的问题_pipinstall命令无法使用-其它...
+
+相关资源：解决Python安装后pip不能用的问题_pipinstall命令无法使用-其它...
+

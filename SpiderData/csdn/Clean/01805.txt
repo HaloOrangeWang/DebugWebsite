@@ -1,0 +1,16 @@
+原本一个好好的爬虫脚本，最近运行时突然报错：
+
+报错代码如下
+
+File "e:\python3.7.1\lib\site-packages\scrapy\core\downloader\middleware.py", line 43, in process_request
+    defer.returnValue((yield download_func(request=request,spider=spider)))
+twisted.web._newclient.ResponseNeverReceived: [<twisted.python.failure.Failure twisted.internet.error.ConnectionDone: Connection was closed cleanly.>]
+
+分析报错：
+
+发送的请求未被接受，链接已断开
+
+百度最终定位到是请求头的原因：
+
+原本的请求头的HOST被换了，脚本发起请求时就被拒了，因此把请求头修改就好了
+

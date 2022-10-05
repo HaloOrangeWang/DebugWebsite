@@ -1,0 +1,20 @@
+python版本3.6
+
+import pandas as pd
+
+df = pd.read_csv(r'C:\Users\ZHAOLAN\Desktop\Python数据集\train-pivot.csv',sep= ",")
+
+print(df)
+
+报错信息：OSError: Initializing from file failed
+
+报错原因：
+
+调用pandas的read_csv()方法时，默认使用C语言作为解析语言，而当文件名中含有中文的时候，用C engine在部分情况下就会出错。所以可以在调用read_csv()方法时指定engine为Python来消除这个错误。
+
+写法如下：
+
+df = pd.read_csv(r'C:\Users\ZHAOLAN\Desktop\Python数据集\train-pivot.csv',sep= ",",engine = 'python')
+
+print(df)
+

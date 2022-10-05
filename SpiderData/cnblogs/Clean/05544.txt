@@ -1,0 +1,37 @@
+解决方案1：在D:\python3\Lib\site-packages，新建一个sitecustomize.py文件
+
+内容：
+
+# -*- coding: utf-8 -*- 
+import sys
+import os 
+import cx_Oracle 
+reload(sys) 
+sys.setdefaultencoding('utf-8')
+
+原文链接：https://blog.csdn.net/enen1129/article/details/96316663
+
+解决方案2：如果上述方法还是不能解决问题，那么查下
+
+第一步:先检查python的编码是什么格式:
+
+>>> import sys
+>>> print(sys.getdefaultencoding())
+utf-8
+
+第二步:查看oracle数据库编码是否也是utf-8
+select userenv('language') from dual
+
+数据库执行结果：
+
+SIMPLIFIED CHINESE_CHINA.AL32UTF8
+
+第三步:设置客户机的编码环境:
+  如果是在windows下 设置环境变量: NLS_LANG
+
+变量名：NLS_LANG
+
+变量值：SIMPLIFIED CHINESE_CHINA.AL32UTF8
+
+原文链接：https://blog.csdn.net/qq_40546896/article/details/80451985
+

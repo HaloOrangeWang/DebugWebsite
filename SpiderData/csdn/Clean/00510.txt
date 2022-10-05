@@ -1,0 +1,20 @@
+在使用vscode运行python代码的时候一直报/bin/sh: python: not found 问题
+ 1.查看所有的python映射
+
+ls -l /usr/bin/python*
+
+发现没没有/usr/bin/python的路径，这就是出错的原因。
+ 是因为/usr/bin/python的路径被python2，3覆盖了
+
+2.搭建路径
+
+sudo ln -s /usr/bin/python3 /usr/bin/python
+
+3.再次查看python映射
+
+ls -l /usr/bin/python*
+```![在这里插入图片描述](https://img-blog.csdnimg.cn/ced76544b3614b78973fba8d791041a2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAX-a0iw==,size_20,color_FFFFFF,t_70,g_se,x_16)
+发现添加上了。
+再次运行就可以了。
+![在这里插入图片描述](https://img-blog.csdnimg.cn/953426920e0246d78e2b268adb727136.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAX-a0iw==,size_20,color_FFFFFF,t_70,g_se,x_16)
+

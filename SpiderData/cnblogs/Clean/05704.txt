@@ -1,0 +1,25 @@
+报错：
+
+This dependency was not found:* app.js?vue&type=script&lang=js& in ./src/App.vue
+
+To install it, you can run: npm install --save app.js?vue&type=script&lang=js&
+
+
+可能报错原因
+
+1、在APP.vue中需要引入app.js文件，但是无法找到该文件
+
+此时应当考虑js文件引入的路径是否正确，我在这个问题上找了老半天，就是因为路径问题；
+
+报错时：在App.vue中是这样的
+
+修改后：是这样的（./  之差）
+
+2、在app.js中需要引入其他vue文件
+
+在项目重启后，app.js找不到当时引用的vue文件了，可能是在项目重启后引用 的vue文件默认为和app.js同一路径，此时需要修改vue的文件路径，重新import
+
+修改前：
+
+修改后：
+

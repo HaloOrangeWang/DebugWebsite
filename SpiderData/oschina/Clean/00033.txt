@@ -1,0 +1,36 @@
+class SelfException(Exception):
+    pass
+
+def main():
+    firstMethod()
+
+def firstMethod():
+    secondMethod()
+
+def secondMethod():
+    thirdMethod()
+
+def thirdMethod():
+    raise SelfException("自定义异常信息")
+
+main()
+
+#输出结果：
+D:\soft\python36\python.exe D:/myproject/crazy_python/07/7.4/traceback_test.py
+Traceback (most recent call last):
+  File "D:/myproject/crazy_python/07/7.4/traceback_test.py", line 24, in <module>
+    main()
+  File "D:/myproject/crazy_python/07/7.4/traceback_test.py", line 9, in main
+    firstMethod()
+  File "D:/myproject/crazy_python/07/7.4/traceback_test.py", line 13, in firstMethod
+    secondMethod()
+  File "D:/myproject/crazy_python/07/7.4/traceback_test.py", line 17, in secondMethod
+    thirdMethod()
+  File "D:/myproject/crazy_python/07/7.4/traceback_test.py", line 21, in thirdMethod
+    raise SelfException("自定义异常信息")
+__main__.SelfException: 自定义异常信息
+
+那么如何通过报错信息定位问题？
+
+最后一行信息详细显示了异常的类型和异常的详细信息。从这一行往上，逐个记录了异常发生源头、异常依次传播所经过的轨迹，并表明异常发生在哪个文件、哪一行、哪个函数处。一般在大量的报错信息中找出属于自己写的代码去定位问题
+

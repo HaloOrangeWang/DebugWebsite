@@ -1,0 +1,18 @@
+在Linux下安装PyMySQL时，升级了下pip命令，这一下搞出了问题，使用pip命令，会报错：ImportError: No module named typing。这个问题最终解决了，下面是解决的记录。
+
+分析：上述错误产生的原因，可能没有安装​​'typing'​​导致，可以执行以下命令安装：pip install typing 。但在执行这个命令时候，也报错ImportError: No module named typing。 网上搜了下，有说执行：sudo python -m pip install typing ，执行后，继续报错：/usr/bin/python: No module named typing; 'pip' is a package and cannot be directly executed。
+
+最终在查看网站：https://stackoverflow.com/questions/67278017/pip-command-line-importerror-no-module-named-typing 中，看到以下方法，执行了命令
+
+1、wget ​​https://bootstrap.pypa.io/pip/2.7/get-pip.py​​
+
+2、python get-pip.py
+
+在执行命令wget时，提示：wget: unable to resolve host address ‘bootstrap.pypa.io’ ，再次执行此命令，直到正常即可。
+
+执行完后，再执行pip install typing
+
+pip正常后，安装PyMySQL，第一次安装的时1.0.2版本，发现版本和python2会有兼容问题。
+
+卸载PyMySQL版本，重新安装0.9.3版本即可。命令：pip uninstall PyMySQL   卸载后，检查没问题，安装：  pip install PyMySQL==0.9.3
+

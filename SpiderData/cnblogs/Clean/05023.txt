@@ -1,0 +1,18 @@
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xa3 in position 3:ordi
+
+因为同时安装了python2和python3，所以出现了这个错误
+
+解决方法：
+
+进入python2安装文件夹（如C:\Python27）在Lib\mimetypes.py添加一段代码，可以直接在import下按照下图添加
+
+if sys.getdefaultencoding() != 'gbk':
+    reload(sys)
+    sys.setdefaultencoding('gbk')
+
+然后执行下面语句
+
+python -m pip install --upgrade pip
+
+参考：解决“UnicodeDecodeError: 'ascii' codec can't decode byte 0xc0 in position 7: ordi”
+

@@ -1,0 +1,28 @@
+虽然我已经安装了GPU版的pytorch，但是只能使用CPU的。
+
+安装的pytorch版本pytorch1.5.1-py36-cu102-cudn70
+
+执行：
+
+因为anconda也确实安装了cudatoolkit 10.2.89，不能用感觉莫名其妙，就在程序中的：
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu") # 让torch判断是否使用GPU
+
+强制改成：
+
+DEVICE = torch.device('cuda')
+
+结果运行报错：
+
+原来是驱动版本太低，找到原因自然就好解决了。
+
+然后重新安装cuda10.2就可以正常使用了。
+
+说明，之前我安装cuda10.2的时候是自定义安装的，只安装了cuda，其他组件都没有安装。
+
+安装后
+
+(base) C:\Users\Administrator>conda activate pytorch
+
+另外，下面这里也可以查看cuda驱动版本。
+

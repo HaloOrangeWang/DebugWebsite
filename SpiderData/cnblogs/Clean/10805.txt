@@ -1,0 +1,91 @@
+渗透测试常用工具
+
+如何安装Java环境
+访问https://www.java.com/zh_CN/download/win10.jsp点击同意并开始免费下载
+
+如何安装Python环境
+Python 分为 2.x和3.x两个系列，如果是用sqlmap建议使用2.x这个版本。
+
+python(2.7.16)下载地址：
+
+https://www.python.org/ftp/python/2.7.16/python-2.7.16.amd64.msi
+
+Java和Python默认安装路径
+python默认路径：C:\Python27
+
+Java默认路径：C:\Program Files\Java\jre1.8.0_211\bin。
+
+环境变量是什么？
+环境变量一般是指在操作系统中用来指定操作系统运行环境的一些参数，如果我定义了这个环境变量的路径，那么当在windows系统的变量中寻找不到的时候，就会去我添加的路径去寻找对应的东西。
+
+环境变量的意义？
+如果我没有把Python加入环境变量，我在cmd中不能直接运行python,因为在系统路径里面找不到python这个东西，然后加了环境变量，于是乎就会去我添加的路径查找，然后他发现了，有一个东西交python然后调用了。
+
+环境变量如何添加？
+选择计算机属性->远程设置->高级->环境变量
+
+找到path变量值，然后编辑，然后输入;将前面的结束，然后在后面添加你想加入的路径
+
+https://jingyan.baidu.com/article/b24f6c82cba6dc86bfe5da9f.html
+
+Sqlmap
+https://github.com/sqlmapproject/sqlmap
+
+Sqlmap怎么运行
+打开cmd，然后输入python sqlmap的地址就行了
+
+例如：python E:\sqlmap-master\sqlmap.py (后面加各种指令)
+
+或者将cmd打开的目录在sqlmap.py那个目录下直接输入python sqlmap.py
+
+手册https://www.cnblogs.com/hongfei/p/3872156.html
+
+有注入点Sqlmap一定能跑出来吗？
+Sqlmap只是一个工具而已，工具都是由局限性的，有些时候，摆明存在注入点，但是Sqlmap就是跑不出来，有些时候Sqlmap跑出来存在注入，但是跑不出库名表名就可能是误报
+
+在使用sqlmap --os-shell中，找不到绝对路径怎么办
+我们可以在对方网站进行测试使其报错，或者是找到他的一些phpinfo、探针之类的信息泄露，或者通过注入找到对方的数据库地址，然后进行猜测地址目录
+
+12.在使用sqlmap --os-shell中，如何判断他的脚本信息？
+
+我们在对方的站点中，可以去测试他的主页，例如使用index.php,index.asp来简单判断，或者是抓包，查看他其他的链接的后缀信息
+
+13.如何查看Python安装成功且环境变量安装成功？
+
+我们打开Cmd窗口输入，输入python，查看是否进入了python终端
+
+14. SqlMap中探测等级的区别？
+
+当–level的参数设定为2或者2以上的时候，sqlmap会尝试注入Cookie参数；
+
+当–level参数设定为3或者3以上的时候，会尝试对User-Angent，referer进行注入。
+
+15.如何清除缓存重新测试？
+
+使用参数： --flush-session，他将会刷新会话，进行测试
+
+16.Burp Suite
+Burp Suite是一个集成化的渗透测试工具，它集合了多种渗透测试组件，使我们自动化地或手工地能更好的完成对web应用的渗透测试和攻击。在渗透测试中，我们使用Burp Suite将使得测试工作变得更加容易和方便，即使在不需要娴熟的技巧的情况下，只有我们熟悉Burp Suite的使用，也使得渗透测试工作变得轻松和高效。
+
+17.Burp Suite哪里获取？
+
+https://portswigger.net/burp
+
+18.如何配置浏览器代理？
+
+可以使用插件去配置。
+
+配置的话可以参照这篇帖子，https://www.cnblogs.com/guanfuchang/p/6978863.html 因为写的话比较多，如果过程中有什么问题可以继续提。
+
+19.为什么要设置代理才能抓到数据包妮？
+
+浏览器和服务器是直接通信的，而我们增加了代理，就把直接发送到服务器的数据发送到你设置的代理的端口。Burp Suite代理工具是以拦截代理的方式，拦截所有通过代理的网络流量，如客户端的请求数据、服务器端的返回信息等。Burp Suite主要拦截http和https协议的流量，通过拦截，burp Suite以中间人的方式，可以对客户端请求数据、服务端返回做各种处理，以达到安全评估测试的目的
+
+20.Burp抓不到HTTPS的数据包怎么办？
+安装个证书就可以了
+
+https://www.cnblogs.com/aq-ry/p/9336365.html 参考这篇文章
+
+21.为什么监听8080端口
+burp上默认的端口就是8080，我们也可以修改，在proxy模块option处，点击设置的端口，然后点击edit，就可以修改了
+

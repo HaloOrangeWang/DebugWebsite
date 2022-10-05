@@ -1,0 +1,185 @@
+
+1.NameError变量名错误
+
+>>> a
+Traceback (most recent call last):
+  File "<pyshell#1>", line 1, in <module>
+    a
+NameError: name 'a' is not defined
+
+>>> print(a)
+Traceback (most recent call last):
+  File "<pyshell#0>", line 1, in <module>
+    print(a)
+NameError: name 'a' is not defined
+
+原因:a变量并没有定义（复制）
+
+解决方案：
+
+先要给a赋值。才能使用它。在实际编写代码过程中，报NameError错误时，查看该变量是否赋值，或者是否有大小写不一致错误，或者说不小心将变量名写错了。上面两个代码的错误都是因为a变量并没有赋值。
+
+注：在Python中，无需显示变量声明语句，变量在第一次被赋值时自动声明。
+
+>>> a=10
+>>> a
+10
+>>> print(a)
+10
+
+
+2.IndentationError代码缩进错误
+
+IndentationError: expected an indented block
+
+>>>x=10
+>>>if x==10:
+print(x)
+	
+IndentationError: expected an indented block
+
+原因：
+
+缩进错误，在这里需要强调一点，python不仅对大小写敏感，而且对缩进非常严格，行首多个空格，少个空格都会报错。这是新手常犯的一个错误，要引起注意。不仅if语句要缩进，def（函数），class（类），for（循环），while（循环）等代码块都需要缩进。
+
+解决方案：
+
+>>>x=10
+>>>if x==10:
+       print(x)
+
+
+3.AttributeError对象属性错误
+
+>>> import math
+>>> math.value
+Traceback (most recent call last):
+  File "<pyshell#14>", line 1, in <module>
+    math.value
+AttributeError: module 'math' has no attribute 'value'
+
+原因：导入的math模块并没有values这个属性
+
+解决方案：
+
+>>> import math
+>>> a=4
+>>> math.sqrt(4)
+2.0
+
+python拓展：使用dir函数查看某个模块的属性
+
+例如:
+
+>>> dir(math)
+['__doc__', '__loader__', '__name__', '__package__', '__spec__', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atan2', 'atanh', 'ceil', 'comb', 'copysign', 'cos', 'cosh', 'degrees', 'dist', 'e', 'erf', 'erfc', 'exp', 'expm1', 'fabs', 'factorial', 'floor', 'fmod', 'frexp', 'fsum', 'gamma', 'gcd', 'hypot', 'inf', 'isclose', 'isfinite', 'isinf', 'isnan', 'isqrt', 'lcm', 'ldexp', 'lgamma', 'log', 'log10', 'log1p', 'log2', 'modf', 'nan', 'nextafter', 'perm', 'pi', 'pow', 'prod', 'radians', 'remainder', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'tau', 'trunc', 'ulp']
+
+
+4.TypeError类型错误
+
+（1）TypeError: 'list' object cannot be interpreted as an integer
+
+>>> t=('a','b','c')
+>>> t=[1,2,3,4]
+>>> for i in range(t):
+	print(s[i])
+
+Traceback (most recent call last):
+  File "<pyshell#14>", line 1, in <module>
+    for i in range(t):
+TypeError: 'list' object cannot be interpreted as an integer
+
+原因:列表对象不能被解释为整数
+
+解决方案：
+
+>>> t=[1,2,3,4]
+>>> for i in t:
+	print(i)
+
+1
+2
+3
+4
+
+（2）'list' object is not callable
+
+>>> t=[1,2,3,4]
+>>> t()
+Traceback (most recent call last):
+  File "<pyshell#30>", line 1, in <module>
+    t()
+TypeError: 'list' object is not callable
+
+原因：不是调用的列表对象
+
+解决方案：
+
+>>> t=[1,2,3,4]
+>>> t[-1]
+4
+
+
+5.IOError输入输出错误
+
+（1）文件不存在报错
+
+>>> f=open("Hello.py")
+
+Traceback (most recent call last):
+  File "<pyshell#34>", line 1, in <module>
+    f=open("Hello.py")
+FileNotFoundError: [Errno 2] No such file or directory: 'Hello.py'
+
+原因：open()函数没有指明mode，默认为只读方式，如果该目录下没有Hello.py的文件，则会报错，可查看是否拼写有错误，或者是否大小写错误，或者根本不存在这个文件。
+
+解决方案：
+
+#创建一个hello.py文件
+#在我的目录下已经创建了hello.py文件
+>>>f=open('hello.py')
+'hello world'
+
+（2）因文件权限问题报错
+
+>>> f=open("hello.py")
+>>> f.write("test")
+
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+IOError: File not open for writing
+
+原因：open("hello.py")如果入参没有加读写模式参数mode，说明默认打开文件的方式为只读方式，而此时又要写入字符，所以权限受限，才会报错。
+
+解决方案：
+
+>>> f=open("hello.py",'w+')  #w+：既可以写入还可以读取
+>>> f.write("test")
+
+
+6.KeyError字典键值错误
+
+>>> d={'a':'小明','b':'小红','c':'小花'}
+>>> d['b']
+'小红'
+>>> d['e']
+
+Traceback (most recent call last):
+  File "<pyshell#37>", line 1, in <module>
+    d['e']
+KeyError: 'e'
+
+原因：键‘e’不存在
+
+知识拓展:字典通过花括号中用逗号分隔的项目（键/值。键/值对使用冒号分隔）定义。其基本形式如下:
+            {键1:值1，[键2:值2，…，键n:值n] }
+ 键必须为可hash对象，因此不可变对象(bool、int、float、complex、str、tuple、frozenset等）可以作为键;值则可以为任意对象。字典中的键是唯一的，不能重复。
+
+解决方案：
+
+>>> d['e']='小王'  #你可以在字典里增加一个键
+>>> d
+{'a': '小明', 'b': '小红', 'c': '小花', 'e': '小王'}
+>>> d['e']
+'小王'
+

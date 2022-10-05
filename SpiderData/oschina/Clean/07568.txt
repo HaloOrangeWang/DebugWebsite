@@ -1,0 +1,23 @@
+报错：
+
+Error Domain=NSCocoaErrorDomain Code=3840 "The operation couldn’t be completed. (Cocoa error 3840.)" (Unescaped control character around character 2884.) UserInfo=0x79fa60b0 {NSDebugDescription=Unescaped control character around character 2884.}
+
+原因在于出现特殊字符是AFNetworking无法解析的，会直接报错，那么当你在发post请求时，返回结果会直接进如fail代码块，其实在fail中用operation的nsstring可以直接输出接收到的数据，是string形，可以清楚的看到服务器端数据有哪些含有特殊字符，但是有一些字符是不好看到的，比如“TAB”(制表)键打出的那种四个空格，项目中用户有时候很常用到tab键，最好的方法是在AFNetworking源码中添加字符过滤功能
+
+处理办法：找到AFNetworking包中AFURLResponseSerialization.m文件，大概在第256行的 if (responseString && ![responseStringisEqualToString:@" "])(此时已将data转化为responseString形)条件下面添加如下过滤方法：
+
+NSCharacterSet *controlChars = [NSCharacterSet controlCharacterSet];  
+                NSRange range = [responseString rangeOfCharacterFromSet:controlChars];  
+                if (range.location != NSNotFound)  
+                {  
+                    NSMutableString *mutable = [NSMutableString stringWithString:responseString];  
+                    while (range.location != NSNotFound)  
+                    {  
+                        [mutable deleteCharactersInRange:range];  
+                        range = [mutable rangeOfCharacterFromSet:controlChars];  
+                    }  
+                    responseString = mutable;  
+                }
+
+　　OK，再试一下，应该不会在报错了。
+

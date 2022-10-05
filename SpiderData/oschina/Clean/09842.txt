@@ -1,0 +1,38 @@
+
+创建函数报错
+
+错误描述：FUNCTION mx.getChildList does not exist
+
+解决方案：数据库默认不启用函数功能，需要配置开启
+
+mysql> show variables like '%func%';  
++---------------------------------+-------+  
+| Variable_name                   | Value |  
++---------------------------------+-------+  
+| log_bin_trust_function_creators | OFF   |  
++---------------------------------+-------+  
+1 row in set (0.00 sec)  
+  
+mysql> set global log_bin_trust_function_creators=1;  
+Query OK, 0 rows affected (0.00 sec)  
+  
+mysql> show variables like '%func%';  
++---------------------------------+-------+  
+| Variable_name                   | Value |  
++---------------------------------+-------+  
+| log_bin_trust_function_creators | ON    |  
++---------------------------------+-------+  
+1 row in set (0.00 sec)mysql>
+
+
+调用函数报错
+
+错误描述：The user specified as a definer ('root'@'%') does not exist
+
+解决方案：root用户调用权限不足，需要授权root用户所有sql权限
+
+mysql> grant all privileges on *.* to root@"%" identified by ".";
+Query OK, 0 rows affected (0.00 sec)
+mysql> flush privileges;
+Query OK, 0 rows affected (0.00 sec)
+

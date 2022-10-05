@@ -1,0 +1,31 @@
+
+1 前言
+
+在腾讯云上pip install sklearn时报这个错误，如下：
+
+原因：Python3中有个内置模块叫ctypes，它是Python3的外部函数库模块，它提供兼容C语言的数据类型，并通过它调用Linux系统下的共享库(Shared library)，此模块需要使用CentOS7系统中外部函数库(Foreign function library)的开发链接库(头文件和链接库)。
+
+由于在CentOS7系统中没有安装外部函数库(libffi)的开发链接库软件包，所以在安装pip的时候就报了"ModuleNotFoundError: No module named '_ctypes'"的错误。
+
+
+2 步骤
+
+安装外部函数库(libffi)
+
+yum install libffi-devel -y
+
+重新安装python
+
+yum install python
+
+用pip3 Install 安装需要的包
+
+pip3 install sklearn
+
+
+3 参考
+
+Python3.7.0以上版本安装pip报错ModuleNotFoundError: No module named '_ctypes'解决方法
+
+https://www.jianshu.com/p/69681655309b
+

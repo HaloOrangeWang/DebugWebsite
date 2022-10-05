@@ -1,0 +1,161 @@
+
+一、下载python3.8.2版本的压缩包
+
+链接：https://pan.baidu.com/s/19TQjJHilJOTKQOVnc0chHg
+
+提取码：oxzo
+
+
+二、下载完成后解压，进入Python-3.8.2文件夹，编译安装
+
+tar -xf Python-3.8.2.tgz
+cd Python-3.8.2/
+
+依次执行以下三个操作(https://blog.csdn.net/tanmx219/article/details/86518446)
+
+./configure --prefix=/usr/local --with-pydebug --enable-shared CFLAGS=-fPIC
+
+make
+
+make install
+
+
+configure参数说明：
+
+【其中/usr/local是安装目录，当然你完全可以选其他的地方，如果你需要学习Python源码，那就要调试版，此时要加上--with-pydebug，更详细的过程可以参考官方说明：https://devguide.python.org/
+
+补充：这里加上--enable-shared和-fPIC之后可以将python3的动态链接库编译出来，默认情况编译完lib下面只有python3.xm.a这样的文件，python本身可以正常使用，但是如果编译第三方库需要python接口的比如caffe等，则会报错；所以这里建议按照上面的方式配置，另外如果openssl不使用系统yum安装的，而是使用自己编译的比较新的版本可以使用--with-openssl=/usr/local/openssl这种方式指定，后面目录为openssl实际安装的目录，另外编译完还要将openssl的lib目录加入ld运行时目录中即可. 】
+
+在执行make过程中会出现很多问题，这些问题一定要一一排查解决：
+
+Python build finished successfully!
+The necessary bits to build these optional modules were not found:
+_bz2                  _curses               _curses_panel      
+_dbm                  _gdbm                 _hashlib           
+_lzma                 _sqlite3              _ssl               
+_tkinter              _uuid                 readline           
+zlib                                                           
+To find the necessary bits, look in setup.py in detect_modules() for the module's name.
+
+The following modules found by detect_modules() in setup.py, have been
+built by the Makefile instead, as configured by the Setup files:
+_abc                  atexit                pwd                
+time
+
+Failed to build these modules:
+_ctypes
+
+Could not build the ssl module!
+Python requires an OpenSSL 1.0.2 or 1.1 compatible libssl with X509_VERIFY_PARAM_set1_host().
+LibreSSL 2.6.4 and earlier do not provide the necessary APIs, https://github.com/libressl-portable/portable/issues/381
+
+yum install libffi-devel -y  命令来安装_ctypes模块
+
+yum install readline-devel -y 命令来安装readline模块
+
+yum install zlib zlib-devel -y 命令来安装zlib模块
+
+yum install python3-tkinter tkinter tcl-devel tk-devel -y 命令来安装_tkinter模块
+
+yum install xz-devel lzma -y 命令来安装_lzma模块
+
+yum install libuuid uuid-devel -y 命令来安装_uuid模块
+
+yum install sqlite-devel -y 命令来安装 _sqlite3模块
+
+yum install gdbm-devel -y 命令来安装 _dbm、_gdbm模块
+
+yum install ncurses-devel -y 命令来安装 _curses、_curses_panel  模块
+
+yum install openssl-devel -y 命令来安装 _ssl模块
+
+
+全部依赖组件安装：
+
+yum -y install gcc gcc-c++ zlib zlib-devel libffi-devel
+yum -y install gcc kernel-devel kenel-headers make bzip2
+yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel
+
+安装libressl-2.6.4以上版本的依赖模块
+
+安装教程：https://blog.csdn.net/scorpio921/article/details/82682757
+
+下载地址：链接：https://pan.baidu.com/s/16MdU8orh4AHUpc7jVIU0Fw
+
+提取码：ezbt
+
+
+编译错误1：
+
+/home/Python-3.8.2/Modules/_uuidmodule.c:19:5: error: unknown type name ‘uuid_t’
+     uuid_t uuid;
+     ^
+/home/Python-3.8.2/Modules/_uuidmodule.c:36:5: error: implicit declaration of function ‘uuid_generate_time’ [-Werror=implicit-function-declaration]
+     uuid_generate_time(uuid);
+
+
+解决方法：
+
+网上https://my.oschina.net/mengyoufengyu/blog/2876198说，添加环境变量，执行了一下命令，但不起作用
+
+vim ~/.bash_profile
+添加一行 export CPPFLAGS=" -Wno-error=coverage-mismatch" 保存退出
+source ~/.bash_profile
+
+最终用以下方法https://zhuanlan.zhihu.com/p/120341207解决：
+
+对_uuidmodule.c文件进行修改：
+
+cd Python-3.8.2/Modules
+
+vi _uuidmodule.c
+
+#include "Python.h"
+/* #ifdef HAVE_UUID_UUID_H */
+#include <uuid/uuid.h>
+/* #elif defined(HAVE_UUID_H)
+#include <uuid.h>
+#endif */
+
+
+编译错误2：
+
+/home/Python-3.8.2/Modules/_cursesmodule.c:3240:5: error: implicit declaration of function ‘setupterm’ [-Werror=implicit-function-declaration]
+     if (!initialised_setupterm && setupterm((char *)term, fd, &err) == ERR) {
+
+
+解决方法：
+
+参考https://my.oschina.net/mengyoufengyu/blog/2876198
+
+cd Python-3.8.2
+
+sed -i "s/Werror=implicit-function-declaration/Wno-error/g" configure
+
+make clean
+
+make
+
+
+编译成功提示：
+
+
+安装成功提示：
+
+......
+Looking in links: /tmp/tmpsqv00cbn
+Collecting setuptools
+Collecting pip
+Installing collected packages: setuptools, pip
+Successfully installed pip-19.2.3 setuptools-41.2.0
+
+安装成功之后，安装目录就在/usr/local/
+
+
+查看python版本：
+
+[root@localhost bin]# python -V
+Python 2.7.5
+[root@localhost bin]# python3 -V
+Python 3.8.2
+

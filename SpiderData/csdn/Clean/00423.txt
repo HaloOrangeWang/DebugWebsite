@@ -1,0 +1,55 @@
+问题：使用命令【puthon -m pip install --upgrade pip】更新pip包时出现如下错误：
+
+c:\Users\Yang>puthon -m pip install --upgrade pip
+
+...
+...
+def read(rel_path: str) -> str:
+SyntaxError: invalid syntax
+------
+Command "Python' setup.py egg_info" failed with error code 1 in c:\Users\yang\appdate\local\tem\pip-build-iu2hbx\pip
+
+
+1. 解决Command中的问题
+
+刚开始时，重点在解决（Command "Python' setup.py egg_info" failed with error code 1 in c:\...）中的问题，参考如下博客/网站，分别更新了 setuptools、 ez_setup、bcrypt-3.2.- paramiko-2.8.1 pynacl-1.4.0等，但再次尝试更新pip时还是不行。
+
+参考的博客：
+
+1）解决 Command "python setup.py egg_info" failed with error code 1 问题 - Wasdns - 博客园
+
+2） pip - "python setup.py egg_info" failed with error code 1 - Stack Overflow
+
+3） pip2升级报错 ( def read(rel_path: str) -＞str: )_Y_peak的博客-CSDN博客
+
+# 在cmd中执行
+pip install --upgrade setuptools 
+# Successfully installed setuptools-59.5.0
+
+pip install ez_setup 
+# Successfully built ez-setup
+
+pip3 install --upgrade pip 
+#successfully installed bcrypt-3.2.- paramiko-2.8.1 pynacl-1.4.0
+
+# 安装后再次尝试更新pip，仍然报错
+python -m pip install --upgrade pip
+SyntaxError: invalid syntax
+------
+Command "Python' setup.py egg_info" failed with error code 1 in c:\Users\yang\appdate\local\tem\pip-build-iu2hbx\pip
+
+
+2. 解决报错中的问题
+
+发现上述方法不行后，目光转向Command上面（def read(rel_path: str) -> str:）的报错。参考如下博客，这种情况可能是因为版本升级跨度较大，低级版本无法直接升级到高级版本，可尝试先升级到20.2.4，再尝试升级到20.3.4，成功~~
+
+pip2升级报错 ( def read(rel_path: str) -＞str: )_Y_peak的博客-CSDN博客
+
+#先升级至pip==20.2.4 
+python -m pip install --user --upgrade pip==20.2.4
+
+#再升级至pip==20.3.4
+python -m pip install --user --upgrade pip==20.3.4
+
+用【pip -V】查看当前版本，确认已更新pip。
+

@@ -1,0 +1,38 @@
+问题1：python(3.8)文件夹下的script文件夹为空
+
+解决：cmd 窗口输入python -m ensurepip
+
+问题2：cmd窗口输入pip显示无法将pip识别为......
+
+解决：如果python为3以上的版本，请输入pip3
+
+问题3：通过pip install 包名 安装扩展包时速度很慢，甚至报错
+
+解决： pip3 install 包名 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+
+问题4：用上述方法进行扩展包安装时，每一次都需要复制上述链接很麻烦
+
+解决：①进入cmd窗口查看默认打开路径
+
+②然后在该路径最后一层下建立名为 pip的文件夹，此处我就在Administrator 文件夹下建立
+
+③进入pip文件夹，新建一个pip.ini的文件
+
+④将下述内容复制到该文件内：此处用的是阿里源（注意此处字符集就是默认的ANSI）
+
+[global]
+index-url = http://mirrors.aliyun.com/pypi/simple/
+trusted-host = mirrors.aliyun.com
+
+问题5：安装taichi库时显示
+
+这说明当前pip的版本低于库要求的版本，需要更新pip
+
+查看当前pip版本：> pip show pip
+
+更新：> python -m pip install --upgrade pip
+
+问题6：经上述更改后还是装不上,通过taichi官网得知python可执行文件的版本要求为64bit,通过代码：
+
+print(__import__('platform').architecture()[0]) 查看当前可执行文件的版本
+

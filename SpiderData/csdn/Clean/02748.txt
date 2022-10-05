@@ -1,0 +1,55 @@
+最新Pycharm安装调用opencv-python步骤，以及遇到的问题： opencv已经安装成功；cmd环境下python可以import cv2 ；但pycharm下会出错
+
+
+最新Pycharm安装调用opencv-python步骤
+
+python官网下的最新版python3.9.6
+ pycharm官网下的最新版本2021.1.3
+ opencv-python下的是opencv_python-4.5.3-cp39-cp39-win_amd64.whl
+
+opencv-python免费下载链接：
+ https://www.lfd.uci.edu/~gohlke/pythonlibs/
+ 下滑到：
+ OpenCV: a real time computer vision library. 这一模块找到对应版本
+ （我下载了三个才知道是版本不对）
+ 电脑时64位的就选win_amd64的; 电脑32位的就选win32
+ 下载的Python是3.9.几，选cp39 (下载两次不对后的个人感觉)
+
+**
+
+
+尝试的方法一：一键安装 pip install opencv-python****
+
+按 win+R键，输入cmd进入命令行窗口
+ 输入 pip install opencv-python 会出现以下界面，即安装成功
+ 
+ 在cmd中进行验证：
+ 输入Python，进而输入import cv2 ，如果没有报错，就是已经安装上啦
+
+
+尝试的方法二
+
+按这个博主的步骤又来了一遍：
+
+链接: https://blog.csdn.net/m0_47472749/article/details/109143669?ops_request_misc=&request_id=&biz_id=102&utm_term=python3.9.6%E5%AF%B9%E5%BA%94%E7%89%88%E6%9C%ACopencv&utm_medium=distribute.pc_search_result.none-task-blog-2allsobaiduweb~default-6-.first_rank_v2_pc_rank_v29&spm=1018.2226.3001.4187
+
+
+遇到的问题及解决方法
+
+
+在cmd中Python能顺利地调用cv2(这表示安装的opencv-python是没有问题的) , 但是在pycharm中，import cv2 后会报错
+
+问题出在pycharm中，解决步骤如下：
+ （1）打开pycharm,点击左上角File—>Settings—>Project Interpreter
+
+检查是否有opencv-python(我在改之前是没有的)
+
+（2）点右上角的按钮，选择Add
+ 
+ （3）选择Existing environment——>点击 三小点
+ python的python.exe文件所在完整目录，复制下来; 将完整路径复制到步骤4中点击 “三小点” 打开的页面的搜索框中，选择python.exe然后点击ok
+ 
+ 然后在Setting—>Project Interpreter中右侧应该就有opencv-python啦
+ 
+ 在从pycharm程序里输入import cv2就不会报错啦
+

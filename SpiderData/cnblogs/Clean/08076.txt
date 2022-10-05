@@ -1,0 +1,46 @@
+首先报错DPI-1047原因分析
+
+有分析才有进步，没进步心情又怎么giao起来呢是吧：
+
+　　1)：没有oracle客户端instantclient_xx_x安装文件，并且该目录文件没有添加到环境变量；
+
+　　2)：该instantclient_xx_x安装文件中的.dll结尾的三个动态链接库文件没有复制到python的运行环境中；
+
+　　3)：Oracle的客户端instantclient_xx_x，Python，cx_Oracle是否都是64位的（或者32位）
+
+1. 安装Oracle客户端的版本,添加环境变量
+
+安装oracle客户端instantclient_xx_x
+
+由于我的数据库版本是11g和64位的，所以这里下载Oracle11g客户端对应的instantclient文件是win64位：
+
+可以到我的网盘下载，链接：
+
+链接：https://pan.baidu.com/s/1E_qbpo2lt6ulnRsvXhrgng 
+提取码：45av
+
+也可以到官网下载：
+https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html
+
+官网下载如下：
+
+下载解压，这里为了方便管理，解压到python安装路径下
+
+下载完毕后，把instantclient_11_2添加到环境变量
+
+并把oracle客户端instantclient的安装路径下，以.dll结尾的这三个动态链接库文件，复制到python的安装目录中的Lib的site-packages下
+
+2. cmd,查看Py的版本
+
+3. 根据安装的Python的具体版本,下载对应的cx_Oracle版本(py3.7版本对应cx_Oracle的cp37m版本就行)
+
+去cx_Oracle的官网已确认你需要下载的cx_Oracle版本，如下 :
+地址:
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyhook
+
+由下图的cp37m-win_amd64版本可以确定cx-oracle版本应为8.0.1
+
+直接在PyCharm安装cx-oracle8.0.1（下载是记得选择【版本下载】）
+
+执行代码
+

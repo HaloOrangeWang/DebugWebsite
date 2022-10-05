@@ -1,0 +1,74 @@
+Python相关环境：
+
+1.Windows 10
+
+2.JDK 1.8
+
+3.Python 3.7.2
+
+4.Pip 18.1 from c:\python37\lib\site-packages\pip (python 3.7)
+
+5.Eclipse
+
+安装Pytest+allure过程：参考链接一：https://blog.csdn.net/liudinglong1989/article/details/83023886
+
+1.安装pytest
+
+CMD下执行命令pip install pytest，安装成功，版本号：5.2.2
+
+2.安装allure
+
+根据链接一指导安装
+
+下载allure压缩包，版本号：2.7.0
+
+在目录下解压压缩包
+
+设置系统环境变量：指向allure的bin目录
+
+3.安装pytest-allure-adaptor
+
+CMD下执行命令pip install pytest-allure-adaptor，安装成功，版本号：1.7.10
+
+问题处理过程：
+
+1.在Eclipse中写入基础脚本，点击Run as Python Run
+
+脚本如下：
+
+2.报错，错误一：执行后，发现报错，报错信息如下：
+
+pluggy.manager.PluginValidationError: unknown hook 'pytest_namespace' in plugin <module 'allure.pytest_plugin' from 'C:\\Users\\wenqi\\AppData\\Roaming\\Python\\Python37\\site-packages\\allure\\pytest_plugin.py'>
+
+网上查找错误信息，都提示是pytest版本太高导致，建议安装pytest低版本4.0.2
+
+2.1卸载pytest高版本：pip uninstall pytest
+
+2.2安装pytest低版本：pip install pytest==4.0.2
+
+（安装过程发现通过公司wif安装不了，找不到对应的包，然后通过手机热点安装，可安装成功，具体原因未知）
+
+2.3 报错，错误二：安装完成后，查案pytest版本号，发现报错，如下：
+
+TypeError: attrib() got an unexpected keyword argument 'convert'
+
+3.再次卸载pytest4.0.2，重新安装pytest最新版本，eclipse中运行程序时仍报错，同“错误一”
+
+4.在网上继续寻找解决方案，在链接二：https://www.cnblogs.com/wsy1103/p/10530397.html中有介绍到和pytest集成，需要安装allure-pytest
+
+继续尝试着安装：pip install allure-pytest，安装成功，版本号：2.8.6
+
+5.在Eclipse中运行程序，仍报错，不过此时报错信息和“错误一”不同，报错信息如下：
+
+No module named 'allure.pytest_plugin'; 'allure' is not a package
+
+6.在网上查询此错误，在链接三：https://www.cnblogs.com/lansan0701/p/10345142.html中介绍，卸载pytest-allure-adaptor、再安装allure-pytest
+
+由于已安装allure-pytest，故只卸载pytest-allure-adaptor
+
+7.卸载成功后，再次在Eclipse中执行程序，发现程序运行成功
+
+以上，为整个python+allure安装过程，问题思考过程
+
+以上，绿色背景的三个安装，为正确安装过程
+

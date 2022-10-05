@@ -1,0 +1,4 @@
+本人在 docker-compose build 时的报错如上图。提示pip不支持处理Python3.5，需要使用提示的pip版本代替！因为原项目是基音python3.5，而系统中默认是python3.7，对应的pip版本version22+，无法对原项目build镜像。
+ 解决方案：此时只需要将Dockerfile中的提示 “https://bootstrap.pypa.io/get-pip.py”改为建议的“https://bootstrap.pypa.io/pip/3.5/get-pip.py ”即可。
+ 这里需要说明，不能在编译环境中（Linux）进行更改，这样还会报同样的错误，因为只修改了主机环境的pip，跟Docker环境是两码事，所以一定要在Dockerfile中修改！
+

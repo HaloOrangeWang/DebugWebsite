@@ -1,0 +1,72 @@
+
+重点
+
+mac pro 系统安装了python ，但版本可能不是3 版本。
+
+系统安装目录 /System/Library/Frameworks/Python.framework/Versions/
+
+用户安装python3 版本。
+
+用户安装目录 /Library/Frameworks/Python.framework/Versions/
+
+使用$ python,提示如下,但明明安装了python3，提示的却是2版本python
+
+Python 2.7.4
+
+查看环境 PATH 配置,
+
+文件路径：～/.bash_profile ,文件内容如下，没有问题
+
+# Setting PATH for Python 3.6
+# The original version is saved in .bash_profile.pysave
+PATH="/Library/Frameworks/Python.framework/Versions/3.6/bin:${PATH}"
+export PATH
+
+查看 /Library/Frameworks/Python.framework/Versions/3.6/bin,目录下确实没有 python 文件，但是有python3 文件，并且有pip3 这个文件。使用以下命令，提示的是3版本
+
+$ python3
+
+Python 3.6.4 (v3.6.4:d48ecebad5, Dec 18 2017, 21:07:28) 
+[GCC 4.2.1 (Apple Inc. build 5666) (dot 3)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+
+在bin目录下操作，复制一份 python3 文件并命名为 python, 并且复制一份pip3 文件并命名为pip。 这样就能解决，将mac系统默认的python版本完全切换到自定义的版本。
+
+在bin目录下操作，复制一份 python3 文件并命名为 python, 并且复制一份pip3 文件并命名为pip。 这样就能解决，将mac系统默认的python版本完全切换到自定义的版本。
+
+执行 $ python 命令测试python版本，显示的版本正确
+
+执行 $ python 命令测试python版本，显示的版本正确
+
+bogon:~ $ python
+Python 3.6.4 (v3.6.4:d48ecebad5, Dec 18 2017, 21:07:28) 
+[GCC 4.2.1 (Apple Inc. build 5666) (dot 3)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+安装scrapy 模块
+
+命令：  pip install scrapy
+
+一路正常，最终看到 Successfully,安装成功
+
+Successfully installed Automat-0.6.0 PyDispatcher-2.0.5 Twisted-17.9.0 asn1crypto-0.24.0 attrs-17.4.0 cffi-1.11.5 constantly-15.1.0 cryptography-2.2.1 cssselect-1.0.3 hyperlink-18.0.0 idna-2.6 incremental-17.5.0 lxml-4.2.1 parsel-1.4.0 pyOpenSSL-17.5.0 pyasn1-0.4.2 pyasn1-modules-0.2.1 pycparser-2.18 queuelib-1.5.0 scrapy-1.5.0 service-identity-17.0.0 six-1.11.0 w3lib-1.19.0 zope.interface-4.4.3
+
+
+吐槽
+
+查看系统默认的python版本，我的电脑默认的python版本是2.7。我明明已新经安装了python3.6 ，但使用$ python命令 展示的还是2.7版本。
+
+使用$ python3 命令查看版本，提示的是python 3.6 的版本，也就是说使用$ python3 开头的命令是使用3版本的python  解释器解释代码。
+
+使用$ pip install scrapy 进行安装scrapy ，但安装模块默认目录在2.7 版本下，且有很多报错。
+
+思考可能的原因是环境path有问题
+
+查看环境path配置，问题果然在这，解决步骤 查看重点：6
+
+
+传送门
+
+Mac 下 python 环境问题
+

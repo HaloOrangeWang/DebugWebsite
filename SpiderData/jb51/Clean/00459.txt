@@ -1,0 +1,112 @@
+问题
+
+https://docs.python.org/3/tutorial/errors.html#handling-exceptions
+
+https://docs.python.org/3/library/exceptions.html#ValueError
+
+try:
+  int("x")
+except Exception as e:
+  '''异常的父类，可以捕获所有的异常'''
+  print(e)
+# e变量是Exception类型的实例，支持__str__()方法，可以直接打印。 
+invalid literal for int() with base 10: 'x'
+try:
+  int("x")
+except Exception as e:
+  '''异常的父类，可以捕获所有的异常'''
+  print(e.args)
+
+# e变量有个属性是.args，它是错误信息的元组
+
+("invalid literal for int() with base 10: 'x'",)try: datetime(2017,2,30)except ValueError as e: print(e) day is out of range for monthtry: datetime(22017,2,30)except ValueError as e: print(e) year 22017 is out of rangetry: datetime(2017,22,30)except ValueError as e: print(e) month must be in 1..12e = Nonetry: datetime(2017,22,30)except ValueError as e: print(e) month must be in 1..12e
+# e这个变量在异常过程结束后即被释放，再调用也无效
+ Traceback (most recent call last): File "<input>", line 1, in <module>NameError: name 'e' is not defined
+
+errarg = None
+try:
+  datetime(2017,22,30)
+except ValueError as errarg:
+  print(errarg)
+  
+month must be in 1..12
+errarg
+Traceback (most recent call last):
+ File "<input>", line 1, in <module>
+NameError: name 'errarg' is not defined
+try:
+  datetime(2017,22,30)
+except ValueError as errarg:
+  print(errarg.args)
+
+# ValueError.args 返回元组
+
+('month must be in 1..12',)
+message = None
+try:
+  datetime(2017,22,30)
+except ValueError as errarg:
+  print(errarg.args)
+  message = errarg.args
+  
+('month must be in 1..12',)
+message
+('month must be in 1..12',)
+try:
+  datetime(2017,22,30)
+except ValueError as errarg:
+  print(errarg.args)
+  message = errarg
+  
+('month must be in 1..12',)
+message
+ValueError('month must be in 1..12',)
+str(message)
+'month must be in 1..12'
+
+分析异常信息，并根据异常信息的提示做出相应处理：
+
+try:
+  y = 2017
+  m = 22
+  d = 30
+  datetime(y,m,d)
+except ValueError as errarg:
+  print(errarg.args)
+  message = errarg
+  m = re.search(u"month", str(message))
+  if m:
+    dt = datetime(y,1,d)
+    
+('month must be in 1..12',)
+dt
+datetime.datetime(2017, 1, 30, 0, 0)
+
+甚至可以再except中进行递归调用：
+
+def validatedate(y, mo, d):
+  dt = None
+  try:
+    dt = datetime(y, mo, d)
+  except ValueError as e:
+    print(e.args)
+    print(str(y)+str(mo)+str(d))
+    message = e
+    ma = re.search(u"^(year)|(month)|(day)", str(message))
+    ymd = ma.groups()
+    if ymd[0]:
+      dt = validatedate(datetime.now().year, mo, d)
+    if ymd[1]:
+      dt = validatedate(y, datetime.now().month, d)
+    if ymd[2]:
+      dt = validatedate(y, mo, datetime.now().day)
+  finally:
+    return dt 
+validatedate(20199, 16, 33)
+('year 20199 is out of range',)
+('month must be in 1..12',)
+('day is out of range for month',)
+datetime.datetime(2018, 4, 20, 0, 0)
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

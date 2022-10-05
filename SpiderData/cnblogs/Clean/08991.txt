@@ -1,0 +1,50 @@
+基本的步骤是参考这位小哥的步骤来的https://zhuanlan.zhihu.com/p/40319581，但过程中遇到的错误还是得自己好好琢磨下，不能照搬。
+
+1.安装pycrypto报错：
+
+报错大多数是来自未安装 Microsoft Visual C++ 14.0，或者安装以后没有设置环境变量。
+
+（1）error: Microsoft Visual C++ 14.0 is required
+
+安装：下载链接：https://pan.baidu.com/s/1rFIiHGylwZH2I3rH9rg1ow  提取码：1i70
+
+（2）error: command 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\BIN\x86_amd64\cl.exe' failed with exit status 2
+
+a.将pycrypto下载到本地:
+
+2.6.1版本下载地址：https://files.pythonhosted.org/packages/60/db/645aa9af249f059cc3a368b118de33889219e0362141e75d4eaf6f80f163/pycrypto-2.6.1.tar.gz
+
+b.解压到本地，dos命令进入解压后的目录：cd Downloads/pycrypto-2.6.1（根据自己的路径）
+
+c.设置环境变量：set CL=/FI"C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\include\\stdint.h"
+
+d.运行python setup.py install 进行安装
+
+e.pip list 如果能看到就表示安装成功了
+
+2.ee.Initialize()错误：[WinError 10060]由于连接方在一段时间后没有正确答复或连接的主机。。。。
+
+（1） 计算机用户名是中文，需改成英文
+
+（2）如果即使是英文，也报同样的错，那就跟我碰到同样的问题了，网上也给了解决办法，但是也要看自己的计算机设置再去解决。我的解决方式如下：
+
+a.kexueshangwang设置为全局模式
+
+b.通过“网络和Internet设置”，查看自己的代理地址和端口，例如我的
+
+然后在dos命令行运行：
+
+>python
+
+>import os
+
+> os.environ['http_proxy'] ='http://127.0.0.1:1081'
+
+> os.environ['https_proxy'] ='http://127.0.0.1:1081'
+
+>import ee
+
+>import ee.Initialize()
+
+注：还有一点我刚开始拿一个跟qq邮箱连接的谷歌账号注册GEE没成功，后来无奈拿学校的邮箱重新注册了一个谷歌账号（注册的过程中手机验证显示“此电话号码无法用于进行验证”，查看网上的方法，将谷歌语言设置为英文(united states)并且在登陆界面的语言也设置成英文以后，手机验证成功），再去注册GEE，注册信息最好认真填写，便可注册成功。注册成功以后才能进行GEE的配置。我当时就是注册了，没发现没有成功，后来配置也发生错误了。
+

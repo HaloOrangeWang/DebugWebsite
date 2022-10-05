@@ -1,0 +1,23 @@
+今天在运行测试时突然遇到报错：ModuleNotFoundError: No module named '_pytest.resultlog'
+
+回想起最近更新和安装了不少python库，但是也不清楚跟这个报错有什么关系。
+
+上网查，看到文章 https://blog.csdn.net/qq_33385691/article/details/112562236
+
+原因是因为pytest-rerunfailures导入，_pytest.resultlog但该模块已在 pytest-dev/pytest@ef946d5被删除
+结果，不再可以pytest-rerunfailures与pytest 6.1.0以上的版本一起使用。
+
+解决办法：
+①升级pytest-rerunfailures版本到9.1.1
+②卸载pytest-rerunfailures使用pytest-reportlog代替
+③降低pytest版本到6.1.0以下
+————————————————
+pip list看了一下我的版本：
+
+pytest版本：6.2.4
+ pytest-rerunfailures版本：7.0.0
+
+遂对pytest-rerunfailures进行了升级：pip install --upgrade pytest-rerunfailures,升级后版本：10.1
+
+再次启动测试，正常！
+

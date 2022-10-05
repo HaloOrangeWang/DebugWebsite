@@ -1,0 +1,49 @@
+写python的时候出现了这个错，然后网上的教程的解决方案几乎都是——“重新定义下这个变量”，看的我一脸懵逼
+
+后来发现原来是我把return None的方法赋给了变量，之后操作变量导致的，直接上代码
+
+for i in range(2000):
+        read_lines = random.shuffle(read_lines) # 问题出在这里了
+        print(read_lines)
+
+咋一看是没啥问题，但是一运行就报错
+
+>>TypeError: 'NoneType' object is not subscriptable
+
+后来发现原来 random.shuffle这个函数他是return None的，但是我把他赋值给了read_lines，导致后续在操作read_lines的时候一直都是这个报错，包括打印read_lines也报错
+
+这个是random库里面的代码（看他的注释里面说的是return None）
+
+def shuffle(self, x, random=None):
+        """
+        Shuffle list x in place, and return None.
+
+Optional argument random is a 0-argument function returning a
+        random float in [0.0, 1.0); if it is the default None, the
+        standard random.random will be used.
+
+"""
+
+if random is None:
+            randbelow = self._randbelow
+            for i in reversed(range(1, len(x))):
+                # pick an element in x[:i+1] with which to exchange x[i]
+                j = randbelow(i+1)
+                x[i], x[j] = x[j], x[i]
+        else:
+            _int = int
+            for i in reversed(range(1, len(x))):
+                # pick an element in x[:i+1] with which to exchange x[i]
+                j = _int(random() * (i+1))
+                x[i], x[j] = x[j], x[i]
+
+
+解决方案
+
+把上面一行赋值语句改掉就好了
+
+for i in range(2000):
+        random.shuffle(read_lines)
+        print(read_lines)
+        content_list = []
+

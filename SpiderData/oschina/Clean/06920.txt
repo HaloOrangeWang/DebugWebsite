@@ -1,0 +1,32 @@
+安装好jmeter之后在启动Jmeter的过程中出现了如下的报错信息（大部分的原因是配置不对）：
+
+/usr/local/Cellar/jmeter/5.1.1/libexec/bin/jmeter: line 128: [: : integer expression expected
+
+/usr/local/Cellar/jmeter/5.1.1/libexec/bin/jmeter: line 192: /Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/bin/java: No such file or directory
+
+在网上查的资料表明是我的jdk版本不对
+
+1、用如下命令查询本机的jdk版本：
+
+/usr/libexec/java_home -V
+
+输入命令后我的电脑jdk版本如下：
+
+实际报错的jdk版本是：jdk1.8.0_181
+
+2、打开.bash_profile文件进行修改，输入如下命令：
+
+vim .bash_profile
+
+打开文件之后，点击字母 i 编辑比较方便，编辑好了之后按esc推出编辑模式，输入:wq，退出，之后在终端再输入下面的命令才会真正生效
+
+source ~/.bash_profile
+
+改好了之后在终端执行：
+
+sudo sh jmeter
+
+然后就成功启动了！！！（放烟花～(๑•̀ㅂ•́)و✧）
+
+以上，希望对你们有所帮助～
+

@@ -1,0 +1,190 @@
+
+1 FailedPreconditionError错误现象
+
+在运行tensorflow时出现报错，报错语句如下：
+
+FailedPreconditionError (see above for traceback): Attempting to use uninitialized value Variable
+ [[Node: Variable/read = _MklIdentity[T=DT_FLOAT, _kernel="MklOp", _device="/job:localhost/replica:0/task:0/device:CPU:0"](Variable, DMT/_0)]]
+
+对报错原因进行直白翻译（信、雅、达精度严重缺失）：
+
+条件预处理时失败错误（参看上面的回溯）：尝试使用未初始化的值变量。
+
+
+2 FailedPreconditionError错误浅析
+
+
+2.1 FailedPreconditionError的浅析
+
+查看错误类源代码：
+
+class FailedPreconditionError(OpError):
+  """Operation was rejected because the system is not in a state to execute it.
+  This exception is most commonly raised when running an operation
+  that reads a @{tf.Variable}
+  before it has been initialized.
+  @@__init__
+  """
+
+def __init__(self, node_def, op, message):
+    """Creates a `FailedPreconditionError`."""
+    super(FailedPreconditionError, self).__init__(node_def, op, message, FAILED_PRECONDITION)
+
+注释意思可理解为：
+
+因为系统未处于执行状态，所以操作被拒绝。
+
+在@ {tf.Variable}初始化前运行读取操作时，通常会引发此异常。
+
+
+2.2 global_variables_initializer的源代码
+
+查看global_variables_initializer函数的源代码
+
+def global_variables_initializer():
+  """Returns an Op that initializes global variables.
+  This is just a shortcut for `variables_initializer(global_variables())`
+  Returns:
+    An Op that initializes global variables in the graph.
+  """
+  if context.executing_eagerly():
+    return control_flow_ops.no_op(name="global_variables_initializer")
+  return variables_initializer(global_variables())
+
+溯源，查看variable_initializer函数源代码。
+
+def variables_initializer(var_list, name="init"):
+  """Returns an Op that initializes a list of variables.
+  After you launch the graph in a session, you can run the returned Op to
+  initialize all the variables in `var_list`. This Op runs all the
+  initializers of the variables in `var_list` in parallel.
+  Calling `initialize_variables()` is equivalent to passing the list of
+  initializers to `Group()`.
+  If `var_list` is empty, however, the function still returns an Op that can
+  be run. That Op just has no effect.
+  Args:
+    var_list: List of `Variable` objects to initialize.
+    name: Optional name for the returned operation.
+  Returns:
+    An Op that run the initializers of all the specified variables.
+  """
+  if var_list and not context.executing_eagerly():
+    return control_flow_ops.group(*[v.initializer for v in var_list], name=name)
+  return control_flow_ops.no_op(name=name)
+
+查看global_variables()函数源代码。
+
+def global_variables(scope=None):
+  """Returns global variables.
+  Global variables are variables that are shared across machines in a
+  distributed environment. The `Variable()` constructor or `get_variable()`
+  automatically adds new variables to the graph collection
+  `GraphKeys.GLOBAL_VARIABLES`.
+  This convenience function returns the contents of that collection.
+  An alternative to global variables are local variables. See
+  @{tf.local_variables}
+  Args:
+    scope: (Optional.) A string. If supplied, the resulting list is filtered
+      to include only items whose `name` attribute matches `scope` using
+      `re.match`. Items without a `name` attribute are never returned if a
+      scope is supplied. The choice of `re.match` means that a `scope` without
+      special tokens filters by prefix.
+  Returns:
+    A list of `Variable` objects.
+  """
+  return ops.get_collection(ops.GraphKeys.GLOBAL_VARIABLES, scope)
+
+
+2.3 全局变量初始化分析
+
+
+2.3.1 变量
+
+Tensorflow 变量是表示程序处理的共享持久状态的最佳方法。
+
+我们通过tf.Variable类操作变量。tf.Variable表示可通过对其运行操作来改变其值的张量。
+
+与tf.Tensor对象不同，tf.Variable存在于单个tf.Session().run()调用的上下文之外。
+
+在TensorFlow内部，tf.Variable会存储持久性张量。具体operation( op )允许您读取和修改张量的值。这些修改在多个tf.Session()之间是可见的，因此对于一个tf.Variable，多个工作器可以看到相同的值。
+
+
+2.3.2 变量集合
+
+由于 TensorFlow 程序的未连接部分可能需要创建变量，因此能有一种方式访问所有变量有时十分受用。为此，TensorFlow 提供了集合，它们是张量或其他对象（如 tf.Variable 实例）的命名列表。
+
+默认情况下，每个 tf.Variable 都放置在以下两个集合中：
+
+tf.GraphKeys.GLOBAL_VARIABLES - 可以在多台设备间共享的变量，
+
+tf.GraphKeys.TRAINABLE_VARIABLES - TensorFlow 将计算其梯度的变量。
+
+如果您不希望变量可训练，可以将其添加到 tf.GraphKeys.LOCAL_VARIABLES 集合中。
+
+
+2.3.3 初始化变量
+
+变量必须先初始化后才可使用。
+
+如果您在低级别 TensorFlow API 中进行编程（即您在显式创建自己的图和会话），则必须明确初始化变量。tf.contrib.slim、tf.estimator.Estimator 和 Keras 等大多数高级框架在训练模型前会自动为您初始化变量。
+
+显式初始化在其他方面很有用。它允许您在从检查点重新加载模型时不用重新运行潜在资源消耗大的初始化器，并允许在分布式设置中共享随机初始化的变量时具有确定性。
+
+要在训练开始前一次性初始化所有可训练变量，请调用 tf.global_variables_initializer()。此函数会返回一个操作，负责初始化 tf.GraphKeys.GLOBAL_VARIABLES 集合中的所有变量。运行此操作会初始化所有变量。例如：
+
+session.run(tf.global_variables_initializer())
+# Now all variables are initialized.
+
+如果您确实需要自行初始化变量，则可以运行变量的初始化器操作。例如：
+
+session.run(my_variable.initializer)
+
+您可以查询哪些变量尚未初始化。例如，以下代码会打印所有尚未初始化的变量名称：
+
+print(session.run(tf.report_uninitialized_variables()))
+
+请注意，默认情况下，tf.global_variables_initializer 不会指定变量的初始化顺序。因此，如果变量的初始值取决于另一变量的值，那么很有可能会出现错误。任何时候，如果您在并非所有变量都已初始化的上下文中使用某个变量值（例如在初始化某个变量时使用另一变量的值），最好使用 variable.initialized_value()，而非 variable：
+
+v = tf.get_variable("v", shape=(), initializer=tf.zeros_initializer())
+w = tf.get_variable("w", initializer=v.initialized_value() + 1)
+
+具体参考 Tensorflow的官方信息 --> 变量 https://www.tensorflow.org/programmers_guide/variables
+
+备注：
+
+在2017年03月02日之前，全局变量初始化函数initialize_all_variables()；之后为global_variables_initializer()函数。
+
+
+3 变量的生命周期（补充）
+
+2018.10.28日首图学习时看到内容，将其补充上。
+
+在看到Tensorflow官网的常见问题解答中的变量部分时，有关于变量的生命周期的解答。
+
+
+什么是变量的生命周期？
+
+在会话中为变量首次运行  tf.Variable.initializer  操作时，即会创建该变量。运行   tf.Session.close  后，将销毁该变量。
+
+从变量生命周期中可以得知，如果不进行 initializer ，变量就不会创建。
+
+参考
+
+处理FailedPreconditionError、该文针对FailedPreconditionError错误函数进行解读
+
+TensorFlow定义错误的异常类型（详细）进入该文直接搜索FailedPreconditionError函数，可以看到源代码段
+
+变量初始化的意义 该文从C/C++程序中的栈和堆上来说存储并采用示例分析证明
+
+具体参考 Tensorflow的官方信息 --> 变量 https://www.tensorflow.org/programmers_guide/variables
+
+tf.global_variables_initializer：https://devdocs.io/tensorflow~python/tf/global_variables_initializer
+
+tensorflow/tensorflow/python/ops/variables.py：https://github.com/tensorflow/tensorflow/blob/r1.8/tensorflow/python/ops/variables.py
+
+tensorflow中的参数初始化方法
+
+FailedPreconditionError tensorflow
+
+TensorFlow 常见问题解答
+

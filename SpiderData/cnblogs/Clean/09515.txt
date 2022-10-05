@@ -1,0 +1,20 @@
+问题描述：python连接数据库插入数据时，显示插入的数据在数据库里面没有找到相应的字段
+
+问题描述：python连接数据库插入数据时，显示插入的数据在数据库里面没有找到相应的字段
+
+问题代码
+sql = "insert into dim_phone_location(phone,region,city,isp) 
+values(%s,%s,%s，%s)" %(parent_mobile,prov,city,isp)
+
+问题代码
+
+原因：在插入对应的值得时候，其字段是varchar类型，%s是必须要加上单引号的
+
+原因：在插入对应的值得时候，其字段是varchar类型，%s是必须要加上单引号的
+
+改后代码：
+sql = "insert into dim_phone_location(phone,region,city,isp) 
+values('%s','%s','%s'，'%s')" %(parent_mobile,prov,city,isp)
+
+改后代码：
+

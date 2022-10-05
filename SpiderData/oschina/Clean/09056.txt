@@ -1,0 +1,2 @@
+最近算法组又加了一个定制匹配算法，按照之前的匹配算法路子，很快就实现好了，本地顺利调用，但是服务器报错java.lang.UnsatisfiedLinkError: Native Library C:\Program Files\MATLAB\MATLAB Compiler Runtime\v83\bin\win64\BuilderJABootstrap.dll already loaded in another classloader。原因是之前的算法和这次的算法两个jar的实例化代码中都是通过matlab的javabuild.jar加载的，而jvm不允许一个本地library加载两次，所以把javabuild.jar（只需要移动这个jar）这个包从web-inf/lib移到tomcat/lib这个公有环境中，重启tomcat解决问题。开心
+

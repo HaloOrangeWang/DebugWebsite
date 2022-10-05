@@ -1,0 +1,34 @@
+org.json.JSONException: Value ﻿ of type java.lang.String cannot be converted to JSONObject
+
+解析服务器返回的Json串时，JSONObject对象抛出了这个异常。
+
+原以为是返回的json格式错误了，仔细对比看不出所以然。至少字符上看是格式没问题的。。
+
+那就可能是编码的问题了。仔细比较每个字符，的确在json串头部发现字符："\ufeff" 。
+
+客户端解决方案：
+
+public static final String removeBOM(String data) {
+
+if (TextUtils.isEmpty(data)) {
+
+return data;
+
+}
+
+if (data.startsWith("\ufeff")) {
+
+return data.substring(1);
+
+} else {
+
+return data;
+
+}
+
+}
+
+服务器端解决方案：
+
+将输出此json的php源码重新用editplus之类用utf-8无BOM的编码保存。【不要用windows系统自带的记事本编辑php源码，这个BOM就是记事本这些windows自带的编辑器引入的。】
+

@@ -1,0 +1,8 @@
+原因：python2.79之后urllib.urlopen打开一个 https要验证ssl证书，目标网站证书是自签名的证书时就会抛出此异常。
+
+注：自签名证书是由服务器自己颁发给自己，用于证明自己身份的东西，非权威颁发机构发布，默认客户端都是不信任的，主要目的是用来加密和保证数据的完整性和不可抵赖性,与签名证书相同.
+
+#禁用证书
+
+import ssl ssl._create_default_https_context = ssl._create_unverified_contex
+

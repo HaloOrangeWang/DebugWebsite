@@ -1,0 +1,58 @@
+这周末在学习Flask框架的时候，有需要安装MySQL-python模块，一开始用pip安装：
+
+1 pip install MySQL-python
+
+但是安装的时候报错了：
+
+error: command 'C:\\Program Files\\Microsoft Visual Studio 14.0\\VC\\BIN\\cl.exe' failed with exit status 2
+
+没办法只能再去百度找答案……
+
+下面推荐两种办法安装：
+
+一：
+
+https://pypi.python.org/pypi/mysqlclient/1.3.10
+
+这是在Python-3.5及上版本的扩展的mysql驱动。
+
+之后将下载后的*.whl文件跟pip.exe放在同个目录（一般是在 ..\Python36\Scripts\ 里）
+
+然后用cmd命令进入到这个目录执行PIP命令安装：
+
+1 pip install mysqlclient-1.3.10-cp36-cp36m-win32.whl
+
+安装成功后会提示：
+
+检查MySQLdb模块是否可以正常导入来测试有没有安装成功：
+
+>>> import MySQLdb
+
+没有报错说明安装成功了。
+
+二：
+
+安装pymysql代替
+
+1 pip install pymysql
+
+也是可以的，推荐使用第一种方法。
+
+flask-sqlalchemy 最新版本存在 keyError 问题
+
+KeyError: ‘SQLALCHEMY_TRACK_MODIFICATIONS’ 的错误问题
+
+解决方法：
+
+一：
+
+　　修改flask_sqlalchemy的__init__.py 中为True
+
+　　app.config[‘SQLALCHEMY_TRACK_MODIFICATIONS’] = True
+
+二：
+
+　　如果还是报错，建议回退flask_sqlalchemy 版本为2.0，这样问题就解决了。
+
+1 pip install Flask-SQLAlchemy==2.0
+

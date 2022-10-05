@@ -1,0 +1,46 @@
+
+Django2.0同步Mysql数据库时出现的问题
+
+
+执行 python manage.py makemigrations 报错
+
+# 报错位置
+File "G:\python\lib\site-packages\django\db\backends\mysql\base.py", line 36, in <module>
+# 报错问题
+    raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3
+
+
+解决方案
+
+
+第一步:
+
+点击报错位置找到这两行 注释掉
+
+version = Database.version_info
+# if version < (1, 3, 13):
+#    raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+
+
+第二步
+
+再次执行python manage.py makemigrations   报错
+
+# 报错路径 
+File "G:\python\lib\site-packages\django\db\backends\mysql\operations.py", line 146, in last_executed_query
+    query = query.decode(errors='replace')
+
+# 报错问题
+AttributeError: 'str' object has no attribute 'decode'
+
+　　
+
+修改  :将代码里面query.decode改成：query.encode
+
+if query is not None:
+            query = query.encode(errors='replace')  # 修改后的
+        return query
+
+　　
+

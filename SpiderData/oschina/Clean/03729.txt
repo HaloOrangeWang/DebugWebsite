@@ -1,0 +1,37 @@
+
+Traceback (most recent call last):异常
+
+通常很难出现这样的错误。只能一点点排除：
+
+1.磁盘空间满了。 比如/tmp, /var 或者是/分区满了。
+
+2.文件读写错误，在临时目录里，某些文件被锁，无法读写导致
+
+3.内存不足（这个可能性小），你可以将占用内存多的程序去掉
+
+4.你是在虚拟机里运行，可能内存访问函数不能正确使用
+
+5.有防火墙的问题
+
+6.可能是权限的问题，比如某些程序需要超级用户的权限
+
+7.程序本身有BUG，它预留的计算空间不够。你可以检查一下配置什么的，看看有没有设置预加载内存的配置。
+
+通常space是指磁盘空间， memory是指内存。
+
+#举个栗子(函数递归调用)
+
+def f1():
+　　print('===>f1')
+　　f2()
+
+def f2():
+　　print('===>f2')
+　　f1()                      #再次调用函数f1
+
+f1()
+
+# 运行代码拉到很后面会报错:Traceback (most recent call last)
+
+RecursionError: maximum recursion depth exceeded while calling a Python object       调用Python对象时，超出了最大递归深度
+

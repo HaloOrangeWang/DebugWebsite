@@ -1,0 +1,43 @@
+
+使用Google colab 路径问题报错记录
+
+
+遇到问题
+
+当使用colab训练yolov4代码时遇到了一个错误（其实以前也遇到过一样的错误，不过忘记怎么解决了）
+
+FileNotFoundError: [Errno 2] No such file or directory: '/content/drive/My'
+
+
+错误尝试
+
+最初我是觉得可能是由于哪些库的版本有问题，导致导入和发现对应的路径。因为我出现了如下错误：
+ 
+ 由于显示了torch、PIL等库的错误，我以为是这些库版本存在问题，或者是环境不匹配。花了大半天去调试环境，试了很多torch、torchvison、pillow的版本，可报错依然发生。后来看见了一个博主的博客，解决了这个问题
+ 解决经验
+
+
+问题总结
+
+其实原因很简单，就是因为Google的网盘叫My Drive,中间存在空格，在程序的读取和执行的过程中无法识别为整个整体，所以报了找不到路径的错误。我这里的代码是这个样子：
+
+def convert_annotation(year, image_id, list_file):    
+	in_file = open('VOCdevkit/VOC%s/Annotations/%s.xml'%(year, image_id))    	
+	tree=ET.parse(in_file)    
+	root = tree.getroot()    	
+	list_file.write('%s/VOCdevkit/VOC%s/JPEGImages/%s.png'%(wd,year, image_id))    
+	for obj in root.iter('object'):        
+		difficult = obj.find('difficult').text        
+		cls = obj.find('name').text        
+		if cls not in classes or int(difficult)==1:           
+			continue        
+		cls_id = classes.index(cls)        
+		xmlbox = obj.find('bndbox')        
+		b = (int(xmlbox.find('xmin').text), int(xmlbox.find('ymin').text), int(xmlbox.find('xmax').text), int(xmlbox.find('ymax').text))        list_file.write(" " + ",".join([str(a) for a in b]) + ',' + str(cls_id))
+    	list_file.write('\n')
+
+只需将 list_file.write(’%s/VOCdevkit/VOC%s/JPEGImages/%s.png’%(wd,year, image_id))改成list_file.write(’./VOCdevkit/VOC%s/JPEGImages/%s.png’%(year, image_id))，把原来的绝对路径化成相对路径就能直接运行了。其实不止是yolov4，像yolov3，ssd，efficientnet等目标检测算法在colab中使用时，遇到相关报错时都可以这样解决。
+ 修改后我的2007_train.txt文件变成了这样：
+ 
+ 最后再运行train.py就能成功运行了。介绍下自己吧，作为一个通信专业的本科生，学习深度学习也快一年了，第一次写博客，希望能够帮助到大家。
+

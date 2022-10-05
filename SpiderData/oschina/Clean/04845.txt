@@ -1,0 +1,13 @@
+1，nginx: [emerg] getpwnam("www") failed
+
+inux 64系统中安装nginx时如果出现错误：nginx: [emerg] getpwnam(“www”) failed in ........
+解决方法1：
+      在nginx.conf中 把user www www;的注释去掉,在这句前面加#即可 
+解决方法2：
+      错误的原因是没有创建www这个用户，应该在服务器系统中添加www用户组和用户www，如下命令：
+
+#/usr/sbin/groupadd -f www
+
+
+2， Nginx 报错： nginx: [error] open() "/usr/local/nginx/logs/nginx.pid" failed (2: No such file or directory) 的解决方法
+

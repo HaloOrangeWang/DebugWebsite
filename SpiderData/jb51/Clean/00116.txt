@@ -1,0 +1,61 @@
+pandas 做merge的时候报这个错：
+
+df22 = pd.merge(df1,df2,left_on='company_name',right_on = 'name',how='left') Process finished with exit code 137
+
+
+查了一下原因是：
+
+两个表太大了，可能导致内存不够。
+
+补充：Pandas：merge函数使用注意事项（pandas的merge函数造成大量错误的空值）
+
+相信使用过Pandas的merge函数的人都知道，merge具有连接的功能，左连接更是在数据处理中最常用的连接方式。在使用merge过程中，
+
+
+经常会出现这种情况：
+
+dataframe1：
+a b
+1 1
+2 2
+3 3
+
+dataframe2：
+b c
+1 2
+2 3
+
+dataframe = pd.merge(dataframe1,dataframe2,on='b',how='left')后得到
+
+dataframe:
+a b c
+1 1 2
+2 2 3
+3 3 nan
+
+但有时候dataframe2为
+
+b c
+1 2
+2 3
+3 4
+
+dataframe = pd.merge(dataframe1,dataframe2,on='b',how='left')后得到
+
+dataframe:
+a b c
+1 1 2
+2 2 3
+3 3 nan
+
+
+这是为什么呢？
+
+原因是通常我们的dataframe的数据都是从csv文件或者xls文件读取过来的，在excel中打开对应b那些的数据看起来是一样的，但是使用pandas读取的时候，
+
+可能发现不同csv文件或者xls文件的同一列的数据相同的数据具有整型和浮点型的区别，这样导致在连接的时候，3和3.0是不一样的，无法对3那行进行连接。
+
+因此，在使用merge进行连接前，必须对连接的关键字进行字符化或者整型化的调整。
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

@@ -1,0 +1,22 @@
+centos7下python安装mysql-python模块，执行命令：
+
+pip install mysql-python
+
+出现报错：EnvironmentError: mysql_config not found
+
+网上查了一下需安装mysql-devel 
+yum -y install mysql-devel
+
+安装成功后，执行命令
+python setup.py install
+
+又出现报错：error: command 'gcc' failed with exit status 1
+
+明明装了gcc的，怎么会不行呢，然后发觉是failed不是not found，这说明这个错误个gcc没多大关系，应该是缺少某些功能模块，先后安装了python-devel,libffi-devel,openssl-devel才行
+
+可如下命令行安装：
+
+yum install gcc libffi-devel python-devel openssl-devel
+
+done!
+

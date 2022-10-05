@@ -1,0 +1,23 @@
+当Python的语段用了try...except...方式之后，就一直不太知道怎么定位到详细的程序crush
+ 位置，这两天程序需要用到这方面，于是就查了一下。
+
+需要使用traceback包
+
+import traceback
+
+try:
+		#以除0错误为例
+		3/0
+except Exception, e:
+		#这个是输出错误类别的，如果捕捉的是通用错误，其实这个看不出来什么
+		print 'str(Exception):\t', str(Exception)       #输出  str(Exception):	<type 'exceptions.Exception'>
+		#这个是输出错误的具体原因，这步可以不用加str，输出 
+		print 'str(e):\t\t', str(e)   #输出 str(e):		integer division or modulo by zero
+		print 'repr(e):\t', repr(e) #输出 repr(e):	ZeroDivisionError('integer division or modulo by zero',)
+		print 'traceback.print_exc():';    
+		#以下两步都是输出错误的具体位置的
+		traceback.print_exc()
+		print 'traceback.format_exc():\n%s' % traceback.format_exc()
+
+另外说一下，Python 2.6之后 except那句可以换成except Exception as e了
+

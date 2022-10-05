@@ -1,0 +1,31 @@
+如下所示：
+
+logging:
+ config: classpath:spring-logback.xml
+ pattern:
+ console: "%d - %msg%n"
+ level: info
+
+直接写 level: info 会报错：
+
+org.springframework.boot.context.properties.bind.BindException: Failed to bind properties under 'logging.level' to java.util.Map<java.lang.String, java.lang.String>
+
+...
+
+Caused by: org.springframework.core.convert.ConverterNotFoundException: No converter found capable of converting from type [java.lang.String] to type [java.util.Map<java.lang.String, java.lang.String>]
+
+...
+
+解决方法 ：加个root
+
+logging:
+ config: classpath:spring-logback.xml
+ pattern:
+ console: "%d - %msg%n"
+ level: 
+ root: info
+
+运行成功
+
+以上这篇解决springboot yml配置 logging.level 报错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

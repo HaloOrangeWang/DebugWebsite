@@ -1,0 +1,12 @@
+最新的flask_socketio 使用的是python-socketio
+
+如果在包中安装了gevent或evenlet，在服务器上使用时，就会报错
+
+RuntimeError: You need to use the eventlet server. See the Deployment section of the documentation for more information
+
+卸载gevent和evenlet有关的库，卸载后就好了
+
+经测试发现,如果是用uwsgi启动，采用eventlet模式，process只能设置1个，且会造成线程堵塞，如果设置超过1个，也会报上面的错误
+
+后来采用gunicorn解决
+

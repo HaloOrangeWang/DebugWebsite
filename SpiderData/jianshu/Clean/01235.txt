@@ -1,0 +1,41 @@
+使用 pip 直接安装 talib 扩展会出错，根据报错提示，需要在名字中间添加连接字符 ta-lib
+
+$ pip install ta-lib
+
+报错信息如下：
+
+talib/_ta_lib.c:526:10: fatal error: 'ta-lib/ta_defs.h' file not found
+    #include "ta-lib/ta_defs.h"
+             ^
+    1 error generated.
+    error: command 'clang' failed with exit status 1
+
+原因是需要先安装 TA-Lib 扩展库，然后再执行 pi p命令。
+
+
+Mac OS X
+
+$ brew install ta-lib
+==> Pouring ta-lib-0.4.0.yosemite.bottle.1.tar.gz
+🍺  /usr/local/Cellar/ta-lib/0.4.0: 14 files, 2.5MB
+
+$ pip install ta-lib
+Installing collected packages: ta-lib
+  Running setup.py install for ta-lib ... |^@^done
+Successfully installed ta-lib-0.4.17
+
+
+Windows
+
+下载 ta-lib-0.4.0-msvc.zip，然后解压到 C:\ta-lib，下载地址：
+
+https://sourceforge.net/projects/ta-lib/files/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip/download?use_mirror=jaist
+
+如 windows 下报错 Unable to find vcvarsall.bat，可以访问 https://www.lfd.uci.edu/~gohlke/pythonlibs/#ta-lib 下载对应版本的包直接安装，cp后面是版本号。
+
+pip install TA_Lib‑0.4.17‑cp35‑cp35m‑win_amd64.whl
+
+参考：
+
+http://www.nginx.cn/4798.html
+

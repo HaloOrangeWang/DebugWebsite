@@ -1,0 +1,23 @@
+
+import torch不报错但是import torchvision报错:UserWarning:Faild to load image Python extension:Could not解决二
+
+可能是你的torch和torchvision版本不对应
+ 
+ 我是在运行yolo5时发现的错误，yolo5要求torch>=1.6就可以，那我们就先卸载原来的torch和torchvision，再安装新的,打开anaconda prompt，
+ 1.输入如下命令卸载
+
+pip uninstall torch
+
+pip uninstall torchvision
+
+2.然后查看对应cuda和torch1.6.0和torchvision0.7.0命令进行安装
+
+或者想安装其他版本torch，可以在https://pytorch.org/查询
+ 3.要查看自己cuda版本只需要cmd输入如下命令：
+
+nvcc -V
+
+4.我是cuda10.2
+
+conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.2 -c pytorch
+

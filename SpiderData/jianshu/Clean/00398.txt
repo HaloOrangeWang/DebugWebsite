@@ -1,0 +1,202 @@
+今天重新安装了下mac 蒙特利系统，配置iOS开发环境，在安装了cocoapods后pod install，报错如下：
+
+Analyzing dependencies
+
+――― MARKDOWN TEMPLATE ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+### Command
+
+/usr/local/Cellar/cocoapods/1.11.3/libexec/bin/pod install
+
+### Report
+
+* What did you do?
+
+* What did you expect to happen?
+
+* What happened instead?
+
+### Stack
+
+CocoaPods : 1.11.3
+
+Ruby : ruby 2.6.8p205 (2021-07-07 revision 67951) [universal.x86_64-darwin21]
+
+RubyGems : 3.0.3.1
+
+Host : macOS 12.3 (21E230)
+
+Xcode : 13.3 (13E113)
+
+Git : git version 2.32.0 (Apple Git-132)
+
+Ruby lib dir : /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib
+
+Repositories : trunk - CDN - https://cdn.cocoapods.org/
+
+### Plugins
+
+cocoapods-deintegrate : 1.0.5
+
+cocoapods-plugins     : 1.0.0
+
+cocoapods-search      : 1.0.1
+
+cocoapods-trunk       : 1.6.0
+
+cocoapods-try         : 1.2.0
+
+### Podfile
+
+```ruby
+# Uncomment this line to define a global platform for your project
+platform :ios, '9.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['ENABLE_BITCODE'] = 'NO'
+      if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 11.0
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      end
+    end
+  end
+end
+
+
+Error
+
+JSON::ParserError - 767: unexpected token at '{
+  "name": "SDWebImage",
+  "version": "5.12.5",
+  "platforms": {
+    "osx": "10.11",
+    "ios": "9.0",
+    "tvos": "9.0",
+    "watchos": "2.0"
+  },
+  "license": "MIT",
+  "summary": "Asynchronous image downloader with cache support with an UIImageView category.",
+  "homepage": "https://github.com/SDWebImage/SDWebImage",
+  "authors": {
+    "Olivier Poitrey": "rs@dailymotion.com"
+  },
+  "source": {
+    "git": "https://github.com/SDWebImage/SDWebImage.git",
+    "tag": "5.12.5"
+  },
+  "description": "This library provides a category for UIImageView with support for remote images coming from the web. It provides an UIImageView category adding web image and cache management to the Cocoa Touch framework, an asynchronous image downloader, an asynchronous memory + disk image caching with automatic cache expiration handling, a guarantee that the same URL won't be downloaded several times, a guarantee that bogus URLs won't be retried again and again, and performances!",
+  "requires_arc": true,
+  "frameworks": "ImageIO",
+  "default_subspecs": "Core",
+  "pod_target_xcconfig": {
+    "SUPPORTS_M'
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/json/common.rb:156:in `parse'
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/json/common.rb:156:in `parse'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/specification/json.rb:61:in `from_json'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/specification.rb:748:in `from_string'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/specification.rb:722:in `from_file'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/source.rb:188:in `specification'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/specification/set.rb:58:in `block in specification_name'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/specification/set.rb:56:in `each'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/specification/set.rb:56:in `specification_name'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/cdn_source.rb:216:in `search'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/source/aggregate.rb:83:in `block in search'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/source/aggregate.rb:83:in `select'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-core-1.11.3/lib/cocoapods-core/source/aggregate.rb:83:in `search'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:416:in `create_set_from_sources'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:385:in `find_cached_set'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:360:in `specifications_for_dependency'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:165:in `search_for'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:274:in `block in sort_dependencies'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:267:in `each'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:267:in `sort_by'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:267:in `sort_by!'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:267:in `sort_dependencies'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/delegates/specification_provider.rb:60:in `block in sort_dependencies'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/delegates/specification_provider.rb:77:in `with_no_such_dependency_error_handling'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/delegates/specification_provider.rb:59:in `sort_dependencies'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:754:in `push_state_for_requirements'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:744:in `require_nested_dependencies_for'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:727:in `activate_new_spec'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:684:in `attempt_to_activate'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:254:in `process_topmost_state'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:182:in `resolve'
+/Library/Ruby/Gems/2.6.0/gems/molinillo-0.8.0/lib/molinillo/resolver.rb:43:in `resolve'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/resolver.rb:94:in `resolve'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/installer/analyzer.rb:1078:in `block in resolve_dependencies'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/user_interface.rb:64:in `section'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/installer/analyzer.rb:1076:in `resolve_dependencies'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/installer/analyzer.rb:124:in `analyze'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/installer.rb:416:in `analyze'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/installer.rb:241:in `block in resolve_dependencies'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/user_interface.rb:64:in `section'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/installer.rb:240:in `resolve_dependencies'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/installer.rb:161:in `install!'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/command/install.rb:52:in `run'
+/Library/Ruby/Gems/2.6.0/gems/claide-1.1.0/lib/claide/command.rb:334:in `run'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/lib/cocoapods/command.rb:52:in `run'
+/Library/Ruby/Gems/2.6.0/gems/cocoapods-1.11.3/bin/pod:55:in `<top (required)>'
+/usr/local/Cellar/cocoapods/1.11.3/libexec/bin/pod:23:in `load'
+/usr/local/Cellar/cocoapods/1.11.3/libexec/bin/pod:23:in `<main>'
+
+――― TEMPLATE END ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+[!] Oh no, an error occurred.
+
+Search for existing GitHub issues similar to yours:
+
+https://github.com/CocoaPods/CocoaPods/search?q=767%3A+unexpected+token+at+%27%7B%0A++%22name%22%3A+%22SDWebImage%22%2C%0A++%22version%22%3A+%225.12.5%22%2C%0A++%22platforms%22%3A+%7B%0A++++%22osx%22%3A+%2210.11%22%2C%0A++++%22ios%22%3A+%229.0%22%2C%0A++++%22tvos%22%3A+%229.0%22%2C%0A++++%22watchos%22%3A+%222.0%22%0A++%7D%2C%0A++%22license%22%3A+%22MIT%22%2C%0A++%22summary%22%3A+%22Asynchronous+image+downloader+with+cache+support+with+an+UIImageView+category.%22%2C%0A++%22homepage%22%3A+%22https%3A%2F%2Fgithub.com%2FSDWebImage%2FSDWebImage%22%2C%0A++%22authors%22%3A+%7B%0A++++%22Olivier+Poitrey%22%3A+%22rs%40dailymotion.com%22%0A++%7D%2C%0A++%22source%22%3A+%7B%0A++++%22git%22%3A+%22https%3A%2F%2Fgithub.com%2FSDWebImage%2FSDWebImage.git%22%2C%0A++++%22tag%22%3A+%225.12.5%22%0A++%7D%2C%0A++%22description%22%3A+%22This+library+provides+a+category+for+UIImageView+with+support+for+remote+images+coming+from+the+web.+It+provides+an+UIImageView+category+adding+web+image+and+cache+management+to+the+Cocoa+Touch+framework%2C+an+asynchronous+image+downloader%2C+an+asynchronous+memory+%2B+disk+image+caching+with+automatic+cache+expiration+handling%2C+a+guarantee+that+the+same+URL+won%27t+be+downloaded+several+times%2C+a+guarantee+that+bogus+URLs+won%27t+be+retried+again+and+again%2C+and+performances%21%22%2C%0A++%22requires_arc%22%3A+true%2C%0A++%22frameworks%22%3A+%22ImageIO%22%2C%0A++%22default_subspecs%22%3A+%22Core%22%2C%0A++%22pod_target_xcconfig%22%3A+%7B%0A++++%22SUPPORTS_M%27&type=Issues
+
+If none exists, create a ticket, with the template displayed above, on:
+
+https://github.com/CocoaPods/CocoaPods/issues/new
+
+Be sure to first read the contributing guide for details on how to properly submit a ticket:
+
+https://github.com/CocoaPods/CocoaPods/blob/master/CONTRIBUTING.md
+
+Don't forget to anonymize any private data!
+
+Looking for related issues on cocoapods/cocoapods...
+
+Searching for inspections failed: undefined method `map' for nil:NilClass
+
+解决办法：
+
+rm -rf ~/.cocoapods/repos/trunk/
+

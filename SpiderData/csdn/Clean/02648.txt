@@ -1,0 +1,70 @@
+题目描述
+
+Python中try-except出错后如何从try出错地方继续执行？
+
+try语句中有一个for循环，在某次循环中(假设i=99)出错了，except捕获到这个异常。
+
+已有经验是，如果for循环包括了try-except(如下代码)，那么将继续循环，但是是从i=100开始的，i=99被跳过了。
+
+问题1：怎样让他重试一次i=99？
+
+现在情况是，for循环只在try里面，报错打印错误信息后仍从start_point(=9222)，我想让他继续从9472开始。简言之，如下题目来源及自己的思路中，第二个Page 9222 collecting如何变成Page 9472 collecting............
+
+问题2：Page 9472失败后怎样重新从Page 9472继续？
+
+题目来源及自己的思路
+
+Page 9222 collecting............
+
+..........(省略)...............
+
+Page 9471 collecting............
+
+Page 9472 collecting............
+
+Current page failed: (省略)Failed to ···尝试失败···(省略)
+
+Page 9222 collecting............
+
+Page (省略)...................
+
+相关代码
+
+// 请把代码文本粘贴到下方(请勿用图片代替代码)
+
+try-except在for循环里面----------------
+
+def mainfun(pages, path):
+
+for n in range(2, pages + 1):
+
+try:
+
+append_csv(path, n)
+
+print("Page " + str(n) + " finished...")
+
+except Exception as err:
+
+print("Page " + str(n) + " failed: " + str(err))
+
+for循环只在try里面---------------------
+
+函数restarting(start_point)有一个for循环
+
+start_point=9222
+
+while start_point<1e7:
+
+try:
+
+restarting(start_point)
+
+except Exception as err:
+
+print(" Current page failed: " + str(err))
+
+你期待的结果是什么？实际看到的错误信息又是什么？
+
+我在while循环里的except中记录一下执行到的i=99那里(err_point=i)，然后赋值给start_point，运行的时候就会报错err_point is not defined之类的，这又是什么原因呢？
+

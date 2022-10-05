@@ -1,0 +1,154 @@
+目录
+
+1 错误和异常
+
+1.1 错误
+
+python 中的错误有两种，语法错误和逻辑错误
+
+这种错误是我们应该避免的
+
+1.2 异常
+
+python中的异常是程序运行过程中产生的，有异常不一定要把程序停止，只要把异常抛出，然后查看异常产生的原因即可。
+
+1.2.1 python中的异常种类
+
+AttributeError 试图访问一个对象没有的属性，比如foo.x，但是foo没有属性x
+
+IOError 输入/输出异常；基本上是无法打开文件
+
+ImportError 无法引入模块或包；基本上是路径问题或名称错误
+
+IndentationError 语法错误（的子类） ；代码没有正确对齐
+
+IndexError 下标索引超出序列边界，比如当x只有三个元素，却试图访问x[5]
+
+KeyError 试图访问字典里不存在的键
+
+KeyboardInterrupt Ctrl+C被按下
+
+NameError使用一个还未被赋予对象的变量
+
+TypeError 传入对象类型与要求的不符合
+
+UnboundLocalError 试图访问一个还未被设置的局部变量，基本上是由于另有一个同名的全局变量，
+
+导致你以为正在访问它
+
+ValueError 传入一个调用者不期望的值，即使值的类型是正确的
+
+## 2 异常处理
+
+>
+
+Python解释器检测到错误，触发异常，程序员编写特定的代码，专门用来捕捉这个异常（这段代码与程序逻辑无关，与异常处理有关）如果捕捉成功则进入另外一个处理分支，执行你为其定制的逻辑，使程序不会崩溃，这就是异常处理
+
+### 2.1 python 的异常处理机制
+
+```python
+
+try:
+
+被检测的代码块
+
+except 异常类型：
+
+try中一旦检测到异常，就执行这个位置的逻辑
+
+下面的except就是相当于if,但是不能把所有的的错误用except，于是就有了Exception
+
+try:
+
+print("====")
+
+print(x)
+
+except KeyError as x: # 命名错误
+
+print(x) # 把错误的内容传递给x
+
+except NameError as y:
+
+print(y)
+
+Exception 万能异常
+
+x = 1
+
+try:
+
+print(x)
+
+except Exception as e: # 都能处理异常
+
+print(e)
+
+else:
+
+# pass
+
+print("hello") # try内代码块没有异常则执行我
+
+finally:
+
+# pass
+
+print("都会执行") # 通常用于清理工作,比如关闭数据连接
+
+主动抛出异常
+
+try:
+
+raise TypeError('类型错误')
+
+except Exception as e:
+
+print(e)
+
+自定义异常
+
+classabcException(BaseException): # 这里是继承BaseException
+
+def__init__(self,msg):
+
+self.msg=msg
+
+def__str__(self):
+
+return self.msg
+
+try:
+
+raise abcException('类型错误')
+
+except abcException as e:
+
+print(e)
+
+断言
+
+assert 1 == 1
+
+assert 1 == 2
+
+try..except的方式比较if的方式的好处
+
+try..except这种异常处理机制就是取代if那种方式，让你的程序在不牺牲可读性的前提下增强健壮性和容错性
+
+异常处理中为每一个异常定制了异常类型（python中统一了类与类型，类型即类），对于同一种异常，一个except就可以捕捉到，可以同时处理多段代码的异常（无需‘写多个if判断式’）减少了代码，增强了可读性
+
+使用try..except的方式
+
+把错误处理和真正的工作分开来
+
+代码更易组织，更清晰，复杂的工作任务更容易实现；
+
+毫无疑问，更安全了，不至于由于一些小的疏忽而使程序意外崩溃了；
+
+什么时候用异常处理
+
+try…except应该尽量少用，因为它本身就是你附加给你的程序的一种异常处理的逻辑，与你的主要的工作是没有关系的
+
+这种东西加的多了，会导致你的代码可读性变差
+

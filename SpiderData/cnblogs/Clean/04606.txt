@@ -1,0 +1,21 @@
+python的pickle是用来序列化对象很方便的工具，但是pickle对传入对象的要求是不能是内部类，也不能是lambda函数。
+
+比如尝试pickle这个内部类：
+
+结果会报错AttributeError: Can't pickle local object。
+
+这个问题可以用第三方库dill来解决： （https://pypi.org/project/dill/）
+
+结果：
+
+dill除了可以处理pickle可以处理的标准类型外：
+
+嗯，还是很好用的。
+
+(另外python内建库shelve也是用的pickle做后端，所以默认也是不能处理内部类和lambda函数的。)
+
+
+进一步参考：
+
+https://medium.com/@emlynoregan/serialising-all-the-functions-in-python-cd880a63b591
+

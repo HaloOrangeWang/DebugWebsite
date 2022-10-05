@@ -1,0 +1,102 @@
+问题：
+
+我不能确定我为什么得到这个错误：
+
+************************************************** **************
+
+Traceback (most recent call last):
+
+File  "my.py" , line  3 ,  in  ?
+
+urlparse( 'http://www.cwi.nl:80/%7Eguido/Python.html' )
+
+TypeError:  'module'  object  is   not  callable
+
+**************************************************
+
+源代码如下：
+
+import  urlparse
+
+urlparse( 'http://www.cwi.nl:80/%7Eguido/Python.html' )
+
+答复:
+
+"TypeError: 'module' object is not callable"这个信息是说你试图把"urlparse"这个模块作为一个函数来调用，但它却无法调用。
+
+urlparse这个模块包含urlparse 和 urlsplit等函数。我把urlsplit也拖了进来，它的名字和模块名不同。这个可能能帮助你发现问题。以下是调用它们的两种方法。
+
+（1）
+
+>>>  import  urlparse
+
+>>> urlparse.urlparse( 'http://www.cwi.nl:80/%7Eguido/Python.html' )
+
+( 'http' ,  'www.cwi.nl:80' ,  '/%7Eguido/Python.html' ,  '' ,  '' ,  '' )
+
+>>> urlparse.urlsplit( 'http://www.cwi.nl:80/%7Eguido/Python.html' )
+
+( 'http' ,  'www.cwi.nl:80' ,  '/%7Eguido/Python.html' ,  '' ,  '' )
+
+>>>
+
+（2）
+
+>>>  from  urlparse  import  urlparse, urlsplit
+
+>>> urlparse( 'http://www.cwi.nl:80/%7Eguido/Python.html' )
+
+( 'http' ,  'www.cwi.nl:80' ,  '/%7Eguido/Python.html' ,  '' ,  '' ,  '' )
+
+>>> urlsplit( 'http://www.cwi.nl:80/%7Eguido/Python.html' )
+
+( 'http' ,  'www.cwi.nl:80' ,  '/%7Eguido/Python.html' ,  '' ,  '' )
+
+>>>
+
+方法1可能更适合你。
+
+我建议你阅读指南里的模块章节：http://docs.python.org/tut/node8.html  及所以你没读过的前面的章节。
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+
+原文如下：
+
+reply:
+
+The message "TypeError: 'module' object is not callable" means that the 
+"urlparse" that you are trying to call as a function is a module and is 
+thus not callable.
+
+The module urlparse contains functions urlparse and urlsplit, among 
+others. I'm dragging urlsplit into the arena as its name is not the same 
+as the module name, and it might help you see what is happening. There 
+are two ways of calling them:
+
+(1)
+>>> import urlparse
+>>> urlparse.urlparse('http://www.cwi.nl:80/%7Eguido/Python.html') 
+('http', 'www.cwi.nl:80', '/%7Eguido/Python.html', '', '', '')
+>>> urlparse.urlsplit('http://www.cwi.nl:80/%7Eguido/Python.html') 
+('http', 'www.cwi.nl:80', '/%7Eguido/Python.html', '', '')
+>>>
+
+(2)
+>>> from urlparse import urlparse, urlsplit
+>>> urlparse('http://www.cwi.nl:80/%7Eguido/Python.html') 
+('http', 'www.cwi.nl:80', '/%7Eguido/Python.html', '', '', '')
+>>> urlsplit('http://www.cwi.nl:80/%7Eguido/Python.html') 
+('http', 'www.cwi.nl:80', '/%7Eguido/Python.html', '', '')
+>>>
+
+Method (1) is probably better for you at the moment.
+
+I suggest that you read the Modules section in the tutorial:
+http://docs.python.org/tut/node8.html
+
+*and* all the earlier sections if you haven't already.
+
+John Machin
+

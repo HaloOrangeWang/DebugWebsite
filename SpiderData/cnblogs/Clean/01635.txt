@@ -1,0 +1,48 @@
+1. 安装依赖环境
+
+　　# yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel
+
+2.下载Python3
+
+wget ttp://mirrors.sohu.com/python/3.6.4/Python-3.6.4.tgz
+
+3.安装python3
+
+　　我个人习惯安装在/usr/local/python3（具体安装位置看个人喜好）
+　　创建目录：mkdir -p /usr/local/python3
+
+解压下载好的Python-3.x.x.tgz包(具体包名因你下载的Python具体版本不不同，如：我下载的是Python3.6.4.那我这里就是Python-3.6.4.tgz)
+
+tar -zvxf Python-3.6.4.tgz
+
+　　结果发现make失败
+
+参考了文章发现gcc版本过低需要安装4.8.2以上
+
+升级代码见下文，升级的是6.1版本
+
+　　
+
+升级gcc过程报错处理
+
+# 查看日志，搜索"error"
+
+4、进入解压后的目录，编译安装。
+
+5、添加Python命令到环境变量：
+
+[root@Python /]# vi ~/.bash_profile
+
+6、更改系统默认python版本为Python3.6
+
+[root@Python /]# mv /usr/bin/python /usr/bin/python2.6
+    [root@Python /]# ln -s /usr/local/python3/bin/python3.6 /usr/bin/python
+    [root@Python /]# python -V
+
+解决python升级后，YUM不能正常工作的问题：
+
+#vi /usr/bin/yum
+
+将文件头部的 　　#!/usr/bin/python
+　　改成 　　#!/usr/bin/python2.6
+

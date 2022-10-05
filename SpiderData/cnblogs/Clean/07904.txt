@@ -1,0 +1,36 @@
+
+问题描述：
+
+使用
+
+os.system('cls')
+
+命令清空屏幕上的输出时，报错，显示错误为：
+
+sh: cls: command not found
+
+　　
+
+
+问题解决：
+
+首先，停止使用jupyter notebook。因为jupyter使用网页，不断拦截标准输出流到界面上，会忽略清屏的操作。
+
+将代码复制到pycharm运行，
+
+将
+
+os.system('cls')
+
+　　改为
+
+os.system('clear')
+
+　　
+
+在Preference --> Build,Execution，Deployment--> Console -->  Python Console中添加一个环境变量：
+
+在配置里勾选 emulate terminal in output console
+
+再次运行代码，问题解决～
+

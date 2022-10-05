@@ -1,0 +1,67 @@
+一、问题如下：
+
+　　cv2.findContours()这个方法是用来找出轮廓值的：
+
+# cv2.findContours找出轮廓值，cv2.RETR_EXTERNAL表示图像的外轮廓
+binary, contours, h = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+　　但是在运行时，我所使用的opencv-python4.1.0.25则报错：
+
+　　
+
+　　错误信息：
+
+　　ValueError: not enough values to unpack (expected 3, got 2)
+
+　　值错误:没有足够的值解包(应为3，得到2)
+
+二、问题解决：
+
+　　1、降级（或升级）OpenCV：
+
+　　　　我在python中安装的第三方库是OpenCV4.1.0.25，所以这里要降级处理：
+
+pip3 install opencv-python==3.4.3.18
+
+　　　　使用pip将版本降为3.4.3.18。
+
+　　　　
+
+　　　　
+
+　　　　降级之后，PyCharm中可以看到现在的版本号：
+
+　　　　
+
+　　　　（如果是OpenCV2则要升级到OpenCV3）
+
+　　2、解析差异：
+
+　　　　OpenCV2和OpenCV4中：
+
+　　　　　　findContours这个轮廓提取函数会返回两个值：
+
+　　　　　　①轮廓的点集(contours)
+
+　　　　　　②各层轮廓的索引(hierarchy)
+
+　　　　OpenCV3中：
+
+　　　　　　则会返回三个值：
+
+　　　　　　①处理的图像(image)
+
+　　　　　　②轮廓的点集(contours)
+
+　　　　　　③各层轮廓的索引(hierarchy)
+
+三、cv2.findContours()相关：
+
+　　1、参数：
+
+　　　　①第一个参数：
+
+　　　　②第二个参数表示轮廓的检索模式，有四种：
+
+　　　　③第三个参数method为轮廓的近似办法：
+

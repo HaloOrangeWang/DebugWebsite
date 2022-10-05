@@ -1,0 +1,275 @@
+
+Python模块介绍及常见报错
+
+
+环境准备
+
+python 3.8.1
+
+Django 3.0.4
+
+VsCode 1.43.2
+
+项目地址链接
+
+
+1. 什么是模块
+
+Python 模块(Module)，简单的来说每一个以.py结尾的Python文件就是一个模块，我们既可以自己创建模块也可以安装第三方模块，python内置也有许多模块，模块的使用有利于提升代码的可维护性，我们也可以把相同得函数名和变量存放在不同的模块中，来避免在模块中变量及函数名得重复。
+
+模块中包含了 Python 对象定义和Python语句，模块可以定义函数，类和变量，模块里也能包含可执行的代码。
+
+一个模块只会被导入一次，不管你执行了多少次import。这样可以防止导入模块被重复执行。
+
+
+2. 模块导入方法
+
+模块导入方法有三种：
+
+
+import语句
+
+在编写代码过程中，我们可以使用imort语句来引入我们想用的模块，语法如下：
+
+比如我们希望在views.py模块中引入demo6.py模块，我们可以通过import demo1.demo6来进行引入，调用模块内函数时通过模块名.函数名方式来进行引用：
+
+另外，一个模块只会导入一次，这样防止导入模块被多次加载。
+
+
+from…import 语句
+
+前面已经说import是为了导入模块，实际上我们在项目中可能不需要导入整个模块，只是导入模块中的某个函数、类或者变量就够了，那么我们可以使用from…import语句，语法如下：
+
+比如：
+
+
+from…import * 语句
+
+如果我们希望将模块全部的内容（函数变量等）都导入到当前的命名空间也是可以的，可以采用from..import语句，语法如下：
+
+项目中例子：
+
+
+3. 模块搜索路径规则
+
+
+3.1 模块搜索路径规则
+
+在导入模块时，Python3解析器对模块路径搜索顺序是：
+
+1、首先会在当前文件夹内进行搜索；
+
+2、如果当前文件夹内搜索不到，会根据环境变量中默认路径中进行查找。
+
+模块的搜索路径可以通过sys.path来进行查看，sys.path是一个数组，模块搜索优先级是按照数组内路径的先后顺序，数组中包含路径先后分别为，当前文件夹路径、环境变量路径和第三方模块路径。
+
+在sys模块中为我们提供了sys.path.insert和sys.path.append方法来改变模块搜索路径的顺序。
+
+如果我们在第三方模块中及当前目录中存在同名模块six模块，当执行模块demo4时，能够看到此时six为项目
+
+所在目录中我们自己创建的six模块。
+
+如果我们希望采用第三方模块中six模块我们便可以使用sys.path.insert方法在路径list最前面插入第三方模块所在文件路径，因为前面我们已经说过，python解析器是以sys.path路径list中路径先后顺序来进行模块查找的。（采用直接运行方式加载.py文件——python xxx.py）
+
+为什么我们要说采用的是直接加载.py文件——python xxx.py的方式呢？
+
+因为python运行.py文件时，有两种不同的运行方法，分别为：
+
+python xxx.py # 直接运行文件
+
+python -m xxx # 把文件当作脚本来启动文件
+
+在编写demo4过程中当其它文件不变退到demo2上一级文件目录，采用python -m启动项目时，发现引用的six模块是第三方的模块，并不能查找到我们自定义six模块，而我们并没有删除自定义six模块，这和我们希望自由修改查找原则的理念完全相悖，此时sys.path打印的值为：
+
+如果细心比较可以发现，两次执行py文件后，sys.path的首个搜索项路径并不相同，直接运行和以python -m 运行的结果分别为：
+
+D:\工作\项目文件\github下载\Python\SearchPathProject\demo2
+
+D:\工作\项目文件\github下载\Python\SearchPathProject
+
+而我们的自定义模块six应该是存放在demo2文件夹中，由此也能够看出来两种打开运行py文件方式，添加到sys.path中的路径分别是当前脚本的运行目录和执行python时的目录地址。
+
+
+3.2 python两种加载py文件的方式
+
+上面已经简单的说过，py文件的两种打开方式：
+
+python xxx.py
+
+python -m xxx.py
+
+第一种方式：直接运行
+
+第二种方式：把模块当作脚本来运行
+
+两者的区别主要在于运行导致的sys.path[0]的值是不同的：
+
+第一种方式：sys.path[0]为当前模块的运行目录
+
+第二种方式：sys.path[0]为当前运行命令的路径
+
+实际使用：
+
+比如我们希望在demo4.py模块中引入demo1文件夹下的demo6.py模块，文件目录结构如下，
+
+├── demo1
+
+│   ├── demo6.py
+
+├── demo2
+
+│   ├── demo3
+
+│    │    ├── demo2_1.py
+
+│   ├── demo2.py
+
+│   ├── six.py
+
+│   └── demo4.py
+
+├── SearchPathProject
+
+在使用python38 -m时需要注意：已经切换至上一级目录，添加到sys.path中路径与直接运行路径不同，为当前运行命令的路径，后续进行文件导入时，在此目录路径下进行模块搜索
+
+
+4. 模块导入坑集合
+
+
+4.1 项目启动和单独启动导致ModuleNotFoundError: No module named或No such file or directory
+
+首先抛出结论，为什么会报错？
+
+python文件搜索路径是采用绝对路径，文件路径由模块的运行目录 + 文件相对路径拼接生成，单独启动和项目启动两种启动方式致使模块的运行目录不同，拼接后生成文件路径必然不同，所以才会报错模块无法找到。
+
+关于路径这里，还有一点需要注意，一定要使用cmd运行 或者从shell运行py文件。避免路径报错我们可以使用PyCharm，因为PyCharm自动会添加一些目录到sys.path，如果总是使用PyCharm来跑代码，本地可能跑的没有问题，但是一部署到服务器，就可能挂了。
+
+我们的代码最终肯定是需要跑在服务器上面的，在开始接触使用python时，就应该养成良好的使用习惯，把python的模块导入去深入的搞清楚，python模块导入我觉得和编写代码一样重要，不然就会像这条问题一样，项目启动和单独启动总是报模块查找不到的问题，把sys.path.append乱用一同，或者胡乱尝试路径修改，当然如果能尝试出来最好。
+
+在学习python之初，最好花出一点时间，把python的模块导入细细的研究一下，不能每次调试代码都靠试吧。
+
+
+4.2 相对路径.的使用ImportError: attempted relative import with no known parent package
+
+文件目录结构
+
+├── demo1
+
+│   ├── demo6.py
+
+├── demo2
+
+│   ├── demo3
+
+│   │    ├── demo2_1.py
+
+│   ├── demo2.py
+
+│   ├── six.py
+
+│   └── demo4.py
+
+python模块导入分为绝对导入和相对导入两种：
+
+绝对导入：指明顶层 package 名。比如 import a，Python 会在 sys.path里寻找所有名为 a 的顶层模块。
+
+import A.B
+
+或
+
+from A import B
+
+相对导入：并不会指明package名，只在本文件package的目录内进行搜索，而且不会去搜索sys.path中路径下文件。ppackage名称在python以上版本中可以通过全局变量__package__来进行查看。
+
+相对导入的常用使用方式如下：
+
+相对路径使用时需要注意，相对导入只适用于包（package）中的模块，顶层的模块中将不起作用。
+
+因为在直接从命令行通过运行python moduleX时，如果我们使用__package__变量查看package名称，此时相同层级的所有模块__package__值为None，并且文件夹名称为__name__=__main__ ，文件夹名称为__main__也常被用来判断是否为主入口文件。
+
+Note that relative imports are based on the name of the current module. Since the name of the main module is always "__main__", modules intended for use as the main module of a Python application must always use absolute imports.
+
+请注意，相对导入基于当前模块的名称。由于主模块的名称始终为“ main”，因此用作Python应用程序主模块的模块必须始终使用绝对导入.
+
+如果我们此时在直接执行文件中采用相对导入时就会报错ImportError: attempted relative import with no known parent package，因为此时的__package__值为None，而相对导入时以package值为依据。
+
+比如下面的例子
+
+├── demo1
+
+│   ├── demo6.py
+
+├── demo2
+
+│   ├── demo3
+
+│   │    ├── demo8
+
+│   │    │   ├── demo9.py
+
+│   │    ├── demo2_1.py
+
+│   │    ├── demo7.py
+
+│   │    ├── six.py
+
+│   ├── demo2.py
+
+│   ├── six.py
+
+│   └── demo4.py
+
+├── SearchPathProject
+
+如果我们直接执行python38 demo4.py， 毫无疑问此时将报错ImportError: attempted relative import with no known parent package，因为此时__package__=None，如果我们在demo2文件下其它模块（demo2.py、six.py）中进行打印，也会得到相同的结果，并且使用相对导入都会报错，因为前面我们已经讲过模块搜索机制是以项目运行文件目录作为搜索路径，这些py文件都在demo2文件目录下面，所以导致的结果也相同。
+
+python解释器是如何解析相关模块。从 PEP 328 中，我们找到了关于 the relative imports（相对引用）的介绍：
+
+Relative imports use a module's name attribute to determine that module's position in the package hierarchy. If the module's name does not contain any package information (e.g. it is set to 'main') then relative imports are resolved as if the module were a top level module, regardless of where the module is actually located on the file system.
+
+相对导入通过使用模块的 name 属性来确定模块在包层次结构中的位置。如果该模块的名称不包含任何包信息（例如，它被设置为 main ），那么相对引用会认为这个模块就是顶级模块，而不管模块在文件系统上的实际位置。
+
+那么如果我们希望此时可以使用相对导入，可以在返回上一级目录后采用python -m demo2.demo4来启动我们的demo4.py文件。
+
+因为我们的当前目录下没有名为 demo2 的模块，需要到上一级目录，因为 Python 3 运行时只添加脚本所在目录到 sys.path。
+
+相对导入只能在包（package）中执行，而这样运行的话 demo4.py 不是包（只是个模块）。
+
+你应该到上一级目录里运行 python -m demo2.demo4。在上一级目录里才有 demo2 这个包，其下有个 demo4 模块，还有个 six 模块。
+
+如果我们每次切换打开项目文件方式，会变得十分麻烦，除采用python -m之外，我们还可以通过将项目启动文件提出整个文件夹，在项目顶层在运行模块启动项目，类似Django中manage.py文件位置（即本项目目录结构中manage.py位置）。
+
+下面我们尝试创建嵌套文件并使用相对导入来进行模块导入(文件目录见上)：
+
+在demo4.py文件中我们能够看到__package__值为空，而在文件夹demo3及demo8下的文件__package__值为不再空，此时也可以使用相对导入，这也验证了我们之前所说的，相对导入只适用于包（package）中的模块，顶层的模块中将不起作用。
+
+
+4.3 本地模块和第三方模块命名冲突
+
+本地模块和第三方模块命名相同时，python3.8会优先查找到本地py文件导入，还是以demo4为例
+
+通过sys.path数组路径顺序我们能够明显看到，本地模块路径被放在了数组最前面，优先级是要高于数组最后一项的第三方模块存放路径的。
+
+但是我们可以通过sys.path.insert来改变路径查找的优先级，比如我们取消掉代码中sys.path.insert方法的注释,再次查看打印结果，能够看到此时导入的six模块已经变成了第三方模块而不是我们本地模块。
+
+但是最好在命名时，避免本地模块和第三方模块命名相同
+
+
+参考资料：
+
+python 导入模块的坑。为什么整个项目能运行，单独运行某个文件模块就报错？多层目录不同文件夹怎么导入?python相对包导入报“Attempted relative import in non-package”错误
+
+ImportError:attempted relative import with no known parent package
+
+python3.x - 对python比较熟悉和专业的过来看一下，from future import absolute_import 的问题？
+
+lightgbm报错LightGBMError: Do not support non-ascii characters in feature name.
+
+Python 相对导入attempted relative import beyond top-level package
+
+Python3 中 的 绝对导入 与 相对导入
+
+[译][python]ImportError:attempted relative import with no known parent package
+
+Python The import system
+

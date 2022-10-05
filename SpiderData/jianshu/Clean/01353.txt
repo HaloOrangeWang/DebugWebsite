@@ -1,0 +1,18 @@
+python发邮件报错smtplib.SMTPDataError: (554, b'DT:SPM 163 smtp11
+
+网上一堆解决办法大多是主题test/收件人加自己邮箱,与我无用.
+
+我遇见这个问题后的解决办法是
+
+原文:
+
+x=MIMEMultipart('related')
+
+追加:
+
+x["From"] = "任意名8888@163.com"
+
+加上 From对象就正常发送了
+
+这是我反复对比这篇文章的代码得到的答案 https://mp.weixin.qq.com/s?__biz=MzA3ODYwNDkzOQ==&mid=2659057652&idx=1&sn=7d556becd4c9f6ad67b3aeee2975a61a&chksm=84c96010b3bee9065797924c70af6549c75f5986565ff545f9685a8dcf69e43dbaf3961a342c#rd
+

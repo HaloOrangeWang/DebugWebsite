@@ -1,0 +1,48 @@
+
+目录
+
+最近在爬取一个医学权威网址上面的论文，发现一个问题，采用以下方式进行请求
+
+运行之后报错：
+
+明显是无法解析请求头，说通俗点就是老子不认识你，所以报错
+
+查看资料说这是hppt2的请求
+ 作为RFC 描述，Http 请求头不能以分号开头
+
+安装hyper进行解析，因为hyper认识这样的请求头
+
+pip install hyper
+
+代买修改为如下：
+
+import requests
+from bs4 import BeautifulSoup
+from hyper.contrib import HTTP20Adapter
+
+keywords = 'doxorubicin'
+page = 1
+url = 'https://pubmed.ncbi.nlm.nih.gov/?term='+keywords+'&pos='+str(page)
+   
+headers={':authority':'pubmed.ncbi.nlm.nih.gov',
+'referer':'https://pubmed.ncbi.nlm.nih.gov/',
+'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+'upgrade-insecure-requests': '1'
+}
+
+sessions=requests.session()
+sessions.mount('https://pubmed.ncbi.nlm.nih.gov', HTTP20Adapter())
+res=sessions.get(url,headers=headers)
+
+bs= BeautifulSoup(res.text,'html.parser') #指定Beautiful的解析器为“html.parser”,转换为bs4.BeautifulSoup数据类型
+
+print(bs)
+
+注意：不要把请求方式get写成post了，写成post会请求到403页面：
+ 
+ 给出的提示就是说确认你的浏览器不是被第三方所劫持
+
+参考资料：
+
+Python 请求头header在http/http2下的问题.md
+

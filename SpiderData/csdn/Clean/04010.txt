@@ -1,0 +1,146 @@
+异常是指程序中的例外，违例情况。异常机制是指程序出现错误后，程序的处理方法。当出现错误后，程序的执行流程发生改变，程序的控制权转移到异常处理。
+
+Exception类是常用的异常类，该类包括StandardError，StopIteration, GeneratorExit, Warning等异常类。
+
+StandardError类是python中的错误异常，如果程序上出现逻辑错误， 将引发该异常。StandardError类是所有内敛异常的基类，放置在默认的命名空间中，因此使用IOEroor,
+
+EOFError, ImportError等类，不需要导入exception模块。
+
+StopIteration类判断循环是否执行到尾部，如果循环到尾部，则抛出该异常。
+
+GeneratorExit类是由Generator函数引发的异常，当调用close()时引发该异常。
+
+Warning类表示程序中的代码引起的警告。
+
+python中的异常使用继承结构创建，可以在异常处理程序中捕获基类异常，也可以捕获各种子类异常，python中使用try...except语句捕获异常，异常子句定义在try子句后面。
+
+try...except的使用方法
+
+try...except用于处理问题语句，捕获可能出现的异常。try子句中的代码块放置可能出现异常的语句，except子句中的代码块处理异常。
+
+演示try...except语句捕获IOError异常
+
+try：
+
+file("hello.txt", "r") #如果文件不存在，引发异常
+
+print "读文件"
+
+except IOError: #捕获IO异常
+
+print "文件不存在"
+
+except： #其它异常
+
+print "程序异常"
+
+python与Java的异常处理模式相似，异常处理语句也可以嵌套，演示如下:
+
+try:
+
+s = "hello"
+
+try:
+
+print s[0] + s[1]
+
+print s[0] - s[1]
+
+except TypeError:
+
+print "字符串不支持减法运算"
+
+except:
+
+print "异常"
+
+如果外层try子句中的代码引发异常，程序将直接跳转到外层try对应的except子句，而内部的try子句将不会被执行。
+
+try...finally的使用方法
+
+try...except后还可以添加一个finally子句。无论异常是否发生，finally子句都会被执行。所有的finally子句通常用于关闭因异常而不能释放的系统资源。
+
+try:
+
+f = open("hello.txt", "r")
+
+try:
+
+print f.read(5)
+
+except:
+
+print "读文件异常"
+
+finally:
+
+print "释放资源"
+
+f.close()
+
+except IOError:
+
+print "文件不存在"
+
+使用raise抛出异常
+
+当程序出现错误，python会自动引发异常，也可以通过raise显示地引发异常。一旦执行了raise语句，raise后面的语句将不能执行。
+
+演示raise用法
+
+try:
+
+s = None
+
+if s is None:
+
+print "s 是空对象"
+
+raise NameError #如果引发NameError异常，后面的代码将不能执行
+
+print len(s)
+
+except TypeError:
+
+print "空对象没有长度"
+
+自定义异常
+
+python允许程序员自定义异常，用于描述python中没有涉及的异常情况，自定义异常必须继承Exception类，自定义异常按照命名规范以"Error"结尾，显示地告诉程序员这是异常。自定义异常使用raise语句引发，而且只能通过人工方式触发。
+
+from __future__ import division
+
+class DivisionException(Exception):
+
+def __init__(self, x, y):
+
+Exception.__init__ (self, x, y) #调用基类的__init__进行初始化
+
+self.x = x
+
+self.y = y
+
+if __name__ == "__main__":
+
+try:
+
+x = 3
+
+y = 2
+
+if x % y > 0: #如果大于0， 则不能被初始化，抛出异常
+
+print x/y
+
+raise DivisionException(x, y)
+
+except DivisionException,div: #div 表示DivisionException的实例对象
+
+print "DivisionExcetion: x/y = %.2f" % (div.x/div.y)
+
+assert语句的使用
+
+assert语句用于检测某个条件表达式是否为真。assert语句又称为断言语句，即assert认
+
+为检测的表达式永远为真，if语句中的条件判断都可以使用assert语句检测。
+

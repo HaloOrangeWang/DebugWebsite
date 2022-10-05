@@ -1,0 +1,161 @@
+先简述一下问题, 微服务框架下开发, spring cloud 与 alibaba cloud 升级到了 2021.1.x,相对应的 spring boot 也升级到了2.6.6,紧接着,就发现swagger 无法启动, 报错.先贴环境、错误,再说解决方案. 最后说一下原因.
+
+
+报错如下Failed to start bean 'documentationPluginsBootstrapper'; nested exception is java.lang.NullPointerException
+
+org.springframework.context.ApplicationContextException: Failed to start bean 'documentationPluginsBootstrapper'; nested exception is java.lang.NullPointerException
+    at org.springframework.context.support.DefaultLifecycleProcessor.doStart(DefaultLifecycleProcessor.java:181) ~[spring-context-5.3.18.jar:5.3.18]
+    at org.springframework.context.support.DefaultLifecycleProcessor.access$200(DefaultLifecycleProcessor.java:54) ~[spring-context-5.3.18.jar:5.3.18]
+    at org.springframework.context.support.DefaultLifecycleProcessor$LifecycleGroup.start(DefaultLifecycleProcessor.java:356) ~[spring-context-5.3.18.jar:5.3.18]
+    at java.lang.Iterable.forEach(Iterable.java:75) ~[na:1.8.0_311]
+    at org.springframework.context.support.DefaultLifecycleProcessor.startBeans(DefaultLifecycleProcessor.java:155) ~[spring-context-5.3.18.jar:5.3.18]
+    at org.springframework.context.support.DefaultLifecycleProcessor.onRefresh(DefaultLifecycleProcessor.java:123) ~[spring-context-5.3.18.jar:5.3.18]
+    at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:935) ~[spring-context-5.3.18.jar:5.3.18]
+    at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586) ~[spring-context-5.3.18.jar:5.3.18]
+    at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:145) ~[spring-boot-2.6.6.jar:2.6.6]
+    at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:740) [spring-boot-2.6.6.jar:2.6.6]
+    at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:415) [spring-boot-2.6.6.jar:2.6.6]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:303) [spring-boot-2.6.6.jar:2.6.6]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1312) [spring-boot-2.6.6.jar:2.6.6]
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1301) [spring-boot-2.6.6.jar:2.6.6]
+    at com.example.demo1.Demo1Application.main(Demo1Application.java:10) [classes/:na]
+Caused by: java.lang.NullPointerException: null
+    at springfox.documentation.spring.web.WebMvcPatternsRequestConditionWrapper.getPatterns(WebMvcPatternsRequestConditionWrapper.java:56) ~[springfox-spring-webmvc-3.0.0.jar:3.0.0]
+    at springfox.documentation.RequestHandler.sortedPaths(RequestHandler.java:113) ~[springfox-core-3.0.0.jar:3.0.0]
+    at springfox.documentation.spi.service.contexts.Orderings.lambda$byPatternsCondition$3(Orderings.java:89) ~[springfox-spi-3.0.0.jar:3.0.0]
+    at java.util.Comparator.lambda$comparing$77a9974f$1(Comparator.java:469) ~[na:1.8.0_311]
+    at java.util.TimSort.countRunAndMakeAscending(TimSort.java:355) ~[na:1.8.0_311]
+    at java.util.TimSort.sort(TimSort.java:220) ~[na:1.8.0_311]
+    at java.util.Arrays.sort(Arrays.java:1512) ~[na:1.8.0_311]
+    at java.util.ArrayList.sort(ArrayList.java:1464) ~[na:1.8.0_311]
+    at java.util.stream.SortedOps$RefSortingSink.end(SortedOps.java:387) ~[na:1.8.0_311]
+    at java.util.stream.Sink$ChainedReference.end(Sink.java:258) ~[na:1.8.0_311]
+    at java.util.stream.Sink$ChainedReference.end(Sink.java:258) ~[na:1.8.0_311]
+    at java.util.stream.Sink$ChainedReference.end(Sink.java:258) ~[na:1.8.0_311]
+    at java.util.stream.Sink$ChainedReference.end(Sink.java:258) ~[na:1.8.0_311]
+    at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:483) ~[na:1.8.0_311]
+    at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:472) ~[na:1.8.0_311]
+    at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:708) ~[na:1.8.0_311]
+    at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234) ~[na:1.8.0_311]
+    at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:499) ~[na:1.8.0_311]
+    at springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider.requestHandlers(WebMvcRequestHandlerProvider.java:81) ~[springfox-spring-webmvc-3.0.0.jar:3.0.0]
+    at java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:193) ~[na:1.8.0_311]
+    at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1384) ~[na:1.8.0_311]
+    at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:482) ~[na:1.8.0_311]
+    at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:472) ~[na:1.8.0_311]
+    at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:708) ~[na:1.8.0_311]
+    at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234) ~[na:1.8.0_311]
+    at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:499) ~[na:1.8.0_311]
+    at springfox.documentation.spring.web.plugins.AbstractDocumentationPluginsBootstrapper.withDefaults(AbstractDocumentationPluginsBootstrapper.java:107) ~[springfox-spring-web-3.0.0.jar:3.0.0]
+    at springfox.documentation.spring.web.plugins.AbstractDocumentationPluginsBootstrapper.buildContext(AbstractDocumentationPluginsBootstrapper.java:91) ~[springfox-spring-web-3.0.0.jar:3.0.0]
+    at springfox.documentation.spring.web.plugins.AbstractDocumentationPluginsBootstrapper.bootstrapDocumentationPlugins(AbstractDocumentationPluginsBootstrapper.java:82) ~[springfox-spring-web-3.0.0.jar:3.0.0]
+    at springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper.start(DocumentationPluginsBootstrapper.java:100) ~[springfox-spring-web-3.0.0.jar:3.0.0]
+    at org.springframework.context.support.DefaultLifecycleProcessor.doStart(DefaultLifecycleProcessor.java:178) ~[spring-context-5.3.18.jar:5.3.18]
+    ... 14 common frames omitted
+
+
+依赖
+
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.6.6</version>
+</parent>
+....
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-boot-starter</artifactId>
+        <version>3.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+....
+
+
+解决方式: 按需选择.
+
+项目中没有引用spring-boot-starter-actuator 包, 直接在application.yml增加 ant_path_matcher.即可.
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+项目中引用了spring-boot-starter-actuator,并且无法取舍.在SwaggerConfig中增加bean如下:
+
+@Configuration
+public class SwaggerConfig  {
+
+protected ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("网关管理")
+                .description("网关管理api")
+                .version("2.0")
+                .build();
+    }
+    @Bean
+    public  Docket createRestApi(){
+        return new Docket(DocumentationType.SWAGGER_2)
+                .pathMapping("/")
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.soul"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+@Bean
+    public static BeanPostProcessor springfoxHandlerProviderBeanPostProcessor() {
+        return new BeanPostProcessor() {
+
+@Override
+            public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+                if (bean instanceof WebMvcRequestHandlerProvider || bean instanceof WebFluxRequestHandlerProvider) {
+                    customizeSpringfoxHandlerMappings(getHandlerMappings(bean));
+                }
+                return bean;
+            }
+
+private <T extends RequestMappingInfoHandlerMapping> void customizeSpringfoxHandlerMappings(List<T> mappings) {
+                List<T> copy = mappings.stream()
+                        .filter(mapping -> mapping.getPatternParser() == null)
+                        .collect(Collectors.toList());
+                mappings.clear();
+                mappings.addAll(copy);
+            }
+
+@SuppressWarnings("unchecked")
+            private List<RequestMappingInfoHandlerMapping> getHandlerMappings(Object bean) {
+                try {
+                    Field field = ReflectionUtils.findField(bean.getClass(), "handlerMappings");
+                    field.setAccessible(true);
+                    return (List<RequestMappingInfoHandlerMapping>) field.get(bean);
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        };
+    }
+
+}
+
+还有人说降级spring boot 版本的. 没尝试过. 也不建议~
+
+
+原因分析
+
+从官方的文档中来分析,大概如下. 这个问题是由Springfox 引起的.它对 Spring MVC 的设置方式做出了假设,通俗点说就是写死了.它假设 MVC 的路径匹配将使用基于 Ant 的路径匹配器而不是基于 PathPattern 的匹配器.并且是 Spring Boot 2.6.x 的默认选项。
+
+如Spring Boot 2.6’s release notes 中所述,您可以通过在您的文件中设置spring.mvc.pathmatch.matching-strategyto来恢复 Springfox 假定将使用的配置.请注意,这仅在您不使用 Spring Boot 的 Actuator 时才有效。执行器始终使用基于 PathPattern 的解析,而不管配置的. 如果您想在 Spring Boot 2.6 及更高版本中将其与 Actuator 一起使用,则需要对 Springfox 进行更改.
+
+
+到这里,问题就差不多清楚了, 有同学说ant_path_matcher 没用, 那就看看是否引用Actuator,说白了就是路径匹配的问题, 咱们给重写个就OK了.不建议采取降版本号的愚蠢做法.
+
+如果我帮到了您,请关注我.近期会开源一套微服务体系框架,包含前后端.所有代码开源~
+

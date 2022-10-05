@@ -1,0 +1,69 @@
+python中zip函数返回一个以元组为元素的列表，其中第 i 个元组包含每个参数序列的第 i 个元素。返回的列表长度被截断为最短的参数序列的长度。只有一个序列参数时，它返回一个1元组的列表。没有参数时，它返回一个空的列表。概括起来一句话： zip函数返回的是一个列表，但是列表里面的元素是由一个个元组构成的..
+
+在Python中使用zip函数，出现<zip object at 0x02A9E418>错误的原因是，你是用的是python2点多的版本，python3.0对python做了改动
+
+zip方法在Python 2 和Python 3中的不同
+
+为何有这种不同
+
+更多注解
+
+问题一：zip方法在Python 2 和Python 3中的不同
+
+Python 2 的代码演示：
+
+$ python2
+>>> a = zip((1, 2), (3, 4))
+>>> a
+[(1, 2), (3, 4)]
+
+# 可以看到这里返回的是一个list
+
+Python 3 的代码演示：
+
+$ python3
+>>> a = zip((1, 2), (3, 4))
+>>> a
+<zip object at 0x1007096c8>
+
+# 可以看到这里返回的是一个对象，这里就是2和3的不同点 >>> dir(a) # 查看a的相关属性 [‘__class__', ‘__delattr__', ‘__dir__', ‘__doc__', ‘__eq__', ‘__format__', ‘__ge__', ‘__getattribute__' , ‘__gt__', ‘__hash__', ‘__init__', ‘__iter__', ‘__le__', ‘__lt__', ‘__ne__', ‘__new__', '__next__',  ‘__reduce__', ‘__reduce_ex__', ‘__repr__', ‘__setattr__', ‘__sizeof__', ‘__str__', ‘__subclasshook__' ] # 这里值得注意的是 ‘__iter__' 和 ‘__next__' 方法，说明a是一个支持遍历的对象 # 既然知道了a是一个支持遍历的对象，我们也就基本明白了a的用法了 ### 和Python2的区别（一）：返回的是一个支持遍历的对象，而不是一个list本身 >>> for i in a: print i # in 方法 … (1, 3) (2, 4) >>> next(a) # 我们测试__next__方法 Traceback (most recent call last): File “<stdin>”, line 1, in <module> StopIteration # 说明next方法是支持的，但是这里也说明了对象只能遍历一次 >>> a = zip((1, 2), (3, 4)) # 这里需要重新赋值，因为这个对象只能遍历一次 >>> next(a) (1, 3) # 运行良好 ### 返回的对象支持遍历的操作
+
+问题二：为何有这种不同
+
+我想最重要的原因是节约了不少的内存吧。Python的运行效率和编译类型的语言自然是没法比，但是能优化就优化一点吧~谁不想有更高的追求呢。
+
+问题三：更多注解
+
+这个zip在不同版本的不同反应了python的一个演变：大部分返回list的函数不在返回list，而是返回一个支持遍历的对象，比如map、fiter之类的，基本的例子如下：
+
+$ python3
+>>> a = map(abs, [1, 2, -3])
+>>> a
+<map object at 0x100707ed0>
+>>> list(a) # 如果不习惯，可以自己手动转化为list，也是写兼容代码需要注意的地方
+[1, 2, 3]
+
+$ python2
+>>> a = map(abs, [1, 2, -3])
+>>> a
+[1, 2, 3]
+
+所以运行方法是
+
+>>> t=[‘name','age','gender']
+>>> t2=[‘milo',30,'male']
+>>> for each in zip(t,t2):
+ print(each)
+
+运行结果：
+
+(‘name', ‘milo')
+(‘age', 30)
+(‘gender', ‘male')
+for each in zip(t,t2):
+ print(each)
+
+总结
+
+以上所述是小编给大家介绍的python中使用zip函数出现<zip object at 0x02A9E418>错误的原因，希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+

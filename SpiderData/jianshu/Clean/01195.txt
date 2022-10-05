@@ -1,0 +1,60 @@
+
+导入报错
+
+日常做分析导数据源进python，有时候会出现报错及显示乱码的问题，今天来梳理一下常见的报错。
+
+python 代码
+
+import pandas as pd
+ import numpy as np
+ df=pd.read_csv('invest_record_2018.csv’)
+
+报错信息
+
+UnicodeDecodeError                        Traceback (most recent call last)
+pandas/_libs/parsers.pyx in pandas._libs.parsers.TextReader._convert_tokens (pandas/_libs/parsers.c:14858)()
+pandas/_libs/parsers.pyx in pandas._libs.parsers.TextReader._convert_with_dtype (pandas/_libs/parsers.c:17119)()
+
+报错信息显示文件编码错误，所以来调整下代码
+
+import pandas as pd
+import numpy as np
+df=pd.read_csv('invest_record_2018.csv',encoding='utf-8')
+
+报错依旧，换下编码
+
+import pandas as pd
+import numpy as np
+df=pd.read_csv('invest_record_2018.csv',encoding='gbk')
+
+使用encoding='ISO-8859-1' 也可以不再报错
+
+import pandas as pd
+import numpy as np
+df=pd.read_csv('invest_record_2018.csv',encoding='ISO-8859-1')
+
+两种编码都不再显示报错，可以继续写了。
+
+
+中文乱码
+
+df.head()
+
+预览前5行，中文显示乱码
+
+继续改代码
+
+import pandas as pd
+import numpy as np
+df=pd.read_csv('invest_record_2018.csv',encoding='gbk')
+df.head()
+
+执行后显示正常，问题解决。
+
+
+编码分类
+
+一般默认是 encoding='utf-8'编码，导入报错首先加入这一小段，不行的话就试encoding='gbk'
+
+我的tableau public：yangliang的tableau public主页
+

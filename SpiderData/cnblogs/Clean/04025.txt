@@ -1,0 +1,44 @@
+发送邮件的代码及学习请参见：https://www.liaoxuefeng.com/wiki/1016959663602400/1017790702398272
+
+发送失败错误1：smtplib.SMTPAuthenticationError: (550, b'User has no permission')
+   我们使用python发送邮件时相当于自定义客户端根据用户名和密码登录，然后使用SMTP服务发送邮件，新注册的163邮箱是默认不开启客户端授权的，因此登录总是被拒绝，解决办法（以163邮箱为例）：进入163邮箱-设置-客户端授权密码-开启（授权码是用于登录第三方邮件客户端的专用密码），非第三方登录密码不变。
+
+错误2：smtplib.SMTPAuthenticationError: (535, b'Error: authentication failed')
+
+　　以163邮箱为例，在开启POP3/SMTP服务，并开启客户端授权密码时会设置授权码，将这个授权码代替smtplib.SMTP().login(user,password)方法中的password即可。
+
+以下是python利用SMTP协议发送邮件的代码：
+
+#coding:utf-8
+import smtplib
+from email.mime.text import MIMEText  # 引入smtplib和MIMEText
+ 
+host = 'smtp.163.com'  # 设置发件服务器地址
+port = 25  # 设置发件服务器端口号。注意，这里有SSL和非SSL两种形式
+sender = 'XXXXXX@163.com'  # 设置发件邮箱，一定要自己注册的邮箱
+pwd = 'XXXXXX'  # 设置发件邮箱的密码，等会登陆会用到
+receiver = 'XXXXXXXX@YY.com' # 设置邮件接收人，可以是扣扣邮箱
+body = '<h1>Hi</h1><p>test</p>' # 设置邮件正文，这里是支持HTML的
+ 
+msg = MIMEText(body, 'html') # 设置正文为符合邮件格式的HTML内容
+msg['subject'] = 'Hello world' # 设置邮件标题
+msg['from'] = sender  # 设置发送人
+msg['to'] = receiver  # 设置接收人
+ 
+try:
+	s = smtplib.SMTP(host, port)  # 注意！如果是使用SSL端口，这里就要改为SMTP_SSL
+	s.login(sender, pwd)  # 登陆邮箱
+	s.sendmail(sender, receiver, msg.as_string())  # 发送邮件！
+	print 'Done'
+except smtplib.SMTPException:
+	print 'Error'
+
+一些常用邮箱发件服务器及端口号
+邮箱   发件服务器    非SSL协议端口    SSL协议端口
+
+163   smtp.163.com      25          465/587
+
+qq    smtp.qq.com      25          465/587
+
+转载:https://blog.csdn.net/fjx1173865548/article/details/57084620
+

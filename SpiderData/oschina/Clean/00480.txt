@@ -1,0 +1,25 @@
+原因及处理：
+在使用python是经常会用到import一个第三方库，但是有时候会提示某个模块不存在，如Crypto
+其实是因为Python3里面这个模块的名字变了，
+
+pip install pycrypto试试
+安装成功后，如果还是提示没有该模块，那就python3的安装目录Lib—-site-package中查看是否有Crypto文件夹，这时你应该看到有crypto文件夹，将其重命名为Crypto即可
+如果又出现另一个提示说没有Crypto.Cipher，“ModuleNotFoundError:No module named ‘Crypto.Cipher’”，那就去Crypto文件夹下看，是否存在Cipher文件夹，这时你会发现，咦，不存在，看第4步
+这时你需要卸载pycrypto，pip uninstall pycrypto，然后安装pycryptodome，pip install pycryptodome，即可
+
+
+ModuleNotFoundError: No module named 'Crypto'
+
+解决方法：
+
+pip install pycryptodome
+
+当然有可能会出现这种情况：看到报错后是这么安装的：pip install crypto
+
+但是运行还是报错：ModuleNotFoundError: No module named 'Crypto'；
+此时需要去环境中将安装的包crypto的名字改成Crypto,首字母大写；
+然后再次运行，出现这个错误：ModuleNotFoundError: No module named 'Crypto.Cipher'
+此时进入到安装的文件夹下，发现没有此文件：
+需要卸载刚才安装的包：pip uninstall crypto
+然后重新安装：pip install pycryptodome，即可！
+

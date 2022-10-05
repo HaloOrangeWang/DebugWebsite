@@ -1,0 +1,12 @@
+在升级golang到1.18后，之前可以跑过的Dockerfile突然报错：
+
+k8s.io/apimachinery/pkg/apis/meta/v1: missing go.sum entry for module providing package k8s.io/apimachinery/pkg/apis/meta/v1 (imported by alert-service/pkg/cache);
+
+本地执行go mod tidy后，本地可以build过，但是容器中仍然失败。
+
+最终经过测试发现，go 1.18版本在build的时候需要go.sum文件，这与之前版本有所不同。
+
+只需在Dockerfile中增加下面一句即可。
+
+RUN COPY go.sum go.sum
+

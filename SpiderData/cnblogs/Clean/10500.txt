@@ -1,0 +1,169 @@
+在走这段代码的时候报错了，记录一下我的调试过程，感觉有个思路来走就挺好的。
+
+1、报错与解决
+
+文件名字：ClassifierTest.py
+
+报错
+
+This probably means that you are not using fork to start your
+
+child processes and you have
+forgotten to use the proper idiom
+
+in the main module:
+
+关于这个报错，涉及线程问题，改num_workers=0，当然就么事没有，然而，作为一个优秀的程序员，能止步于此吗，不行的。
+
+我百度了一下报错情况，找到这样的解决方案，是可行：
+
+2、为什么是main？
+
+整段放在main里面，就安全了——为什么呢？
+
+对于python编程我还是萌新，实在想不明白加个__name__=='__main__'判断有什么魅力。
+
+关于__name__属性：
+
+作为启动脚本，它模块的__name__都是__main__。
+
+此句主要作用在于有时候import，不想运行引用模块中某些语句的时候，以启动模块的名字作为区别。
+
+报错的位置在这里：
+
+C:\Users\13723\AppData\Local\Programs\Python\Python39\Lib\multiprocessing\spawn.py
+
+def _check_not_importing_main():
+    if getattr(process.current_process(), '_inheriting', False):
+        raise RuntimeError('''
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase...''')
+
+getattr(实例, 属性名字, 默认值)
+
+如果有属性，取True，否则取默认值，没有默认值则取False。
+
+_inheriting，查找当前程序的可继承性？没用过，笔者不知道呢。
+
+看不懂（下文有解），只能从方法名字入手，它走这一段为了什么——
+
+检查是不是源自__main__模块，即程序不让由执行脚本import的模块走这一段。
+
+我跑ClassifierTest.py（进程pid1），它在走到
+
+里面，由其他模块，再导入了一次ClassifierTest.py（此时是进程pid2）
+
+而当增加判断 __name__==’__main__’，就避免模块陷入执行的死循环。
+
+3、为什么多一个进程？
+
+3.1 现象
+
+为什么会多一个进程，num_workers=2，此句是一个进程两个线程worker，还是两个进程worker呢？
+
+我很奇怪，为什么不是开线程，而是开进程这么个重量级东西。
+
+虽然叫做process，但它应该只干一个事情——毕竟进程的重量级要大于线程。
+
+3.2 线程与进程
+
+这个时候就很纠结线程和进程的区别了，
+
+（参考：https://www.zhihu.com/question/25532384）
+
+线程是cpu执行的时间段颗粒，
+
+进程保存上下文，cpu切进进程里面读取上下文（寄存器、指令内容之类）。
+
+这样看来，如果进程是仓库，线程就是仓库里面的机器人，等待CPU来灵魂激活。但是在一个仓库里面工作，必然比在多个仓库里面工作要省事。
+
+所以为什么要开多进程呢？
+
+一个莫名的灵感，让我查了一下fork()，
+
+（参考：https://www.cnblogs.com/liyuan989/p/4279210.html）
+
+因为进程、线程是windows系统的概念，unix中只有进程的说法。
+
+在windows当中，进程是资源管理的最小单位，而线程是程序执行的最小单位。
+
+fork创建的一个子进程几乎但不完全与父进程相同。
+
+子进程得到与父进程用户级虚拟地址空间相同的（但是独立的）一份拷贝，
+
+包括文本、数据和bss段、堆以及用户栈等。
+
+子进程还获得与父进程任何打开文件描述符相同的拷贝，
+
+这就意味着子进程可以读写父进程中任何打开的文件，父进程和子进程区别在于它们有着不同的PID。
+
+fork 意为分支，分支与父进程几乎一样的子进程。子进程区别于父进程，两者有不同的pid，但二者的引用均指向相同的地址。
+
+话虽如此，Python里面确实是包含threading，和process模块，那为什么选择process更好？
+
+（参考：https://zhuanlan.zhihu.com/p/20953544）
+
+一个进程，有一个全局锁GIL（Global Interpreter Lock），此设定是为了数据安全。
+
+线程执行时，先获取GIL，执行代码直到sleep或挂起，释放GIL。
+
+所以多线程执行，其实仅是宏观时间上处理多任务，微观时间上仍是顺序处理。
+
+而每个进程有各自独立的GIL，互不干扰，多进程才能在真正意义上实现并行执行（多核CPU同时做多个任务，程序在微观时间上同时执行）。
+
+3.3 Python中，worker是进程
+
+为什么会再读一次ClassifierTest.py，从堆栈看，是这里：
+
+（注，以下截图可能取自不同次调试，所以父pid会不同）
+
+走了 exec(code, run_globals) 导致再此导入 ClassifierTest.py 。
+
+再往前走frame not available，也即IDE只能看到spawn_main函数。
+
+（spawn应该就是孵化了，孵化进程的，还挺有蛇下蛋的感觉）
+
+更之前的调用情况没有了，可以猜是不是新进程直接调用spawn_main了，那就找spawn_main引用。
+
+（可能pyCharm我还没get灵魂用法，spawn_main引用我是用notepad++查找全局的）
+
+Python39\Lib\multiprocessing\popen_spawn_win32.py
+
+前后呼应：
+
+在查看堆栈的过程中，恰巧看到了_inheriting的赋值：
+
+堆栈可以看到对_inheriting赋值，此时就很明了表示是否子进程，此处赋值True。
+
+再者，inheriting是ing结尾，表示进行时状态；如果是表示继承性，应该叫inherited，如此看来这个编程就很细心，自己写程序的时候也得注意。
+
+3.4 num_workers=2 的结果
+
+前文设置num_workers = 2，此时就是父进程带着两个子进程，
+
+__name__==’__main__’ 的处理，阻止了子进程由于调用 ClassifierTest.py 而再生子子进程的子孙无穷尽也。
+
+主线程12012 它有两个worker，分别是 15480 和 7036 。
+
+（这个数值是系统分配的pid编号，区分进程的代号，每次启动程序都不同）
+
+15480 和 7036 带着自己的Queue，dataloader.py完成了这个配置。
+
+dataIter = iter(trainloader)
+images, labels = dataIter.next()
+
+当执行 next()，程序会读取象 dataIter 当中的 _data_queue ，这个数据由两个子进程各自传入。
+
+data = self._data_queue.get(timeout=timeout)
+
+具体实现看这个类：
+
+C:\Users\13723\PycharmProjects\pythonProject\venv\Lib\site-packages\torch\utils\data\dataloader.py
+
+class _MultiProcessingDataLoaderIter(_BaseDataLoaderIter):
+    pass
+
+4、结语
+
+　　由一个小小的报错，能“查漏补缺”知识漏洞就挺好的，锻炼思维也挺好的。共勉。
+

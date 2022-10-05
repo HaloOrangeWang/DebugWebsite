@@ -1,0 +1,39 @@
+使用python中的ctypes模块可以很方便的调用windows的dll（也包括linux下的so等文件）
+
+引入ctypes库 有两种方法
+
+from ctypes import *
+
+import ctypes
+
+
+加载DLL
+
+stdcall调用约定：两种加载方式
+
+Objdll = ctypes.windll.LoadLibrary("dllpath")  
+Objdll = ctypes.WinDLL("dll")
+
+cdecl调用约定：也有两种加载方式
+
+Objdll = ctypes.cdll.LoadLibrary("dllpath")  
+Objdll = ctypes.CDLL("dll")
+
+引入ctypes库的方法不同，对应不同的加载DLL方式
+
+第一种：
+
+from ctypes import *
+
+Objdll = ctypes.WinDLL("dll") 
+#或者
+Objdll = ctypes.CDLL("dll")
+
+第二种：
+
+import ctypes
+
+Objdll = ctypes.windll.LoadLibrary("dllpath") 
+#或者
+Objdll = ctypes.cdll.LoadLibrary("dllpath")
+

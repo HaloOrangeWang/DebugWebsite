@@ -1,0 +1,60 @@
+问题：
+
+import pandas as pd # 读取数据表并进行基于DataFrame结构的操作
+
+import numpy as np
+
+import seaborn as sns#绘图用
+
+from matplotlib import pyplot as plt#绘图用的包
+
+from sklearn import preprocessing #数据预处理的包
+
+from sklearn.feature_extraction import DictVectorizer#特征提取
+
+from sklearn.linear_model import LinearRegression#线性回归模型用的包
+
+%matplotlib inline
+
+#当你调用matplotlib.pyplot的绘图函数plot()进行绘图的时候，
+
+#或者生成一个figure画布的时候，可以直接在你的python console里面生成图像
+
+#可以不用函数plt.show。
+
+import warnings
+
+warnings.filterwarnings('ignore') # 不显示warning信息
+
+pd.options.display.width = 900 # Dataframe 显示宽度设置
+
+出现：
+
+ModuleNotFoundErrorTraceback (most recent call last)<ipython-input-2-0ee7bcc4e8c1>in<module>      1importpandasaspd# 读取数据表并进行基于DataFrame结构的操作      2importnumpyasnp----> 3 importseabornassns#绘图用ModuleNotFoundError: No module named 'seaborn'
+
+但是已经安装：
+
+C:\Users\Monica>conda install seaborn
+
+Solving environment: done
+
+==> WARNING: A newer version of conda exists. <==
+
+current version: 4.5.13
+
+latest version: 4.6.14
+
+Please update conda by running
+
+$ conda update -n base -c defaults conda
+
+# All requested packages already installed.
+
+分析：
+
+seaborn应该是安装在了Anaconda的Python环境之下，但在import的时候使用的还是原生的Python环境。
+
+解决方案：
+
+pip install seaborn，在conda环境外重装模块。
+

@@ -1,0 +1,44 @@
+
+python install mysql-connector error , the latest version is mysql-connector 2.2.3
+
+python 安装 mysql驱动 mysql-connector 去访问mysql数据库时报错
+
+Issue：
+
+copying lib/mysql/connector/fabric/balancing.py -> build/lib.linux-x86_64-2.7/mysql/connector/fabric
+    copying lib/mysql/connector/fabric/__init__.py -> build/lib.linux-x86_64-2.7/mysql/connector/fabric
+    creating build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/statement.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/result.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/protocol.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/protobuf.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/expr.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/errors.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/errorcode.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/dbdoc.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/crud.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/constants.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/connection.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/compat.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/charsets.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/authentication.py -> build/lib.linux-x86_64-2.7/mysqlx
+    copying lib/mysqlx/__init__.py -> build/lib.linux-x86_64-2.7/mysqlx
+    creating build/lib.linux-x86_64-2.7/mysqlx/locales
+    copying lib/mysqlx/locales/__init__.py -> build/lib.linux-x86_64-2.7/mysqlx/locales
+    creating build/lib.linux-x86_64-2.7/mysqlx/locales/eng
+    copying lib/mysqlx/locales/eng/client_error.py -> build/lib.linux-x86_64-2.7/mysqlx/locales/eng
+    copying lib/mysqlx/locales/eng/__init__.py -> build/lib.linux-x86_64-2.7/mysqlx/locales/eng
+    running build_ext
+    # Python architecture: 64-bit
+    # Python ARCH_64BIT: True
+    Unable to find Protobuf include directory.
+    
+    ----------------------------------------
+Command "/usr/bin/python2 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-ubv_z0/mysql-connector/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" install --record /tmp/pip-hiJXbo-record/install-record.txt --single-version-externally-managed --compile" failed with error code 1 in /tmp/pip-build-ubv_z0/mysql-connector/
+
+Solutions:
+
+sudo pip install mysql-connector==2.1.4 or sudo pip install mysql-connector==2.1.6
+
+Replace sudo pip install mysql-connector 默认最新的是2.2.3, 安装时缺少C++ library.
+

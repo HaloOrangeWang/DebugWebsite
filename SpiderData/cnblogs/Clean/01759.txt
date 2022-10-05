@@ -1,0 +1,42 @@
+在学习django模型的时候，博主就遇到过一些坑，这是博主遇到的一个小例子，希望能帮到遇到同样问题的你们。
+
+你是否在学习django时，当你创建了一个模型后，当你正要检测模型的可用性时，使用了语句：python manage.py validate
+
+嗯，却没想到出现了以下问题？
+
+系统报错：Unknown command: 'validate'  Type 'manage.py help' for usage.
+
+Unknown command: 'validate'
+Type 'manage.py help' for usage.
+
+what?
+
+也许你好好检查了一下教程代码，好像没错呀？怎么回事？
+
+嗯。。我告诉你，代码的确没错，只是你可能用错django框架版本，这些语法已经被淘汰掉了，网上教程教程里面的版本很多都是比较老套的，然而你可能装了django1.9，django1.11，或者更高的django2.0了。
+
+这当然会出现错误，那些语法都被淘汰了，系统已经没有了那个命令，所以必须错误。那么新语法时怎样的呢？
+
+你应该用：python manage.py check
+
+i@DESKTOP-Q59QKNV:~/djangoweb$ python manage.py check
+System check identified no issues (0 silenced).
+
+也许你像这样，搞定了，完美！
+
+模型确认没问题了，运行下面的命令来生成 CREATE TABLE，运用语句：python manage.py sqlall books
+
+xxxx@DESKTOP-Q59QKNV:~/djangoweb$ python manage.py sqlall books
+Unknown command: 'sqlall'
+Type 'manage.py help' for usage.
+
+what?又出现了同样的错误，命令不存在！因为同样被淘汰了，应该使用：python manage.py sqlmigrate books 0001
+
+当你看到这些提示时，证明没有问题了。
+
+嗯，完美！完美的版本语法大坑，这是博主在学习过程中遇到的一些问题，这只是一小例子。希望能帮到同样学习django的你们。
+
+博主建议你们可以到网上去找一些比较新的教程去学习，或者网上购买一些比较新的教程书籍，也许会达到事半功倍的效果。
+
+使用老教程学习的确很痛苦，希望你们不要走太多歪路！！
+

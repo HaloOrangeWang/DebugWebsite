@@ -1,0 +1,12 @@
+转自 (1条消息) python里使用exec函数，报错NameError: name ‘XXX‘ is not defined的解决办法_qiongtaiyu的博客-CSDN博客
+
+大半年前，我写代码的时候，在自己定义的函数里使用exec还可以正确运行，但这两天又用到这个函数，同样的用法却无法正确运行了。
+
+例子如下：
+
+报错：NameError: name 'f' is not defined。
+
+在网上查找原因，发现是因为exec函数的作用域的问题，这个函数现在有两个参量globals() 和locals()。默认情况下，exec是作用于局部范围的，因为我是在自己定义的子函数里使用exec函数，所以就会报错。
+
+解决方法是修改为下图，在子函数中使用时，在后面增加globals()。
+

@@ -1,0 +1,69 @@
+只有由于Python3.6装不上 pymssql，所以一直用Python3.5的版本。
+
+报错界面
+
+现在有了新的解决方法：
+
+原帖如下： 
+https://docs.microsoft.com/en-us/sql/connect/python/pymssql/step-1-configure-development-environment-for-pymssql-python-development
+
+来翻译一下具体步骤： 
+1.安装python和pip(这一步不需要做) 
+2.从下面的网址下载合适版本的pymssql模块
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#pymssql
+
+我的Python是64位的3.7版本所以下载的是，cp37是python3.7的意思
+
+pymssql‑2.1.4.dev5‑cp37‑cp37m‑win_amd64.whl
+
+3.打开cmd 
+4.
+
+1）在cmd中进入你下载的pymssql模块文件夹。
+
+cd C:\Users\xcey1\Downloads
+
+2）然后再用pip安装
+
+pip install pymssql-2.1.4.dev5-cp37-cp37m-win_amd64.whl
+
+我的安装过程如下
+
+至此Pymssql已经安装成功！
+
+另外补充下:Linux下pymssql是基于freetds的
+
+所以Linux下需要安装几个基础类库：
+
+Cython与freetds
+
+1、Cython的安装
+
+Cython：pip install Cython        ##python包
+
+2、freetds的安装
+
+1）通过yum安装  yum install freetds-devel.x86_64
+
+但是这个不是所有的yum源支持，国内我发现腾讯云支持。阿里和其他不支持。
+
+freetds-dev：yum install freetds-devel.x86_64
+
+2）通过下载安装包安装
+
+参考网页http://pymssql.org/en/stable/freetds.html#linux
+
+如果说 要安装  2.1.3的pymssql，你必须下载0.95.95的版本。
+
+freetds官网：http://www.freetds.org
+
+export CFLAGS="-fPIC"  # 设置 64 bits version
+export PYMSSQL_BUILD_WITH_BUNDLED_FREETDS=1
+
+配置编译
+
+安装完freetds后，你就可以直接用pip安装pymssql了
+
+pip install pymssql
+

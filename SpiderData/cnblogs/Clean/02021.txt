@@ -1,0 +1,37 @@
+报错：TypeError: Tuple or struct_time argument required
+
+原因：时间戳——格式化时间 不能直接转换会报错
+
+上代码：
+
+import time
+
+time3 = time.asctime(time.time())#
+
+print ("本地时间为 ：",time3)
+
+所以需要注意他们之间的转换关系
+
+时间戳——时间元祖&时间元祖——格式化时间 是能相互转换的
+
+但是，时间戳——格式化时间 不能直接相互转换，需要转为时间元祖进行过渡
+
+
+解决方法：
+
+
+第一步：时间戳——时间元祖
+
+time.localtime(time.time())#转换成时间元祖
+
+
+第二步：时间元祖的格式化
+
+import time
+
+localtime = time.asctime(time.localtime())#
+
+print ("本地时间为 ：",localtime)
+
+可参照：time()模块的使用一级简单转换
+

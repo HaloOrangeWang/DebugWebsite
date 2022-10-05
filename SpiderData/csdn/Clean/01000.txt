@@ -1,0 +1,25 @@
+背景：这个pyhon项目之前是可以正常运行了，一段时间没有维护再次运行忽然就开始报错，而且是只有https的url才会报错，开始的时候感觉很莫名其妙。
+ 报错截图如下：
+ 
+ 解决过程：
+ 首先肯定是先度娘，然后搜出来的答案基本都是在requests调用的时候增加参数：verify=False；这个方法有两个问题
+ 1）我的自动化项目有很多地方用到requests，一个个修改真的很麻烦（虽然最后解决方案还是要改）；
+ 2）修改后虽然可以运行不报错了，但是还是会有警告（看着真的很不舒服，我的测试报告里面也会出现这个），警告信息如下：
+ 
+ 再次度娘，发现新的信息：
+ 我的python是3.8的（之前是3.7的，因为搭建appium环境时某些情况我就用了3.8）使用的是urllib3。
+ 在urllib2时代对https的处理非常简单，只需要在请求的时候加上 verify=False 即可，这个参数的意思是忽略https安全证书的验证，也就是不验证证书的可靠性，直接请求，这其实是不安全的，因为证书可以伪造，不验证的话就不能保证数据的真实性。
+ 在urllib3时代官方强制验证https的安全证书，如果没有通过是不能通过请求的，虽然添加忽略验证的参数，但是依然会 给出醒目的 Warning。知道原因了就可以对症下药了
+ 解决方案：
+ 1）禁用urllib3（貌似没啥用，提示给的是urllib3的使用方法，但程序使用的是requests库，无法解决）
+ import urllib3
+ urllib3.disable_warnings()
+ 2）上一种方法的变形（我的问题还是没有解决）
+ requests.packages.urllib3.disable_warnings()
+ content = requests.get(url, verify=False)
+ 3）安装以下几个包（会报一开始certificate verify failed的错，好像陷入了死循环，懵逼中…）
+ pip install cryptography
+ pip install pyOpenSSL
+ pip install certifi
+ 4）最后通过注释掉warning的代码解决了（这个方法不是很推荐，我这个只是自动化的测试脚本，所以安全性要求不高）
+

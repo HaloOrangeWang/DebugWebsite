@@ -1,0 +1,55 @@
+
+Windows的Python3.6报错_ssl.c:749解决办法
+
+1. 问题由来
+
+2. 解决办法
+
+1）安装证书2）升级pip版本3）改国内镜像4）安装tensorflow
+
+1）安装证书
+
+2）升级pip版本
+
+3）改国内镜像
+
+4）安装tensorflow
+
+
+1. 问题由来
+
+今天想试一下谷歌开源的自然语言处理模型bert，在其github上看到需要安装tensorflow-1.11.0，于是设法在我的python3.10上安装，但是不匹配，最后使用miniconda浅试了一下在虚拟的python2.7上安装tensorflow-1.11.0，提示要匹配python3.6。
+
+miniconda上用虚拟的python3.6安装tensorflow-1.11.0成功了，但是并不太适合运行bert模型的代码，最后只能选择继续安装本地python3.6，并使用pip安装tensorflow-1.11.0。
+
+在官网下载并安装python3.6后，尝试pip安装tensorflow-1.11.0，然而报错了，报错如下（我自己电脑忘记截图了，这是在网上找的图，注意第4行报错_ssl.c:749，由于这个错误，一直无法开展后续步骤）：
+
+
+2. 解决办法
+
+经过一下午的寻医问药，始终没有找到解决办法。于是我开始仔细查看报错信息，然后思考了一下，开始尝试一个新思路：从网站的证书方面入手，事实证明，果真需要事先考虑重新安装证书。
+
+终于摸着了头路，这不是提示我证书没安装好嘛，那我第一步：安装证书，由于我没有配置国内镜像，改镜像使用pip命令时提示“unknown command “config””错误。
+
+我想着可能是我pip的版本太低，因此，第二步：升级pip版本，升级完了，果然可以改镜像了，第三步：改国内镜像，最后，第四步：安装tensorflow。
+
+
+1）安装证书
+
+pip install certifi -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+
+
+2）升级pip版本
+
+python -m pip install --upgrade pip
+
+
+3）改国内镜像
+
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+
+
+4）安装tensorflow
+
+pip install tensorflow==1.11.0
+

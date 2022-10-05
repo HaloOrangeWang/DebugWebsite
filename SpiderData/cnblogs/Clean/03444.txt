@@ -1,0 +1,51 @@
+
+问题
+
+今天碰到一个怪问题，明明各种包都已经安装好了，进入python也可以正常使用pytorch，但一进入ipython, jupyter notebook就无法使用pytorch,
+
+>>>import torch as t
+
+报错：
+
+ModuleNotFoundError: No module named 'torch'
+
+事发突然，不知何故，硬着头皮重新安装
+
+$ conda install ipython
+
+发现conda添加了几外包，然后再进入IPython就一切正常了，但jupyter notebook还是不能正常使用, conda install jupyter notebook也没什么效果。
+
+
+重新配置一下jupyter notebook（无效）
+
+$jupyter notebook --generate-config
+ Writing default config to: /home/user/.jupyter/jupyter_notebook_config.py
+
+$sudo gedit /home/user/.jupyter/jupyter_notebook_config.py
+ 打开文件查找 c.NotebookApp.notebook_dir，去掉注释，并在后面添加自己想要设置的默认路径，比如我的：
+ c.NotebookApp.notebook_dir = '/home/user/dev/jupyter/'
+
+(pytorch) user@user-MS-7816:~$ which python
+ /home/user/anaconda3/envs/pytorch/bin/python
+
+(pytorch) user@user-MS-7816:~$ sudo /home/user/anaconda3/envs/pytorch/bin/python -m ipykernel install --name pytorch
+ Installed kernelspec pytorch in /usr/local/share/jupyter/kernels/pytorch
+
+
+安装mkl=2018(无效)
+
+网上流行一个解决办法，于本人的情况，全然无效
+
+$conda update conda
+ $conda install mkl=2018
+
+
+通过anaconda-navigator安装jupyter notebook（有效，OK）
+
+启动navigator:
+ $anaconda-navigator
+
+选择进入环境pytorch，然后发现，jupyter notebook 在该环境下竟然是没有安装的。可是我明明是在pytorch环境下使用命令安装的jupyter notebook呀，不知道问题在哪里，那就在navigator下再装一次吧！
+
+参考：https://github.com/pytorch/pytorch/issues/4827
+

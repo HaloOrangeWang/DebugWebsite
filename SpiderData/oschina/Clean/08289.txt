@@ -1,0 +1,10 @@
+jenkins 启动tomcat报错：
+
+Caused by: java.lang.ClassNotFoundException: javax.management.modelmbean.ModelMBeanNotificationBroadcaster not found;
+
+这个原因是jenkins远程登录的时候，在shell里找不到java_home变量，
+
+解决很简单，在tomcat的bin里的setclasspath.sh开头加上java_home的值
+
+比如：JAVA_HOME=/soft/jdk1.7.0_71
+

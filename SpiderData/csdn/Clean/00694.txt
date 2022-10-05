@@ -1,0 +1,22 @@
+
+报错情况：
+
+原来的对数转换（如下），前面调过一些数后就报错。
+
+np.log(data['Item']+1)
+
+
+AttributeError Traceback (most recent call last)
+ AttributeError: ‘float’ object has no attribute ‘log’
+
+TypeError: loop of ufunc does not support argument 0 of type float which has no callable log method
+
+
+解决方法
+
+np.log(data['Item']+1)
+
+改成
+
+np.log((data['Item']+1).astype('float'))
+

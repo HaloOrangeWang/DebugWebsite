@@ -1,0 +1,44 @@
+yum安装软件时出现报错:bash: /usr/bin/yum: /usr/bin/python: 坏的解释器：没有那个文件或目录，从字面意思来看，就是yum找不到python解释器了，或者python解释器坏了。我的环境是因为安装了python3，导致python2失效了，还有一种情况是python2被卸载了
+
+1.先看下/usr/bin/yum文件内容
+
+[root@zabbix bin]# vim /usr/bin/yum
+
+从上图可以看到yum服务使用的默认python版本是python2
+
+2.使用命令查看即可，发现已经没有python文件，那yum文件中指定的/usr/bin/python就无效了
+
+[root@zabbix bin]# ls -l /usr/bin/python
+ls: 无法访问/usr/bin/python: 没有那个文件或目录
+
+3.由于yum服务默认使用的python2，不能改成python3，以防出现服务依然不可用情况，所以只需要安装一个python2即可
+4. 我这里使用的python-2.7.5-90.el7.x86_64.rpm安装完成后，解决了yum报错问题
+rpm文件地址
+5.rpm安装方法
+把文件下载完成后，使用命令：
+
+[root@zabbix /]# rpm -ivh python-2.7.5-90.el7.x86_64.rpm 
+准备中...                          ################################# [100%]
+正在升级/安装...
+   1:python-2.7.5-90.el7              ################################# [100%]
+[root@zabbix /]# python
+Python 2.7.5 (default, Nov 16 2020, 22:23:17) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-44)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> exit()
+
+6 . 验证yum
+
+[root@zabbix bin]# yum install docker 
+已加载插件：fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirrors.aliyun.com
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+正在解决依赖关系
+--> 正在检查事务
+---> 软件包 docker.x86_64.2.1.13.1-203.git0be3e21.el7.centos 将被 安装
+--> 正在处理依赖关系 docker-common = 2:1.13.1-203.git0be3e21.el7.centos，它被软件包 2:docker-1.13.1-203.git0be3e21.el7.centos.x86_64 需要
+
+没有问题
+

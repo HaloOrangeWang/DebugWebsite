@@ -1,0 +1,17 @@
+
+我的版本是PaddleDetection2.3，paddlepaddle2.2.2,运行静态图的模型首先要把PaddleDetection/static当做根目录下去执行
+
+
+首先是出现这个问题：ModuleNotFoundError: No module named 'ppdet.utils.eval_utils'
+
+解决：运行!set PYTHONPATH='pwd':G:/python/python37  （我也不是很懂，官方的issues里是这样的，我因为是windows环境把export改成了set，确实有效）
+
+
+解决了上面这个，又报错No module named 'ppdet.experimental'  可以先pip uninstall paddledet，使用动态图的时候再下回去；
+
+
+这样修改后又报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0xa1 in position 41: illegal multibyte sequence
+
+这个就是在paddleDetection\static\ppdet\core\workspace.py", line 90改为：
+with open(file_path, 'r', encoding='utf-8') as f:
+

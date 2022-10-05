@@ -1,0 +1,32 @@
+python脚本连接数据库之前一直用的好好的，今天突然就不能用了，连接数据库的时候报这个错：
+
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+试了网上的各种方法，也没有解决好，快要放弃的时候，终于搞好了，其中的过程很多也分不清具体是哪个方法搞好的了，大概思路是这样的：
+
+1.My.ini 最后一行添加 skip-grant-tables
+
+2.root不用密码登录成功
+
+3.重置密码:（执行如下命令，就可以了）
+
+mysql> set password =password('123456');
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> flush privileges;
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> grant all on *.* to 'root'@'localhost' IDENTIFIED BY '123456'with grant option ;
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> flush privileges;
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> quit
+
+Bye
+

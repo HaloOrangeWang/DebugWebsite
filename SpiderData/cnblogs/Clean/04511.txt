@@ -1,0 +1,28 @@
+问题描述
+
+使用pyinstaller打包使用Tkinter编写的控制台程序，出现报错
+
+15793 INFO: Adding Microsoft.Windows.Common-Controls to dependent assemblies of final executable
+  required by d:\solftware\python3.7.3\python.exe
+16000 WARNING: lib not found: api-ms-win-crt-math-l1-1-0.dll dependency of d:\solftware\python3.7.3\python.exe
+16193 WARNING: lib not found: api-ms-win-crt-runtime-l1-1-0.dll dependency of d:\solftware\python3.7.3\python.exe
+16394 WARNING: lib not found: api-ms-win-crt-heap-l1-1-0.dll dependency of d:\solftware\python3.7.3\python.exe
+16582 WARNING: lib not found: api-ms-win-crt-locale-l1-1-0.dll dependency of d:\solftware\python3.7.3\python.exe
+16767 WARNING: lib not found: api-ms-win-crt-stdio-l1-1-0.dll dependency of d:\solftware\python3.7.3\python.exe
+17012 WARNING: lib not found: api-ms-win-crt-math-l1-1-0.dll dependency of d:\solftware\python3.7.3\python37.dll
+17219 WARNING: lib not found: api-ms-win-crt-runtime-l1-1-0.dll dependency of d:\solftware\python3.7.3\python37.dll
+17392 WARNING: lib not found: api-ms-win-crt-environment-l1-1-0.dll dependency of d:\solftware\python3.7.3\python37.dll
+17596 WARNING: lib not found: api-ms-win-crt-process-l1-1-0.dll dependency of d:\solftware\python3.7.3\python37.dll
+17769 WARNING: lib not found: api-ms-win-crt-string-l1-1-0.dll dependency of d:\solftware\python3.7.3\python37.dll
+17944 WARNING: lib not found: api-ms-win-crt-locale-l1-1-0.dll dependency of d:\solftware\python3.7.3\python37.dll
+18136 WARNING: lib not found: api-ms-win-crt-heap-l1-1-0.dll dependency of d:\solftware\python3.7.3\python37.dll
+18347 WARNING: lib not found: api-ms-win-crt-stdio-l1-1-0.dll dependency of d:\solftware\python3.7.3\python37.dll
+
+解决方案：
+
+执行pyinstaller 的时候添加  -p C:\Windows\System32\downlevel即可
+
+如下
+
+pyinstaller -F -w  -p C:\Windows\System32\downlevel face_label.py
+

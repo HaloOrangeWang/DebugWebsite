@@ -1,0 +1,19 @@
+首先安装xadmin，pip install xadmin,或者下载放到项目根目录都可以，直接运行会报错，主要因为
+
+Django中six包已经移除，使用独立的第三方包。
+需要改的地方有：
+requirements.txt中django-formtools==2.2需要升级到2.2版本，2.1版本会报错
+
+根目录下sites.py中需要替换
+
+from django.utils import six ==> import six
+
+xadmin/models.py中以下需要替换
+
+**from django.core.urlresolvers import NoReverseMatch, reverse ==> from django.urls import NoReverseMatch, reverse
+
+**from django.utils.encoding import python_2_unicode_compatible, smart_text ==>
+
+from six import python_2_unicode_compatible
+from django.utils.encoding import smart_text
+

@@ -1,0 +1,76 @@
+
+1.SpringCloud Eureka 报错 无法启动基本上都是spring boot的版本与spring cloud的版本不匹配导致的。
+
+1 <dependencyManagement>
+ 2         <dependencies>
+ 3             <dependency>
+ 4                 <groupId>org.springframework.cloud</groupId>
+ 5                 <artifactId>spring-cloud-dependencies</artifactId>
+ 6                 <version>Dalston.SR1</version>   //这里的版本问题
+ 7                 <type>pom</type>
+ 8                 <scope>import</scope>
+ 9             </dependency>
+10         </dependencies>
+11     </dependencyManagement>
+
+
+2. 下面是spring boot 版本与spring cloud 版本对应列表
+
+
+版本号规则
+
+Spring Cloud并没有熟悉的数字版本号，而是对应一个开发代号。
+
+开发代号看似没有什么规律，但实际上首字母是有顺序的，比如：Dalston版本，我们可以简称 D 版本，对应的 Edgware 版本我们可以简称 E 版本。
+
+
+D版本和E版本的区别
+
+二者均基于SpringBoot的1.5.x版本。但支持其他组件的版本不同，如以 Dalston.SR4 和 Edgware.RELEASE 来对比：
+
+spring-cloud-config 分别对应 1.3.3和 1.4.0; 
+spring-cloud-netflix 分别对应 1.3.5和 1.4.0; 
+spring-cloud-consul 分别对应 1.2.1和 1.3.0; 
+spring-cloud-gateway 前者不支持，后者 1.0.0。
+
+每个小版本的不同，会有细微差别。
+
+
+F版本
+
+F版本是个绝对的大版本，几乎所有组件，全部同步变更版本号为2.x。
+
+
+小版本
+
+Spring Cloud 小版本分为:
+
+SNAPSHOT： 快照版本，随时可能修改
+
+M： MileStone，M1表示第1个里程碑版本，一般同时标注PRE，表示预览版版。
+
+SR： Service Release，SR1表示第1个正式版本，一般同时标注GA：(GenerallyAvailable),表示稳定版本。
+
+
+选择版本
+
+
+大版本
+
+首先说明，各个版本之间组件变化不大，但细节略有不同，比如配置项名称、或者新版本增加新的配置方式。
+
+从这一点来看，选择哪个版本都不是大问题，但提醒一下，遇到坑时，最好根据版本进行查询，否则你会发现你找到的办法不行。实际上是版本不匹配。
+
+如果你项目需要和其他老项目交叉，以兼容为第一要务。
+
+如果你项目需要和其他老项目交叉，以兼容为第一要务。
+
+如果全新项目，可以考虑较新版本，如E版。如果你爱好踩坑，F拿去。
+
+如果全新项目，可以考虑较新版本，如E版。如果你爱好踩坑，F拿去。
+
+
+小版本
+
+小版本没啥可说的，尝鲜：SNAPSHOT，生产：GA。
+

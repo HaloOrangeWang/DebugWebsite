@@ -1,0 +1,15 @@
+给另一台笔记本安装Python3.7发现运行scrapy时会报如下错误
+
+File "../py37/lib/python3.7/site-packages/twisted/conch/manhole.py", line 154
+    def write(self, data, async=False):
+                              ^
+SyntaxError: invalid syntax
+
+也就是manhole.py文件中发生错误
+
+async在Python3.7下是保留关键字，所以这里出现了语法错误
+
+简单的修改办法是把async全部替换成isAsync即可
+
+参考stackoverflow
+

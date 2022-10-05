@@ -1,0 +1,24 @@
+今天收到一位博友的问题。大家可以帮忙看看或者提供更好的方法。
+
+上图可见，提示报错信息是没找到这个路径，并且 还存在。那么我们可以想到的是，1是有缓存了，2 路径错误。我们此时就要卸载掉项目中的node_modules包，重新安装。
+ 但是有可能我们此时安装过Python 可能也报错了。
+ 其实大部分原因是因为node-sass这个报错的。解决node-sass问题，可以看下我的这个博文，应该就解决了（4种办法，其实都差不多，情景不同罢了）。
+
+1 链接在这里 。
+
+2 在或者执行这个命令，先解决node-sass的问题
+
+yarn add sass node-sass@npm:sass  
+或者
+npm install sass node-sass@npm:sass
+
+如果不能解决看下边的方式，就搞定了。
+
+3 如果命令长时间执行不成功，用管理权限的 cmd 然后执行
+
+npm install --global --production windows-build-tools
+
+（可以重启下项目）然后在项目中 执行 npm uninstall 后在重新npm install就好了。
+
+4。如果在部署前端Vue框架项目时，使用npm install和yarn install安装插件报错。你可以看看这个人写的文章，还不错，应该能帮你解决
+

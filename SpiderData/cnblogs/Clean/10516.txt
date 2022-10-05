@@ -1,0 +1,26 @@
+
+解决Python flask运行报错：
+
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xd2 in position 0: invalid continuation byte
+
+
+原因：在python下lib文件夹里的socket.py文件中的name=gethostname()代码执行获取本机电脑名称时，遇到中文导致乱码报错。
+
+
+解决办法：
+
+
+1. 直接改掉自己的中文电脑名称，改为英文名称，我建议如此，如果没有太多的关联文件、代码、软件的话。因为在这上面吃过太多的亏。
+
+
+2. 观察python下lib文件夹里的socket.py文件中此处代码
+
+
+很明显只需要将host设为0.0.0.0就好，不会再获取本机电脑名称：可以这样设置：app.run(host="0.0.0.0.", port=1234)
+
+
+不起作用的话就直接在pycharm里设置Additional options:--host=0.0.0.0，如下图：
+
+
+3. 修改代码：在python下lib文件夹里的socket.py文件中此处代码:hostname, aliases, ipaddrs = gethostbyaddr(name)前直接指定name="gxg",gxg是我的名字，可以改成其他英文名称
+

@@ -1,0 +1,31 @@
+macOS使用phpize安装扩展时报错。
+
+$ phpize
+grep: /usr/include/php/main/php.h: No such file or directory
+grep: /usr/include/php/Zend/zend_modules.h: No such file or directory
+grep: /usr/include/php/Zend/zend_extensions.h: No such file or directory
+Configuring for:
+PHP Api Version:        
+Zend Module Api No:     
+Zend Extension Api No:
+
+缺少PHP的header头文件，再一看/usr/include文件夹根本不存在敲出如下命令
+
+$ xcode-select --install
+xcode-select: note: install requested for command line developer tools
+
+如果phpize还是无效、执行下列命令安装header头文件SDK即可
+
+# 10.14
+$ cd /Library/Developer/CommandLineTools/Packages/
+$ open macOS_SDK_headers_for_macOS_10.14.pkg
+
+# 10.15
+ sudo mount -uw /
+ sudo ln -s "$(xcrun --show-sdk-path)/usr/include" /usr/include
+ export SDKROOT="$(xcrun --show-sdk-path)"
+ echo "export SDKROOT=\"\$(xcrun --show-sdk-path)\"" >> ~/.bash_profile
+ sudo DevToolsSecurity -enable
+
+出处：https://www.cnblogs.com/lantor/p/11644269.html
+

@@ -1,0 +1,40 @@
+报错1045 (28000): Access denied for user 'root'@'localhost' (using password: NO）
+
+首先关闭mysql服务
+
+sudo /usr/local/mysql/support-files/mysql.server stop
+
+然后去mysql文件夹里设置跳过验证
+
+cd /usr/local/mysql/bin/
+
+获取超级管理员权限
+
+sudo su
+
+跳过验证
+
+./mysqld_safe --skip-grant-tables &
+
+接着打开一个新的终端
+
+/usr/local/mysql/bin/mysql -u root -p
+
+因为没有密码，所以直接回车
+
+然后设置新密码
+
+UPDATE mysql.user SET authentication_string=PASSWORD('想要设置的密码') where User='root';
+
+刷新一下
+
+flush privileges;
+
+然后启动mysql
+
+sudo /usr/local/mysql/support-files/mysql.server start
+
+再设置一遍刚刚的密码就OK了
+
+SET PASSWORD = PASSWORD('刚刚设置的密码');
+

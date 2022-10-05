@@ -1,0 +1,64 @@
+
+python打包exe，各种入坑
+
+一、安装PyInstaller
+1、安装pywin32
+
+
+一、安装PyInstaller
+
+
+1、安装pywin32
+
+pip命令安装：pip install pywin32（推荐）
+
+2、安装Pyinstaller
+
+
+2、安装Pyinstaller
+
+pip命令安装：pip install PyInstaller
+
+pip命令安装：pip install pywin32-ctypes
+
+如果是要打包别人写好的.py文件，这时要最好先运行这个文件、可能会出现的缺少的库、例如：
+
+
+如果是要打包别人写好的.py文件，这时要最好先运行这个文件、可能会出现的缺少的库、例如：
+
+No module named matplotlib.pyplot
+
+No module named matplotlib.pyplot
+
+no module named sklearn
+
+no module named sklearn
+
+no module named PyQt5
+
+都统一用pip install ***
+
+windows python2.7 安装PyQt5的一个简单方法：pip install python-qt5
+
+
+windows python2.7 安装PyQt5的一个简单方法：pip install python-qt5
+
+安装了PyQT5之后用import PyQt5试一下是可以的。
+
+在打包时会出现问题Cannot find existing PyQt5 plugin directories ，具体如下
+
+Exception:
+            Cannot find existing PyQt5 plugin directories
+            Paths checked: C:\Qt\Qt5.3.1\5.3\msvc2013_64\plugins
+
+解决方法就是用everything搜索PyQt5，找到 /Library/plugins路径下的PyQt5文件夹，将里面的dll动态库pyqt5.dll，pyqt5qmlplugin.dlll复制出来
+
+按照错误提示的路径，一个个的新建文件夹，形成目录 C:\Qt\Qt5.3.1\5.3\msvc2013_64\plugins，将刚才复制出来的dll动态库拷贝进去即可
+
+
+二、使用Pyinstaller生成exe
+
+管理员打开cmd，并且复制.py文件到Pyinstaller文件夹中（与pyinstaller.py同一层文件夹下），之后把路径切换到当前路径打开命令提示行，输入以下内容（xxx.py是文件名）：
+
+python pyinstaller.py -F xxx.py   #-F的意思是将打包成一个独立的.exe程序
+

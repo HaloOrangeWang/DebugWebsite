@@ -1,0 +1,61 @@
+废话不多说，报错如下：
+
+DataNucleus.Datastore (Log4JLogger.java:error(115)) - An exception was thrown while adding/validating class(es) : Specified key was too long; max key length is 767 bytes
+com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Specified key was too long; max key length is 767 bytes
+
+然后在全网搜索，几乎所有的文章都没正面讲原因（不好意思，这里用了夸张的手法，如果有说错的，还请见谅），要么就是臭长臭长的，很难受。
+
+还有一个东西提一下，就是hive在控制台打印的报错信息是这样子的：
+
+ERROR [main]: metastore.RetryingHMSHandler (RetryingHMSHandler.java:invoke(150)) - HMSHandler Fatal error: javax.jdo.JDODataStoreException: Error(s) were found while auto-creating/validating the datastore for classes. The errors are printed in the log, and are attached to this exception.
+
+说实话，第一段很好判断，其实就是mysql的字符集编码的问题（所实话，这是一个很大的问题，后面慢慢解释），然后第二段报错是控制台打印的，只能够看出报错是因为在创建/插入/更新某个数据的数据出现了异常。
+
+
+所以从这里告诉我们一个道理：出现报错去看log日志好吗？？？？？
+
+通过如上的修改，再次生成的hive日志文件，就会在你自己指定的目录中了
+
+扯远了，言归正传！！
+
+所以通过以上的乱七八糟的东西，我们就确定了报错，是mysql中hive的元数据库的字符集问题，也正是因为字符集问题，导致了create或者insert或者load等等操作出现了问题！
+
+1、如果有兴趣和心思，大家可以先研究明白mysql的字符集都有哪些地方是可以设置的。
+
+2、如果没有，那请看接下来鄙人讲的东西。
+
+原因分析：
+
+-1.mysql数据库创建数据库的时候的字符集默认是latin1，很有可能之前被修改过，改成UTF8或者其他
+
+如何查看？
+
+注：这里的a这个库，是我的hive的元数据信息的库
+
+如果是如上的这张图，那么a这个数据库的字符集就是utf-8，并且如果hive在这个库里面生成的相关元数据信息表，这些表也都会是utf-8的字符集！不信你看！
+
+你会发现这里的所有表甚至表中的字段都是utf-8的字符集，并且当你在操作hive的时候，那么就很有可能会出现标题上的错误！
+
+-2.然后你就会去百度，搜索各种各样的文章，发现可以这么修改数据库的字符集
+
+alter database a character set latin1;
+
+这里顺便提一句：
+
+//修改数据库
+alter database 数据库名 character set utf8;
+//修改表
+alter table 表名 convert to character set gbk;
+//修改字段
+alter table 表名 modify column '字段名' varchar(30) character set gbk not null;
+//添加表字段
+alter table 表名 add column '字段名' varchar (20) character set gbk;
+
+天真的你发现，已经完全修改过来了，应该不会有问题了！
+
+-3.然而这时候，你重启了你的环境（包括重启虚拟机一大堆杂七杂八的操作），打开hive，发现该报错的还是报错！
+
+-4.为什么呢，你可以尝试下看看元数据库里的表的字符集有改变吗？
+
+-5.所以问题已经很明显了，这样修改虽然数据库的字符集改了，但是其中表的字符集和字段都没改过来
+

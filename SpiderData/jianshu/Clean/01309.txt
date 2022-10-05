@@ -1,0 +1,50 @@
+Mac下是自带Python的，不过版本较低Python 2.7.10，要安装下最新的Python3。
+
+1.打开终端，通过Homebrew查找下python3
+
+$ brew search python3
+
+==> Formulae
+boost-python3                                                python@3
+python3                                                      homebrew/linuxbrew-core/boost-python3
+
+2.找到python3，安装：
+
+$ brew install python3
+
+安装提示有个Error
+Error: Xcode alone is not sufficient on Mojave.
+Install the Command Line Tools:
+  xcode-select --install
+
+3.解决Error，在终端执行命令安装the Command Line Tools
+
+$ xcode-select --install
+
+此时会弹出提示安装the Command Line Tools，我们按照提示进行下载安装即可，安装完毕继续执行
+
+$ brew install python3
+
+4.又发现新的报错：
+
+==> Pouring python-3.7.4_1.mojave.bottle.1.tar.gz
+Error: An unexpected error occurred during the `brew link` step
+The formula built, but is not symlinked into /usr/local
+Permission denied @ dir_s_mkdir - /usr/local/Frameworks
+Error: Permission denied @ dir_s_mkdir - /usr/local/Frameworks
+
+发现/usr/local/下没有路径/usr/local/Frameworks
+
+需要新建该路径，并修改权限
+
+解决：
+
+$ sudo mkdir /usr/local/Frameworks
+$ sudo chown $(whoami):admin /usr/local/Frameworks
+$ brew link python
+
+5.完成
+
+$ python3 -V
+Python 3.7.4
+

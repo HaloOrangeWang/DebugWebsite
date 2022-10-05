@@ -1,0 +1,108 @@
+Python练习内容：
+
+SMTP是发送邮件的协议，Python内置对SMTP的支持，可以发送纯文本邮件、HTML邮件以及带附件的邮件。
+
+Python对SMTP支持有smtplib和email两个模块，email负责构造邮件，smtplib负责发送邮件。
+
+首先，我们来构造一个最简单的纯文本邮件：
+
+from email.mime.text import MIMEText
+msg = MIMEText('hello, send by Python...', 'plain', 'utf-8')
+
+注意到构造MIMEText对象时，第一个参数就是邮件正文，第二个参数是MIME的subtype，传入'plain'表示纯文本，最终的MIME就是'text/plain'，最后一定要用utf-8编码保证多语言兼容性。
+
+然后，通过SMTP发出去：
+
+# 输入Email地址和口令:from_addr = input('From: ')
+password = input('Password: ')# 输入收件人地址:to_addr = input('To: ')# 输入SMTP服务器地址:smtp_server = input('SMTP server: ')import smtplib
+server = smtplib.SMTP(smtp_server, 25) # SMTP协议默认端口是25server.set_debuglevel(1)
+server.login(from_addr, password)
+server.sendmail(from_addr, [to_addr], msg.as_string())
+server.quit()
+
+我们用set_debuglevel(1)就可以打印出和SMTP服务器交互的所有信息。SMTP协议就是简单的文本命令和响应。login()方法用来登录SMTP服务器，sendmail()方法就是发邮件，由于可以一次发给多个人，所以传入一个list，邮件正文是一个str，as_string()把MIMEText对象变成str。
+
+如果一切顺利，就可以在收件人信箱中收到我们刚发送的Email​
+
+​————————分割线,以上都是资料内容​————————
+
+使用过程中我遇到了一些问题，或者是之前作者没有表述清楚
+
+我使用的是163邮箱
+
+1、首先作者没有提醒我，要确保自己的邮箱地址开启了smtp服务，并设置客户端授权登陆密码
+
+2、发送邮件时，password应该填写邮箱的授权登陆码，而不是自己的邮箱密码。
+
+3、按照以上代码运行，会报​错
+
+​Traceback (most recent call last):
+ File "mailDemo.py", line 24, in
+ server.sendmail(from_addr,[to_addr],msg.as_string())
+ File "C:\Program Files\Python35-32\lib\smtplib.py", line 878, in sendmail
+ raise SMTPDataError(code, resp)
+
+应该在代码中加上：
+
+#发送邮箱地址
+msg['From'] = from_addr
+#收件箱地址
+msg['To'] = to_addr
+#主题
+msg['Subject'] = 'the frist mail'
+
+4、在公司环境运行没问题的代码，在自己家的网络下又遇到了一系列问题，运行时报。
+
+Traceback (most recent call last):
+File "/Users/xuexiaopeng/Documents/sendmailDemo.py", line 13, in <module>
+ server = smtplib.SMTP(smtp_server,25)
+File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/smtplib.py", line 253, in __init__
+ raise SMTPConnectError(code, msg)
+smtplib.SMTPConnectError: (554, b'IP<114.111.167.154> in blacklist')
+
+我也不知道这个114.111.167.154是那里的IP，我将自己电脑的翻墙代理关闭，重启了路由器解决了。
+
+5、发送邮件时报错：
+
+Traceback (most recent call last):
+File "/Users/xuexiaopeng/Documents/sendmailDemo.py", line 21, in <module>
+ server.sendmail(from_addr, [to_addr], msg.as_string())
+File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/smtplib.py", line 878, in sendmail
+ raise SMTPDataError(code, resp)
+smtplib.SMTPDataError: (554, b'DT:SPM 163 smtp10,DsCowAA3h9_QbgZXI9_fCQ--.713S2 1460039376,please see http://mail.163.com/help/help_spam_16.htm?ip=117.114.147.187&hostid=smtp10&time=1460039376')
+
+我查了一下页面http://mail.163.com/help/help_spam_16.htm?ip=117.114.147.187&hostid=smtp10&time=1460039376，是发生了退信行为，后来我关闭了路由器，连接了自己手机分享的热点，才发送成功。
+
+至于家里的网络为啥会出问题，我还的再研究。
+
+完整代码如下：
+
+from email.mime.text import MIMEText
+msg = MIMEText('hello，send by python...','plain','utf-8')
+#发送邮箱地址
+from_addr = 'test@163.com'
+#邮箱授权码，非登陆密码
+password = '123'
+#收件箱地址
+to_addr = '123456@qq.com'
+#smtp服务器
+smtp_server = 'smtp.163.com'
+#发送邮箱地址
+msg['From'] = from_addr
+#收件箱地址
+msg['To'] = to_addr
+#主题
+msg['Subject'] = 'the frist mail'
+import smtplib
+server = smtplib.SMTP(smtp_server,25)
+server.set_debuglevel(1)
+print(from_addr)
+print(password)
+server.login(from_addr,password)
+server.sendmail(from_addr,[to_addr],msg.as_string())
+server.quit()
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作具有一定的参考学习价值，谢谢大家对脚本之家的支持。如果你想了解更多相关内容请查看下面相关链接
+

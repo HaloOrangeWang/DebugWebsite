@@ -1,0 +1,15 @@
+如果我们当前py文件需要导入上级目录文件夹下py文件报错：No Module Name
+
+
+处理方法：
+
+例如Code文件夹下的test1想导入文件夹TestDIR里的py文件
+ 
+ 首先需要在TestDIR下创建__init__.py文件，里面可以为空，这样TestDIR便成了一个Python 包；然后再test1.py中加入：
+
+import sys
+sys.path.append('根目录路径')
+from TestDIR import file_utils
+
+即可导入相关py文件
+

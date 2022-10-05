@@ -1,0 +1,37 @@
+报错信息
+
+raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.baidu.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:581)'),))
+
+分析:由于报错SSL证书验证失败,所以这次的访问应该是https协议.但是我们明明使用的是http,所以,猜测访问该网站后,被重定向到了https
+
+解决：关闭证书验证.因为,如果不关闭,请求总是失败,不能获取到重定向的信息.
+
+安装一下几个requests依赖包，然后设置, verify=False
+
+pip install cryptography 
+pip install pyOpenSSL
+pip install certifi
+
+>>> response = requests.get('http://www.baidu.com/', headers = header, verify=False)
+D:\python\lib\site-packages\urllib3\connectionpool.py:858: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+InsecureRequestWarning)
+>>> response.history
+[<Response [302]>]
+>>> response.url
+u'https://www.baidu.com/'
+
+结果出现警告，Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings InsecureRequestWarning)
+
+想去掉红框内的内容还需要添加如下代码
+
+requests.packages.urllib3.disable_warnings()
+
+参考：https://blog.csdn.net/win_turn/article/details/77142100
+ https://www.cnblogs.com/hum0ro/p/9536033.html
+ https://blog.csdn.net/jss19940414/article/details/89886043
+
+本文同步分享在 博客“周小董”（CSDN）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

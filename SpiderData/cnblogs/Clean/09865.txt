@@ -1,0 +1,30 @@
+关于Jupyter Notebook无法自动补全（Autocompletion），报错TypeError: __init__() got an unexpected keyword argument 'column' 的解决方案
+
+
+问题描述：
+
+最近在linux服务器上装了jupyter notebook希望远程访问使用，安装完成后发现notebook的TAB自动补全功能不能用。这是一件很难受的事情，python这么多库的用法不可能一一记住，所以必须解决这个问题。
+
+在谷歌百度上寻求解决方案，发现很多文章提到安装nbextensions插件，但很遗憾，我尝试之后发现这个方法无法解决问题。
+
+最后我在pycharm上运行jupyter的时候发现了问题的根源。当在pycharm中输入函数名并补全代码时，jupyter的控制台会提示如下的错误（但由于pycharm的强大功能，此时仍然能够完成代码补全）：
+
+于是让我联想到，直接使用jupyter  notebook时无法按TAB补全可能也是这个错误导致的。查看服务器上的jupyter日志发现似乎也有这个报错。
+
+最后，在github上ipython项目的issue中找到了解决方法：
+
+https://github.com/ipython/ipython/issues/12740
+
+
+解决方案：
+
+该问题是ipython版本和jedi版本不符造成的（从错误提示中也能看出来与jedi有关）。
+
+在这种情况下，直接从shell控制台运行ipython也不能使用TAB键补全，按下TAB没有任何反应。
+
+由于ipython 7.19及以下的版本不支持最新的jedi 0.18.0，就会出现错误。查看ipython版本，嗯，版本号7.16.1，那么问题就找到了。
+
+由于我的Python版本是3.6.9，不能升级ipython到7.20以上（需要python3.7以上的版本），只能选择从jedi入手。网上有博客称jupyter使用不需要jedi所以可以直接卸载解决问题，我没有尝试是否可行。我这里选择将jedi降低一个版本（到0.17.0），即可解决问题
+
+完成之后，先试试shell运行ipython，TAB键已经出现代码提示和补全功能。然后打开jupyter notebook，同样能够使用TAB键补全了，问题解决！
+

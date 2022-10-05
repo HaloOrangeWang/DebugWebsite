@@ -1,0 +1,24 @@
+我的python 版本 - 3.7.2  paramiko 版本 - 2.4.2
+
+新年工作的第二天，就一大堆问题上来了。
+
+首先为了执行python脚本，
+
+执行命令报错，Exception in thread "main" java.io.IOException: Cannot run program "python": CreateProcess error=2, 系统找不到指定的文件
+
+这是因为本地未安装python，然后去http://www.python.org下载安装了。安装很简单，环境变量都给你配好了。然后打开命令行，执行python试试看，退出是exit();
+
+接下来测试，还是不可以，网上找了半天，idea里面配置了下环境变量
+
+这样跑是跑起来了，但是返回值为NULL，如果我将InputStream改为errorStream，打印了下
+
+python - ImportError: No module named paramiko
+
+提示没安装paramiko模块。
+
+然后去https://pypi.org/project/paramiko/#files 下载了解压后，在当前文件中执行了python setup.py build && python setup.py install
+
+一顿安装后，我们打开python，输入import paramiko测试下，啥都不显示，没有错就是好消息
+
+接着跑程序，终于得到想要的了
+

@@ -1,0 +1,91 @@
+
+问题所在环境
+
+CentOS 7.0
+
+Python 3.8.0
+
+
+错误描述
+
+在给CentOS的Python安装pip模块的时候出现如下错误：
+
+
+错误原因
+
+Python3中有个内置模块叫ctypes，它是Python3的外部函数库模块，它提供兼容C语言的数据类型，并通过它调用Linux系统下的共享库(Shared library)，此模块需要使用CentOS7系统中外部函数库(Foreign function library)的开发链接库(头文件和链接库)。
+
+由于在CentOS7系统中没有安装外部函数库(libffi)的开发链接库软件包，所以在安装pip的时候就报了"ModuleNotFoundError: No module named '_ctypes'"的错误。
+
+
+解决方案
+
+其实很简单安装一下外部函数库(libffi)就可以了，操作步骤如下：
+
+使用yum install命令安装libffi-devel
+    yum install libffi-devel -y
+
+使用yum install命令安装libffi-devel
+
+yum install libffi-devel -y
+
+使用make&make install 命令重新编译并安装python
+   
+   make&make install
+   
+   # 如果出现下述错误，这是因为没有在python的源码目录进行编译出现的。解决方法见文章最后。
+   # make: *** No targets specified and no makefile found.  Stop.
+   # make: *** No rule to make target `install'.  Stop.
+
+使用make&make install 命令重新编译并安装python
+
+make&make install
+   
+   # 如果出现下述错误，这是因为没有在python的源码目录进行编译出现的。解决方法见文章最后。
+   # make: *** No targets specified and no makefile found.  Stop.
+   # make: *** No rule to make target `install'.  Stop.
+
+最后安装pip，可以看到成功安装
+
+最后安装pip，可以看到成功安装
+
+
+步骤2报错的解决方法
+
+在操作步骤2的时候如果出现下述错误请检查当前目录是否在python的源码目录
+
+在操作步骤2的时候如果出现下述错误请检查当前目录是否在python的源码目录
+
+如果不是Python的源码目录，并且已经找不到了请按照下述步骤进行操作
+# 使用wget命令获取python的源码压缩包
+wget https://www.python.org/ftp/python/3.8.0/Python-3.8.0b1.tgz
+
+# 使用tar命令对其进行解压
+tar -zxvf Python-3.8.0b1.tgz
+
+# 切换到解压后的目录
+cd Python-3.8.0b1
+
+# 然后执行编译安装命令
+make&make install
+
+如果不是Python的源码目录，并且已经找不到了请按照下述步骤进行操作
+
+# 使用wget命令获取python的源码压缩包
+wget https://www.python.org/ftp/python/3.8.0/Python-3.8.0b1.tgz
+
+# 使用tar命令对其进行解压
+tar -zxvf Python-3.8.0b1.tgz
+
+# 切换到解压后的目录
+cd Python-3.8.0b1
+
+# 然后执行编译安装命令
+make&make install
+
+然后安装pip即可安装成功。
+
+然后安装pip即可安装成功。
+
+更多好文点击访问https://blog.52zhuanke.cn/
+

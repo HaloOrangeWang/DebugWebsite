@@ -1,0 +1,136 @@
+在测试Elasticsearch聚合的时候报了一个错误。具体如下：
+
+GET /megacorp/employee/_search
+{
+  "aggs": {
+    "all_interests": {
+      "terms": { "field": "interests" }
+    }
+  }
+}
+
+报错信息
+
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "illegal_argument_exception",
+        "reason": "Fielddata is disabled on text fields by default. Set fielddata=true on [interests] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead."
+      }
+    ],
+    "type": "search_phase_execution_exception",
+    "reason": "all shards failed",
+    "phase": "query",
+    "grouped": true,
+    "failed_shards": [
+      {
+        "shard": 0,
+        "index": "megacorp",
+        "node": "wlvuJ0f_SsCxys6ZW5j7eA",
+        "reason": {
+          "type": "illegal_argument_exception",
+          "reason": "Fielddata is disabled on text fields by default. Set fielddata=true on [interests] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead."
+        }
+      }
+    ]
+  },
+  "status": 400
+}
+
+此时需要使用.keyword即可满足，如下
+
+GET /megacorp/employee/_search
+{
+  "aggs": {
+    "all_interests": {
+      "terms": { "field": "interests.keyword" }
+    }
+  }
+}
+
+结果如下
+
+{
+  "took": 21,
+  "timed_out": false,
+  "_shards": {
+    "total": 5,
+    "successful": 5,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": 3,
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "megacorp",
+        "_type": "employee",
+        "_id": "2",
+        "_score": 1,
+        "_source": {
+          "first_name": "Jane",
+          "last_name": "Smith",
+          "age": 32,
+          "about": "I like to collect rock albums",
+          "interests": [
+            "music"
+          ]
+        }
+      },
+      {
+        "_index": "megacorp",
+        "_type": "employee",
+        "_id": "1",
+        "_score": 1,
+        "_source": {
+          "first_name": "John",
+          "last_name": "Smith",
+          "age": 25,
+          "about": "I love to go rock climbing",
+          "interests": [
+            "sports",
+            "music"
+          ]
+        }
+      },
+      {
+        "_index": "megacorp",
+        "_type": "employee",
+        "_id": "3",
+        "_score": 1,
+        "_source": {
+          "first_name": "Douglas",
+          "last_name": "Fir",
+          "age": 35,
+          "about": "I like to build cabinets",
+          "interests": [
+            "forestry"
+          ]
+        }
+      }
+    ]
+  },
+  "aggregations": {
+    "all_interests": {
+      "doc_count_error_upper_bound": 0,
+      "sum_other_doc_count": 0,
+      "buckets": [
+        {
+          "key": "music",
+          "doc_count": 2
+        },
+        {
+          "key": "forestry",
+          "doc_count": 1
+        },
+        {
+          "key": "sports",
+          "doc_count": 1
+        }
+      ]
+    }
+  }
+}
+

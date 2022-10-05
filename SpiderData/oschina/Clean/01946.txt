@@ -1,0 +1,68 @@
+
+解决python乱码问题
+
+字符串在python的内部采用unicode的编码方式，因此，在做编码转换时，通常需要以unicode作为中间编码，即先将其他编码的字符串解码（decode）成unicode，再从unicode编码（encode）成另一种编码。 编码是一种用二进制数据表示抽象字符的方式，utf8是一种编码方式。
+
+代码中的字符串编码默认和代码文件编码相同。
+
+decode的作用是将其他编码的字符串转换成unicode编码，如str1.decode('gb2312')，表示将gb2312编码的字符串str1转换成unicode编码。
+
+encode的作用是将unicode编码转换成其他编码的字符串，如str2.encode('gb2312')，表示将unicode编码的字符串str2转换成gb2312编码。
+
+因此，转码的时候一定要先搞明白，字符串str是什么编码，然后decode成unicode，然后再encode成其他编码
+
+python2中的unicode和python3中的str等价。可以查看s.__class__，如果为<class 'str'>则为unicode编码及文本数据，如果为<class 'bytes'>则为utf8编码及二进制数据。str(s, 'utf8')和s.decode('utf8')等价。
+
+如果字符串在代码中被定义为s=u'中文'，则s就是python内部编码unicode。
+
+unicode类型再解码会报错。
+
+判断一个字符串是否为unicode方法isinstance(s, unicode)，python2中的unicode和python3中的str等价，所以在python3中判断一个字符串是否为unicode方法为isinstance(s, str)。
+
+获取系统默认编码：
+
+import sys
+print(sys.getdefaultencoding())
+
+有些IDE输出乱码是因为控制台不能输出字符串的编码，这倒不是程序本身的问题。比如windows的控制台是gb2312编码方式，则utf8的输出格式不能正确输出。
+
+一种输出格式为gb2312避免乱码的方式（如果不确定是哪种编码格式，可以使用一下的通用形式去处理）：
+
+#coding=utf-8
+
+s='中文'
+ 
+ if(isinstance(s, str)):
+ #s为u'中文'
+    s.encode('gb2312')
+ else:
+ #s为'中文'
+    s.decode('utf8').encode('gb2312')
+
+采用标准库codecs模块
+
+codecs.open(filename, mode='r', encoding=None, errors='strict', buffering=1)
+import codecs
+f = codecs.open(filename, encoding='utf-8')
+
+使用上边这种方式读进来utf-8文件，会自动转换为unicode。但必须明确该文件类型为utf8类型。
+
+如果是文件中有汉字，不是一个字节一个字节地读而是整个汉字的所有字节读进来然后转换成unicode（猜想跟汉字的utf8编码有关）。
+
+下边的代码也是一种使用codecs的读写方式
+
+#coding=utf-8
+import codecs
+
+fin = open("test.txt", 'r')
+fout = open("utf8.txt", 'w')
+
+reader = codecs.getreader('gbk')(fin)
+writer = codecs.getwriter('gbk')(fout)
+
+data = reader.read(10)
+#10是最大字节数，默认值为-1表示尽可能大。可以避免一次处理大量数据
+while data:
+    writer.write(data)
+data = reader.read(10)
+

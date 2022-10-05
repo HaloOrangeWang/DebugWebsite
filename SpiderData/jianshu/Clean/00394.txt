@@ -1,0 +1,8 @@
+return const Center(
+    child: Icon(Icons.favorite, color: Colors.red, size: _controller?.value),
+);
+
+在size: _controller?.value报错Invalid constant value.
+
+把Center的关键字const删掉。原因是Flutter使用const关键字修饰widget永远不会重建，因为它将在编译时进行评估，并且只会被评估一次。因此，它的每个部分也必须保持不变。
+

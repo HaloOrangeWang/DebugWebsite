@@ -1,0 +1,15 @@
+
+ios15上运行正常，真机iOS10.3.3和模拟器iOS11.4运行报错：
+
+dyld: Library not loaded: @rpath/libswiftCore.dylib
+  Referenced from: /Users/leadiffer/Library/Developer/CoreSimulator/Devices/9972CD31-BF59-4469-BDFC-B6C74CBD223F/data/Containers/Bundle/Application/C8D7BEB3-43C6-4F6B-B269-D3BC48A40D33/OrturLaser.app/Frameworks/FBSDKCoreKit.framework/FBSDKCoreKit
+  Reason: image not found
+
+
+网上查阅了一些方法，只发现下面这个方法有效，记录一下：
+
+
+targets -> Build settings -> Always embed swift standard libraries -> Yes
+
+打开这个设置后，运行正常，应该是编译时会把swift标准库编译进去，设置为Yes后ipa包会变大。
+

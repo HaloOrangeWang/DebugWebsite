@@ -1,0 +1,24 @@
+说明一下，graphviz这个包，使用pip install graphviz安装后是不行的，这只安装了graphviz的pyhon调用接口，使用的话还需要下载graphviz的安装文件。
+
+1、下载graphviz安装包地址：
+
+https://graphviz.gitlab.io/_pages/Download/Download_windows.html
+
+2、下载msi文件安装，安装完成后，要手动设置一下path路径
+
+我的电脑——右键——高级系统设置——系统变量，选中“PATH”——编辑，如下图，增加graphviz的安装目录。
+
+3、安装完以后，还是报错：
+
+ExecutableNotFound: failed to execute ['dot', '-Tsvg'], make sure the Graphviz executables are on your systems' PATH
+
+4、解决办法：
+
+重启了浏览器、kennel，都不行，导入os打印PATH系统变量看看，确实没有这个内容，还是没有：
+
+import os
+
+os.environ['PATH']
+
+重启电脑，问题解决，运行成功。
+

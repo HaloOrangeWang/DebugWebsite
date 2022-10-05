@@ -1,0 +1,22 @@
+-  Mac修改python默认版本  -
+
+每次重开终端后执行which python，发现默认的都是mac系统自带的2.7版本，所以每次使用python3.6的时候都需要 export PATH="/anaconda/env/tensorflow/bin:"$PATH ，并且发现在jupyter notebook中写入 import tensorflow ，显示no module named 'tensorflow'。于是想要修改python默认版本。按照网上所找的教程修改.bashrc文件和.bash_profile，将想要使用的python路径放在最前端，但仍然未解决。
+
+而后输入 env |grep PATH 后发现，环境路径中置于最前的是python2.7的路径，于是使用root权限修改/etc/paths文件，将python3.6的环境变量输入，重启终端后发现默认的变为python3.6了，jupyter motebook中执行 import tensorflow 也不会报错了。
+
+PS：更改后的环境：
+
+-  conda无法使用  -
+
+安装anaconda过了一段时间后，使用conda报错 Load Error: \my\address\.condarc on line 6, column 0. Invalid YAML百度后发现conda的配置文件condarc中出现了问题，按照网上的方法删除了 - defaults 后无变化。
+
+于是删除了condarc文件，再重新加入清华大学的第三方库源，问题解决。
+
+-  jupyter使用  -
+
+安装anaconda后再使用jupyter notebook时，报错
+
+AttributeError: type object 'IOLoop' has no attribute 'initialized'
+
+原因是tornado版本过高，不支持jupyter notebook，输入 conda install tornado=4.5 后问题解决。
+

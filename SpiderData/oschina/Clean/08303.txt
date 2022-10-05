@@ -1,0 +1,18 @@
+git push 时报错：permission denied xxx
+
+目前很多解决办法是生成公钥和秘钥，这种方法安全可靠，比较适用于一台电脑对应一个git账户，但是多个账户在同一台电脑上提交使用git时就容易出现公钥和秘钥不生效问题，本人就是不生效，但是各种谷歌终于还是找到了一个解决办法，今天记下来与大家共享，如有错误或不足，请赐教：
+
+1、首先找到自己项目目录，在目录中有一个git文件夹（默认是隐藏的，需要ls -a 或 windows显示隐藏文件）
+
+2、打开git文件夹（命令或直接磁盘找到打开均可）
+
+3、找到config文件，记事本（不太建议此方式，windows记事本有可能出现编码改变问题）或sublime或notepad++或editplus打开config文件
+
+4、修改url为当前要被提交的账号名下git的仓库地址
+
+例如：当前地址为：http://github.com/xxxx/xxx.git 修改为  http://username@github.com/xxx/xxx.git (username是当前要提交到哪个账号下的用户名)
+
+至此就可以解决a电脑上用b账户提交git permission denied xxx问题
+
+但是如果项目比较多，以上方法比较不妥的地方是每个项目都需要改配置文件，还是早日研究好公钥和秘钥为妙！
+

@@ -1,0 +1,29 @@
+请求头增加 "Connection": "close"
+
+header = {"user-agent": random_agent, "referer": url, "Connection": "close"}
+
+[Update] 08-21
+
+from requests.adapters import HTTPAdapter
+
+def get_response(url: str):
+    random_agent = USER_AGENTS[randint(0, len(USER_AGENTS) - 1)]
+    ua = random_agent
+    req_header = { 'user-agent': ua, 'referer': url, 'Connection': 'close' }
+
+r = requests.Session()
+    # 设置重连次数
+    r.mount("http://", HTTPAdapter(max_retries=6))
+    r.mount("https://", HTTPAdapter(max_retries=6))
+    try:
+        response = r.get(url, headers=req_header, timeout=8).content
+        return response
+    except requests.exceptions.ProxyError as e:
+        print(e)
+        # TODO
+    except requests.exceptions.ConnectionError as e:
+        print(e)
+        # TODO
+
+Source code for requests.adapters
+

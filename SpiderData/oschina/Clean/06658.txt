@@ -1,0 +1,60 @@
+
+Git报错 bad signature
+
+将文件提交到仓库时，抛出以下错误：
+
+
+报错
+
+Roc@DESKTOP-AF552U2 MINGW64 /e/note/Git (master)
+$ git add git连接GitHub以及推送至仓库.md
+error: bad signature
+fatal: index file corrupt
+
+
+原因分析
+
+由于index file在 git 里面一般指的是 .git/index 这个文件。这个文件保存的是暂存区的信息（索引信息）。可以通过 git ls-files --stage 来查看暂存区的内容。这个文件很重要！但是现在报 index file corrupt，说明这个文件已经损坏了。还好，我们有办法重新来生成这个文件：git read-tree 或者直接 git reset.
+
+
+解决办法
+
+进入到工程目录下: cd /path/to/dir
+
+删除或重命名 .git/index 文件： rm -f .git/index 或 mv .git/index{,.bak}
+
+重建 .git/index : git read-tree 或者直接 git reset
+
+Roc@DESKTOP-AF552U2 MINGW64 /e/note (master)
+$ mv .git/index .git/index.bak
+
+Roc@DESKTOP-AF552U2 MINGW64 /e/note (master)
+$ git reset
+Unstaged changes after reset:
+M       Git/git的初次使用.md
+M       Git/git的选项参数.md
+
+Roc@DESKTOP-AF552U2 MINGW64 /e/note (master)
+$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+modified:   "Git/git\347\232\204\345\210\235\346\254\241\344\275\277\347\224\250.md"
+        modified:   "Git/git\347\232\204\351\200\211\351\241\271\345\217\202\346\225\260.md"
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+Git/git failed to push some refs to github.md
+        "Git/git \346\212\245\351\224\231 index file corrupt.md"
+        "Git/git\350\277\236\346\216\245GitHub\344\273\245\345\217\212\346\216\250\351\200\201\350\207\263\344\273\223\345\272\223.md"
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+Roc@DESKTOP-AF552U2 MINGW64 /e/note (master)
+

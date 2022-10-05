@@ -1,0 +1,47 @@
+安装tomcat报错；
+启动tomcat报错：
+[root@ape-test-a008 src]# /usr/local/tomcat/bin/startup.sh
+Cannot find /usr/local/tomcat/bin/catalina.sh
+The file is absent or does not have execute permission
+This file is needed to run this program
+解决：给tomcat目录下bin目录的*.sh可执行权限；
+[root@ape-test-a008 src]# cd  /usr/local/tomcat/bin/
+[root@ape-test-a008 bin]# chmod +x *.sh
+启动时再次报错；
+[root@ape-test-a008 bin]# /usr/local/tomcat/bin/startup.sh
+Using CATALINA_BASE:   /usr/local/tomcat
+Using CATALINA_HOME:   /usr/local/tomcat
+Using CATALINA_TMPDIR: /usr/local/tomcat/temp
+Using JRE_HOME:        /usr/local/jdk1.8
+Using CLASSPATH:       /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar
+touch: cannot touch ‘/usr/local/tomcat/logs/catalina.out’: No such file or directory
+/usr/local/tomcat/bin/catalina.sh: line 464: /usr/local/tomcat/logs/catalina.out: No such file or directory
+这是因为tomcat目录/logs/目录下没有catalina.out文件：
+[root@ape-test-a008 bin]# mkdir /usr/local/tomcat/logs/
+[root@ape-test-a008 bin]# /usr/local/tomcat/bin/startup.sh
+Using CATALINA_BASE:   /usr/local/tomcat
+Using CATALINA_HOME:   /usr/local/tomcat
+Using CATALINA_TMPDIR: /usr/local/tomcat/temp
+Using JRE_HOME:        /usr/local/jdk1.8
+Using CLASSPATH:       /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar
+Tomcat started.
+启动发现还是没tomcat服务,无法监听这个端口；
+后来发现是包下载错了，错把源码包当成二进制包使用了；
+
+如下：
+
+再次启动则正常了；
+
+[root@ape-test-a008 src]# /usr/local/tomcat/bin/startup.sh 
+Using CATALINA_BASE:   /usr/local/tomcat
+Using CATALINA_HOME:   /usr/local/tomcat
+Using CATALINA_TMPDIR: /usr/local/tomcat/temp
+Using JRE_HOME:        /usr/local/jdk1.8
+Using CLASSPATH:       /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar
+Tomcat started.
+[root@ape-test-a008 src]# ls
+apache-tomcat-8.5.34-src.tar.gz  apache-tomcat-8.5.34.tar.gz  jdk1.8.0_181  jdk-8u181-linux-x64.tar.gz
+[root@ape-test-a008 src]# ps aux |grep tomcat
+root     11348  1.4  6.9 2271424 70580 pts/0   Sl   18:16   0:02 /usr/local/jdk1.8/bin/java -Djava.util.logging.config.file=/usr/local/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 -Dignore.endorsed.dirs= -classpath /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tomcat -Dcatalina.home=/usr/local/tomcat -Djava.io.tmpdir=/usr/local/tomcat/temp org.apache.catalina.startup.Bootstrap start
+root     11367  0.0  0.0 112660   968 pts/0    R+   18:18   0:00 grep --color=auto tomcat
+

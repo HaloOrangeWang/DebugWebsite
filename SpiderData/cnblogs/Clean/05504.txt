@@ -1,0 +1,50 @@
+前言：记录启动IE浏览器的报错及解决方法。
+
+错误1：
+
+selenium.common.exceptions.WebDriverException: Message: 'IEDriverServer.exe' executable needs to be in PATH. Please download from http://selenium-release.storage.googleapis.com/index.html and read up at https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver
+
+Exception ignored in: <bound method Service.__del__ of <selenium.webdriver.ie.service.Service object at 0x000001541A09C1D0>>
+
+解决方法：
+
+根据以上报错提示，点击蓝色链接，下载IEDriverServer.exe  ，这里需要注意的是，所下载的IEDriverServer要与selenium版本保持一致！！！
+
+（1）查看selenium版本
+
+打开cmd，输入命令：pip show selenium,可以查看到版本号为2.53.6
+
+（2）下载IEDriverServer.exe
+
+点击报错链接或直接在浏览器输入：http://selenium-release.storage.googleapis.com/index.html，根据selenium对应版本进行下载。
+
+根据需要下载32位或64位
+
+将下载完成后的压缩包解压，并将其放置python文件夹下即可。
+
+错误2：
+
+WebDriverException: Message: u'Unexpected error launching Internet Explorer. Protected Mode settings are not the same for all zones. Enable Protected Mode must be set to the same value (enabled or disabled) for all zones.'
+
+解决方法：
+
+在IE浏览器的  设置>internet选项>安全 下 ，将四个区域中启用保护模式的勾选状态取消，应用并确定。
+
+错误3：
+
+selenium.common.exceptions.WebDriverException: Message: Unexpected error launching Internet Explorer. Browser zoom level was set to 150%. It should be set to 100%
+
+解决方法：
+
+修改浏览器缩放比例为100%即可。
+
+问题4：
+
+在ie上执行程序，点击的是“确定”按钮，触发的却是“取消”按钮的效果。（ps:其他浏览器都正常执行，就IE不对）name定位、css定位、xpath文本定位能试的都试了，可还是如此。还没解决，要是哪位大佬看到，请在评论区指点迷津~非常感谢！下面附上代码和效果：
+
+1、定位截图：
+
+2、代码截图：
+
+3、运行结果：（点击确定后则新建成功，弹框关闭；点击取消才是如下结果）
+

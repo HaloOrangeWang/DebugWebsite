@@ -1,0 +1,22 @@
+出现原因：
+
+因为直接在mysql中删除了表或者在执行过一次迁移后，在modles中修改了表名及对应的方法和引用
+
+产生后果：
+
+1.迁移的过程中可能出现表不存在的报错情况
+			2.迁移过程没有报错，在admin管理页面点击相应的表，报错django.db.utils.ProgrammingError: 1146...
+ 
+解决办法 ：
+
+1.删除migrations文件夹中除了__init__.py 文件外所有文件(pycharm环境下) 或   
+				找到报错对应的app中的本地文件夹，删除其中migrations文件夹中除了__init__.py 和__pycache__文件夹以外所有文件(资源管理器环境下)
+
+2.在mysql中，找到django_migrations表，删除报错app对应的行数据
+				如：报错app为vend则删除34行数据
+
+3.重新迁移
+
+python manage.py makemigrations
+python manage.py migrate
+

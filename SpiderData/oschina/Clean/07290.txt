@@ -1,0 +1,12 @@
+背景
+
+java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load [com.alibaba.rocketmq.remoting.netty.NettyRemotingAbstract]. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+
+升级了架构组提供的新的jar包后启动报错，怀疑是jar冲突。
+
+根据 上面的报错信息怀疑是rocketMq的jar包冲突，但是在idea中用插件排查，发现mq没有冲突。
+
+这时候犯了难，最终想的需要看更详细的日志，所以去tomcat中的localhost日志中，看到了如下内容：
+
+发现是一个Kafka的启动类报错了，但是我在代码中根本没用到Kafka，所以怀疑是Kafka的jar包冲突了，排掉Kafka的jar包之后，果然启动成功，没有报错了
+

@@ -1,0 +1,52 @@
+在运行人人爬虫的爬取用户档案StartUserCrawl类时，突然报出了java.lang.NullPointerException错误
+
+具体的报错行在 UserCrawler.getUserProfile(String, String)的if(temp[schoolNameIndex+1].matches("\\d+?级")){
+
+if(temp[j].matches(schoolName)){
+	System.out.println("√在此用户教育经历内找到当前查找学校-"+schoolName);
+	schoolNameIndex = j;
+        if(temp[schoolNameIndex+1].matches("\\d+?级")){
+             int convertYear = Integer.parseInt(temp[schoolNameIndex+1].substring(0,4));
+        ....
+
+temp[]是String[30]的数组，已经实例化。
+
+于是print整个temp数组发现，只有7个元素，也就是说后面的30-7=23个元素都为null，没有被赋值过：
+
+0 哈尔滨工业大学
+ 1 2008级
+ 2 市政学院
+ 3 哈师大
+ 4 2004级
+ 5 生命与环境科学学院
+ 6 哈尔滨工业大学
+
+而在报错行，当时的 j，也就是后面赋值的 schoolNameIndex，已经是6了，也就是指向最后一个已赋值元素 6 哈尔滨工业大学
+
+所以此时的temp[schoolNameIndex+1]便指向的是未被赋值过的null了
+
+将代码改为下面的，完美解决问题，不再报错：
+
+if(temp[j].matches(schoolName)){
+	System.out.println("√在此用户教育经历内找到当前查找学校-"+schoolName);
+	schoolNameIndex = j;
+	//解决java.lang.NullPointerException问题，判断此数组元素是否为空
+	if((schoolNameIndex+1<temp.length)&&(temp[schoolNameIndex+1]!=null)){
+		//判断数组内其下一个条目存储的是否为入学年
+		if(temp[schoolNameIndex+1].matches("\\d+?级")){
+			
+			int convertYear = Integer.parseInt(temp[schoolNameIndex+1].substring(0,4));
+
+由此，经过查阅资料，造成空指针异常的原因有：
+
+·当一个对象的值为空时，你没有判断为空的情况。
+ 你可以试着把下面的代码前加一行代码：
+ if(rb!=null && rb!="")
+ 改成：
+ if(rb==null);
+ if(rb!==null&&rb!="")
+ ……
+
+因为你定义的时候 定义的是null;
+ 所以查的时候如果也是null 那么内存没有为你定义这个List分配内存空间 即有效的内存地址 所以会这样
+

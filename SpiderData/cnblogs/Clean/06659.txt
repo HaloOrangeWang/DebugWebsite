@@ -1,0 +1,51 @@
+1 pyinstaller打包tensorflow出错，如：ModuleNotFoundError: No module named 'tensorflow_core.python解决方法
+
+该类型错误还有ImportError: cannot import name 'pywrap_tensorflow' 等。运行报错是pyinstaller无法导入tensorflow_core。问题解决方式为：在所运行的python文件（mypython.py中使用from tensorflow import *）路径下创建一个名为hooks的文件夹,文件夹没创建python程序文件hook-tensorflow.py。
+
+--mypython.py
+
+--hooks
+
+--hook-tensorflow.py
+
+hook-tensorflow.py中的内容如下：
+
+from PyInstaller.utils.hooks import collect_all
+
+def hook(hook_api):
+
+packages = [
+
+'tensorflow',
+
+'tensorflow_core',
+
+'astor'
+
+]
+
+for package in packages:
+
+datas, binaries, hiddenimports = collect_all(package)
+
+hook_api.add_datas(datas)
+
+hook_api.add_binaries(binaries)
+
+hook_api.add_imports(*hiddenimports)
+
+运行pyinstaller时添加参数--additional-hooks-dir=hooks。最终运行的命令为pyinstaller --additional-hooks-dir=hooks mypython.py
+
+参考：
+
+https://stackoverflow.com/questions/60384288/pyinstaller-modulenotfounderror
+
+https://github.com/pyinstaller/pyinstaller/issues/4400#issuecomment-550905592
+
+2 py3.6使用pyinstaller打包执行时报错FileNotFoundError:No such file or directory
+
+解决办法有两个：
+最简单的就是将跟.xx（找不到的文件）相关的整个文件放到dist目录下（生成的exe在dist目录下，并且要使用exe时，要挪动一整个dist目录），执行就OK了。
+
+参考 https://blog.csdn.net/qq_28304687/article/details/88639156
+

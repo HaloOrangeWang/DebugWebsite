@@ -1,0 +1,67 @@
+最近学习分类数据，想试试tensorflow，于是…
+ 环境：win10（mac电脑装的win10），python3.7，pycharm
+ 直接pip install tensorflow之后，import tensorflow报错
+ （tensorflow好像是2.1）
+ Traceback (most recent call last):
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_core\python\pywrap_tensorflow.py”, line 58, in 
+ from tensorflow.python.pywrap_tensorflow_internal import *
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_core\python\pywrap_tensorflow_internal.py”, line 28, in 
+ _pywrap_tensorflow_internal = swig_import_helper()
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_core\python\pywrap_tensorflow_internal.py”, line 24, in swig_import_helper
+ _mod = imp.load_module(’_pywrap_tensorflow_internal’, fp, pathname, description)
+ File “C:\work\python\Python37\lib\imp.py”, line 243, in load_module
+ return load_dynamic(name, filename, file)
+ File “C:\work\python\Python37\lib\imp.py”, line 343, in load_dynamic
+ return _load(spec)
+ ImportError: DLL load failed: 找不到指定的模块。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+ File “”, line 1, in 
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_init_.py”, line 101, in 
+ from tensorflow_core import *
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_core_init_.py”, line 42, in 
+ from . api.v2 import audio
+ File "C:\work\python\Python37\lib\site-packages\tensorflow_core_api\v2\audio_init.py", line 10, in 
+ from tensorflow.python.ops.gen_audio_ops import decode_wav
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_core\python\ops\gen_audio_ops.py”, line 9, in 
+ from tensorflow.python import pywrap_tensorflow as pywrap_tensorflow
+ File "C:\work\python\Python37\lib\site-packages\tensorflow_init.py", line 50, in getattr
+ module = self.load()
+ File "C:\work\python\Python37\lib\site-packages\tensorflow_init.py", line 44, in _load
+ module = importlib.import_module(self.name)
+ File "C:\work\python\Python37\lib\importlib_init.py", line 127, in import_module
+ return _bootstrap.gcd_import(name[level:], package, level)
+ File "C:\work\python\Python37\lib\site-packages\tensorflow_core\python_init.py", line 49, in 
+ from tensorflow.python import pywrap_tensorflow
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_core\python\pywrap_tensorflow.py”, line 74, in 
+ raise ImportError(msg)
+ ImportError: Traceback (most recent call last):
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_core\python\pywrap_tensorflow.py”, line 58, in 
+ from tensorflow.python.pywrap_tensorflow_internal import *
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_core\python\pywrap_tensorflow_internal.py”, line 28, in 
+ _pywrap_tensorflow_internal = swig_import_helper()
+ File “C:\work\python\Python37\lib\site-packages\tensorflow_core\python\pywrap_tensorflow_internal.py”, line 24, in swig_import_helper
+ _mod = imp.load_module(’_pywrap_tensorflow_internal’, fp, pathname, description)
+ File “C:\work\python\Python37\lib\imp.py”, line 243, in load_module
+ return load_dynamic(name, filename, file)
+ File “C:\work\python\Python37\lib\imp.py”, line 343, in load_dynamic
+ return _load(spec)
+ ImportError: DLL load failed: 找不到指定的模块。
+
+搜了各种帖子，有的说用pip3 install tensorflow的，试了一下还是不行
+ 有的说要装 Microsoft Visual C++ 2015 Redistributable ，我看我电脑装了2017的，专门卸了2017装2015，还是报错，而且是报找不到MSVCP140_1.dll
+ 于是下载装了Microsoft Visual C++ 2015-2019 Redistributable，出其不意的tensorflow竟然可以用了
+ 虽然还是报warnning
+
+2020-01-13 15:38:10.522972: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library ‘cudart64_101.dll’; dlerror: cudart64_101.dll not found
+ 2020-01-13 15:38:10.523505: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+ 2020-01-13 15:38:15.774498: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library ‘nvcuda.dll’; dlerror: nvcuda.dll not found
+ 2020-01-13 15:38:15.774964: E tensorflow/stream_executor/cuda/cuda_driver.cc:351] failed call to cuInit: UNKNOWN ERROR (303)
+ 2020-01-13 15:38:15.784101: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:169] retrieving CUDA diagnostic information for host: BraidTimMac
+ 2020-01-13 15:38:15.784709: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:176] hostname: BraidTimMac
+ 2020-01-13 15:38:15.785612: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2
+ 看了一下好像是因为我不是n卡用不了cuda，但是cpu应该是能用，就没管了
+ 希望能帮助同样遇到问题的朋友！
+

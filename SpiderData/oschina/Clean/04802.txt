@@ -1,0 +1,22 @@
+当我在 使用python 的
+
+os.system(r'"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"')
+
+来打开应用的时候，第一次 执行的时候，没有问题，多次或者再次执行可能就会出现下面的情况了报错了：
+
+ERROR:in_progress_cache_impl.cc(189)] Cache is not initialized, cannot Retri
+
+Could not read download entries from file because there was a read failure
+
+或者是  执行了打开 了 应用了，  接下来的  代码，没有起效果。
+
+我刚开始以为 是 其他代码的 不兼容的问题， 原来不是。。。
+
+改为 ：
+
+win32api.ShellExecute(0, 'open', 'D:/Program Files (x86)/open/launcher.exe', '','',1)
+
+即可。
+
+os.system 感觉适合第一次 打开应用 这样的场景。
+

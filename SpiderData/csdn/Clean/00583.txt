@@ -1,0 +1,44 @@
+以下打包时出现相似的错误
+
+未指定 Android 目标平台版本，自动查找一个可用版本...
+
+执行命令出错，返回值：2。
+
+出现这些问题有很多种原因，主要看报错的那些提示。
+
+例如我之前在MFC里面添加过Sleep()函数，在cocos里面我也添加过这个函数，但是在打包成apk时候，报错了，提示的是Sleep()处报错，说明打包apk时候不能使用这个函数。
+
+除了以上可能出现的原因，目前我发现还有以下不同情况时，出现的原因。（当然还有很多我还没有发现的问题）
+
+错误问题提示：报错No resource found that matches the given name (at 'title' with value '@string/xxx'.
+
+错误解决：找到项目\proj.android\res\values，找到string.xml.打开这个文件，修改这个
+
+<string name="其他的名称">MyFunGame</string>为
+
+<string name="xxx">MyFunGame</string>（xxx是你报错时提示的名称）。
+
+或者以下两种通常出现的原因：
+
+第一错误原因：要么sdk版本太低，要么ndk版本低。。。
+
+第二错误原因：cocos项目里面的proj.android\jni\Android.mk.（错误主要是因为新建工程，添加源代码文件进去之后，Android.mk.文件里面没有记录被添加进去的源代码文件名称信息）
+
+第一种错误原因的解决方法：
+
+重新安装或者配置相应的各个ndk,jdk,sdk配置版本。
+
+cocos Studio上：编辑->偏好设置->平台->一键配置（“SDK,NDK和JDK可到商店获取”处，这个按钮）
+
+从点下“一键配置”按钮，可以查看相应配置版本需求。
+
+可以一键傻瓜式的“一键配置”，软件自动帮我们安装配置，方便许多。
+
+第二种错误原因的解决方法：
+
+打开项目的proj.android\jni\Android.mk.进行添加相应的源代码文件名称.cpp：
+
+添加如下内容：
+
+保存后，再编译就不会出错了。
+

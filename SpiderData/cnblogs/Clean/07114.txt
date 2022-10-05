@@ -1,0 +1,34 @@
+在安装Jupyter-Lab的时候遇到的一些问题，总结一下解决思路
+
+
+背景：
+
+由于公司电脑有统一的权限管理设置，不能通过可执行文件的方式下载安装包进行安装Python，但是我有时候需要利用Python写一些简单的脚本来帮助我快速的处理手头的事情，于是我下载了官方编译好的Python包
+
+麻烦的事情是这个包只包含Python解释器，我需要自己手动下载安装各种库
+
+
+记一次有价值的第三方库安装过程：
+
+Jupyter-Lab
+
+安装Jupyter-Lab的过程不再赘述，可以使用 python -m pip install jupyterlab 进行，期间如果出现安装某个依赖包报错的情况，可以到这里搜索下载对应的版本之后使用 python -m pip install xxx.whl 安装即可
+
+Jupyter-Lab这个库，我面临的不是安装上的问题，这个网络上有很多的解决办法，可以具体问题具体分析
+
+我面临的问题主要是安装成功后无法正常使用，在可以打开http://localhost:8888/lab的界面后我原以为安装成功了
+
+但是在新建页面Select Kernel选择Python3后将会报错No Module Named win32api
+
+通过google查询解决方案，建议是安装 pywin32 或是 pypiwin32 库，然而安装后仍然不能使用
+
+此时可以使用 python pywin32_postinstall.py -install 进行安装，提示安装成功后会发现 .../python/Lib/site-package/ 路径下多出了win32、win32com、win32comext这几个文件夹
+
+一般情况下这个时候就已经成功了，可以在命令行使用 python -c "import win32api" 进行测试，如果没有任何报错则证明可以使用了（然而我遇到的问题远不止这样。。。）
+
+我发现问题的根源在于Python的模块加载路径，它没有加载win32api和一些其他必要的模块所在路径。。。
+
+其实Python的安装路径下有一个文件可以进行配置python38._pyh（如果没有这个文件就自己创建一个，命名随意，注意后缀是 ._pth 就可以），把想要设置为Python解释器默认加载的模块所在路径添加到这个文件中保存修改试一下。
+
+完活！
+

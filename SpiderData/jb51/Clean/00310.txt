@@ -1,0 +1,70 @@
+在使用python pip的时候，经常会发生pip版本过低导致失败的情况，这时候，系统会提示让你使用如下命令对pip进行升级更新：
+
+python -m pip install --upgrade pip
+
+但这种更新方式，经常会出现错误，如下所示
+
+多尝试几次，依旧还是显示错误，更新失败，那么该如何解决这个问题。
+
+解决方案-使用以下命令：
+
+python -m pip install -U --force-reinstall pip
+
+即可完美解决这种出错，更新示例如下
+
+希望能帮到碰上同样问题的朋友。
+
+补充拓展：解决pip安装的超时问题
+
+关于解决pip install xx过程中的遇到的一万个吐血超时问题
+
+解决方案一：
+
+找到pip文件夹新建pip.ini文件添加如下内容
+
+[global]
+timeout = 60000
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+[install]
+use-mirrors = true
+mirrors = https://pypi.tuna.tsinghua.edu.cn
+
+解决方案二：
+
+设置超时时间
+
+pip3 --default-timeout=100 install 包名
+
+解决方案三：
+
+不想设置配置文件的话可以直接连接站点下载
+
+pip3 install -i https://pypi.doubanio.com/simple/ 安装包
+pip install -i https://pypi.doubanio.com/simple/ flask
+
+站点整理：
+
+清华大学 TUNA 镜像源
+    网易开源镜像站
+    中国科学技术大学
+    搜狐开源镜像站
+    北京交通大学镜像站
+    浙江大学开源镜像站（特色配置生成器）
+    厦门大学信息与网络中心开源软件镜像服务
+    华中科技大学开源镜像站
+    兰州大学开源社区镜像站
+    上海交通大学
+    西南大学开源协会镜像站
+    东北大学开源镜像
+    大连东软信息学院开源镜像站
+    重庆大学
+    北京理工大学开源软件镜像服务
+    LUPA 镜像
+    中山大学
+
+解决方案四：
+
+直接在下载外部依赖包下载地址Unofficial Windows Binaries for Python Extension Packages
+
+以上这篇解决Python pip 自动更新升级失败的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

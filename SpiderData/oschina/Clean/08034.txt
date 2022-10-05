@@ -1,0 +1,45 @@
+背景：
+
+在执行 supervisorctl 时，报了这么一个错（如图），查找对应文档后解决，记录下来用来以后遇到使用
+
+解决：
+
+1.
+
+将 supervisord.conf 文件下对应的 /tmp  目录改成自己目录下，防止被删除
+
+需要修改的目录：
+
+1 /tmp/supervisor.sock   ---  /xxx/supervisor.sock
+
+2 /tmp/supervisord.log   ---  /xxx/supervisord.log
+
+3 /tmp/supervisord.pid  ---  /xxx/supervisord.pid
+
+2.
+
+修改后，在 /xxx 目录下创建  supervisor.sock ，vi 、touch 都可以
+
+1 vi supervisor.sock
+2 或
+3 touch supervisor.sock
+
+3.
+
+给 supervisor.sock 赋权
+
+1 chmod 777 supervisor.sock
+
+4.
+
+重启supervisord
+
+1 killall supervisord
+2 supervisord -c supervisord.conf
+
+重启后无报错，新改的目录文件如图：
+
+-------- 后续
+
+修改之后，下次再执行还是报了这个错，于是将 1 中 supervisord.conf  涉及到 tmp/ 目录全部改成 自己的目录下
+

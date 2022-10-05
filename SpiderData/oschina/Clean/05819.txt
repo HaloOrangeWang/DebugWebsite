@@ -1,0 +1,20 @@
+1、如往常一样对docker-compose.yml配置修改后，docker-compose up -d 后台启动，启动后报错，由原来的done变成了error。
+
+第一反应就是down掉这些容器：
+
+docker-compose down  #仍然报错，并提示xxxx   /var/lib/docker/overlay2/d9bf3cecd709xxx :device or resource busy
+
+网上说这表示目录被挂载中，尝试umount这些目录
+
+umount  /var/lib/docker/overlay2/d9bf3cecd709xxx  #无法umount，提示no mounts，是说根本没有挂载，也许有些前辈遇到过这类问题，可以此操作解决问题。
+
+又到处查看前辈高人发的文，都不尽相同，再次尝试如下操作：
+
+根据容器ID 找到/var/lib/docker/containers/xxx(container_id长id)
+
+再将其删除：rm -rf  /var/lib/docker/containers/xxx(container_id长id)
+
+重启docker：systemctl restart docker
+
+查看容器：docker-compose ps   #发现已经成功删除报错的容器。
+

@@ -1,0 +1,21 @@
+Python_报错：SyntaxError: unexpected character after line continuation character
+
+原因：写入的文件内容不正确，应处理为字符串
+
+>>> import os
+>>> os.makedirs(time_year+"\\"+time_month+"\\"+time_day)#其中的time_year、time_month、time_day都是有赋值的变量
+>>> os.chdir(time_year\time_month\time_day)#问题出在这里，写法不对
+  File "<stdin>", line 1
+    os.chdir(time_year\time_month\time_day)
+                                          ^
+SyntaxError: unexpected character after line continuation character
+
+写成这样就ok了：os.chdir(time_year+"\\"+time_month+"\\"+time_day)
+
+参照第一行的创建目录的写法
+
+>>> os.chdir(time_year+"\\"+time_month+"\\"+time_day)#正确的
+>>> with open(time_hours+".txt","w+") as fp:#此种方法能正常进入下一步操作
+...     fp.read()
+...
+

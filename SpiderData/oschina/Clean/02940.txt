@@ -1,0 +1,48 @@
+[root@localhost Python-3.8.0]# pip install bs4
+Collecting bs4
+  Using cached https://files.pythonhosted.org/packages/10/ed/7e8b97591f6f456174139ec089c769f89a94a1a4025fe967691de971f314/bs4-0.0.1.tar.gz
+    ERROR: Command errored out with exit status 1:
+     command: /usr/local/python3.8/bin/python3.8 -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-alhbm0sp/bs4/setup.py'"'"'; __file__='"'"'/tmp/pip-install-alhbm0sp/bs4/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base /tmp/pip-install-alhbm0sp/bs4/pip-egg-info
+         cwd: /tmp/pip-install-alhbm0sp/bs4/
+    Complete output (11 lines):
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/usr/local/python3.8/lib/python3.8/site-packages/setuptools/__init__.py", line 20, in <module>
+        from setuptools.dist import Distribution, Feature
+      File "/usr/local/python3.8/lib/python3.8/site-packages/setuptools/dist.py", line 36, in <module>
+        from setuptools import windows_support
+      File "/usr/local/python3.8/lib/python3.8/site-packages/setuptools/windows_support.py", line 2, in <module>
+        import ctypes
+      File "/usr/local/python3.8/lib/python3.8/ctypes/__init__.py", line 7, in <module>
+        from _ctypes import Union, Structure, Array
+    ModuleNotFoundError: No module named '_ctypes'
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+
+解决方法：
+
+　　需要安装 libffi-devel
+
+yum install libffi-devel -y
+
+　　
+
+　　重新编译安装
+
+make install
+
+　　
+
+验证：
+
+[root@localhost Python-3.8.0]# python3
+Python 3.8.0 (default, Dec  4 2019, 06:08:18)
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-39)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sys, setuptools, tokenize
+>>>
+
+　　
+
+　　
+

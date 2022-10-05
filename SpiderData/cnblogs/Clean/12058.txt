@@ -1,0 +1,38 @@
+最近在Ubuntu中使用pandas库的时候，出现了一个问题，Google了好久最终是解决了。记录一下解决的步骤
+
+首先安装Ubuntu依赖
+
+rpm -ivh zlib-1.2.7-19.el7_9.x86_64.rpm –replacefiles
+
+rpm -ivh zlib-devel-1.2.7-19.el7_9.x86_64.rpm –replacefiles
+
+　　
+
+查看import 报错
+
+ModuleNotFoundError: No module named &apos;_bz2&apos;
+
+该错误是缺失_bz2.cpython-38-x86_64-linux-gnu.so这个os文件，处理步骤如下：
+
+报错：
+
+UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
+
+安装
+
+backports.lzma-0.0.14安装
+
+python3  setup.py install
+
+xz-5.2.5安装
+
+$ sudo ./configure
+
+$ sudo make
+
+$ sudo make install
+
+在执行
+
+pip3 install --no-index --find-links=../pip -r requirements.txt
+

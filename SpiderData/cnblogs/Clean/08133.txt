@@ -1,0 +1,36 @@
+一般迁移失败无外乎那几个问题，1、mysql的版本问题；2、修改model之后执行迁移后不生效；3、正常操作，但迁移莫名的报一堆错误无法进行，这种操作情况比较多，无法列出来；4、删除migrations目录后迁移出现问题；
+
+基本我觉得能够大部分都能用如下的方式可以去解决，我所遇到的各种无语的问题都是这样操作处理的。
+
+1、更新表结构发现执行migrate老是failed的时候，使用如下方式处理基本就行
+
+如果下面这种情况下执行失败，需要在models文件还原一下修改的表结构，然后重新执行一下，在去更改表结构，用最下面的那两条语句执行就行了
+
+python manage.py makemigrations Ops --settings=DevOps.settings-test
+
+python manage.py migrate Ops --settings=DevOps.settings-test --fake
+
+--fake是需要解决那种存在表的报错
+
+一般情况下下面的就行了
+
+python manage.py makemigrations Ops --settings=DevOps.settings-test
+
+python manage.py migrate Ops --settings=DevOps.settings-test
+
+2、migrate执行成功，但缺少很多表没生成
+
+要查看下是否有应用下缺少migrations目录，使用如下的方式进行
+
+python manage.py makemigrations --empty app应用名
+
+python manage.py makemigrations
+
+python manage.py migrate
+
+3、数据库版本或者数据库参数变量等引起的问题
+
+比如说datetime(6)这个字段不同mysql版本对支持携带6这个参数不一样，还有索引列的默认最大长度不同等等，需要相应修改mysql或者是model的参数值
+
+4、其他的一些问题，基本可以通过尝试删除migrations目录下的文件，然后再重新执行试试，migrations表上的一些就不要去操作了，很多文档说在上面删除对应app的init文件，没什么效果，而且还可能会出现一些问题。
+

@@ -1,0 +1,23 @@
+报错：MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util (D:\\py\\venv\\lib\\site-packages\\urllib3\\util\\__init__.py)', 'urllib3.util.ssl_ (D:\\py\\venv\\lib\\site-packages\\urllib3\\util\\ssl_.py)']. monkey.patch_all()
+
+源代码：
+
+修改成：就是gevent 提前
+
+import gevent
+
+from urllib import request
+import sys
+
+from gevent import monkey
+
+monkey.patch_all()
+import requests
+sys.setrecursionlimit(10000)
+
+from requests.packages.urllib3.util.ssl_ import create_urllib3_context
+
+create_urllib3_context()
+
+ok
+

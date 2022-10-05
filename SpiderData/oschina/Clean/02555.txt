@@ -1,0 +1,406 @@
+异常处理.
+
+part1:程序中难免出现错误,错误分成两种:1,语法错误;2,逻辑错误
+
+语法错误示例:
+
+if
+
+def test:
+    pass
+
+print(hah
+
+逻辑错误示例:
+
+#用户输入的不完整(比如输入为空)或者输入非法(输入不是数字)
+num=input(">>:")
+int(num)
+
+什么是异常:
+
+异常就是程序运行时发生错误的信号,
+
+在python中,不同的异常可以用不同的类型去标识(python中统一了类与类型,类型即类),不同的类对象标识不同的异常,一个异常标识一个错误.
+
+错误举例
+
+触发:IndexError
+lst=['aa','bb']
+print(lst[3])#输出:list index out of range
+
+KeyError
+dic={'name':'hh'}
+print(dic['age']) #输出:'age'
+
+ValueError
+s='hello'
+int(s) #输出:invalid literal for int() with base 10: 'hello'
+
+常用异常
+
+AttributeError:试图访问一个对象没有的属性,比如food.x,但是foo没有属性x
+
+IOError:输入/输出异常,基本上是无法打开文件
+
+ImportError:无法引入模块或包,基本上是路径问题或名称错误.
+
+IndentationError:语法错误(的子类),代码没有正确对齐.
+
+IndexError:下标索引超出序列边界,比如当list只有三个元素,却试图访问list[5]
+
+KeyError:试图访问字典里不存在的键
+
+KeyboardInterrput:Ctrl+C被按下
+
+NameError:使用一个还未被赋予对象的变量
+
+SyntaxError:语法错误
+
+TypeError:传入对象类型与要求的不符合
+
+UnboundLocalError:试图访问一个还未被设置的全局变量,基本上是由于另有一个同名的全局变量,导致你以为正在访问它.
+
+ValueError:传入一个调用者不期望的值,即使值的类型是正确的.
+
+更多异常:
+
+ArithmeticError
+AssertionError
+AttributeError
+BaseException
+BufferError
+BytesWarning
+DeprecationWarning
+EnvironmentError
+EOFError
+Exception
+FloatingPointError
+FutureWarning
+GeneratorExit
+ImportError
+ImportWarning
+IndentationError
+IndexError
+IOError
+KeyboardInterrupt
+KeyError
+LookupError
+MemoryError
+NameError
+NotImplementedError
+OSError
+OverflowError
+PendingDeprecationWarning
+ReferenceError
+RuntimeError
+RuntimeWarning
+StandardError
+StopIteration
+SyntaxError
+SyntaxWarning
+SystemError
+SystemExit
+TabError
+TypeError
+UnboundLocalError
+UnicodeDecodeError
+UnicodeEncodeError
+UnicodeError
+UnicodeTranslateError
+UnicodeWarning
+UserWarning
+ValueError
+Warning
+ZeroDivisionError
+
+异常处理:
+
+异常发生之后,异常之后的代码就不执行了,
+
+python解释器检测到错误,触发异常(也允许程序员自己触发异常),程序员编写特点的代码,专门用来捕捉这个异常(这段代码与逻辑无关,与异常处理有关)
+
+如果捕捉成功则进入另外一个处理分支,执行你为其定制的逻辑,使程序不会崩溃,这就是异常处理,
+
+为什么要进行异常处理:
+
+python解释器去执行程序,检测到一个错误时,触发异常,异常触发后且没被处理的情况下,程序就在当前异常处终止,后面的代码不会运行,谁会去用一个运行着突然就崩溃的软件,
+
+所以,必须提供一种异常处理机制来增强所编写的程序的健壮性与容错性.
+
+如何进行异常处理:
+
+异常是由程序的错误引起的,语法上的错误跟异常处理无关,必须在程序运行前就修正
+
+使用if判断式
+
+content=input(">>>")
+if content.isalpha():
+    print("输入的是字母")
+elif content.isdigit():
+    print("输入的是数字")
+else:
+    print("输入的是其他字符")
+
+总结:
+
+1,if判断式的异常处理只能针对某一段代码,对于不同的代码段的相同类型的错误,需要写重复的if来
+
+进行处理.
+
+2,在程序中频繁的写与本程序无关,与异常处理有关的if,会使得代码的可读性极差
+
+3,if是可以解决异常的,
+
+python的异常处理,try-except的使用:
+
+try:
+    '''被检测的代码'''
+except 异常检测:
+    try中一旦检测到异常,就执行这个位置的逻辑.
+
+读文件的例子
+
+try:
+    f=open('tb.txt',encoding='utf-8')
+    g=(line.strip() for line in f)
+    print(type(g))
+    print(next(g))
+    print(next(g))
+    print(next(g))
+    print(next(g))
+except StopIteration:
+    f.close()
+
+next(g)会触发迭代f,依次next(g)就可以读取文件的一行行内容,无论文件
+有多大,同一时刻内存中只有一行内容
+g是基于文件句柄f而存在的,因而只能在next(g)抛出异常StopIteration后才可以执行f.close()
+
+异常类只能用来处理指定的异常情况
+
+单支,遇到报错信息,防止程序终止,执行另一个语句.
+
+try:
+    num=int(input('>>>'))
+    name
+
+except EOFError:
+    print("出现了NameError错误")
+#当随笔输入一个整数时,后面输出:出现了NameError错误
+#出现报错,然后就跳到except处执行预计,前提是except后跟
+#的报错类型是对的,否则程序依然报错
+
+多分支
+
+try:
+    num=int(input('>>'))#ValueError
+    name                # NameError
+    dic = {}
+    dic['key']          # KeyError
+except ValueError:
+    print("出现了ValueError错误")
+except NameError:
+    print("出现了NameError错误")
+except KeyError:
+    print("出现了KeyError错误")
+print(11)
+print(22)
+print(33)
+#当输入1a,会报出现了value错误,下面的代码直接跳到print("出现了ValueError错误")
+# 然后接着执行3个print,当
+#3个except也可以换位置,出现错误之后去捕捉,
+
+万能的异常处理
+
+try:
+    print(11)
+    num=int(input('>>'))
+    print(22)
+    name
+    lst=[1,23]
+    lst[5]
+except Exception: #此处Exception可以不写,最好写上
+    print("出错了")
+# 代码只要有错误的,可以是程序不报错,最后导向到except
+
+try:
+    print(11)
+    num=int(input('>>'))
+    print(22)
+    name
+    lst=[1,23]
+    lst[5]
+except Exception as e: #可以将报错信息显示出来,
+    print(e)
+
+#  e 其实是Exception这个类实例化的对象,所有的错误继承exception.
+# print(e)打印这个对象,输出了一段字符串,实际上是触发了__str__方法
+
+# 异常处理的两种结局方式:
+# 1,只是显示错误信息,不终止程序就行,               用万能的
+# 2,针对不同的错误,提示不同的信息,进行不同的操作,  用多分支的
+
+实例分析:
+
+def login():
+    pass
+
+def register():
+    pass
+
+def dariy():
+    pass
+dic={
+    1:login,
+    2:register,
+    3:dariy
+}
+
+# while True:  #第一种判断形式
+#     choice=input("请输入:")
+#     if  choice.isdigit():
+#         if 1<=int(choice)<=4:
+#             dic[int(choice)]()
+#         else:
+#             print("请输入范围内的数")
+#     else:
+#         print("请输入数字")
+
+while True:  #第二种形式,比第一种代码要简约的多,
+    choice=input("请输入: ")
+    try:
+        dic[int(choice)]()
+    except ValueError:
+        print("请输入数字")
+    except KeyError:
+        print("请输入范围内数字")
+
+多分支+万能
+
+def login():
+    pass
+
+def register():
+    pass
+
+def dariy():
+    pass
+dic={
+    1:login,
+    2:register,
+    3:dariy
+}
+
+choice=input("请输入: ")
+    try:
+        dic[int(choice)]()
+    except ValueError:
+        print("请输入数字")
+    except KeyError:
+        print("请输入范围内数字")
+
+except Exception as e:
+        print(e)           #万能的是用来保底的,以防出现位置的错误
+# as e 要是出现在Value或者key错误之前,那后面的代码将不会执行,即不会再被导流到另外的except
+
+try except except...else  模式
+
+#固定搭配必须是
+# try:
+#     pass
+# except : #或者except Exception,至少有一个except
+#     pass
+# else:
+#     pass
+
+try:
+    num=int(input(">>"))
+except ValueError:
+    print("出错了")
+except Exception as e:
+    print(e)
+else:
+    print('输出这里,')
+#当except没有捕获到异常时,才会走else,
+
+try except else finally
+
+try finally
+
+这两种方法的用法
+
+#固定搭配,
+# try except else  finally
+# try finally
+try:
+    num=int(input(">>"))
+except ValueError:
+    print("出错了")
+except Exception as e:
+    print(e)
+else:
+    print('执行else这里,')
+finally:
+    print("执行finally这里")
+
+finally的具体用处:用在关闭文件句柄,关闭数据库的链接,关闭网络链接等等.
+
+# 用在文件操作中,假如try里面的代码有报错,\
+# finally执行之后,还是可以把文件句柄关掉
+try:
+    f=open('a.txt',encoding='utf-8')
+    print(f.read())
+    f.write()
+finally:
+    f.close()
+
+主动触发异常
+
+class A:
+    def pay(self):
+        raise TypeError("你的子类中应该有一个pay方法")
+
+class QQ(A):
+    def pay(self):
+        print("执行")
+class Wexin(A):
+    def paym(self):
+        print("执行")
+q1=QQ()
+w1=Wexin()
+w1.pay()
+# 输出:TypeError: 你的子类中应该有一个pay方法
+
+自定义异常
+
+# 自定义异常,
+# (大项目,针对python不具备的一些错误类型)
+#在代码中出现错误,但是python源码没有收录这个错误,
+# 这时就需要开发人员手动定义一个错误类,保证程序可以运行
+raised TypeError("类型错误")
+
+class '未知错误'(BaseException):
+    def __init__(self,msg):
+        self.msg=msg
+    def __str__(self):
+        return self.msg
+
+# # raise EvaException('EvaException:错误!!!!' )
+# # raise TypeError('EvaException:错误!!!!' )
+try:
+    raise '未知错误'('EvaException:错误!!!!' )
+except "未知错误" as e:  # e = EvaException('类型错误')
+    print(e)
+
+断言,主动抛出异常,
+
+断言 源码处常有,主动抛出异常
+assert 1==2  #如果条件不满足,强行终止.
+print(111)
+print(222)
+print(333)
+
+异常处理的正确使用:
+
+只有在有些异常无法与之的情况下,才应该加上try..except,其他的逻辑错误应该尽量修正.
+

@@ -1,0 +1,16 @@
+报错信息：ImportError: No module named urlgrabber.grabber
+
+修改文件：/usr/libexec/urlgrabber-ext-down
+
+将头部的python改成和/usr/bin/yum头部的python一样。
+
+出现这种问题的原因：python版本错乱。
+
+出现问题的操作系统版本：centos 7
+
+由于centos 7自身携带python2.7，所以本身就存在/usr/bin/python2.7和python2。但我们又单独编译安装python275时，
+
+重新设置了软链接：ln -s /usr/bin/python2.7 /usr/local/python275/bin/python2
+
+所以导致原本的yum不好用了，因此/usr/bin/yum里的python解释器也要改下。
+

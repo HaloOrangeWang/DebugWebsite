@@ -1,0 +1,34 @@
+{
+    "err_msg": {
+        "text": "/tmp/supervisor.sock no such file",
+        "lines": ["title"],
+        "weight": [1]
+    },
+    "scene": {
+        "text": "执行 supervisorctl",
+        "lines": [3],
+        "weight": [1]
+    },
+    "solve": [
+        {
+            "text": "将 supervisord.conf 文件下对应的 /tmp  目录改成自己目录下，防止被删除\n\n需要修改的目录：\n\n1 /tmp/supervisor.sock   ---  /xxx/supervisor.sock\n\n2 /tmp/supervisord.log   ---  /xxx/supervisord.log\n\n3 /tmp/supervisord.pid  ---  /xxx/supervisord.pid",
+            "lines": [9, 11, 13, 15, 17],
+            "weight": [1, 1, 1, 1, 1]
+        },
+        {
+            "text": "修改后，在 /xxx 目录下创建  supervisor.sock ，vi 、touch 都可以\n\n1 vi supervisor.sock\n2 或\n3 touch supervisor.sock",
+            "lines": [21, 23, 24, 25],
+            "weight": [1, 0.5, 0.5, 0.5]
+        },
+        {
+            "text": "给 supervisor.sock 赋权\n\n1 chmod 777 supervisor.sock",
+            "lines": [29, 31],
+            "weight": [1, 0.5]
+        },
+        {
+            "text": "重启supervisord\n\n1 killall supervisord\n2 supervisord -c supervisord.conf",
+            "lines": [35, 37, 38],
+            "weight": [1, 0.5, 0.5]
+        }
+    ]
+}

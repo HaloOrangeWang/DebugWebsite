@@ -1,0 +1,14 @@
+在脚本的开头加入下面的代码，可以将错误输出重定向至errorlog文本中
+
+__stderr__ = sys.stderr                     #将当前默认的错误输出结果保存为__stderr__
+# __stdout__ = sys.stdout 标准输出就用这行
+# sys.stdout = open('log.txt', 'a')
+sys.stderr = open('errorlog.txt', 'a')  #将后续的报错信息写入对应的文件中
+
+如果用try；except就不会输出错误，这时候可以在except后面使用traceback,可以输出详细的错误定位信息
+
+try:
+	....
+except:
+	traceback.prit_exc()
+

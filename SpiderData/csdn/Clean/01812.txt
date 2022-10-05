@@ -1,0 +1,30 @@
+1.UserWarning:  Data Validation extendion is not supported and will be removed
+
+可能原因：第三方包与当前python版本不匹配，有部分扩展功能无法使用
+
+2.non-default parameter follows default parameter
+
+这种错误原因是将没有默认值的参数在定义时放在了有默认值的参数的后面，应该将有默认值的参数放在没有默认值参数的后面
+
+3.'module' object is not callable
+
+引用模块没有调到，查看引用语句和调用语句
+
+4.json.decoder.JSONDecodeError:Expecting property name enclosed in double quotes:
+
+字面意思是属性名没有用双引号扩起来
+
+原因是从字符转换成字典的过程中，字符里用的是单引号，json.loads()里面的字符一定要是双引号才能将字符转换成字典
+
+要这种'{"name" : "john", "gender" : "male", "age": 28}'
+
+不能是这种"{'name' : 'john', 'gender' : 'male', 'age': 28}"
+
+5.openpyxl的一个警告： UserWarning: Workbook contains no default style, apply openpyxl's default
+
+warn("Workbook contains no default style, apply openpyxl's default") ：
+
+这个警告也是字面意思，打开的这个excel表没有默认样式，openpyxl要给它赋默认样式，我遇到这个警告的原因是xlsx文件是由Apache POI创建，并不是Microsoft EXCEL创建。文件属性里程序名称是Apache POI
+
+解决方法：用EXCEL打开文件，做些改动，然后保存，程序属性变成Microsoft EXCEL，同时应该也保存了默认的excel样式
+

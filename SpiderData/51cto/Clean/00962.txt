@@ -1,0 +1,28 @@
+
+现象
+
+执行Python脚本提示没有_bz2模块
+
+No module named _bz2
+
+
+原因分析
+
+这个库不是用python写的库，而是c语言写的系统动态库，这种库属于Python的底层库，得在编译Python阶段一起编译进去才能用
+
+
+解决方法
+
+
+使用uos或root用户执行安装bz2
+
+sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
+
+
+使用本地域用户执行重新编译
+
+cd $HOME/Tools/src/ && tar -zxf Python-3.8.8.tgz
+cd $HOME/Tools/src/Python-3.8.8
+./configure --prefix=$HOME/Tools/python --enable-optimizations
+make -j4 && make install
+

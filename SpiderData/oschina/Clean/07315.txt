@@ -1,0 +1,35 @@
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    // 求出标题按钮的索引
+    NSUInteger index = scrollView.contentOffset.x / scrollView.width;
+    // index == [0, 4]
+    // 点击对应的标题按钮
+    HKTitleButton *titleButton = self.titlesView.subviews[index];
+    //HKTitleButton *titleButton = [self.titlesView viewWithTag:index];
+    //此代码 索引为0时会报错(viewWithTag 递归查找，包括自己 先查找自己的tag，再查找子视图的tag，父视图默认tag为0，找到的是UIView而不是Button，所以setSelected方法找不到)
+    [self titleButtonClick:titleButton];
+}
+
+此代码 索引为0时会报错(viewWithTag 递归查找，包括自己 先查找自己的tag，再查找子视图的tag，父视图默认tag为0，找到的是UIView而不是Button，所以setSelected方法找不到)
+
+/*
+ -[UIView setSelected:]: unrecognized selector sent to instance 0x7fbcba35ab10
+ 
+ -[HKPerson length]: unrecognized selector sent to instance 0x7fbcba35ab10
+ 将HKPerson当做NSString来使用
+ 
+ - (void)test:(NSString *)string
+ {
+ string.length;
+ }
+ id str = [[HKPerson alloc] init];
+ [self test:str];
+ 
+ -[HKPerson count]: unrecognized selector sent to instance 0x7fbcba35ab10
+ 将HKPerson当做NSArray或者NSDictionary来使用
+ 
+ -[HKPerson setObject:forKeyedSubscript:]: unrecognized selector sent to instance 0x7fbcba35ab10
+ 名字中带有Subscript的方法，一般都是集合的方法，比如NSMutableDictionary\NSMutableArray的方法
+ 将HKPersonNSMutableDictionary来使用
+ */
+

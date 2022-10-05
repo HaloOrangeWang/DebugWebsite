@@ -1,0 +1,81 @@
+
+Django  跨域问题的解决
+
+
+跨域介绍
+
+同源:
+
+指的是协议, 域名, 端口
+如果完全一样, 称为同源
+
+指的是协议, 域名, 端口
+
+如果完全一样, 称为同源
+
+跨域:
+
+如果不一样, 称为跨域
+问题: 没有经过对方授权的时候, 不能去读取对方的资源
+
+如果不一样, 称为跨域
+
+问题: 没有经过对方授权的时候, 不能去读取对方的资源
+
+
+跨域设置
+
+目的: 可以解决, 前端项目和后端项目的跨域问题
+
+目的: 可以解决, 前端项目和后端项目的跨域问题
+
+官方文档：django-cors-headers
+
+官方文档：django-cors-headers
+
+操作流程:
+
+1, 安装
+pip install django-cors-headers
+
+操作流程:
+
+1, 安装
+pip install django-cors-headers
+
+
+1, 安装
+
+2, 添加应用
+INSTALLED_APPS = [
+    ...
+    'corsheaders',
+    ...
+]
+
+
+2, 添加应用
+
+3, 中间层设置
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware' ，
+    'django.middleware.common.CommonMiddleware'
+    ...
+]
+
+
+3, 中间层设置
+
+4, 添加白名单
+# CORS
+CORS_ORIGIN_WHITELIST = (
+    '127.0.0.1:8080',  # 报错的话，在前面加上http://
+    'localhost:8080',
+    'www.meiduo.site:8080',
+    'api.meiduo.site:8000'
+)
+CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
+
+4, 添加白名单
+
+

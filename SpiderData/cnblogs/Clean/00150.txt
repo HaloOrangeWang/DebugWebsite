@@ -1,0 +1,29 @@
+　　SqlServer2017开始支持Python，前段时间体验了下，按照微软的入门例子操作的：https://microsoft.github.io/sql-ml-tutorials/python/rentalprediction/。虽然简单，但因为新入门python，中间绕了下弯子，现在记录下，可以让有同样经历的人少走弯路。
+
+　　运行Python程序的时候，报错：
+
+ImportError: No module named 'revoscalepy'
+
+　　revoscalepy是安装SQLServer2017选择Python组件的时候安装到机器上的，默认路径是
+
+C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\PYTHON_SERVICES\Lib\site-packages\revoscalepy
+
+　　开发依赖SqlServer的Python程序最好使用SQLServer自带的python.exe，版本是3.5.2，默认路径如下
+
+C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\PYTHON_SERVICES\python.exe
+
+　　如果使用Visual Studio编辑器，需要在工具-选项中配置Python Tools的环境信息，如图所示：
+
+　　配置了上述信息，可以在项目中的Python Environments中选择该环境：
+
+　　这样，再编译，就不报找不到'revoscalepy'模块的错误了。
+
+　　另外，也尝试使用PyCharm工具进行开发，但报错更多，报过
+
+Missing required dependencies ['numpy']
+  File "C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\PYTHON_SERVICES\Lib\site-packages\numpy\core\__init__.py", line 16, in <module>
+    from . import multiarray
+ImportError: DLL load failed: 找不到指定的模块。
+
+这个错误，弄了好久没弄好，后来放弃PyCharm，转到Visual Studio就好了。
+

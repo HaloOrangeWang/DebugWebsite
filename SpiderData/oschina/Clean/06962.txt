@@ -1,0 +1,76 @@
+C++开发的项目难免会用到STL的string，使用管理都比char数组（指针）方便的多，但在得心应手的使用过程中也要警惕几个小陷阱，避免我们项目出bug却迟迟找不到原因。
+
+
+1.  结构体中的string赋值问题
+
+直接通过一个例子说明，下面的例子会输出什么：
+
+#include <iostream>  
+#include <string>  
+#include <stdlib.h>  
+      
+using namespace std;  
+      
+struct flowRecord            
+{  
+    string app_name;                                                              
+    struct flowRecord *next;  
+      
+};  
+      
+int main() {  
+    flowRecord *fr = (flowRecord*)malloc(sizeof(flowRecord));  
+    fr->app_name = "hello";  
+    out << fr->app_name << endl;  
+    return 0;  
+}
+
+当然不是简单的输出 “hello”了，在Linux下用g++编译后运行试试，会出现“Segmentation fault (core dumped)”，why？
+
+问题就出在给fr指针分配内存的时候，注意这里用的是C中的malloc而不是new，如果你换成new再运行，就不会报错 了，成功的输出“hello”，那为什么malloc就不行呢？
+
+这就要看malloc()与new()的区别了，关于两者的区别是程序员面试中屡问不爽的经典面试题，所以相信一般的程序员都知道它们之间有一个非常重要的区别就是：new在分配内存时会调用默认的构造函数，而malloc不会调用。 而STL的string在赋值之前需要调用默认的构造函数以初始化string后才能使用，如赋值、打印等操作，如果使用malloc分配内存，就不会调用string默认的构造函数来初始化结构体中的app_name字符串，因此这里给其直接赋值是错误的，应该使用new操作符。
+
+这也提示我们用C++开发程序时，就尽量使用C++中的函数，不要C++与C混合编程，导致使用混淆，比如有时候new分配的内存却用free释放。
+
+
+2. c_str()函数问题
+
+c_str()函数用于string与const char*之间的转换，也经常能用到，下面的例子你说输出啥？
+
+#include <iostream>  
+#include <string>  
+  
+using namespace std;  
+  
+int main() {  
+    string s = "Alexia";  
+    const char *str = s.c_str();  
+    cout << str << endl;  
+    s[1] = 'm';  
+    cout << str << endl;  
+  
+    return 0;  
+}
+
+第一个不用多说，第二个输出是“Alexia”还是“Amexia”呢？
+
+答案是后者，咋一看const char*的值应该是个常量啊，怎么还能改变值呢？
+
+这又是个经典的面试题：const char*, char const*, char* const的区别是什么？
+
+老生常谈的问题，const char*与char const*是等价的，指的是指向字符常量的指针，即指针可以改变指向但其指向的内容不可以改变，而char* const相反，指的是常量指针，即指向不可以改变但指针指向的内容可以改变。因此这里的const char*指向的内容本类是不可以改变的，那么这里为什么改变了呢？这跟str这个const char*的生命周期及string类的实现有关，string的c_str()返回的指针是由string管理的，因此它的生命期是string对象的生命期，而string类的实现实际上封装着一个char*的指针，而c_str()直接返回该指针的引用，因此string对象的改变会直接影响已经执行过的c_str()返回的指针引用。
+
+
+3. 字符串字面值与标准库string不是同一种类型
+
+直接看下面的例子：
+
+string s("hello");  
+cout<<s.size()<<endl;        //OK  
+cout<<"hello".size()<<endl;  //ERROR  
+cout<<s+"world"<<endl;       //OK  
+cout<<"hello"+"world"<<endl; //ERROR
+
+可以看出两者是非常不同的，不能混淆使用。
+

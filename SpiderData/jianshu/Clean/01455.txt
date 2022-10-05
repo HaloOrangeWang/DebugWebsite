@@ -1,0 +1,130 @@
+背景：工作需要，处理的数据需要通过redis进行缓存处理，之后方便统计分析。
+
+目标：python连接redis进行读取&写入。
+
+
+连接 redis 与 redis集群 是不同的 ！！！
+
+
+一、连接redis
+
+单一的连接redis上的某一个节点
+
+import redis  
+  
+pool=redis.ConnectionPool(host='127.0.0.1',port=6379,db=0)  
+r = redis.StrictRedis(connection_pool=pool)  
+  
+keys = r.keys()    #获取所有的键
+r.set('test001','123456')    #写新的值
+r.get('test001')    #查询值
+
+
+二、连接redis集群
+
+Redis集群是一个节点集合，在调用一个节点时其它节点都会响应。
+
+如果直接使用redis包操作可能会报错
+
+redis.exceptions.ResponseError: MOVED 6918 127.0.0.1:6381
+
+报错原因：因为redis由单节点变为集群，而python的redis连接包暂时还不支持redis集群连接方式，需要更换连接包
+
+解决方法： 可以使用rediscluster连接redis集群，注意其中依赖redis包的版本，否则会报错。
+
+redis-py-cluster说明文档
+
+pip install redis-py-cluster
+
+完成后再次进行连接
+
+# -*- coding:utf-8 -*-
+from rediscluster import StrictRedisCluster
+
+nodes = [{"host": "localhost", "port": "6379"}]
+r = StrictRedisCluster(startup_nodes=nodes, decode_responses=True)
+
+r.set('test', 111)
+
+
+三、常见说明
+
+
+1、版本报错
+
+随着导入的不同的redis版本会报错
+
+unknow command "CONFIG"
+
+配置一个跳过检查的参数 skip_full_coverage_check=True  就可以了
+
+r = StrictRedisCluster(startup_nodes=nodes, decode_responses=True,skip_full_coverage_check=True)
+
+
+2、危险操作
+
+一下操作可能会直接影响数据库，使用中必须注意！！！
+
+
+删除数据
+
+r.flushall()      #删除所有数据
+r.flushdb()     #删除所有数据库下的数据
+
+
+遍历查询keys
+
+r.keys()
+
+平时keys()命令获取所有键，但是如果数据量多大的话，遍历一次可能会引起生产事故
+
+Redis的KEYS命令引起宕机事件
+
+
+3、scan命令，进行模糊查询
+
+既然keys()有如此危险的隐患，可能keys()被禁止使用。
+
+那么我们读取未知的键应该怎么办呢？
+
+这个时候可以使用scan遍历数据库
+
+python redis常用操作说明
+
+scan(cursor=0, match=None, count=None)  增量式迭代获取，redis里匹配的的name【推荐使用下面的方法】
+
+cursor，游标（基于游标分批取获取数据）
+
+match，匹配指定key，默认None 表示所有的
+
+keycount，每次分片最少获取个数，默认None表示采用Redis的默认分片个数
+
+简单来说 cursor默认为 0。如果遍历完全则返回 0，否则返回其他游标。
+
+match 就是模糊查询 eg: 'test*'
+
+keycount 一次遍历返回的个数
+
+from rediscluster import StrictRedisCluster
+
+nodes = [{"host": "localhost", "port": "6379"}]
+r = StrictRedisCluster(startup_nodes=nodes, decode_responses=True,skip_full_coverage_check=True)
+
+###遍历读取所有键
+all_scan = r.scan(curson =0,match = 'AI*',count = 100000)
+
+###将符合条件的值加入到列表中
+all_keys = []
+for i in all_scan:
+    iteration_num = all_scan[i][0]
+    all_keys = all_keys + all_scan[i][1]   
+  
+###如果  iteration_num ！= 0 的话，说明一次遍历还有数据没有被遍历完。
+while iteration_num ！= 0:
+    all_scan = r.scan(curson =iteration_num,match = 'AI*',count = 100000)
+    for i in all_scan:
+        iteration_num = all_scan[i][0]
+        all_keys = all_keys + all_scan[i][1]
+
+这样操作可以完成相当于 redis中的模糊查询。
+

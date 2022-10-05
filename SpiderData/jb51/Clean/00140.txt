@@ -1,0 +1,78 @@
+
+引言
+
+目前无论是中文还是国外网站对于如何正确的导入keras，如何从tensorflow中导入keras，如何在pycharm中从tensorflow里导入keras，这几个问题都众说纷纭，往往是互相借鉴给出一个可用的解决方法，但没有更进一步的解释了。常见因为keras导入引发的问题有以下几个：
+
+from tensorflow import keras: pycharm中使用keras相关的包没有自动补全
+
+from tensorflow.keras.layers import Conv2D: pycharm中如此导入会发生Cannot find reference 'keras' in '__init__.py | __init__.py' 问题。
+
+
+分析
+
+首先需要说明的是上面两种问题其实并不能称之为“问题”，因为实际上这些代码都是可以运行的，并且如果在pycharm自带的python console里执行这些问题也都是不存在的， 只是由于编译器自带的bug5使得这些现象一再发生。如果您只是要求代码能运行即可，那可以关闭页面大胆的继续编程了，但要是想要解决这些不便，可以继续看下去。
+
+
+解决方法
+
+首先给出这些问题的解决方法：
+
+使用如下方式导入keras：
+
+from tensorflow.python import keras
+
+不从tensorflow里导入keras:
+
+import keras
+
+不导入keras，改用tf.keras.xxx来使用keras的相关函数；
+
+
+理论解释
+
+首先我们要明确一个概念，keras只是一个前端的API，其后端的计算都要基于现有的计算引擎，比如Theano或者Tensorflow1，而如今Tensorflow已经成为了Keras的默认后端，后者也成为了前者的官方高级API，也就意味着当我们安装2.0+版本的Tensorflow时实际会自动安装Keras2，经笔者实测也确实如此。
+
+ 那么当我们通过不同方式来导入keras时，我们到底在导入什么，不同导入方法导入的包是否有区别呢？以下分别通过包的导入路径及导入内容进行具体分析，为了更好理解其中内容，建议去学习python中import的相关知识3.
+
+keras常用导入方法有以下几种：
+
+import keras
+from tensorflow import keras
+from tensorflow.python import keras
+import tensorflow as tf
+tf.keras
+
+
+1. 直接导入keras
+
+寻址到的包为venv\Lib\site-packages\keras\__init__.py，也就是找到了keras的安装路径，直接运行了__init__.py。但是keras这个包的init文件中并没有显式的导入keras包中的所有子包，只是显式导入了一部分比如Sequetial ,Model：
+
+from keras import models
+from keras.engine.input_layer import Input
+from keras.engine.sequential import Sequential
+from keras.engine.training import Model
+
+在仅导入keras的情况下，pycharm窗口中我们无法使用其他的代码自动补全，比如keras.optimizers等等。但值得注意的是，刚刚我说的是没有“显式导入”，而实际上显式导入的这些py文件本身其实又导入了大部分keras所包含的函数，这就使得虽然我们写出keras.optimizers这样的语句在pycharm中无法不全、高亮，但运行起来是没有问题的，而在python console中运行也能够自动补全，其实这也算是pycharm的一个bug了。如果希望在窗口界面也能自动补全，就应该直接导入keras文件夹下的optimizer子文件夹：import keras.optimizer。
+
+
+2. 从tensorflow里导入keras
+
+这一方法是执行了venv\Lib\site-packages\tensorflow\__init__.py，而该文件中的keras实际是从 keras.api._v2 中导入了keras，执行了\venvLib\site-packages\keras\api\_v2\keras\_init.py，而再进一步的查看它实际也只是个空壳，进一步的调用了\venvLib\site-packages\keras\api\_v2\keras文件夹下的其他子文件夹，虽然这些文件夹看起来十分唬人，和重写了所有方法一样，但实际上其下只包含着__init__文件，内容也只是from keras import xx，和1中的方没有区别，只是个重定位而已。因此我们可以推测，在2.0+的版本里使用tf.keras.xx和keras.xx实际上是等价的，而在以前的版本是否存在区别，亦或者独立安装的keras是否有区别，笔者尚未去证实。
+
+
+3. 从tensorflow.python里导入keras；
+
+执行了venv\Lib\site-packages\tensorflow\python\keras\__init__.py，这里的keras下包含了第一二种方法里导入的keras下属函数，是对1、2中方法的重写而不是重定位。tf.python.keras是private的，提供给开发者使用的，并不建议普通用户来使用。
+
+
+４. 不导入keras
+
+这一方法和2是等价的，不同点在于在pycharm中使用这种方式书写可以实现代码的自动补全。
+
+
+总结
+
+这篇报错处理花了挺长时间去搜集相关资料并且实际验证，最终弄明白了python的import原理和keras到底是以怎样的形式和tensorflow取得联系，也算是个挺大的收获，总结就是后续的代码直接import keras即可。当然还有一些不太明晰的地方，比如tf.python.keras和keras在通用函数的实现方面方面是否存在区别，又有着怎样的区别？
+
+到此这篇关于pycharm中keras导入报错无法自动补全cannot find reference分析的文章就介绍到这了,更多相关pycharm keras 内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

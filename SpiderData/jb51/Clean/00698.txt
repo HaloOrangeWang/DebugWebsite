@@ -1,0 +1,35 @@
+我就废话不多说啦，还是直接看代码吧！
+
+try:
+  print(a)
+except Exception as e:
+  print(e)
+  print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
+  print(e.__traceback__.tb_lineno)            # 发生异常所在的行数
+
+补充知识：catch中打出完整错误日志，包括Exception类型和报错行数
+
+try(){
+
+}catch(Exception e){
+
+}
+
+在catch中打出完整错误日志，包括Exception类型和报错行数
+
+方法：在catch块中加入代码
+
+1)
+
+ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+e.printStackTrace(new PrintStream(baos)); 
+      String exception = baos.toString(); 
+      System.out.println("baos:" + exception);
+
+2)
+
+logger.error("",e);
+
+以上这篇Python实现捕获异常发生的文件和具体行数就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

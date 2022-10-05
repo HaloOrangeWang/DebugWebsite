@@ -1,0 +1,41 @@
+
+问题描述
+
+多个客户在使用kvm虚拟机搭配T4 GPU创建windows虚拟机时，物理机出现PCIE报错，且报错指向具体的GPU。
+
+测试发现只有在安装GPU驱动时会引发物理机PCIE报错，具体由以下两种情况触发：
+
+kvm使用包含T4 GPU 驱动的windows镜像创建虚拟机时
+
+kvm使用纯净的windows镜像创建虚拟机正常，在windows虚拟机下安装GPU驱动时
+
+详细报错示例：
+
+#服务器事件日志出现PCIE报错
+14b | 06/02/2020 | 16:57:59 | Critical Interrupt PCIE | Bus Uncorrectable error | Asserted
+14c | 06/02/2020 | 16:58:14 | Critical Interrupt PCIE | Bus Uncorrectable error | Asserted
+#服务器黑盒日志给出了PCIE的报错busno
+[Jun 02 2020 16:57:59] : PCIE Error: locate:NPSENTBusNo 62 DevNo 0 FuncNo 0 Bus Uncorrectable Error assertion.
+[Jun 02 2020 16:57:59] : Current BIOS Code(Port80): 0x00.                         
+[Jun 02 2020 16:58:14] : PCIE Error: locate:NPSENTBusNo 181 DevNo 0 FuncNo 0 Bus Uncorrectable Error assertion.
+[Jun 02 2020 16:58:14] : Current BIOS Code(Port80): 0x00.
+
+其中黑盒日志BusNo 62和BusNo 181分别指向3E:00和B5:00两个GPU。
+
+
+解决办法
+
+linux宿主机每次开机进系统后，执行命令清除root port SERR信息，可将以下命令添加进开机自启动配置中，需要注意root port的device_id 不要搞错。
+
+setpci -s 3a:00.0 3e.w=0:2
+setpci -s ae:00.0 3e.w=0:2
+
+
+问题根因
+
+直通连接的T4 GPU卡，在Windows 虚拟机下触发GPU MSI-X表的访问，这将导致来自T4不支持的请求（UR）响应，该错误由PCIe root port触发系统处理器上的不可屏蔽中断（NMI），从而导致不可恢复的系统错误。
+
+NVIDA提交BUG给RedHat KVM团队建议修复方案：在禁用相应的MMIO访问时，使PCIe root的端口映射无效。 并将尝试对设备的MMIO访问仅向用户生成SIGBUS响应，并且将避免导致KVM虚拟机管理程序上的NMI的系统错误。
+
+NV已提交了这个红帽系统错误，后续会在新的linux内核中进行优化。
+

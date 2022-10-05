@@ -1,0 +1,56 @@
+初学 Python 在使用 pip3 安装依赖时报错
+
+Traceback (most recent call last):
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/site-packages/pkg_resources/__init__.py", line 583, in _build_master
+    ws.require(__requires__)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/site-packages/pkg_resources/__init__.py", line 900, in require
+    needed = self.resolve(parse_requirements(requirements))
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/site-packages/pkg_resources/__init__.py", line 791, in resolve
+    raise VersionConflict(dist, req).with_context(dependent_req)
+pkg_resources.VersionConflict: (pip 21.1.2 (/Users/wangjiaxin/Library/Python/3.8/lib/python/site-packages), Requirement.parse('pip==20.3.1'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/bin/pip3", line 6, in <module>
+    from pkg_resources import load_entry_point
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/site-packages/pkg_resources/__init__.py", line 3251, in <module>
+    def _initialize_master_working_set():
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/site-packages/pkg_resources/__init__.py", line 3234, in _call_aside
+    f(*args, **kwargs)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/site-packages/pkg_resources/__init__.py", line 3263, in _initialize_master_working_set
+    working_set = WorkingSet._build_master()
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/site-packages/pkg_resources/__init__.py", line 585, in _build_master
+    return cls._build_from_requirements(__requires__)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/site-packages/pkg_resources/__init__.py", line 598, in _build_from_requirements
+    dists = ws.resolve(reqs, Environment())
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.8/lib/python3.8/site-packages/pkg_resources/__init__.py", line 786, in resolve
+    raise DistributionNotFound(req, requirers)
+pkg_resources.DistributionNotFound: The 'pip==20.3.1' distribution was not found and is required by the application
+
+直接使用 pip 没问题, 但是依赖包会安装到 Python2.x 下
+
+使用 python3 -m pip 命令正常, 怀疑 pip3 命令配置有问题, 接着使用 python -m pip -V 查看 Python3 下对应的 pip 版本, 果然输出结果跟报错中提示的版本不同
+
+$ python3 -m pip -V     
+pip 21.1.2
+
+是不是只要修改 pip3 中的版本号就可以了?
+
+通过 which pip3 找到 pip3 所在目录, 打开替换其中的版本号 20.3.1 为上面输出的 '21.1.2'
+
+#!/usr/bin/python3
+# EASY-INSTALL-ENTRY-SCRIPT: 'pip==21.1.2','console_scripts','pip3'
+__requires__ = 'pip==21.1.2'
+import re
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(
+        load_entry_point('pip==21.1.2', 'console_scripts', 'pip3')()
+    )
+
+保存 重新执行 pip3 完美!
+

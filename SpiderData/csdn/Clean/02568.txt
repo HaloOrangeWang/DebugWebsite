@@ -1,0 +1,52 @@
+
+这里写自定义目录标题
+
+pip install opencv-python
+
+使用命令前提命令出现问题问题解决
+
+使用命令前提
+
+命令
+
+出现问题
+
+问题解决
+
+
+pip install opencv-python
+
+因为下载的一个项目需要用到opencv，所以需要这个库，但是install的过程出现报错，所以做个记录
+
+
+使用命令前提
+
+1.安装并配置好python，这里是安装了python3.7.6版本
+ https://www.runoob.com/python3/python3-install.html
+
+
+命令
+
+1.pip install opencv-python 这个比较慢，据说容易出现timeout的现象
+ 2.pip install opencv-python -i https://pypi.tuna.tsinghua.edu.cn/simple 使用镜像下载会比较快
+
+
+出现问题
+
+Building windows wheels for Python 3.7 requires Microsoft Visual Studio 2019.
+ Get it with “Visual Studio 2017”
+ 
+ 看到这个error说需要Visual Studio 2017，我很郁闷，为什么别人都不需要，我还得下载个Visual Studio 2017。于是经过不懈得百度。我找到了两篇文章
+ 1.https://stackoverflow.com/questions/64466398/could-not-build-wheels-for-opencv-python-which-use-pep-517-and-cannot-be-install
+ 2.https://blog.csdn.net/weixin_43820665/article/details/106483558
+
+
+问题解决
+
+因为电脑内存不堪重负，所以选择了第二种办法，2.https://blog.csdn.net/weixin_43820665/article/details/106483558
+ 按照文章是要Anaconda3 ，但是我没有，所以我忽略了这一步，
+ 按照指引下载了Python3.7轮子名里有cp37得文件后，我下载了4.5.4.60版本得
+ cd到轮子所在的位置，然后再输入pip install opencv_python-4.5.4.60-cp37-cp37m-win_amd64.whl
+ 然后。。。。出现了新的错误
+ 我一看，不慌，可能网络不好，于是我为了包在同一个地方，我把包移到python\Lib\site-packages 里面，然后在安装文件同级目录下启动shell或切换到安装路径，输入安装命令，例如：pip install opencv_contrib_python-4.1.1.26-cp37-cp37m-win_amd64.whl。后来就没问题了，我估计应该是网络问题，遇到这个错误我是试了三次才安装成功。可能有其他更好得解决办法，如果有，可以指正评论。谢谢
+

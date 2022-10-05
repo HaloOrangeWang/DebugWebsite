@@ -1,0 +1,22 @@
+异常报错：TypeError: queue_declare() missing 1 required positional argument: 'queue'
+
+解决办法：加一个空字符
+
+result = channel.queue_declare('',exclusive=True)
+
+异常报错： Python pika, TypeError: exchange_declare() got an unexpected keyword argument 'type'
+
+解决办法：由type='fanout' 改成 change_type='fanout'
+
+channel.exchange_declare(exchange='logs_fanout', exchange_type='fanout')
+
+异常报错：TypeError: basic_consume() got multiple values for argument 'queue'
+
+解决办法：调整参数顺序
+
+channel.basic_consume(queue_name,callback,True)
+
+异常报错：rabbitmq-service start 服务名无效，无法启动服务 
+原因：安装路径中含有中文，无法跳过
+解决办法：https://blog.csdn.net/leoma2012/article/details/97636859  还未验收
+

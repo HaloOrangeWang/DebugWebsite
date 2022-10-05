@@ -1,0 +1,36 @@
+
+Beeline连接hiveserver2报错
+
+报错信息
+
+Error: Could not open client transport with JDBC Uri: jdbc:hive2://node-4:10000: Failed to open new session: java.lang.RuntimeException: org.apache.hadoop.ipc.RemoteException(org.apache.hadoop.security.authorize.AuthorizationException): User: root is not allowed to impersonate root (state=08S01,code=0)
+
+报这个错的关键地方是:User: root is not allowed to impersonate root
+
+解决
+ 把hadoop/core-site.xml文件添加如下内容,然后分发到各个服务器
+
+<property>
+        <name>hadoop.proxyuser.root.hosts</name>
+        <value>*</value>
+    </property>
+    <property>
+        <name>hadoop.proxyuser.root.groups</name>
+        <value>*</value>
+    </property>
+
+注意
+
+如果报错信息是:hadoop is not allowed to impersonate anonymous
+ (hadoop在这里就是举个例子,是你自己的用户名)
+ 要把配置文件里的root改成你自己的用户名,这里用hadoop举例,就改为hadoop
+
+<property>
+        <name>hadoop.proxyuser.hadoop.hosts</name>
+        <value>*</value>
+    </property>
+    <property>
+        <name>hadoop.proxyuser.hadoop.groups</name>
+        <value>*</value>
+    </property>
+

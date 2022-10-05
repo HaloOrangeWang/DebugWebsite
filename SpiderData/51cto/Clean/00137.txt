@@ -1,0 +1,47 @@
+环境
+
+Mac OS 10.11.6
+
+pyenv 1.2.8
+
+Python 2.7.5
+
+问题
+
+$ pip install lxml==3.6.4
+
+Failed to build lxml
+
+ld: file not found: python.exe
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+error: command 'clang' failed with exit status 1
+
+----------------------------------------
+
+Failed building wheel for lxml
+
+解决：
+2.7.5 是对应的版本号
+
+$ export p=/Users/$(whoami)/.pyenv/versions/2.7.5
+
+$ sed -i -e "s~-bundle_loader python.exe~-bundle_loader ${p}/bin/python2.7~g" "$p/lib/python2.7/_sysconfigdata.py"
+
+再次安装成功了
+
+$ pip install lxml==3.6.4
+
+Successfully built lxml
+Installing collected packages: lxml
+  Found existing installation: lxml 4.3.3
+    Uninstalling lxml-4.3.3:
+      Successfully uninstalled lxml-4.3.3
+Successfully installed lxml-3.6.4
+
+安装普通包没问题，比如requests ,而需要编译的包，比如lxml就报错
+
+找了很多地方这是因为我使用的是 pyenv , 这应该是它的小问题，不过好在有人已经解决了
+
+参考
+Unable to install compiled Python modules under pyenv on OS X 10.10 #273
+

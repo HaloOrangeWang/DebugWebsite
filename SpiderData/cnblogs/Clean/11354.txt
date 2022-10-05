@@ -1,0 +1,34 @@
+
+1.RuntimeWarning: overflow encountered in ubyte_scalars像素加减运算溢出异常
+
+　　用python处理图像时，可能会涉及两幅图像像素值之间的加减运算，这里需要注意的是图像像素值是ubyte类型，ubyte类型数据范围为0~255，若做运算出现负值或超出255，则会抛出异常，下面看一下异常示例：
+
+
+2 ValueError: not enough values to unpack (expected 3, got 2)
+
+原因是 cv2.findContours的opencv旧版本返回3个值：
+im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)，
+
+新版本返回2个值：
+contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)。
+
+解决办法：
+原代码：im2, contours, hierarchy = cv2.findContours(img_gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+改为： contours, hierarchy = cv2.findContours(img_gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+
+3.【SIFT】python OSError: image1.sift not found 解决方案
+
+原因：
+
+　　报错提示的代码行为l1, d1 = sift.read_features_from_file(‘im1.sift’)，说明没有读取到im1.sift，说明在sift.process_image阶段没有生成sift文件
+
+解决办法
+
+　　添加开源工具包VLFeat，下载链接：http://www.vlfeat.org/download/，最好下载vlfeat-0.9.20-bin.tar.gz。
+
+　　把Win64文件夹直接复制到自己的Python工程项目中。我在项目中新建了一个名为VLFeat的文件夹，将复制的win64文件家直接粘贴在这个新建的文件中。修改sift下的process_image代码下的cmmd 。
+
+　　改为cmmd = str(r"C:\Users\PC028\PycharmProjects\test_3D\sift.exe “+imagename+” --output="+resultname+
+" "+params)（路径是你项目文件夹中的sift.exe的路径，记得在路径前加r，并且路径最后要加一个空格）。
+

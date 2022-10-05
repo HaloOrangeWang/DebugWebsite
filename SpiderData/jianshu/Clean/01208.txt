@@ -1,0 +1,101 @@
+今天用python的requests模块post的请求的脚本，遇到了ssl报错特此记录下
+
+Python 3.6.6
+requests 2.19.1
+
+一个很简单的post请求脚本
+
+#/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+import json
+import requests
+
+url = 'https://127.0.0.1:8000'
+
+def test_login(url):
+    headers = {'Content-Type': 'application/json', \
+              'Accept': 'application/json', \
+              'X-Auth-Token': '47c10675da5556fa5351430d5385fed650bc0d45'}
+    login_url = url + "/login"
+    post_data = [{'username': 'saltapi', 'password': 'saltapi', 'eauth': 'pam'}]
+    json_data = json.dumps(post_data)
+    response = requests.post(login_url, data = json_data, headers = headers)
+    print(response.text)
+
+if __name__ == "__main__":
+    test_login(url)
+
+报错如下：
+
+Traceback (most recent call last):
+  File "/usr/local/python36/lib/python3.6/site-packages/urllib3/connectionpool.py", line 600, in urlopen
+    chunked=chunked)
+  File "/usr/local/python36/lib/python3.6/site-packages/urllib3/connectionpool.py", line 343, in _make_request
+    self._validate_conn(conn)
+  File "/usr/local/python36/lib/python3.6/site-packages/urllib3/connectionpool.py", line 849, in _validate_conn
+    conn.connect()
+  File "/usr/local/python36/lib/python3.6/site-packages/urllib3/connection.py", line 356, in connect
+    ssl_context=context)
+  File "/usr/local/python36/lib/python3.6/site-packages/urllib3/util/ssl_.py", line 372, in ssl_wrap_socket
+    return context.wrap_socket(sock)
+  File "/usr/local/python36/lib/python3.6/ssl.py", line 407, in wrap_socket
+    _context=self, _session=session)
+  File "/usr/local/python36/lib/python3.6/ssl.py", line 814, in __init__
+    self.do_handshake()
+  File "/usr/local/python36/lib/python3.6/ssl.py", line 1068, in do_handshake
+    self._sslobj.do_handshake()
+  File "/usr/local/python36/lib/python3.6/ssl.py", line 689, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:841)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/python36/lib/python3.6/site-packages/requests/adapters.py", line 445, in send
+    timeout=timeout
+  File "/usr/local/python36/lib/python3.6/site-packages/urllib3/connectionpool.py", line 638, in urlopen
+    _stacktrace=sys.exc_info()[2])
+  File "/usr/local/python36/lib/python3.6/site-packages/urllib3/util/retry.py", line 398, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /login (Caused by SSLError(SSLError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:841)'),))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "test_api.py", line 21, in <module>
+    test_login(url)
+  File "test_api.py", line 16, in test_login
+    response = requests.post(login_url, data = json_data, headers = headers)
+  File "/usr/local/python36/lib/python3.6/site-packages/requests/api.py", line 112, in post
+    return request('post', url, data=data, json=json, **kwargs)
+  File "/usr/local/python36/lib/python3.6/site-packages/requests/api.py", line 58, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/local/python36/lib/python3.6/site-packages/requests/sessions.py", line 512, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/local/python36/lib/python3.6/site-packages/requests/sessions.py", line 622, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/local/python36/lib/python3.6/site-packages/requests/adapters.py", line 511, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /login (Caused by SSLError(SSLError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:841)'),))
+
+后来google了下，在requests参数里面加上参数 verify=False
+
+在python 2.7中添加一个新的特性，在urlopen请求的时候会验证ssl证书，如果是自签名的ssl证书会出错。
+
+在request.post 和request.get方法中都有一个verify的参数。把verify参数置为FALSE。
+
+官方文档SSL 证书验证部分：http://docs.python-requests.org/zh_CN/latest/user/advanced.html#advanced
+
+再次运行又有警告了：
+
+/usr/local/python36/lib/python3.6/site-packages/urllib3/connectionpool.py:857: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  InsecureRequestWarning)
+
+# 在脚本中添加如下代码，禁用安全请求警告：
+
+rom requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+最终解决！
+

@@ -1,0 +1,35 @@
+
+先贴代码：
+
+from_addr = 'wisedeve@gmail.com'
+password = '*******' # gmail邮箱密码
+to_addr = '18612124664@163.com'
+smtp_server = 'smtp.gmail.com'
+
+msg = MIMEText('hello,python', 'plain', 'utf-8')
+
+msg['From'] = _fromat_addr('Python Dev <%s>' % from_addr)
+msg['To'] = _fromat_addr('Admin <%s>' % to_addr)
+msg['Subject'] = Header('来自SMTP的问候...', 'utf-8').encode()
+
+server = smtplib.SMTP(smtp_server, 587)  # Gmail的SMTP端口是587
+server.starttls()
+server.set_debuglevel(1)
+server.login(from_addr, password)
+server.sendmail(from_addr, [to_addr], msg.as_string())
+server.quit()
+
+在 python3 中实现用 gmail 邮箱给另一邮箱发送邮件，由于 gmail 邮箱的 SMTP 服务必须要加密传输，因此调用 starttls() 方法，创建安全连接。
+
+但是运行之后却报这样的错误：
+
+
+错误信息
+
+smtplib.SMTPAuthenticationError: (534, b'5.7.14 <https://accounts.google.com/signin/continue?sarp=1&scc=1&plt=AKgnsbsd\n5.7.14 DXuFyTBeeat48cnZaaPpb0-4tdxV-XSxdRhw5fwA2ySJG-ja__E2MkXG-CZMWvdSfbVCf8\n5.7.14 0FSnsSFF_tKP4uYWgB-KINh5dXXB0XxM1kz4ubMZKRutAE0dbGOrIRNNKX7GjECR9nSzyw\n5.7.14 0EzedPi7akD_oDfIxr-5J7C3wR-wOjmjc2kmulQZaX853J6cWK_uIlS9XncSv-ax5earoI\n5.7.14 -ZrGV4csHa42kTrC_ixt1s7xpFF5A> Please log in via your web browser and\n5.7.14 then try again.\n5.7.14  Learn more at\n5.7.14  https://support.google.com/mail/answer/78754 197sm7140946pga.58 - gsmtp')
+
+
+解决方案
+
+根据提示去 gamil 网站找到了解决方案，因为 google 默认不允许通过不安全的应用访问 gmail 等服务，可以去“我的帐号”中“不够安全的应用”部分 中把 “不够安全的应用的访问权限” 打开即可。
+

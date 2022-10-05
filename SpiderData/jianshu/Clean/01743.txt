@@ -1,0 +1,26 @@
+在Python3+Selenium 做 UI 自动化中遇到的两个问题
+
+1、输出报告报错<_io.TextIOWrapper name=’’ mode=‘w’ encoding=‘UTF-8’>
+
+解决方法：
+
+将
+
+print (sys.stderr, ‘\nTime Elapsed: %s’ % (self.stopTime-self.startTime))
+
+修改为：
+
+sys.stderr.write(’\nTime Elapsed: %s\n’ % (self.stopTime - self.startTime))
+
+即可；
+
+2、在python自动化测试中生成测试报告，报错：string argument expected, got ‘bytes’
+
+**解决方法：
+
+第94行引入的名称要改，从 import StringIO 改成import io。
+
+相应的，539行 self.outputBuffer = StringIO.StringIO() 要改成self.outputBuffer = io.BytesIO()
+
+**
+

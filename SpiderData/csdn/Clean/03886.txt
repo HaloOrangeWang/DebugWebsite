@@ -1,0 +1,27 @@
+出现错误的情况
+
+图二这样调用就会报错TypeError: ‘module’ object is not callable
+
+出现这种原因的情况
+
+Python导入模块的方法有两种：import module 和 from module import，区别是前者所有导入的东西使用时需加上模块名的限定，而后者不要。
+
+如果是用import module 这种方式导入的话这里的调用代码应该是下面的
+
+import People
+
+a = People.People('小张', 23, '男')
+print(a.name)
+
+如果是使用 **from module import *** 的话
+ 直接这样调用就行
+
+from People import People
+
+a = People('小张', 23, '男')
+print(a.name)
+
+两者输出结果一样
+
+Python错误 Python学习 Python训练营
+

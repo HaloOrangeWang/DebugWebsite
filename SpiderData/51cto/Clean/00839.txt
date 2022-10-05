@@ -1,0 +1,32 @@
+我的环境是win7+vs2013+python3.2，他们是32地点
+
+windows通过安装模块错误
+
+1）Unable to find vcvarsall.bat ：
+
+打开“<python安装文件夹>\Lib\distutils\msvc9compiler.py”
+
+找到 toolskey = “VS%0.f0COMNTOOLS” % version，
+
+直接改动为 toolskey = “VS100COMNTOOLS”  （假设是vs2012或者vs2013则要从100改成120）
+
+2）攻克了上面的那个问题之后又出现了以下的这个问题：
+
+File "C:\Python33\lib\distutils\msvc9compiler.py", line 287, in query_vcvarsall
+
+raise ValueError(str(list(result.keys())))
+
+ValueError: ['lib', 'include', 'path']
+
+定位到文件里，联系到上一个错误，发现可能是vcvarsall.bat的问题。依据query_vcvarsall这个函数的參数arch（如x86等）。到你的vs安装文件夹下找对应的vcvarsall.bat
+
+然后执行这个批处理文件，看有没有什么错误，我在这里就又遇到了一个错误：
+
+ERROR: Cannot determine the location of the VS Common Tools folder.
+
+可是事实上我系统环境变量里面有VS120COMNTOOLS，所以又到网上找阿找，原来是PATH环境变量中少了C:\Windows\System32;（上次装个破软件把我的环境变量给搞坏了，所以这里也建议大家把PATH环境变量备份一下）
+
+所以把这个加上，又一次build一遍（记得得重开一个cmd窗体，最好以管理员身份执行）。假设还不行的话，就在build之前，在cmd形成vcvarsall.bat第一次执行。然后build。这应该是能够在
+
+版权声明：本文博客原创文章。博客，未经同意，不得转载。
+

@@ -1,0 +1,105 @@
+要实现标题的功能，总共分四步：
+
+1.创建html错误页
+
+2.配置settings
+
+3.编写视图
+
+4.配置url
+
+我的开发环境：
+
+django1.10.3
+
+python2.7.12
+
+前期工作
+
+创建项目及app
+
+$ django-admin.py startproject Test
+
+...
+
+$ python manage.py startapp myapp
+
+...
+
+1.创建html错误页
+
+在Test目录下，创建templates文件夹
+
+在文件夹下创建404.html/403.html/500.html文件
+
+2.配置settings
+
+配置tamplates文件路径、关闭Debug、配置allowrd_hosts
+
+DEBUG = False # 关闭Debug
+...
+TEMPLATES = [
+  {
+    ...
+    'DIRS': ['templates/'], # 配置tamplates文件路径    
+    ...
+  },
+]
+...
+ALLOWED_HOSTS = [ 
+  '192.168.1.12', # 配置allowrd_hosts
+]
+
+3.编写视图
+
+在myapp下编写views.py
+
+from django.shortcuts import render
+
+def page_not_found(request):
+  return render(request, '404.html')
+
+def page_error(request):
+  return render(request, '500.html')
+
+def permission_denied(request):
+  return render(request, '403.html')
+
+4.配置url
+
+...
+from myapp.views import *
+
+handler403 = permission_denied
+handler404 = page_not_found
+handler500 = page_error
+...
+
+ok！运行一下，看看结果！
+
+补充知识：Django 漂亮的出错页面
+
+例子展示 Django 的出错页面。 我们来花些时间看一看这个出错页，了解一下其中 给出了哪些信息。
+
+以下是值得注意的一些要点：
+
+在页面顶部，你可以得到关键的异常信息： 异常数据类型、异常的参数 (如本例中的 "unsupported type" ）、在哪个文件中引发了异常、出错的行号等等。
+
+在关键异常信息下方，该页面显示了对该异常的完整 Python 追踪信息。 这类似于你在 Python 命令行解释器中获得的追溯信息，只不过后者更具交互性。 对栈中的每一帧，Django 均显示了其文件名、函数或方法名、行号及该行源代码。
+
+点击该行代码 (以深灰色显示)，你可以看到出错行的前后几行，从而得知相关上下文情况。
+
+点击栈中的任何一帧的“Local vars”可以看到一个所有局部变量的列表，以及在出错 那一帧时它们的值。 这些调试信息相当有用。
+
+注意"Traceback"下面的"Switch to copy-and-paste view"文字。 点击这些字，追溯会 切换另一个视图，它让你很容易地复制和粘贴这些内容。 当你想同其他人分享这些异常 追溯以获得技术支持时（比如在 Django 的 IRC 聊天室或邮件列表中），可以使用它。
+
+你按一下下面的"Share this traceback on a public Web site"按钮，它将会完成这项工作。 点击它以传回追溯信息至http://www.dpaste.com/，在那里你可以得到一个单独的URL并与其他人分享你的追溯信息。
+
+接下来的”Request information”部分包含了有关产生错误的 Web 请求的大量信息： GET 和 POST、cookie 值、元数据（象 CGI 头）。
+
+Request信息的下面，“Settings”列出了 Django 使用的具体配置信息。
+
+Django 的出错页某些情况下有能力显示更多的信息，比如模板语法错误。
+
+以上这篇django的403/404/500错误自定义页面的配置方式就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

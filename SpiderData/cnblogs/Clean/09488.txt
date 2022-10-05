@@ -1,0 +1,29 @@
+生成xmlrpc的描述，报错，是因为一个代码bug导致，在ladon的安装目录..\Python\Python39\site-packages\ladon\interfaces 下，找到文件xmlrpc.py，打开编辑
+
+在156行的原代码：
+
+for type_class, type_info in type_dict.iteritems():
+
+　　修改如下：
+
+for type_class, type_info in type_dict.items():
+
+保存后，问题解决。
+
+在198行的原代码：
+
+self._get_type_name(method_info['rtype'][0])
+
+修改如下：
+
+self._get_type_name(method_info['rtype'])
+
+对于wsgi_application文件中的报错，是因为代码的一个bug导致，字符串和bytes类型无法进行字符串拼接导致。
+
+在521行源代码如下：
+
+output += dispatcher.iface.description(service_url, charset, **dict(
+                        map(lambda x: (x[0], x[1][0]), query.items())))
+
+替换为如下代码：
+

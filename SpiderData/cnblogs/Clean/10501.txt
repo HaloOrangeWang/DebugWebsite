@@ -1,0 +1,246 @@
+Python+pycharm常见报错
+
+报错内容：
+
+Element is not currently visible and may not be manipulated
+
+场景：
+
+定位弹窗上面的Select元素
+
+原因分析：
+
+弹窗弹出延时，弹窗上面的元素无法操作
+
+解决方法：
+
+sleep(2)等待加载
+
+报错内容：
+
+'Element ' is not clickable at point (1273, 576). Other element would receive the click
+
+场景：
+
+原因分析：
+
+页面加载完成后要操作的元素被别的元素挡住了，导致无法点击
+
+解决方法：
+
+调整屏幕分辨率、浏览器大小，或者用JS操作滚动条让元素完全漏出来
+
+报错内容：
+
+failed to change window state to maximized, current state is normal
+
+场景：
+
+driver.maximize_window()
+
+原因分析：
+
+driver已经最大化过了，导致执行报错
+
+解决方法：
+
+先检查下driver有没有最大化过，或者先作下判断driver大小
+
+报错内容：
+
+stale element reference: element is not attached to the page document
+
+场景：
+
+定位元素时报错
+
+原因分析：
+
+定位元素之前页面刷新过，导致页面失效
+
+解决方法：
+
+加个等待，然后元素重新定位就好
+
+报错内容：
+
+An invalid or illegal selector was specified
+
+场景：
+
+定位元素时发生
+
+原因分析：
+
+用错了选择器，如：xpth的路径用了 by_css_selector
+
+解决方法：
+
+使用正确的选择器
+
+报错内容：
+
+Unable to find element on closed window
+
+场景：
+
+代码没有改动，chrome可以运行 切换到IE就报错
+
+原因分析：
+
+IE的兼容性问题，页面URL重定向引起。例：http://google.cn 重定向为http://google.cn/login
+
+解决方法：
+
+暂无，
+
+报错内容：
+
+'NoneType' object has no attribute 'test_one'
+
+TypeError: don't know how to make test from: None
+
+场景：
+
+unittest和paramunittest(参数化模块）引用这2个模块在pycharm中运行时报错
+
+原因分析：
+
+鼠标右键->运行项目 导致出现上述报错，主要是光标没有停在
+
+这个位置运行导致 找不到启动位置
+
+解决方法：
+
+在如图位置右键->运行，即可以正常
+
+报错内容：
+
+unknown error: cannot focus element 无法聚焦元素
+
+场景：
+
+定位126邮箱【https://mail.126.com/index_alternate.htm】登录文本框时出现，文本框可以点击，但是send_keys失败
+
+原因分析：
+
+原因是126邮箱文本框前面蒙了一层label标签，导致定位不到文本框
+
+解决方法：
+
+有两种：1、用【https://mail.126.com/】这个网址，没有这种蒙层；
+
+2、用模拟键盘操作，可以输入
+
+报错内容：
+
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xa6 in position 41: illegal multibyte sequence
+
+场景：
+
+open(filepath) 时出现该报错，
+
+原因分析：
+
+文件中带有中文字符无法解析，导致报错
+
+解决方法：
+
+改为：open(filepath,encoding='utf-8') 指定编码格式即可
+
+报错内容：
+
+unknown error: chrome failed to start
+
+场景：
+
+创建浏览器实例的时候报错，如图
+
+原因分析：
+
+原因有很多种：
+
+1、    chrome与chromedriver版本不匹配；
+
+2、    chromedriver路径没有添加到环境变量
+
+解决方法：
+
+针对第一种情况，保证2者匹配即可；
+
+第二种情况，可以把chromedriver添加到环境变量，或者在实例化的时候，指定chromedriver的路径，如图：
+
+报错内容：
+
+'NoneType' object is not iterable
+
+场景：
+
+原因分析：
+
+返回值为None，却用来做for循环的迭代，故报错。
+
+解决方法：
+
+调用函数时要查看，返回值是否符合预期
+
+报错内容：
+
+'NoneType' object has no attribute 'title'
+
+场景：
+
+原因分析：
+
+如图，aa()函数返回值为None ，因为NoneType没有title属性，所以报错
+
+解决方法：
+
+检查调用函数的aa()，保证返回值符合预期
+
+报错内容：
+
+invalid literal for int() with base 10: ''
+
+场景：
+
+原因分析：
+
+如图，mobile为空字符串，转换int时报该错误
+
+解决方法：
+
+避免出现这种空字符串转换的情况，或者用try模块忽视掉该错误
+
+报错内容：
+
+Cannot navigate to invalid URL
+
+场景：
+
+使用这个方法driver.get() 的时候会出现
+
+原因分析：
+
+域名前面没有加【https://】导致的
+
+解决方法：
+
+加上http协议就不报该错误了，可以正常访问了
+
+报错内容：
+
+element not interactable
+
+场景：
+
+定位div弹窗里面元素的时候会遇到
+
+原因分析：
+
+是因为需要定位的元素在页面中被隐藏了，比如（我的是定位百度账号退出按钮，由于，退出按钮被隐藏，只有当鼠标移动到用户账号时，才显示出退出按钮）
+
+解决方法：
+
+解决办法就是添加鼠标悬浮定位功能，
+

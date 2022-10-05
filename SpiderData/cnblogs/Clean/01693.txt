@@ -1,0 +1,14 @@
+　　运行 python darknet.py 结果报错如下：
+
+原因
+
+　　net = load_net(“cfg/tiny-yolo.cfg”, “tiny-yolo.weights”, 0)这个函数最后会将”cfg/tiny-yolo.cfg”, “tiny-yolo.weights”这些参数传给刚才说到的libdarknet.so这个库中，而这个库是用c/c++来写的，所以出现了这个错误。
+
+解决方法
+
+　　在出错的字符串前面添加一个b就行了，如：
+
+net = load_net(b"cfg/tiny-yolo.cfg", b"tiny-yolo.weights", 0)
+meta = load_meta(b"cfg/coco.data")
+r = detect(net, meta, b"data/dog.jpg")
+

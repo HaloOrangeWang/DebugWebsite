@@ -1,0 +1,9 @@
+
+连接mysql失败
+
+环境: ubuntu18.04+MySQL5.7
+
+报错_mysql_exceptions.OperationalError: (2006, "Can't connect to local MySQL server through socket '/tmp/mysql.sock' (2)")
+
+挺坑的，如果是用localhost连接MySQL，实际用的是UNIX Domain Socket来通信的，也就是报错提示的/tmp/mysql.sock这个路径。查看了一下确实没有这个socket，咋办呢，一种解决方法就是从mysql的配置文件/etc/mysql/mysql.conf.d/mysqld.cnf中找到mysqld的socket位置，然后以unix_socket的参数传递给MySQLdb的连接。
+

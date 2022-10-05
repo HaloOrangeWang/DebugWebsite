@@ -1,0 +1,86 @@
+pyinstaller安装，简单打包可以参考：https://blog.csdn.net/qq_40587575/article/details/85076934
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+pyinstaller [参数] [要打包的程序.py]
+
+参数说明：
+–icon=图标路径
+-F 打包成一个exe文件
+-w 使用窗口，无控制台
+-c 使用控制台，无窗口
+-D 创建一个目录，里面包含exe以及其他一些依赖性文件
+pyinstaller -h 来查看参数
+
+重点：
+
+刚开始进行编译的时候，切忌直接使用：  pyinstaller -F -w demo.py
+
+应该使用：pyinstaller -F -c demo.py  此时打包完成后，点击exe执行文件，如果有报错的话，将在控制台显示。这是，要做好截图的准备，因为控制台报错后是一闪而过的。
+
+​
+
+
+报错信息： No module named 'typedefs'
+
+此时，我们可以看到 importError 的报错信息，  由于此时找不到typedefs模块，所以程序直接报 Failed to excute script xxxx
+
+删除原来的dist、build 文件， spec文件， 在编译的时候加上：
+
+pyinstaller -F -c QTimerTest.py --hidden-import sklearn.neighbors.typedefs
+
+或者
+
+直接在. spec 文件里的 hiddenimports = [ ] 增加： 如最后的代码
+
+​
+
+
+报错信息： No module named 'sklearn.neighbors.quad_tree'
+
+​
+
+
+报错信息： No module named 'pywt._extendions._cwt'
+
+汇总上述的问题可以使用命令：
+
+pyinstaller -F -c QTimerTest.py --hidden-import sklearn.neighbors.typedefs --hidden-import sklearn.neighbors.quad_tree --hidden-import pywt._extensions._cwt --add-data=xgboost;xgboost
+
+程序如果还是会报错的话， 可以使用相同的方法找出原因，有原因一般就好找答案了。。。。。。。。。。。
+
+
+参考：
+
+
+1. XGBoost出现的问题解决办法：
+
+https://my.oschina.net/u/1241965/blog/2997992
+
+
+2.pywt小波包库解决方法：
+
+https://stackoverflow.com/questions/41998403/pyinstaller-importerror-on-pywt-ctw-module
+
+
+3.sklearn解决方法：
+
+https://www.smwenku.com/a/5b86bb8a2b71775d1cd5c2d8/zh-cn/
+
+https://stackoverflow.com/questions/31774906/why-do-i-get-an-importerror-when-building-a-exe-with-pyinstaller
+
+http://www.voidcn.com/article/p-nqtjgive-bms.html
+
+在pyinstaller生成的 .spec文件中修改为：
+
+主要是hiddenimportts  主要都是这一块出问题，pyinstaller找不到库在哪里
+
+# -*- mode: python -*-
+
+block_cipher = None
+
+
+
+
+-----------------done----------------------
+

@@ -1,0 +1,46 @@
+在 php.ini 里重新指定mysql.sock 路径
+
+pdo_mysql.default_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock
+
+重启 php-fpm
+
+sudo /usr/local/sbin/php56-fpm start
+
+重启 nginx
+
+brew services restart  nginx
+
+下面我们来看看php pdo_mysql连接报错Connection failed: SQLSTATE[HY000] [2002] No such file or directory问题的解决办法。
+
+错误
+
+Connection failed: SQLSTATE[HY000] [2002] No such file or directory
+
+环境概述：
+
+MacOS
+
+xampp 搭建的开发环境 apache mysql php
+
+xampp 已支持mysql oracle 测试ok，且 phpinfo已上显示支持pdo_mysql pdo_pgsql pdo_sqlite
+
+其中mysql我用的是brew包管理安装到机器里面的，而非xampp自带的mysql
+
+php pdo 连接报错 Connection failed: SQLSTATE[HY000] [2002] No such file or directory
+
+开始以为找不到文件是因为 url rewrite导致的，(因为从nginx切换到apache)结果跟踪程序发现是 new pdo 报错
+
+经过搜索一些资料研究发现：
+
+这个是php.ini配置文件中pdo_mysql.default_socket指定的mysql.sock路径不对
+
+我的mysql.sock文件在 /private/tmp/mysql.sock
+
+所以要设置：
+
+pdo_mysql.default_socket=/private/tmp/mysql.sock
+
+如果不知道自己的mysql.sock在哪里可以搜索(因为编译安装，和yum、apt-get、或者brew等包管理工具安装的位置不一样)
+
+sudo find / -name ‘mysql.sock’
+

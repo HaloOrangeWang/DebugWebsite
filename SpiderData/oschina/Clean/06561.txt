@@ -1,0 +1,200 @@
+点击蓝字关注 👆👆
+
+阅读本文大约需要5分钟。
+
+golang爬珍爱网代码优化后，运行报了如下的错，找了半小时才找到原因，在此记录一下。
+
+代码是这样的：
+
+有一个interface类型的Parser：
+
+type Parser interface {
+   Parser(contents []byte, url string) ParserResult
+   Serialize() (funcName string, args interface{})
+}
+
+type Parser interface {
+   Parser(contents []byte, url string) ParserResult
+   Serialize() (funcName string, args interface{})
+}
+
+有一个struct类型的FuncParser：
+
+type FuncParser struct {
+   parser ParserFunc
+   funcName string
+}
+
+type FuncParser struct {
+   parser ParserFunc
+   funcName string
+}
+
+FuncParser 实现了Parser 接口：
+
+func (f *FuncParser) Parser(contents []byte, url string) ParserResult {
+   return f.Parser(contents, url)
+}
+
+func (f *FuncParser) Serialize() (funcName string, args interface{}) {
+   return f.funcName, nil
+}
+
+func (f *FuncParser) Parser(contents []byte, url string) ParserResult {
+   return f.Parser(contents, url)
+}
+
+func (f *FuncParser) Serialize() (funcName string, args interface{}) {
+   return f.funcName, nil
+}
+
+抛开爬虫代码整体的复杂度，将代码简化到如下这样：
+
+type ParserFunc func(url string) string
+
+type FuncParser struct {
+    parser ParserFunc
+}
+
+func (f *FuncParser) Parser(url string) string {
+    return f.Parser(url)
+}
+
+func main() {
+
+funcParse := FuncParser{
+        func(url string) string {
+            return url
+        },
+    }
+
+funcParse.Parser("http://www.zhenai.com/zhenghun")
+}
+
+type ParserFunc func(url string) string
+
+type FuncParser struct {
+    parser ParserFunc
+}
+
+func (f *FuncParser) Parser(url string) string {
+    return f.Parser(url)
+}
+
+func main() {
+
+funcParse := FuncParser{
+        func(url string) string {
+            return url
+        },
+    }
+
+funcParse.Parser("http://www.zhenai.com/zhenghun")
+}
+
+运行代码后同样会报错：
+
+runtime: goroutine stack exceeds 1000000000-byte limit
+fatal error: stack overflow
+
+runtime stack:
+runtime.throw(0x467297, 0xe)
+    D:/Program Files/Go/go103/src/runtime/panic.go:616 +0x88
+runtime.newstack()
+    D:/Program Files/Go/go103/src/runtime/stack.go:1054 +0x72d
+runtime.morestack()
+    D:/Program Files/Go/go103/src/runtime/asm_amd64.s:480 +0x91
+
+runtime: goroutine stack exceeds 1000000000-byte limit
+fatal error: stack overflow
+
+runtime stack:
+runtime.throw(0x467297, 0xe)
+    D:/Program Files/Go/go103/src/runtime/panic.go:616 +0x88
+runtime.newstack()
+    D:/Program Files/Go/go103/src/runtime/stack.go:1054 +0x72d
+runtime.morestack()
+    D:/Program Files/Go/go103/src/runtime/asm_amd64.s:480 +0x91
+
+这个示例就很明显了，FuncParser的Parser方法里形成了递归调用（自己调自己），递归调用自身导致栈溢出，导致报错。应该改成这样：（小写的parser）
+
+实际上goland开发工具里已经提示了Recursive Call
+
+一不小心就会写出这种代码，再看如下代码：
+
+package main
+
+import (
+    "fmt"
+)
+
+type Str string
+
+func (s Str) String() string {
+    return fmt.Sprintf("Str: %s", s)
+}
+
+func main() {
+    var s Str = "hi"
+    fmt.Println(s)
+}
+
+package main
+
+import (
+    "fmt"
+)
+
+type Str string
+
+func (s Str) String() string {
+    return fmt.Sprintf("Str: %s", s)
+}
+
+func main() {
+    var s Str = "hi"
+    fmt.Println(s)
+}
+
+同样报错：
+
+You are implementing Str.String in terms of itself. return fmt.Sprintf("Str: %s", s) will call s.String(), resulting in infinite recursion. Convert s to string first.
+
+This is working as intended, you are using the %s verb to call Str's String method, which uses fmt.Sprint to call Str's String method, and so on.
+
+正常代码应该如下：
+
+实际上，goland开发工具里也会警告该问题的：
+
+看来平时编写代码，警告还是得注意的。
+
+项目代码见：https://github.com/ll837448792/crawler
+
+本文由“壹伴编辑器”提供技术支持
+
+本公众号免费提供csdn下载服务，海量IT学习资源，如果你准备入IT坑，励志成为优秀的程序猿，那么这些资源很适合你，包括但不限于java、go、python、springcloud、elk、嵌入式 、大数据、面试资料、前端 等资源。同时我们组建了一个技术交流群，里面有很多大佬，会不定时分享技术文章，如果你想来一起学习提高，可以公众号后台回复【2】，免费邀请加技术交流群互相学习提高，会不定期分享编程IT相关资源。
+
+推荐阅读：
+
+Kubernetes，走进未来软件世界的敲门砖
+
+极致简洁的markdown编辑神器
+
+历史文章：
+
+爬取珍爱网后用户信息展示
+
+你有必要知道的三个问题
+
+ElasticSearch学习笔记之原理介绍
+
+本文由“壹伴编辑器”提供技术支持
+
+我是小碗汤，我们一起学习。
+
+扫码关注，精彩内容第一时间推给你
+
+本文分享自微信公众号 - 我的小碗汤（mysmallsoup）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

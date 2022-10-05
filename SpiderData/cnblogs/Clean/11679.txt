@@ -1,0 +1,72 @@
+
+问题解决zipimport.ZipImportError: can‘t decompress data; zlib not availabl
+
+wget https://bootstrap.pypa.io/pip/2.7/get-pip.py  # python2.7
+wget https://bootstrap.pypa.io/get-pip.py  # python3
+报错
+
+wget https://bootstrap.pypa.io/pip/2.7/get-pip.py  # python2.7
+
+wget https://bootstrap.pypa.io/get-pip.py  # python3
+
+
+报错
+
+1
+
+2
+
+[www@pythontab.com ~]$ https://bootstrap.pypa.io/get-pip.py
+[www@pythontab.com ~]$ sudo python get-pip.py
+
+[www@pythontab.com ~]$ https://bootstrap.pypa.io/get-pip.py
+
+[www@pythontab.com ~]$ sudo python get-pip.py
+
+报错提示“zipimport.ZipImportError: can‘t decompress data; zlib not available”
+
+看起来是因为缺少响应的zlib库，需要先安装再执行。
+
+
+问题解决
+
+1. 安装zlib相关库
+
+sudo apt install zlib*
+
+在重新编译之前还需要在安装源文件中修改Modules/Setup.dist文件，将
+
+1
+
+#zlib zlibmodule.c -I$(prefix)/include -L$(exec_prefix)/lib -lz
+
+#zlib zlibmodule.c -I$(prefix)/include -L$(exec_prefix)/lib -lz
+
+这行的注释去掉，变为：
+
+1
+
+zlib zlibmodule.c -I$(prefix)/include -L$(exec_prefix)/lib -lz
+
+zlib zlibmodule.c -I$(prefix)/include -L$(exec_prefix)/lib -lz
+
+然后在次编译安装(在Python的安装源文件目录执行如下命令)
+
+1
+
+[www@pythontab.com ~]$ make && make install
+
+[www@pythontab.com ~]$ make && make install
+
+重新安装完成
+
+执行：
+
+1
+
+[www@pythontab.com ~]$ sudo python get-pip.py
+
+[www@pythontab.com ~]$ sudo python get-pip.py
+
+安装pip成功！
+

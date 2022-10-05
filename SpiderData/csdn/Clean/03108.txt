@@ -1,0 +1,76 @@
+今天小编就为大家分享一篇python3中pip3安装出错,找不到SSL的解决方式，具有很好的参考价值，希望对大家有所帮助。一起跟随小编过来看看吧
+
+最近在Ubuntu16.04上安装Python3.6之后，使用pip命令出现了问题，提示说找不到ssl模块，出现错误如下：
+
+pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+ 
+Could not fetch URL https:*******: There was a problem confirming the ssl certificate: 
+Can't connect to HTTPS URL because the SSL module is not available. - skipping
+
+本人安装Python3.6的操作如下：
+
+1.wget获取安装包：
+  wget http://www.python.org/ftp/python/3.6.2/Python-3.6.2.tgz
+ 
+2.解压安装包：
+  tar -xvzf Python-3.6.2.tgz
+ 
+3.检查安装平台属性，系统是否有编译时所需要额库，以及库的版本是否满足编译需要
+  ./configure
+ 
+4.编译源码
+  make
+ 
+5.成功编译之后，安装
+  sudo make install
+
+在安装完之后，我们希望用pip3命令来安装numpy。首先，用如下命令安装pip3:
+
+sudo install python3-pip
+
+安装完之后，使用pip3安装numpy：
+
+sudo pip install python-numpy
+
+但是此时就出错了，显示本文开始提到的错误，大致意思就是安装过程需要SSL,但是那个SSL找不到。
+
+本人查阅网上资料，发现openSSL是系统自带的，所以一定是安装了的，本人用以下命令尝试再次安装openssl:
+
+sudo apt-get install openssl
+sudo apt-get install libssl-dev
+
+但是安装结果显示是对其进行更新(update)，这说明系统已经安装了openssl。但是pip3就是找不到ssl模块。
+
+本人进入python3中，然后进行ssl导入操作:
+
+import ssl
+
+结果出错，错误如下：
+
+no moudle named _ssl
+
+显示没有ssl模块。本人再进入python中(即系统自带的python2.7中)，进行ssl导入操作:
+
+import ssl
+
+发现并没有显示错误，导入正常。这说明openssl已经安装了，只是python2可以调用，新安装的python3却不能调用。
+
+本人查阅资料发现，在./configure过程中，如果没有加上–with-ssl参数时，默认安装的软件涉及到ssl的功能不可用，刚好pip3过程需要ssl模块，而由于没有指定，所以该功能不可用。
+
+解决办法是重新对python3.6进行编译安装，用一下过程来实现编译安装:
+
+cd Python-3.6.2
+./configure --with-ssl
+make
+sudo make install
+
+这样就允许安装的python3使用ssl功能模块,进入python3中，执行import ssl发现未出错，正常再次调用pip3指令来安装numpy，发现正常，问题解决！
+
+写到这里，给大家推荐一个资源很全的python学习聚集地，点击进入，这里有资深程序员分享以前学习
+
+心得，学习笔记，还有一线企业的工作经验，且给大家精心整理一份python零基础到项目实战的资料，
+
+每天给大家讲解python最新的技术，前景，学习需要留言的小细节
+
+以上这篇python3中pip3安装出错,找不到SSL的解决方式就是小编分享给大家的全部内容了
+

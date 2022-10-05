@@ -1,0 +1,113 @@
+安装好Library后如果始终RIDE还是显示红色，可以通过Tools→View RIDE Log查看报错信息
+
+
+问题一：导入AppiumLibrary报错：ImportError: cannot import name 'InvalidArgumentException
+
+原因：
+
+在网上查询得知，造成报错ImportError: cannot import name 'InvalidArgumentException 是因为exceptions.py文件中未定义InvalidArgumentException类，所以需要手动在该文件中加入该类
+
+解决方法：
+
+网上有的说exceptions.py在\Lib\site-packages\selenium-2.48.0-py2.7.egg\selenium\common下，但我的Python目录下没有这个路径，最终找到我的路径为E:\Program Files\Python2.7.12\Lib\site-packages\selenium\common\exceptions.py，可以根据自己的实际情况找到exceptions.py文件，然后添加如下代码：
+
+class InvalidArgumentException(WebDriverException):
+
+"""
+
+"""
+
+pass
+
+添加好后，一定要用编译器把修改后的exceptions.py文件run一下，然后重新打开RF，重新导入AppiumLibrary变成黑色，说明问题已经解决
+
+
+问题二：WIN10系统，之前RF使用AutoItLibrary一直正常，在安装了appium后却出现报错
+
+问题描述：
+
+之前一直使用正常，安装appium后AutoItLibrary显示为红色，查看日志有如下报错：
+
+Initializing test library 'AutoItLibrary' with no arguments failed: com_error: (-2147221005, '\xce\xde\xd0\xa7\xb5\xc4\xc0\xe0\xd7\xd6\xb7\xfb\xb4\xae', None, None)
+
+摸索过程：
+
+在网上查了半天，试过把AutoItLibrary安装包重新安装，也试过用管理员cmd进入到AutoItLibrary安装路径下AutoItX3.dll文件所在目录，运行系统注销和系统注册命令：
+
+c:\Python27\Lib\site-packages\AutoItLibrary\lib>regsvr32 /s AutoItX3.dll
+
+c:\Python27\Lib\site-packages\AutoItLibrary\lib>regsvr32 /u AutoItX3.dll
+
+两种方法都没有用
+
+解决办法：
+
+最后索性把pywin32，autoit-v3，AutoItLibrary重装一遍
+
+1、在...\Python27\Lib\site-packages路径下删除AutoItLibrary相关的文件和文件夹，卸载pywin32，autoit-v3
+
+2、重新下载安装包
+
+pywin32下载路径：https://sourceforge.net/projects/pywin32/files/pywin32/
+
+autoit-v3下载路径：https://www.autoitscript.com/site/autoit/downloads/
+
+AutoItLibrary下载路径：https://www.softpedia.com/get/Programming/Components-Libraries/AutoItLibrary.shtml
+
+选择下载pywin32安装包时要弄清楚自己Python，在cmd中执行python可以查看，然后根据Python的版本和位数下载相应的包，然后直接运行安装文件
+
+在安装autoit-v3时，如果是64位的安装过程中一定要选择X64才行，因为默认项是X86，要是不小心直接下一步还是会导致错误
+
+安装好pywin32，autoit-v3后，把下载的AutoItLibrary包解压出来，打开管理员cmd，进入到解压后的路径，执行python setup.py install安装即可
+
+安装完后重启RF，重新导入AutoItLibrary，变成黑色，问题解决
+
+
+问题三：httplibrary库安装成功后一直标红
+
+问题描述：
+
+httplibrary安装是成功的，没有任何报错，但RIDE始终显示红色，查看log发现报语法错误，网上查了下说是python2和python3的兼容问题导致
+
+解决办法：
+
+1、安装livetest
+
+直接通过pip install livetest安装也是会因为兼容性问题报错的，需要下载安装包手动安装
+
+下载地址：
+
+https://files.pythonhosted.org/packages/de/77/7ab378ff9e62013f1756b64b1553e126ba7b3f3598bc9c5c8fc508c13d55/livetest-0.5.tar.gz
+
+解压后需要修改以下两个文件里面的对应内容：
+
+修改  \livetest-0.5\livetest\__init__.py 文件
+
+修改：import httplib -》 import http.client as httplib
+
+修改：import urlparse -》import urllib.parse
+
+修改：from Cookie import BaseCookie, CookieError -》 import http.cookiejar
+
+修改：CookieError, e 为CookieError as e
+
+这里我踩到一个坑提示一下，我是注释掉之前的代码然后再加上新代码，但是在改CookieError, e的时候另起一行写的新代码总是会报错有空格，无奈只能在源代码上修改
+
+修改 \livetest-0.5\setup.py文件
+
+修改：long_description=file('README.rst').read() -》 long_description=open('README.rst').read()
+
+修改：version=livetest.__version__ -》 version='0.5'
+
+修改：author_email=livetest.__author__ -》 author_email='storborg@mit.edu'
+
+直接在当前窗口按住shift点击鼠标右键，选择在此处打开命令窗口，执行python setup.py install完成安装
+
+2、修改httplibrary的__init__.py文件（文件路径：python安装目录\Lib\site-packages\HttpLibrary）
+
+修改：from urlparse import urlparse -》 from urllib.parse import urlparse
+
+修改：except ValueError,  e -> except ValueError as e （共两处）
+
+修改完后重启RIDE，httplibrary变成了黑色，问题解决
+

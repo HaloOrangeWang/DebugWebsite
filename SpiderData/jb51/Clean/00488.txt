@@ -1,0 +1,85 @@
+在安装tensorflow完成后，import tensorflow as tf出现问题，问题如下：
+
+>>> import tensorflow as tf
+Traceback (most recent call last):
+ File "I:\Anaconda3\lib\site-packages\tensorflow\python\pywrap_tensorflow.py", line 58, in <module>
+  from tensorflow.python.pywrap_tensorflow_internal import *
+ File "I:\Anaconda3\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 28, in <module>
+  _pywrap_tensorflow_internal = swig_import_helper()
+ File "I:\Anaconda3\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 24, in swig_import_helper
+  _mod = imp.load_module('_pywrap_tensorflow_internal', fp, pathname, description)
+ File "I:\Anaconda3\lib\imp.py", line 242, in load_module
+  return load_dynamic(name, filename, file)
+ File "I:\Anaconda3\lib\imp.py", line 342, in load_dynamic
+  return _load(spec)
+ImportError: DLL load failed: 动态链接库(DLL)初始化例程失败。
+ 
+During handling of the above exception, another exception occurred:
+ 
+Traceback (most recent call last):
+ File "<stdin>", line 1, in <module>
+ File "I:\Anaconda3\lib\site-packages\tensorflow\__init__.py", line 24, in <module>
+  from tensorflow.python import pywrap_tensorflow # pylint: disable=unused-import
+ File "I:\Anaconda3\lib\site-packages\tensorflow\python\__init__.py", line 49, in <module>
+  from tensorflow.python import pywrap_tensorflow
+ File "I:\Anaconda3\lib\site-packages\tensorflow\python\pywrap_tensorflow.py", line 74, in <module>
+  raise ImportError(msg)
+ImportError: Traceback (most recent call last):
+ File "I:\Anaconda3\lib\site-packages\tensorflow\python\pywrap_tensorflow.py", line 58, in <module>
+  from tensorflow.python.pywrap_tensorflow_internal import *
+ File "I:\Anaconda3\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 28, in <module>
+  _pywrap_tensorflow_internal = swig_import_helper()
+ File "I:\Anaconda3\lib\site-packages\tensorflow\python\pywrap_tensorflow_internal.py", line 24, in swig_import_helper
+  _mod = imp.load_module('_pywrap_tensorflow_internal', fp, pathname, description)
+ File "I:\Anaconda3\lib\imp.py", line 242, in load_module
+  return load_dynamic(name, filename, file)
+ File "I:\Anaconda3\lib\imp.py", line 342, in load_dynamic
+  return _load(spec)
+ImportError: DLL load failed: 动态链接库(DLL)初始化例程失败。
+ 
+ 
+Failed to load the native TensorFlow runtime.
+ 
+See https://www.tensorflow.org/install/errors
+ 
+for some common reasons and solutions. Include the entire stack trace
+above this error message when asking for help.
+
+问题原因：
+
+tensorflow的新版本不支持比较老的cpu（我这个老机器表示很桑心）
+
+解决办法：
+
+卸载现有的tensorflow，安装tensorflow1.5版本
+
+依次执行：
+
+pip uninstall tensorflow
+
+pip install tensorflow==1.5 -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com
+
+成功
+
+另外其他原因：
+
+报错：
+
+import tensorflow遇到以下报错：
+
+原因分析：
+
+根据报错信息，导入（import）失败的原因是在源目录中导入（import）。
+
+解决办法：
+
+使用cd ..命令回到上一级目录，重新导入（import），导入（import）成功
+
+补充：
+
+在github中也有类似问题－可能不是同一原因导致－的讨论，针对的是“Failed to load the native TensorFlow runtime.“的问题，链接如下。
+
+github该问题讨论
+
+到此这篇关于tensorflow安装成功import tensorflow 出现问题的文章就介绍到这了,更多相关import tensorflow 出现问题内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家
+

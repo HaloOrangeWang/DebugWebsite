@@ -1,0 +1,15 @@
+
+可能是由于Django使用的MySQLdb库对Python3不支持，我们用采用了PyMySQL库来代替，导致出现各种坑，特别是执行以下2条命令的是时候：
+
+
+报错1：（提示你的mysqlclient版本过低）,无论你是否执行pip install mysqlclient安装的最新版的，都抛出：
+
+使用注释大法解决：找到自己Python安装路劲下的Python36-32\Lib\site-packages\django\db\backends\mysql\base.py文件 将文件中的如下代码注释（可能需先关闭pycharm IDE）
+
+
+报错2：（str类型没有decode方法）
+
+py3默认str是unicode编码，通过encode方法编码成bytes类型，后者才有decode解码方法。提示错误来源：Python36\lib\site-packages\django\db\backends\mysql\operations.py", line 149, in last_executed_query
+
+参考连接： https://www.zhangshengrong.com/p/281om6qgNw/
+

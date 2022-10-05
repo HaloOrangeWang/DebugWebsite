@@ -1,0 +1,65 @@
+相信大家在日常调用接口中，是会遇到由于字段格式不匹配导致的接口调用失败的。
+
+下面废话不多说，直接上案例：
+
+import requests
+import json
+import demjson
+
+def sendFengs(token):
+url = "http://open-api-funsionwork.sit.sf-express.com:8080/ump-biz/platform/send"
+Headers ={
+    "Authorization":token_1,
+    "Content-Type":"application/json"
+}
+
+content = {"title":"发版标题","body":"发版内容"}
+
+Body = {
+    "sendTime":"1628047385515",
+    "templateCode":"1201",
+    "body":{
+        "range":"APPOINT",
+        "toNums":["715905"],
+        "text":"111222测试内容",
+        "pushContent":{
+            "title":"发版标题",
+            "body":"发版内容"
+        }
+    }
+}
+
+try:
+    res = requests.request("POST",url,headers=Headers,data=demjson.encode(Body))
+except BaseException as err:
+    print(err)
+
+if res.status_code != 200:
+    return False
+else:
+    res_json = res.json()
+
+print(res_json)
+    return token
+
+sendFengs(token_1)
+
+
+问题描述：
+
+在我调用的接口中，要求body，pushContent字段的格式为 jsonObject
+ 在日益严苛的格数处理机制中，代码会对格式做校验，那么就得保持格式一致。
+
+
+问题解决：
+
+注意上面的代码，引入了demjson这个模块！这是一个第三方模块，可以做python和json的格式转换。
+
+用法很简单：使用encode方法，demjson.encode(要转换的内容)，即可转换python为json
+
+有网友写的json格式处理的文章还蛮详细的，就这里引用推荐一下~ https://www.cnblogs.com/wangyayun/p/6699184.html.
+
+只是简单记录一下这样的处理方式，做个笔记，也帮更多网友踩个坑~
+
+大大的小小阳
+

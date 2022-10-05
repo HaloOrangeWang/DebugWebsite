@@ -1,0 +1,34 @@
+执行创建表sql：
+
+CREATE EXTERNAL TABLE IF NOT EXISTS supplier ( 
+  S_SUPPKEY  INT,
+  S_NAME  STRING,
+  S_ADDRESS  STRING,
+  S_NATIONKEY INTEGER,
+  S_PHONE STRING,
+  S_ACCTBAL  DECIMAL,
+  S_COMMENT  STRING
+  )COMMENT 'The file of TPCH  is supplier.tbl' 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'  
+STORED AS TEXTFILE
+LOCATION '/testdata/supplier';
+
+报错：
+
+ImpalaRuntimeException: Error making 'createTable' RPC to Hive Metastore: 
+ CAUSED BY: MetaException: hdfs://hadoopname02vl:8020/testdata/supplier is not a directory or unable to create one
+
+后来发现是在hdfs上put文件的时候出现问题。
+
+hdfs dfs -put /tmp/bigdata/supplier.tbl /testdata/supplier
+
+这样会把supplier.tbl 复制到supplier文件
+
+这会supplier不是一个目录。
+
+应该先创建目录，再put文件
+
+hdfs dfs -mkdir /testdata/supplier
+
+hdfs dfs -put /tmp/bigdata/supplier.tbl /testdata/supplier
+

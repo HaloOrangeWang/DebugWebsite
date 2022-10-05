@@ -1,0 +1,8 @@
+$ lsnrctl start
+
+报错提示:
+
+The listener supports no services The command completed successfully 如图所示：
+
+这样启动后远程连接会报错： oracle ORA-12514:TNS:listener does not currently know of service requested in connect descriptor 问题原因：数据库实例没注册到listener解决方法一： 在listener.ora里面添加了一行 SID_LIST_LISTENER = (SID_LIST = (SID_DESC = (GLOBAL_DBNAME = orcl) (SID_NAME = orcl) ) ) 注：里面的orcl根据你安装的数据库实例名确定，我用此法解决了这个报错。 解决方法二： 登录数据库： $sqlplus / as sysdba 显示服务名： SQL>show parameter service_names 强制注册服务： SQL>alter system register; 查看监听状态： $lsnrctl status
+

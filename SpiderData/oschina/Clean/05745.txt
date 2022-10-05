@@ -1,0 +1,38 @@
+容器和宿主机时间不同步问题？
+
+　　将本地时间复制到docker容器内的etc文件夹下即可
+
+docker cp /etc/localtime scrapy_8:/etc/
+
+启动crontab错误？
+
+　　报错： Failed to get D-Bus connection: Operation not permission
+
+docker run -d --privileged=true --name scrapy_1 -h scrapy_8 -p 18008:8888 -it centos-python3:1.1 /usr/sbin/init
+
+docker和本地之间的文件复制
+
+　　将docker内文件复制到宿主机
+
+docker cp scrapy_8:/home/xxx /home/docker/scrapy-redis/tem
+
+　　将宿主机文件复制到docker
+
+docker cp /home/docker/scrapy-redis/tem/xxx scrapy_8:/home
+
+docker内安装crontab？
+
+yum -y install crontabs yum -y install vixie-cron
+
+查看crontab是否启动
+
+service crond status#查看状态
+
+service crond start#启动
+
+service crond stop#停止
+
+进入正在运行的容器 docker exec -it scrapy_8 /bin/bash ，以交互模式重新开启一个终端。
+
+docker attach container_id也可以连接到正在运行中的容器，要attach上去的容器必须正在运行，可以同时连接上同一个container来共享屏幕。
+

@@ -1,0 +1,27 @@
+出错代码如下
+
+报错信息   Module 'numpy.random' has no 'random' member (no-member)
+
+虽然 pylint 报错，但是运行是成功的。
+
+我就很疑惑，就跟之前的这篇博文一样迷惑  vscode设置 pylint把违反了编码风格标准的提示信息忽略掉，就是Variable name “**“ doesn‘t conform to snake_case naming
+
+肯定又是 pylint 抽风了，他哪儿没做好。听说 pylint1.8.2 解决了这个问题，没用过，所以不太清楚。
+
+说一下我的解决办法：在 pylint 的设置里面把 numpy 设置成白名单。
+
+
+步骤
+
+同上面一篇博文
+
+1、在vscode里面 Ctrl+shift+p 然后搜索settings
+
+2、点击 首选项：打开设置（json）打开settings.json文件 ，在文件里面添加
+
+当然如果之前有设置过python.linting.pylintArgs的话，在里面加"--extension-pkg-whitelist=numpy"就可以了，注意不同项末尾加个逗号，不然会报错
+
+我的如下
+
+.json文件里面的注释是双斜杠，和 C/C++ 一样
+

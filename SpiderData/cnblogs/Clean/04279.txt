@@ -1,0 +1,31 @@
+
+web 报错500 Internal Server Error解决方案
+
+在安装使用Cobbler web界面的时候提示HTTP 500错误，也就是服务器内部错误，检查防火墙和selinux都是为关闭状态，后面查看日志发现报错信息如下：
+
+其实就是python django 的问题。
+
+解决办法：
+
+1、安装python2-pip
+
+# yum -y install python2-pip
+# pip install ipaddress
+
+2、安装django
+
+# pip install Django==1.8.9
+
+3、重启httpd
+
+# systemctl restart httpd
+
+再次刷新页面访问http://IP/cobbler_web即可
+
+
+通过Cobbler 安装Linux系统报空间不足
+
+错误信息：/sbin/dmsquash-live-root:line286:printf:write error:no space left on device
+
+解决办法：内存不足，增加客户机内存最少为2G   参考
+

@@ -1,0 +1,134 @@
+对于新手，初学Python时，总会遇到这样那样的报错，想要弄懂Python错误信息的含义可能还不知道怎么做，这里列出了一些比较常见的Python报错问题，希望对于学习Python的人能够有些帮助。
+
+1)尝试连接非字符串值与字符串(导致 “TypeError: Can’t convert ‘int’ object to str implicitly”)
+
+该错误发生在如下代码中：
+
+numEggs = 12print('I have ' + numEggs + 'eggs.')
+
+而你实际想要这样做：
+
+numEggs = 12print('I have ' + str(numEggs) + 'eggs.')
+
+或者：
+
+numEggs = 12print('I have %s eggs.' % (numEggs))
+
+2)在字符串首尾忘记加引号(导致“SyntaxError: EOL while scanning string literal”)
+
+该错误发生在如下代码中：
+
+print(Hello!')
+
+或者:
+
+print('Hello!)
+
+或者:
+
+myName = 'Al'print('My name is ' + myName + . How are you?')
+
+3)变量或者函数名拼写错误(导致“NameError: name ‘fooba’ is not defined”)
+
+该错误发生在如下代码中：
+
+foobar = 'Al'print('My name is ' + fooba)
+
+或者:
+
+spam = ruond(4.2)
+
+或者:
+
+spam = Round(4.2)
+
+4)方法名拼写错误(导致 “AttributeError:‘str’ object has no attribute ‘lowerr‘”)
+
+该错误发生在如下代码中：
+
+spam = 'THIS IS IN LOWERCASE.'spam =spam.lowerr()
+
+5)引用超过list最大索引(导致“IndexError: list index out of range”)
+
+该错误发生在如下代码中：
+
+spam = ['cat', 'dog', 'mouse']
+
+print(spam[6])
+
+6)使用不存在的字典键值(导致“KeyError：‘spam’”)
+
+该错误发生在如下代码中：
+
+spam = {'cat': 'Zophie', 'dog': 'Basil','mouse': 'Whiskers'}
+
+print('The name of my pet zebra is ' + spam['zebra'])
+
+7)忘记在 if, elif , else , for , while , class ,def 声明末尾添加：(导致 “SyntaxError ：invalid syntax”)
+
+该错误将发生在类似如下代码中：
+
+ifspam == 42
+
+print('Hello!')
+
+8)使用 = 而不是 ==(导致“SyntaxError: invalid syntax”)
+
+= 是赋值操作符而 == 是等于比较操作。该错误发生在如下代码中：
+
+ifspam = 42:
+
+print('Hello!')
+
+9)使用错误的缩进量。(导致“IndentationError：unexpectedindent”、“IndentationError：unindent does not match any outer indetation level”以及“IndentationError：expected an indented block”)
+
+记住缩进增加只用在以：结束的语句之后，而之后必须恢复到之前的缩进格式。该错误发生在如下代码中：
+
+print('Hello!')
+
+print('Howdy!')
+
+或者：if spam == 42:
+
+print('Hello!')
+
+print('Howdy!')
+
+或者：if spam == 42:
+
+print('Hello!')
+
+10)在 for循环语句中忘记调用 len()(导致“TypeError:‘list’ object cannot be interpreted as an integer”)
+
+通常你想要通过索引来迭代一个list或者string的元素，这需要调用 range() 函数。要记得返回len 值而不是返回这个列表。
+
+该错误发生在如下代码中：
+
+spam= ['cat', 'dog', 'mouse']for i in range(spam):
+
+print(spam)
+
+python一些最重要的内建异常类名总结
+
+AttributeError：属性错误，特性引用和赋值失败时会引发属性错误
+
+NameError：试图访问的变量名不存在
+
+SyntaxError：语法错误，代码形式错误
+
+Exception：所有异常的基类，因为所有python异常类都是基类Exception的其中一员，异常都是从基类Exception继承的，并且都在exceptions模块中定义。
+
+IOError：一般常见于打开不存在文件时会引发IOError错误，也可以解理为输出输入错误
+
+KeyError：使用了映射中不存在的关键字(键)时引发的关键字错误
+
+IndexError：索引错误，使用的索引不存在，常索引超出序列范围，什么是索引
+
+TypeError：类型错误，内建操作或是函数应于在了错误类型的对象时会引发类型错误
+
+ZeroDivisonError：除数为0，在用除法操作时，第二个参数为0时引发了该错误
+
+ValueError：值错误，传给对象的参数类型不正确，像是给int()函数传入了字符串数据类型的参数。
+
+希望上边的总结，对大家能够有一些帮助，如有不到之处，也希望多多指教，相互交流进步。
+

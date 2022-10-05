@@ -1,0 +1,69 @@
+
+前言
+
+今天调annacond3 是, 可能是环境出了问题
+
+[root@myecsid ~]# python
+Fatal Python error: Py_Initialize: Unable to get the locale encoding
+  File "/usr/lib64/python2.7/encodings/__init__.py", line 123
+    raise CodecRegistryError,\
+                            ^
+SyntaxError: invalid syntax
+
+Current thread 0x00007f2054b04740 (most recent call first):
+Aborted
+
+
+尝试
+
+重新配了下环境变量 path 清回默认, 为 Anaconda3添加
+
+
+try01
+
+#echo 'export PATH="/root/anaconda3/bin:$PATH"' >> ~/.bashrc
+#source ~/.bashrc
+[root@ ~]# unset PYTHONHOME
+[root@ ~]# unset PYTHONPATH
+
+python 依旧失败
+
+[root@ ~]# python
+Fatal Python error: Py_Initialize: Unable to get the locale encoding
+ModuleNotFoundError: No module named 'encodings'
+
+Current thread 0x00007f62cb4f1740 (most recent call first):
+Aborted
+
+但conda 启动正常
+
+[root@myecsid ~]# conda --version
+conda 4.3.30
+[root@myecsid ~]# conda env list
+# conda environments:
+#
+python27                 /root/anaconda3/envs/python27
+root                  *  /root/anaconda3
+[root@myecsid ~]# source activate
+(root) [root@myecsid ~]# python
+Python 3.6.2 |Anaconda custom (64-bit)| (default, Jul 20 2017, 13:51:32)
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+既然 conda 能正常运行python , 那证明是可以的,
+
+可能是某些环境变量变更没有生效, 导致多版本冲突
+
+还是重启下服务器
+
+[root@myecsid ~]# $PATH
+-bash: /root/anaconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin: No such file or directory
+[root@myecsid ~]# python
+Python 3.6.2 |Anaconda custom (64-bit)| (default, Jul 20 2017, 13:51:32)
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> quit()
+
+果然如此 解决
+

@@ -1,0 +1,35 @@
+
+1.ubuntu20.04下安装了python3后执行python --version提示python找不到
+
+默认情况下，Ubuntu 20.04随附Python 3作为默认python版本。它可以作为“ python3”命令而不是“ python”使用。
+
+sudo ln -s /usr/bin/python3 /usr/bin/python
+
+然后提示
+
+ln: 无法创建符号链接’/usr/bin/python’: 文件已存在
+
+这时发现使用命令python --version依然找不到python，提示
+
+Command 'python' not found, did you mean:
+command 'python3' from deb python3
+command 'python' from deb python-is-python3
+
+要解决此问题，请使用以下命令将Python3二进制文件’/usr/bin/python3’链接到’/usr/bin/python’作为默认python命令。
+
+update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+
+2.从pc机拖动文件到vmware中ubuntu20.04桌面文件被破坏解决方法
+
+目前的解决方法，卸载open-vm-tools-desktop，命令
+
+sudo apt autoremove open-vm-tools-desktop
+
+重启电脑，执行下面的命令
+
+sudo apt-get upgrade
+sudo apt-get install open-vm-tools-desktop -y
+
+再重启电脑，ok
+

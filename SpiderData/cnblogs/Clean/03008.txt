@@ -1,0 +1,52 @@
+问题1：Missing parentheses in call to 'print'
+
+原因:因为Python2.X和Python3.X不兼容。
+我安装的是Python3.X，但是我试图运行的却是Python2.X 的代码。
+所以上面的语法在python3中是错误的。在python3中，你需要将print后面的语句加括号，正确的写法：
+print ("hello world")
+
+问题2：创建项目报错，django-admin startproject sundyblog  
+File "c:\users\andy\appdata\local\programs\python\python35-32\lib\site-packages\django\utils\html.py", line 16, in <module>
+from .html_parser import HTMLParser, HTMLParseError
+File "c:\users\andy\appdata\local\programs\python\python35-32\lib\site-packages\django\utils\html_parser.py", line 12, in <module>
+HTMLParseError = _html_parser.HTMLParseError
+AttributeError: module 'html.parser' has no attribute 'HTMLParseError'
+
+原因:HTMLParseError在pythons3.5已经没有了
+
+解决方法:
+
+方法1：将python版本回退到3.3或3.4
+
+方法2：升级django版本
+>pip3 install django==1.8     ##升级django版本
+C:\Users\andy>django-admin startproject sundyblog    ##再次执行，无报错
+
+问题3： 使用  ImageField  字段建表报错
+
+C:\Users\andy\sundyblog>python manage.py makemigrations
+SystemCheckError: System check identified some issues:
+
+ERRORS:
+blog.Article.portal: (fields.E210) Cannot use ImageField because Pillow is not installed.
+        HINT: Get Pillow at https://pypi.python.org/pypi/Pillow or run command "pip install Pillow".
+
+解决：C:\Users\andy\sundyblog>pip install -i https://pypi.douban.com/simple/ Pillow
+Looking in indexes: https://pypi.douban.com/simple/
+Collecting Pillow
+  Downloading https://pypi.doubanio.com/packages/0f/fe/0979c8d6fa0c986e4603e5396904945b44f93ff9e346ee5ffadc7487cff6/Pillow-5.4.1-cp35-cp35m-win32.whl
+    100% |████████████████████████████████| 1.7MB 351kB/s
+Installing collected packages: Pillow
+Successfully installed Pillow-5.4.1
+You are using pip version 19.0.1, however version 19.0.2 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+C:\Users\andy\sundyblog>python manage.py makemigrations
+Migrations for 'blog':
+  0001_initial.py:
+    - Create model Article
+    - Create model Author
+    - Add field autor to article
+
+C:\Users\andy\sundyblog>
+

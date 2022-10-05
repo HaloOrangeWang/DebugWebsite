@@ -1,0 +1,28 @@
+当做UI自动化的时候，有时候明明表达式写的没有问题，就是定位不到 。。这是为啥嘞
+
+咱拿登录qq邮箱做个示范
+
+不论是xpath定位还是直接ui或name定位，直接u就对了 。
+
+这是初学最容易犯的问题，因为初学ui自动化，想着找一个网站去试验 ，一般都是常用的，比如邮箱登录啊，空间登录啊，等等，这种网址都比较老，用的技术可能也比较老旧
+
+一般这种问题都是因为页面嵌套了iframe ，这是啥？ iframe等于打开一个新的网页，所有的JS/CSS全部加载一遍，算是一个过时的技术 。
+
+当你在一个页面访问另外一个页面 ，肯定取不到元素值 。所以就用到了层级取值方法
+
+python 的话直接加一行代码即可
+
+进入iframe
+
+driver.switch_to.frame(driver.find_element_by_xpath("//iframe[contains(@id,'login_frame')]"))　　
+
+driver.find_elements_by_xpath("u").send_keys("sasaddad")
+
+　　在当前iframe操作完之后要记得退出来，不然外面的元素就定位不到了
+
+退出iframe
+
+driver.switch_to.default_content()
+
+　　
+

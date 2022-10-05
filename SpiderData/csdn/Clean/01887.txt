@@ -1,0 +1,102 @@
+
+SyntaxError
+
+
+1. invalid syntax
+
+常是丢冒号，丢括号等问题。
+
+
+UnicodeDecodeError：
+
+
+1. 'gbk' codec can't decode byte
+
+代码如下：
+
+报错：
+
+报错原因是：大部分情况是因为文件不是 UTF8 编码的（例如，可能是 GBK 编码的），而系统默认采用 UTF8 解码。解决方法是改为对应的解码方式。解决方法是：
+
+open(path, ‘-模式-‘,encoding=’UTF-8’) 即open(路径+文件名, 读写模式, 编码)
+
+在python对文件进行读写操作的时候，常常涉及到“读写模式”，整理了一下常见的几种模式，如下：
+
+读写模式：r ：只读 r+ : 读写 w ： 新建（会对原有文件进行覆盖） a ： 追加 b ： 二进制文件
+
+常用的模式有：“a” 以“追加”模式打开， (从 EOF 开始, 必要时创建新文件) “a+” 以”读写”模式打开 “ab” 以”二进制 追加”模式打开 “ab+” 以”二进制 读写”模式打开
+
+“w” 以”写”的方式打开 “w+” 以“读写”模式打开 “wb” 以“二进制 写”模式打开 “wb+” 以“二进制 读写”模式打开
+
+“r+” 以”读写”模式打开 “rb” 以”二进制 读”模式打开 “rb+” 以”二进制 读写”模式打开
+
+rU 或 Ua 以”读”方式打开, 同时提供通用换行符支持 (PEP 278)
+
+
+2. 'gbk' codec can't decode byte 0x9d in position 6305: illegal multibyte sequence
+
+程序：
+
+报错
+
+改为：
+
+分析：编码问题
+
+​ encoding is the name of the encoding used to decode or encode the
+
+
+TypeError：
+
+
+1. expected string or bytes-like object
+
+报错：
+
+正则参数不是字符串，改成字符串就行了！
+
+
+2. cannot use a string pattern
+
+代码：
+
+报错：
+
+原因分析：在匹配正则表达式的时候我们用到了pattern，但正则表达式的pattern是用于处理字符串的，所以对“bytes-like”的对象无法使用。
+
+有些方法比如re模块的findall要求传入的是字符串格式的参数，urllib.request.urlopen(url).read()返回的是bytes类型（这个是python3中才有的类型，所以很多python2中的方法都相应更改了）的，这样传参就会报以上错误。
+
+python3中Unicode字符串是默认格式（就是str类型），ASCII编码的字符串（就是bytes类型，bytes类型是包含字节值，其实不算是字符串，python3还有bytearray字节数组类型）要在前面加操作符b或B；python2中则是相反的，ASCII编码字符串是默认，Unicode字符串要在前面加操作符u或U。
+
+
+3. unhashable type: 'list'
+
+报错：
+
+原因：用set函数将一个元素中含有列表的列表转换成集合。
+
+因为list和dict的内容都是可变的，也即是不可哈希的。因此不能使用list和dict去创建dict，不能作为dict的keys，利用set函数构造集合时，给的参数列表中的元素不能含有列表作为参数！
+
+
+4. 'type' object is not subscriptable
+
+报错：
+
+
+ValueError
+
+
+1. too many values to unpack
+
+报错：
+
+原因，调用函数的时候，接受返回值的变量个数不够
+
+#函数中：
+def getAclInfor(dataset):
+...
+    return dict_id2author, dict_id2venue, authors
+​
+#调用时：
+dict_id2venue, authors = dpp.getAclInfor(total_aclmetadata)
+

@@ -1,0 +1,45 @@
+1、ZeroDivisionError异常的处理（被除数为0）
+
+当程序出现错误时例如出现5/0无法计算时，Python会给出让人迷惑的报错，因此我们可以使用try-except代码块来让Python输出我们想要的报错信息以方便我们识别
+
+try:
+    print(5/0)
+except ZeroDivisionError:
+    print("You can't divide by zero!")
+
+try-except-else代码块（以除法计算器为例）
+
+print("输入'q'以退出计算")
+while True:
+    a=input("First_number:")
+    #导入被除数
+    if a=='q':
+        break
+    b=input("Sencond_number:")
+    #导入除数
+    if b=='q':
+        break
+    try:
+        c=int(a)/int(b)
+        #将输入的a和b化为整数后计算a/b
+    except ZeroDivisionError:
+        print("You can't divide zero.")
+        #如果被除数是0输出不能被0除
+    else:
+        print(c)
+        #否则输出a/b计算的结果
+
+2、FileNotFoundError异常的处理
+
+try:
+    f=open('text.txt',encoding=('UTF-8'))
+    #在try中运行此可能错误的代码
+except FileNotFoundError:
+    print("Sorry,text.txt isn't found!")
+    #输出文件未找到
+else:
+    print(f.read().rstrip())
+    #如果找到则输出文件的内容
+
+3、隐藏报错信息只需要对except块的代码改为pass即可，当程序检查到此种错误时会跳过报错阶段！
+

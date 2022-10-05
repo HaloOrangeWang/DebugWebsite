@@ -1,0 +1,8 @@
+浏览器打开jupyter后，出现一堆文件，然后点击new创建新的python文件时，跳出错误：Permission denied: Untitled.ipynb。
+
+解决方式如下：
+
+cmd输入jupyter notebook --generate-config，可以看到jupyter_notebook_config.py文件的地址，修改一下jupyter_notebook的保存路径。具体操作方式：打开jupyter_notebook_config.py文件，找到 #c.NotebookApp.notebook_dir = ‘’ ，将这句话改为：c.NotebookApp.notebook_dir = ‘你想保存的路径’ 。例如：c.NotebookApp.notebook_dir = ‘F:/JupyterProject’。 也就是去掉注释符号#号，然后在单引号里加上路径。
+ 
+ 输入：jupyter notebook
+

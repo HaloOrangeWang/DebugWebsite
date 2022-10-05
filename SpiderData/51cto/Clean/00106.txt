@@ -1,0 +1,54 @@
+问题：
+在python使用过程中，发现报错No module named _ssl，但是系统已经安装opensll，于是开始了解决问题之旅
+原因：
+python3支持openssl版本最低为1.0.2，而系统比较老，自带的openssl版本为1.0.2
+参考 https://www.jianshu.com/p/3ec24f563b81
+
+
+安装新版openssl
+
+下载
+https://www.openssl.org/source/
+
+安装
+
+mkdir /usr/local/openssl
+tar xf openssl-1.1.1c.tar.gz
+cd openssl-1.1.1c/
+./config --prefix=/usr/local/openssl shared zlib
+make && make install
+
+配置共享库
+
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/openssl/lib' >> ~/.bash_profile
+source ~/.bash_profile
+
+
+安装python3
+
+下载
+https://www.python.org/downloads/source/
+
+安装，指定刚刚安装的opensll
+
+tar xf Python-3.7.3.tar.xz
+mkdir /usr/local/python3
+cd Python-3.7.3/
+./configure prefix=/usr/local/python3 --with-openssl=/usr/local/openssl
+make && make install
+
+配置python3环境变量
+
+echo '
+#配置python
+export PYTHON_HOME=/usr/local/python3
+export PATH=$PYTHON_HOME/bin:$PATH' >> ~/.bash_profile
+source ~/.bash_profile
+
+编译的时候能看到ssl成功加载
+
+
+验证ssl模块
+
+ssl模块成功导入
+

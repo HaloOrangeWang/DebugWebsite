@@ -1,0 +1,216 @@
+以前Maya用的好好地，结果安装了Anaconda之后，maya启动以后，日志就会报错（如下），只能自主建模，不能打开以前创建的模型，也不能导入fbx，错误提示就是Maya找不到Python模块，在网上查询有关资料，最后通过如下方式解决问题：
+
+第一步：找到  "E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm"目录下的xgGlobal.py文件（注意，对应到您自己的安装目录），打开文件，在文件头部添加如下代码（大概在42行，含注释）：
+
+import string
+import os
+import xgenm as xgen
+
+#上面三行是原有代码，只需要添加下面三行即可
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+第二步：
+
+在桌面上找到  "此电脑"，，点击右键，选择属性，打开
+
+选择"高级系统设置"，打开
+
+选择  "环境变量(N)..."，打开
+
+在系统变量列表中找到"PYTHON_PATH"或者"PYTHONHOME"或者是与Python相关的变量名，选中，点击删除，或者重命名成别的字段，然后重启电脑，错误消除，Maya又可以正常工作了，Anaconda也能正常工作。
+
+--------------------------------------------------------------------------------------Maya错误日志---------------------------------------------------------------------------------------------------
+
+找不到 maya.utils._guiExceptHook。
+Python 环境无效: Python 找不到 Maya 的 Python 模块
+Python Environment:
+PYTHONHOME = E:\Anaconda3\install1\
+PYTHONPATH = ;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/ATF/scripts;C:/Program Files/Autodesk/Bifrost/Maya2018/scripts/boss;C:/Program Files/Autodesk/Bifrost/Maya2018/scripts/presets;C:/Program Files/Autodesk/Bifrost/Maya2018/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/apiclient;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/googleapiclient;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/httplib2;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/MASH;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/MASHAET;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/MayaToAE;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/oauth2client;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/uritemplate;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/ae;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/resources;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/ui;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/resources/icons;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/fbx/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/camd/scripts;C:/solidangle/mtoadeploy/2018/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/camd/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/camd/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/substance/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/cafm;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/xmaya;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/ae;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/brushes;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/dialogs;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/fxmodules;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/tabs;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/util;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/widgets;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts
+System modules located at: E:\AutoDesk\maya2018\install\Maya2018\bin\python27.zip
+Search path (sys.path):
+E:\AutoDesk\maya2018\install\Maya2018\bin
+E:\AutoDesk\maya2018\install\Maya2018
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\ATF\scripts
+C:\Program Files\Autodesk\Bifrost\Maya2018\scripts\boss
+C:\Program Files\Autodesk\Bifrost\Maya2018\scripts\presets
+C:\Program Files\Autodesk\Bifrost\Maya2018\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\apiclient
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\googleapiclient
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\httplib2
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\MASH
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\MASHAET
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\MayaToAE
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\oauth2client
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\uritemplate
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\ae
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\resources
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\ui
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\resources\icons
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\fbx\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\camd\scripts
+C:\solidangle\mtoadeploy\2018\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\substance\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\cafm
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\xmaya
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\ae
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\brushes
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\dialogs
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\fxmodules
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\tabs
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\util
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\widgets
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts
+E:\AutoDesk\maya2018\install\Maya2018\bin\python27.zip
+E:\Anaconda3\install1\DLLs
+E:\Anaconda3\install1\lib
+E:\Anaconda3\install1\lib\plat-win
+E:\Anaconda3\install1\lib\lib-tk
+E:\AutoDesk\maya2018\install\Maya2018\bin
+E:\Anaconda3\install1
+E:\Anaconda3\install1\lib\site-packages
+E:\Anaconda3\install1\lib\site-packages\win32
+E:\Anaconda3\install1\lib\site-packages\win32\lib
+E:\Anaconda3\install1\lib\site-packages\Pythonwin
+也坏?maya.utils._guiExceptHook。
+Python 环境无效: Python 找不到 Maya 的 Python 模块
+Python Environment:
+PYTHONHOME = E:\Anaconda3\install1\
+PYTHONPATH = ;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/ATF/scripts;C:/Program Files/Autodesk/Bifrost/Maya2018/scripts/boss;C:/Program Files/Autodesk/Bifrost/Maya2018/scripts/presets;C:/Program Files/Autodesk/Bifrost/Maya2018/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/apiclient;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/googleapiclient;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/httplib2;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/MASH;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/MASHAET;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/MayaToAE;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/oauth2client;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/uritemplate;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/ae;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/resources;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/ui;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/resources/icons;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/fbx/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/camd/scripts;C:/solidangle/mtoadeploy/2018/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/camd/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/camd/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/substance/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/cafm;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/xmaya;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/ae;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/brushes;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/dialogs;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/fxmodules;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/tabs;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/util;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/widgets;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts
+System modules located at: E:\AutoDesk\maya2018\install\Maya2018\bin\python27.zip
+Search path (sys.path):
+E:\AutoDesk\maya2018\install\Maya2018\bin
+E:\AutoDesk\maya2018\install\Maya2018
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\ATF\scripts
+C:\Program Files\Autodesk\Bifrost\Maya2018\scripts\boss
+C:\Program Files\Autodesk\Bifrost\Maya2018\scripts\presets
+C:\Program Files\Autodesk\Bifrost\Maya2018\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\apiclient
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\googleapiclient
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\httplib2
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\MASH
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\MASHAET
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\MayaToAE
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\oauth2client
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\uritemplate
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\ae
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\resources
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\ui
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\resources\icons
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\fbx\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\camd\scripts
+C:\solidangle\mtoadeploy\2018\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\substance\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\cafm
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\xmaya
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\ae
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\brushes
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\dialogs
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\fxmodules
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\tabs
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\util
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\widgets
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts
+E:\AutoDesk\maya2018\install\Maya2018\bin\python27.zip
+E:\Anaconda3\install1\DLLs
+E:\Anaconda3\install1\lib
+E:\Anaconda3\install1\lib\plat-win
+E:\Anaconda3\install1\lib\lib-tk
+E:\AutoDesk\maya2018\install\Maya2018\bin
+E:\Anaconda3\install1
+E:\Anaconda3\install1\lib\site-packages
+E:\Anaconda3\install1\lib\site-packages\win32
+E:\Anaconda3\install1\lib\site-packages\win32\lib
+E:\Anaconda3\install1\lib\site-packages\Pythonwin
+找不到 maya.utils._guiExceptHook。
+Python 环境无效: Python 找不到 Maya 的 Python 模块
+Python Environment:
+PYTHONHOME = E:\Anaconda3\install1\
+PYTHONPATH = ;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/ATF/scripts;C:/Program Files/Autodesk/Bifrost/Maya2018/scripts/boss;C:/Program Files/Autodesk/Bifrost/Maya2018/scripts/presets;C:/Program Files/Autodesk/Bifrost/Maya2018/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/apiclient;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/googleapiclient;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/httplib2;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/MASH;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/MASHAET;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/MayaToAE;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/oauth2client;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/uritemplate;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/ae;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/resources;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/ui;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts/flux/resources/icons;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/MASH/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/fbx/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/camd/scripts;C:/solidangle/mtoadeploy/2018/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/camd/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/camd/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/substance/scripts;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/cafm;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/xmaya;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/ae;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/brushes;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/dialogs;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/fxmodules;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/tabs;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/util;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts/xgenm/ui/widgets;E:/AutoDesk/maya2018/install/Maya2018/plug-ins/xgen/scripts
+System modules located at: E:\AutoDesk\maya2018\install\Maya2018\bin\python27.zip
+Search path (sys.path):
+E:\AutoDesk\maya2018\install\Maya2018\bin
+E:\AutoDesk\maya2018\install\Maya2018
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\ATF\scripts
+C:\Program Files\Autodesk\Bifrost\Maya2018\scripts\boss
+C:\Program Files\Autodesk\Bifrost\Maya2018\scripts\presets
+C:\Program Files\Autodesk\Bifrost\Maya2018\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\apiclient
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\googleapiclient
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\httplib2
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\MASH
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\MASHAET
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\MayaToAE
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\oauth2client
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\uritemplate
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\ae
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\resources
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\ui
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts\flux\resources\icons
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\MASH\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\fbx\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\camd\scripts
+C:\solidangle\mtoadeploy\2018\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\substance\scripts
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\cafm
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\xmaya
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\ae
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\brushes
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\dialogs
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\fxmodules
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\tabs
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\util
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts\xgenm\ui\widgets
+E:\AutoDesk\maya2018\install\Maya2018\plug-ins\xgen\scripts
+E:\AutoDesk\maya2018\install\Maya2018\bin\python27.zip
+E:\Anaconda3\install1\DLLs
+E:\Anaconda3\install1\lib
+E:\Anaconda3\install1\lib\plat-win
+E:\Anaconda3\install1\lib\lib-tk
+E:\AutoDesk\maya2018\install\Maya2018\bin
+E:\Anaconda3\install1
+E:\Anaconda3\install1\lib\site-packages
+E:\Anaconda3\install1\lib\site-packages\win32
+E:\Anaconda3\install1\lib\site-packages\win32\lib
+E:\Anaconda3\install1\lib\site-packages\Pythonwin
+
+------------------------------------------------------------------------------正常启动以后的日志---------------------------------------------------------------------------------------
+
+Initialized VP2.0 renderer {
+Version : 2016.11.35.12. Feature Level 5.
+Adapter : Quadro M1200/PCIe/SSE2
+Vendor ID: 4318. Device ID : 22811
+Driver : .
+API : OpenGL V.4.6.
+Max texture size : 16384 * 16384.
+Max tex coords : 32
+Shader versions supported (Vertex: 5, Geometry: 5, Pixel 5).
+Shader compiler profile : (Best card profile)
+Active stereo support available : 0
+GPU Memory Limit : 4096 MB.
+CPU Memory Limit: 15424.3 MB.
+}
+OpenCL eval（R) Corporation. Intel(R) OpenCL. OpenCL 2.1 .
+Supported extensions: cl_intel_dx9_media_sharing cl_khr_3d_image_writes cl_khr_byte_addressable_store cl_khr_d3d11_sharing cl_khr_depth_images cl_khr_dx9_media_sharing cl_khr_fp64 cl_khr_gl_sharing cl_khr_global_int32_base_atomics cl_khr_global_int32_extended_atomics cl_khr_icd cl_khr_image2d_from_buffer cl_khr_local_int32_base_atomics cl_khr_local_int32_extended_atomics cl_khr_spir
+1: NVIDIA Corporation. NVIDIA CUDA. OpenCL 1.2 CUDA 9.1.84.
+Supported extensions: cl_khr_global_int32_base_atomics cl_khr_global_int32_extended_atomics cl_khr_local_int32_base_atomics cl_khr_local_int32_extended_atomics cl_khr_fp64 cl_khr_byte_addressable_store cl_khr_icd cl_khr_gl_sharing cl_nv_compiler_options cl_nv_device_attribute_query cl_nv_pragma_unroll cl_nv_d3d10_sharing cl_khr_d3d10_sharing cl_nv_d3d11_sharing cl_nv_copy_opts cl_khr_gl_event cl_nv_create_buffer
+OpenCL evaluator choosing OpenCL platform NVIDIA Corporation.
+Choosing OpenCL Device Quadro M1200. Device Type: GPU Device is available.
+
+---------------------------------------------------------------------------------------------------------------
+
+导入fbx\stl\obj等格式的模型也没有问题
+

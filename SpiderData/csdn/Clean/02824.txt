@@ -1,0 +1,20 @@
+一个求最大值的C代码，用GCC编译生成dll，存放于python代码同一文件夹下。
+
+int max(int a,int b)
+ {
+     return a>b?a:b;
+ }
+
+然后用python调用：
+
+from ctypes import cdll
+ cur=cdll.LoadLibrary('J:\StudyPython\max.dll')
+ a=cur.max(1, 2)
+ print(a)
+
+结果报错！错误信息末尾有win32字样。
+
+原因在于：GCC默认将C代码编译成64位dll，而python是32位 的。
+
+解决办法：gcc -shared -m32 max.c -o max.dll ，生成32dll。
+

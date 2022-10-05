@@ -1,0 +1,28 @@
+1、kubelet与docker的Cgroup Driver不一致导致的报错
+
+7月 01 15:05:59 kubeadm-master kubelet[9931]: W0701 15:05:59.697391    9931 watcher.go:87] Error while processing event ("/sys/fs/cgroup/devices/libcontainer_34389_systemd_test_default.slice": 0x40000100 == IN_CREATE|IN_ISDIR): inotify_add_watch /sys/fs/cgroup/devices/libcontainer_34389_systemd_test_default.slice: no such file or directory
+
+yum安装的kubelet默认的是cgroupfs，而docker一般默认的是systemd。但是kubernetes安装的时候建议使用systemd，当然修改docker为cgroupfs也可以,先修改docker
+
+#vim /etc/docker/daemon.json
+
+{
+  "exec-opts": ["native.cgroupdriver=cgroupfs"]
+}
+
+使修改生效：
+
+#systemctl  daemon-reload
+
+#systemctl restart docker
+
+也可以修改kubelet的配置文件：
+
+#vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml --cgroup-driver=systemd"
+
+#systemctl daemon-reload
+
+#systemctl restart kubelet
+

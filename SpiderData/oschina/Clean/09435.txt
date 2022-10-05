@@ -1,0 +1,21 @@
+
+Eclipse创建Maven web项目jsp表头报错
+
+5558
+
+　　今天在使用eclipse创建项目的时候，自动创建的文件的表头也就是默认的index.jsp页面出现了错误：superclass"javax.servlet.http.HttpServlet" was not found on the Java Build Path，jboss服务器已经安装，那么怎么解决呢？
+
+　　尝试了很多的方法，有的说是缺少相应的依赖的jar包，配置之后还是报错，幸好找到了答案。
+
+　　原来是建立的web工程没有添加相应的tomcat或者是jboss运行时相关类导致的。因为Web工程是运行在Tomcat或者jboss服务器上的，一般我们建立web项目的时候都会事先指定Target runtime也就是运行时的版本，那么怎么设置呢？
+
+　　（1）       右击web工程-----》属性或Build Path------》Java BuildPath->Libraries------》AddLibray...------》Server Runtime
+
+　　（2）       点击Next进入下一步选择服务器
+
+　　（3）       切换到Java Build Path界面中的Oraderand Export
+
+　　这样也许显示的不明确，比如我们创建一个动态的java web 项目：
+
+网上收藏  用来学习
+

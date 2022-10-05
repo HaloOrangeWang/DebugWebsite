@@ -1,0 +1,20 @@
+pact-python 在github上的readme推荐使用pip install pact-python 命令来安装。
+
+但是！但是！但是！
+
+pact在安装过程中，会下载ruby环境，由于国内无法下载，会导致下载不到。
+
+因此，找了很多资料，发现可以按如下步骤解决
+
+1.首先去github下载pact-python源码，并解压出来
+
+2.进入解压的目录，运行python setup.py build  和 python setup.py install ，运行第二个命令会发现安装卡住，此时可以中断安装
+
+3.去github下载ruby环境pact-1.88.14-win32.zip，命名改为win32.zip ，https://github.com/pact-foundation/pact-ruby-standalone/releases
+
+4.把改名后的zip放到python site-pactage-pact下的bin目录，并且修改 setup.py 把下载和创建目录注释掉
+
+"""pact-python PyPI Package."""
+
+5.再次执行 python setup.py install 则安装完成
+

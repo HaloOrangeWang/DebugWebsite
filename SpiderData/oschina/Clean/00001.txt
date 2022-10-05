@@ -1,0 +1,266 @@
+
+VMware
+
+
+vmware 模块“Disk”启动失败
+
+解决方案: 打开你存放虚拟机系统硬盘的所在文件夹，注意，是硬盘文件，不是虚拟机的安装目录，也就是你建立虚拟机的时候设置的位置。
+
+然后以下面关键字搜索这个文件夹：*.lck
+
+我这里找到了三个，删除即可，删除后，就不再提示上面第一个图的错误了：
+
+
+MYSQL
+
+
+使用pycharm连接mysql报错
+
+解决方案: 在jdbc连接的url后面加上?serverTimezone=Asia/Shanghai即可 (jdbc:mysql://127.0.0.1:3306/host?serverTimezone=Asia/Shanghai )
+
+
+Django
+
+<hr>
+
+
+ConnectionAbortedError: [WinError 10053]
+
+File "E:\Python\Python36-32\lib\socketserver.py", line 803, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接
+
+解决方法：找到``python/Lib/socketserver.py文件，修改SocketWriter`类的write方法
+
+def write(self, b):
+    try:
+		self._sock.sendall(b)
+	except Exception as e:
+		self._sock.close()
+	with memoryview(b) as view:
+		return view.nbytes
+
+参考博客
+
+
+python3 manager.py makemigration报错
+
+django.core.exceptions.ImproperlyConfigured: The app module <module 'web' (namespace)> has multiple filesystem locations (['D:\\桌面\\审计管理\\CrazyEye\\web', 'D:/桌面/审计管理/CrazyEye\\web']); you must configure this app with an AppConfig subclass with a 'path' class attribute.
+
+解决方法：django app没有__init__.py, 新建这个文件
+
+
+python3 manager.py migrate报错
+
+执行命令 python3 manager.py migrate, 出现报错:
+
+django.db.utils.InternalError: (1071, 'Specified key was too long; max key length is 767 bytes')
+
+解决方案: python3 manager.py migrate <app名字>
+
+又出现了报错 django.db.utils.InternalError: (1050, "Table 'web_userprofile' already exists")
+
+解决方案: 执行命令 migrate <app名字> --fake, 然后再执行命令 migrate就正常了
+
+
+启动报错django.core.exceptions.ImproperlyConfigured
+
+django.core.exceptions.ImproperlyConfigured: Requested setting DEFAULT_INDEX_TABLESPACE, but settings are not configured. You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.
+
+解决方案: 环境选错, 选择django项目启动
+
+<br>
+
+
+mysql.W002
+
+System check identified some issues:
+
+WARNINGS:
+?: (mysql.W002) MySQL Strict Mode is not set for database connection 'default'
+	HINT: MySQL's Strict Mode fixes many data integrity problems in MySQL, such as data truncation upon insertion, by escalating warnings into errors. It is strongly recommended you activate it. See: https://docs.djangoproject.com/en/1.11/ref/databases/#mysql-sql-mode
+
+<br>
+
+解决: 在setting.py中添加选项
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cmdb1',
+        'HOST': '127.0.0.1',
+        'USER': 'root',
+        'PASSWORD': '123',
+        'PORT': 3306,
+        'CHARSET': 'utf8',
+        'OPTIONS': {
+            "init_command": "SET default_storage_engine='INNODB'"
+        }
+    }
+}
+DATABASES['default']['OPTIONS']['init_command'] = "SET sql_mode='STRICT_TRANS_TABLES'"
+
+<br>
+
+
+TypeError: init() missing 1 required positional argument: 'app_module'
+
+<hr>
+
+<br>
+
+<font color="red">原因: 将app注册到MIDDLEWARE的列表中</font>
+
+<br>
+
+
+PIP
+
+
+[WinError 10061] 由于目标计算机积极拒绝，无法连接
+
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', NewConnectionError('<pip._vendor.urllib3.connection.VerifiedHTTPSConnection object at 0x03C98530>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。',))': /simple/django/
+
+解决方案: 关闭代理, 浏览器设置是没用的, 需要去注册表设置 计算机\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings, 将enable的值设置为0, 就是关闭代理
+
+<br>
+
+
+SED
+
+<hr>
+
+
+mac下sed -i参数: command a expects \ followed by text
+
+<br>
+
+mac下想要使用-i参数直接替换文件中的内容，使用的命令为：
+
+$ sed -i '13d' /Users/cjw/.ssh/known_hosts
+
+执行之后，提示的错误信息为：
+
+sed: 1: "/Users/cjw/.ssh/known_h ...": command c expects \ followed by text
+
+该命令，在redhat、ubuntu下执行则没有问题，这个问题产生的原因是Mac是基于FreeBSD,和RedHat不是一个系列。 查看mac下 sed 帮助文档，显示如下内容：
+
+-i extension
+             Edit files in-place, saving backups with the specified extension.  If a zero-length extension is given, no backup will be saved.  It is not recommended to give a zero-
+             length extension when in-place editing files, as you risk corruption or partial content in situations where disk space is exhausted, etc.
+
+修改命令
+
+$ sed -i.bak '13d' /Users/cjw/.ssh/known_hosts
+
+<br>
+
+
+SALT
+
+<hr>
+
+
+pip3 安装salt报错
+
+pip3 install salt
+
+<br>
+
+安装python36-devel 问题解决
+
+yum install python3.6-devel
+
+<br>
+
+
+saltstack 执行命令出错 Minion did not return. [No response]
+
+<br>
+
+查看minion的日志
+
+root@salt-minion: ~ # tail -f /var/log/salt/minion 
+The master public key can be found at:
+/etc/salt/pki/minion/minion_master.pub
+2019-08-23 03:01:05,340 [salt.crypt       ][ERROR   ][22697] The master key has changed, the salt master could have been subverted, verify salt master's public key
+2019-08-23 03:01:05,341 [salt.crypt       ][CRITICAL][22697] The Salt Master server's public key did not authenticate!
+
+<br>
+
+删除公钥并重启minion
+
+root@salt-minion: ~ # cat /etc/salt/pki/minion/minion_master.pub 
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzZ0JW14Ddso9t14i7Q9e
+xnw5E/q8AAFQm9oi5ON0Q3wcnVabp8qrkM6iwf7yIelBrz9HWkys8e5PVnX80Tr9
+/uhRX7JwXxHTUfVqwTaBvSF+ShNKWrB8IFl4ZER4bn6V9BtTty1UsE6t/nh4iSPO
+uW1UWsgv0BNpTOj6o1cQSQnUdBEIH0mYYQPCBwY/0avqbpB7NblZH5PLfe3a7bG1
+N+jrbjla5Wo0KOICrD6qJlp/5cUsq5YnGKMnDtwgP0oQ9lSr8rP4qWpWnhIkjI69
+n3/yAjmCehnK+7SZBaxrqhRPRT/muphpwmqhmVtQSjLjNXoKjBHCC5+UAiveLdmC
+/QIDAQAB
+-----END PUBLIC KEY-----
+root@salt-minion: ~ # rm -rf /etc/salt/pki/minion/minion_master.pub
+root@salt-minion: ~ # systemctl restart salt-minion
+
+<br>
+
+master端可以正常和minion通信
+
+root@salt-master: ~ # salt 'slave1' cmd.run 'ip a'
+slave1:
+    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+        link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+        inet 127.0.0.1/8 scope host lo
+           valid_lft forever preferred_lft forever
+        inet6 ::1/128 scope host 
+           valid_lft forever preferred_lft forever
+    2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+        link/ether 00:0c:29:2e:48:02 brd ff:ff:ff:ff:ff:ff
+        inet 172.16.240.130/24 brd 172.16.240.255 scope global noprefixroute ens33
+           valid_lft forever preferred_lft forever
+        inet6 fe80::bc7e:e9f9:591c:208d/64 scope link noprefixroute 
+           valid_lft forever preferred_lft forever
+
+<br>
+
+
+ELK
+
+<hr>
+
+
+Java HotSpot(TM) 64-Bit Server VM warning: Cannot open file logs/gc.log due to Permission denied
+
+$ /usr/local/elasticsearch-6.6.0/bin/elasticsearch -d
+Java HotSpot(TM) 64-Bit Server VM warning: Cannot open file logs/gc.log due to Permission denied
+
+<br>
+
+查看/usr/local/elasticsearch-6.6.0/bin/elasticsearch 权限
+
+[elk@es2 ~]$ ll /usr/local/elasticsearch-6.6.0/logs/
+总用量 267304
+-rw-rw-r--. 1 elk  elk     38877 1月   3 00:00 elasticsearch-2020-01-02-1.log.gz
+-rw-rw-r--. 1 elk  elk    117561 1月   7 12:58 elasticsearch-2020-01-03-1.log.gz
+-rw-rw-r--. 1 elk  elk     91739 1月   8 00:00 elasticsearch-2020-01-07-1.log.gz
+-rw-rw-r--. 1 elk  elk         0 1月   2 10:26 elasticsearch_access.log
+-rw-rw-r--. 1 elk  elk         0 1月   2 10:26 elasticsearch_audit.log
+-rw-rw-r--. 1 elk  elk     27666 1月   8 14:36 elasticsearch_deprecation.log
+-rw-rw-r--. 1 elk  elk         0 1月   2 10:26 elasticsearch_index_indexing_slowlog.log
+-rw-rw-r--. 1 elk  elk         0 1月   2 10:26 elasticsearch_index_search_slowlog.log
+-rw-rw-r--. 1 elk  elk   1464484 1月   8 16:06 elasticsearch.log
+-rw-rw-r--. 1 elk  elk  67109935 1月   3 02:38 gc.log.0
+-rw-r--r--. 1 root root     4295 1月   8 15:48 gc.log.0.current
+-rw-rw-r--. 1 elk  elk  67109911 1月   3 17:27 gc.log.1
+-rw-rw-r--. 1 elk  elk  67109912 1月   8 00:55 gc.log.2
+-rw-rw-r--. 1 elk  elk  67109247 1月   8 14:30 gc.log.3
+-rw-rw-r--. 1 elk  elk   3506396 1月   8 15:15 gc.log.4.current
+
+<br>
+
+删除root所属和所属组的文件, 无报错
+
+rm -rf /usr/local/elasticsearch-6.6.0/logs/gc.log.0
+/usr/local/elasticsearch-6.6.0/bin/elasticsearch -d
+

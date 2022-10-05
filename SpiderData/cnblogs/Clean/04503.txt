@@ -1,0 +1,29 @@
+[问题现象]
+
+在一次调用修饰函数中出现了问题，折腾了一下午，一直报错 TypeError:  got multiple values for argument
+
+只是很简单的调用
+
+from tsu2Runner import AndroidActions
+auto = AndroidActions()
+
+auto.log(1, 2, text='应用市场', name='lucy')
+
+auto = AndroidActions()
+
+auto.log(1, 2, text='应用市场', name='lucy')
+
+经过翻阅查找，意思是传参错误，但是并不知道是哪里错了，因为看代码是完全没问题的！！！自己在另一边写了测试代码也完全可以运行的，但是在项目代码中就会报错
+
+[问题原因]
+
+折腾了一下午，最后依靠谷爹进行一番查阅找到了原因
+
+原因是字典d里面还存在关键字'name‘，python解释器报错
+
+[解决办法]
+
+在传参的时候，避免使用python自带的常用关键字
+
+博主已搭建个人博客，更多精彩请见 《yongchin.xyz》
+

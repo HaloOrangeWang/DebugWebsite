@@ -1,0 +1,15 @@
+
+具体报错
+
+[2019-02-20 11:57:36] [42000][1055] Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'exer.student.sid' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+
+
+解决方案
+
+select version(),
+@@sql_mode;SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+
+show variables like "sql_mode";
+set sql_mode='';
+set sql_mode='NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES';
+

@@ -1,0 +1,52 @@
+一. 抛出异常
+
+Python用异常对象(exception object)表示异常情况，遇到错误后，会引发异常。如果异常对象并未被处理或捕捉，程序就会用所谓的回溯(Traceback,一种错误信息)终止执行。
+
+raise 语句
+
+Python中的raise 关键字用于引发一个异常，基本上和C#和Java中的throw关键字相同，如下所示：
+
+import traceback
+
+def throw_error():
+  raise Exception("抛出一个异常")#异常被抛出，print函数无法执行
+  print("飞天猪")
+  
+throw_error()
+
+#运行结果：
+
+'''Traceback (most recent call last):
+ File "C:\Users\Administrator\Desktop\systray.py", line 7, in <module>
+  throw_error()
+ File "C:\Users\Administrator\Desktop\systray.py", line 4, in throw_error
+  raise Exception("抛出一个异常")#异常被抛出，print函数无法执行
+Exception: 抛出一个异常'''
+
+raise关键字后面是抛出是一个通用的异常类型(Exception)，一般来说抛出的异常越详细越好
+
+二.传递异常：
+
+捕捉到了异常，但是又想重新引发它(传递异常)，可以使用不带参数的raise语句即可：
+
+class MufCalc(object):
+  m = False
+  def calc(self,exp):
+    try:
+      return eval(exp)
+    except ZeroDivisionError:
+      if self.m:
+        print("cool")
+      else:
+        raise
+
+app = MufCalc()
+app.calc(2/0)
+
+三.自定义异常类型：
+
+Python中也可以自定义自己的特殊类型的异常，只需要要从Exception类继承(直接或间接)即可：
+
+class MyError(Exception):
+  pass
+

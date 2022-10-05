@@ -1,0 +1,36 @@
+目前的Django版本是Django version 2.0.4
+
+Python使用的版本是Python 3.6.4
+
+以下会将遇到的问题和各种报错信息记录
+
+报错信息：NameError: name 'url' is not defined
+
+问题分析：urls.py文件下没有导入url的模块
+
+解决办法：输入from django.conf.urls import url
+
+——————————————————————————————————————————————————————————————
+
+报错信息：不报错，但是页面无法返回正常的值，并且GET、POST方法均正常
+
+问题分析：网页返回值正常，但是html文件中包含处理字段的缩进导致不能正常返回值
+
+解决办法：在需要逻辑处理的地方（html文件）取消缩进
+
+———————————————————————————————————————————————————————————————————————————————
+
+报错信息：django.db.utils.InternalError: (1049, "Unknown database 'cms'")
+
+问题分析：数据库名字写错了(尴尬，因为是在单位写的，想在家迁移的时候没注意)
+
+解决办法：改下setting.py调用的数据名字就可以了
+
+———————————————————————————————————————————————————————————————————————————————
+
+报错信息：TypeError: register() missing 1 required positional argument: 'model_or_iterable'
+
+问题分析：Django 提供的 CSRF 防护机制
+
+解决办法：Django内部中间注册件注释掉就行了
+

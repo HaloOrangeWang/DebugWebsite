@@ -1,0 +1,18 @@
+前几天更新到 macOS 12.3 之后，Sourcetree 无法正常打开 Mercurial 的项目，猜测是跟 macOS 12.3 移除了内置的 Python2 有关。报错如下：
+
+在 ATLASSIAN Community 上也能找到相关的帖子，比如这篇：Couldn't posix_spawn: error 2，我也在上面留言了。
+
+其实，打开 Sourcetree 偏好设置可以看到报错原因了：
+
+其中有两个选项，前者意思是「使用内置的 Mercurial」，后者表示「使用系统安装的 Mercurial」。猜测是 Sourcetree 内置的 Mercurial 依赖了 macOS 系统内置的 Python2，但由于系统更新之后已彻底移除，所以就报错了（当前 Sourcetree 最新版本为 4.1.6，仍存在问题，目测后续版本会解决此问题）。
+
+因此，解决思路也很简单，就是使用自行安装的 Mercurial 即可。
+
+从 Use System Mercurial 处选择路径：/usr/local/Cellar/mercurial/6.1/lib/python3.10/site-packages/mercurial（根据自己安装的 Mercurial 版本及对应路径去选择）。
+
+如果你是通过 Homebrew 安装 Mercurial 的话，可以使用 brew list mercurial 命令查看其路径。
+
+重新打开，就可以了，不再报错。
+
+The end.
+

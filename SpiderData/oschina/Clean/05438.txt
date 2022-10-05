@@ -1,0 +1,12 @@
+在接口测试中，excel中存储的是测试数据，包括测试id，api_name，测试说明，请求数据，期望结果等等，所以对待excel要格外注意，刚刚就因为excel中请求数据少了一个"，导致测试通通失败
+
+下图即为测试用例的运行结果，几乎都fail了，从图中可以看出问题出在print(json.loads(case_data["request_data"]))这一行，首先想到的是会不会py.test引起的，因为我的是unittest框架，默认是用pytest运行的
+
+跑到设置—Python Integrated Tools下面，把Default test runner改成unittests，保存
+
+再运行，发现结果还是一样的，换种思路，通过print(case_data["request_data"])打印出请求数据，发现reg的值末尾都少了"号，可能是我在第一个"xiaozhai写错之后，都是复制粘贴的，才会出现这样的情况
+
+果然是Excel中写错了
+
+更改保存后，发现print(case_data["request_data"])不报错了
+

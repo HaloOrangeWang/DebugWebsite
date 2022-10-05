@@ -1,0 +1,48 @@
+转载请注明出处：https://blog.csdn.net/l1028386804/article/details/83120113
+
+
+一、问题现象
+
+在Kali下写python代码的时候，有时会需要安装一些第三方的库，安装的时候提示：
+
+SystemError: Cannot compile 'Python.h'. Perhaps you need to install python-dev.
+
+然后按照提示sudo apt-get install Python-dev又出错，提示：
+
+The following packages have unmet dependencies:  
+ python-dev : Depends: python2.7-dev (>= 2.7.3) but it is not going to be installed  
+E: Unable to correct problems, you have held broken packages.
+
+于是我又sudo apt-get install python2.7-dev，显示依赖错误：
+
+The following packages have unmet dependencies：  
+ python2.7-dev : Depends: python2.7 (= 2.7.3-0ubuntu3) but 2.7.3-0ubuntu3.1 is to be installed  
+                 Depends: libpython2.7 (= 2.7.3-0ubuntu3) but 2.7.3-0ubuntu3.1 is to be installed
+
+
+二、问题原因
+
+出现这个问题的原因主要是默认情况下，Kali为python2.7-dev提供的软件源与python-2.7 2.7.3-0Kali3.1的源不一致，需要更新软件源。
+
+
+三、问题解决
+
+可以使用命令apt-cache show python2.7查看到你安装python-2.7 2.7.3-0Kali3.1是从源precise-updates/main安装的，而python2.7-dev默认是从源precise/main安装的，因此安装python2.7-dev之前需要更新软件源。
+ 使用如下的代码可以安装成功
+
+
+1、更新镜像源
+
+vim /etc/apt/sources.list
+deb http://mirrors.ustc.edu.cn/kali kali main non-free contrib
+deb-src http://mirrors.ustc.edu.cn/kali kali main non-free contrib
+deb http://mirrors.ustc.edu.cn/kali-security kali/updates main contrib non-free
+apt-get update
+
+
+2、安装Python依赖
+
+sudo apt-get update  
+sudo apt-get install python2.7-dev
+sudo apt-get install python-dev
+

@@ -1,0 +1,223 @@
+最近由于自己的课题需要，想要用在树莓派上使用DHT11温湿度传感器来读取空气中温湿度，遇到了几个问题，解决之后也对之前的知识进行了回顾，总结，特整理如下，希望能给也在学习树莓派的小伙伴们带来一些帮助。总的来说操作很简单，但很容易出现细节方面的问题，我也把我遇到的问题进行了简单整理，如果有其他问题可以直接在评论区提出，我看到了就会回答。
+
+本篇文章主要对DHT11进行了简单梳理，主要分为四大模块，分别为：
+
+一、DHT11温湿度传感器
+
+二、实验所需设备与连线方式
+
+三、Python代码实现
+
+四、常见问题
+
+（一）TypeError: unsupported format string passed to NoneType.__format__
+
+（二）SyntaxError: invalid syntax
+
+（三）ModuleNotFoundError: No module named 'Adafruit_DHT'
+
+（四）ImportError: cannot import name 'Beaglebone_Black_Driver' from 'Adafruit_DHT'
+
+（五）RuntimeError: Error accessing GPIO.
+
+对哪个模块感兴趣也直接翻到相应部分阅读即可。
+
+一、DHT11温湿度传感器
+
+DHT11温湿度传感器是一个性能很棒的模块，它提供温度和湿度读数。价格低廉，精准度高使用简单，并且有python库可以直接导入使用，应用也很广泛，在远程气象站、土壤监测器和家庭自动化系统都可以看见它的身影。
+
+在日常工作学习中，我们接触到的DHT11主要有两种形式。一种是三引脚的焊有PCB的模块，另一款是是四引脚的独立模块。如下图所示：
+
+第一种传感器从左到右分别是信号引脚，VCC引脚（连接电源正极），ground接地引脚（连接电源负极）。需要注意的是，关于三引脚传感器，不同厂商的传感器引脚的顺序可能不同，大家在连接之前需要看准传感器上标的符号来进行判断，比如我的传感器就是这样的，从左到右的第一个引脚（+）是连接电源正极的。
+
+二、实验所需设备与连线方式
+
+（一）实验所需设备
+
+1. DHT11 温室度传感器
+
+2. 树莓派 3 B+/树莓派 4 B
+
+3. 三根杜邦线（母对母）
+
+（二）软件环境：Thonny
+
+（三）DHT11与树莓派连线方式
+
+根据DHT11传感器两种形式不同，连线不太相同，却也大同小异，你有哪一种传感器都可以。此处的连线与后面的代码相关，直接按照图示方式连接即可。
+
+1.三针引脚DHT11温湿度传感器与树莓派的连接方式（我也把树莓派的引脚功能图放到下方了，不熟悉树莓派引脚功能的同学可以直接在本页面进行比对查看。）
+
+2.四针引脚DHT11温湿度传感器与树莓派的连接方式
+
+树莓派引脚对照图：树莓派3B(3B+)(下图左)，树莓派3B(3B+)(下图右)
+
+注意：
+
+1.一定要看好传感器引脚的顺序再进行连接。（vcc-树莓派pin2，ground-树莓派pin6，signal-树莓派pin7(gpio4)）
+
+2.vcc只要连接的是树莓派上标有“5v”标识的引脚（pin2或pin4），ground连接树莓派上标有“GND”标识的引脚（pin6,pin9,pin14,pin25,pin30,pin39），signal连接任意标有“GPIO”的引脚，但最后连接pin7，这样后面的代码直接复制粘贴的即可，建议第一次连接的同学直接按照我的方式连接即可，避免后期不必要的错误。
+
+三、Python代码实现
+
+Python代码实现数据读取有很多现成的库可供使用，DHT系列传感器的库可以使用Adafruit DHT。在写代码之前，先把python和Adafruit DHT库下载下来。
+
+sudo apt-get install git-core
+
+git clone https://github.com/adafruit/Adafruit_Python_DHT.git
+
+cd Adafruit_Python_DHT
+
+sudo apt-get install build-essential python-dev
+
+sudo python3 setup.py install
+
+1.sudo apt-get install git-core
+
+（注意：如果下载失败，则先运行sudo apt-get update并且再试一遍，其实不管下载什么，都可以先update到最新）
+
+2.安装Adafruit DHT11库
+
+（1）下载库： git clone https://github.com/adafruit/Adafruit_Python_DHT.git
+
+（2）使用cd命令进到 Adafruit_Python_DHT文件夹： cd Adafruit_Python_DHT
+
+（3）sudo apt-get install build-essential python-dev
+
+（4）下载python3：sudo python3 setup.py install
+
+新建py文件
+
+#!/usr/bin/python
+import sys
+import Adafruit_DHT
+
+　　
+
+　　
+
+然后点运行就可以了
+
+这是运行结果
+
+代码解释：
+
+（1）输出的温度以摄氏度为单位，相对湿度是以百分比的形式呈现。
+
+（2）在shell框中会连续不断的输出温度和相对湿度，暂停点击右上角的stop即可。
+
+其实每个库的包都包含示例和相关文件，打开你下载的Adafruit_Python_DHT库，可以看到里面example文件夹，在里面可以查看一些示例文件
+
+你的库怎么用和相关代码细节都在里面，就不给大家赘述了，想深入了解的同学打开文件查看即可。
+
+四、 常见问题：
+
+其实整个过程下来，连线方式或者代码的编写都是没有多大难度的，但是细节的问题一旦忽视，就会报错。结合其他网友的经验和我自己的问题总结如下。
+
+（一）报错：
+
+TypeError: unsupported format string passed to NoneType.__format__（出现情况一般是先没有读数，过10秒钟左右后报这个错误。在调试过程中它是最常出现的，造成这个报错的原因比较多）
+
+出现这个报错的根本原因是树莓派没有成功的拿到humidity和temperture参数，导致这两个值为none，从而使得.format方法出错。拿不到dht11数值的可能性有：
+
+1. 杜邦线与树莓派的连线问题。连线没有插紧、线序有问题、线有损坏、代码与使用的信号引脚不对应、没有插到树莓派5v电源引脚上（树莓派与传感器的连接方式最好使用树莓派5v，电源，但确实存在使用3.3v电源最后得到数值的情况）
+
+2. 传感器有问题（一直盯着查看代码排错，结果发现换了个传感器就好了，哭晕）
+
+3. 电源供电不足（我这里是指树莓派引脚，在使用5V引脚和接地引脚给传感器供电时）我上次是就是控制继电器的同时想要拿到传感器读数，导致DHT传感器供电不足报错。解决方法是接一个外接电源来保证电源电压的稳定。
+
+（二）报错：SyntaxError: invalid syntax
+
+这句话的意思是Python代码语法有问题。Python对语法的要求非常严格，有时候代码是网上直接找来复制粘贴的，就有可能导致明明看上去没错，但就一直报语法错误，代码短的话可以重新打一遍，或者格式化后再粘贴。
+
+另外需要注意的是Python2和Python3的语法有区别，比如Python2的print后面不用加括号，而Python3中就会报错。
+
+（三）报错：ModuleNotFoundError: No module named 'Adafruit_DHT'
+
+“import Adafruit_DHT ”语句错误，提示找不到Adafruit_DHT模块，但是在terminal里输入“import Adafruit_DHT”不报错，并且已经下载了相关库。可能是python版本的问题，先明确你运行程序时使用的是哪个Python版本。
+
+使用的是Python2使用的语句是：sudo pip install Adafruit_Python_DHT； sudo python setup.py install，
+
+但使用的是Python3使用的语句是：sudo pip3 install Adafruit_Python_DHT； sudo python3 setup.py install
+
+--------------假装我是分割线--------------
+
+隔了一段时间，我用树莓派4B（我之前用的树莓派3B+）进行相同操作的时候出了新的问题，所以再更新一下
+
+（四）报错：ImportError: cannot import name 'Beaglebone_Black_Driver' from 'Adafruit_DHT' (/usr/local/lib/python3.7/dist-packages/Adafruit_DHT/__init__.py)
+
+完整错误信息：
+
+Traceback (most recent call last):
+
+File "/home/pi/Desktop/ec and ph/temp.py", line 7, in <module>
+
+humidity,temperature = Adafruit_DHT.read_retry(11, 4)
+
+File "/usr/local/lib/python3.7/dist-packages/Adafruit_DHT/common.py", line 94, in read_retry
+
+humidity, temperature = read(sensor, pin, platform)
+
+File "/usr/local/lib/python3.7/dist-packages/Adafruit_DHT/common.py", line 80, in read
+
+platform = get_platform()
+
+File "/usr/local/lib/python3.7/dist-packages/Adafruit_DHT/common.py", line 60, in get_platform
+
+from . import Beaglebone_Black
+
+File "/usr/local/lib/python3.7/dist-packages/Adafruit_DHT/Beaglebone_Black.py", line 24, in <module>
+
+from . import Beaglebone_Black_Driver as driver
+
+ImportError: cannot import name 'Beaglebone_Black_Driver' from 'Adafruit_DHT' (/usr/local/lib/python3.7/dist-packages/Adafruit_DHT/__init__.py)
+
+分析：通过报错信息，我们可以发现是库中的common.py里引用get_latform有问题
+
+再去platform_detect.py里查看发现树莓派的版本定义里没有4B，导致返回了None
+
+解决：出现这个原因是AdaFruit不再更新这个旧的Adafruit_DHT库，所以里面没有更新树莓派4B对应的cpu。有两种解决方法，使用这个传感器的新库“Adafruit_CircuitPython_DHT”，或者在你原来的Adadruit_DHT库中自己手动更新，具体操作如下：
+
+（1）找到Adafruit_DHT文件夹，有时候可能时间久远忘记保存到哪个文件夹里了，可以通过报错信息查看是“/usr/local/lib/python3.7/dist-packages/Adafruit_DHT/”，
+
+（2）打开文件夹里的platform_detect.py文件，可以看到把下面这两行代码添加到最后。
+
+elif match.group(1) == 'BCM2711':
+    return 3
+
+其中BCM2711是树莓派4B的CPU，它是四核Cortex-A72 64位。其它的BCMxxxx是其它树莓派版本的CPU。
+
+修改完文件保存的时候可能遇见permission denied的情况：
+
+需要你打开Terminal运行这条命令，最后的库的位置需要你根据自己库存放的位置修改。更详细的可以看这里树莓派里常用的Linux命令——在terminal中修改文件夹读写权限
+
+sudo chmod -R 777 /usr/local/lib/python3.7/dist-packages/Adafruit_DHT
+
+成功保存之后再运行原代码就可以顺利拿到读数啦！
+
+（五）报错：RuntimeError: Error accessing GPIO.
+
+Traceback (most recent call last):
+  File "/home/pi/shan.py", line 8, in <module>
+    humidity, temperature = Adafruit_DHT.read_retry(11, 4)
+  File "/usr/local/lib/python3.7/dist-packages/Adafruit_DHT-1.4.0-py3.7-linux-armv7l.egg/Adafruit_DHT/common.py", line 94, in read_retry
+    humidity, temperature = read(sensor, pin, platform)
+  File "/usr/local/lib/python3.7/dist-packages/Adafruit_DHT-1.4.0-py3.7-linux-armv7l.egg/Adafruit_DHT/common.py", line 81, in read
+    return platform.read(sensor, pin)
+  File "/usr/local/lib/python3.7/dist-packages/Adafruit_DHT-1.4.0-py3.7-linux-armv7l.egg/Adafruit_DHT/Beaglebone_Black.py", line 213, in read
+    raise RuntimeError('Error accessing GPIO. Make sure program is run as root with sudo!')
+RuntimeError: Error accessing GPIO. Make sure program is run as root with sudo!
+
+raise RuntimeError('Error accessing GPIO. Make sure program is run as root with sudo!')
+RuntimeError: Error accessing GPIO. Make sure program is run as root with sudo!、
+
+分析：报错的原因是你当前登录的账户不是root账户，所以Adafruit_DHT库里需要拿GPIO数据的时候被阻止了。你可以在terminal中测试一下，先使用cd进入你代码所在文件夹，再执行“sudo python3 你的文件名.py”（如“sudo python3 temp.py”）。如果你使用的是python2， 那么就用“sudo python 你的文件名.py”。如果不报错，就说明是这个问题。
+
+解决：两种解决方法。
+
+1. 把当前用户授权所有root的权限，再执行代码
+
+2. 直接使用root账户登录
+
+最后祝大家都玩派顺利~~
+

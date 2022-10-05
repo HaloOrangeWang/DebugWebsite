@@ -1,0 +1,28 @@
+运行了一段代码,报错了'str' object is not callable
+
+score = int(input('请输入一个数字:'))
+grade = 'abcde'
+mun = 0
+if score>100  or score<0:
+    print('数字不符合条件!请重新输入')
+else:
+    num = score//10
+    if num<6:
+        num=5
+    print("分数是{0},等级是{1}".format(score,grade(9-num)))
+
+str在用它的时候不能同时定义一个别的叫做str的变量,修改为如下内容就运行正常. grade[ 9-num],这里是的单个字符串的提取,所以用[],()可以说是代表方法.
+
+score = int(input('请输入一个数字:'))
+grade = 'abcde'
+mun = 0
+if score>100  or score<0:
+    print('数字不符合条件!请重新输入')
+else:
+    num = score//10
+    if num<6:
+        num=5
+    print("分数是{0},等级是{1}".format(score,grade[9-num]))
+
+查资料说一般情况报错 XXX is not callable的时候，很有可能是正在调用一个不能被调用的变量或对象，具体表现就是你调用函数、变量的方式错误,等遇到了再补充吧.
+

@@ -1,0 +1,30 @@
+python使用super()出现错误解决办法
+
+当我们在python的子类中调用父类的方法时，会用到super()，不过我遇到了一个问题，顺便记录一下。
+
+比如，我写了如下错误代码：
+
+class A():
+  def dosomething(self):
+    print "It's A"
+
+class B(A):  
+  def dosomething(self):    
+    super(B, self).dosomething()
+
+if __name__ == '__main__':  
+  b = B()  
+  b.dosomething()
+
+输出报错：
+
+TypeError: must be type, not classobj
+
+google之后发现,python在2.2前后有新式类(new-style class)与旧式类(old-style class)的区别，我上面的例子为旧式类，而super关键字必须作用于新式类。
+
+新式类：所有类都必须要有继承的类，如果什么都不想继承，就继承到object类。
+
+所以，解决此错误必须将A类改为class A(object):
+
+以上就是python super()使用遇到问题的解决办法，如有疑问请留言或者到本站社区交流讨论，感谢阅读，希望能帮助到大家，谢谢大家对本站的支持！
+

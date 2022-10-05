@@ -1,0 +1,71 @@
+
+执行报错
+
+一、 控制台输出 有各种文件 出现错误，其中会有 ASCll utf-8相关字眼，最后发现，只要有中文就不可，每个文件都必须要有# -- coding: UTF-8 --
+
+新建文件的头部模板https://blog.csdn.net/oukohou/article/details/62039563 一开始感觉这个可有可无。但是！！！现在 Jenkins运行项目的时候，一直报错，就是因为没有 在每个文件的第一行写上# -- coding: UTF-8 -- 所以放在头部
+
+Pycharm -> Preference -> Editor -> File and Code Templates -> Python Script 在右侧输入。可参考链接中的高阶写法，下边是我的
+
+# -*- coding: utf-8 -*-
+# ---
+# @PROJECT_NAME: ${PROJECT_NAME}
+# @File: ${NAME}.py
+# @Author: MJ
+# @Time: ${DATE} ${TIME}
+# ---
+
+二、 Python ImportError: No module named configparser
+
+打开终端
+
+输入 python  可以看到默认版本(我这是已经改成了3之前默认是2.7)
+
+输入 which python3 获取路径
+
+拓展：
+
+which指令：会在PATH变量指定的路径中，搜索某个系统命令的位置，并且返回第一个搜索结果。
+
+作用：查找文件并显示命令路径eg：which python3
+
+输出：（which是查找PATH路径下配置的文件）
+
+编辑   vim ~/.bash_profile
+
+我这里报错了看错误信息可能是之前我做什么操作 没保存还是啥  （If you did this already, delete the swap file "/Users/lxr/.bash_profile.swp"）
+
+执行 rm -f ~/.bash_profile.swp
+
+再执行 source ~/.bash_profile
+
+拓展source命令作用
+
+在当前bash环境下读取并执行FileName中的命令。
+
+source（或点）命令通常用于重新执行刚修改的初始化文档，如 .bash_profile 和 .profile 这些配置文件。
+
+举例说明:
+
+假如在登录后对 .bash_profile 中的 EDITER 和 TERM 变量做了修改，这时就可以用 source 命令重新执行 .bash_profile文件,使修改立即生效而不用注销并重新登录。
+
+vim ~/.bash_profile后
+
+输入  i    -> 进入编辑模式
+
+在最后一行 输入  路径是 which python3 获取到的路径
+
+alias python="/usr/local/bin/python3"
+
+输入:wq结束编辑
+
+输入 source .bash_profile 重新执行
+
+输入 vi ~/.zshrc
+
+同上输入 source .bash_profile
+
+保存退出后 输入python 检查默认版本号
+
+重新运行jenkins中的任务 蓝球通过
+

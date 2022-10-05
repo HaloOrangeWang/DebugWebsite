@@ -1,0 +1,54 @@
+　　由于公司项目比较多，每次被指派迭代一个新项目的时候都会下载对应的node module包，但是内网上存在的那些node module包，总是跑不起来。经过一些尝试。得已解决。现在我把集中可能的情况分享出来，避免以后再次踩坑。
+
+1、检查node版本
+
+　　我是用的是nvm，首先贴上nvm常用命令：
+
+　　nvm install latest #安装最新node
+
+　　nvm install 10.15.3 #安装指定版本的node
+
+　　nvm list #查看已安装的node
+
+　　nvm use 10.15.3 #切换到指定的node 版本
+
+　　首先 终端上 输入node -v 查看node版本，有些老项目需要 node 8 才能运行。这时候我们就要切换版本;
+
+　　首先看看本地有哪些node 版本， nvm ls ；其次下载需要的node版本， nvm install 8.17.0，然年后就是切换版本 nvm use 8.17.0；
+
+　　再次 npm run serve 启动服务。
+
+2、 检查node-sass和sass-loader版本
+
+　　这里的坑我属实踩过好几遍，上网查阅后发现node-sass和sass-loader还有版本冲突的情况：以下版本可以完美兼容
+
+　　  "node-sass": "^4.14.1",  "sass-loader": "^7.3.1", // 亲测node 版本v14.16.1完美兼容/10.12.0也行
+
+　　操作步骤： 1、npm uninstall sass-loader
+
+　　　　　　　 2、 npm install sass-loader@7.3.1
+
+　　　　　　　 3、npm uninstall node-sass
+
+　　　　　　　 4、 npm install node-sass@4.14.1
+
+　　　　　　　 5、再试一次 npm run serve
+
+　　提示：1、如果想要保险一点，可以先去node module 包里面删除 sass-loder 和 node-sass 文件夹 ，再删除  package.json 里面的 node-sass 和 sass-loder 。再执行上述操作。
+
+　　　　　2、如果npm 下载过慢，可使用cnpm下载；终端输入  npm install -g cnpm --registry=https://registry.npm.taobao.org  ，随后cnpm便可以使用，使用方法和npm如出一辙。
+
+3、还有一种报错：
+
+　　
+
+　　这种报错window电脑上会出现，缺少python环境，而且不支持python3，我们需要下载python2安装。
+
+　　为什么 node模块会需要python环境呢？
+
+　　　　node-sass 编译器是通过 C++ 实现的。
+
+　　　　在 Node.js 中，采用 gyp 构建工具进行构建 C++ 代码，而 GYP 是基于 Python 2 开发的，所以需要 python，而且不支持 3。
+
+　　　　安装好环境后，执行上面的操作就行了。
+

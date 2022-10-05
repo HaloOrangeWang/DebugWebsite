@@ -1,0 +1,75 @@
+异常捕捉：
+
+try: 
+  XXXXX1
+  raise Exception(“xxxxx2”) 
+except （Exception1，Exception2，……）: 
+  xxxx3
+else:
+  xxxxx4
+finally:
+  xxxxxxx5
+
+1.raise 语句可以自定义报错信息，如上。
+
+2. raise后的语句是不会被执行了，因为已经抛出异常，控制流将会跳到异常捕捉模块。
+
+3. except 语句可以一个except后带多个异常，也可以用多个语句捕捉多个异常，分别做不同处理。
+
+4. except语句捕捉的异常如果没有发生，那么except里的语句块是不被执行的。而是执行else里的语句
+
+5. 在上面语句中try/except/else/finally所出现的顺序必须是try–>except X–>except–>else–>finally，即所有的except必须在else和finally之前，else（如果有的话）必须在finally之前，而except X必须在except之前。否则会出现语法错误。
+
+6.else和finally都是可选的.
+
+7.在上面的完整语句中，else语句的存在必须以except X或者except语句为前提，如果在没有except语句的try block中使用else语句会引发语法错误。
+
+异常参数输出：
+
+try:
+  testRaise()
+except PreconditionsException as e: #python3的写法，必须用as
+  print (e)
+
+自定义异常，只需自定义异常类继承父类Exception。在自定义异常类中，重写父类init方法。
+
+class DatabaseException(Exception):
+  def __init__(self,err='数据库错误'):
+    Exception.__init__(self,err)
+class PreconditionsException(DatabaseException):
+  def __init__(self,err='PreconditionsErr'):
+    DatabaseException.__init__(self,err)
+def testRaise():
+  raise PreconditionsException()
+try:
+  testRaise()
+except PreconditionsException as e:
+  print (e)
+
+注意：PreconditonsException又是DatabaseException的子类。
+
+所以如果，raise PreconditionException的话，用两个异常类都可以捕捉。
+
+但是, 如果是raise DatabaseException, 用PreconditonsException是捕捉不到的。
+
+实例补充：
+
+python自定义异常捕获异常处理异常
+
+def set_inf(name,age):
+  if not 0 < age < 120:
+    raise ValueError('超出范围')
+  else:
+    print('%s is %s years old' % (name,age))
+def set_inf2(name,age):
+  assert 0 < age < 120,'超出范围'
+  print('%s is %s years old' % (name,age))
+if __name__ == '__main__':
+  try:
+   set_inf('bob',200)
+  except ValueError as e:
+    print('无效值:',e)
+  set_inf2('bob',200)
+
+到此这篇关于python怎么自定义捕获错误的文章就介绍到这了,更多相关python自定义捕获错误的方法内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

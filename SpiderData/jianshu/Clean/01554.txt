@@ -1,0 +1,136 @@
+python3很少有编码错误了，偏偏我就遇到了。
+
+当时内心是崩溃的。
+
+环境：Ubuntu16.04.02，python3.5.2，代码中涉及文档无中文。
+
+#这里还有记不清了，大概是README.txt文件第n行出问题。
+
+File "usr/local/Python35/lib/codecs.py", line 300, in decode
+
+(result, consumed) = self._buffer_decode(data, self.errors, final)
+
+UnicodeDecodeError: 'utf8' codec can't decode byte 0xc3 in position 633096: invalid con
+
+记录一下整理过的排查过程：
+
+1，先把README.txt转换utf-8编码，排除文件编码问题。执行代码问题依旧，命令如下：
+
+# sudo vi ./README.txt
+
+: set encoding=utf-8     //vi编辑文件中 shift+:
+
+: wq
+
+2，确认python3默认编码是utf8。确认方法如下：
+
+python3
+Python 3.6.4 (default, Jan 12 2018, 09:41:26)
+
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-16)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> import sys
+
+>>> sys.getdefaultencoding()
+
+'utf-8'
+
+如果编码是utf8则跳过下面的步骤。我的结果如上，是utf-8，所以我认为我的不是python默认编码问题。
+
+如果输出是'acsii'等，改成utf8。方法是在 /usr/lib/python3.5/sitecustomize.py（ubuntu16,不同环境路径不同，也有可能在/usr/local/lib/python3/site-packages，如果都没有就新建。都可以试试，看那个起作用）中添加以下几行：
+
+# encoding=utf8
+
+import sys
+
+import io
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8')
+
+python启动时默认加载该文件，会设置默认默认编码。
+
+3，又注意到是不能解码0xc3，决定输出该转换成字符看看到底是什么。在Ubuntu机器中的python IDE转换成字符串，看到底是什么字符不能转换，结果报错。后又换了一台看起来比较正常的centos机器转换如下：
+
+>>> print(chr(0xc3))
+
+Ã
+
+结果发现是德文，然后查系统是否支持的德文。结果一查发先只支持英文，连中文都没有。
+
+检查过程如下，环境Ubuntu，查看系统可用编码:
+
+qg@kai-1_1:~$ cd /var/lib/locales/supported.d/
+
+qg@kai-1_1:/var/lib/locales/supported.d$ ls
+
+en
+
+qg@kai-1_1:/var/lib/locales/supported.d$ cat en
+
+en_HK.UTF-8 UTF-8
+
+en_DK.UTF-8 UTF-8
+
+en_IN UTF-8
+
+en_ZM UTF-8
+
+......
+
+好吧，装德文和中文，过程如下：
+
+查看系统支持的文字编码，有德文中文：
+
+qg@kai-1_1:~$ cat /usr/share/i18n/SUPPORTED
+
+aa_DJ.UTF-8 UTF-8
+
+aa_DJ ISO-8859-1
+
+...
+
+de_AT.UTF-8 UTF-8
+
+de_AT ISO-8859-1
+
+de_AT@euro ISO-8859-15
+
+de_BE.UTF-8 UTF-8
+
+de_BE ISO-8859-1
+
+de_BE@euro ISO-8859-15
+
+de_CH.UTF-8 UTF-8
+
+...
+
+zh_CN.UTF-8 UTF-8
+
+zh_CN.GB18030 GB18030
+
+zh_CN.GBK GBK
+
+zh_CN GB2312
+
+zh_HK.UTF-8 UTF-8
+
+...
+
+把德文和中文加到 /var/lib/locales/supported.d/ 中
+
+sudo  locale -a | grep zh > /var/lib/locales/supported.d/zh     //中文
+
+sudo  locale -a | grep de > /var/lib/locales/supported.d/de    //德文
+
+sudo locale-gen    /更新生效
+
+到此python的报错也解决了。
+
+总结：
+
+1，排查python默认编码。
+
+2，排查系统默认编码。
+

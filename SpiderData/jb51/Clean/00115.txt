@@ -1,0 +1,40 @@
+更新tensorflow后，出现tensorboard 不可用情况（tensorflow-cpu 1.4 ->tensorflow-gpu 1.7）
+
+尝试了更新tensorboard 仍然不可用，事故情况：
+
+运行tensorboard.exe报错并且闪退，在控制台运行tensorboard命令
+
+
+报错如下：
+
+多方查证，在国内网站没找到有前车之鉴，于是发布问题到tensorflow github
+
+
+大神支招：
+
+更新protobuf（Google Protocol Buffer(简称 Protobuf)是一种轻便高效的结构化数据存储格式，平台无关、语言无关、可扩展，可用于通讯协议和数据存储等领域），protobuf 3.4->protobuf 3.5
+
+这时出现protobuf 依赖包(setuptools)安装问题,即要升级setuptools（23.0.0->39.0.0）时出现问题：
+
+这时，pip install --upgrade --ignore-installed setuptools，成功升级，然后pip install --upgrade protobuf 成功，然后tensorboard 可用
+
+
+问题分析：
+
+tensorflow1.7需要对protobuf进行更新，而protobuff更新需要对setuptools进行更新
+
+补充：关于tensorflow和tensorboard版本问题
+
+由于最近将tensorflow cpu换成了gpu版本，导致之前的tensorboard不能使用了，各种百度，google还是没能解决，网上没有类似的错误提示。其实是由于版本问题，感觉python配置环境啥的都是因为版本问题导致的不兼容。
+
+
+这里总结一下之前遇到的各种坑
+
+要么是因为python的版本问题，还有各种库的版本，一般来说，按照时间来算，各种库的版本发行的时间比安装的python版本的要稍晚一点，时间间隔不能太长。
+
+我安装的tensorflow-gpu==1.4.0 （2017 12月），然后使用tenorboard==1.13.1（2019年） 发现不兼容，最后卸载重新安装tensorboard==1.6.0(2018) ，发现错误完美解决。
+
+所以说版本问题还是挺大的，以及遇到过若干次了，自己都记不清了，反正萌新总是会遇到的，遇到这个问题，由于每个人电脑的环境都不一样，出现的bug也是千奇百怪，直接google或者百度是找不到答案的，真的很头疼，算是个小tip吧！
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

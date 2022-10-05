@@ -1,0 +1,94 @@
+此为记录我重装Ubuntu后安装Python的过程
+
+
+安装Python3.8
+
+其他系统安装: CentOS 7上安装Python 3.9
+
+目前Ubuntu自带的Python版本为3.6，但官方都出3.8了，能不试一下新的功能吗？
+
+
+第一步：下载Python3.8的源码
+
+点击这里打开网址
+
+选择下载tgz包（“Download Gzipped source tarball ”），解压
+
+
+第二步：更新包列表并安装构建Python源所需的包
+
+输入这三个命令:
+
+
+第三步：安装Python3.8
+
+解压tgz包, 并cd 到Python解压目录，然后输入以下命令
+
+到这里Python3.8已经安装完成，但是只能输入python3.8打开，这里等到下面一并解决
+
+安装pip和pip3, 直接输入下面两行代码，安装　
+
+此时，ubuntu中已经有了: python2.7、python3.6、python3.8、pip、pip2、pip3
+
+
+解决兼容问题
+
+我的想法是：python命令是可以动态切换Python2.7、Python3.6、Python3.8的，而且pip和pip3会动态指向我切换的python版本上（pip2就让他指向Python2.7吧）
+
+
+第一步：解决Python版本切换问题
+
+目前网上已经有很好的教程了，使用update-alternatives命令来为整个系统更改python 版本的方法更好。
+
+第一步:  找到各个Python的路径，使用which命令
+
+第二步:  记录好他们所在路径，我这里是
+
+第三步: 重点，使用update-alternatives命令
+
+这里的最后一个参数是优先级，数越大越高，倒数第二个参数是各个版本Python所在位置，即我们上一步记录的东西
+
+检验是否成功, 输入：
+
+选择并切换Python版本，至此，Python版本兼容性问题已经解决
+
+　
+
+
+第二步：解决pip、pip2、pip3指向问题
+
+当我切换到python3.8输入pip -V，查看pip指向哪里之时，会报错“from pip import main ImportError: cannot import name 'main'
+
+听网上说，主要是由于ubuntu升级pip的版本后导致的
+
+没有这个问题的跳过即可
+
+我的做法是修改pip文件: 结合两个pip文件, 然后作python版本判断, 执行对应代码即可
+
+注：一定要备份pip文件，包括pip、pip2、pip3、pip3.8（Python3.8的）
+
+输入echo $PATH，可以看到环境变量:
+
+不巧的是pip和pip3在/usr/local/bin目录下，而/usr/bin目录下也有pip和pip3，由优先级知道输入pip命令会优先执行/usr/local/bin目录下的。
+
+所以我这里修改的是/usr/local/bin下的pip、pip3、pip3.8和/usr/bin下的pip2，假如想改/usr/bin下的pip和pip3的话可以直接cp过去（注意先备份）
+
+下面是修改的代码，可以直接复制粘贴过去
+
+
+pip
+
+
+pip2
+
+
+pip3和pip3.8
+
+　　　　
+
+参考资料：
+
+https://www.jb51.net/article/163112.htm
+
+https://blog.csdn.net/qq_38522539/article/details/80678412
+

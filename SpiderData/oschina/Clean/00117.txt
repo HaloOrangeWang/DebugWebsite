@@ -1,0 +1,148 @@
+python核心编程中关于socket tcp通信代码：
+
+客户端：
+
+# !/usr/bin/env python
+
+from socket import *
+
+HOST = '*******'
+PORT = 21567
+BUFSIZE = 1024
+ADDR = (HOST, PORT)
+
+tcpCliSock = socket(AF_INET, SOCK_STREAM)
+tcpCliSock.connect(ADDR)
+
+while True:
+    data = input('> ')
+    if not data:
+        break
+    tcpCliSock.send(data)
+    data = tcpCliSock.recv(BUFSIZE)
+    if not data:
+        break
+    print(data.decode('utf-8'))
+
+tcpCliSock.close()
+
+服务器：
+
+# !/usr/bin/env python
+
+from socket import *
+from time import ctime
+
+HOST = ''
+PORT = 21567
+BUFSIZE = 1024
+ADDR = (HOST, PORT)
+
+tcpSerSock = socket(AF_INET, SOCK_STREAM)
+tcpSerSock.bind(ADDR)
+tcpSerSock.listen(5)
+
+while True:
+    print("waiting for connection...")
+    tcpCliSock, addr = tcpSerSock.accept()
+    print("...connected from: ", addr)
+
+while True:
+        data = tcpCliSock.recv(BUFSIZE)
+        if not data:
+            break
+        print(type(data))
+        tcpCliSock.send("[%s] %s" %(ctime(), data))
+
+tcpCliSock.close()
+
+tcpSerSock.close()
+
+在python 3.6 环境运行报错：
+
+Traceback (most recent call last):
+   File ".\tsTclnt3.py", line 17, in <module>
+     tcpCliSock.send(data)
+ TypeError: a bytes-like object is required, not 'str'
+
+于是更改客户端代码如下：
+
+--->tcpCliSock.send(data.encode())
+
+运行报错：
+
+打印data数据类型是<class 'bytes'>，于是很好奇为什么会报这个错误。网上查资料看到这段话：
+
+In python 3, bytes strings and unicodestrings are now two different types. Since sockets are not aware of string encodings, they are using raw bytes strings, that have a slightly differentinterface from unicode strings.
+
+So, now, whenever you have a unicode stringthat you need to use as a byte string, you need toencode() it. And whenyou have a byte string, you need to decode it to use it as a regular(python 2.x) string.
+
+Unicode strings are quotes enclosedstrings. Bytes strings are b”” enclosed strings
+
+When you use client_socket.send(data),replace it by client_socket.send(data.encode()). When you get datausing data = client_socket.recv(512), replace it by data =client_socket.recv(512).decode()
+
+遂修改代码如下：
+
+--->
+
+这才调通。
+
+最后上一遍终极代码：
+
+服务端：
+
+# !/usr/bin/env python
+
+from socket import *
+from time import ctime
+
+HOST = ''
+PORT = 21567
+BUFSIZE = 1024
+ADDR = (HOST, PORT)
+
+tcpSerSock = socket(AF_INET, SOCK_STREAM) #创建套接字
+tcpSerSock.bind(ADDR)                     #套接字和地址进行绑定
+tcpSerSock.listen(5)                      #监听（设置最大监听数）
+
+while True:
+    print("waiting for connection...")
+    tcpCliSock, addr = tcpSerSock.accept()
+    print("...connected from: ", addr)
+
+while True:
+        data = tcpCliSock.recv(BUFSIZE).decode()
+        if not data:
+            break
+        tcpCliSock.send(("[%s] %s" %(ctime(), data)).encode())
+
+tcpCliSock.close()
+
+tcpSerSock.close()
+
+客户端：
+
+# !/usr/bin/env python
+
+from socket import *
+
+HOST = '*********'
+PORT = 21567
+BUFSIZE = 1024
+ADDR = (HOST, PORT)
+
+tcpCliSock = socket(AF_INET, SOCK_STREAM) #创建套接字
+tcpCliSock.connect(ADDR)                  #请求建立连接
+
+while True:
+    data = input('> ')
+    if not data:
+        break
+    tcpCliSock.send(data.encode())
+    data = tcpCliSock.recv(BUFSIZE)
+    if not data:
+        break
+    print(data.decode())
+
+tcpCliSock.close()
+

@@ -1,0 +1,29 @@
+{
+    "err_msg": {
+        "text": "MySQL Can't create a new thread",
+        "lines": ["title"],
+        "weight": [1]
+    },
+    "scene": {
+        "text": "CentOS 6.4 Linux version 2.6.32以上版本",
+        "lines": [29],
+        "weight": [1]
+    },
+    "solve": [
+        {
+            "text": "动态修改mysql进程的系统资源限制（不需重启mysql服务即可生效）\n\necho -n \"Max processes=65535:65535\" > /proc/`pidof mysqld`/limits",
+            "lines": [31, 33],
+            "weight": [1, 0.5]
+        },
+        {
+            "text": "修改/etc/security/limits.d/90-nproc.conf配置文件的配置（下次重启mysql服务生效）",
+            "lines": [35],
+            "weight": [1]
+        },
+        {
+            "text": "同时修改上面配置中用户打开最大文件数的限制nofile",
+            "lines": [37],
+            "weight": [1]
+        }
+    ]
+}

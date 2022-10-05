@@ -1,0 +1,26 @@
+报错内容share:fail:[Share微信分享:-3]Unable to send
+
+解决方法：
+
+uni.share({
+                    provider: 'weixin',
+                    scene: "WXSceneSession",
+                    type: 5,//0 图文，1    纯文字，2   纯图片，3   音乐，4    视频，5    小程序
+                    imageUrl: imageUrl,
+                    title: title,
+                    miniProgram: {
+                        webUrl: 'https://faas.mypays.cn',//安卓app必须要传webUrl，且必须要有值，否则有的机型分享不出去，
+                        id: '微信小程序原始id',
+                        path: path,
+                        type: 0, //微信小程序版本类型，可取值： 0-正式版； 1-测试版； 2-体验版。 默认值为0
+                    },
+                    success: ret => {
+                        console.log(JSON.stringify(ret));
+                    },
+                    fail: (err) => {
+                        console.log(err)
+                    }
+                });
+
+安卓app必须要传webUrl，且必须要有值，否则有的机型报错分享不出去，
+

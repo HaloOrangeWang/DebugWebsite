@@ -1,0 +1,166 @@
+异常：由于代码的逻辑或者语法错误导致的程序中断。
+
+在学习Python的过程当中，大家一定要区分清楚异常和布尔值False
+
+　　布尔值的False只是一个值，通常代表的是一个条件的不成立，常用于逻辑判断
+
+　　比如：
+
+1 num = 2
+2 print(num > 3)
+3 if num > 3:
+4    print("num > 3")
+
+　   异常指的是由于代码的逻辑或者语法错误导致的程序中断
+
+　　比如：
+
+1 num = 2
+2 2+"2"
+
+了解了上面的逻辑之后，我们来看看大家在代码当中经常出现的几种错误，和常见原因
+
+当然异常的类型还有好多，在这就不一一列举了，我们来看捕获异常的关键字
+
+捕获异常最简单的写法如下
+
+try:  #尝试执行缩进下面的报错
+    1+"1"
+except:  #如果发生错误，打印Error
+    print("Error")
+
+>>> Error
+
+这里我们尝试执行 1+“1”,如果可以执行就执行，如果发生错误就执行下面的代码。
+
+但是，在工作当中，这样的代码并没有太好的效果，我们通过这段代码既无法实现错误内容的输出，也不能实现错误的处理，只是让程序不报错的执行了下去，这个显然不好使。
+
+所以我们首先要考虑的就是如何获取具体的错误内容，例子如下：
+
+例1：
+
+try: 
+    1+"1"
+except Exception as e:
+    print(e)
+
+>>> unsupported operand type(s) for +: 'int' and 'str'
+
+这里我们用到了两个之前没有用到过的关键词：
+
+　　1、Exception 所有的错误
+
+　　2、as 别名
+
+所以例1代码的含义就是尝试执行 1+"1”,如果只成功就可以，否则无论发生任何错误，都把这个错误返回的内容起别名为e，在下面输出出来。在这里要注意的一点就是，e可以被打印但是不是字符串对象，所以不可以进行任何字符串操作。
+
+try:
+    1+"1"
+except Exception as e:
+    print(type(e))
+
+>>> <class 'TypeError'>
+
+例2：
+
+try:
+    1+"1"
+except TypeError as e:
+    print(e)
+
+>>> unsupported operand type(s) for +: 'int' and 'str'
+
+这里和上面的例1唯一的不同就在于except后面跟了具体的错误类型，意思很明确，当发生TypeError的时候，我进行如下处理，至于其他错误，就让他报错去吧。
+
+当然这样的说法有点随性，认真的查看，着多种错误类型的捕获异常给我们对同一语句进行不同的异常处理带来了很大的遍历性，毕竟不是所有的错误都可以pass!
+
+了解了上面的报错，那么接下来要认真研究的就是捕获异常的另外两个关键字：else 和finally
+
+首先是他两的逻辑
+
+else：代表在try执行成功之后，进行执行，放在except的后面
+
+finally：代表最后，无论执行try成功还是失败，都会执行。作为最后的收尾
+
+了解之后，我们来查看我们例子
+
+例1：
+
+1 try:
+ 2     1+"1"
+ 3 except Exception as e:
+ 4     print(e)
+ 5 else:
+ 6     print("it is ok")
+ 7 finally:
+ 8     print("ok it's over")
+ 9 
+10 >>> unsupported operand type(s) for +: 'int' and 'str'
+11 >>> ok it's over
+
+例2：
+
+1 try:
+ 2     1+1
+ 3 except Exception as e:
+ 4     print(e)
+ 5 else:
+ 6     print("it is ok")
+ 7 finally:
+ 8     print("ok it's over")
+ 9 
+10 >>> it is ok
+11 >>> ok it's over
+
+在例1当中，我们执行try失败，所以except和finally执行，在例子2当中，我们执行try成功，所以else和finally成功。
+
+else和finally的出现极大的方便了我们对捕获异常和异常处理的完整流程描述，不如下面的例子
+
+1 import pymysql
+ 2 try:
+ 3     #尝试连接数据库
+ 4     connect = pymysql.connect(
+ 5         host = "localhost",
+ 6         user = "root",
+ 7         password = "123",
+ 8         database = "outTest"
+ 9     )
+10 except Exception as e:
+11     #失败输出错误
+12     print(e)
+13 else:
+14     #如果成功进行数据查询
+15     cursor = connect.cursor()
+16     cursor.execute("select * from login")
+17     all_data = cursor.fetchall()
+18     print(all_data)
+19 finally:
+20     #不论如何进行结束通知
+21     print("执行结束")
+
+到这里，可能好多读者觉得捕获异常到此结束，其实并不是这样，还可以有一个好的建议给到大家，我们可以尝试使用。先看下面的两个案例：
+
+例1：
+
+try:
+    1+"1"
+except Exception as e:
+    print(e)
+
+>>> unsupported operand type(s) for +: 'int' and 'str'
+
+例2：
+
+try:
+    1+"1"
+except Exception as e:
+    error = traceback.format_exc()
+    print(error)
+
+>>> Traceback (most recent call last):
+  File "C:/Users/bian/Desktop/TestProject/twistedProject/twistedProject.py", line 67, in <module>
+    1+"1"
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+
+例1和例2同样实现了捕获异常的功能，但是例子2的返回更加的专业，并且利于调试
+

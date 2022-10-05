@@ -1,0 +1,104 @@
+两种方式：
+
+1.pip install jupyter notebook
+
+2.安装Anaconda
+
+1.pip安装
+
+通过命令行pip，要注意是在哪个虚拟环境，安装好后jupyter notebook所使用的python解释器为安装时虚拟环境的解释器
+
+2.Anaconda
+
+安装好后配置环境变量PATH
+
+C:\Program Files\Anaconda3\Scripts
+
+C:\Program Files\Anaconda3\Library\bin
+
+3，pip装了jupyter notebook，也安装了Anaconda；这时有两个jupyter notebook，运行的是哪一个？
+
+①通过where命令确定
+
+上图显示，使用的是Anaconda中的jupyter notebook
+
+②在jupyter notebook中通过sys模块查看所使用的python解释器
+
+确定了当前运行环境 ，就可以知道使用的是那个环境中的模块了
+
+4.jupyter notebook可以打开浏览器，但一直显示正在连接服务，而且不能运行代码的问题？
+
+如果pip和Anaconda都有，先根据上一条确定是哪一个出了问题
+
+解决:
+
+重新配置，Anaconda中需要更新而不能重新安装，
+
+先pip uninstall jupyter notebook，再重新安装会出现错误：THESE PACKAGES DO NOT MATCH THE HASHES FROM THE REQUIREMENTS FILE
+
+通过更新可以成功
+
+pip install --upgrade jupyter notebook
+
+5.配置jupyter notebook默认打开目录
+
+①首先，生成配置文件
+
+打开cmd，在cmd中输入jupyter notebook --generate-config运行，即可生成配置文件
+
+如：
+
+（图片来源）
+
+本机生成的配置文件在目录：C:\Users\用户名\.jupyter
+
+②配置
+
+打开：jupyter_notebook_config.py
+
+更改前：#c.NotebookApp.notebook_dir = ‘‘’’
+
+6.jupyter notebook 提示补全
+
+本身按Tab也可以提示，想要不按Tab出现提示，需要安装插件
+
+需要两步安装：
+
+1. 先安装jupyter_contrib_nbextensions
+
+pip install jupyter_contrib_nbextensions
+
+jupyter contrib nbextension install
+
+2. 安装jupyter_nbextensions_configurator
+
+pip install jupyter_nbextensions_configurator
+
+jupyter nbextensions_configurator enable
+
+安装完成后，会出现Nbextensions标签，勾选Hinterland即可完成提示功能
+
+如果无法自动补全，且报错“TypeError: __init__() got an unexpected keyword argument 'column'”
+
+原因：jedi模块的问题
+
+解决：降低jedi模块的版本，为0.17.2，即可解决
+
+7.matplotlib中文乱码问题
+
+参考：
+
+https://blog.csdn.net/u014465934/article/details/80377470
+
+8.怎么给Anaconda安装模块，如keras?
+
+可以使用pip也可以用conda
+
+pip安装：
+
+要使用 Anaconda安装目录/Scripts/pip.exe来安装，才会安装到Anaconda中，否则会安装到默认python环境中
+
+（取决于是那个环境下的pip，使用Anaconda目录下的pip.exe执行安装，会安装给Anaconda；默认python环境也是一样）
+
+Over!
+

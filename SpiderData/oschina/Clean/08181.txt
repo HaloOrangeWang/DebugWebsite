@@ -1,0 +1,40 @@
+数据库表A：
+
+CREATE TABLE task_desc_tab
+(
+    id INT(11) PRIMARY KEY NOT NULL COMMENT '自增主键' AUTO_INCREMENT,
+    taskname VARCHAR(200) NOT NULL COMMENT '任务名字',
+    sqlname VARCHAR(20) NOT NULL COMMENT 'sql文件名字',
+    params VARCHAR(5000) NOT NULL COMMENT '任务参数,格式为一个JSON字符串',
+    updatetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    detail VARCHAR(3000) COMMENT '任务一些描述信息,只是备注信息作用'
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+数据库B：
+
+CREATE TABLE exec_plan_tab
+(
+    id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    taskname VARCHAR(200) NOT NULL,
+    startdate DATE NOT NULL,
+    enddate DATE NOT NULL,
+    updatetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT exec_plan_tab_task_desc_tab_taskname_fk FOREIGN KEY (taskname) REFERENCES task_desc_tab (taskname)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+　
+
+目标：创建表使得表B中的taskname为外键，参考表A中的taskname字段，创建表发现报错如下：
+
+[2018-07-19 15:02:29] [HY000][150] Create table 'daxin/#sql-5d_30' with foreign key constraint failed. There is no index in the referenced table where the referenced columns appear as the first columns.
+[2018-07-19 15:02:29] [HY000][1215] Cannot add foreign key constraint
+[2018-07-19 15:02:29] [HY000][1215] Cannot add foreign key constraint
+
+　　
+
+经过排查找到问题原因： 表A中的taskname必须使用UNIQUE字段修饰，这样保证记录唯一性，当表B参考时候不会出现歧义。
+

@@ -1,0 +1,20 @@
+python paramiko模块ftp报错：
+
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+File "/usr/lib/python2.7/dist-packages/paramiko/sftp_client.py", line 170, in from_transport
+return cls(chan)
+File "/usr/lib/python2.7/dist-packages/paramiko/sftp_client.py", line 132, in __init__
+raise SSHException("EOF during negotiation")
+paramiko.ssh_exception.SSHException: EOF during negotiation
+
+解决方案：
+
+sftp服务问题：
+
+首先，查找sftp-server安装位置，find / -name sftp-server
+
+然后，vim /etc/ssh/sshd_config ，查看sftp路径是否正确，修改。
+
+最后重启sshd： systemctl restart sshd
+

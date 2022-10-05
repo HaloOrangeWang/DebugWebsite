@@ -1,0 +1,36 @@
+先贴一下源码：
+
+base.py文件如下：
+
+from selenium import webdriver
+
+loginPage.py文件如下：
+
+from base import Page
+from selenium.webdriver.common.by import By
+from selenium import webdriver
+
+运行时报错：
+
+TypeError: user_login() missing 1 required positional argument: 'self'
+
+经查询是因为self丢失了要传递的参数。
+
+解决方法如下：
+
+一、定义的user_login()位置不动，把self替换引参数，见下面：
+
+二、定义的user_login()移动到class中，self会指向base.py文件的selenium_driver无参数
+
+TypeError: __init__() missing 1 required positional argument: 'selenium_driver'
+
+完整修改代码如下：
+
+base.py文件修改：
+
+loginPage.py文件修改如下：
+
+from base import Page
+from selenium.webdriver.common.by import By
+from selenium import webdriver
+

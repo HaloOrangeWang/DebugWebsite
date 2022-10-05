@@ -1,0 +1,29 @@
+windows安装fdfs_client-py-master.zip 出现 error: Microsoft Visual C++ 14.0 is required.
+在学习django+fdfs+nginx时碰见的问题，笔记本电脑的虚拟机ubuntu实在卡到怀疑人生，所以django装在windows，ubuntu只开启fdfs+nginx服务。于是就有在windows下安装fdfs client的需求，先提醒一下，有条件还是在linux下学习开发好~
+
+下载 fdfs_client-py-master.zip 并 pip install fdfs_client-py-master.zip时报错
+报错信息：
+error: Microsoft Visual C++ 14.0 is required
+这时到控制面板确认此程序已安装，或者已安装Microsoft Visual C++ 2005等 。
+那么问题不是因为 版本不正确
+经过百度，看论坛等方式发现错误原因是因为在windows安装fdfs_client 需要注释或者删除一些代码
+
+解决方法
+1.解压以下载的fdfs_client-py-master到任意位置，打开fdfs_client 目录下的storage_client.py文件
+屏蔽第12行 # from fdfs_client.sendfile import *
+
+2.解压后的fdfs_client-py-master 目录下的setup.py
+屏蔽sdict字典中的 ‘ext_modules’
+
+3.在将注释过的fdfs_client-py-master文件压缩成压缩文件，格式应为.zip
+4.在pip install fdfs_client-py-master.zip 之前必须确保你的虚拟环境中以安装mutagen 和 requests，如果没有请先导入
+
+pip install mutagen 
+pip install requests
+
+5.在到你的fdfs_client-py-master.zip压缩包目录下导入即可成功运行
+
+pip install fdfs_client-py-master.zip
+
+显示安装成功
+

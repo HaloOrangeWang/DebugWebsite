@@ -1,0 +1,57 @@
+当你确定你做的所有操作基本符合正确但无法解决你的问题的时候，尝试换一个方向突破
+
+环境：windows10
+
+具体报错信息如下
+
+gyp verb ensuring that file exists: C:\Python27\python.exe
+gyp ERR! configure error
+gyp ERR! stack Error: Can't find Python executable "python2.7", you can set the PYTHON env variable.
+gyp ERR! stack     at PythonFinder.failNoPython (E:\phpstudy\PHPTutorial\WWW\ft\node_modules\node-gyp\lib\configure.js:484:19)
+gyp ERR! stack     at PythonFinder.<anonymous> (E:\phpstudy\PHPTutorial\WWW\ft\node_modules\node-gyp\lib\configure.js:509:16)
+gyp ERR! stack     at E:\phpstudy\PHPTutorial\WWW\ft\node_modules\graceful-fs\polyfills.js:282:31
+gyp ERR! stack     at FSReqCallback.oncomplete (fs.js:158:21)
+gyp ERR! System Windows_NT 10.0.17763
+gyp ERR! command "C:\\Program Files\\nodejs\\node.exe" "E:\\phpstudy\\PHPTutorial\\WWW\\ft\\node_modules\\node-gyp\\bin\\node-gyp.js" "rebuild" "--verbose" "--libsass_ext=" "--libsass_cflags=" "--libsass_ldflags=" "--libsass_library="
+gyp ERR! cwd E:\phpstudy\PHPTutorial\WWW\ft\node_modules\node-sass
+gyp ERR! node -v v12.13.0
+gyp ERR! node-gyp -v v3.8.0
+gyp ERR! not ok
+Build failed with error code: 1
+npm WARN The package vue-router is included as both a dev and production dependency.
+npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.6 (node_modules\fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.6: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
+
+npm ERR! code ELIFECYCLE
+npm ERR! errno 1
+npm ERR! node-sass@4.11.0 postinstall: `node scripts/build.js`
+npm ERR! Exit status 1
+npm ERR!
+npm ERR! Failed at the node-sass@4.11.0 postinstall script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     C:\Users\admin\AppData\Roaming\npm-cache\_logs\2019-11-08T08_49_23_963Z-debug.log
+
+我的主要搜索目标是在python2.7找不到这个信息上，根据网上各种帖子尝试都没成功，
+
+gyp ERR! stack Error: Can't find Python executable "python2.7", you can set the PYTHON env variable.
+
+最后一次搜索是搜索的node-sass错误
+
+npm ERR! node-sass@4.11.0 postinstall: `node scripts/build.js`
+
+最终在这个贴子找到了答案，被墙了，很多时候，可能真的需要换个方向，emmm，头铁啊老铁
+
+//windows设置变量 sass_binary_site，指向淘宝镜像地址。
+set SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/ && npm install node-sass
+
+或者
+
+//设置全局镜像源：
+npm config set sass_binary_site https://npm.taobao.org/mirrors/node-sass/
+
+记录一下
+
+https://segmentfault.com/a/1190000010984731?utm_source=tag-newest
+

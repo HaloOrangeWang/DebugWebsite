@@ -1,0 +1,21 @@
+最近更新了python解释器3.7
+
+结果安装gevent，在导入gevent之后就报错了，错误信息如下
+
+RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+
+看到现在写这个问题的帖子不多，就先贴出来了。
+
+只需要执行一下下面这段代码就可以了
+
+pip3 install -U --force-reinstall --no-binary :all: gevent
+
+附上参数说明
+
+这条命令的大概意思就是使用非二进制的包重新安装gevent以及它的依赖。
+
+总之在执行这个命令之后就完美的解决问题了。
+
+目前安装的gevent版本和greenlet版本分别是1.3.5和0.4.14
+

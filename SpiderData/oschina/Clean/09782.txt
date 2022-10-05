@@ -1,0 +1,31 @@
+运行后过段时间报错，
+
+Warning: Error while sending STMT_PREPARE packet. PID=1776 in D:\phpStudy\WWW\ap
+i\mysql-master\src\Connection.php on line 1739
+
+其内容在mysql类里面，
+
+/**
+ * 关闭连接
+ */
+ public function closeConnection()
+ {echo 88888;
+ $this->pdo = null; 
+ }
+
+加入打印8888后，打印错误为：
+
+Warning: PDO::prepare(): MySQL server has gone away in E:\work\xueshengka\api\my
+ sql-master\src\Connection.php on line 1747
+
+网上的解决办法：
+
+由于我等待消息队列是一个长连接，而我在等待回调前有个数据库连接，数据库的wait_timeout=28800，所以只要下一条消息离上一条消息超过8小时，就会出现这个错误，我把wait_timeout设置成10，并且捕获异常，发现真实的报错是 MySQL server has gone away ，
+所以只要在把等待回调前那次数据库连接主动close掉就可以解决问题
+
+只说出了原因，并为解决错误，所以本人亲自试验，在执行完sql后关闭mysql连接，然后重新实例化sql类，执行新的连接数据库操作，结果。。。。。。并没有   卵用
+
+最后弄了一天较劲脑汁，终于找到了解决办法那就是！！！！在Connection连接数据库类里面将报错行，$this->sQuery = @$this->pdo->prepare($query);
+
+前面加上@，强行隐藏报错信息，问题得到了完美解决，开心一笑
+

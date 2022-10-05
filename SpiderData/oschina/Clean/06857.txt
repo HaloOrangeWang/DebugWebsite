@@ -1,0 +1,13 @@
+原因是：
+
+　　Context中有一个startActivity方法，Activity继承自Context，重载了startActivity方法。如果 使用 Activity的startActivity方法，不会有任何限制，而如果使用Context的startActivity方法的话，就需要开启一个新 的task，遇到上面那个异常的，都是因为使用了Context的startActivity方法。解决办法是，加一个flag。 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+修改后代码如下：
+
+Intent intent = new Intent();
+intent.setClass(mContext, PhotoView.class);
+Bundle bundle = new Bundle();
+intent.putExtras(bundle);
+intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);  
+mContext.startActivity(intent);
+

@@ -1,0 +1,44 @@
+转自：https://www.jianshu.com/p/2ad1ca176804
+
+在使用pip命令安装selenium和appium-python-client时，总报错：Unicode Decode Error ascii codec can't decode byte 0xd0 in position 7: ordinal not in range(128)……上百度搜了很久，终于得到解决，现在记录一下，方便以后回溯查找！
+
+报错
+
+报错原因：windows的cmd环境默认为gbk编码，pip默认用utf8编码。而在Linux和Mac中，terminal环境默认的是utf8编码，所以不会报错。
+
+方法1：在你的python目录： Python27\Lib\site-packages下，新 建一个 sitecustomize.py 文件，
+
+内容为：import sys                      sys.setdefaultencoding('gbk')
+
+sitecustomize.py
+
+保存，然后重新运行安装命令，即可成功安装。
+
+安装成功
+
+方法2：更改Python27\Lib目录下的 mimetypes.py 文件，找到大概256行（你可以用Notepad++的搜索功能）的 default_encoding = sys.getdefaultencoding()，在这行前面添加三行内容：ifsys.getdefaultencoding() !='gbk':                          reload(sys)                    sys.setdefaultencoding('gbk')注意格式并保存，重新运行cmd命令。
+
+添加
+
+但是我使用这种方法失败了，你们可以尝试一下~
+
+方法3：在python/lib/site.py文件中加入（在报错的页面添加）：
+
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding('gbk')（括号里面的内容填写所需的编码格式）
+
+这种办法我没有尝试，是在网上看到的，也一并整理了。
+
+如果后面两种方法有效的话，请一定记得与我分享！
+
+作者：失语失芯不失梦
+
+链接：https://www.jianshu.com/p/2ad1ca176804
+
+來源：简书
+
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+

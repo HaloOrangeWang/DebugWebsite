@@ -1,0 +1,102 @@
+
+00 | 问题解决
+
+NameError:name ‘xrange’ is not defined
+ 解决：在Python 3中，range()与xrange()合并为range( )。如果你是python3，使用range即可。
+
+NameError:name ‘xrange’ is not defined
+ 解决：在Python 3中，range()与xrange()合并为range( )。如果你是python3，使用range即可。
+
+使用pip时，from pip import main ImportError: cannot import name ‘main’。
+ 解决：pip老版本升级到新版本的问题。
+
+使用pip时，from pip import main ImportError: cannot import name ‘main’。
+ 解决：pip老版本升级到新版本的问题。
+
+打开/usr/bin/pip文件
+
+from pip import main  
+if __name__ == '__main__':  
+    sys.exit(main())
+
+修改为
+
+from pip import __main__  //修改为__main__，注意是两个下划线
+if __name__ == '__main__':  
+    sys.exit(__main__._main())//增加__main__._
+
+错误提示：unindent does not match any outer indentation level
+ 解决：不一致的缩减导致。
+
+错误提示：unindent does not match any outer indentation level
+ 解决：不一致的缩减导致。
+
+错误提示：ImportError: No module named 'cPickle'
+ 解决：python3没有cPickle库，应该用pickle。
+
+错误提示：ImportError: No module named 'cPickle'
+ 解决：python3没有cPickle库，应该用pickle。
+
+使用range错误提示：TypeError: 'float' object cannot be interpreted as an integer
+ 解决：首先错误事range应该接收int类型的参数。一般可能事python2的除法与python3不一致导致的。
+ python2：a = b/c结果为int
+ python3：a = b/c结果为float，如果需要结果为int，需要修改为a = b//c。
+
+使用range错误提示：TypeError: 'float' object cannot be interpreted as an integer
+ 解决：首先错误事range应该接收int类型的参数。一般可能事python2的除法与python3不一致导致的。
+ python2：a = b/c结果为int
+ python3：a = b/c结果为float，如果需要结果为int，需要修改为a = b//c。
+
+进行某些安装操作，pip突然坏掉了，提示如下：
+
+进行某些安装操作，pip突然坏掉了，提示如下：
+
+Traceback (most recent call last):
+  File "/usr/local/bin/pip", line 6, in <module>
+    from pip._internal import main
+ImportError: No module named 'pip._internal
+
+解决：重新安装pip
+
+wget https://bootstrap.pypa.io/get-pip.py  --no-check-certificate
+python3 get-pip.py --force-reinstall  #如果你是python3，记得不要写成python
+
+unindent does not match any outer indentation level
+ 解决：不一致的缩进导致。如tab不一致，可以使用多次按space来表示tab，一个tab表示四个space`。
+
+unindent does not match any outer indentation level
+ 解决：不一致的缩进导致。如tab不一致，可以使用多次按space来表示tab，一个tab表示四个space`。
+
+TypeError: 'module' object is not callable
+ 解决：Python导入模块的方法有两种：import module 和 from module import，区别是前者所有导入的东西使用时需加上模块名的限定，而后者不要。
+
+TypeError: 'module' object is not callable
+ 解决：Python导入模块的方法有两种：import module 和 from module import，区别是前者所有导入的东西使用时需加上模块名的限定，而后者不要。
+
+How to solve "AttributeError: module 'google.protobuf.descriptor' has no attribute '_internal_create_key"?
+ 解决： pip install --upgrade protobuf
+
+How to solve "AttributeError: module 'google.protobuf.descriptor' has no attribute '_internal_create_key"?
+ 解决： pip install --upgrade protobuf
+
+pip安装pycuda报错：bpl-subset/bpl_subset/boost/python/detail/wrap_python.hpp:50:11: fatal error: pyconfig.h: No such file or directory
+ 解决：pip install python3-dev (如果已安装，重新安装确认指定版本，如python3.8-dev)
+
+pip安装pycuda报错：bpl-subset/bpl_subset/boost/python/detail/wrap_python.hpp:50:11: fatal error: pyconfig.h: No such file or directory
+ 解决：pip install python3-dev (如果已安装，重新安装确认指定版本，如python3.8-dev)
+
+import cv2报ImportError: libGL.so.1: cannot open shared object file: No such file or directory。
+ 解决：apt install libgl1-mesa-glx
+
+import cv2报ImportError: libGL.so.1: cannot open shared object file: No such file or directory。
+ 解决：apt install libgl1-mesa-glx
+
+ImportError: cannot import name 'tensorrt' from 'tensorflow_core.contrib'
+ 解决：
+
+ImportError: cannot import name 'tensorrt' from 'tensorflow_core.contrib'
+ 解决：
+
+import tensorflow.contrib.tensorrt as trt (used in ≤ TensorFlow 1.13.1 )    
+from tensorflow.python.compiler.tensorrt import trt (TensorFlow ≥ 1.14.1)```
+

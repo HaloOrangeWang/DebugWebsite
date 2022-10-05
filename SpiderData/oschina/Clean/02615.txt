@@ -1,0 +1,90 @@
+错误信息如下所示,根据网上查找发现celery4版本起已经不支持windows了，所以会报此错误，解决方法
+
+1 如果要用windows来实现的话，请降低版本到3版本
+
+2 可以用linux系统   linux系统支持4.1版本，不会发生如下错误
+
+from celery import Celery
+ 
+app = Celery('tasks',
+             broker='redis://localhost',
+             backend='redis://localhost')
+ 
+@app.task
+def add(x,y):
+    print("running...",x,y)
+    return x+y
+
+windows下报错信息如下
+
+[2018-01-10 14:23:01,932: INFO/MainProcess] Received task: task.add[4d68d561-e835-4592-a4d4-0f4799700df8]
+[2018-01-10 14:23:01,951: ERROR/MainProcess] Task handler raised error: ValueError('not enough values to unpack (expected 3, got 0)',)
+Traceback (most recent call last):
+  File "d:\program files (x86)\python\python36\lib\site-packages\billiard\pool.py", line 358, in workloop
+    result = (True, prepare_result(fun(*args, **kwargs)))
+  File "d:\program files (x86)\python\python36\lib\site-packages\celery\app\trace.py", line 525, in _fast_trace_task
+    tasks, accept, hostname = _loc
+ValueError: not enough values to unpack (expected 3, got 0)
+[2018-01-10 14:25:54,285: INFO/MainProcess] Received task: task.add[e0593045-acb4-414d-ab6e-45ac7b636084]
+[2018-01-10 14:25:57,287: ERROR/MainProcess] Task handler raised error: ValueError('not enough values to unpack (expected 3, got 0)',)
+Traceback (most recent call last):
+  File "d:\program files (x86)\python\python36\lib\site-packages\billiard\pool.py", line 358, in workloop
+    result = (True, prepare_result(fun(*args, **kwargs)))
+  File "d:\program files (x86)\python\python36\lib\site-packages\celery\app\trace.py", line 525, in _fast_trace_task
+    tasks, accept, hostname = _loc
+ValueError: not enough values to unpack (expected 3, got 0)
+[2018-01-10 14:42:36,239: INFO/MainProcess] Received task: task.add[be45c703-b833-44c5-8f4f-7c81bbcc2cf0]
+[2018-01-10 14:42:36,253: ERROR/MainProcess] Task handler raised error: ValueError('not enough values to unpack (expected 3, got 0)',)
+
+Centos 7下使用celery4.1可以正常执行
+
+客户端
+
+[python@qinhan file]$ python
+Python 3.6.2 (default, Jan 10 2018, 16:15:47) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-16)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from task import add
+>>> add.delay(5,7)
+<AsyncResult: 598a600d-7b49-4ba4-8d7b-85692027b46d>
+>>>
+
+Celery端
+
+[root@qinhan file]# celery -A task worker --loglevel=info
+/usr/local/python3/lib/python3.6/site-packages/celery/platforms.py:795: RuntimeWarning: You're running the worker with superuser privileges: this is
+absolutely not recommended!
+
+Please specify a different user using the -u option.
+
+User information: uid=0 euid=0 gid=0 egid=0
+
+uid=uid, euid=euid, gid=gid, egid=egid,
+ 
+ -------------- celery@qinhan v4.1.0 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-3.10.0-327.el7.x86_64-x86_64-with-centos-7.2.1511-Core 2018-01-11 16:59:47
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f4262d718d0
+- ** ---------- .> transport:   redis://localhost:6379//
+- ** ---------- .> results:     redis://localhost/
+- *** --- * --- .> concurrency: 4 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+
+[tasks]
+  . task.add
+
+[2018-01-11 16:59:47,385: INFO/MainProcess] Connected to redis://localhost:6379//
+[2018-01-11 16:59:47,403: INFO/MainProcess] mingle: searching for neighbors
+[2018-01-11 16:59:48,444: INFO/MainProcess] mingle: all alone
+[2018-01-11 16:59:48,465: INFO/MainProcess] celery@qinhan ready.
+[2018-01-11 17:06:57,465: INFO/MainProcess] Received task: task.add[598a600d-7b49-4ba4-8d7b-85692027b46d]  
+[2018-01-11 17:06:57,472: WARNING/ForkPoolWorker-1] running...
+[2018-01-11 17:06:57,473: WARNING/ForkPoolWorker-1] 5
+[2018-01-11 17:06:57,474: WARNING/ForkPoolWorker-1] 7
+[2018-01-11 17:06:57,490: INFO/ForkPoolWorker-1] Task task.add[598a600d-7b49-4ba4-8d7b-85692027b46d] succeeded in 0.018820124001649674s: 12
+

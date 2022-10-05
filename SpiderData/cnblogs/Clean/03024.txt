@@ -1,0 +1,18 @@
+我的环境：Ubuntu 16.04.5 LTS
+
+修改这个文件： $HOME/.local/lib/python2.7/site-packages/IPython/utils/terminal.py
+
+这个路径下没有该文件的话，可以到这个地方找：/usr/local/lib/python2.7/dist-packages/IPython/utils/terminal.py
+
+找到这句然后注释掉：
+
+# from backports.shutil_get_terminal_size import get_terminal_size as _get_terminal_size
+
+添加：
+
+from shutil_backports import get_terminal_size as _get_terminal_size
+
+我遇到这个问题是在 jupyter notebook时遇到的，按照如上方法修改后就解决了，否则jupyter中不能正常执行代码。
+
+参考：https://blog.csdn.net/baiyu9821179/article/details/70156950
+

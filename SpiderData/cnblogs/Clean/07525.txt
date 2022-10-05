@@ -1,0 +1,22 @@
+1、什么是python包？
+
+python中，每个py文件被称之为模块，每个具有__init__.py文件的目录被称为包。只要模块或者包所在的目录在sys.path中，就可以使用import 模块或import包来使用。
+
+比如下面这个web_monitor项目，共有3个包：conf、db、utils。这3个包中的py文件都可以被其他模块导入。
+
+2、如何导入？
+
+（1）导入同级目录/同级目录的子模块：直接import即可。eg：
+
+test.py中导入task1.py：from task1 import *  /  import task1
+
+或者task2.py中导入task1.py：from moitor.task1.py import *
+
+（2）导入上级目录的同级目录：
+
+或者
+
+pro_dir = os.path.abspath(os.path.dirname(__file__) + '/' + '..')
+sys.path.append(pro_dir)
+import *******
+

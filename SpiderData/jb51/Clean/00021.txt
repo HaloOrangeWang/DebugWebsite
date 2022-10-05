@@ -1,0 +1,80 @@
+处理上传的文件：
+
+f1 = request.FILES['pic']
+ fname = '%s/%s' % (settings.MEDIA_ROOT, f1.name)
+ with open(fname, 'w') as pic:
+  for c in f1.chunks():
+  pic.write(c)
+
+测试报错：
+
+TypeError at /upload/
+
+write() argument must be str, not bytes
+
+把之前的打开语句修改为用二进制方式打开：
+
+f1 = request.FILES['pic']
+ fname = '%s/%s' % (settings.MEDIA_ROOT, f1.name)
+ with open(fname, 'wb+') as pic:
+  for c in f1.chunks():
+  pic.write(c)
+
+没有问题了~
+
+补充知识：python3使用pickle读取文件提示TypeError或者UnicodeDecodeError的解决办法
+
+python的pickle模块实现了基本的数据序列和反序列化。通过pickle模块的序列化操作我们能够将程序中运行的对象信息保存到文件中去，永久存储；通过pickle模块的反序列化操作，我们能够从文件中创建上一次程序保存的对象。
+
+python2使用的是cPickle模块，而在python3中cPickle已经被取消，取而代之的是pickle模块。
+
+开发过程中，我曾经遇到一个奇怪的问题，在读取一个文件时候，使用python2的如下方式：
+
+import cPickle
+
+train, test, dicts = cPickle.load(open("./dataset/atis.pkl"))
+
+是可以正常读取文件的。
+
+可是当换做python3的方式读取文件时候，如下：
+
+import pickle
+
+train, test, dicts = pickle.load(open("./dataset/atis.pkl"))
+
+却获得了错误提示，提示信息如下：
+
+Traceback (most recent call last):
+
+File “Main.py”, line 4, in
+
+train, test, dicts = pickle.load(open(“./dataset/atis.pkl”))
+
+TypeError: ‘str' does not support the buffer interface
+
+查询错误信息后得知解决办法 链接，应该指明用二进制方式打开文件，于是代码改为：
+
+import pickle
+
+train, test, dicts = pickle.load(open("./dataset/atis.pkl", "rb"))
+
+可是这时候错误变成了：
+
+Traceback (most recent call last):
+
+File “Main.py”, line 4, in
+
+train, test, dicts = pickle.load(open(“./dataset/atis.pkl”, “rb”))
+
+UnicodeDecodeError: ‘ascii' codec can't decode byte 0xe8 in position 0: ordinal not in range(128)
+
+于是再次求助万能的google，终于找到了解决办法 链接，我们需要告诉pickle：how to convert Python bytestring data to Python 3 strings，The default is to try and decode all string data as ASCII，所以代码改为：
+
+import pickle
+
+train, test, dicts = pickle.load(open("./dataset/atis.pkl", "rb"), encoding='iso-8859-1')
+
+问题终于的到了解决。
+
+以上这篇解决Python 写文件报错TypeError的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

@@ -1,0 +1,22 @@
+昨晚搞鼓了一下python的open（）打开文件 代码如下
+
+def main():
+     infile =open("C:\Users\Spirit\Desktop\bc.txt",'r')
+     data = infile.read()
+     print(data)
+ main()
+
+然而结果总报错invaild argument 或者cant found such file ***
+
+查找问题后 发现是由于python中的 ‘\’ 是转义符号，要想输出\ 的办法有两种
+
+1 、在\后再加\  就是\\ 的形式
+
+把第二行改为infile =open("C:\\Users\\Spirit\\Desktop\\bc.txt",'r') 即可
+
+2、在路径前加个 r ，意思是按原始字符处理 。
+
+eg：  infile =open(r"C:\Users\Spirit\Desktop\bc.txt",'r')
+
+好的 文件就可以读取了！
+

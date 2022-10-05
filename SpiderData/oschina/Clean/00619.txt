@@ -1,0 +1,67 @@
+
+文件：
+
+
+代码：
+
+import pprint
+messge = 'It was a bringht cold day in April,and the clocks were striking thrirteen'
+count = {}
+for char in messge:
+ count.setdefault(char,0)
+ count[char] = count[char]+1
+pprint.pprint(count)
+
+
+报错：
+
+Traceback (most recent call last):
+ File "C:\Users\Desktop\python\pprint.py", line 1, in <module>
+ import pprint
+ File "C:\Users\Desktop\python\pprint.py", line 7, in <module>
+ pprint.pprint(count)
+TypeError: 'module' object is not callable
+
+
+原因：
+
+代码文件命名为了pprint，导致解释器读入pprint模块时读错
+
+
+解决：
+
+修改文件名字
+
+
+结果：
+
+============= RESTART: C:\Users\Desktop\python\pprint1.py =============
+
+{' ': 12,
+ ',': 1,
+ 'A': 1,
+ 'I': 1,
+ 'a': 4,
+ 'b': 1,
+ 'c': 3,
+ 'd': 3,
+ 'e': 5,
+ 'g': 2,
+ 'h': 3,
+ 'i': 6,
+ 'k': 2,
+ 'l': 3,
+ 'n': 5,
+ 'o': 2,
+ 'p': 1,
+ 'r': 6,
+ 's': 3,
+ 't': 6,
+ 'w': 2,
+ 'y': 1}
+
+
+总结：
+
+命名不规范，debug泪两行！
+

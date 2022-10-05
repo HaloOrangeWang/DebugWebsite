@@ -1,0 +1,22 @@
+post请求
+
+参数赋给data变量时，返回400
+ 参数赋给json变量后，正常200
+
+# coding:utf-8
+
+import requests
+url = r'http://**/**'
+data = {
+    'fq': 'false',
+    'limit': 10,
+    'page': 1
+}
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19',
+}
+r = requests.post(url=url, headers=headers,data=data,timeout=30)  
+print(r.status_code) # 400
+r = requests.post(url=url, headers=headers, json=data, timeout=30)  
+print(r.status_code)# 200
+

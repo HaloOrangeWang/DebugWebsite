@@ -1,0 +1,18 @@
+写了一个监控mq的脚本，把这个脚本加入crontab里进行时刻监控，于是#crontab -e，添加语句：
+
+* * * * * cd /目录  &&  python  mq脚本名.py  >/root/mq.log 2>&1
+
+将执行的结果发送到/root/mq.log里，打开一看里面出现了这样的错误：
+
+但是在shell里单独执行是OK的，于是添加了 source /etc/profile还是报错，可见不是环境变量的问题，怎么办？
+
+首先，#which python，确定python的路径：
+
+把整个python的路径都复制进crontab里去，整个#crontab -l的效果就成了这样:
+
+* * * * * source /etc/profile && cd /目录 && nohup /usr/local/bin/python mq脚本名.py >/root/mq.log 2>&1
+
+如果一台机器上装有多个版本的python，更是要指明python 的路径，不然crontab就会笨笨的去找默认路径。
+
+参考地址：http://blog.51cto.com/chenx1242/1922450
+

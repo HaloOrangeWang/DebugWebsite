@@ -1,0 +1,39 @@
+1.pip更新之前都是：python -m pip install --upgrade pip
+ 2.但今天一直提示有错误，试过输入：python -m pip install --upgrade pip -i https://pypi.douban.com/simple
+ 3.也试过删除形如pip-21.0.3.dist-info的文件夹，再输入python -m pip install --upgrade pip也是报错
+
+4.后面发现了一行关键的报错语句：
+
+#大概意思是：没有执行安装包的权限
+#可以在指令中添加--user 参数或者检查本地文件夹的相关权限设置
+ERROR: Could not install packages due to an OSError: [WinError 5] 拒绝访问。: 'C:\\Python39\\Lib\\site-packages\\pip\\__init__.py'
+Consider using the `--user` option or check the permissions.
+
+5.修改后尝试执行：pip install --user --upgrade pip
+ 6.pip工具算是更新成功了，但这么多的警告我还是想弄掉
+ 7.输入了：pip3 install pyinstaller -i https://pypi.tuna.tsinghua.edu.cn/simple -U
+ 
+ 8.关键报错在于：
+
+note: This error originates from a subprocess, and is likely not a problem with pip.
+ #此错误源于子流程，可能不是pip的问题。
+error: legacy-install-failure
+#错误：旧版安装失败
+× Encountered error while trying to install package.
+╰─> future
+note: This is an issue with the package mentioned above, not pip.
+#注意：这是上述软件包的问题，而不是pip
+hint: See above for output from the failure.#提示：有关故障的输出，请参见上文。
+WARNING: Ignoring invalid distribution -p (c:\python39\lib\site-packages)
+WARNING: Ignoring invalid distribution -1p (c:\python39\lib\site-packages)
+WARNING: Ignoring invalid distribution -p (c:\python39\lib\site-packages)
+WARNING: Ignoring invalid distribution -0p (c:\python39\lib\site-packages)
+WARNING: Ignoring invalid distribution -ip (c:\python39\lib\site-packages)
+WARNING: Ignoring invalid distribution - (c:\python39\lib\site-packages)
+
+9.参考网上的办法，删除以前版本的包即可，原因可能是之前下载库的时候没有成功或者中途退出。到提示的目录site-packages下删除。删除c:\python39\lib\site-packages目录下面的所有以波浪号开头的目录
+ 
+ 10.终于正常了。
+ 
+ 今天也是讨厌pip的一天
+

@@ -1,0 +1,42 @@
+1.运行tensorflow代码遇到如下问题：
+
+2.使用git下载modules包：
+
+（1）下载最新版git，下载地址：https://git-scm.com/downloads，
+
+（2）使用如下命令进入tensorflow文件夹
+
+（3）在命令框输入：git clone --recurse-submodules https://github.com/tensorflow/models
+
+clone过程中如果出现如下问题：
+
+[tortoisegit+github] error:1407742E:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert protocol version
+
+是因为github不支持TLSv1/TLSv1.1，请升级git
+
+(4)下载完成之后，在tensorflow文件夹下能看到modules文件夹
+
+3.打开python运行，
+
+from tensorflow.models.tutorials.rnn.ptb import reader
+
+发现还是报错，找不到reader
+
+4.C:\Program Files\Anaconda3\Lib\site-packages\tensorflow\models\tutorials\rnn\ptb的__init__.py文件下，进行如下修改：
+
+进行如下修改：
+
+将原来的注释或者删除，添加如下两行：
+
+from tensorflow.models.tutorials.rnn.ptb import reader
+
+from tensorflow.models.tutorials.rnn.ptb import util
+
+5.测试
+
+没有报错。
+
+6.如果上述方法仍然不能解决问题，执行如下操作：
+
+将 C:\Program Files\Anaconda3\Lib\site-packages\tensorflow\models\tutorials\rnn\ptb下的reader.py等文件，拷贝到 C:\Program Files\Anaconda3\Lib\site-packages下
+

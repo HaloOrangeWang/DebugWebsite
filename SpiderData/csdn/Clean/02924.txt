@@ -1,0 +1,45 @@
+因为在电脑已经安装了64位的python 3.6版本，现在要开发一个调用DLL的程序，由于这个DLL是32位的，所以使用WINDLL调用它，运行下面的代码：
+
+#
+#https://blog.csdn.net/caimouse/article/details/51749579
+#开发人员：蔡军生（QQ：9073204） 深圳  2018-3-25
+#
+from ctypes import *
+
+VCI_USBCAN2A = 4
+CanDLLName = 'ControlCAN.dll'
+print(CanDLLName)
+canDLL = windll.LoadLibrary(CanDLLName)
+
+出错如下：
+
+ControlCAN.dll
+Traceback (most recent call last):
+  File "SimLow.py", line 10, in <module>
+    canDLL = windll.LoadLibrary(CanDLLName)
+  File "Python36\lib\ctypes\__init__.py", line 426, in LoadLibrary
+    return self._dlltype(name)
+  File "Python36\lib\ctypes\__init__.py", line 348, in __init__
+    self._handle = _dlopen(self._name, mode)
+OSError: [WinError 193] %1 不是有效的 Win32 应用程序。
+
+后面经过查看相关的出错码，发现在64位的PYTHON不能调用32位的DLL。原因找到了，解决就简单了，只有两个选择：
+
+1. 改为32位的python版本。
+
+2. 把DLL改为64位的版本。
+
+
+比特币源码入门教程
+
+
+https://edu.csdn.net/course/detail/6998
+
+
+深入浅出Matplotlib
+https://edu.csdn.net/course/detail/6859
+
+
+深入浅出Numpy
+http://edu.csdn.net/course/detail/6149
+

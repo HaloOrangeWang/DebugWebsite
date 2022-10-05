@@ -1,0 +1,62 @@
+在8.04.4环境下（其实我觉得跟环境无关，是我语句有问题）：
+
+$ dpkg -l | grep -i python
+
+ii  libapache2-mod-python                 3.3.1-2build1               Apache 2 module that embeds Python within th
+
+ii  moinmoin-common                       1.5.8-5.1ubuntu2.5          Python clone of WikiWiki - common data
+
+ii  python                                2.5.2-0ubuntu1              An interactive high-level object-oriented la
+
+ii  python-apt                            0.7.4ubuntu7.7              Python interface to libapt-pkg
+
+ii  python-central                        0.6.7ubuntu0.1              register and build utility for Python packag
+
+ii  python-django                         0.96.1-2ubuntu2.1           A high-level Python Web framework
+
+ii  python-gdbm                           2.5.2-0ubuntu2              GNU dbm database support for Python
+
+ii  python-gnupginterface                 0.3.2-9ubuntu1              Python interface to GnuPG (GPG)
+
+ii  python-minimal                        2.5.2-0ubuntu1              A minimal subset of the Python language (def
+
+ii  python-moinmoin                       1.5.8-5.1ubuntu2.5          Python clone of WikiWiki - library
+
+ii  python-mysqldb                        1.2.2-5ubuntu1              A Python interface to MySQL
+
+ii  python-support                        0.7.5ubuntu1                automated rebuilding support for python modu
+
+ii  python2.5                             2.5.2-2ubuntu6.2            An interactive high-level object-oriented la
+
+ii  python2.5-minimal                     2.5.2-2ubuntu6.2            A minimal subset of the Python language (ver
+
+写了个小程序，希望读取显示自己数据库users表里面的 name 和 mail。
+
+cat /var/www/dbtest.py
+
+#!/usr/bin/python
+
+db = MySQLdb.connect(host="localhost",user="XXXX",passwd="passwd****",db="mymanualdb")
+
+cursor = db.cursor()
+
+cursor.execute("SELECT name, mail FROM users")
+
+result = cursor.fetchall()
+
+for record in result:
+
+print record[0] , "-->" , record[1]
+
+但实际老是报错，不知问题出在哪？
+
+$ python /var/www/dbtest.py
+
+File "/var/www/dbtest.py", line 11
+
+print record[0] , "-->" , record[1]
+
+^
+
+IndentationError: expected an indented block
+

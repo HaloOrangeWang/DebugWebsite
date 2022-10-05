@@ -1,0 +1,135 @@
+
+问题现象
+
+dubbo服务的生产者启动失败报错：
+
+.   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.5.4.RELEASE)
+
+[06/10/19 07:36:26:026 CST] main  INFO provider.ProviderApplication: Starting ProviderApplication on geektcp-PC with PID 8180 
+(D:\alpha\alpha-dubbo\alpha-dubbo-provider\target\classes started by Administrator in D:\alpha)
+[06/10/19 07:36:26:026 CST] main  INFO provider.ProviderApplication: No active profile set, falling back to default profiles: default
+[06/10/19 07:36:26:026 CST] main  INFO annotation.AnnotationConfigApplicationContext: Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@61d6015a: 
+startup date [Sun Oct 06 19:36:26 CST 2019]; root of context hierarchy
+[06/10/19 07:36:26:026 CST] main  INFO logger.LoggerFactory: using logger: com.alibaba.dubbo.common.logger.log4j.Log4jLoggerAdapter
+[06/10/19 07:36:26:026 CST] main  INFO annotation.ServiceAnnotationBeanPostProcessor:  [DUBBO] BeanNameGenerator bean can't be found in BeanFactory with name 
+[org.springframework.context.annotation.internalConfigurationBeanNameGenerator], dubbo version: 2.6.2, current host: 192.168.1.200
+[06/10/19 07:36:26:026 CST] main  INFO annotation.ServiceAnnotationBeanPostProcessor:  [DUBBO] BeanNameGenerator will be a instance of org.springframework.context.annotation.AnnotationBeanNameGenerator , 
+it maybe a potential problem on bean name generation., dubbo version: 2.6.2, current host: 192.168.1.200
+[06/10/19 07:36:26:026 CST] main  WARN annotation.ServiceAnnotationBeanPostProcessor:  [DUBBO] The BeanDefinition[Root bean: 
+class [com.alibaba.dubbo.config.spring.ServiceBean]; scope=; abstract=false; 
+lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; 
+initMethodName=null; destroyMethodName=null] of ServiceBean has been registered with name : 
+ServiceBean:demoServiceImpl:com.geektcp.alpha.dubbo.api.DemoService, dubbo version: 2.6.2, current host: 192.168.1.200
+[06/10/19 07:36:26:026 CST] main  INFO annotation.ServiceAnnotationBeanPostProcessor:  
+[DUBBO] 1 annotated Dubbo's @Service Components { [Bean definition with name 'demoServiceImpl': 
+Generic bean: class [com.geektcp.alpha.dubbo.provider.service.DemoServiceImpl]; scope=; abstract=false; 
+lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; 
+factoryMethodName=null; initMethodName=null; destroyMethodName=null; 
+defined in file [D:\alpha\alpha-dubbo\alpha-dubbo-provider\target\classes\com\geektcp\alpha\dubbo\provider\service\DemoServiceImpl.class]] } 
+were scanned under package[com.geektcp.alpha.dubbo.provider.service], dubbo version: 2.6.2, current host: 192.168.1.200
+[06/10/19 07:36:27:027 CST] main  WARN annotation.AnnotationConfigApplicationContext: Exception encountered during context initialization - 
+cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 
+'org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; 
+nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'spring.info-org.springframework.boot.autoconfigure.info.ProjectInfoProperties': 
+Initialization of bean failed; nested exception is javax.validation.ValidationException: Unable to create a Configuration, 
+because no Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+[06/10/19 07:36:27:027 CST] main  INFO annotation.AnnotationMBeanExporter: Unregistering JMX-exposed beans on shutdown
+[06/10/19 07:36:27:027 CST] main  INFO annotation.ReferenceAnnotationBeanPostProcessor: 
+class com.alibaba.dubbo.config.spring.beans.factory.annotation.ReferenceAnnotationBeanPostProcessor was destroying!
+[06/10/19 07:36:27:027 CST] main  INFO logging.AutoConfigurationReportLoggingInitializer:
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+[06/10/19 07:36:27:027 CST] main ERROR diagnostics.LoggingFailureAnalysisReporter:
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The Bean Validation API is on the classpath but no implementation could be found
+
+Action:
+
+Add an implementation, such as Hibernate Validator, to the classpath
+
+[06/10/19 07:36:27:027 CST] DubboShutdownHook  INFO config.AbstractConfig:  
+[DUBBO] Run shutdown hook now., dubbo version: 2.6.2, current host: 192.168.1.200
+[06/10/19 07:36:27:027 CST] DubboShutdownHook  INFO support.AbstractRegistryFactory:  
+[DUBBO] Close all registries [], dubbo version: 2.6.2, current host: 192.168.1.200
+
+
+　解决方案
+
+这个问题原因看起来是跟Validate有关，但是添加如下依赖，问题不会解决：
+
+<dependency>
+　　<groupId>org.hibernate</groupId>
+　　<artifactId>hibernate-validator</artifactId>
+　　<version>5.3.0.Final</version>
+</dependency>
+
+　　
+
+真正是解决办法，添加如下依赖：
+
+<dependency>
+　　<groupId>org.springframework.boot</groupId>
+　　<artifactId>spring-boot-starter-web</artifactId>
+　　<version>1.5.4.RELEASE</version>
+</dependency>
+
+通常带有版本依赖的项目，子模块不需要指定版本，那么添加如下依赖即可：
+
+<dependency>
+　　<groupId>org.springframework.boot</groupId>
+　　<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+　　
+
+
+原因分析
+
+没有spring-boot-starter-web的这个依赖，代码也不会有报错，但是dubbo内部需要用到web服务，所以要有这个依赖。
+
+但是加了这个依赖，使用dubbo开发的springboot项目的日志就不是很好打印了，因为老是有一个警告在启动日志的开头，如下：
+
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/F:/mavenLocalRepository/ch/qos/logback/logback-classic/1.1.11/logback-classic-1.1.11.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/F:/mavenLocalRepository/org/slf4j/slf4j-log4j12/1.7.25/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [ch.qos.logback.classic.util.ContextSelectorStaticBinder]
+
+.   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.5.4.RELEASE)
+
+　解决方案是排除掉zookeeper依赖jar包中的slf4j日志：
+
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>dubbo-registry-zookeeper</artifactId>
+    <version>${dubbo.version}</version>
+    <exclusions>
+        <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+　　
+
+　　
+

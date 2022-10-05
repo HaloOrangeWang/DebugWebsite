@@ -1,0 +1,19 @@
+Tornado 文档中提到但是这样只能捕获到handlers中列出的路径请求中的错误。
+
+如果只定义了(r"/hello", HelloHandler) 一条规则，那么只能捕获到 /hello/other，这样的未定义路径请求，而像/he、/helloworld、/he/other这样的会直接显示Tornado默认的404错误页面，而不会显示自定义的错误页面。
+
+解决方法很简单只需要在路由规则的最后加一条(r".*", BaseHandler)，用于捕获未被其他规则捕获的所有请求，然后覆写get方法，并在方法中调用自定义的write_error方法。 例：
+
+复制代码 代码如下:
+class BaseHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write_error(404)
+
+def write_error(self, status_code, **kwargs):
+        if status_code == 404:
+            self.render('public/404.html')
+        elif status_code == 500:
+            self.render('public/500.html')
+        else:
+            self.write('error:' + str(status_code))
+

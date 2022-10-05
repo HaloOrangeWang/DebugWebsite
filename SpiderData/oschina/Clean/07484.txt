@@ -1,0 +1,118 @@
+memcache使用phpize工具生成config后,然后编译make时报错；
+
+[root@localhost_002 memcache-2.2.3]# make
+/bin/sh /usr/local/src/memcache-2.2.3/libtool --mode=compile cc -I/usr/local/php/include/php -I. -I/usr/local/src/memcache-2.2.3 -DPHP_ATOM_INC -I/usr/local/src/memcache-2.2.3/include -I/usr/local/src/memcache-2.2.3/main -I/usr/local/src/memcache-2.2.3 -I/usr/local/php/include/php -I/usr/local/php/include/php/main -I/usr/local/php/include/php/TSRM -I/usr/local/php/include/php/Zend -I/usr/local/php/include/php/ext -I/usr/local/php/include/php/ext/date/lib  -DHAVE_CONFIG_H  -g -O2   -c /usr/local/src/memcache-2.2.3/memcache.c -o memcache.lo 
+ cc -I/usr/local/php/include/php -I. -I/usr/local/src/memcache-2.2.3 -DPHP_ATOM_INC -I/usr/local/src/memcache-2.2.3/include -I/usr/local/src/memcache-2.2.3/main -I/usr/local/src/memcache-2.2.3 -I/usr/local/php/include/php -I/usr/local/php/include/php/main -I/usr/local/php/include/php/TSRM -I/usr/local/php/include/php/Zend -I/usr/local/php/include/php/ext -I/usr/local/php/include/php/ext/date/lib -DHAVE_CONFIG_H -g -O2 -c /usr/local/src/memcache-2.2.3/memcache.c  -fPIC -DPIC -o .libs/memcache.o
+/usr/local/src/memcache-2.2.3/memcache.c: 在函数‘mmc_str_left’中:
+/usr/local/src/memcache-2.2.3/memcache.c:1116:8: 警告：assignment discards ‘const’ qualifier from pointer target type [默认启用]
+  found = php_memnstr(haystack, needle, needle_len, haystack + haystack_len);
+        ^
+/usr/local/src/memcache-2.2.3/memcache.c: 在函数‘mmc_stats_parse_stat’中:
+/usr/local/src/memcache-2.2.3/memcache.c:1523:13: 警告：assignment discards ‘const’ qualifier from pointer target type [默认启用]
+  if ((space = php_memnstr(start, " ", 1, end)) == NULL) {
+             ^
+/usr/local/src/memcache-2.2.3/memcache.c:1528:13: 警告：assignment discards ‘const’ qualifier from pointer target type [默认启用]
+  if ((colon = php_memnstr(start, ":", 1, space - 1)) != NULL) {
+             ^
+/usr/local/src/memcache-2.2.3/memcache.c: 在函数‘mmc_stats_parse_item’中:
+/usr/local/src/memcache-2.2.3/memcache.c:1566:13: 警告：assignment discards ‘const’ qualifier from pointer target type [默认启用]
+  if ((space = php_memnstr(start, " ", 1, end)) == NULL) {
+             ^
+/usr/local/src/memcache-2.2.3/memcache.c:1574:13: 警告：assignment discards ‘const’ qualifier from pointer target type [默认启用]
+  for (value = php_memnstr(space, "[", 1, end); value != NULL && value <= end; value = php_memnstr(value + 1, ";", 1, end)) {
+             ^
+/usr/local/src/memcache-2.2.3/memcache.c:1574:85: 警告：assignment discards ‘const’ qualifier from pointer target type [默认启用]
+  for (value = php_memnstr(space, "[", 1, end); value != NULL && value <= end; value = php_memnstr(value + 1, ";", 1, end)) {
+                                                                                     ^
+/usr/local/src/memcache-2.2.3/memcache.c:1579:34: 警告：assignment discards ‘const’ qualifier from pointer target type [默认启用]
+   if (value <= end && (value_end = php_memnstr(value, " ", 1, end)) != NULL && value_end <= end) {
+                                  ^
+/usr/local/src/memcache-2.2.3/memcache.c: 在函数‘mmc_stats_parse_generic’中:
+/usr/local/src/memcache-2.2.3/memcache.c:1603:14: 警告：assignment discards ‘const’ qualifier from pointer target type [默认启用]
+   if ((space = php_memnstr(start, " ", 1, end)) != NULL) {
+              ^
+/usr/local/src/memcache-2.2.3/memcache.c: 在函数‘php_mmc_connect’中:
+/usr/local/src/memcache-2.2.3/memcache.c:1902:3: 错误：提供给函数‘zend_list_insert’的实参太少
+   list_id = zend_list_insert(pool, le_memcache_pool);
+   ^
+In file included from /usr/local/php/include/php/Zend/zend_API.h:27:0,
+                 from /usr/local/php/include/php/main/php.h:39,
+                 from /usr/local/src/memcache-2.2.3/memcache.c:26:
+/usr/local/php/include/php/Zend/zend_list.h:73:14: 附注：在此声明
+ ZEND_API int zend_list_insert(void *ptr, int type TSRMLS_DC);
+              ^
+/usr/local/src/memcache-2.2.3/memcache.c:1919:3: 错误：提供给函数‘zend_list_insert’的实参太少
+   list_id = zend_list_insert(pool, le_memcache_pool);
+   ^
+In file included from /usr/local/php/include/php/Zend/zend_API.h:27:0,
+                 from /usr/local/php/include/php/main/php.h:39,
+                 from /usr/local/src/memcache-2.2.3/memcache.c:26:
+/usr/local/php/include/php/Zend/zend_list.h:73:14: 附注：在此声明
+ ZEND_API int zend_list_insert(void *ptr, int type TSRMLS_DC);
+              ^
+/usr/local/src/memcache-2.2.3/memcache.c: 在函数‘zif_memcache_add_server’中:
+/usr/local/src/memcache-2.2.3/memcache.c:1975:3: 错误：提供给函数‘zend_is_callable’的实参太少
+   if (!zend_is_callable(failure_callback, 0, NULL)) {
+   ^
+In file included from /usr/local/php/include/php/main/php.h:39:0,
+                 from /usr/local/src/memcache-2.2.3/memcache.c:26:
+/usr/local/php/include/php/Zend/zend_API.h:304:20: 附注：在此声明
+ ZEND_API zend_bool zend_is_callable(zval *callable, uint check_flags, char **callable_name TSRMLS_DC);
+                    ^
+/usr/local/src/memcache-2.2.3/memcache.c:2003:3: 错误：提供给函数‘zend_list_insert’的实参太少
+   list_id = zend_list_insert(pool, le_memcache_pool);
+   ^
+In file included from /usr/local/php/include/php/Zend/zend_API.h:27:0,
+                 from /usr/local/php/include/php/main/php.h:39,
+                 from /usr/local/src/memcache-2.2.3/memcache.c:26:
+/usr/local/php/include/php/Zend/zend_list.h:73:14: 附注：在此声明
+ ZEND_API int zend_list_insert(void *ptr, int type TSRMLS_DC);
+              ^
+/usr/local/src/memcache-2.2.3/memcache.c: 在函数‘zif_memcache_set_server_params’中:
+/usr/local/src/memcache-2.2.3/memcache.c:2059:3: 错误：提供给函数‘zend_is_callable’的实参太少
+   if (!zend_is_callable(failure_callback, 0, NULL)) {
+   ^
+In file included from /usr/local/php/include/php/main/php.h:39:0,
+                 from /usr/local/src/memcache-2.2.3/memcache.c:26:
+/usr/local/php/include/php/Zend/zend_API.h:304:20: 附注：在此声明
+ ZEND_API zend_bool zend_is_callable(zval *callable, uint check_flags, char **callable_name TSRMLS_DC);
+                    ^
+/usr/local/src/memcache-2.2.3/memcache.c: 在函数‘mmc_find_persistent’中:
+/usr/local/src/memcache-2.2.3/memcache.c:2159:4: 错误：提供给函数‘zend_list_insert’的实参太少
+    zend_list_insert(mmc, le_pmemcache);
+    ^
+In file included from /usr/local/php/include/php/Zend/zend_API.h:27:0,
+                 from /usr/local/php/include/php/main/php.h:39,
+                 from /usr/local/src/memcache-2.2.3/memcache.c:26:
+/usr/local/php/include/php/Zend/zend_list.h:73:14: 附注：在此声明
+ ZEND_API int zend_list_insert(void *ptr, int type TSRMLS_DC);
+              ^
+/usr/local/src/memcache-2.2.3/memcache.c:2177:4: 错误：提供给函数‘zend_list_insert’的实参太少
+    zend_list_insert(mmc, le_pmemcache);
+    ^
+In file included from /usr/local/php/include/php/Zend/zend_API.h:27:0,
+                 from /usr/local/php/include/php/main/php.h:39,
+                 from /usr/local/src/memcache-2.2.3/memcache.c:26:
+/usr/local/php/include/php/Zend/zend_list.h:73:14: 附注：在此声明
+ ZEND_API int zend_list_insert(void *ptr, int type TSRMLS_DC);
+              ^
+make: *** [memcache.lo] 错误 1
+
+处理方法：
+
+vi memcache.c
+
+将所有的：zend_list_insert(pool, le_memcache_pool);
+
+改为：zend_list_insert(pool, le_memcache_pool TSRMLS_CC);
+
+将所有的：zend_list_insert(mmc, le_pmemcache);
+
+改为：zend_list_insert(mmc, le_pmemcache TSRMLS_CC);
+
+讲所有的：if (!zend_is_callable(failure_callback, 0, NULL))
+
+改为：if (!zend_is_callable(failure_callback, 0, NULL, NULL))
+
+再次重新编译即可；
+

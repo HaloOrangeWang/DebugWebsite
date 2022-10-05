@@ -1,0 +1,30 @@
+错误
+
+单步运行是可以import json这个模块的，而且之前运行时没有问题的；
+
+原因
+
+目录中有一个json命名的文件；最根本的原因是python搜索导入模块的顺序；
+
+首先我们要了解python中import引入模块的原理机制。当我们执行一行 from package import module as mymodule 命令时，Python解释器会查找package 这个包的module模块，并将该模块作为 mymodule 引入到当前的工作空间。所以import语句主要是做了二件事：
+
+a) 查找相应的module
+b) 加载module到local namespace
+在import的第一个阶段，主要是完成了查找要引入模块的功能。查找时首先检查 sys.modules (保存了之前import的类库的缓存），如果module没有被找到，则按照下面的搜索路径查找模块：
+
+a) .py 所在文件的目录
+b) PYTHONPATH 中的目录
+c) python安装目录，UNIX下，默认路径一般为/usr/local/lib/python/
+d) 3.x 中.pth 文件内容
+也就是说，当我们import json的时候，它会先搜索json.py所在目录有没有对应的模块，由于我们命名的json.py与json模块文件重名，所以会误以为我们自己创建的json.py即为json模块文件，所以会出现这样的错误。
+
+解决方法
+
+更改json.py文件的名称；
+
+参考
+
+1. ​​Python错误：AttributeError: module 'json' has no attribute 'loads'解决办法​​；
+
+完
+

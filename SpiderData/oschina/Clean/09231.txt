@@ -1,0 +1,82 @@
+
+No.1 消除“Unfortunately, System UI has stopped”的方法——CSDN杭州山不高的blog
+
+在Android模拟器下，我创建个大屏幕的AVD，每次运行都弹出“Unfortunately, System UI has stopped”！
+解决方法是：修改AVD下的config.ini中的hw.mainKeys，由no 改为yes！
+Windows下，其路径在：C:\Users\gaojs\.android\avd\smdk4412.avd。[不知道gaojs是什么，在C盘搜索.android文件夹会有所得，我直接搜的android]
+Ubuntu下，其路径在：~/.android/avd/smdk4412.avd。
+
+
+No.2 Failed to install *apk on device 'emulator-5554': timeout——我的异常网网友
+
+Failed to install *.apk on device 'emulator-5554': timeout
+
+错误提示：
+
+Failed to install helloworld.apk on device 'emulator-5554': timeout
+
+或者
+
+the user data image is used
+
+原因：
+
+由于模拟器已经开启而没有关闭或者非法关闭引起的。
+
+解决方法：
+
+删除 C:\Documents and Settings\Administrator\.android\avd\对应版本.avd
+下所有以.lock结尾的文件夹。
+
+或者
+
+Failed to install *.apk on device *:
+
+timeout Launch canceled!
+
+还有一种办法：
+
+在window->preferences->Android->DDMS->ADB connection time out (ms):
+
+将这个值设置的大一些，默认为5000，我设置成500000，然后就OK了。
+
+我有一次试N种方法都解决不了，后来就是用这个办法解决的。
+
+[没试过这些方法，因为自己的程序图标自动在虚拟机界面出现了，先留着]
+
+
+No.3 Failed to install *apk on device * timeout——我的异常网网友
+
+每次调试安装时都出现Failed to install *.apk on device *: timeout
+现在将这个问题整理出来，以便以后查阅。
+
+错误出现：连接真机调试的时候如果连接太久没响应就会出现timeout
+
+根据网上众多资料：可分为这几个解决方法
+
+方法由简单到麻烦：
+
+1.在window-》prensent....-》android-》设置ddms的timeout时间。这种是就最有效、最简洁的。
+
+2.delete android里面的 apk，保证速度。不过试过一次后，真机好像变“聪明了”，也出现timeout。
+
+3.Cleaning the project (Project->Clean)，不行就重启eclipse或者android，很郁闷的是，重启后运行第一次可以。第二次就开始变慢了，也就是出现timeout
+
+4.网上一个方法：
+
+Don't use spaces in your directory names. If you have files that are in such a directory (e.g., stuff inside of C:\Program Files\), copy them to another spot that does not have spaces.
+
+很明显是说目录里面不要有空格[本人就是用了有空格的workspace，换了workspace还是没用，不过至少现在程序能跑起来。。]
+
+
+No.4 Error inflating class linearLayout
+
+具体错误名字记不清了，这几天下来感觉安卓报错一定要注意看LogCat里面反馈的信息，特别是Caused by那行，会具体表明出现的是什么问题或者出错的位置。安卓中xml里对系统自带节点名字的字母大小写是有要求的，各个节点的名字大小写都是固定的，所以一定要注意不要写错。就像这个 LinearLayout的命名规则就与java中类名的命名方式相同，首字母大写，如果包含两个单词，第二个单词的首字母也要大写。估计写错了系统会找不到，所以无法填充。
+
+
+No.5 使用lazylist时关于缓存将被用尽的提示
+
+使用lazylist时提示MemoryCache will use up to xMB然后就是报IOException的错，具体错误也找不到了。。是跟lazylist里面的类相关的。是因为在lazylist的MemoyCache类中定义了一个limit，应该就是分配的内存限制，而当你使用lazylist加载的图片大小超过此限制时就会报错。增大限制问题就能解决，但是不知道对性能有何影响。
+
+待续
+

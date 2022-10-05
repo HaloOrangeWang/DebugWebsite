@@ -1,0 +1,30 @@
+一、Windows安装Python启动报错：api-ms-win-crt-runtimel1-1-0.dll缺失
+
+两种解决办法：
+
+a、api-ms-win-crt-runtime就是MFC的运行时环境的库，Python在Windows上编译也是用微软的visual studio C++编译的，底层也会用到微软提供的C++库和runtime库，去微软官网下载安装Microsoft Visual C++ Redistributable for Visual Studio 2015组件后，重启计算机即可解决问题，但我在完成这一操作之后仍然启动不了Python，并没有解决问题，如果大家出现的情况和我一样，不妨试试方法2。
+
+b、去微软官网下载安装：KB2999226补丁程序
+
+（注意X86和X64的区别：X86即通常所说的32位，X64即通常所说的64位，具体区别详见：http://www.windows7en.com/jiaocheng/29804.html）
+
+补丁码：KB2999226
+
+链接：https://www.microsoft.com/en-us/download/details.aspx?id=49093
+
+这个链接是针对win7的，若想要别的，直接在微软官网搜索补丁号即可。
+
+补丁下载安装完成后在Windows开始菜单栏里输入cmd，在新打开的窗口输入python，如下图所示
+
+摘抄自：https://blog.csdn.net/lingaixuexi/article/details/80992542
+
+二、windows7 下python3.7下Scripts文件夹为空
+
+1. python -m ensurepip   会自动安装pip，然后运行pip3 list就可以了
+
+2. pip3 list
+
+3. python -m pip install --upgrade pip   然后运行命令升级pip：
+
+摘抄自：https://zhuanlan.zhihu.com/p/269190304
+

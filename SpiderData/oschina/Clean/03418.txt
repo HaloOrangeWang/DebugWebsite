@@ -1,0 +1,63 @@
+
+报错信息
+
+tomcat启动报错：
+Jul 20, 2018 11:48:37 AM org.apache.catalina.core.ContainerBase addChildInternal
+SEVERE: ContainerBase.addChild: start:
+org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[Catalina].StandardHost[localhost].StandardContext[/wrs]]
+at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:154)
+at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:901)
+at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:877)
+at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:652)
+at org.apache.catalina.startup.HostConfig.deployWAR(HostConfig.java:1095)
+at org.apache.catalina.startup.HostConfigDeployWar.run(HostConfig.java:1957)atjava.util.concurrent.ExecutorsRunnableAdapter.call(Executors.java:511)
+at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.IllegalStateException: Unable to complete the scan for annotations for web application [/wrs] due to a StackOverflowError. Possible root causes include a too low setting for -Xss and illegal cyclic inheritance dependencies. The class hierarchy being processed was [org.bouncycastle.asn1.ASN1EncodableVector->org.bouncycastle.asn1.DEREncodableVector->org.bouncycastle.asn1.ASN1EncodableVector]
+at org.apache.catalina.startup.ContextConfig.checkHandlesTypes(ContextConfig.java:2159)
+at org.apache.catalina.startup.ContextConfig.processAnnotationsStream(ContextConfig.java:2105)
+at org.apache.catalina.startup.ContextConfig.processAnnotationsJar(ContextConfig.java:1980)
+at org.apache.catalina.startup.ContextConfig.processAnnotationsUrl(ContextConfig.java:1946)
+at org.apache.catalina.startup.ContextConfig.processAnnotations(ContextConfig.java:1931)
+at org.apache.catalina.startup.ContextConfig.webConfig(ContextConfig.java:1330)
+at org.apache.catalina.startup.ContextConfig.configureStart(ContextConfig.java:889)
+at org.apache.catalina.startup.ContextConfig.lifecycleEvent(ContextConfig.java:386)
+at org.apache.catalina.util.LifecycleSupport.fireLifecycleEvent(LifecycleSupport.java:117)
+at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:90)
+at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5479)
+at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:150)
+... 10 more
+
+Jul 20, 2018 11:48:37 AM org.apache.catalina.startup.HostConfig deployWAR
+SEVERE: Error deploying web application archive /server/tomcat-pingan-wrs/webapps/wrs.war
+java.lang.IllegalStateException: ContainerBase.addChild: start: org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[Catalina].StandardHost[localhost].StandardContext[/wrs]]
+at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:905)
+at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:877)
+at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:652)
+at org.apache.catalina.startup.HostConfig.deployWAR(HostConfig.java:1095)
+at org.apache.catalina.startup.HostConfigDeployWar.run(HostConfig.java:1957)atjava.util.concurrent.ExecutorsRunnableAdapter.call(Executors.java:511)
+at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+at java.lang.Thread.run(Thread.java:745)
+
+Jul 20, 2018 11:48:37 AM org.apache.catalina.startup.HostConfig deployWAR
+
+
+问题分析：
+
+Caused by: java.lang.IllegalStateException: Unable to complete the scan for annotations for web application [/wrs] due to a StackOverflowErro：报错为Java虚拟机栈溢出问题；而导致栈溢出的根本原因是由于包含（ASN1EncodableVector）jar包冲突，这种情况是有两个jar都含有上述相同的类名，且继承关系刚好相反，故造成tomcat启动的环问题。
+
+
+处理方法：
+
+在项目中搜含有 ASN1EncodableVector 的jar包，只留一个，再重新启动项目试试
+
+需要先安装 Maven Helper插件
+
+然后点击pom.xml -> Dependency Analyzer
+
+右键Exclude
+

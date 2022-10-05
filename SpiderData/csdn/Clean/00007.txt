@@ -1,0 +1,17 @@
+现状：
+ 能访问到，但是无法创建
+
+尝试（都无法解决）：
+ 1.授权anacoda下的jupter文件为777权限，工作目录为777权限，不能解决问题
+ 2.重装anacoda，不能解决问题
+ 3.pip卸载重装jupyter，不能解决问题
+
+最后解决办法（成功）：
+ （1）打开jupyter_notebook_config.py文件
+ 在开始菜单里找到并打开Anaconda Prompt，输入如下命令，然后执行。 jupyter notebook --generate-config，如图所示：
+
+然后， 找到jupyter_notebook_config.py文件，打开
+
+（2）找到c.NotebookApp.allow_origin = ’ ‘将’ '改为‘*’
+ （3）保存退出 重新启动jupyter 成功
+

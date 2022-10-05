@@ -1,0 +1,17 @@
+在运行python，的时候，使用了一个list的sort方法
+
+selected = MMRScore.sort(key=self.get_mmr_value, reverse=True)[0]
+
+结果报错如下：
+ TypeError: 'NoneType' object is not subscriptable
+
+
+解决
+
+MMRScore.sort(key=self.get_mmr_value, reverse=True)没有返回值的，不能进行赋值操作
+
+将上面的代码拆分处理，如下所示：
+
+MMRScore.sort(key=self.get_mmr_value, reverse=True)
+selected = MMRScore[0]
+

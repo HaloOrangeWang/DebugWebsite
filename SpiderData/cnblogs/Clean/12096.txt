@@ -1,0 +1,22 @@
+众所周知，很多Python的库都需要编译（大概率是用了Cython），这时直接用pip安装会报错：error: Microsoft Visual C++ 14.0 is required.
+
+不知为何，我的电脑死活不能安装上VC，只能用mingw作为编译器。
+
+附：MinGW-w64 密码:2jfy，tdm64-gcc tdm-gcc（32位）
+
+最新版：tdm-gcc GCC with the MCF thread model MinGW-w64
+
+环境变量：[Windows配置MinGW环境变量]
+
+然后编辑你的Python路径/Lib/distutils/distutils.cfg
+
+仍然会报错 Unknown MS Compiler version XXXX
+
+编辑你的Python路径/Lib/distutils/cygwinccompiler.py
+
+在
+
+后添加
+
+其中1927改为你的Compiler version
+

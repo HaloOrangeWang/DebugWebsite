@@ -1,0 +1,22 @@
+问题：
+
+在Django的管理页面进行添加的时候
+
+出现了如下的错误
+
+TypeError at /admin/booktest/book_infor/add/ __str__ returned non-string (type bytes)
+
+原因就在于你在写的models模块的时候没有注意你使用的是python2还是python3系列，两者实际上有着非常大的区别。就好像成人和小孩的区别一样
+
+pyhotn2中的__str__():方法
+
+1     def __str__(self):
+2         return self.btitle.encode('utf-8')
+
+python3中的__str__():方法
+
+def __str__(self):
+        return self.btitle
+
+因为在python3中会自动进行编码不需要指定编码格式，所以在python3中使用python2的那种格式就会报错
+

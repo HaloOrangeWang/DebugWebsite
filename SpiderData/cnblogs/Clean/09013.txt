@@ -1,0 +1,132 @@
+
+1.由于目标计算机积极拒绝，无法连接
+
+原因：appium服务未开启，或者python脚本中的服务地址和实际开启的appium服务不一致
+
+
+2.Could not find a connected Android device
+
+原因：手机没连上
+
+解决方法：命令行adb devices查看手机是否已连上；如果没连上可以重启模拟器或插拔数据线
+
+
+3.desired_capabilities中未包含必须项
+
+注释platformName：
+
+
+4.The desiredCapabilities object was not valid for the following reason(s): 'noReset' must be of type boolean
+
+原因：caps中noReset不是java的布尔类型
+
+
+5.NoSuchElementException
+
+selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.
+
+原因：可能是没有加等待
+
+
+6.install_failed_user_restricted
+
+使用appium对app进行自动化测试时，会自动在手机上安装appium的setting应用。
+
+Appium的setting应用安装失败，报install_failed_user_restricted用户限制安装失败
+
+解决：手机打开usb安装权限
+
+原因：appium会在手机上安装appium setting应用，如果没有开启usb安装权限，就安装不了
+
+usb安装权限在哪里？
+
+拿魅蓝举例，手机管家-权限管理-usb安装管理，打开usb安装管理开关，允许appium setting监控；或设置-应用管理-应用权限-权限管理，返回应用权限，跳转到手机管家的权限管理页面，……
+
+
+7.Error executing adbExec :adb timeout after 20000ms
+
+raise exception_class(message, screen, stacktrace)
+
+selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Cannot start the 'com.lemon.lemonban' application. Visit https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/android/activity-startup.md for troubleshooting. Original error: Error executing adbExec.
+
+Original error:
+
+'Command 'D\:\\cjnsoft\\adt-bundle-windows-x86_64-20140702\\sdk\\platform-tools\\adb.exe -P 5037 -s A02AECPB2F3N8 shell am start -W -n com.lemon.lemonban/com.lemon.lemonban.activity.WelcomeActivity -S' timed out after 20000ms'. #adb命令超时在20000ms后
+
+Try to increase the 20000ms adb execution timeout represented by 'adbExecTimeout' capability
+
+#增大adb执行超时时间（默认20000ms），通过capability的'adbExecTimeout'键
+
+解决：
+
+Capability添加adbExecTimeout键，大于20000ms
+
+
+8.device unauthorized: This adb server's $ADB_VENDOR_KEYS is not set
+
+selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command.
+
+Original error: Error getting device API level.
+
+Original error: Error executing adbExec.
+
+Original error:
+
+'Command'D\:\\cjnsoft\\adt-bundle-windows-x86_64-20140702\\sdk\\platform-tools\\adb.exe -P 5037 -s 91QEBP74YE6X shell getprop ro.build.version.sdk' exited with code 1';
+
+Stderr: 'error: device unauthorized. #设备未认证
+
+This adb server's $ADB_VENDOR_KEYS is not set #usb厂商key没有设置
+
+Try 'adb kill-server' if that seems wrong.
+
+Otherwise check for a confirmation dialog on your device.'; Code: '1'
+
+测试的手机是魅族
+
+adb devices提示未认证
+
+adb shell提示厂商key没有设置
+
+解决方式：设置厂商vid
+
+手机usb默认连接方式是仅充电，选择媒体设备模式（如果不设置，设备管理器中没有便携设备）
+
+设备管理器中查看安卓手机的vid
+
+双击
+
+vid：0E8D
+
+C:\Users\12544\.android  （12544为用户名）
+
+如果该路径下没有adb_usb.ini文件，可以新建一个，并将vid填写
+
+重启adb后，认证成功了
+
+adb kill-server
+
+adb start-server
+
+
+9.socket hang up（挂断）
+
+selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not proxy command to remote server.#无法将命令代理到远程服务器
+
+Original error: Error: socket hang up
+
+原因：可能是python代码中缺少驱动对象.quit()
+
+
+10.java.lang.SecurityException: Permission Denial？
+
+报错java.lang.SecurityException: Permission Denial 权限拒绝
+
+原因：activity名称不对，不属于同一个应用。
+
+解决方法：换个acitivity，使用“aapt dump badging 安装包”命令获取launchable-activity，为入口activity，而不要使用“adb shell dumpsys activity | find "mFocusedActivity"”获取到的前台应用activity。
+
+问题记录：
+
+原因：uid不一致，不是同一个应用。同一个应用的不同activity之间可以相互访问，但是不同应用的activity之间不能相互访问，所以提示Permission Denial。
+

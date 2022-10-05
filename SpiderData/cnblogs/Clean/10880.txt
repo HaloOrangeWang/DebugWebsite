@@ -1,0 +1,95 @@
+
+服务器环境为 Ubuntu18.04+python3.8+Django2.2.24+mysql5.7
+
+
+这两天在阿里云租了个服务器，将Django项目部署上去，耗时一整天成功部署，记录期间遇到的问题与解决办法，供大家参考。
+
+
+启动uwsgi时报错：ImportError: No module named ‘django’
+
+解决方法：
+
+在uwsgi.ini中添加
+
+
+Django忘记管理密码：
+
+
+阿里云服务器公网ip无法访问：
+
+安全策略里添加策略放行80端口
+
+
+获取 Django版本号：
+
+python -m django --version
+
+
+在Ubuntu 18.04 下安装mysql，没有初始密码，重设root密码：
+
+1、找到安装时默认生成的默认账户在终端上输入
+
+2、用得到的账户和密码登录mysql，这里的密码一定要用查到的那个密码
+
+3、修改密码
+
+重启mysql服务器后，直接可以用root账户进行登录了
+
+
+ubuntu删除django，安装django
+
+删除安装路径下的django与egg文件
+
+Open the python shell
+
+或
+
+从终端：
+
+
+修改python默认版本
+
+home路径下终端输入：
+
+如果是python3.7和python3.8共存，但是想默认是3.8，需要执行
+
+然后source一下：
+
+
+阿里云服务器中uwsgi报错bind error : Cannot assign requested address
+
+修改uwsgi.ini文件中的socket为阿里云服务器管理中给的内网ip
+
+
+NAT模式物理机无法ping通虚拟机
+
+若安装了VirtualBox，将其在物理机对应的网卡禁用
+
+
+启动uwsgi出现!!! no internal routing support, rebuild with pcre support !!!
+
+
+not a regular file问题
+
+可以用scp -r来进行传输
+
+
+简单更改Django Admin登录页面
+
+可通过修改应用的admin.py文件，改变后台登陆的header和title
+
+
+no python application found, check your startup logs for errors
+
+一般是多版本兼容的问题，或者uwsgi和python环境不符合，注意pip的时候需不需要pip3
+
+
+Django错误unsupported operand type(s) for +: ‘PosixPath‘ and ‘str‘
+
+将settings中的'DIRS': [BASE_DIR+'templates',],改为：
+
+
+创建Django工程出现：Cannot find installed version of python-django or python3-django
+
+大概率是由于pip的路径和当前python版本不对应，安装对应版本的django即可解决
+

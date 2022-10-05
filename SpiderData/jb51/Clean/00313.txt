@@ -1,0 +1,101 @@
+遇到个小白常见的问题，发现度娘里面没有记录，翻墙谷歌了下，解决问题，在此写个说明。
+
+
+事情起因：
+
+在jupyter notebook中导入文件时发生了错误：
+
+%load p2_test1.py
+
+
+错误信息：
+
+---------------------------------------------------------------------------
+NameError                 Traceback (most recent call last)
+/usr/local/lib/python3.5/dist-packages/IPython/core/interactiveshell.py in find_user_code(self, target, raw, py_only, skip_encoding_cookie, search_ns)
+  3586     try:                       # User namespace
+-> 3587       codeobj = eval(target, self.user_ns)
+  3588     except Exception:
+ 
+<string> in <module>
+ 
+NameError: name 'p2_test1' is not defined
+ 
+During handling of the above exception, another exception occurred:
+ 
+ValueError                Traceback (most recent call last)
+<ipython-input-1-e4e531e2ca85> in <module>
+----> 1 get_ipython().run_line_magic('load', 'p2_test1.py')
+ 
+/usr/local/lib/python3.5/dist-packages/IPython/core/interactiveshell.py in run_line_magic(self, magic_name, line, _stack_depth)
+  2285         kwargs['local_ns'] = sys._getframe(stack_depth).f_locals
+  2286       with self.builtin_trap:
+-> 2287         result = fn(*args,**kwargs)
+  2288       return result
+  2289 
+ 
+<decorator-gen-47> in load(self, arg_s)
+ 
+/usr/local/lib/python3.5/dist-packages/IPython/core/magic.py in <lambda>(f, *a, **k)
+  185   # but it's overkill for just that one bit of state.
+  186   def magic_deco(arg):
+--> 187     call = lambda f, *a, **k: f(*a, **k)
+  188 
+  189     if callable(arg):
+ 
+/usr/local/lib/python3.5/dist-packages/IPython/core/magics/code.py in load(self, arg_s)
+  333     search_ns = 'n' in opts
+  334 
+--> 335     contents = self.shell.find_user_code(args, search_ns=search_ns)
+  336 
+  337     if 's' in opts:
+ 
+/usr/local/lib/python3.5/dist-packages/IPython/core/interactiveshell.py in find_user_code(self, target, raw, py_only, skip_encoding_cookie, search_ns)
+  3588     except Exception:
+  3589       raise ValueError(("'%s' was not found in history, as a file, url, "
+-> 3590                 "nor in the user namespace.") % target)
+  3591 
+  3592     if isinstance(codeobj, str):
+ 
+ValueError: 'p2_test1.py' was not found in history, as a file, url, nor in the user namespace.
+
+出现这个问题是因为解释器找不到对应的文件。念了“妈咪妈咪轰”pwd后，发现问题所在：
+
+%pwd 
+ll
+
+pwd显示当前目录不是该文件所在的目录。这下明白了，使用咒语要谨慎，记得在念“妈咪妈咪轰”load前，要cd到该文件的目录下去。
+
+参考
+
+补充：Jupyter Notebook - sns.load_dataset加载文件错误解决方法
+
+seaborn模块中sns.load_dataset加载文件错误解决方法：
+
+import seaborn as sns
+data = sns.load_dataset("iris")
+
+出现错误：
+
+URLError: <urlopen error [Errno 11004] getaddrinfo failed>
+
+
+出现原因：
+
+seaborn-data文件夹里面是空的，可以另外下载该文件夹的内容复制到该文件夹中。
+
+下载地址：
+
+https://github.com/mwaskom/seaborn-data
+
+
+下载位置：
+
+电脑上搜索seaborn-data文件夹
+
+将下载下来的文件解压后全部放进seaborn-data文件夹
+
+重新运行代码，出现结果。
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

@@ -1,0 +1,92 @@
+前言
+
+django项目开发过程中，碰到了多种情况下的中文乱码报错，在这儿做一下处理总结。
+
+报错：UnicodeEncodeError: 'ascii' codec can't encode characters in position x-x: ordinal not in range(128)
+
+1.因代码中的中文注释问题的报错
+
+django项目的.py文件文件中加入了中文注释，经常会因此报错而导致无法运行，究其原因是编码的问题，最后的解决办法是直接在有中文注释的.py文件的顶部加上：
+
+# -*-coding:utf-8 -*-
+
+2.运行过程中的中文乱码的报错
+
+首先确保连接的数据库的基础设置是utf-8：
+
+然后确认django项目中的网页头部设置编码为utf-8，网页头部加上代码：
+
+<meta charset="utf-8">
+
+最后仍然报错就是因为django项目中我们没有指明编码方式，所以按照默认设置来，而非正常的utf-8，为：
+
+所以项目最后需要在进行编码操作的地方，或者直接在settings.py中加入：
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+3.项目配置在debian系统中，FileField字段在admin中因中文文件名上传报错
+
+在一个django项目中发现，在本地windows测试环境中，django admin的文件上传功能毫无障碍，可是当项目布置在debian环境中时，中文文件名的文件在admin中无法上传，并且报中文乱码的错，该错误的主要原因来自系统编码问题，该debian系统中未设置系统编码语言，均为默认设置，导致所布置的项目无法正常运行，解决如下：
+
+（1）.终端中操作安装locales
+
+apt-get install locales
+
+（2）.重新选择字符编码
+
+dpkg-reconfigure locales
+
+（3）.空格选择所有zh_开头的字符编码，OK确认下一步，选择中文UTF-8
+
+（4）.debian里需要在~/.bashrc里面最下面加入export LC_ALL=zh_CN.UTF-8或者直接运行export LANG=zh_CN.UTF-8
+
+（5）.最后直接reboot重启服务器，查看系统编码，UTF-8中文生效，locale命令可以直接查看系统编码设置，此时再运行django项目上传中文名文件无误。
+
+附：django邮件乱码解决方案
+
+python中有email.meeesage 和 email.header 对邮件中的非ASCII进行处理, 因此需要对sendMail函数中的参数进行如下处理:
+
+# coding=utf8 
+from email.message import Message 
+from email.header import Header 
+ 
+mail_from=Header('友好互动', 'utf8') + "god_chen@sina.com"#a************** 
+mail_to="god_chen@sina.com" 
+mail_subj=Header("测试","utf8")#b*************** 
+mail_content='\r\n<div>测试测试邮件</div>\r\n<a href="www.61pad.com">儿童派</a>' 
+ 
+msg=Message() 
+msg['Mime-Version']='1.0' 
+msg['Content-type']='text/html' 
+msg['From']=mail_from 
+msg['To']=mail_to 
+msg['Subject']=mail_subj 
+msg.set_payload(mail_content,'utf8')#c************** 
+ 
+server=connect(sm_host, sm_port, sm_user, sm_password) 
+server.sendmail(mail_from, mail_to, msg.as_string()) 
+server.close() 
+ 
+def connect(host,port,user,password): 
+  "connect server" 
+  server=smtplib.SMTP() 
+  server.connect(host, port) 
+  server.login(user, password) 
+  return server
+
+注：
+
+a、用Header对象处理发件人乱码
+
+b、用Header对象处理主题乱码
+
+c、用Message对象处理正文乱码
+
+这里统一采用utf8编码
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作具有一定的参考学习价值，如果有疑问大家可以留言交流，谢谢大家对脚本之家的支持。
+

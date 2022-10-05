@@ -1,0 +1,15 @@
+在Python的不同子目录中进行模块调用时会出现“ModuleNotFoundError: No module named 'backend'” 之类的问题，因为Python在执行时默认会将当前目录加入到sys.path中，然后会根据sys.pyth中的路径去找需要导入的模块，如果找不到就会报错，因此我们需要将模块的最上级目录（如下图中的pathtest）的绝对路径添加到sys.path中，然后就可以按照“from backend.func import login”的方式将模块正常导入了，详见如下事例：
+
+1、目录结构如下图：
+
+2、在main.py中调用login.py中的login函数：
+
+　　
+
+3、login.py中的的内容如下：
+
+4、注意：写文件是要绝对路径，否则其他子模块调用文件是会报错如：FileNotFoundError: [Errno 2] No such file or directory: 'user.pickle'。可以用如下方法写绝对路径：
+
+　　
+
+

@@ -1,0 +1,33 @@
+接上篇“Eclipse启动报错：JVM terminated. Exit code=2”，今天把Python的安装位置也从C盘剪切到了D盘，
+
+然后修改了Path环境变量中对应的盘符：D:\Python27\;D:\Python27\Scripts;
+
+不管是在哪个目录，Python可以执行了，但是执行Pip的时候就出错了！
+
+D:\Python27\Scripts>pip
+Fatal error in launcher: Unable to create process using '"C:\Python27\python.exe
+"  "D:\Python27\Scripts\pip.exe" '
+
+Path环境变量已经改了，它居然还是去找C盘的位置，我就感觉很奇怪了。
+
+尝试使用“python pip.exe install”是可以的，但是又觉得这样用比较麻烦，还是希望把它搞清楚！又不希望重新安装！
+
+在网上搜索“pip从什么位置读取python的安装目录”无果，就搜索错误信息，还真找到了！
+
+有网友在cmd下执行“python -m pip install --upgrade pip”解决了问题，我这却不行。
+
+哦哦，我没有加“-m”参数。
+
+我采用的解决方法比较野蛮野蛮野蛮一点，是使用二进制文件编辑工具修改“pip.exe”，
+
+参考：http://stackoverflow.com/questions/24627525/fatal-error-in-launcher-unable-to-create-process-using-c-program-files-x86
+
+使用HEdit打开，然后搜索“C:\”，找到对应的位置，然后把盘符修改成“D”，保存，再执行"pip"命令就OK了。
+
+“D:\Python27\Scripts”目录下有多个文件都存在这样的情况，顺手都改了吧。
+
+======================文档信息======================
+版权声明：非商用自由转载-保持署名-注明出处
+署名(BY) ：testcs_dn(微wx笑)
+文章出处：[无知人生，记录点滴](http://blog.csdn.net/testcs_dn)
+

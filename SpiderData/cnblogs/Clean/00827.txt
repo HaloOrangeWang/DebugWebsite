@@ -1,0 +1,115 @@
+在学习git的过程中，遇到如下问题，特整理如下：
+
+
+1 error:src refspec master does not match any
+
+问题产生
+
+a git服务器使用如下命令新建一个项目
+
+b 客户端clone代码并提交
+
+c push报错
+
+原因分析
+
+引起该错误的原因是，目录中没有文件，空目录是不能提交上去的
+
+解决办法
+
+
+2 fatal: unable to connect to eagain.net
+
+问题产生
+
+使用git clone 命令从 eagain.net 克隆gitosis.git源码出错
+
+解决办法
+
+
+3 fatal:Interactive git shell is not enabled
+
+问题产生
+
+a 设置git用户登录shell
+
+作为一个额外的防范措施，你可以用Git 自带的git-shell 简单工具来把git 用户的活动限制在仅与Git 相关。把它设为git 用户登入的shell，那么该用户就不能拥有主机正常的shell 访问权。为了实现这一点，需要指明用户的登入shell 是git-shell ，而不是bash 或者csh。你可能得编辑/etc/passwd 文件：
+
+找到git用户的信息，修改如下：
+
+保存修改后，使用如下命令访问服务器
+
+报错如下：
+
+原因分析
+
+按照提示，在git用户的主目录下面需要存在git-shell-commands目录
+
+解决办法
+
+在git用户的主目录下面新建git-shell-commands目录
+
+参考链接
+
+http://planzero.org/blog/2012/10/24/hosting_an_admin-friendly_git_server_with_git-shell
+
+
+4 通过http协议clone出错
+
+问题产生
+
+在gitserver通过apache提供了git项目的公共访问地址，在克隆的时候报错如下：
+
+解决办法
+
+在git服务器上要提供的项目下面执行
+
+
+5  centos5.8下面安装gitweb的默认路径问题
+
+问题产生
+
+在centos下使用yum install gitweb 命令安装gitweb后找不到gitweb的默认安装路径
+
+原因分析
+
+网络上的说法默认路径是 /var/www/git ，但是在我的centos虚拟机中，安装完gitweb后，默认路径是/usr/share/gitweb
+
+解决办法
+
+由于按网上的说法，找不到gitweb的默认安装路径，我使用了find 命令，用来查找gitweb所在的目录
+
+
+6 安装gitosis时使用python3.3.0执行python setup.py install 报错
+
+问题产生
+
+在安装gitosis的时候，需要预先安装工具包python-setuptools，安装命令比较简单
+
+但是在clone了gitosis代码，执行python安装命令的时候报错，错误提示如下：
+
+ImportError: No module named setuptools
+
+原因分析
+
+centos默认的python版本是2.4.3，因为一次机会我升级了python的版本到3.3.0，这样就出现了错误。
+
+解决办法
+
+我的办法是降低了python的版本，有兴趣的同学可以尝试安装distribute包，看能不能解决这个问题
+
+
+7 git push origin master 到github出错
+
+问题产生
+
+本地项目添加了远程仓库，但是在推送代码到远程仓库的时候，报无法连接到远程服务器
+
+原因分析
+
+github和本地代码做推送和拉取时，需要用到ssh的密钥对进行数据加解密，由于github上新建的项目没有添加密钥，所以本地仓库连接不到远程仓库
+
+解决办法
+
+在github上为该项目添加公钥，推荐做法是不要单独为每个项目添加公钥，而是直接通过github帐号的ssh信息维护开发机的ssh公钥
+

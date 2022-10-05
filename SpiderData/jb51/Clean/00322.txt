@@ -1,0 +1,163 @@
+
+下面是出现的错误解释
+
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+ 
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+ 
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+ 
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+
+
+下面是出现错误代码的原代码
+
+import multiprocessing as mp
+import time
+from urllib.request import urlopen,urljoin
+from bs4 import BeautifulSoup
+import re
+ 
+base_url = "https://morvanzhou.github.io/"
+ 
+#crawl爬取网页
+def crawl(url):
+    response = urlopen(url)
+    time.sleep(0.1)
+    return response.read().decode()
+ 
+#parse解析网页
+def parse(html):
+    soup = BeautifulSoup(html,'html.parser')
+    urls = soup.find_all('a',{"href":re.compile('^/.+?/$')})
+    title = soup.find('h1').get_text().strip()
+    page_urls = set([urljoin(base_url,url['href'])for url in urls])
+    url = soup.find('meta',{'property':"og:url"})['content']
+    return title,page_urls,url
+ 
+unseen = set([base_url])
+seen = set()
+restricted_crawl = True
+ 
+pool = mp.Pool(4)
+count, t1 = 1, time.time()
+while len(unseen) != 0:                 # still get some url to visit
+    if restricted_crawl and len(seen) > 20:
+            break
+    print('\nDistributed Crawling...')
+    crawl_jobs = [pool.apply_async(crawl, args=(url,)) for url in unseen]
+    htmls = [j.get() for j in crawl_jobs]      # request connection
+ 
+    print('\nDistributed Parsing...')
+    parse_jobs = [pool.apply_async(parse, args=(html,)) for html in htmls]
+    results = [j.get() for j in parse_jobs]    # parse html
+ 
+    print('\nAnalysing...')
+    seen.update(unseen)         # seen the crawled
+    unseen.clear()              # nothing unseen
+ 
+    for title, page_urls, url in results:
+        print(count, title, url)
+        count += 1
+        unseen.update(page_urls - seen)     # get new url to crawl
+print('Total time: %.1f s' % (time.time()-t1))    # 16 s !!!
+
+
+这是修改后的正确代码
+
+import multiprocessing as mp
+import time
+from urllib.request import urlopen,urljoin
+from bs4 import BeautifulSoup
+import re
+ 
+base_url = "https://morvanzhou.github.io/"
+ 
+#crawl爬取网页
+def crawl(url):
+    response = urlopen(url)
+    time.sleep(0.1)
+    return response.read().decode()
+ 
+#parse解析网页
+def parse(html):
+    soup = BeautifulSoup(html,'html.parser')
+    urls = soup.find_all('a',{"href":re.compile('^/.+?/$')})
+    title = soup.find('h1').get_text().strip()
+    page_urls = set([urljoin(base_url,url['href'])for url in urls])
+    url = soup.find('meta',{'property':"og:url"})['content']
+    return title,page_urls,url
+ 
+def main():
+    unseen = set([base_url])
+    seen = set()
+    restricted_crawl = True
+ 
+    pool = mp.Pool(4)
+    count, t1 = 1, time.time()
+    while len(unseen) != 0:                 # still get some url to visit
+        if restricted_crawl and len(seen) > 20:
+                break
+        print('\nDistributed Crawling...')
+        crawl_jobs = [pool.apply_async(crawl, args=(url,)) for url in unseen]
+        htmls = [j.get() for j in crawl_jobs]      # request connection
+ 
+        print('\nDistributed Parsing...')
+        parse_jobs = [pool.apply_async(parse, args=(html,)) for html in htmls]
+        results = [j.get() for j in parse_jobs]    # parse html
+ 
+        print('\nAnalysing...')
+        seen.update(unseen)         # seen the crawled
+        unseen.clear()              # nothing unseen
+ 
+        for title, page_urls, url in results:
+            print(count, title, url)
+            count += 1
+            unseen.update(page_urls - seen)     # get new url to crawl
+    print('Total time: %.1f s' % (time.time()-t1))    # 16 s !!!
+ 
+ 
+if __name__ == '__main__':
+    main()
+
+综上可知，就是把你的运行代码整合成一个函数，然后加入
+
+if __name__ == '__main__':
+    main()
+
+这行代码即可解决这个问题。
+
+
+python报错:RuntimeError
+
+python报错：RuntimeError:fails to pass a sanity check due to a bug in the windows runtime这种类型的错误
+
+
+这种错误原因
+
+1.当前的python与numpy版本之间有什么问题，比如我自己用的python3.9与numpy1.19.4会导致这种报错。
+
+2.numpy1.19.4与当前很多python版本都有问题。
+
+
+解决办法
+
+在File->Settings->Project:pycharmProjects->Project Interpreter下将numpy版本降下来就好了。
+
+1.打开interpreter，如下图：
+
+2.双击numpy修改其版本：
+
+3.勾选才能修改版本，将需要的低版本导入即可：
+
+弄完了之后，重新运行就好。
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

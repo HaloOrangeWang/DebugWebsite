@@ -1,0 +1,74 @@
+
+ImportError: No module named XXX 错误解决
+
+
+问题
+
+错误：ImportError: No module named XXX
+
+在Python的工程中，偶尔会遇到文件无法引用的情况，即PyCharm IDE支持文件跳转，但是当文件执行时，找不到模块。
+
+例如，错误如下：
+
+Traceback (most recent call last):
+  File "utils/average_clinic.py", line 17, in <module>
+    from utils.file_utils import listdir_files, show_string
+ImportError: No module named file_utils
+
+
+解决
+
+首先，在py文件的顶部，引入根目录，如
+
+import os
+import sys
+
+p = os.path.dirname(os.path.dirname((os.path.abspath(__file__))))
+if p not in sys.path:
+    sys.path.append(p)
+
+# print p  # 显示路径
+
+其次，检查文件的Working directory，位置：
+
+第一步是导入工程路径，第二步是检查文件的工作目录。优先检查工作目录，其次检查工程路径。同时，要注意PyCharm自动生成文件引用不一定正确，如：
+
+from file_utils import listdir_files, show_string
+# 错误的引用，文件位于同一目录下，不使用包名
+# from utils.file_utils import listdir_files, show_string
+
+
+补充：ImportError: libGL.so.1: cannot open shared object file: No such file or directory
+
+
+报错信息
+
+ImportError: libGL.so.1: cannot open shared object file: No such file or directory
+
+
+报错分析
+
+在使用opencv-python的过程中，只是通过pip安装了cv相关的python包，但是没有关注cv对于底层系统中部分共享库的依赖。这个在docker中是一个常见的错误。
+
+
+解决方案
+
+方案1： 安装cv2的依赖
+
+这里只是举例部分环境，至于具体需要安装哪些库，对应的库名称，需要参考你本身的系统查询后，方可执行。
+
+apt-get install ffmpeg libsm6 libxext6 -y
+
+方案2： 安装python3-opencv或者opencv-python-headless
+
+可以通过安装python3-opencv或opencv-python-headless库来实现便捷的处理依赖。
+
+apt-get install python3-opencv -y
+
+apt-get install opencv-python-headless -y
+
+
+总结
+
+到此这篇关于Python中ImportError错误的文章就介绍到这了,更多相关Python ImportError错误内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

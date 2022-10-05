@@ -1,0 +1,104 @@
+在程序出现bug时一般不会将错误信息显示给用户，而是现实一个提示的页面，通俗来说就是不让用户看见大黄页！！！
+
+有时候我们写程序的时候，会出现一些错误或异常，导致程序终止.
+
+为了处理异常，我们使用try...except
+
+把可能发生错误的语句放在try模块里，用except来处理异常。
+
+except可以处理一个专门的异常，也可以处理一组圆括号中的异常，
+
+如果except后没有指定异常，则默认处理所有的异常。
+
+每一个try，都必须至少有一个except
+
+在python的异常中，有一个万能异常：Exception，他可以捕获任意异常
+
+s1 = 'hello'
+try:
+  int(s1)
+except Exception,e:
+  print e
+
+程序时需要考虑到try代码块中可能出现的多个异常，可以这样写：
+
+s1 = 'hello'
+try:
+  int(s1)
+except IndexError,e:
+  print e
+except KeyError,e:
+  print e
+except ValueError,e:
+  print e
+
+异常的简单结构和复杂结构
+
+try:
+　　pass
+except Exception as e: #python2 中还可以这样写：except Exception,e
+　　pass
+
+完整实列
+
+try:
+  # 主代码块
+  pass
+except KeyError,e:
+  # 异常时，执行该块
+  pass
+else:
+  # 主代码块执行完，执行该块
+  pass
+finally:
+  # 无论异常与否，最终执行该块
+  pass
+
+先定义特殊提醒的异常，最后定义Exception,来确保程序正常运行。
+
+先特殊，后万能
+
+s1 = 'hello'
+try:
+  int(s1)
+except KeyError,e:
+  print '键错误'
+except IndexError,e:
+  print '索引错误'
+except Exception, e:
+  print '错误'
+
+主动触发异常
+
+raise Exception('messages') 可以自定义报错信息
+
+a=2
+if a > 1:
+  raise ValueError('值大于1')
+
+raise 触发异常
+
+try:
+  raise Exception('错误了。。。')
+except Exception,e:
+  print e
+
+自定义异常
+
+class WupeiqiException(Exception):
+ 
+  def __init__(self, msg):
+    self.message = msg
+ 
+  def __str__(self):
+    return self.message
+ 
+try:
+  raise WupeiqiException('我的异常')
+except WupeiqiException,e:
+  print e
+
+python所有的标准异常类：
+
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+

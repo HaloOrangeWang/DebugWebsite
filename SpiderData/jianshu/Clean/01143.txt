@@ -1,0 +1,117 @@
+今天想用NumPy来做一个机器学习训练分类器的工作。但是发现自己Mac的IDEL打开以后显示：
+
+>>> WARNING: The version of Tcl/Tk (8.5.9) in use may be unstable.
+Visit http://www.python.org/download/mac/tcltk/ for current information.
+
+然后的确没运行几句就闪退。
+
+Part 1～Part 4是尝试部分， Part 5是最终解决方案
+
+Part 1
+
+搜到解决方案:
+
+brew tap homebrew/dupes
+brew install tcl-tk
+brew install python --with-tcl-tk
+
+本以为可以开心地训练一个分类器了，又出现了新的报错：
+
+$brew tap homebrew/dupes
+Error: homebrew/dupes was deprecated. This tap is now empty as all its formulae were migrated.
+
+$brew install python --with-tcl-tk
+Error: invalid option: --with-tcl-tk
+
+继续解决新问题，发现有人指出：
+
+homebrew/dupes，homebrew/versions好像已经被迁移到homebrew/core或者是被删除
+
+Part 2
+
+我想灵活变通一下，尝试了：
+
+$ brew tap homebrew/core
+
+Updating Homebrew...
+==> Auto-updated Homebrew!
+Updated 1 tap (homebrew/cask).
+No changes to formulae.
+
+继续尝试：
+
+$ brew tap homebrew/cask
+
+Updating Homebrew...
+==> Auto-updated Homebrew!
+Updated 2 taps (homebrew/core and homebrew/cask).
+==> Updated Formulae
+apachetop          bitwarden-cli      cimg               gssh               protobuf
+arangodb           cdk                cli53              influxdb           pulumi
+bedtools           cfr-decompiler     exploitdb          kubecfg            vulkan-headers
+
+至此解决更新Homebrew的问题
+
+Part 3
+
+$ brew install python --build-from-source
+
+Error: Xcode alone is not sufficient on High Sierra.
+Install the Command Line Tools:
+  xcode-select --install
+
+结果：未修复
+
+Part 4. 对应Python 版本安装 对应的 Tcl-tk,使用安装包安装法
+
+Step 1. 备份～/library/Framework 下的 Tcl 和 Tk,然后删除他们
+
+Step 2: 安装, 并将变量加入环境变量中
+
+$ echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
+$ source ~/.zshrc
+
+Step 2： 重安装 Python3
+
+$ brew reinstall python3
+
+结果：未修复，还有新的报错
+
+$brew reinstall python3
+Error: Permission denied @ dir_s_mkdir - /usr/local/Frameworks
+
+解决办法：
+
+$sudo mkdir /usr/local/Framework
+$sudo chown $USER /usr/local/Frameworks
+$brew reinstall python3
+Error: The `brew link` step did not complete successfully
+The formula built, but is not symlinked into /usr/local
+Could not symlink bin/2to3
+Target /usr/local/bin/2to3
+already exists. You may want to remove it:
+  rm '/usr/local/bin/2to3'
+
+Part 5: 最终，彻底删除python3，并重新安装
+
+Step 1. 删除python 3.7
+
+# 删除框架
+$sudo rm -rf /Library/Frameworks/Python.framework/Versions/3.7
+# 删除对应目录
+$sudo rm -rf "/Applications/Python 3.7"
+# 删除指向 Python 的连接
+$ ls -l /usr/local/bin | grep '../Library/Frameworks/Python.framework/Versions/3.7'| awk '{print $9}' | tr -d @ | xargs rm
+
+Step 2. 备份后删除 ～/library/Framework 下的 Tcl 和 Tk, 然后下载对应版本的Tcl和Tk并安装，我使用安装包安装的
+
+Step 3 重新安装Python3后，打开IDLE发现没有问题了，开心地做机器学习了！
+
+注意
+
+虽然Tcl和Tk是独立的框架和库，但它们密切相关，通常同时安装或更新。你不应该尝试混合和匹配Tcl和Tk版本。对特定版本的Tk的引用假设也安装了相应的Tcl版本。
+
+从该网站下载的Python for macOS安装程序在运行时动态链接到Tcl / Tk macOS框架。 Tcl / Tk主要版本是在创建安装程序时确定的，无法覆盖。 Python 3.7.x，3.6.x和2.7.x的所有当前python.org安装程序都链接到它们自己的内置Tcl / Tk 8.6框架，并且不使用外部Tcl / Tk框架，因此本节的其余部分仅适用于非当前版本，因此不再受支持。
+
+Python 3.6.x和2.7.x的Python 64位/ 32位macOS安装程序动态链接到Tcl / Tk 8.5框架。首次导入tkinter（Python 3）或Tkinter（Python 2）时（特别是内部_tkinter C扩展模块），会发生动态链接。默认情况下，macOS动态链接器首先在/ Library / Frameworks中查找具有适当主要版本的Tcl和Tk框架。这是第三方的标准位置或从源框架构建，包括ActiveTcl版本。如果在那里找不到正确主要版本的框架，动态链接器会在/ System / Library / Frameworks中查找相同的版本，这是Apple提供的框架与macOS一起提供的位置。 （注意，您通常不应修改或删除/ System / Library中的文件。）
+

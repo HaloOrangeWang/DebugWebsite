@@ -1,0 +1,24 @@
+环境说明：
+win10 专业版
+python 2.7.16
+django 1.11.9
+
+遇到的问题：
+python的库中已经安装了mysqlclient&MySQL两个库，debug的时候还是报错：
+
+No module named MySQLdb.
+Did you install mysqlclient or MySQL-python?
+1
+2
+解决方案：
+在django项目的根目录下的setting.py中添加如下两行代码：
+
+import pymysql
+pymysql.install_as_MySQLdb()  
+1
+2
+重新debug项目就可以正常使用了
+————————————————
+版权声明：本文为CSDN博主「立志成为摄影师的健身虾」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weekdawn/article/details/96474865
+

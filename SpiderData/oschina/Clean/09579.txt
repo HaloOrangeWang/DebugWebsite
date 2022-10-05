@@ -1,0 +1,37 @@
+
+lua-cjson下载
+
+下载地址
+
+
+报错信息
+
+[root@LeoDevops lua-cjson]# make
+cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/local/include -fpic -o lua_cjson.o lua_cjson.c
+lua_cjson.c:43:17: error: lua.h: No such file or directory
+lua_cjson.c:44:21: error: lauxlib.h: No such file or directory
+
+
+解决方法
+
+通过LUAINC -I 这个来指定luajit的安装目录，
+
+root@LeoTestMachine:/tmp/nginx_with_lua/lua-cjson-2.1.0# make LUAINC=/usr/local/include/luajit-2.0/
+cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/local/include -fpic -o lua_cjson.o lua_cjson.c
+lua_cjson.c:43:17: fatal error: lua.h: No such file or directory
+compilation terminated.
+make: *** [lua_cjson.o] Error 1
+
+注意看上面的报错，还是有问题。明明通过 LUAINC=/usr/local/include/luajit-2.0/指定了到luajit目录，但是你看他第一行编译的路径还是指向 /usr/local/include ，所以就报错，无法执行，那该怎么办。很好办，我们手工执行它刚才第一行的编译命令，但是需要把它 -I 指定的路径改为我们自己的，由 /usr/local/include 改为 /usr/local/include/luajit-2.0/
+
+root@LeoTestMachine:/tmp/nginx_with_lua/lua-cjson-2.1.0# cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/local/include/luajit-2.0/ -fpic -o lua_cjson.o lua_cjson.c
+
+没有报错编译成功，下面在执行make命令
+
+root@LeoTestMachine:/tmp/nginx_with_lua/lua-cjson-2.1.0# make LUAINC=/usr/local/include/luajit-2.0/
+cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/local/include -fpic -o strbuf.o strbuf.c
+cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/local/include -fpic -o fpconv.o fpconv.c
+cc  -shared -o cjson.so lua_cjson.o strbuf.o fpconv.o
+
+编译通过了，完美搞定
+

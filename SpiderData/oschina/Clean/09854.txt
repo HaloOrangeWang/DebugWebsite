@@ -1,0 +1,41 @@
+以下问题是，在安装Oracle过程中遇到的问题以及自己的解决方法：
+
+问题一：下载好两个Oracle的安装压缩包文件，同时解压后，启动setup.exe，报错：[INS-13001]环境不满足最低要求。
+
+网上搜索解决方法，有效解决问题的方法是：
+
+首先，打开文件夹，依次寻找目录为：database-stage-cvu,找到cvu_prereq.xml文件，用记事本打开，增添下面内容：
+
+<OPERATING_SYSTEM RELEASE="6.2">
+           <VERSION VALUE="3"/>
+           <ARCHITECTURE VALUE="64-bit"/>
+           <NAME VALUE="Windows 10"/>
+           <ENV_VAR_LIST>
+               <ENV_VAR NAME="PATH" MAX_LENGTH="1023" />
+           </ENV_VAR_LIST>
+</OPERATING_SYSTEM>
+
+如果你的操作系统是32位的则把“64-bit”改为“32-bit”，然后保存文件，重新打开setup.exe，不会报错正常进入安装。
+
+问题二：此时修改cvu_prereq.xml文件后保存，可能会报错“没有修改权限”。
+
+解决方法：右键点击该文件，选择“属性”，属性窗口中，点击“安全”菜单下的“编辑”按钮，在新出现的“权限”窗口中，把“修改”后面的多选框勾上，点击“应用”，“确定”，操作权限窗口，同样的方式，点击“应用”，“确定”，操作属性窗口。再次修改文件并保存则保存成功。
+
+问题三：安装Oracle过程中，如果你是卸载后重新安装，可能会遇到问题，“主目录已被使用”。
+
+这个问题是因为你在使用卸载软件的时候，卸载Oracle没有把卸载完的空主目录删除，解决方法，使用Oracle的卸载软件，把“显示空的主目录”勾上，卸载空的主目录，以后再安装在这个目录下则不会报错“主目录已被使用”，或者选择另外的路径来当主目录。
+
+问题四：安装Oracle过程中，报错
+
+Environment variable: "PATH" - This test checks whether the length of the environment variable "PATH" does not exceed the recommended length.
+
+预期值:N/A
+
+实际值: N/A
+
+解决方法：一是：删除不必要的path值，保证path的长度没有超出预期值，二是点击“全部忽略”进入下一步。
+
+问题五：安装Oracle最后一步显示“异常终止”，查看日志显示“%ORACLE_HOME%.....路径已被修改为.......”，安装失败。
+
+解决方法：此处问题所在是卸载Oracle之后没有删除相关的Oracle环境变量导致，这里需要重新卸载Oracle后，删除相关的Oracle环境变量，然后重新安装Oracle。
+

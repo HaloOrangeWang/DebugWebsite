@@ -1,0 +1,11 @@
+1.json.Marshal不能导出chan类型、函数类型、 complex 类型，如果不加处理直接导出会报错导致导出失败
+
+报错内容大概如下：json: unsupported type: chan int
+
+2.解决：让json.Marshal过滤掉不能导出的类型 使用tag  如： `json:"-"`
+
+type User struct {
+	UserId   int `json:"user_id"`
+	UserChan chan int `json:"-"`
+}
+

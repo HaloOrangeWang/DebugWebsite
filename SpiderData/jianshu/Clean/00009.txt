@@ -1,0 +1,56 @@
+我打算用python来执行shell命令，实现sqoop导数据功能
+
+脚本如下：
+
+mysql_jdbc="jdbc:mysql://{0}:{1}/{2}?characterEncoding=utf8&autoReconnect=true"
+
+sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+
+--connect $mysql_jdbc \
+
+--username {3} \
+
+--password {4} \
+
+--table {5} \
+
+--target-dir {7} \
+
+--delete-target-dir \
+
+--split-by clientid
+
+然后报错：sqoop：未找到命令
+
+然后我就测试：subprocess.run("java -version",shell=True)
+
+也是报错：java：未找到命令
+
+网上一顿百度，查了2天啊~~~~
+
+1、检查/etc/profile环境变量设置没问题
+
+2、linux机器上直接执行java -version也正常
+
+3、linux机器上执行python3后，执行subprocess.run("java -version",shell=True)也正常
+
+我就奇了怪了，还摆不平你这小娘子
+
+后来突然想到之前项目里，先生效一下profile文件，试了一下，果然有效！！！
+
+我的亲娘诶，绝望之际，解救了我~~~
+
+至于为什么一定要这样，还是不解
+
+正确脚本：
+
+shell_str ="""
+
+source /etc/profile;
+
+java -version
+
+"""
+
+subprocess.run(shell_str, shell=True)
+

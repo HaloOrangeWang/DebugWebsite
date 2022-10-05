@@ -1,0 +1,26 @@
+跟着欢迎进入Flask大型教程项目！的教程学习Flask，到了重构用户模型的时候，运行脚本后报错:
+
+TypeError: 'bool' object is not callable
+
+这是用户模型：
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True) nickname = db.Column(db.String(64), index=True, unique=True) email = db.Column(db.String(120), index=True, unique=True) posts = db.relationship('Post', backref='author', lazy='dynamic')  @property def is_authenticated(self): return True  @property def is_active(self): return True  @property def is_anonymous(self): return False def get_id(self): try: return unicode(self.id) # python 2 except NameError: return str(self.id) # python 3 def __repr__(self): return '<User %r>' % (self.nickname)
+
+这是调用的时候的代码：
+
+from flask import render_template, flash, redirect, session, url_for, request, g
+from flask.ext.login import login_user, logout_user, current_user, login_required
+from app import app, db, lm, oid from .forms import LoginForm from .models import User @app.route('/login', methods=['GET', 'POST']) @oid.loginhandler def login(): if g.user is not None and g.user.is_authenticated(): # 这一句报错 return redirect(url_for('index')) form = LoginForm() if form.validate_on_submit(): session['remember_me'] = form.remember_me.data return oid.try_login(form.openid.data, ask_for=['nickname', 'email']) return render_template('login.html', title='Sign In', form=form, providers=app.config['OPENID_PROVIDERS'])
+
+解决方法：
+
+按照参考资料里面的说法:
+ is_authenticated是属性而不是方法，把括号去掉就可以了。书里这一段有两处印刷错误，请参照git源码。
+
+把出错的地方：
+ if g.user is not None and g.user.is_authenticated():
+ 修改为
+ if g.user is not None and g.user.is_authenticated:
+然后就不报错了。
+

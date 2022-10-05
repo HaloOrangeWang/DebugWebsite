@@ -1,0 +1,117 @@
+解压redis后，第一次make出现报错：
+
+
+解压redis后，第一次make出现报错：
+
+[root@localhost redis-3.2.5]# make cd src && make all
+make[1]: Entering directory `/data/redis/redis-3.2.5/src'
+rm -rf redis-server redis-sentinel redis-cli redis-benchmark redis-check-rdb redis-check-aof *.o *.gcda *.gcno *.gcov redis.info lcov-html
+(cd ../deps && make distclean)
+make[2]: Entering directory `/data/redis/redis-3.2.5/deps'
+(cd hiredis && make clean) > /dev/null || true
+(cd linenoise && make clean) > /dev/null || true
+(cd lua && make clean) > /dev/null || true
+(cd geohash-int && make clean) > /dev/null || true
+(cd jemalloc && [ -f Makefile ] && make distclean) > /dev/null || true
+(rm -f .make-*)
+make[2]: Leaving directory `/data/redis/redis-3.2.5/deps'
+(rm -f .make-*)
+echo STD=-std=c99 -pedantic -DREDIS_STATIC='' >> .make-settings
+echo WARN=-Wall -W >> .make-settings
+echo OPT=-O2 >> .make-settings
+echo MALLOC=jemalloc >> .make-settings
+echo CFLAGS= >> .make-settings
+echo LDFLAGS= >> .make-settings
+echo REDIS_CFLAGS= >> .make-settings
+echo REDIS_LDFLAGS= >> .make-settings
+echo PREV_FINAL_CFLAGS=-std=c99 -pedantic -DREDIS_STATIC='' -Wall -W -O2 -g -ggdb -I../deps/geohash-int -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -DUSE_JEMALLOC -I../deps/jemalloc/include >> .make-settings
+echo PREV_FINAL_LDFLAGS= -g -ggdb -rdynamic >> .make-settings
+(cd ../deps && make hiredis linenoise lua geohash-int jemalloc)
+make[2]: Entering directory `/data/redis/redis-3.2.5/deps'
+(cd hiredis && make clean) > /dev/null || true
+(cd linenoise && make clean) > /dev/null || true
+(cd lua && make clean) > /dev/null || true
+(cd geohash-int && make clean) > /dev/null || true
+(cd jemalloc && [ -f Makefile ] && make distclean) > /dev/null || true
+(rm -f .make-*)
+(echo "" > .make-cflags)
+(echo "" > .make-ldflags)
+MAKE hiredis
+cd hiredis && make static
+make[3]: Entering directory `/data/redis/redis-3.2.5/deps/hiredis'
+gcc -std=c99 -pedantic -c -O3 -fPIC -Wall -W -Wstrict-prototypes -Wwrite-strings -g -ggdb net.c
+make[3]: gcc: Command not found
+make[3]: *** [net.o] Error 127
+make[3]: Leaving directory `/data/redis/redis-3.2.5/deps/hiredis'
+make[2]: *** [hiredis] Error 2
+make[2]: Leaving directory `/data/redis/redis-3.2.5/deps'
+make[1]: [persist-settings] Error 2 (ignored)
+ CC adlist.o
+/bin/sh: cc: command not found                     这行报错说明你没有安装gcc
+make[1]: *** [adlist.o] Error 127
+make[1]: Leaving directory `/data/redis/redis-3.2.5/src'
+make: *** [all] Error 2
+
+安装gcc后，继续make出现如下报错：
+
+
+安装gcc后，继续make出现如下报错：
+
+[root@localhost redis-3.2.5]# make
+cd src && make all
+make[1]: Entering directory `/data/redis/redis-3.2.5/src'
+ CC adlist.o
+In file included from adlist.c:34:0:
+zmalloc.h:50:31: fatal error: jemalloc/jemalloc.h: No such file or directory
+ #include <jemalloc/jemalloc.h>
+ ^
+compilation terminated.
+make[1]: *** [adlist.o] Error 1
+make[1]: Leaving directory `/data/redis/redis-3.2.5/src'
+make: *** [all] Error 2
+
+
+解决方法：
+
+第一种：执行 make MALLOC=libc 命令 ，如果执行后报错 或 还有其他错误,建议删除redis所有文件重新解压编译尝试
+
+原因：由于系统没有jemalloc 而只有 libc ，但是默认回去找jemalloc，导致了 make 出错。 所以加参：make MALLOC=libc
+
+第二种：make CFLAGS="-march=x86-64"
+
+在README 有这个一段话。
+
+Allocator  
+---------  
+ 
+Selecting a non-default memory allocator when building Redis is done by setting  
+the `MALLOC` environment variable. Redis is compiled and linked against libc  
+malloc by default, with the exception of jemalloc being the default on Linux  
+systems. This default was picked because jemalloc has proven to have fewer  
+fragmentation problems than libc malloc.  
+ 
+To force compiling against libc malloc, use:  
+ 
+    % make MALLOC=libc  
+ 
+To compile against jemalloc on Mac OS X systems, use:  
+ 
+    % make MALLOC=jemalloc
+
+
+在构建Redis时，通过设置来选择非默认的内存分配器
+
+MALLOC的环境变量。Redis被编译并链接到libc
+
+malloc是默认的，jemalloc是Linux上的默认值。之所以选择这个默认值，是由于事实证明jemalloc的内存更少，碎片化问题比libc malloc严重。
+
+现在由于没有jemalloc 而只有 libc ，但是默认回去找jemalloc，导致了 make 出错。 所以加这么一个参数。
+
+要强制编译libc malloc，请使用:
+
+% MALLOC = libc
+
+要在Mac OS X系统上编译jemalloc，请使用:
+
+% MALLOC = jemalloc
+

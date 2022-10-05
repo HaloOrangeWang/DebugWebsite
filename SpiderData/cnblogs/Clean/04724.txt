@@ -1,0 +1,16 @@
+之前写的发邮件的程序部署到vps的时候出现了 UnicodeDecodeError: 'ascii' codec can't decode byte 0x.... 的错误。
+
+按理说UnicodeDecodeError是python2才有的错误，这在python3出现是什么情况？
+
+根据报错观察代码，发现打开文件的时候没指定encoding，于是指定'utf-8'，改成这样：
+
+改完之后还是这个错误，但是byte 0xe6 变成了别的值，说明指定编码是有效的（在没指定locale的主机上居然按ascii读取文件？？？！！ Σ( ° △ °|||)︴）
+
+问题还没完全解决，网上查了些资料，基本都是复制粘贴，看起来也没什么价值。
+
+再仔细想想，因为代码调用了print，那会不会是stdout不支持中文显示？
+
+于是找到之前看到的一段导入codecs设置stdout相关的代码：
+
+这样设置之后，的确OK了。
+

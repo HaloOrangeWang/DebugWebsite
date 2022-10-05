@@ -1,0 +1,44 @@
+
+一、问题
+
+运行jupyter notebook，然后运行python代码，读取文件处理时，会报错。发现时IO读取时错误。应该是IO速率问题。
+
+下面是问题报错：
+
+
+二、解决办法
+
+
+2.1、生产配置文件
+
+运行命令：
+
+说明：
+
+如果之前运行过这个命令，则不用再次运行。
+
+这个命令的目的时生产运行需要的配置文件。
+
+
+2.2、修改配置文件
+
+修改生产的配置文件：jupyter_notebook_config.py
+
+把默认的配置项：#c.NotebookApp.iopub_data_rate_limit = 1000000
+
+修改成：c.NotebookApp.iopub_data_rate_limit = 1000000000
+
+
+2.3、重启jupter notebook
+
+注意前面修改的配置文件需要保存。
+
+报错中有两个配置项，另一个配置项不需要修改。
+
+
+三、参考
+
+参考：
+
+https://blog.csdn.net/LaoChengZier/article/details/80705298
+

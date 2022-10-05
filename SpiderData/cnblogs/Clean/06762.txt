@@ -1,0 +1,24 @@
+1、报错信息为“ERROR 'str' object has no attribute 'endwith'”，排查发现endswith方法名写错了，少了s，写成了 'endwith'
+
+2、报错信息为“ERROR request() got an unexpected keyword argument 'header”，排查发现将参数名headers写成了header
+
+response = requests.get(url=req_url, headers=header_data, verify=False, timeout=10)
+
+3、报错信息为“ERROR No connection adapters were found for 'test.XXX.xxx/xxx/'”,排查发现URL少了“http://”，加上解决问题
+
+4、发送HTTP请求，请求方式是post时，url和参数等都正确，但是请求时还是报错，排查发现使用Python发送请求时，并没有把参数传进去，导致报错；
+
+进一步排查发现，请求头参数类型未设置content-type值，常用的content-type有四种，如下：
+
+（1）application/x-www-form-urlencoded：是最常见的数据类型，通常表明请求的数据类型是键值对类型
+
+（2）application/json：请求的数据类型是json格式
+
+（3）multipart/form-data：通常用于上传文件
+
+（4）application/xml：数据格式为xml格式
+
+在请求头中添加了'content-type':'application/x-www-form-urlencoded'数据后，传参也遵循对应的格式，HTTP请求就能正常返回数据了
+
+请求头content-type值参考：https://www.jianshu.com/p/f59b04ffea61
+

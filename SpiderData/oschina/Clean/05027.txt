@@ -1,0 +1,55 @@
+关键字：初始化，主程序，program
+
+关键字：初始化，主程序，program
+
+问题描述：使用卷积神经网络训练MNIST数据集，再执行训练程序时出现错误，错误提示var image not in this block。
+
+问题描述：使用卷积神经网络训练MNIST数据集，再执行训练程序时出现错误，错误提示var image not in this block。
+
+报错信息：
+
+报错信息：
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in run(self, program, feed, fetch_list, feed_var_name, fetch_var_name, scope, return_numpy, use_program_cache)
+    465                 fetch_list=fetch_list,
+    466                 feed_var_name=feed_var_name,
+--> 467                 fetch_var_name=fetch_var_name)
+    468 
+    469         self._feed_data(program, feed, feed_var_name, scope)
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in _add_feed_fetch_ops(self, program, feed, fetch_list, feed_var_name, fetch_var_name)
+    313         if not has_feed_operators(global_block, feed, feed_var_name):
+    314             for i, name in enumerate(feed):
+--> 315                 out = global_block.var(name)
+    316                 global_block._prepend_op(
+    317                     type='feed',
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/framework.py in var(self, name)
+   1038         v = self.vars.get(name, None)
+   1039         if v is None:
+-> 1040             raise ValueError("var %s not in this block" % name)
+   1041         return v
+   1042
+
+ValueError: var image not in this block
+
+问题复现：在执行训练程序时，run函数的program参数的值设置为fluid.default_startup_program()，当执行到这一行的时就会出错。错误代码如下：
+
+for batch_id, data in enumerate(train_reader()):
+    train_cost, train_acc = exe.run(program=fluid.default_startup_program(),
+                                    feed=feeder.feed(data),
+                                    fetch_list=[avg_cost, acc])
+
+问题解决：在执行训练时，run函数的program参数的值应该时fluid.default_main_program()的，错误的原因是使用了初始化参数的程序来进行训练而导致的错误。正确代码如下：
+
+for batch_id, data in enumerate(train_reader()):
+    train_cost, train_acc = exe.run(program=fluid.default_main_program(),
+                                    feed=feeder.feed(data),
+                                    fetch_list=[avg_cost, acc])
+
+问题分析：fluid.default_main_program是定义了神经网络模型，前向反向计算，以及优化算法对网络中可学习参数的更新，所以在训练的时候，使用的Program应该是fluid.default_main_program。而不是用于初始化的Program。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

@@ -1,0 +1,196 @@
+我们在这里讨论6个新手容易犯的错误，这些错误与你所使用工具的API或语法无关，而是与你的知识和经验水平直接相关。在实际中如果出现了这些问题可能不会有任何的错误提示，但是在应用中却会给我们带来很大的麻烦。
+
+
+使用pandas自带的函数读取大文件
+
+第一个错误与实际使用Pandas完成某些任务有关。具体来说我们在实际处理表格的数据集都非常庞大。使用pandas的read_csv读取大文件将是你最大的错误。
+
+为什么?因为它太慢了!看看这个测试，我们加载TPS十月数据集，它有1M行和大约300个特性，占用了2.2GB的磁盘空间。
+
+import pandas as pd
+%%time
+
+tps_october = pd.read_csv("data/train.csv")
+Wall time: 21.8 s
+
+read_csv花了大约22秒。你可能会说22秒并不多。但是在一个项目中，需要在不同的阶段执行许多实验。我们会创建很多单独的脚本，用于清理、特征工程、选择模型，以及其他任务。多次等待数据加载20秒就变得很长了。此外，数据集可能会更大时间就会更长。那么有什么更快的解决方案呢?
+
+解决方案是在这个阶段放弃Pandas，使用其他为快速IO设计的替代方案。我最喜欢的是datatable，但你也可以选择Dask, Vaex, cuDF等。这里是用datatable加载相同的数据集所需要的时间:
+
+import datatable as dt  # pip install datatble
+
+%%time
+
+tps_dt_october = dt.fread("data/train.csv").to_pandas()
+
+------------------------------------------------------------
+
+Wall time: 2 s
+
+只有2秒，10倍差距
+
+
+没有矢量化
+
+函数式编程中最重要的规则之一就是永远不要使用循环。似乎在使用 Pandas 时坚持这个“无循环”规则是加速计算的最佳方法。
+
+函数式编程用递归代替循环。虽然递归也会出现各种问题（这个我们这里不考虑），但是对于科学计算来说使用矢量化是最好的选择！
+
+矢量化是 Pandas 和 NumPy 的核心，它对整个数组而不是单个标量执行数学运算。 Pandas 已经拥有一套广泛的矢量化函数，我们无需重新发明轮子，只要关注我们的重点如何计算就好了。
+
+在 Pandas 中进行Python 的大部分算术运算符（+、-、*、/、**）都以矢量化方式工作。此外，在 Pandas 或 NumPy 中看到的任何其他数学函数都已经矢量化了。
+
+为了验证到速度的提高，我们将使用下面的 big_function，它以三列作为输入并执行一些无意义的算术作为测试：
+
+def big_function(col1, col2, col3):
+    return np.log(col1 ** 10 / col2 ** 9 + np.sqrt(col3 ** 3))
+
+首先，我们将这个函数与 Pandas 最快的迭代器——apply 一起使用：
+
+%time tps_october['f1000'] = tps_october.apply(
+      lambda row: big_function(row['f0'], row['f1'], row['f2']), axis=1
+    )
+
+-------------------------------------------------
+
+Wall time: 20.1 s
+
+操作耗时20秒。 让我们以矢量化的方式使用核心 NumPy 数组来做同样的事情：
+
+%time tps_october['f1001'] = big_function(tps_october['f0'].values, 
+                                          tps_october['f1'].values, 
+                                          tps_october['f2'].values)
+
+------------------------------------------------------------------
+
+Wall time: 82 ms
+
+只用了 82 毫秒，快了大约 250 倍。
+
+事实上我们不能完全抛弃循环。 因为并非所有数据操作操作都是数学运算。 但是每当发现需要使用一些循环函数（例如 apply、applymap 或 itertuples）时，花点时间看看想要做的事情是否可以矢量化是一个非常好的习惯。
+
+
+数据类型，dtypes！
+
+我们可以根据内存使用情况指定数据类型。
+
+pandas中最糟糕也是最耗内存的数据类型是 object，这也恰好限制了 Pandas 的一些功能。 剩下的我们还有浮点数和整数。 以下这张表是pandas的所有类型：
+
+Pandas命名方式中，数据类型名称之后的数字表示此数据类型中的每个数字将占用多少位内存。 因此，我们的想法是将数据集中的每一列都转换为尽可能小的子类型。 我们只要根据规则来判断就可以了，这是规则表：
+
+通常，根据上表将浮点数转换为 float16/32 并将具有正整数和负整数的列转换为 int8/16/32。 还可以将 uint8 用于布尔值和仅正整数，以进一步减少内存消耗。
+
+这个函数你一定很眼熟，因为他在Kaggle中被广泛使用，它根据上表将浮点数和整数转换为它们的最小子类型：
+
+def reduce_memory_usage(df, verbose=True):
+    numerics = ["int8", "int16", "int32", "int64", "float16", "float32", "float64"]
+    start_mem = df.memory_usage().sum() / 1024 ** 2
+    for col in df.columns:
+        col_type = df[col].dtypes
+        if col_type in numerics:
+            c_min = df[col].min()
+            c_max = df[col].max()
+            if str(col_type)[:3] == "int":
+                if c_min > np.iinfo(np.int8).min and c_max < np.iinfo(np.int8).max:
+                    df[col] = df[col].astype(np.int8)
+                elif c_min > np.iinfo(np.int16).min and c_max < np.iinfo(np.int16).max:
+                    df[col] = df[col].astype(np.int16)
+                elif c_min > np.iinfo(np.int32).min and c_max < np.iinfo(np.int32).max:
+                    df[col] = df[col].astype(np.int32)
+                elif c_min > np.iinfo(np.int64).min and c_max < np.iinfo(np.int64).max:
+                    df[col] = df[col].astype(np.int64)
+            else:
+                if (
+                    c_min > np.finfo(np.float16).min
+                    and c_max < np.finfo(np.float16).max
+                ):
+                    df[col] = df[col].astype(np.float16)
+                elif (
+                    c_min > np.finfo(np.float32).min
+                    and c_max < np.finfo(np.float32).max
+                ):
+                    df[col] = df[col].astype(np.float32)
+                else:
+                    df[col] = df[col].astype(np.float64)
+    end_mem = df.memory_usage().sum() / 1024 ** 2
+    if verbose:
+        print(
+            "Mem. usage decreased to {:.2f} Mb ({:.1f}% reduction)".format(
+                end_mem, 100 * (start_mem - end_mem) / start_mem
+            )
+        )
+    return df
+
+让我们在 TPS 十月份的数据上使用它，看看我们能减少多少：
+
+>>> reduce_memory_usage(tps_october)
+Mem. usage decreased to 509.26 Mb (76.9% reduction)
+
+我们将数据集从原来的 2.2GB 压缩到 510MB。当我们将df保存到csv文件时，这种内存消耗的减少会丢失因为csv还是以字符串的形式保存的，但是如果使用pickle保存那就没问题了。
+
+为什么要减小内存占用呢？ 在使用大型机器学习模型处理此类数据集时，内存的占用和消耗起着重要作用。 一旦遇到一些 OutOfMemory 错误，你就会开始追赶并学习这样的技巧来让计算机保持愉快的工作（谁让Kaggle只给16G的内存呢，都是逼出来的）。
+
+
+不设置样式
+
+Pandas 最美妙的功能之一是它能够在显示DF时设定不同的样式，在 Jupyter 中将原始DF呈现为带有一些 CSS HTML 表格。
+
+Pandas 允许通过 style 属性对其 DataFrame 进行样式设置。
+
+tps_october.sample(20, axis=1).describe().T.style.bar(
+    subset=["mean"], color="#205ff2"
+).background_gradient(subset=["std"], cmap="Reds").background_gradient(
+    subset=["50%"], cmap="coolwarm"
+)
+
+我们随机选择 20 列，为它们创建一个 5 位数的汇总，并转置结果，根据它们的大小为均值、标准差和中值列着色。添加这样的样式可以让我们更轻松地发现原始数字中的模式，设置无需使用其他的可视化库。
+
+实际上，不对df进行样式设置并没有错。 但是这的确是一个很好的功能，对吧。
+
+
+使用 CSV格式保存文件
+
+就像读取 CSV 文件非常慢一样，将数据保存回它们也是如此。 以下是将 TPS 十月数据保存到 CSV 所需的时间：
+
+%%time
+
+tps_october.to_csv("data/copy.csv")
+
+------------------------------------------
+
+Wall time: 2min 43s
+
+花了将近3分钟。 为了节省时间可以保存为parquet，feather 甚至pickle。
+
+%%time
+
+tps_october.to_feather("data/copy.feather")
+
+Wall time: 1.05 s
+
+--------------------------------------------------------------------------------
+
+%%time
+
+tps_october.to_parquet("data/copy.parquet")
+
+Wall time: 7.84 s
+
+
+不看文档！
+
+实际上，这个对我来说最严重的错误是没有阅读Pandas 的文档。但是一般情况下没人会阅读文档，对吧。有时候 我们宁愿在互联网上搜索数小时也不愿阅读文档。
+
+但是当涉及到 Pandas 时，这个就是一个非常大的错误了。因为它像sklearn一样有一个出色的用户指南，涵盖从基础知识到如何贡献代码，甚至是如何设置更漂亮的主题（也许可能就是因为太多了，所以没人看）。
+
+我今天提到的所有错误都可以在文档中找到。 甚至在文档的“大型数据集”部分会专门告诉你使用其他软件包（如 Dask）来读取大文件并远离 Pandas。 其实如果我有时间从头到尾阅读用户指南，我可能会提出 50 个新手错误，所以还是看看文档吧。
+
+
+总结
+
+今天，我们学习了新手在使用Pandas时最常犯的六个错误。
+
+我们这里提到的错误大部分和大数据集有关，只有当使用GB大小的数据集时可能才会出现。如果你还在处理泰坦尼克这种新手数据集，你可能都不会感觉到有这些问题。但是当你开始处理真实世界的数据集时，这些概念会让别人觉得你不是一个新手而是真正有过实际经验的人。
+
+到此这篇关于pandas初学者容易犯的六个错误总结的文章就介绍到这了,更多相关pandas初学者易犯错误内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

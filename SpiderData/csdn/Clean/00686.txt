@@ -1,0 +1,10 @@
+TypeError: only integer scalar arrays can be converted to a scalar index
+
+报错信息直接翻译过来是只有整型标量数组才能转换成标量索引，然而问题一般都不在于你的索引是不是整数。这个报错一般会出现在你想使用一个索引数组去索引一个列表，即诸如list[indexarray]的形式，此时就会出现此报错。
+
+比较简单的解决方法是把你想要索引的列表转换为numpy数组，再对其进行索引，即：np.array(list)[indexarray]
+
+扩展一下，用索引列表去索引另一个列表也是不被允许的，即使用 list[indexlist] 时会出现 list indices must be integers or slices, not list的报错信息，此时同样可以将list转化为ndarray避免报错。
+
+最后总结一下，在python中用索引数组或索引列表去索引某个列表都是不被允许的；相反，你既可以用索引数组也可以用索引列表去索引某个numpy数组。所以当你想使用较为简便的索引操作时，尽可能地将数据类型转换为numpy数组进行处理，而不是列表。
+

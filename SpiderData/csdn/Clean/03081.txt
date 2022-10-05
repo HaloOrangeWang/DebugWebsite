@@ -1,0 +1,46 @@
+.json文件在’w’的模式下存储数据时出错导致文件的数据被删除而为空。
+ 后续检查无误却一直出错，错误类型：
+
+*raise JSONDecodeError("Expecting value", s, err.value) from None
+**json.decoder.JSONDecodeError**: Expecting value: line 1 column 1 (char 0)*
+
+改正方法：
+
+try:
+	-----snip-----
+except json.decoder.JSONDecodeError
+
+示例：（新手上路，格式胡乱）
+
+import json
+"""验证用户,若为新用户则储存新用户名"""
+
+def greet_user():
+    """问候"""
+    try:
+        with open('username.json') as f_obj:
+            user_old = json.load(f_obj)
+            
+    except json.decoder.JSONDecodeError:
+        """文件如果空时会出错"""
+        get_new_username()
+        
+    else:
+            print("Your name is " + user_old)
+            answer = input()
+            
+            if answer.lower() == 'y':
+                print('Hello ' + user_old)
+            else:
+                get_new_username()
+        
+def get_new_username():
+    """获取新的用户名"""
+    with open('username.json', 'w') as f_obj:
+        name = input("Your name: ")
+        json.dump(name, f_obj)
+
+greet_user()
+
+错误找了很久，才发现可能这个不对，特此记录，铭记于心。
+

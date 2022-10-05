@@ -1,0 +1,35 @@
+使用 jstack 命令时提示 command not found，不要慌，可能的原因如下：
+
+原因1：没有在 jdk 的安装目录下使用这个命令（一般配置了 jdk 的环境变量之后就可以解决）
+
+原因2：使用的是系统自带的 openjdk（没有 jstack 命令），而不是正式的 jdk 版本
+
+1、首先先查下安装的 jdk 的版本是不是 openjdk，如果是，卸载掉，然后重新安装官网的 jdk
+
+rpm -qa|grep java
+
+可以看到安装的版本是 openjdk，那么接下来就需要删除掉它
+
+rpm -e --nodeps java-1.8.0-openjdk-headless-1.8.0.191.b12-0.el6_10.i686
+
+rpm -e --nodeps java-1.8.0-openjdk-1.8.0.191.b12-0.el6_10.i686
+
+再次查询时，查询不到 jdk 信息
+
+2、安装 jdk
+
+下载好 tar.gz 文件并上传到 linux 下，解压文件
+
+tar -zxvf jdk-8u131-linux-i586.tar.gz -C /usr/local/java
+
+配置环境变量：
+
+echo JAVA_HOME=/usr/local/java/jdk1.8.0_131 #jdk 的解压目录
+echo PATH=$PATH:$JAVA_HOME/bin
+
+使环境变量生效：
+
+source /etc/profile
+
+再次使用 jstack pid 命令发现就不再报错了哈~
+

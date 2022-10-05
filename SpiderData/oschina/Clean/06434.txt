@@ -1,0 +1,54 @@
+在做web ui自动化的过程中，经常发现这样一种情况，执行时case报错啦，再重新执行一遍又成功了。
+
+如果不解决这个问题，脚本稳定性就会变差，很让人蛋疼，怎么解决呢：
+
+思路：
+
+写一个装饰器，装饰在case方法上，case一但出错就抛出错误。能过装饰器去捕获，来控制重新执行case。
+
+代码：
+
+def replayCaseFail(num=3):
+    def _warpper(func):
+        def warpper(*args,**kwargs):
+            raise_info = None
+            rnum = 0
+            for i in range(num):
+                rnum +=1
+                try:
+                    ret = func(*args,**kwargs)
+                    if rnum > 1:
+                        print('重试{}次成功'.format(rnum))
+                    return ret
+                except Exception as ex:
+                    raise_info = ex
+            print('重试{}次,全部失败'.format(rnum))
+            raise raise_info
+        return warpper
+    return _warpper
+
+以上代码，经实际使用没有问题，也可以结合着unittest使用，或者ddt驱动装饰器使用，但要注意位置。
+
+要放在最底层的，最靠近函数的位置。否则其它装饰器有可能会报错。
+
+示例代码：
+
+@unittest.skipIf(getRunFlag('CHARGE', 'testCase2') == 'N', '验证执行配置')
+    @ddt.data(*FillData)
+    @replayCaseFail(num=3) #case执行失败后，重新执行num次
+    def testCase2(self,data):
+        """储值并补开发票"""
+
+# 调用储值功能函数
+        self.chargeFunc(data)
+
+"""补开发票"""
+        #单击 补开发票按钮
+        self.charge.clickFillReceipt
+        #获取 未开票金额
+        notFillPresent = self.charge.getNotFillPresent(data['txtName'])
+        #输入 开票金额
+        self.charge.inputFillPresent(notFillPresent)
+        #单击 确定 开发票
+        self.charge.clickFillConfirmBtn
+

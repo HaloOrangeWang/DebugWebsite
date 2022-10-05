@@ -1,0 +1,36 @@
+正常情况下执行：
+./configure
+make && make install
+可以直接安装python，但是在在更新了乌版图后居然报错了！！！
+检查了一圈，发现乌版图安装了python3.8，卸载会影响乌版图的组件，
+那么只好保留python3.8并安装自己需要的python3.7.8
+1.安装gcc和g++
+sudo apt-get gcc
+sudo apt-get g++
+
+2.重新编译安装Python
+    (PS:在安装好gcc和g++后编译安装时依然报错解决办法，更新gcc与g++编译正常的可以略过：)
+    　　sudo apt-get install build-essential
+    　　sudo apt-get update
+    　　sudo apt-get upgrade
+    　　sudo apt-get dist-upgrade
+    　　sudo apt-get install build-essential python-dev python-setuptools python3-pip python3-smbus
+    　　sudo apt-get install build-essential libncursesw5-dev libgdbm-dev libc6-dev
+    　　sudo apt-get install zlib1g-dev libsqlite3-dev tk-dev
+    　　sudo apt-get install libssl-dev openssl
+    　　sudo apt-get install libffi-dev
+
+编译安装Python：
+./configure
+make && make install
+查看python安装是否成功：    
+python3.7 -V
+pip3.7 -V
+
+4.进入Pycharm发现没有python3.7的环境变量，只有python3与python3.8
+依次点击：
+settings->Project:pythonproject->Python Intepreter->点击设置图标（在右上角）
+->add->选择Existing envirnment->填入路径：/usr/local/bin/python3.7->勾选Make available to all projects
+
+5.查看Pycharm右下角显示Python3.7
+

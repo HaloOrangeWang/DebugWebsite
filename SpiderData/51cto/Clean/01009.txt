@@ -1,0 +1,79 @@
+本文纯属个人见解，是对前面学习的总结，如有描述不正确的地方还请高手指正~
+
+刚碰到这个问题的时候,在网上找了 半天,发明都是说 添加如下三行代码便可解决问题,
+
+但是我加了之后还解决不了,经过一番思考和发掘终于找到本质原因,
+
+我是在小小说下载器练手的时候碰到的问题,在将爬下来的小说内容写入都文件时报的错,由于其中一些内容，ascii编码不支持，所以报错。
+
+所以，更好的方法是，在输出的时候，对文件制定特定的UTF-8编码便可。而无需修改默认编码。
+
+下面是我转载的一篇关于codecs的文章
+
+----------------------------------------------------------分割线-------------------------------------------------------------
+
+>>> import codecs
+>>> t = codecs.lookup("utf-8")
+>>> print t
+(<built-in function utf_8_encode>, <function decode at 0x00AA25B0>, <class encodings.utf_8.StreamReader at 0x00AA0720>, <class encodings.utf_8.StreamWriter at 0x00AA06F0>)
+>>> encoder = t[0]
+>>> decoder = t[1]
+>>> StreamReader = t[2]
+>>> StreamWriter = t[3]
+
+getencoder(encoding)
+
+getdecoder(encoding)
+
+getreader(encoding)
+
+getwriter(encoding)
+
+>>>
+
+encoder = codecs.getencoder(
+
+"utf-8"
+
+)
+
+>>>
+
+fin = codecs.open(
+
+"e:\\mycomputer.txt"
+
+,
+
+"r"
+
+,
+
+"utf-8"
+
+)
+
+>>>
+
+print
+
+fin.readline()
+
+这是我的电脑
+
+>>>
+
+fin.close()
+
+文章结束给大家分享下程序员的一些笑话语录：
+
+程序员的愿望
+
+　　有一天一个程序员见到了上帝.上帝: 小伙子,我可以满足你一个愿望.程序员: 我希望中国国家队能再次打进世界杯.
+
+　　上帝: 这个啊!这个不好办啊,你还说下一个吧!
+
+　　程序员: 那好!我的下一个愿望是每天都能休息6个小时以上.
+
+　　上帝: 还是让中国国家打进世界杯.
+

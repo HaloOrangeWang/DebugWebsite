@@ -1,0 +1,45 @@
+ValueError: invalid literal for int () with base 10.
+
+int()传的值有问题，之前我传了string类型的
+
+Python2.7 报错：UnicodeEncodeError: 'ascii' codec can't encode characters in position 3-4: ordinal not in range(128)
+
+涉及到中文编码，python处理字符流默认是ascii。解决：
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+参考
+
+解决print不能立即打印的问题
+
+1、问题描述
+在Python中使用print打印hello world时，终端不显示
+
+def hello():
+	print("hello world!")
+
+2、原因
+因为标准输入输出stdin/stdout有缓冲区，所以使用print不能立即打印出来
+
+3、解决方法
+1）刷新缓冲区，python中是sys.stdout.flush()
+
+import sys 
+def hello():
+	print("hello world!")
+ sys.stdout.flush()
+
+2）python3中支持print支持参数flush
+原型：print(*objects, sep=’ ‘, end=’\n’, file=sys.stdout, flush=False)
+
+def hello():
+	print("hello world!", flush=True)
+
+参考官方手册
+https://docs.python.org/zh-cn/3/library/functions.html#print
+参考博客：
+关于某些时候print函数不会立即打印的解决办法
+https://blog.csdn.net/qq_36711420/article/details/79631141
+

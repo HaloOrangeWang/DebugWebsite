@@ -1,0 +1,70 @@
+最近关注了几个python相关的公众号，没事随便翻翻，几天前发现了一个人工智能公开课，闲着没事，点击了报名。
+
+几天都没有音信，我本以为像我这种大龄转行的不会被审核通过，没想到昨天来了审核通过的电话，通知提前做好准备。
+
+所谓听课的准备，就是笔记本一台，装好python、tensorflow的环境。
+
+赶紧找出尘封好几年的联想笔记本，按照课程给的流程安装。将期间遇到的问题记录一下。
+
+1、安装Anaconda
+
+百度下载windows版本，一路点下一步，安装好了Anaconda，自带python3.6.6。
+
+2、安装TensorFlow
+
+（1）打开Anaconda Prompt，输入conda env list，查看当前环境，发现只有base环境。
+
+（2）创建TensorFlow环境，同时安装好numpy：
+
+输入conda create -n tensorflow python=3.6 numpy pip。
+
+（3）进入TensorFlow环境
+
+再用conda env list，发现已经多了一个名为TensorFlow的环境。
+
+输入：activate tensorflow ，进入环境
+
+（4）安装TensorFlow
+
+使用pip安装：pip install tensorflow
+
+安装完成后用conda list 查看，发现TensorFlow1.8.0已经安装进去。
+
+3、检查
+
+（1）CPU不支持导致重装
+
+进入python后，输入“import tensorflow”，结果发现报错。
+
+错误信息有很长一串，我也看不太懂，最主要的错误信息是“DLL load failed with error code - 1073741795”
+
+百度了一下，发现错误原因是因为太老的CPU支持不了太新版本的tensorflow，缺少一个叫VAX的功能？
+
+遂卸载然后安装较低版本的tensorflow：
+
+pip uninstall tensorflow
+
+pip install tensorflow==1.5
+
+安装完1.5版本后打开不再报错。
+
+（2）再次测试
+
+输出b'HELLO TENSORFLOW'
+
+安装成功。
+
+4、安装jupyter notebook
+
+按照教程，安装了一个方便编辑python的网页工具jupyter notebook
+
+conda install jupyter
+
+输入jupyter notebook ，可以打开浏览器，能够编程。
+
+5、其他
+
+说实话，我是个初学者，对这些命令具体干了什么事理解的不是太清楚，基本都按部就班。希望随着学习时间越久能有些理解吧。
+
+在我的比较老的台式机上又安装了一下试了试，发现tensorflow1.8可以正常运行，嗯，这样的话一般的机器应该都不会存在之前那个错误吧.
+

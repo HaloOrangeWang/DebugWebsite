@@ -1,0 +1,69 @@
+专栏：Python基础教程目录
+
+专栏：使用PyQt开发图形界面Python应用
+
+专栏：PyQt+moviepy音视频剪辑实战
+
+专栏：PyQt入门学习
+
+老猿Python博文目录
+
+老猿学5G博文目录
+
+在使用moviepy的fl_time方法进行时间特效处理时报错：ValueError: Attribute ‘duration’ not set
+
+出现报错的原因有2种，一是因为未设置剪辑的duration属性，二是虽然调用了set_duration设置剪辑的duration，但set_duration方法不是改变调用者的时长，而是生成一个原剪辑的拷贝将其时长设置为新值。
+
+要解决该问题有2个方法，一是fl_time进行变换处理时，设置参数keep_duration = True ，或者手工设置剪辑的duration，且记录下set_duration返回的剪辑对象，以该对象进行后续处理。
+
+更多moviepy的介绍请参考《PyQt+moviepy音视频剪辑实战文章目录》或《moviepy音视频开发专栏》。
+
+
+☞ ░  前往老猿Python博文目录 ░
+
+
+1、ValueError: Attribute ‘duration’ not set情况1
+
+这是因为调用fl_time时，keep_duration默认值为False，只要该值为False，moviepy就会将duration设置为None，解决办法是设置keep_duration = True 或者手工设置剪辑的duration。
+
+
+2、ValueError: Attribute ‘duration’ not set情况2
+
+下面的案例是倍速播放，由于是倍速播放，视频的时长时间上只有原视频的一半，此时使用keep_duration=True已经不合适，只能自行设定duration的值。示例代码如下：
+
+执行时还是报错，这是因为剪辑的绝大多数set方法，基本上都不是对调用者的直接修改，而是对调用者进行浅拷贝后，对浅拷贝剪辑进行修改，且这些方法返回值都是一个剪辑。只需要将调用返回的剪辑记录下来作为后续处理才行。
+
+更多关于fl_time时间特效处理的内容请参考《moviepy音视频剪辑：使用fl_time进行诸如快播、慢播、倒序播放等时间特效处理的原理和可能遇到的坑》（免费文章）或《moviepy音视频剪辑：使用fl_time进行诸如快播、慢播、倒序播放等时间特效处理的原理、代码实现以及需要注意的坑》（付费专栏文章，但内容更全、案例更多）。
+
+更多moviepy的介绍请参考《PyQt+moviepy音视频剪辑实战文章目录》或《moviepy音视频开发专栏》。
+
+
+关于收费专栏
+
+老猿的付费专栏《使用PyQt开发图形界面Python应用》专门介绍基于Python的PyQt图形界面开发基础教程，付费专栏《moviepy音视频开发专栏》详细介绍moviepy音视频剪辑合成处理的类相关方法及使用相关方法进行相关剪辑合成场景的处理，两个专栏加起来只需要19.9元，都适合有一定Python基础但无相关专利知识的小白读者学习。这2个收费专栏都有对应免费专栏，只是收费专栏的文章介绍更具体、内容更深入、案例更多。
+
+对于缺乏Python基础的同仁，可以通过老猿的免费专栏《专栏：Python基础教程目录》从零开始学习Python。
+
+如果有兴趣也愿意支持老猿的读者，欢迎购买付费专栏。
+
+
+跟老猿学Python、学5G!
+
+
+☞ ░ 前往老猿Python博文目录 ░
+
+
+跟老猿学Python、学5G!
+
+专栏：Python基础教程目录
+
+专栏：使用PyQt开发图形界面Python应用
+
+专栏：PyQt+moviepy音视频剪辑实战
+
+专栏：PyQt入门学习
+
+老猿Python博文目录
+
+老猿学5G博文目录
+

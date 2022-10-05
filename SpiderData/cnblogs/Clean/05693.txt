@@ -1,0 +1,24 @@
+在python 3.8环境下使用pyinstaller 3.5版本打包制作*.exe文件总是如下报错，
+
+# pyinstaller -F abc.py
+
+...
+21100 INFO: checking PYZ
+21101 INFO: Building PYZ because PYZ-00.toc is non existent
+21101 INFO: Building PYZ (ZlibArchive)
+...
+这是由于pyinstaller 3.5 和python 3.8 不兼容。
+
+解决方案：安装和使用pyinstaller 4.0 development开发包
+
+# pip install https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz
+
+# pip list
+Package        Version
+-------------- -------------------
+...
+PyInstaller    4.0.dev0+1eadfa55f2
+...
+
+这样再使用pyinstaller -F abc.py就可以成功生成abc.exe可执行文件了！
+

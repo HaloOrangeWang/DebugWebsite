@@ -1,0 +1,22 @@
+在运行的时候遇到了报错：
+
+报错：ImportError: DLL load failed: 找不到指定的模块
+
+这个报错是由于没有安装好相应的模块，或者模块的版本不兼容导致的
+
+1.首先根据报错给出的路径，找到具体的报错的模块
+
+进去python安装文件夹的Lib文件夹内，搜索对应的模块或支持程序
+
+2.进入到模块的文件里，查看所需要用到的模块
+
+import audioop
+import cchardet
+import sys
+
+比如这个模块所需要的模块是audioop，cchardet，sys
+
+3.直接运行上述程序查看模块是否能够正常运行，如果不能够正常运行，则逐个排查
+
+4.发现是cchardet模块报错，于是首先进行了import cchardet的操作发现已经成功安装，进入Lib文件夹内查找cchardet模块的文件，在https://pypi.org/project/中查找到了已经下载的版本与正在使用的python版本不兼容，最后卸载了当前版本的cchardet，重新下载对应版本后，问题成功解决了！
+

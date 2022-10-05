@@ -1,0 +1,104 @@
+用vue开发微信公众号网页项目，用到微信分享功能，为保护页面隐私，需要隐藏复制链接、分享到朋友圈、收藏等按钮功能，具体效果见下：
+
+一开始采用的办法是，按微信开放文档介绍的API，隐藏不需要的按钮
+
+使用批量隐藏功能按钮接口：
+
+wx.hideMenuItems({
+
+menuList: ["menuItem:editTag","menuItem:delete","menuItem:refresh","menuItem:copyUrl",
+
+"menuItem:share:qq","menuItem:share:weiboApp","menuItem:favorite",            "menuItem:share:timeline","menuItem:openWithQQBrowser","menuItem:openWithSafari",
+
+"menuItem:share:email",              "menuItem:originPage","menuItem:share:facebook","menuItem:share:QZone","menuItem:share:brand"]
+
+})
+
+结果：使用后微信开发者工具显示正常，安卓正常。但是苹果IOS显示异常，转发给朋友按钮显示不出来，刷新当前页面时，转发给朋友按钮就会显示出来。
+
+一开始想到的解决办法是进入当前页面后用代码刷新一下当前页面，但感觉这种解决办法不太好，就没有采用。
+
+于是在网上查找资料，找到一个解决办法：
+
+先隐藏到所有按钮操作，在主动显示出来你要的按钮操作。
+
+代码如下：
+
+wx.ready(function () {
+
+wx.hideAllNonBaseMenuItem();
+
+//此处省略转发给朋友代码
+
+wx.showMenuItems({
+
+menuList: ["menuItem:share:appMessage"] // 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
+
+});
+
+});
+
+写好后上测试环境，结果报错了，也不生效，打开调试模式，报错信息如下：
+
+通过在网上查资料，找到了原因：config的jsApiList []缺少了hideAllNonBaseMenuItem这个参数，
+
+jsApiList: [ 'checkJsApi', 'onMenuShareAppMessage', 'hideMenuItems', 'hideAllNonBaseMenuItem',  'showMenuItems',  ]
+
+添加上如上参数，再上测试环境，发现不报上面的错误了，但是在苹果IOS手机上前面转发给朋友按钮显示不出来，刷新当前页面时，转发给朋友按钮就会显示出来的问题又出现了。调试模式下，报错信息如下：
+
+问题分析：开启debug查看弹出的信息，先报错hideAllNonBaseMenuItem:the permission value is offline verifying，再弹出menuItem:share:brand,config：ok。而安卓手机或苹果手机当前页面刷新，是先弹menuItem:share:brand,config：ok，再弹hideAllNonBaseMenuItem:config：ok
+
+得出结论：导致错误的原因是"先执行了wx.hideAllNonBaseMenuItem方法再执行wx.onMenuShareAppMessage()"。
+
+解决方法：
+
+setTimeout(() => { }, 400)  // 将wx.hideAllNonBaseMenuItem和wx.showMenuItems()放延时器中延迟一下
+
+代码如下:
+
+wx.ready(function () { //通过ready接口处理成功验证
+
+setTimeout(() => {      //把按钮的隐藏与显示放定时器里，可以解决苹果IOS系统按钮隐藏与显示不生效问题
+
+wx.hideAllNonBaseMenuItem();
+
+wx.showMenuItems({
+
+menuList: ["menuItem:share:appMessage"] // 要显示的菜单项
+
+});
+
+},400)
+
+wx.onMenuShareAppMessage({ // 分享给朋友  ,在config里面填写需要使用的JS接口列表，然后这个方法才可以用
+
+title: '盛唐传世 财富传家', // 分享标题
+
+desc: '财富师'+businessName+'为您分享', // 分享描述
+
+link: shareLink, // 分享链接
+
+imgUrl: 'http://file0.datangwealth.com/g1/M00/16/50/rBAeX1ybKCiAEKkxAADvNDguF4c858.png?filename=share.png', // 分享图标
+
+type: '', // 分享类型,music、video或link，不填默认为link
+
+dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+
+success: function() {
+
+// 用户确认分享后执行的回调函数
+
+},
+
+cancel: function() {
+
+// 用户取消分享后执行的回调函数
+
+}
+
+});
+
+});
+
+在分享微信公众号页面时还要到了一个头疼的问题，如果页面的链接地址进入页面后分享，分享的还是链接地址，不带标题描述图片等信息，只有从微信公众号菜单栏进入或者扫描二维码进入或者从带标题描述信息的分享链接进入，再次分享才会显示标题描述图片等信息
+

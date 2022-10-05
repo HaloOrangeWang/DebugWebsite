@@ -1,0 +1,38 @@
+安装ROS时sudo rosdep init指令报错：
+
+ERROR: cannot download default sources list from:
+https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/sources.list.d/20-default.list
+Website may be down.
+
+解决（以下方法依次执行，一直到搞定：
+
+（1）之前曾经安装过 ROS 系统的某个版本，按照提示删除已经存在的初始化文件即可：
+
+sudo rm /etc/ros/rosdep/sources.list.d/20-default.list
+
+　　
+
+（2）ca-certificates问题，证书不对，重新安装证书
+
+sudo apt-get install ca-certificates
+
+　　
+
+sudo apt-get install ntpdate
+sudo ntpdate cn.pool.ntp.org
+sudo hwclock --systohc
+
+sudo c_rehash /etc/ssl/certs 
+sudo -E rosdep init
+
+　　
+
+sudo apt-get install python-rosdep
+
+　　
+
+cd /ros/rosdep/sources.list.d（具体目录要看你的用户名）
+sudo gedit 20-default.list
+
+　　
+

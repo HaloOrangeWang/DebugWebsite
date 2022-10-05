@@ -1,0 +1,58 @@
+报错场景，使用KVO时，添加观察者（addObserver）后修改被观察对象的值
+
+创建被观察的对象person，添加观察者查看name值的改变
+
+class Person: NSObject {
+   @objc dynamic var name : String = ""
+}
+class ViewController: UIViewController {
+      lazy var p : Person = {
+        let per = Person()
+        return per
+    }()
+override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
+        view.backgroundColor = .white
+        
+        p.name = "jack"
+        p.addObserver(p, forKeyPath: "name", options: [.old,.new], context: nil)
+        p.name = "hello"
+    }
+override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if let old = change?[NSKeyValueChangeKey.oldKey] {
+            print(old)
+        }
+        if let new = change?[NSKeyValueChangeKey.newKey] {
+            print(new)
+        }
+    }
+deinit {
+        p.removeObserver(p, forKeyPath: "name")
+    }
+}
+
+报错
+
+解决方案：将addObserver和override func observeValue替换为
+
+p.observeValue(forKeyPath: String?, of: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?)
+
+修改后:
+
+var observer: NSKeyValueObservation?
+override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+        p.name = "jack"
+        observer = p.observe(\Person.name, options: [.old, .new]) { (person, change) in
+          if let old = change.oldValue {
+            print("old=",old) 
+          }
+          if let new = change.newValue {
+            print("new=",new) 
+          }
+        }
+        p.name = "hello"
+    }
+

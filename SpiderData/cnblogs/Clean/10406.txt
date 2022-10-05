@@ -1,0 +1,114 @@
+问题描述
+
+我在用Keras的Embedding层做nlp相关的实现时，发现了一个神奇的问题，先上代码：
+
+我有两个Embedding层，当其中一个设置mask_zero=True，而另一个为False时，会报如下错误。
+
+ValueError: Dimension 0 in both shapes must be equal, but are 1 and 5.
+
+Shapes are [1] and [5]. for 'concatenate_1/concat_1' (op: 'ConcatV2')
+
+with input shapes: [?,15,1], [?,30,5], [] and with computed input tensors:
+
+input[2] = <1>.
+
+什么意思呢？是说在concatenate时发现两个矩阵的第三维一个是1，一个是5，这就很神奇了，加了个mask_zero=True还会改变矩阵维度的吗？
+
+寻找问题根源
+
+为了检验Embedding层输出的正确性，我把代码改成了：
+
+运行成功了，并且summary显示两个Embedding层输出矩阵的第三维都是5。
+
+这就很奇怪了，明明没有改变维度，为什么会报那样的错误？
+
+然后我仔细追溯了一下前面的各项error，发现这么一句：
+
+File ".../keras/layers/merge.py", line 374, in compute_mask
+
+concatenated = K.concatenate(masks, axis=self.axis)
+
+难道是mask的拼接有问题？
+
+于是我修改了/keras/layers/merge.py里的Concatenate类的compute_mask函数（sudo
+
+vim就可以修改），在返回前输出一下masks：
+
+Tensor("concatenate_1/ExpandDims:0", shape=(?, 30, 1), dtype=bool)
+
+Tensor("concatenate_1/Cast:0", shape=(?, 30, 5), dtype=bool)
+
+发现了！有一个叫concatenate_1/ExpandDims:0的mask它的第三维度是1！
+
+那么这个ExpandDims是什么鬼，观察一下compute_mask代码，发现了：
+
+意思是当mask_i的维度比input_i的维度小时，扩展一维，这下知道第三维的1是怎么来的了，那么可以预计compute_mask函数输入的mask尺寸应该是(None,
+
+30)，输出一下试试：
+
+[<tf.Tensor 'embedding_1/NotEqual:0' shape=(?, 30) dtype=bool>, None]
+
+果然如此，总结一下问题的所在：
+
+Embedding层的输出会比输入多一维，但Embedding生成的mask的维度与输入一致。在Concatenate中，没有mask的Embedding输出被分配一个与该输出相同维度的全1的mask，比有mask的Embedding的mask多一维。
+
+提出解决方案
+
+那么，Embedding层的mask到底是如何起作用的呢？是直接在Embedding层中起作用，还是在后续的层中起作用呢？纵观embeddings.py，mask_zero只在compute_mask函数被用到：
+
+可见，Embedding层的mask是记录了Embedding输入中非零元素的位置，并且传给后面的支持masking的层，在后面的层里起作用。
+
+一种最简单的解决方案：
+
+给所有参与Concatenate的Embedding层都设置mask_zero=True。
+
+但是，我想到了一种更灵活的解决方案：
+
+修改embedding.py的compute_mask函数，使得输出的mask从2维变成3维，且第三维等于output_dim。
+
+验证解决方案
+
+为了验证这个改动是否正确，我需要设计几个小实验。
+
+实验一： mask的正确性
+
+我把输出的mask做了改动，不知道mask是否是正确的。
+
+如下所示，数据是一个带有3个样本、样本长度最长为3的补零padding过的矩阵，我分别让Embedding层的mask_zero为False和True（为True时input_dim=|va|+2所以是5）。然后分别将Embedding的输出在axis=1用MySumLayer进行求和。为了方便观察，我用keras.initializers.ones()把Embedding层的权值全部初始化为1。
+
+结果如下：
+
+这个结果是正确的，这里解释一波：
+
+（1）当mask_True=False时，输入矩阵中的0也会被认为是正确的index，从而从权值矩阵中抽出第0行作为该index的Embedding，而我的权值都是1，因此所有Embedding都是1，对axis=1求和，实际上是对word
+
+length这一轴求和，输入的word length最长为3，以致于输出矩阵的元素都是3.
+
+（2）当mask_True=True时，输入矩阵中的0会被mask掉，而这个mask的操作是体现在MySumLayer中的，将输入(3, 3,
+
+5)与mask(3, 3,
+
+5)逐元素相乘，再相加。第一个样本只有一项非零，第二个有两项，第三个三项，因此MySumLayer输出的矩阵，各行元素分别是1，2，3.
+
+另外附上MySumLayer的代码，它的功能是指定一个axis将Tensor进行求和：
+
+实验二： 一个mask_zero=True和一个mask_zero=False的Embedding是否能够拼接
+
+没有报错！而且输出的shape正是(None, 7, 5)。
+
+实验三： 两个mask_zero=True的Embedding拼接是否会报错
+
+没有报错！
+
+实验四： 两个mask_zero=True的Embedding拼接结果是否正确
+
+如下所示，第一个矩阵是一个带有4个样本、样本长度最长为3的补零padding过的矩阵，第二个矩阵是一个带有4个样本、样本长度最长为4的补零padding过的矩阵。为什么这里要求样本个数一致呢，因为一般来说需要这种拼接操作的都是同一批样本的不同特征。两者的Embedding都设置mask_zero=True，在axis=1拼接后，用MySumLayer在axis=1加起来。
+
+输出如下
+
+这个结果是正确的，解释一波，其实两个矩阵横向拼接起来是下面这样的，4个样本分别有2、4、6、7个非零index，而Embedding层权值都是1，所以最终输出的就是上面这个样子。
+
+至此，问题成功解决了。
+
+以上这篇解决Keras中Embedding层masking与Concatenate层不可调和的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

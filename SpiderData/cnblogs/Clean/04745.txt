@@ -1,0 +1,66 @@
+平台：win10 x64 +JetBrains PyCharm 2018.2.4 x64 +Anaconda3（python3.7.0+opencv3.4.5）
+
+Issue说明：同学发了个python代码，想实现下brisk，帮同学解决，自己试验了下，但是报错ImportError:检查opencv的安装
+
+原因：在cmd下python->import cv2就开始报错ImportError:检查opencv的安装，看来还没运行代码，刚开始import就报错了。原来是opencv_python的问题。
+
+怀疑及解决方案：
+
+Issue1：怀疑是电脑上安装的python3.6.5与Anaconda中的python3.7.0冲突，pip安装时（pip install opencv_python-3.4.5+contrib-cp37-cp37m-win_amd64.whl）没有识别对应的python。
+解决办法：去掉python3.6.5的系统环境变量（D:\ProgramFiles\Python36），卸载opencv_python，重新安装opencv_python（pip install opencv_python-3.4.5+contrib-cp37-cp37m-win_amd64.whl），报错依旧
+
+Issue2：怀疑电脑上的opencv_python版本低或文件破坏。
+解决办法：重新下载了opencv_python-3.4.7+contrib-cp37-cp37m-win_amd64.whl，重新安装opencv_python（pip install opencv_python-3.4.7+contrib-cp37-cp37m-win_amd64.whl），报错依旧
+
+Issue3：win+r打开windows命令窗口输入python显示的是python3.7.0，而在D盘文件夹下文件——>打开Windows PowerShell——>以管理员身份打开Windows PowerShell输入python显示的是python3.6.5（而我在Issue1时已经去掉python3.6.5的系统环境变量）
+解决办法：把（D:\ProgramFiles\Python36）备份好后，卸载python3.6.5，报错依旧
+
+Issue4：应该还是python多版本的问题。
+解决办法：依次检查系统环境变量，看是否哪个包含了opencv3.6.5（因为近期使用CMake编译过opencv工程），还是没有找到，
+
+最后在wang的用户变量中找到（D:\ProgramFiles\Python36；D:\ProgramFiles\Python36\Scripts\）去掉后
+
+Issue5：怀疑是Anaconda的问题
+解决办法：卸载重装，在重装安装opencv_python（pip install opencv_python-3.4.5+contrib-cp37-cp37m-win_amd64.whl），还是报错依旧。
+
+Issue6：还是python多版本的问题
+解决办法：最后在wang的用户变量中找到（D:\ProgramFiles\Python36；D:\ProgramFiles\Python36\Scripts\）去掉后，重新卸载后安装opencv_python（pip install opencv_python-3.4.5+contrib-cp37-cp37m-win_amd64.whl）win+r打开windows命令窗口输入python显示的是python3.7.0，然后输入import cv2 报错更改为ImportError: numpy.core.multiarray failed to import
+
+Issue7：ImportError: numpy.core.multiarray failed to import，百度解决，是numpy版本过低的问题。
+解决办法：更新numpy，使用：pip install -U numpy就可以更新numpy版本了。但是实验室网络太差，更新不成功，下载whl，（地址参看我的另一篇博客：Python入门之第三方模块安装——https://www.cnblogs.com/Alliswell-WP/p/PythonOfPipInstall.html），下载最新的与64版本（numpy-1.17.0+mkl-cp37-cp37m-win_amd64.whl）后，安装（pip install numpy-1.17.0+mkl-cp37-cp37m-win_amd64.whl），在cmd下import cv2不报错了，问题解决。
+
+参看：ImportError: numpy.core.multiarray failed to import——https://www.cnblogs.com/catpainter/p/8645455.html
+
+Issue8：Pycharm下测试？
+
+import cv2 as cv
+
+解决办法：在pycharm上新建python工程->新建New Python File->粘贴上面的代码（更改图片的路径和名称），测试成功。
+
+Issue9：Pycharm无法识别Python已安装的模块，如cv2（OpenCV）模块
+解决办法：Pycharm的菜单  File | Settings | Settings窗口 | Project:XXXX | Project Interpreter项 | 窗口右侧 齿轮按钮点击 | Show All... | 然后依据上图提示打开“Interpreter Paths”窗口
+将已安装的Python路径下的 Lib/site-packages 这个路径添加到“Interpreter Paths”窗口项中，最后保存
+
+参看：本人另一篇博客：在cmd下可以import cv2,而Pycharm报错：找不到cv2 ——https://www.cnblogs.com/Alliswell-WP/p/Pycharm_cv2_issue.html
+
+Issue10：测试brisk，报错：Traceback (most recent call last):
+  File "D:/Working/PycharmProjects/python_brisk_demo-master/brisk_demo.py", line 35, in <module>
+    extractor = cv2.DescriptorExtractor_create('BRISK')  # non-patented. Thank you!
+AttributeError: module 'cv2.cv2' has no attribute 'DescriptorExtractor_create'
+解决办法：网上说OpenCV3.4.3及之后版本下没有使用该算法的权限，所以重新下载安装
+
+opencv-contrib-python     3.4.2.16
+opencv-python        　3.4.2.16
+
+清华大学opencv Python库：https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/opencv-python/
+
+Issue11：安装完成仍报错：没有权限
+解决办法：此算法没有权限，将下载代码时的_cv2_fallback文件夹下（__pycache__文件夹——__init__.cpython-37.pyc，__init__.py，cv2.pyd）替换C:\ProgramData\Anaconda3\Lib\site-packages\cv2下相应的文件，还要改名哦（一定要备份更改的文件，如果失败，可以恢复）！系统警告，点击“继续”。运行代码，报错依旧！
+
+Issue12：操作完成仍报错：没有权限
+解决办法：此算法没有权限，下载下面的BRISK算法，实现。更改路径和名称后，成功！
+
+参考；1）OpenCV-Python Feature2D 特征点检测(含SIFT/SURF/ORB/KAZE/FAST/BRISK/AKAZE)——https://blog.csdn.net/amusi1994/article/details/79591205
+
+2）[OpenCV-Python] OpenCV 中图像特征提取与描述 部分 V (二)——https://www.cnblogs.com/Undo-self-blog/p/8447771.html
+

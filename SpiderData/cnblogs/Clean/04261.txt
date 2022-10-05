@@ -1,0 +1,47 @@
+更新：
+
+还是不行，大家再找别的方法。
+
+以下内容仅做参考，意义不大。
+
+
+U盘安装
+
+用rufus做U盘，写入选DD模式，比ISO模式可靠点。
+
+
+错误解决
+
+报错信息：
+
+Error installing Manjaro: Boost.Python error in job “initcpio”
+
+我的磁盘分区：
+
+sda1：windows C盘
+
+sda2：扩展分区
+
+　　|--sda3：D盘
+
+　　|--sda4：E盘
+
+sda5：空闲分区（装manjaro-18.0.4）
+
+报错原因是采用了legacy boot。
+
+所以，解决方案：
+
+（1）设置bios，改为EFI启动
+
+（2）安装manjaro时，手动分区，将sda1的flag设置为esp，挂载点为 /boot/efi。不要格式化sda1（这是C盘。硬盘的第一个分区）
+
+（3）然后sda5挂载点为/，格式化。当然如果你还有别的分区方案，比如单独分/home等，可自定义。关键在（1）（2）。
+
+后面是正常安装步骤。
+
+
+参考
+
+https://forum.manjaro.org/t/error-installing-manjaro-boost-python-error-in-job-initcpio/77850/25
+

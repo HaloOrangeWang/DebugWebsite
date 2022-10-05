@@ -1,0 +1,46 @@
+<select id="getPurchaseSkuLot" parameterType="java.lang.Long" resultMap="stockOrderSkuPurchaseResultMap">
+	  SELECT
+	  purchase_id,
+	  order_id,
+	  sku_id,
+	  sku_lot
+		FROM
+		  stock_order_sku_purchase 
+		WHERE order_id IN
+	  <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+         #{item}
+      </foreach>
+  	</select>
+
+item为空会报错 形成in （）；的语句
+
+修改以后
+
+<select id="getPurchaseSkuLot" parameterType="java.lang.Long" resultMap="stockOrderSkuPurchaseResultMap">
+	  SELECT
+	  purchase_id,
+	  order_id,
+	  sku_id,
+	  sku_lot
+		FROM
+		  stock_order_sku_purchase 
+			where 1=1
+			<if test="list != null and list.size>0">
+				and order_id in
+				<foreach item="item" index="id" collection="list" open="("separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="list==null or list.size==0">and 1=0</if>
+	</select>
+
+但是报错Caused by: org.xml.sax.SAXParseException; lineNumber: 85; columnNumber: 63; Element type "foreach" must be followed by either attribute specifications, ">" or "/>".
+
+后来发现
+
+open="("separator
+
+separator前面需要一个空格，如下才正确
+
+open="(" separator
+

@@ -1,0 +1,82 @@
+前几天忙着参加一个AI Challenger比赛，一直没有更新博客，忙了将近一个月的时间，也没有取得很好的成绩，不过这这段时间内的确学到了很多，就在决赛结束的前一天晚上，准备复现使用一个新的网络UPerNet的时候出现了一个很匪夷所思，莫名其妙的一个问题。谷歌很久都没有解决，最后在一个日语网站上看到了解决方法。
+
+事后想想，这个问题在后面搭建网络的时候会很常见，但是网上却没有人提出解决办法，So, I think that's very necessary for me to note this.
+
+背景
+
+分割网络在进行上采样的时候我用的是双线性插值上采样的，而Keras里面并没有实现双线性插值的函数，所以要自己调用tensorflow里面的tf.image.resize_bilinear()函数来进行resize,如果直接用tf.image.resize_bilinear()函数对Keras张量进行resize的话，会报出异常，大概意思是tenorflow张量不能转换为Keras张量，要想将Kears Tensor转换为 Tensorflow Tensor需要进行自定义层，Keras自定义层的时候需要用到Lambda层来包装。
+
+大概源码(只是大概意思)如下：
+
+from keras.layers import Lambda
+import tensorflow as tf
+ 
+first_layer=Input(batch_shape=(None, 64, 32, 3))
+f=Conv2D(filters, 3, activation = None, padding = 'same', kernel_initializer = 'glorot_normal',name='last_conv_3')(x)
+upsample_bilinear = Lambda(lambda x: tf.image.resize_bilinear(x,size=first_layer.get_shape().as_list()[1:3]))
+f=upsample_bilinear(f)
+
+然后编译 这个源码：
+
+optimizer = SGD(lr=0.01, momentum=0.9)
+model.compile(optimizer = optimizer, loss = model_dice, metrics = ['accuracy'])
+model.save('model.hdf5')
+
+其中要注意到这个tf.image.resize_bilinear()里面的size，我用的是根据张量(first_layer)的形状来做为reshape后的形状，保存模型用的是model.save().然后就会出现以下错误！
+
+异常描述：
+
+在一个epoch完成后保存model时出现下面错误，五个错误提示随机出现：
+
+TypeError: cannot serialize ‘_io.TextIOWrapper' object
+
+TypeError: object.new(PyCapsule) is not safe, use PyCapsule.new()
+
+AttributeError: ‘NoneType' object has no attribute ‘update'
+
+TypeError: cannot deepcopy this pattern object
+
+TypeError: can't pickle module objects
+
+问题分析：
+
+这个有两方面原因：
+
+tf.image.resize_bilinear()中的size不应该用另一个张量的size去指定。
+
+如果用了另一个张量去指定size,用model.save()来保存model是不能序列化的。那么保存model的时候只能保存权重——model.save_weights('mode_weights.hdf5')
+
+解决办法(两种)：
+
+1.tf.image.resize_bilinear()的size用常数去指定
+
+upsample_bilinear = Lambda(lambda x: tf.image.resize_bilinear(x,size=[64,32]))
+
+2.如果用了另一个张量去指定size,那么就修改保存模型的函数，变成只保存权重
+
+model.save_weights('model_weights.hdf5')
+
+总结：
+
+​​​​我想使用keras的Lambda层去reshape一个张量
+
+如果为重塑形状指定了张量，则保存模型（保存）将失败
+
+您可以使用save_weights而不是save进行保存
+
+补充知识：Keras 添加一个自定义的loss层（output及compile中，输出及loss的表示方法）
+
+例如：
+
+计算两个层之间的距离，作为一个loss
+
+distance=keras.layers.Lambda(lambda x: tf.norm(x, axis=0))(keras.layers.Subtract(Dense1-Dense2))
+
+这是添加的一个loss层，这个distance就直接作为loss
+
+model=Model(input=[,,,], output=[distance])
+
+model.compile(....., loss=lambda y_true, y_pred: ypred)
+
+以上这篇解决Keras的自定义lambda层去reshape张量时model保存出错问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

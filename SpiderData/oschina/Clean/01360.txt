@@ -1,0 +1,57 @@
+__author__ = 'ZHHT'
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+import os
+
+f = open("test1","r")
+# #
+# f.write("你好啊，我在这里等着你，这里真的很不错。")
+sstr = f.read(2)
+print(sstr)
+
+f.seek(7,1)
+sstr = f.read()
+print(sstr)
+f.close()
+
+　　
+
+"C:\Program Files\Python35\python.exe" D:/python3.5-14/练习4.py
+你好
+Traceback (most recent call last):
+ File "D:/python3.5-14/练习4.py", line 12, in <module>
+ f.seek(7,1)
+io.UnsupportedOperation: can't do nonzero cur-relative seeks
+
+Process finished with exit code 1
+
+照理说，按照seek()方法的格式file.seek(offset,whence)，后面的1代表从当前位置开始算起进行偏移，那又为什么报错呢？
+
+这是因为官方文档这样说：
+
+In text files (those opened without a b in the mode string), only seeks relative to the beginning of the file are allowed (the exception being seeking to the very file end with seek(0, 2)).，
+
+在文本文件中，没有使用b模式选项打开的文件，只允许从文件头开始计算相对位置，从文件尾计算时就会引发异常。将  f=open("aaa.txt","r+")  改成
+
+f = open("test1","rb")   就可以了
+
+改正后的代码如下图：
+
+__author__ = 'ZHHT'
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+import os
+
+f = open("test1","rb")
+# #
+# f.write("你好啊，我在这里等着你，这里真的很不错。")
+sstr = f.read(2)
+print(sstr)
+
+f.seek(7,1)
+sstr = f.read()
+print(sstr)
+f.close()
+
+　　
+

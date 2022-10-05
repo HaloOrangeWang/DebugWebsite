@@ -1,0 +1,21 @@
+PYTHON + xxx.py
+
+经常会报自定义模块引用的错误no module xxx，Python找不到这些模块的路径因为没有设置PYTHONPATH变量
+
+可以再./bashrc中把你项目的绝对路径填上去
+
+e.g.
+
+export PYTHONPATH="/home/ran/xxx_beta"
+
+方法二：
+
+在每一个PY文件的头部加上sys.path
+
+e.g.
+
+import sys
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+sys.path.insert(0,os.path.join(BASE_DIR,'当前目录'))
+

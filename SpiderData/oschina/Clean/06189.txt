@@ -1,0 +1,14 @@
+用jstl  fmt格式化时间时报错   错误如下：
+
+org.apache.jasper.JasperException: /fenji/pages/familyDoctorTeamList.jsp (line: 85, column: 15) According to TLD, tag fmt:formatDate must be empty, but is not
+
+意思是fmt:formatDate 标签中间不能有值  必须为空
+
+比如：<fmt:formatDate value="${doctorTeamList.creatTime}" type="date"> 或者这样
+
+<fmt:formatDate value="${doctorTeamList.creatTime}" type="date">   </fmt:formatDate>都会报错
+
+解决方案  ：<fmt:formatDate value="${doctorTeamList.creatTime}" type="date"/>（建议这种）或者
+
+<fmt:formatDate value="${doctorTeamList.creatTime}" type="date"></fmt:formatDate>
+

@@ -1,0 +1,56 @@
+环境：
+
+Ubuntu18.04
+
+mysql：8.0
+
+python: 3.6.8
+
+django: 2.2.6
+
+pymysql: 0.9.3
+
+安装pymysql
+pip install pymysql
+
+安装pymysql
+
+将pymysql引入到django
+在和项目目录一样名字的包下面的__init__.py文件中写入以下代码：
+import pymysql
+
+pymysql.install_as_MySQLdb()
+
+将pymysql引入到django
+
+在和项目目录一样名字的包下面的__init__.py文件中写入以下代码：
+
+在django中配置mysql，之后启动django服务，发现报错如下：
+File "/home/www/.local/share/virtualenvs/EduScore-UXZMOCwv/lib/python3.6/site-packages/django/db/backends/mysql/base.py", line 36, in <module>
+    raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+django.core.exceptions.ImproperlyConfigured: mysqlclient 1.3.13 or newer is required; you have 0.9.3.
+
+解决方法：
+
+使用vim打开 /home/www/.local/share/virtualenvs/EduScore-UXZMOCwv/lib/python3.6/site-packages/django/db/backends/mysql/base.py 文件，将以下代码注释掉
+#if version < (1, 3, 13):
+#    raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+
+在django中配置mysql，之后启动django服务，发现报错如下：
+
+解决方法：
+
+使用vim打开 /home/www/.local/share/virtualenvs/EduScore-UXZMOCwv/lib/python3.6/site-packages/django/db/backends/mysql/base.py 文件，将以下代码注释掉
+
+启动django server 发现还是报错，报错信息为：
+AttributeError: 'str' object has no attribute 'decode'
+
+解决方法：
+找到对应文件，将报错行的decode改为encode即可。
+
+启动django server 发现还是报错，报错信息为：
+
+解决方法：
+
+找到对应文件，将报错行的decode改为encode即可。
+

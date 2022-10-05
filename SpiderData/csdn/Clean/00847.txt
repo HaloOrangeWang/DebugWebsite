@@ -1,0 +1,22 @@
+有时候我们的服务器会跳出下面的错误：
+ UnicodeEncodeError: ‘ascii’ codec can’t encode character u’\u200e’ in position 13: ordinal not in range(128)
+
+报错：ordinal not in range(128)
+ 原因：这是python中汉字编码出问题导致的报错，主要是字符\u200e 引起的问题
+
+\u200e 是控制字符表示从左至右书写标记, 不是空格, 完全看不见, 没有宽度的一个字符，我们平常在网页中是看不到的。
+ 和其类似的还有Unicode格式控制字符，比如“从右至左书写标记”（\u200F）和“从左至右书写标记”（\u200E），零宽连接符（\u200D）和零宽非连接符（\uFEFF）控制着文本的视觉显示，这对于一些非英语文本的正确显示来说是至关重要的。
+
+解决方法：是在python代码所在的文件头加上如下语句块
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+如果加入以上代码块引入python中print函数失灵的问题，那么就将如上代码块替换为如下代码块
+
+import sys #这里只是一个对sys的引用，只能reload才能进行重新加载
+stdi,stdo,stde=sys.stdin,sys.stdout,sys.stderr 
+reload(sys) #通过import引用进来时,setdefaultencoding函数在被系统调用后被删除了，所以必须reload一次
+sys.stdin,sys.stdout,sys.stderr=stdi,stdo,stde
+

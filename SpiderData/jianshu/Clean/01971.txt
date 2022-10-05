@@ -1,0 +1,24 @@
+使用Python的第三方库paramiko，传入用户名密码登录远程
+
+一直报错Server'192.168.0.1'not found in known_hosts
+
+网友给的建议
+
+ssh=paramiko.SSHClient()
+
+ssh.load_system_host_keys()
+
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())   # 前两句是原有的代码，这句是建议加上的，可以解决报错
+
+但是。。。。并没有用
+
+pdb一点点看源码，找到了原因：
+
+在使用parmiko登录之前，会先获取主机公钥写入known_hosts
+
+环境/etc/sshd/sshd_config配置了Ciphers 3des-cbc
+
+ssh-keyscan 192.168.0.1 输出为空，获取不到主机公钥，认证写不到known_hosts文件，known_hosts为空。
+
+然后使用paramiko登录报错Server'192.168.0.1'not found in known_hosts。
+

@@ -1,0 +1,132 @@
+一、"ascii' codec can't encode character"
+
+之前部署了openstack虚拟化环境，有一天在使用nova list查看虚拟机的时候，突然报错！如下：
+
+[root@linux-node1 src]# nova list
+
+ERROR (UnicodeEncodeError): 'ascii' codec can't encode character u'\uff08' in position 9: ordinal not in range(128)
+
+python在安装时，默认的编码是ascii，当程序中出现非ascii编码时，python的处理常常会报这样的错，python没办法处理非ascii编码的，此时需要自己设置将python的默认编码，一般设置为utf8的编码格式。查阅网上，可以在程序中修改所有涉及到编码的地方，强制编码为utf8，即添加代码encode("utf8")，这种方法并不推荐使用，因为一旦少写一个地方，将会导致大量的错误报告。
+
+下面介绍一个一次性修改后永久生效的方法：
+
+在python的lib/site-packages文件夹下新建一个sitecustomize.py
+
+[root@linux-node1 nova]# find / -name site-packages
+
+/usr/lib/python2.7/site-packages
+
+/usr/lib64/python2.7/site-packages
+
+[root@linux-node1 nova]# cd /usr/lib/python2.7/site-packages/
+
+[root@linux-node1 site-packages]# cat sitecustomize.py #添加如下内容，设置编码为utf8
+
+# encoding=utf8
+
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding('utf8')
+
+此时重启python解释器，执行sys.getdefaultencoding()，发现编码已经被设置为utf8的了，多次重启之后，效果相同，这是因为系统在python启动的时候，自行调用该文件，设置系统的默认编码，而不需要每次都手动的加上解决代码，属于一劳永逸的解决方法。
+
+[root@linux-node1 nova]# python #终端进入python，即是重启python解释器！可以多次进入
+
+Python 2.7.5 (default, Aug 18 2016, 15:58:25)
+
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-4)] on linux2
+
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>>
+
+接着，再次使用nova list命令，就没有那个报错了！
+
+[root@linux-node1 src]# nova list
+
++--------------------------------------+----------------------------+--------+-------------+-------------+--------------------+
+
+| ID | Name | Status | Task State | Power State | Networks |
+
++--------------------------------------+----------------------------+--------+-------------+-------------+--------------------+
+
+| b6a4738d-7e01-4068-a09b-7008b612d126 | beta-new1(beta环境1) | ACTIVE | - | Running | flat=192.168.1.151 |
+
+| 9acdb28b-02c2-41bb-87c4-5f3a8fa008ab | dev-new-test1(测试环境1) | ACTIVE | - | Running | flat=192.168.1.150 |
+
+| 30e5ba3e-3942-4119-9ba6-7523cf865b6f | kvm-server003 | ACTIVE | - | Running | flat=192.168.1.152 |
+
+| a2893208-3ec9-4606-ab82-d7a870206cb9 | kvm-server004 | ACTIVE | - | Running | flat=192.168.1.153 |
+
+| 3483d9f1-4015-48d9-9837-b67ca82dd54d | kvm-server005 | ACTIVE | - | Running | flat=192.168.1.154 |
+
++--------------------------------------+----------------------------+--------+------------+-------------+--------------------+
+
+############################################################################
+
+注意：上面是python7环境下的报错解决方案，如果换成python6会怎么解决呢？
+
+如果是python6环境报这个错误，则/usr/lib/python2.6/site-packages下是没有这个sitecustomize.py文件的。
+
+那么这个时候就要看具体的报错文件了，在该文件的代码开头处添加如下代码：
+
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding('utf8')
+
+比如，在jumpserver界面里推送系统用户的时候报错：
+
+ERROR (UnicodeEncodeError): 'ascii' codec can't encode character u'\uff08' in position 9: ordinal not in range(128)
+
+从报错界面里找出错误所在的文件是/data/jumpserver/jperm/ansible_api.py
+
+则解决办法：
+
+[root@jumpserver01 ~]# cp /data/jumpserver/jperm/ansible_api.py /data/jumpserver/jperm/ansible_api.py.bak
+
+[root@jumpserver01 ~]# vim /data/jumpserver/jperm/ansible_api.py
+
+# -*- coding: utf-8 -*-
+
+import sys #也就是在该文件代码开头添加这三行内容
+
+reload(sys)
+
+sys.setdefaultencoding('utf8')
+
+然后再在jumpserver界面里进行系统用户推送操作，就不会报这个错误了！
+
+二、pip安装包出现Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None))
+
+# pip install pymysql
+
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError
+
+(': Failed to establish a new connection: [WinError 10061]
+
+由于目标计算机积极拒绝，无法连接。')': /simple/pylint/
+
+解决办法：添加国内pip源的url地址
+
+# pip install pymysql -i url
+
+目前国内比较靠谱常用的几个pip源
+
+阿里云 http://mirrors.aliyun.com/pypi/simple/
+
+中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/
+
+豆瓣(douban) http://pypi.douban.com/simple/
+
+清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
+
+中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/
+
+例如安装pymysql，则命令如下：
+
+# pip install pymysql -i https://pypi.tuna.tsinghua.edu.cn/simple/
+

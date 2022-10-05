@@ -1,0 +1,58 @@
+pip install 直接安装opencv_python 有时会与windows中的python版本不匹配，造成import 错误
+
+import cv2
+
+报错
+
+ImportError: DLL load failed: 找不到指定的模块。
+
+
+import cv2 报错dll问题
+
+在windows 中直接使用pip安装opencv有时候会出现版本错误：
+
+>>> pip install opencv_python
+
+验证安装时会出错：
+
+>>> python
+
+
+解决方法
+
+出现这种问题的原因之一是安装的opencv_python 版本与python版本不匹配，造成系统无法找到合适的dll。
+
+所以需要根据对应版本的python下载whl安装包手动安装。
+
+例如系统为win64，python2.7,可以在这里找到对应的opencv_python版本下载:
+
+opencv_python‑2.4.13.7‑cp27‑cp27m‑win_amd64.whl
+
+其中2.4.13.7是opencv_python版本号，cp27是cpython2.7版本，cp27m指的是支持unicodeucs2编码。
+
+将下载的whl安装文件copy到python运行目录下：
+
+pip install opencv_python‑2.4.13.7‑cp27‑cp27m‑win_amd64.whl
+
+python
+
+附注：
+
+查看pip 支持python版本
+
+pip -V
+
+pip 18.1 from path\where\python\install\lib\site-packages\pip (python 2.7)
+
+ref：
+
+https://blog.csdn.net/qq_15505637/article/details/78953140
+
+source:https://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv
+
+cp：https://blog.csdn.net/lanchunhui/article/details/62417519
+
+cp27mu：https://blog.csdn.net/zahuopuboss/article/details/52967686
+
+pip.tag:https://blog.csdn.net/qq_33733970/article/details/80503022
+

@@ -1,0 +1,26 @@
+Android studio自带的Google虚拟机越来越好用了，所以可以打开这个功能，想用的时候打开使用即可
+
+使用的过程中经常会遇到这样的问题：
+
+19:26 Emulator: emulator: ERROR: x86 emulation currently requires hardware acceleration!
+
+19:26 Emulator: Process finished with exit code 1
+
+创建了一个虚拟机，但是发现跑完了什么反应也没有，编译也没出错，EventLog里报了上面那两个问题
+
+解决：按照如下步骤一个一个来
+
+（1）首先打开studio里的SDK Manager
+
+查看SDK Tools下的Android Emulator和Intel x86 Emulator...是否下载，没下载给下载了
+
+（2）到sdk\extras\intel\Hardware_Accelerated_Execution_Manager文件夹双击安装一下intelhaxm-android.exe。
+
+注意：如果安装成功，去AS重新模拟器就可以了；若安装提示错误那进入下一步，下一步设置成功再到这一步安装
+
+（3) 如果步骤2 安装报错，且编译通过但看不到虚拟机，那么多半是电脑的虚拟选项没有设置，于是进入到电脑的BOIS界面（每个电脑进入的快捷键不同，自己去查对应型号），           设置“Virtualization Technology”选项：
+
+BOIS–>Security–>Virtualization 然后disable->enable 保存退出重启。再去完成步骤2
+
+大功告成：9.0的虚拟机如下，速度和样式都很美观
+

@@ -1,0 +1,72 @@
+回滚django的migration：
+
+https://stackoverflow.com/questions/32123477/django-revert-last-migration
+
+I've made a migration that added a new table and want to revert it and delete the migration, without creating a new migration.
+
+How do I do it? Is there a command to revert last migration and then I can simply delete the migration file?
+
+You can revert by migrating to the previous migration.
+
+For example, if your last two migrations are:
+
+0010_previous_migration
+0011_migration_to_revert
+Then you would do:
+
+./manage.py migrate my_app 0010_previous_migration 
+You can then delete migration 0011_migration_to_revert.
+
+If you're using Django 1.8+, you can show the names of all the migrations with
+
+./manage.py showmigrations my_app
+To reverse all migrations for an app, you can run:
+
+./manage.py migrate my_app zero
+
+1、到数据库表django_migrations中查看app中看看app列
+
+2、到项目对应的app模块中打开migrations文件查看生成的文件与数据库app列中的是不是一样
+
+3.找到哪里不一致的文件，然后使用python manage.py --fake [版本名字]，将这个版本标记为已经映射
+
+如果还是报错就按照下面执行
+
+1、删除指定app下migrations和数据库表django_migrations中和这个app相关的版本号，
+
+2、将模型中的字段和数据库中的字段保持一致，再使用命令python manage.py makemigrations重新生成一个初始化的迁移脚本。
+
+3、再使用命令python manage.py makemigrations --fake-initial来将这个初始化的迁移脚本标记为已经映射。之后再修改就没有问题了。
+
+更多关于迁移脚本的。请查看官方文档：https://docs.djangoproject.com/en/2.0/topics/migrations/
+
+makemigrations和migrate时django都做了什么？
+
+makemigrations：
+执行makemigrations时检测models文件变化，在migrations文件夹中生成变更的sql的py文件
+migrate：检测django_migrations表，迁移过的表会记录在其中并不再执行migrate，未找到执行记录则进行migrate
+
+不要随意删除django项目目录下的 migrations文件夹，里面会记录models文件每次makemigrations操作，误删后，makemigrations会重新生成
+
+#执行python manage.py makemigrations命令时报错问题及解决办法：
+
+在修改了models.py后，有些用户会喜欢用python manage.py makemigrations生成对应的py代码。
+
+但有时执行python manage.py makemigrations命令(也可能人比较皮，把migrations文件夹给删了)，会提示"No changes detected." 可能有用的解决方式如下：
+
+先 python manage.py makemigrations --empty yourappname 生成一个空的initial.py
+
+再 python manage.py makemigrations 生成原先的model对应的migration file
+
+
+django-关于manage.py migrate无效的问题
+
+问题描述：
+已有的model，修改之后，想重新建模，于是将migrations文件夹中除__init__.py之外其他文件都删掉，再次执行以下步骤python manage.py makemigrations确认成功，执行python manage.py migrate，提示No migrations to apply. 表示一脸懵逼。再次修改，指定表名，再次尝试，发现问题依旧，表示二脸懵逼
+
+临时解决：
+
+在models中添加了一个model，makemigrations成功后，如果migrate提示no apply --》查看django——migrations是否有对应model的name记录，如果没有记录 --》删除model，再次makemigrations、migrate（提示无表，数据库中手动创建对应表名）--》再添加model，再次makemigrations、migrate即可
+
+上述问题出现的根因：项目目录下面没有留存/migrations/ 文件夹及迁移文件，导致，每次项目迁移记得保存好这个目录的文件
+

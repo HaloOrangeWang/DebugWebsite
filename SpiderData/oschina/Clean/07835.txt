@@ -1,0 +1,24 @@
+如果babel设置的是es6的转码方式，在es6中使用static defaultProps会报错，因为定义静态属性不属于es6，而在es7的草案中。ES6的class中只有静态方法，没有静态属性。
+
+es6定义defaultProps的正确写法如下：
+
+解决方案：
+
+1. 将babel设置为es7的转码方式
+
+// 安装babel
+npm install babel-core babel-loader --save-dev
+
+// 支持 ES6/ES2015 
+npm install babel-preset-es2015 --save-dev
+
+// 使用 JSX
+npm install babel-preset-react --save-dev
+
+// 使用 ES7 特性
+npm install babel-preset-stage-0 --save-dev
+
+2. 在项目根目录配置.babelrc文件 加入stage-0
+
+加入stage-0后就能尝试es7语法了，static也能在class内部定义属性了
+

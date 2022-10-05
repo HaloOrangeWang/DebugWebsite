@@ -1,0 +1,18 @@
+今天用普通用户安装supervisor，安装好以后，输入命令启动
+
+/data/program/python2.7/bin/python /data/program/python2.7/bin/supervisord -c  /data/supervisord/supervisord.conf
+
+因为我想放到自己建的目录里面，所以用了-c指定，当我以为可以继续下一步的时候我发现我太年轻了。
+
+因为我执行  /data/program/python2.7/bin/supervisorctl status 的时候报错了，报错内容如下：
+
+http://localhost:9001 refused connection
+
+看这个报错，应该是读了默认配置，就是说我-c 指定了/data/supervisord/ 这个目录根本没有用。。。真是心塞啊，然后我放到 /etc/下，然后 kill掉老进程，重新启动
+
+/data/program/python2.7/bin/python /data/program/python2.7/bin/supervisord -c  /etc/supervisord.conf
+
+然后再执行  /data/program/python2.7/bin/supervisorctl status
+
+完美，OK了。
+

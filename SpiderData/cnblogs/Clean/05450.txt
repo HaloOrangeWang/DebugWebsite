@@ -1,0 +1,30 @@
+我的pip经常出问题，我也不知道为啥。。今天搞啥啥坏=。=
+
+问题：
+
+pip自动安装显示成功，在交互环境下却无法import
+
+==========================踩坑=================================
+
+首先要考虑路径问题。先pip uninstall看看它装到哪里了，然后在python里看sys.path
+确定是不是真的是能搜索到的。
+当前pip会把包安装到
+/usr/local/lib/python2.7/dist-packages
+然而setuptools装在
+/usr/lib/python2.7/dist-packages
+这两个路径都不在我的pthon27搜索路径中。
+所以就算是下载tar.gz源码(tar -zxvf)解压后python setup.py install，也会报错说找不到setuptools
+解决方案：
+sudo vi /etc/profile
+添加
+export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages:/usr/local/lib/python2.7/dist-packages
+再生效
+source /etc/profile
+随后在python27中可以正常import
+
+如果只是临时更改搜索路径，那直接在sys.path上append就好了。
+
+============================================================================
+
+我是Ruriko，我爱这个世界：）
+

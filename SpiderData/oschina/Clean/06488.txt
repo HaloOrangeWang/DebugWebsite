@@ -1,0 +1,170 @@
+
+几个报错
+
+
+1、无法connect mysql
+
+Caused by: java.sql.SQLException: Access denied for user 'root'@'linux1' (using password: YES)
+
+见下文grant语句
+
+
+2、com.mysql.jdbc.Driver
+
+Caused by: org.datanucleus.store.rdbms.connectionpool.DatastoreDriverNotFoundException: The specified datastore driver ("com.mysql.jdbc.Driver") was not found in the CLASSPATH. Please check your CLASSPATH specification, and the name of the driver.
+
+把mysql-connector-java-5.1.28.jar上传到/hive/lib/目录下
+
+
+3、metastore version
+
+Caused by: MetaException(message:Version information not found in metastore. )
+
+在conf/hive-site.xml里添加配置
+
+<property>  
+   <name>hive.metastore.schema.verification</name>  
+   <value>false</value> 
+ </property>
+
+
+4、metastore not initialized
+
+Hive metastore database is not initialized. Please use schematool (e.g. ./schematool -initSchema -dbType ...)
+
+schematool -dbType mysql -initSchema
+
+
+安装
+
+
+三种模式
+
+内嵌模式：元数据保持在内嵌的derby模式，只允许一个会话连接
+
+本地独立模式：在本地安装Mysql，把元数据放到mySql内
+
+远程模式：元数据放置在远程的Mysql数据库
+
+
+1、解压。将文件上传到：/export/software
+
+tar -zxvf apache-hive-1.2.1-bin.tar.gz -C /export/servers/
+
+cd /export/servers/
+
+ln -s apache-hive-1.2.1-bin hive
+
+
+2、配置环境变量，编辑/etc/profile
+
+#set hive env
+
+export HIVE_HOME=/export/servers/hive
+
+export PATH=${HIVE_HOME}/bin:$PATH
+
+#让环境变量生效
+
+source /etc/profile
+
+
+3、修改hive配置文件
+
+进入配置文件的目录
+
+cd /export/servers/hive/conf/
+
+
+①修改hive-env.sh文件
+
+cp hive-env.sh.template hive-env.sh
+
+将以下内容写入到hive-env.sh文件中
+
+export JAVA_HOME=/export/servers/jdk
+
+export HADOOP_HOME=/export/servers/hadoop
+
+export HIVE_HOME=/export/servers/hive
+
+
+②修改log4j文件
+
+cp hive-log4j.properties.template hive-log4j.properties
+
+将EventCounter修改成org.apache.hadoop.log.metrics.EventCounter
+
+#log4j.appender.EventCounter=org.apache.hadoop.hive.shims.HiveEventCounter
+
+log4j.appender.EventCounter=org.apache.hadoop.log.metrics.EventCounter
+
+
+③配置模式 vi hive-site.xml
+
+<configuration>
+        <property>
+                <name>javax.jdo.option.ConnectionURL</name>
+                <value>jdbc:mysql://localhost:3306/hivedb?createDatabaseIfNotExist=true</value>
+        </property>
+        <property>
+                <name>javax.jdo.option.ConnectionDriverName</name>
+                <value>com.mysql.jdbc.Driver</value>
+        </property>
+        <property>
+                <name>javax.jdo.option.ConnectionUserName</name>
+                <value>root</value>
+        </property>
+        <property>
+                <name>javax.jdo.option.ConnectionPassword</name>
+                <value>root</value>
+        </property>
+        <property>  
+                 <name>hive.metastore.schema.verification</name>  
+                 <value>false</value> 
+        </property>  
+</configuration>
+
+
+4、mysql驱动
+
+把mysql-connector-java-5.1.28.jar上传到/hive/lib/目录下
+
+
+5、安装mysql并配置hive数据库及权限
+
+
+①安装mysql数据库及客户端
+
+yum install mysql-server
+
+yum install mysql
+
+service mysqld start
+
+
+②创建hive元数据库
+
+mysql -u root -p
+
+create database hivedb;
+
+
+③对hive元数据库进行赋权，开放远程连接，开放localhost连接
+
+mysql> grant all privileges on *.* to root@"%" identified by "root" with grant option;
+
+mysql> grant all privileges on *.* to root@"localhost" identified by "root" with grant option;
+
+
+6、初始化后，运行hive命令启动
+
+① [root@h1 centos]# schematool -dbType mysql -initSchema
+
+② [root@h1 centos]# hive
+
+
+附录1：报错Terminal initialization failed;
+
+将/export/servers/hive/lib 里面的jline2.12替换了hadoop 中/export/servers/hadoop/hadoop-2.6.1/share/hadoop/yarn/lib/jline-0.09*.jar
+

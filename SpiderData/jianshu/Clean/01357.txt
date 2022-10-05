@@ -1,0 +1,17 @@
+安装完毕tesseract/tesserocr后，用代码直接试下是否可用，如下：
+
+import tesserocr
+print(tesserocr.file_to_text('image.jpg'))
+
+发现直接报下面的错误：
+
+Traceback (most recent call last):
+  File "C:/Users/L/Desktop/my_ocr/1.py", line 2, in <module>
+    print(tesserocr.file_to_text('image.jpg'))
+  File "tesserocr.pyx", line 2488, in tesserocr._tesserocr.file_to_text
+RuntimeError: Failed to init API, possibly an invalid tessdata path: D:\Envs\spider\Scripts\/tessdata/
+
+上面的路径D:\Envs\spider\Scripts为我虚拟环境 spider的安装位置，理解下报错信息，应该是缺了名为tessdata的文件夹，故直接在对应路径下按要求创建该文件夹，发现还是报一样的错，后来发现其实在tesseract的安装路径下就有该文件夹，打开看到这其实不是空的文件夹，直接复制该文件夹，粘贴到提示路径，便可以直接运行成功了
+
+【持续更新中，错误请指出，谢谢！！！】
+

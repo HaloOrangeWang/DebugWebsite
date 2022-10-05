@@ -1,0 +1,14 @@
+报错:
+
+"msg": "The Python 2 bindings for rpm are needed for this module. If you require Python 3 support use the `dnf` Ansible module instead.. The Python 2 yum module is needed for this module. If you require Python 3 support use the `dnf` Ansible module instead.
+
+机制：
+
+1. ansible 的yum模块在python3 中用 dnf 模块替代
+2. 受控节点列表里有python3环境
+
+解决：
+
+主控节点
+ansible_python_interpreter: /usr/bin/python2.7
+

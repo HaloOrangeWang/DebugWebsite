@@ -1,0 +1,44 @@
+在mac上运行 wxpython 出现以下 error：
+
+This program needs access to the screen. 
+Please run with a Framework build of python, 
+and only when you are logged in on the main display of your Mac.
+
+从网上查了很多资料，得出的结果是 mac 上使用了虚拟环境管理 python 配置，所以导致 wxpython 使用不了，有以下两种方法：
+
+1、最官方的解决方法是 wxpython 的wiki官网：https://wiki.wxpython.org/wxPythonVirtualenvOnMac，解决代码见下图：
+
+脚本代码如下：
+
+#!/bin/bash
+
+# what real Python executable to use
+
+PYVER=2.7
+
+PYTHON=/Library/Frameworks/Python.framework/Versions/$PYVER/bin/python$PYVER
+
+# find the root of the virtualenv, it should be the parent of the dir this script is in
+
+ENV=`$PYTHON -c "import os; print os.path.abspath(os.path.join(os.path.dirname(\"$0\"), '..'))"`
+
+# now run Python with the virtualenv set as Python's HOME
+
+export PYTHONHOME=$ENV
+
+exec $PYTHON "$@"
+
+中文解决可以参考以下链接：报错This program needs access to the screen. Please run with a Framework build of python…Python简单随风的博客-CSDN博客。如果是使用 virtualenv 进行管理 python 环境的应该可以解决。
+
+2、如果使用了 miniconda 或者 anaconda 的话，还有更简单的解决方法如果在Mac上运行WxPython程序_Python_u013884777的专栏-CSDN博客，总结为以下步骤
+
+a、打开终端，输入：which python
+
+b、复制目前自己电脑的python路径，例如：/Users/appler/miniconda3/bin/python
+
+c、进入自己要运行py文件目录，例如我的文件在桌面：cd desktop
+
+d、粘贴已经复制的 python 路径，后面加 w，再加你的 py 文件，这样就可以运行wxpython 的程序了，例如我的路径为上面的路径，那么我最后执行代码为：/Users/appler/miniconda3/bin/pythonw wxtest.py
+
+推荐使用第二种方法，不用写脚本。
+

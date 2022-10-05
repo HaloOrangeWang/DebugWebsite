@@ -1,0 +1,100 @@
+问题描述：
+
+1.当你卸载python库的时候，如：pip uninstall pandas
+
+2.当你想要更新python库的时候，如：pip install --upgrade pandas
+
+等等… 就会出现PermissionError: [WinError 5] 问题
+
+废话不多说，分三步完全解决该问题：
+
+第一步：
+
+关闭跟python相关的所有程序，如jupyter，pycharm，Anaconda等等，这一步非常重要！！！
+
+好了，第一步完成下面开始常规操作的两步：
+
+第二步：
+
+赋予用户对python的“完全控制”的权限，步骤如下：
+
+找到按照python的位置，本文用的是Anaconda，安装在D盘，位置为：D:\Anaconda3。找到python->右键->属性->安全->点击“组或用户名”中的Users->编辑->点击点击“组或用户名”中的Users->把“完全控制”打钩->应用->OK
+
+第三步：
+
+执行完第二步一般就能解决问题。如果还没解决问题的话，请执行第三部，找到你安装python的文件夹，本人用的是Anaconda3，那么就直接对该文件夹（本人安装位置为D:\Anaconda3），右键属性，按照第二步的方法执行一遍就OK了！
+
+当然，如果你用的pycharm或其他软件安装的python，那么就找到你安装位置的那个文件夹，同理右键->属性，执行第二步的方法， 搞定！
+
+**总结：**一定要关闭所有跟python相关的程序！
+
+补充知识：jupyter notebook_启动出错_ValueError: Please install nodejs 5+ and npm before continuing installation.
+
+错误描述：
+
+在启动jupyter notebook的时候虽然能进入Home，但是后台还是报错,如下：
+
+[W 11:03:21.011 NotebookApp] Error loading server extension jupyterlab
+ Traceback (most recent call last):
+ File "E:\Anaconda3\lib\site-packages\jupyterlab\commands.py", line 321, in
+ __init__
+ self._run(['node', 'node-version-check.js'], cwd=HERE, quiet=True)
+ File "E:\Anaconda3\lib\site-packages\jupyterlab\commands.py", line 1165, i
+n _run
+ proc = Process(cmd, **kwargs)
+ File "E:\Anaconda3\lib\site-packages\jupyterlab\process.py", line 73, in _
+_init__
+ self.proc = self._create_process(cwd=cwd, env=env)
+ File "E:\Anaconda3\lib\site-packages\jupyterlab\process.py", line 131, in
+_create_process
+ cmd[0] = which(cmd[0], kwargs.get('env'))
+ File "E:\Anaconda3\lib\site-packages\jupyterlab\jlpmapp.py", line 59, in w
+hich
+ raise ValueError(msg)
+ ValueError: Please install nodejs 5+ and npm before continuing installation.
+ nodejs may be installed using conda or directly from the nodejs website.
+ 
+ During handling of the above exception, another exception occurred:
+ 
+ Traceback (most recent call last):
+ File "E:\Anaconda3\lib\site-packages\notebook\notebookapp.py", line 1454,
+in init_server_extensions
+ func(self)
+ File "E:\Anaconda3\lib\site-packages\jupyterlab\extension.py", line 111, i
+n load_jupyter_server_extension
+ info = get_app_info(app_dir)
+ File "E:\Anaconda3\lib\site-packages\jupyterlab\commands.py", line 244, in
+ get_app_info
+ handler = _AppHandler(app_dir, logger)
+ File "E:\Anaconda3\lib\site-packages\jupyterlab\commands.py", line 324, in
+ __init__
+ raise ValueError(msg)
+ ValueError: Please install nodejs 5+ and npm before continuing installation.
+ nodejs may be installed using conda or directly from the nodejs website.
+[I 11:03:21.336 NotebookApp] Serving notebooks from local directory: C:\Users\Ad
+ministrator\Desktop\shuju
+[I 11:03:21.338 NotebookApp] 0 active kernels
+[I 11:03:21.339 NotebookApp] The Jupyter Notebook is running at:
+[I 11:03:21.340 NotebookApp] http://localhost:8888/?token=14172d7abed02b6a0b816a
+51fa29f6b44929d2f96b8a1b7f
+[I 11:03:21.342 NotebookApp] Use Control-C to stop this server and shut down all
+ kernels (twice to skip confirmation).
+[C 11:03:21.350 NotebookApp]
+ 
+ Copy/paste this URL into your browser when you connect for the first time,
+ to login with a token:
+ http://localhost:8888/?token=14172d7abed02b6a0b816a51fa29f6b44929d2f96b8
+a1b7f
+[I 11:03:21.581 NotebookApp] Accepting one-time-token-authenticated connection f
+rom ::1
+[I 11:15:21.364 NotebookApp] Interrupted...
+[I 11:15:21.366 NotebookApp] Shutting down 0 kernels
+
+解决方案：
+
+因为我的电脑上安装了Anaconda，所以我打开Anacoda后
+
+等待系统安装，完成后在cmd命令行中再次输入jupyter notebook,问题解决
+
+以上这篇三步解决python PermissionError: [WinError 5]拒绝访问的情况就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

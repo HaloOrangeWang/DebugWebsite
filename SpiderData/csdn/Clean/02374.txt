@@ -1,0 +1,431 @@
+目录
+
+一般错误
+
+ValueError: check_hostname requires server_hostname
+
+missing 1 required positional argument: 'self'
+
+xxx is not a package
+
+libpng warning: iCCP: cHRM chunk does not match sRGB
+
+check_hostname requires server_hostname
+
+python 安装第三方库，超时报错--Read timed out.
+
+index方法ValueError: xx is not in list
+
+运行setup.py时出现no commands supplied 错误
+
+引用其他py文件报错
+
+removedirs报错：xxx目录不是空的
+
+‘gbk‘ codec can‘t decode byte 0xa6 in position 4: illegal multibyte sequence
+
+shutil copyfile的时候permission denied
+
+三元运算符 报错“SyntaxError: can''t assign to conditional expression”
+
+Object of type ’int64‘ is not JSON serializable
+
+UnicodeDecodeError:“utf-8“
+
+pyparsing
+
+AttributeError: ‘version_info‘ object has no attribute ‘version‘
+
+scipy
+
+AttributeError: module 'scipy.misc' has no attribute 'imsave'
+
+numpy
+
+AttributeError: 'numpy.ndarray' object has no attribute 'append'
+
+ValueError: Object arrays cannot be loaded when allow_pickle=False
+
+pandas
+
+pandas 报错 AttributeError: 'DataFrame' object has no attribute 'ix'
+
+pd.DataFrame报错：ValueError: arrays must all be same length
+
+nltk
+
+Resource stopwords not found.
+
+opencv
+
+error: (-215:Assertion failed) size.width>0 && size.height>0 in function 'cv::imshow'
+
+error: (-2) could not find a writer for the specified extension in function cv::imwrite_
+
+opencv-python用VideoWriter保存视频只有几KB
+
+Unsupported depth of input image
+
+opencv imshow函数显示图片，窗口在转圈并且一直是灰色图像
+
+sklearn
+
+使用逻辑回归报错：STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
+
+其他
+
+AssertionError:
+
+sqlite3找不到指定模块
+
+multiprocessing和threading全局变量共享的问题
+
+用pymysql操作数据库插入数据，数据库里面却没有数据的问题
+
+Tkinter按钮未按却自动执行command中定义的函数
+
+Windows环境下安装pycocotools报错
+
+
+一般错误
+
+
+ValueError: check_hostname requires server_hostname
+
+把vpn关了
+
+
+missing 1 required positional argument: 'self'
+
+类没有实例化就调用了它的方法
+
+
+xxx is not a package
+
+import的时候报错xxx is not a package
+
+将import的文件夹变成Python package
+
+在文件夹下增加__init__.py文件即可
+
+
+libpng warning: iCCP: cHRM chunk does not match sRGB
+
+不要使用QQ输入法
+
+
+check_hostname requires server_hostname
+
+我是在win10下遇到，关掉代理即可。
+
+
+python 安装第三方库，超时报错--Read timed out.
+
+socket.timeout: The read operation timed out
+
+解决方法，设置超时时间  pip --default-timeout=100 install -U Pillow
+
+ModuleNotFoundError: No module named xxxx
+
+找对应的包安装即可。
+
+注意有些包名字可能与提示的名字不同。
+
+
+index方法ValueError: xx is not in list
+
+如果对一个list使用index方法，查找值不存在的时候会报这个错误。
+
+可以使用try except捕获，或者先用if xx in xx来判断某值是否存在来避免。
+
+
+运行setup.py时出现no commands supplied 错误
+
+是因为我写的命令为
+
+python setup.py
+
+实际改为 python setup.py  install 即可。
+
+
+引用其他py文件报错
+
+加上文件夹名
+
+from a import * -> from 文件夹名.a import *
+
+
+removedirs报错：xxx目录不是空的
+
+removedirs只能删除空目录。
+
+
+‘gbk‘ codec can‘t decode byte 0xa6 in position 4: illegal multibyte sequence
+
+在打开文件时出现“‘gbk’ codec can’t decode byte 0xa6 in position 4: illegal multibyte sequence”报错，解决如下：
+
+with open(path,‘rb’)，即在读取文本的时候加入参数‘b’。
+
+或者with open(path, 'r', encoding='utf-8')
+
+
+shutil copyfile的时候permission denied
+
+我遇到的问题是因为复制路径中一个是文件，一个文件夹。
+
+
+三元运算符 报错“SyntaxError: can''t assign to conditional expression”
+
+a=1
+b=1
+x=1 if a==b else x=0
+print(x)
+
+File "test.py", line 3
+ x=a if a==b else x=0
+  ^
+SyntaxError: can't assign to conditional expression
+
+三目运算中表达式只能作为左值
+
+修改
+
+a=1
+b=1
+x=1 if a==b else 0
+print(x)
+
+
+Object of type ’int64‘ is not JSON serializable
+
+json可以解码的数据类型基本都是常见的int，float，str类型，而numpy.array的数据类型都是numpy内置的类型，json.dumps无法支持，需要将数据转换为标准类型
+
+
+UnicodeDecodeError:“utf-8“
+
+一般来说都是因为参杂了中文
+
+1. 检查路径中是否有中文
+
+2. 还有一个比较隐蔽的地方，就是你的电脑名是不是中文
+
+
+pyparsing
+
+
+AttributeError: ‘version_info‘ object has no attribute ‘version‘
+
+版本问题，我用pip install pyparsing==2.4.7解决
+
+
+scipy
+
+
+AttributeError: module 'scipy.misc' has no attribute 'imsave'
+
+scipy.misc.imsave(save_path, img)
+
+在scipy 1.2以上版本不可用。
+
+可以安装imageio
+
+然后用imageio.imsave(save_path, img)
+
+
+numpy
+
+
+AttributeError: 'numpy.ndarray' object has no attribute 'append'
+
+数组不支持append。解决办法就是用list append再转数组。
+
+
+ValueError: Object arrays cannot be loaded when allow_pickle=False
+
+卸载掉numpy 1.16.3，安装numpy 1.16.2
+
+pip3 install numpy==1.16.2
+
+或者在np.load里指定allow_pickle=True
+
+
+pandas
+
+
+pandas 报错 AttributeError: 'DataFrame' object has no attribute 'ix'
+
+dataset.ix[i, 0]方法已被移除
+
+可以用iloc
+
+dataset.iloc[i,0]
+
+
+pd.DataFrame报错：ValueError: arrays must all be same length
+
+使用DataFrame(dict) 来用dict构建DataFrame时，key会变成列column，(list-like)values会变为行row，每个values中的list长度不一致，就会产生这个错误。
+
+解决方法：  df = pd.DataFrame.from_dict(d, orient='index')  #d为要构建的dict
+
+最终产生结果：  行数为key值，列数为最长的values的长度，而其他较短的values则用None填充。
+
+
+nltk
+
+
+Resource stopwords not found.
+
+前提nltk库已安装
+
+打开cmd，进入python环境，或者其他方式进入python环境
+
+import nltk
+
+nltk.download('stopwords')
+
+不过国内访问不了下载地址
+
+所以也给个网盘地址：百度网盘 请输入提取码，提取码：znx7
+
+如果使用anaconda环境，要放到envs\环境名\nltk_data目录下
+
+
+opencv
+
+
+error: (-215:Assertion failed) size.width>0 && size.height>0 in function 'cv::imshow'
+
+查了网上原因有很多，我直接加了try except解决。
+
+if frame is not None:
+            try:
+                cv2.imshow(window_name, frame)
+                p.send(frame)
+            except:
+                pass
+
+
+error: (-2) could not find a writer for the specified extension in function cv::imwrite_
+
+我报错的原因是因为imwrite里，图片名字没有加扩展名
+
+
+opencv-python用VideoWriter保存视频只有几KB
+
+我遇到问题的原因是图片帧的尺寸与videowriter中参数size设定的大小不一致。
+
+
+Unsupported depth of input image
+
+opencv在读取或者存取图片时，数组的类型不是opencv支持的类型
+
+OpenCV的原始数据类型包括unsigned char、bool、signed char、unsigned short、signed short、int、float、double以及由这些基础类型组成的元组，这些元组中的所有值都属于相同的类型。
+
+
+opencv imshow函数显示图片，窗口在转圈并且一直是灰色图像
+
+在imshow之后需要有cv2.waitKey(0)
+
+
+sklearn
+
+
+使用逻辑回归报错：STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
+
+增加迭代次数（最大值）或缩放数据就可以。
+
+比如增加迭代次数
+
+model = LogisticRegression(max_iter=3000)
+
+
+其他
+
+
+AssertionError:
+
+Found no NVIDIA driver on your system. Please check that you
+
+have an NVIDIA GPU and installed a driver from
+
+Download Drivers | NVIDIA
+
+需要NVIDIA的GPU
+
+
+sqlite3找不到指定模块
+
+File "E:\Anaconda3\envs\NLR\lib\site-packages\nltk\corpus\__init__.py", line 66, in <module>     from nltk.corpus.reader import *   File "E:\Anaconda3\envs\NLR\lib\site-packages\nltk\corpus\reader\__init__.py", line 105, in <module>     from nltk.corpus.reader.panlex_lite import *   File "E:\Anaconda3\envs\NLR\lib\site-packages\nltk\corpus\reader\panlex_lite.py", line 15, in <module>     import sqlite3   File "E:\Anaconda3\envs\NLR\lib\sqlite3\__init__.py", line 23, in <module>     from sqlite3.dbapi2 import *   File "E:\Anaconda3\envs\NLR\lib\sqlite3\dbapi2.py", line 27, in <module>     from _sqlite3 import * ImportError: DLL load failed: 找不到指定的模块。
+
+将sqlite3.dll复制到python环境的DLLs文件夹下
+
+
+multiprocessing和threading全局变量共享的问题
+
+对于以下代码，用multiprocessing时无效，因为multiprocessing是多进程，进程间无法共享全局变量，但用threading可以，因为threading是多线程。
+
+multiprocessing可以用管道的方式传输。
+
+注意使用全局变量前，要先用global声明。
+
+from threading import Thread,Lock
+  
+  
+global_num = 0
+  
+def func1():
+    global global_num
+    for i in range(1000000):
+        lock.acquire()#两个线程会最开始抢这个锁，拿到锁就会处于关锁，执行后面的程序，其他线程执行处于监听状态，等待这个线程开锁，再抢锁
+        global_num += 1
+        lock.release()
+    print('---------func1:global_num=%s--------'%global_num)
+  
+def func2():
+    global global_num
+    for i in range(1000000):
+        lock.acquire()
+        global_num += 1
+        lock.release()
+    print('--------fun2:global_num=%s'%global_num)
+print('global_num=%s'%global_num)
+  
+lock = Lock()
+  
+t1 = Thread(target=func1)
+t1.start()
+  
+t2 = Thread(target=func2)
+t2.start()
+
+
+用pymysql操作数据库插入数据，数据库里面却没有数据的问题
+
+执行完excute那一行语句以后，要有commit语句
+
+比如
+
+......
+
+cur.execute(xxxx)
+
+cur.connection.commit()
+
+......
+
+
+Tkinter按钮未按却自动执行command中定义的函数
+
+tkinter要求由按钮（或者其它的插件）触发的控制器函数不能含有参数
+
+即command=fun，而不是command=fun(a)
+
+若要给函数传递参数，需要在函数前添加lambda。
+
+command = lambda: fun(a)
+
+
+Windows环境下安装pycocotools报错
+
+需要有visual c++环境，安装之后再pip install pycocotools即可
+

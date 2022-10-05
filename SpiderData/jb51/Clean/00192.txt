@@ -1,0 +1,40 @@
+当我们在安装scrapy的过程中出现了Twisted错误，当我们有继续安装Twisted的时候，又继续报错，通过一系列的查询和了解，终于发现了问题，现在就来和大家一起解决这个复杂的BUG……
+
+环境
+
+Python3.6.4 + Windows 10
+
+问题描述
+
+当我在安装pip install scrapy的过程中报Twisted的错误；
+
+当我又继续安装pip install Twisted的时候，还是依然报错。
+
+问题原因
+
+当我从网上搜寻了很多资料后发现，原来是Twisted和高版本的Python有兼容性的问题。
+
+解决方法
+
+我们通过在Python扩展包的非官方Windows二进制文件中找到相应的Twisted文件扩展包（我们可以通过Ctrl+F快捷键来搜索Twisted，然后找到该文件），然后下载：
+
+大家可以看到，我的Python是3.6版本的，我的操作系统是Windows 10 64位的，所以我选择的是cp36，win_amd64，大家可以根据自己的Python版本和电脑操作系统的型号来进行下载。接下来大家进入用管理员的方式运行命令提示符（如何运行上一章有讲如何进入命令行的特权模式），找到Python的安装根目录中的的Scripts目录下，比如说我的Python安装在C盘：C:\Program Files\Python36\Scripts
+
+然后将刚才下载的Twisted包复制到Scripts目录下面，并用pip进行安装：
+
+C:\Program Files\Python36\Scripts>
+pip install 
+Twisted-17.9.0-cp36-cp36m-win_amd64.whl
+
+- 最后一步，显示：
+
+Successfully installed Twisted-17.9.0
+
+表示你安装成功了，显示根据自己的版本而定。
+
+PS:如果在安装过程中需要pywin32的话，大家也可以使用pip命令来进行安装该包，pip install pywin32
+
+总结
+
+到此这篇关于pip安装提示Twisted错误问题（Python3.6.4安装Twisted错误）的文章就介绍到这了,更多相关python3.6 安装Twisted出错内容请搜索脚本之家以前的文章或继续浏览下面的相关文章希望大家以后多多支持脚本之家！
+

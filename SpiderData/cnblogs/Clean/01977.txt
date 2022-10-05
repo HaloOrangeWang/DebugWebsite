@@ -1,0 +1,24 @@
+代码：
+
+错误信息：
+
+用WebService测试软件测过了接口没有问题，代码也应该没有问题，因为调用另外一个方法是成功的。我把url打码了。考虑到python版本问题我试了python3.6和python3.7都是这个错误。
+
+在网络上目前没有找到这个问题，StackOverflow上有一个和我一样的问题但是0回答......地址在这里：https://stackoverflow.com/questions/47024015/python-suds-attributeerror-document-object-has-no-attribute-set
+
+在pycharm里分别Debug了出错的函数和成功的函数，发现在调用栈的最后一个模块appender.py中的append方法分别执行了if 和else 的语句，就是下面这个函数：
+
+出错的函数就是因为if 判定成功执行到181行时出错。研究了一下为啥if 会判定成功，原来是参数名称被赋给content.tag，而参数名称，如下所见
+
+几乎都有下划线，只有参数名称没有下划线的addUserCount和selectUserSum函数可以用。
+
+于是简单粗暴直接把上面的append函数改成这样了
+
+试了一下果然好用了。
+
+这么整存在一些隐患，以后可能会有麻烦，但我水平有限，也不懂作者的意图，就先这么着吧。
+
+看了一下stackOverflow上的那位老兄应该也是被这个下划线给整的，谁有账号可以告诉他原因。
+
+错误原因已经找到了，Client包中的函数会把有单前导下划线的参数识别为内部参数，导致报错。这也提醒我们用python时参数命名一定要规范。解决办法我给的实在太low，如果哪位大佬有更好的解决办法欢迎交流。
+

@@ -1,0 +1,40 @@
+
+Python错误提示
+
+
+编码错误
+
+问题：在使用Python编译的时候出现如下错误：
+ SyntaxError: Non-ASCII character ‘\xe5’ in file Test1.py on line 8, but no encoding declared; see
+ 网站
+ for details
+ 解决方法
+ python的默认编码文件是用的ASCII码，将文件存成了UTF-8，编译就可以通过。或在在py文件开头（必须是第一行）加入
+
+
+安装pip
+
+python -m pip install --upgrade pip安装失败
+ 解决方法：
+ 重启安装
+ html = response.read()
+ str_html = html.decode()
+ f = open(‘baidu.html’, ‘w+’)
+ for values in str_html:
+ f.write(values)
+ f.close()
+
+Traceback (most recent call last):
+ File “E:/python/lit_xiaonei/day0927/uilb_demo01.py”, line 25, in 
+ f.write(str(html_content))
+ UnicodeEncodeError: ‘gbk’ codec can’t encode character ‘\xbb’ in position 29836: illegal multibyte sequence
+ 上面代码编译的时候出现了：UnicodeEncodeError: ‘gbk’ codec can’t encode character ‘\xbb’ in position 0: illegal multibyte seque
+ 对比了一下，应该f的编码格式是GBK的，但是其它的是UTF-8的。所以指定一下编码格式即可。。
+ f = open(‘baidu.html’, ‘w+’,encoding=‘utf-8’)
+
+
+python 报错：a bytes-like object is required, not ‘str’
+
+一定要将str转为bytes :
+ str.encode(“utf-8”)
+

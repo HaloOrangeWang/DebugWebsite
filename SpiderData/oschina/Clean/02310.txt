@@ -1,0 +1,39 @@
+
+一、前言
+
+一般来说，为了方便，使用python的时候都会使用csv模块去写数据到csv文件，但是写入中文的时候，经常会报错：
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-3: ordinal not in range(128)
+
+我试过直接用utf8编码打开文件，然后直接将要写入的字段拼接为逗号分隔的字符串，虽然能解决中文写入的问题，但是操作很麻烦。而且直接使用excel打开的时候，还是会显示乱码。
+
+用excel直接打开编码utf8编码的csv文件显示为乱码的原因，我推测是excel打开csv文件的时候，会先读取当前系统的默认编码作为读取csv文件的编码；而因为大家使用的一般都是中文系统，所以excel会使用gbk编码去读取文件，导致直接显示为乱码。
+
+因此解决的点归结为一句话：
+
+如何使用csv库，将中文写入gbk编码的csv文件。
+
+
+二、解决
+
+之前用过csv是没法成功的，后面才查到需要用unicodecsv才行。
+
+直接上例子：
+
+import unicodecsv as ucsv
+data = [[u"列1", u"列2"], [u"内容1", u"内容2"]]
+with open('test.csv', 'wb') as f:
+    w = ucsv.writer(f, encoding = 'gbk')
+    w.writerows(data)
+
+直接用文本编辑器打开效果：
+
+用excel直接打开效果：
+
+
+三、参考
+
+1. Python: 在CSV文件中写入中文字符
+
+（完）
+

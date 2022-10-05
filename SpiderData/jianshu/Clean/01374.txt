@@ -1,0 +1,56 @@
+如何背单词永不遗忘？暴暴暴暴暴暴涨38000单词量的秘诀-->科学记忆法
+
+在centos6.9环境下运行python3.5导入import sqlite3时会报错:
+
+import sqlite3
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "/usr/local/lib/python3.5/sqlite3/init.py", line 23, in <module>
+
+from sqlite3.dbapi2 import *
+
+File "/usr/local/lib/python3.5/sqlite3/dbapi2.py", line 26, in <module>
+
+from _sqlite3 import *
+
+ImportError: No module named '_sqlite3'
+
+以上的错误信息告知您：缺少相关库 ——当运行python脚本时提示没有找到sqlite3.so的库
+
+解决之道：
+
+
+1  安装相关库
+
+yum install sqlite-devel
+
+
+2  重新编译安装Python3.5.4
+
+进入tmp路径（本人喜欢把东西都下载到这里）,执行以下命令：
+
+cd /tmp/
+
+wget https://www.python.org/ftp/python/3.5.4/Python-3.5.4.tgz
+
+下载完成后(如需Python其他版本：点击此处)，执行解压命令：
+
+tar -xzvf Python-3.5.4.tar.gz
+
+进入解压后的Python-3.5.4文件夹，依次执行以下命令
+
+./configure --prefix=/usr/local/python3
+
+（将python3安装到/usr/local/python3/路径下）
+
+make && make install
+
+ln -s /usr/local/python3/bin/python3.5 /usr/bin/python3
+
+ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+
+（以上两个ln命令是为了方便在终端中直接使用python3和pip3命令）
+

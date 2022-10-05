@@ -1,0 +1,70 @@
+python mysql error totally whack
+
+python mysql error totally whack
+
+MySQL5.7存在一些新特性及兼容性问题
+
+
+python mysql error totally whack
+
+python mysql error totally whack
+
+MySQL5.7存在一些新特性及兼容性问题
+
+python mysql error totally whack
+
+
+python mysql error totally whack
+
+最近在做mysql的监控系统，自己懒得用python写，就在网上找了一个开发好的python和php的系统搭建了一下，系统名字叫：mysqlmtop，gitbub地址为：https://github.com/yaoshanliang/mysqlmtop
+
+最近在做mysql的监控系统，自己懒得用python写，就在网上找了一个开发好的python和php的系统搭建了一下，系统名字叫：mysqlmtop，gitbub地址为：https://github.com/yaoshanliang/mysqlmtop
+
+部署在线上环境上，发现mysql的TPS 和QPS一直不显示，本地的数据库就显示，就很奇怪，还在想是不是python代码的问题，就直接运行了python脚本，结果报错，
+
+上网查了好久没查到问题，后来看到一个说是mysql版本的问题，我就看了一下我监控的两台机子的mysql的版本，果然，一个是5.1，一个是5.7， 如下图：
+
+部署在线上环境上，发现mysql的TPS 和QPS一直不显示，本地的数据库就显示，就很奇怪，还在想是不是python代码的问题，就直接运行了python脚本，结果报错，
+
+上网查了好久没查到问题，后来看到一个说是mysql版本的问题，我就看了一下我监控的两台机子的mysql的版本，果然，一个是5.1，一个是5.7， 如下图：
+
+MySQL5.7存在一些新特性及兼容性问题
+
+
+MySQL5.7存在一些新特性及兼容性问题
+
+系统变量
+5.7以后System and status 变量需要从performance_schema中进行获取，information_schema仍然保留了GLOBAL_STATUS，GLOBAL_VARIABLES两个表做兼容。
+[兼容性]
+如果希望沿用information_schema中进行查询的习惯，5.7提供了show_compatibility_56参数，设置为ON可以兼容5.7之前的用法，否则就会报错，如上图
+
+5.7.6之后，在performance_schema新增了如下的表：
+performance_schema.global_variables
+performance_schema.session_variables
+performance_schema.variables_by_thread
+performance_schema.global_status
+performance_schema.session_status
+performance_schema.status_by_thread
+performance_schema.status_by_account
+performance_schema.status_by_host
+performance_schema.status_by_user
+
+所以只要在被监控端机器设置如下：
+set global show_compatibility_56=on;就好啦，是因为兼容5.7之前的用法
+
+所以只要在被监控端机器设置如下：
+set global show_compatibility_56=on;就好啦，是因为兼容5.7之前的用法
+
+@[TOC](python mysql error totally whack)
+# python mysql error totally whack
+   最近在做mysql的监控系统，自己懒得用python写，就在网上找了一个开发好的python和php的系统搭建了一下，系统名字叫：mysqlmtop，gitbub地址为：https://github.com/yaoshanliang/mysqlmtop
+部署在线上环境上，发现mysql的TPS 和QPS一直不显示，本地的数据库就显示，就很奇怪，还在想是不是python代码的问题，就直接运行了python脚本，结果报错，![在这里插入图片描述](https://img-blog.csdnimg.cn/20181221114219345.jpg)上网查了好久没查到问题，后来看到一个说是mysql版本的问题，我就看了一下我监控的两台机子的mysql的版本，果然，一个是5.1，一个是5.7， 如下图：![在这里插入图片描述](https://img-blog.csdnimg.cn/2018122111450592.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L21hbjgwMjNtYW4=,size_16,color_FFFFFF,t_70)
+
+## MySQL5.7存在一些新特性及兼容性问题
+
+1. **系统变量**  5.7以后System and status 变量需要从performance_schema中进行获取，information_schema仍然保留了GLOBAL_STATUS，GLOBAL_VARIABLES两个表做兼容。  [兼容性]如果希望沿用information_schema中进行查询的习惯，5.7提供了show_compatibility_56参数，设置为ON可以兼容5.7之前的用法，否则就会报错，如上图
+5.7.6之后，在performance_schema新增了如下的表：performance_schema.global_variablesperformance_schema.session_variablesperformance_schema.variables_by_threadperformance_schema.global_statusperformance_schema.session_statusperformance_schema.status_by_threadperformance_schema.status_by_accountperformance_schema.status_by_hostperformance_schema.status_by_user
+所以只要在被监控端机器设置如下：set global show_compatibility_56=on;就好啦，是因为兼容5.7之前的用法
+
+ps：有兴趣的可以关注下我的公众号和小程序，谢谢啦~~
+

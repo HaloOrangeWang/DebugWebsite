@@ -1,0 +1,23 @@
+最近在学《Python数据分析与挖掘实战》，按照书上例子实践，发现有问题，记录如下
+
+import pandas as pd
+catering_sale = 'C:\Python\learning\3\catering_sale.xls' #餐饮数据
+data = pd.read_excel(catering_sale, index_col = u'日期') #读取数据，指定“日期”列为索引列
+data.describe()
+
+报错如下
+Traceback (most recent call last):
+  File "<pyshell#4>", line 1, in <module>
+    data = pd.read_excel(catering_sale, index_col = u'日期')
+  File "C:\Python\lib\site-packages\pandas\io\excel.py", line 200, in read_excel
+    io = ExcelFile(io, engine=engine)
+  File "C:\Python\lib\site-packages\pandas\io\excel.py", line 229, in __init__
+    import xlrd  # throw an ImportError if we need to
+ImportError: No module named 'xlrd'
+
+提示没有xlrd这个模块，用pip安装就可以了pip install xlrd
+
+另外在Windows下地址也有问题，正确的地址catering_sale = 'C://Python/learning/3/catering_sale.xls'
+
+可以通过help(pd.read_excel)查看帮助文档
+

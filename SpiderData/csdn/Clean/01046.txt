@@ -1,0 +1,188 @@
+
+Python包的安装
+
+问题一：未安装
+
+报错解决方法
+
+报错
+
+解决方法
+
+问题二：国外网络的限制
+
+报错解决方法
+
+报错
+
+解决方法
+
+问题三：重复安装
+
+报错原因分析解决方法:法一解决方法:法二
+
+报错
+
+原因分析
+
+解决方法:法一
+
+解决方法:法二
+
+问题四：给python不同版本安装第三方库
+
+问题五：pip未更新
+
+其他：
+
+1.删除安装的库2.几种安装方法的优缺点3.pycharm把默认源改成清华镜像
+
+1.删除安装的库
+
+2.几种安装方法的优缺点
+
+3.pycharm把默认源改成清华镜像
+
+参考链接
+
+ttps://blog.csdn.net/niutianzhuang/article/details/79185756
+
+https://blog.csdn.net/weixin_41764441/article/details/104100414
+
+https://blog.csdn.net/gabriel_wei/article/details/108500589
+
+
+问题一：未安装
+
+
+报错
+
+ImportError: No module named xxx
+
+
+解决方法
+
+方法1
+
+pip install xxx
+
+方法2 终端输入
+
+sudo apt-get install python-xxx
+
+
+问题二：国外网络的限制
+
+
+报错
+
+ERROR: Could not find a version that satisfies the requirement xxx (from versions: none)
+ERROR: No matching distribution found for xxx
+
+
+解决方法
+
+1.翻墙
+ 2.用国内库安装（这里使用的是豆瓣的镜像进行安装）
+
+pip3 install xxx -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+Looking in indexes: http://pypi.douban.com/simple/
+
+
+问题三：重复安装
+
+
+报错
+
+ModuleNotFoundError: No module named 'xxx'
+
+
+原因分析
+
+Anaconda，它直接将所有能用到的或者用不到的包都导入进来，有可能已经含有xxx包；
+ 而pycharm里面已经装了xxx包；
+ 故python编译器无法识别两个版本的xxx包
+
+
+解决方法:法一
+
+安装到指定位置
+
+pip install --target=E:\Users\THINKPAD\anaconda3\envs\cv2_env\Lib\site-packages opencv-python
+
+
+解决方法:法二
+
+1.需要删除其中一个并将另一个包放在Anaconda目录下面即可解决问题
+ 执行以下命令，查看这个包所在的位置
+
+pip install xxx
+
+2.打开user->xxx->AppData->Local->Programs->Python->Python37->Lib->site-packages->找xxx开头的文件夹，并删除这些文件夹（因为版本不同可能不止一个）
+
+这一步就是删除了你原来安装的python里的xxx包。
+ 如果合适了，就到此结束；
+ 不合适的话，接着做以下操作
+
+3.打开anaconda文件夹（每个人的anaconda位置可能不同）
+
+4.打开anaconda->lib->site-packages->找xxx开头的文件夹，并删除这些文件夹（因为版本不同可能不止一个）
+
+5.打开anaconda prompt输入
+
+conda install xxx
+
+中间出现Proceed([y]/n)?
+ 输入: y
+ 这时候会显示成功安装成功
+ 然后重新运行程序
+
+
+问题四：给python不同版本安装第三方库
+
+直接打开python2的安装目录，打开Scripts文件夹
+
+pip install numpy -i https://pypi.douban.com/simple/
+
+可以使用pip list查看是否安装
+
+
+问题五：pip未更新
+
+ERROR: Could not find a version that satisfies the requirement cv2> (from versions: none)
+ ERROR: No matching distribution found for cv2
+ 更新pip
+
+python -m pip install --upgrade pip -i https://pypi.douban.com/simple
+
+如果pip安装成功还报错
+
+ERROR: Could not find a version that satisfies the requirement cv2> (from versions: none)
+
+不能直接搜索cv安装，而应该搜索opencv-python进行安装，因为opencv库包含cv库
+
+
+其他：
+
+
+1.删除安装的库
+
+pip uninstall keras
+
+
+2.几种安装方法的优缺点
+
+（1）pycharm自带安装库方法
+ 编译好的（速度快，问题少）
+ 安装目录在项目文件夹下（好迁移）
+ （2）conda安装
+ 编译好的（速度快，问题少）
+ 安装目录在c盘/env，所有环境在一个目录下面
+ （2）pip安装
+ 未编译
+
+
+3.pycharm把默认源改成清华镜像
+
+把里面那个改成这个，https://pypi.tuna.tsinghua.edu.cn/simple/，直接把原来那个用替换掉就好！
+

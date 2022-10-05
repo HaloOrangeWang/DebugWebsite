@@ -1,0 +1,42 @@
+最近在工作中发现一个问题，yum无法使用，报错如下：
+
+/usr/lib64/python2.7/site-packages/pycurl.so: undefined symbol: CRYPTO_num_locks
+
+ldd /usr/lib64/python2.7/site-packages/pycurl.so 查看一下动态库连接
+
+注意：libcurl的位置
+
+查看一下libcurl是否有什么异常的配置
+
+ldconfig -v | grep libcurl 发现两个libcurl
+
+检查ld.so.conf的配置
+
+对比正常的测试机
+
+根据前面的ldd来看，去掉local lib试试
+
+vi /etc/ld.so.conf
+
+执行ldconfig ，重新生成缓存，无返回，测试yum还是不行
+
+ldconfig -p|grep curl 看下加载
+
+继续查找
+
+删除对应的目录，然后刷新缓存（这里很明显是MySQL设置的libcurl地址，经过核实后，发现MySQL安装有问题，已经删除了）
+
+yum 现在可以用了。
+
+知识扩展：
+
+ldconfig 是一个动态链接库管理命令，为了让动态链接库为系统所共享,还需运行动态链接库的管理命令--ldconfig。
+
+ldconfig 命令的用途,主要是在默认搜寻目录(/lib和/usr/lib)以及动态库配置文件/etc/ld.so.conf内所列的目录下,搜索出可共享的动态 链接库(格式如前介绍,lib*.so*),进而创建出动态装入程序(ld.so)所需的连接和缓存文件.缓存文件默认为 /etc/ld.so.cache,此文件保存已排好序的动态链接库名字列表.
+
+ldd 作用：用来查看程序运行所需的共享库,常用来解决程序因缺少某个库文件而不能运行的一些问题。
+
+总结
+
+以上就是这篇文章的全部内容了，希望本文的内容对大家的学习或者工作能带来一定的帮助，如有疑问大家可以留言交流，谢谢大家对脚本之家的支持。
+

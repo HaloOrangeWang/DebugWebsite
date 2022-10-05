@@ -1,0 +1,24 @@
+webdiff 是一个挺好用的 git 差异对比工具。需要使用：
+
+但是很奇怪，公司的电脑能装上，自己家的电脑装不上。报错如下：
+
+又或者是关于 PyGitHub 的报错。
+
+
+解决办法
+
+下载源码 tar.gz 类型的源码： https://pypi.org/project/webdiff/#files
+
+解压，在根目录找到 setup.py, 将 'PyGithub==1.25.2' 修改成 'PyGithub~=1.25'  （因为 PyGithub 这个包，没有 1.25.2 这个版本，所以找不到版本）
+
+然后在当前目录下，右键 Git Bash here ，执行 tar -zcvf test.tar.gz * 重新打包
+
+在此目录下，运行 cmd 目录：pip install test.tar.gz 进行安装，不出意外的话，应该能安装成功。
+
+
+不支持中文的解决办法
+
+webdiff 进行差异对比，如果文件中包含中文，则会显示乱码或者报错，这是因为它默认打开文件的方式不是：utf-8 ，所以找到你的 webdiff 的安装目录：path_of_python\Lib\site-packages\webdiff ，在 app.py 中查找如下这段话：
+
+将上面的第一行，添加一个编码：
+

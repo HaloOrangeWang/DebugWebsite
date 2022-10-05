@@ -1,0 +1,100 @@
+
+背景
+
+最近因项目需要，学习任务队列Celery的用法，跟着官网写Demo，出现如题错误，最终在github的Issues里找到解决办法，记录如下。
+
+
+场景还原
+
+本地环境如下：
+
+Windows 7
+
+Python 3.6.7
+
+Celery 4.1.0
+
+代码tasks.py：
+
+from celery import Celery
+
+app = Celery('tasks', broker='redis://:xxxx@xxx.xxx.xxx.xx:6379/0')
+
+@app.task
+def add(x, y):
+    return x + y
+
+执行worker
+
+celery -A tasks worker --loglevel=info
+
+输出：
+
+-------------- celery@YG_lin v4.2.1 (windowlicker)
+---- **** -----
+--- * ***  * -- Windows-7-6.1.7601-SP1 2018-12-05 20:03:58
+-- * - **** ---
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x38527b8
+- ** ---------- .> transport:   redis://:**@192.168.0.2:6379//
+- ** ---------- .> results:     redis://:**@192.168.0.2:6379/1
+- *** --- * --- .> concurrency: 4 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** -----
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+
+[tasks]
+  . tasks.add
+
+[2018-12-05 20:03:58,721: INFO/MainProcess] Connected to redis://:**@192.168.0.2:6379//
+[2018-12-05 20:03:58,735: INFO/MainProcess] mingle: searching for neighbors
+[2018-12-05 20:03:58,976: INFO/SpawnPoolWorker-1] child process 16292 calling self.run()
+[2018-12-05 20:03:59,006: INFO/SpawnPoolWorker-2] child process 14764 calling self.run()
+[2018-12-05 20:03:59,026: INFO/SpawnPoolWorker-3] child process 13864 calling self.run()
+[2018-12-05 20:03:59,078: INFO/SpawnPoolWorker-4] child process 15980 calling self.run()
+[2018-12-05 20:03:59,893: INFO/MainProcess] mingle: all alone
+[2018-12-05 20:03:59,915: INFO/MainProcess] celery@YG_lin ready.
+
+打开另一个python终端：
+
+>>>from tasks import add
+>>>add.delay(4, 4)
+
+然后worker里报错：
+
+[2018-12-05 20:03:59,933: ERROR/MainProcess] Task handler raised error: ValueError('not enough values to unpack (expected 3, got 0)',)
+Traceback (most recent call last):
+  File "c:\users\administrator\envs\dj11.7\lib\site-packages\billiard\pool.py", line 358, in workloop
+    result = (True, prepare_result(fun(*args, **kwargs)))
+  File "c:\users\administrator\envs\dj11.7\lib\site-packages\celery\app\trace.py", line 537, in _fast_trace_task
+    tasks, accept, hostname = _loc
+ValueError: not enough values to unpack (expected 3, got 0)
+[2018-12-05 20:04:15,392: INFO/MainProcess] Received task: tasks.add[b76c9d02-ca3c-4272-b593-89c280f633da]
+[2018-12-05 20:04:15,399: ERROR/MainProcess] Task handler raised error: ValueError('not enough values to unpack (expected 3, got 0)',)
+Traceback (most recent call last):
+  File "c:\users\administrator\envs\dj11.7\lib\site-packages\billiard\pool.py", line 358, in workloop
+    result = (True, prepare_result(fun(*args, **kwargs)))
+  File "c:\users\administrator\envs\dj11.7\lib\site-packages\celery\app\trace.py", line 537, in _fast_trace_task
+    tasks, accept, hostname = _loc
+ValueError: not enough values to unpack (expected 3, got 0
+
+
+解决：
+
+看别人描述大概就是说win10上运行celery4.x就会出现这个问题，解决办法如下,原理未知：
+
+先安装一个eventlet
+
+pip install eventlet
+
+然后启动worker的时候加一个参数，如下：
+
+celery -A <mymodule> worker -l info -P eventlet
+
+也就是
+
+celery -A tasks worker -l info -P eventlet
+
+然后就可以正常的调用了。
+

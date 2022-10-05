@@ -1,0 +1,28 @@
+Navicat无法连接MySQL8,是因为MySQL8的方式和MySQL5的加密方式不一样导致
+
+解决方案:
+
+1.通过命令行进入mysql数据库:
+
+C:\Windows\system32> mysql -uroot -p
+
+2.更改加密方式：
+
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'password' PASSWORD EXPIRE NEVER;
+
+3.更改新密码：
+
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '123';
+
+4.刷新：
+
+mysql> FLUSH PRIVILEGES;
+
+如果报错: ERROR 1396 (HY000): Operation ALTER USER failed for 'root'@'localhost'
+
+检查一下数据库和用户是否正确
+
+mysql> use mysql;
+Database changed
+mysql> select user,host from user;
+

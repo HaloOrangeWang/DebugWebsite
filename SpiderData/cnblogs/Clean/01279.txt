@@ -1,0 +1,43 @@
+这是个奇葩的问题，我也是奇葩的研究了好几天，最后发现，哈，原来是这个原因，在此记录下曲折的心路历程
+
+接口Content-Type没有，body用的是postman中的raw数据，格式是text
+
+程序如下：
+
+import requests
+url = "https://XXXXXX.com/api/user_device"
+
+1.开始是因为有一个报错，大概是SSLverify fail 的一个错，然后我就各种找原因，最后的解决方式是在requests.post里面加一个参数verify=False;这样报错就变成了一个警告，然后程序运行报504；这是麻烦的开始！
+
+心路：我开始以为是SSL的那个警告引起的错误504，然后就各种查，后来发现好像不对,然后就研究是不是body格式引起的问题
+
+2.然各种查body格式和Content-Type格式，真的是有收获，Content-Tpye有4种格式：application/x-www-form-urlencoded；multipart/form-data；application/json；text/xml；前三种格式需要在header里加上Content-Type类型，最后一种不需要；raw属于最后一种，且用的是text格式，所以我就在headers里加
+
+结果：不再报504.接口跑通了，但是API报了个参数错误
+
+心路：协议里是没有Content-Type.可能不能乱加
+
+注：试各种Content-Type的时候有的会报400
+
+3.最后我把data处理了一下成功解决问题。data= json.dumps(data);然后在发送请求就可以了，Content-Type加不加都行（加上更好）。
+
+总结：requests发送请求的data需要是str格式，而我写的是json格式（曾经不懂，这里补充，json格式其实是符合标准的str,这里之所以报错是因为用的是dict,），也就是Python里的dict,需要转换才能用，但是如果只看报错，根本不知道是什么原因
+
+成功的程序：
+
+import requests
+import json
+
+url = "https://XXXXX.com/proapi/user_device"
+
+小插曲：如果https报错（只要不是200），print(response.json)会报错：
+
+raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+注：Python的request会把没有给Content-Type类型的数据默认成application/x-www-form-urlencoded，但是我不知道为啥我这里没有出问题；设定   在 urllib.request.AbstractHTTPHandler.do_request_()这个文件里；如果不想要默认的设定可以把那几句注释掉
+
+重大发现：
+
+原来postman有一个功能把接口请求直接转换成程序，以后写程序出问题时，可以借鉴参考一下
+

@@ -1,0 +1,37 @@
+
+使用sqlalchemy创建model
+
+初次代码：
+
+class UserModel(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.String(10),primary_key=True,autoincrement=True)
+
+改后代码：
+
+class UserModel(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer,primary_key=True,nullable=False,autoincrement=True)
+
+注：id是字符串类型，无法自增长
+
+
+运行，报错如下：
+
+FlushError: Instance <UserModel at 0x6477550> has a NULL identity key. If this is an auto-generated value, check that the database table allows generation of new primary key values, and that the mapped Column object is configured to expect these generated values. Ensure also that this flush() is not occurring at an inappropriate time, such aswithin a load() event.
+
+
+原因：后期修改表字段的时候，不会自动的映射到数据库中，需要重新映射，使用flask-migrate
+
+app.config.from_object(config)
+db.init_app(app)
+
+依次运行：python manage.py db init  、python manage.py db migrate 、python manage.py db upgrade
+
+注：
+
+python manage.py db init：初始化一个迁移脚本的环境，只需要执行一次。
+
+python manage.py db migrate`：将模型生成迁移文件，只要模型更改了，就需要执行一遍这个命令。
+python manage.py db upgrade`：将迁移文件真正的映射到数据库中。每次运行了`migrate`命令后，就要运行这个命令
+

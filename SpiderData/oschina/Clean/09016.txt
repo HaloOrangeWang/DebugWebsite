@@ -1,0 +1,19 @@
+问题描述：
+
+最终原因是赋值的对象未定义。例如下面的代码会报错。
+
+var family_list = new Array();
+……
+family_list[family_list.length] = {};
+family_list[family_list.length].name = "张三"；
+
+原因是第二行定义下标family_list.length的元素为对象后，family_list.length的值已经+1。这样下一行代码的赋值会因为该元素为定义而报错。
+
+修改为下面代码后就不会报错。
+
+var family_list = new Array();
+……
+var list_size = family_list.length;
+family_list[list_size] = {};
+family_list[list_size].name = "张三"；
+

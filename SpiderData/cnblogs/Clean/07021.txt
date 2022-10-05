@@ -1,0 +1,28 @@
+解决办法：
+
+　　1、安装依赖zlib、zlib-devel
+
+　　2、重新编译安装Python
+
+具体步骤：
+
+　　1  到python安装目录下，运行./configure
+
+　　2  编辑Modules/Setup文件
+
+　　　　vim Modules/Setup
+
+　　　　找到下面这句，去掉注释
+
+　　　　#zlib zlibmodule.c -I(prefix)/include−L(prefix)/include−L(exec_prefix)/lib -lz
+
+　　3  重新编译安装：
+
+　　　　make     这里可能仍会报错：[Modules/zlibmodule.o] Error 1
+
+　　　　　　解决方案：
+
+　　　　make install
+
+　　4  重新执行
+

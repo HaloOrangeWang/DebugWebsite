@@ -1,0 +1,24 @@
+我使用aptitude安装了一个python2的pip，然后使用的时候报错如下：
+
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/runpy.py", line 163, in _run_module_as_main
+    mod_name, _Error)
+  File "/usr/lib/python2.7/runpy.py", line 111, in _get_module_details
+    __import__(mod_name)  # Do not catch exceptions initializing package
+  File "/usr/lib/python2.7/dist-packages/pip/__init__.py", line 21, in <module>
+    from pip._vendor.requests.packages.urllib3.exceptions import DependencyWarning
+  File "/usr/lib/python2.7/dist-packages/pip/_vendor/__init__.py", line 67, in <module>
+    vendored("distro")
+  File "/usr/lib/python2.7/dist-packages/pip/_vendor/__init__.py", line 36, in vendored
+    __import__(modulename, globals(), locals(), level=0)
+  File "/usr/share/python-wheels/distro-1.0.1-py2.py3-none-any.whl/distro.py", line 1051, in <module>
+  File "/usr/share/python-wheels/distro-1.0.1-py2.py3-none-any.whl/distro.py", line 595, in __init__
+  File "/usr/share/python-wheels/distro-1.0.1-py2.py3-none-any.whl/distro.py", line 934, in _get_lsb_release_info
+subprocess.CalledProcessError: Command 'lsb_release -a' returned non-zero exit status 1
+
+然后我看到网上的解决办法是：在/usr/bin/lsb_release的第一行中的python版本号需要写完整。在终端输入python3，查看python的完整版本号，然后填进去，接下来python2的pip就可以用了。
+
+很神奇，但是我还不懂为什么
+
+链接：https://blog.csdn.net/u012114438/article/details/83578113
+

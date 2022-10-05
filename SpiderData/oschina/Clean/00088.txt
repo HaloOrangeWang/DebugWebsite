@@ -1,0 +1,93 @@
+
+每次打包，把之前打包生成的文件，删除
+
+
+将python.py打包成exe
+
+pyinstaller -F python.py
+
+可选参数
+
+-F 参数是打包后，只留下一个.exe的可执行文件
+ -D 打包后在dist目录有多个依赖文件（但是用D启动会快一些）
+–noconsole 或 -w 参数是运行时不显示控制台的意思
+-n 另外还可以使用 -n *** 的方式确定exe的文件名，如 -n 我的第一个exe程序
+-i 用制定icon图标 如 -i ‘icon0.icon’
+
+
+将python.py打包成exe ，但运行后不显示控制台
+
+pyinstaller -F -w python.py
+
+
+用指定图标打包
+
+pyinstaller -F -i xx.icon python.py
+
+
+运行后报错，缺少xxxx模块
+
+原因可能是anaconda导致的，
+
+解决方法，两种：
+
+可以重新建一个python虚拟环境，安装上项目使用的包，在重新打包。注：这个环境不是用anaconda创建。
+
+另一种解决方法，将缺少的包的目录，通过-p参数以及后面的多个目录，进行打包。目录可以用英文分号隔开，进而打包附带多个目目录
+
+pyinstaller -F -p E:\python\Lib\site-packages python.py
+
+
+自己遇到的问题
+
+打包时有警告：
+
+WARNING: Hidden import "sklearn.utils._typedefs" not fond
+WARNING: Hidden import "sklearn.nerghbors._typedefs" not fond
+WARNING: Hidden import "jinja2" not fond
+WARNING: Hidden import "pkg_resources.py2_warn" not fond
+WARNING: Hidden import "pkg_resources.markers" not fond
+
+以为没事，结果运行exe报错
+
+搜索解决方案：
+
+在项目里面直接加一下代码，个人没有用这种方法
+
+import sklearn.utils._typedefs
+
+打包时添加
+
+--hidden-import="sklearn.utils._typedefs"
+
+比如我打包：
+
+pyinstaller -F -p D:\py3.8.8\Lib\site-packages --hidden-import="sklearn.utils._typedefs"serverEditionModel.py
+
+但这样一次运行弹出一个，每次都要加一条，太郁闷了，于是又尝试新方法。打开打包目录dist/项目/warn.txt，吧里面大多数主要警告缺失的module，全都加上直接一起打包。如下
+
+pyinstaller -D -c -p E:\python\Lib\site-packages; --hidden-import="sklearn.utils._typedefs" --hidden-import="sklearn.neighbors._typedefs" --hidden-import="jinja2" --hidden-import="pkg_resources.py2_warn" --hidden-import="pkg_resources.markers" --hidden-import="sklearn.neighbors._ball_tree" --hidden-import="sklearn.neighbors._partition_nodes"  --hidden-import="xgboost" serverEditionModel.py
+
+用-D -c打包后，dist文件夹下，为一个文件夹，在这里，运行serverEditionModel.exe即可
+
+但报错，import xgboost什么没找到，解决方法，编辑serverEditionModel.spec
+
+开头添加
+
+from PyInstaller.utils.hooks import collect_submodules
+from PyInstaller.utils.hooks import collect_data_files
+data = collect_data_files('xgboost')
+
+并修改下边，binaries和datas
+
+a = Analysis(['serverEditionModel.py'],
+             pathex=[],
+             binaries=data,
+             datas=data,
+
+修改完成，再次打包一次，注意打包格式，，，spec不是py
+
+pyinstaller -D -c serverEditionModel.spec
+
+重新打包完成，之后，打开 dist/项目名/项目.exe就可以运行啦
+

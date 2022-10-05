@@ -1,0 +1,8 @@
+遇到报错：
+
+Caused by: org.thymeleaf.exceptions.TemplateInputException: 
+Error resolving template "content/service-reply/themeDetailList/123123", template might not exist or might not be accessible by any of the configured Template Resolvers
+
+在controller层请求处理完了返回时，没有使用@RestController或@ResponseBody而返回了非json格式，这种情况下返回的数据thymeleaf模板无法解析，所以会报错。
+ 解决：将@Controller换成@RestController，不过需要注意有没有其他的方法返回了html页面，会导致返回的不是页面而是字符串；最好的方法就是在你所请求的方法上面加一个@ResponseBody即可。
+

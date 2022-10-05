@@ -1,0 +1,38 @@
+最近在学习spring cloud时遇到一个坑
+
+git中YML文件：
+
+message:message from server
+
+cfg server配置如下：
+
+cloud: 
+     config: 
+       server: 
+         git: 
+           uri: http://admin@192.168.14.11:9090/r/demo.git
+           default-label: master
+           username: admin
+           password: admin
+
+Client 控制器：
+
+@RefreshScope
+ @RestController
+ public class HelloController {
+     @Value("${message}")
+     private String message;
+     @RequestMapping("/message")
+     public String message() {
+         return this.message;
+     }
+ }
+
+启动client报错：Could not resolve placeholder 'message' in string value "${message}"
+
+填坑：
+
+经过多轮填坑挖坑发现配置的yml不符合 YAML文件格式要求，缺少一个空格。添加空格后启动、运行正常
+
+message: message from server
+

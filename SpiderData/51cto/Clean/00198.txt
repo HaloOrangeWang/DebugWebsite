@@ -1,0 +1,28 @@
+在CentOS中，默认情况下，自带python2.7版本环境，但是由于业务需求，将python版本升级到python3.0以上版本，在网上找了一个教程，顺利的将python3.9安装好了，但是随之而来又出现了一个问题，由于安装了python3以上版本，导致yum命令不能正常使用。运行yum命令会报以下错误信息：
+
+[root@localhost vagrant]# yum update zip
+  File "/usr/bin/yum", line 30
+    except KeyboardInterrupt, e:
+                            ^
+SyntaxError: invalid syntax
+
+目录
+
+​​一、 问题根源​​
+
+​​二、 解决方案 ​​
+
+
+一、 问题根源
+
+yum需要用python2编译，如果安装的是python3以上并作为默认编译器的话，就会报这个错误。
+
+
+二、解决方案
+
+主要修改文件中的第一行，默认情况下，文件的第一行代码如下：
+
+1、编辑 /usr/bin/yum 文件
+
+2、编辑 /usr/libexec/urlgrabber-ext-down
+

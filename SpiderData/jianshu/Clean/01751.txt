@@ -1,0 +1,41 @@
+python使用PyPDF2合并多个PDF文件时报错，网上搜了很多方法，有大神说是PyPDF2自己的问题，在输出中文编码的pdf时会报错，需要修改PyPDF2库，在此给自己做个使用笔记。
+
+1、直接使用everything搜索generic.py，打开所在位置。
+
+修改generic.py第488行附近的代码
+
+if not pdf.strict:
+    warnings.warn("Illegal character in Name Object", utils.PdfReadWarning)
+    return NameObject(name)
+
+修改为
+
+if not pdf.strict:
+    warnings.warn("Illegal character in Name Object", utils.PdfReadWarning)
+    return NameObject(name.decode('gbk'))
+
+2、修改utils.py第237行附近的代码
+
+else:
+    r = s.encode('latin-1')
+    if len(s) < 2:
+        bc[s] = r
+    return r
+
+修改为
+
+else:
+#     r = s.encode('latin-1')
+#     if len(s) < 2:
+#         bc[s] = r
+#     return r
+    try:
+        r = s.encode('latin-1')
+    except Exception as e:
+        r = s.encode('utf-8')
+    if len(s) < 2:
+        bc[s] = r
+    return r
+
+自己Mark一下。
+

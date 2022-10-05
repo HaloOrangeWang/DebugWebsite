@@ -1,0 +1,20 @@
+-----------------------------------------------------------------------
+
+报错：UnicodeDecodeError: 'gbk' codec can't decode byte 0xae in position 70: illegal multibyte sequence
+
+使用ConfigParser 读取 ini 文件时报错：
+
+原因：ini 文件中使用了汉字；删除汉字之后，正常读取；且对应的值，不需要添加单引号，否则会将单引号视为值的一部分
+
+解决：可以在读取文件的时候，添加编码规则：encoding='utf-8-sig'
+
+-----------------------------------------------------------------------
+
+报错：non-default argument follows default argument
+
+原因：def get_value(self, option, section=None ) 中，将  ‘section=None’ 放在了 ‘option’ 的前面
+
+option 必须传参，但是section 可以不传；如果将section 放在了前面，那函数应该如何理解这个参数呢？将section 放在后面，可以解决这个问题。
+
+传入的第一个参数肯定是option, 不会是section; 至于section 是否传入，就看第一个参数之后是否有值。
+

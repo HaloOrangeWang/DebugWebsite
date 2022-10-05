@@ -1,0 +1,43 @@
+
+1.使用keras做mnist分类时，运行时GPU报错
+
+错误信息如下：
+
+解决办法：
+
+在前面设置tensorflow对GPU内存的分配比例：
+
+
+2.Matplotlib和Qt5py的兼容问题
+
+在Pycharm中使用matplotlib的时候，当取消了show plots in tool windows选项时，报错：
+
+pycharm This application failed to start because it could not find or load the Qt 
+platform plugin "windows"
+
+解决办法：
+
+在系统变量中添加QT_PLUGIN_PATH
+
+
+3.训练途中出现NaN数值，比如loss和accuracy等
+
+1.一般出现NaN时，是因为有一些非法计算过程，例如log(0)，所以我们要检查是否在计算过程中存在tf.math.log()等函数
+
+如果有的话，可以使用tf.log(tf.clip_by_value(y,1e-8,1.0))
+
+2.可以尝试调整学习率
+
+
+4.使用tensorflow训练时出现调用cudnn错误
+
+错误信息：
+
+tensorflow/stream_executor/cuda/cuda_driver.cc:406 failed call to cuInit: CUDA_ERROR_UNKNOWN
+
+解决方法：
+
+　　在Nvida官网查看显卡所需驱动版本：https://www.geforce.cn/drivers
+
+下载并安装更新，问题解决。
+

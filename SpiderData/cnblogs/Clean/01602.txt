@@ -1,0 +1,41 @@
+Windows环境下使用pip命令安装Python模块mysqlclient
+pip install mysqlclient
+安装过程报错  [error] Microsoft Visual C++ 14.0 is required
+
+于是更换另外一种方法安装，到这个网站上下载mysqlclient安装包
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
+
+由于本地安装的是python3.6版本，于是下载 mysqlclient-1.3.13-cp36-cp36m-win_amd64.whl
+下载链接：
+https://download.lfd.uci.edu/pythonlibs/t5ulg2xd/mysqlclient-1.3.13-cp36-cp36m-win_amd64.whl
+将下载好的包拷贝到python安装目录的Scripts目录下
+例如我的是 D:\Program Files\Python3\Scripts
+然后命令行终端cd到该目录
+最后使用pip进行安装
+pip install "mysqlclient-1.3.13-cp36-cp36m-win_amd64.whl"
+但此时会报错，提示平台不支持
+
+根据网友提供的方法
+进入python终端
+>>> import pip
+>>> print(pip.pep425tags.get_supported())	#列出pip支持的文件名格式
+[('cp36', 'cp36m', 'win_amd64'),
+ ('cp36', 'none', 'win_amd64'), 
+ ('py3', 'none', 'win_amd64'), 
+ ('cp36', 'none', 'any'), 
+ ('cp3', 'none', 'any'), 
+ ('py36', 'none', 'any'), 
+ ('py3', 'none', 'any'), 
+ ('py35', 'none', 'any'), 
+ ('py34', 'none', 'any'), 
+ ('py33', 'none', 'any'), 
+ ('py32', 'none', 'any'), 
+ ('py31', 'none', 'any'), 
+ ('py30', 'none', 'any')]
+
+于是更改mysqlclient-1.3.13-cp36-cp36m-win_amd64.whl文件名再进行安装
+尝试了前面几个都还是提示不支持
+最终更改为mysqlclient-1.3.13-py36-none-any.whl之后终于安装完成
+
+检查是否安装成功
+

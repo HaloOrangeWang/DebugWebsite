@@ -1,0 +1,24 @@
+启动 zkServer.cmd 一直报错 JAVA_HOME is not set
+
+看了一下环境变量，没问题
+
+JAVA_HOME=C:\Program Files\Java\jdk1.7.0_79
+
+最后发现是路径空格的问题
+
+然后修改zkEnv.cmd文件如下
+
+set JAVA_HOME="C:\Program Files\Java\jdk1.7.0_79"
+
+if not defined JAVA_HOME (
+   echo Error: JAVA_HOME is not set.
+   goto :eof
+ )
+
+if not exist %JAVA_HOME%\bin\java.exe (
+   echo Error: JAVA_HOME is incorrectly set.
+   goto :eof
+ )
+
+set JAVA=%JAVA_HOME%\bin\java
+

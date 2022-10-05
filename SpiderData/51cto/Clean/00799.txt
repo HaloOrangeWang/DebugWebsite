@@ -1,0 +1,49 @@
+python远程清除sqlserver数据库服务器日志，供参考：
+
+# coding=gbk
+  from encodings import gbk  
+  import re   
+  import sys
+  import  os
+  import  pyodbc
+  import traceback 
+  import decimal
+
+#连接数据库
+  conn = pyodbc.connect('DRIVER={SQL Server};SERVER=192.168.1.43;DATABASE=master;UID=sa;PWD=passwd123123')
+
+# 获取cursor对象来进行操作
+  cursor = conn.cursor()
+
+#清除错误日志
+  #query="select username,userid from dbo.tbluser where username='%s'"  %(uname)
+  query="EXEC sys.sp_cycle_errorlog"
+  cursor.execute(query)
+  conn.commit
+
+data=cursor.nextset()
+
+while not  data:
+   print ('清除43错误日志完成！')
+   break
+
+#清除代理日志
+  #query="select username,userid from dbo.tbluser where username='%s'"  %(uname)
+  query1="EXEC msdb.dbo.sp_cycle_agent_errorlog"
+  cursor.execute(query1)
+  conn.commit
+
+data1=cursor.nextset()
+
+while not  data1:
+   print ('清除43代理日志完成！')
+   break
+
+#关闭连接，释放资源
+
+cursor.close() 
+  conn.close()
+
+com3='pause'
+  os.system(com3)
+

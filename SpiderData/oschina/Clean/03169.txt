@@ -1,0 +1,48 @@
+
+AttributeError: module 'cv2' has no attribute 'SIFT'
+
+遇到该问题时，网友多是建议补个包，即pip install opencv-contrib-python
+我在补完之后又出现下面这样的错误：
+OpenCV(3.4.3) C:\projects\opencv-python\opencv_contrib\modules\xfeatures2d\src\sift.cpp:1207: error: (-213:The function/feature is not implemented) This algorithm is patented（专利保护） and is excluded in this configuration; Set OPENCV_ENABLE_NONFREE CMake option and rebuild the library in function ‘cv::xfeatures2d::SIFT::create’
+将opencv版本退到3.4.2即可解决，卸载之前的包（pip uninstall opencv-python），然后
+pip install opencv-python==3.4.2.16
+pip install opencv-contrib-python==3.4.2.16
+注意以上两条命令==左右没有空格
+
+又报错误：
+
+　　'module' object has no attribute 'xfeatures2d'
+
+原因：opencv将SIFT等算法整合到xfeatures2d集合里面了。
+
+siftDetector=cv2.SIFT()
+
+变更后为
+
+siftDetector= cv2.xfeatures2d.SIFT_create()
+
+又报：
+
+TypeError: Required argument 'outImage' (pos 3) not found
+
+im=cv2.drawKeypoints(img_RGB,kp,flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+变更后为im=cv2.drawKeypoints(img_RGB,kp,img,flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+SURF：
+
+import cv2
+ 
+img = cv2.imread('cat.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+ 
+surf = cv2.xfeatures2d.SURF_create()
+kp = surf.detect(gray, None)
+ 
+img = cv2.drawKeypoints(gray, kp, img)
+ 
+cv2.imshow("img", img)
+ 
+k = cv2.waitKey(0)
+if k & 0xff == 27:
+    cv2.destroyAllWindows()
+

@@ -1,0 +1,62 @@
+最近使用Faster R-CNN训练了实验室的数据集，期间遇到一些报错，主要还是在配置环境上比较麻烦，但可以根据提示在网上找到解决这些错误的办法。这里我只记录一些难改的报错，以后再遇见这些时希望能尽快解决~
+
+报错汇总：
+
+1、assert (boxes[:, 2] >= boxes[:, 0]).all()
+
+2、targets_dh = np.log(gt_heights / ex_heights)
+
+3、AssertionError: assert (gt_heights > 0).all()
+
+4、ModuleNotFoundError: No module named 'lib.utils.cython_bbox'
+
+5、error: Unable to find vcvarsall.bat
+
+解决方法：
+
+报错1：assert (boxes[:, 2] >= boxes[:, 0]).all()
+
+这个错误表示调用append_flipped_images函数时，自己的数据集标注出现矩形越界，导致后面的计算溢出。在尝试了网上说的几种方法无果后，我决定先想办法找到是哪些图片出现问题。需要在lib/datasets/imdb.py文件的assert (boxes[:, 2] >= boxes[:, 0]).all()这句前面加上一行：
+
+print(self.image_index[i])  #打印出图像名
+
+打印出当前正在处理的图像名，运行train.py后报错前最后一个打印的图像名就是出问题的图像啦，打开Annotation中该图像的标注是不是有矩形越界的情况。经查，还真有两个目标的Xmax被标注成了1047。注意每次重新运行前都要删掉./data/cache中的缓存文件。
+
+报错2：targets_dh = np.log(gt_heights / ex_heights)
+
+这个错误尽量不要看网上说的降低learning_rate，降低了学习率很可能只会延迟报错的时间。
+
+折腾好久终于明白，这个错误还是自己的数据集标注出现问题。源码是针对pascal_voc数据集写的，默认数据集没有错误，所以对x和y的标注都没有检查，在上一报错中，我们只检查了图像中对x的标注，所以后面还需对图像中y的标注进行检查。
+
+点击报错的代码，会自动找到lib/datasets/imdb.py文件中targets_dw = np.log(gt_widths / ex_widths)的位置。在其前面加上：
+
+加上后运行train.py文件，发现运行日志有新的报错3：AssertionError: assert (gt_heights > 0).all()，表示height方向数据存在错误，也就是图像中的y，所以应该是y的标注错误。接下来，我们就要对y的标注进行检查。打开imdb.py文件，找到_get-widths函数和append_flipped_images函数所在位置，如下图：
+
+整体替换为下面代码：
+
+然后运行，当出现中断报错就查看运行日志上最后一个打印出的图像名，找到对应的标注文件检查。改过后记得要删掉./data/cache中的缓存，然后再运行，直到所有图像的y标注错误都修改完后就大功告成啦！
+
+报错4：ModuleNotFoundError: No module named 'lib.utils.cython_bbox'
+
+这个错误可能是因为没有生成训练所需的cython_bbox.py文件，或者已有的cython_bbox.py文件不能在本地正常运行。
+
+解决办法是从cmd中先进入./data/coco/PythonAPI目录，分别运行下面两条命令：
+
+python setup.py build_ext --inplace
+
+python setup.py build_ext install
+
+然后，在cmd中进入./lib/utils目录，运行下面一条命令：
+
+python setup.py build_ext --inplace
+
+这样，就重新运行了setup.py，重新生成了训练所需的文件，报错就解决了。
+
+报错5：error: Unable to find vcvarsall.bat
+
+在构建coco的相关环境时，出现这个错误，找不到vcvarsall.bat，这是因为没有安装c++的配置文件。我的解决方法是下载vs2015版，在安装时记得勾选c++相关的组件，安装成功后把vs2015添加到环境变量，这样就成功解决该报错啦。
+
+感悟：直面bug，找到问题源头就更容易解决。
+
+这次内容就分享到这里了，希望与各位老师和小伙伴们交流学习~
+

@@ -1,0 +1,16 @@
+VSCode中默认开启的python语法检查工具是pylint，整体非常好用，但是最近在使用requests库时有一些报错提示，比较苦恼，就是在使用到 requests.codes.ok 时，pylint会提示报错:E1101:Instance of 'LookupDict' has no 'ok' member
+
+经过一番搜索之后发现原因是 requests.codes.ok 是动态被设置的，而pylint的推断系统里没有该值，因此触发了E1101报错。可以通过配置 generate-members 参数来避免此类报错。
+
+generate-members 参数的添加
+
+在VSCode中打开 文件->首选项->设置，在搜索设置中输入 pylintArgs，把 "python.linting.pylintArgs": [] 这行复制到右侧用户设置中，并在[]中写入 "--generate-members" 即可。
+
+如图:
+
+参考链接:
+
+https://pylint.readthedocs.io/en/latest/technical_reference/features.html#id28
+
+https://code.visualstudio.com/docs/python/linting
+

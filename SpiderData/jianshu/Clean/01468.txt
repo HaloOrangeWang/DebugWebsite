@@ -1,0 +1,86 @@
+背景：在PyCharm中写的Python脚本通过IDE运行正常，但是通过CMD或者终端运行就会报错module找不到，所以学习下Python的import机制是如何生效的是非常有必要的
+
+
+import报错问题描述：
+
+其中main.py是我们的启动脚本
+
+1.通过Pycharm运行是OK的：
+
+2.通过终端或者CMD运行报错找不到module：
+
+
+模拟报错代码：
+
+其中main.py是我们的启动脚本：
+
+# coding=utf-8
+
+from src import common
+from src.packone import test1
+
+test1.py是一个module：
+
+# coding=utf-8
+from ..packtwo import test2
+
+from .. import common
+
+在Pycharm中运行正常，在终端中运行报错：
+
+简单的将main.py的位置移动到和src同层级，通过终端执行就正常了：
+
+
+原因是什么？
+
+我们先看下Python中import的机制：
+
+relative import
+
+from . import yyy
+from .xx import yyy
+from ..xx import yyy
+from ...xx import yyy
+
+相对引入方式使用一个点号来标识引入类库的精确位置。与linux的相对路径表示相似，一个点表示当前目录，每多一个点号则代表向上一层目录。
+
+absolute import
+
+from src.packone import test1
+
+绝对引用通过package的绝对路径引入module，且路径要从最上一层的package写起。
+
+这里有几个问题需要注意：
+
+一、使用relative import的脚本不能直接启动，否则会报错：Attempt relative import in non-package。
+
+原因是：
+
+相对引入使用被引入文件的__name__属性来决定该文件在整个包结构的位置，但是当python脚本被直接运行时，这个module的__name__就被设置__main__, 而不是module原来的name，这样相对路径就无法识别。
+
+二、即使使用了绝对引用，启动脚本也要放在和top-level package同层级，如果放在topo-level的package下，在终端下运行会报错：No module named xxx
+
+原因是：
+
+1.Python通过import的模块搜索路径有：
+
+程序主目录
+
+PYTHONPATH目录
+
+标准链接库目录
+
+.pth文件目录（指python运行用户把有效的路径添加到模块搜索路径中去）
+
+2.如果启动脚本放在src目录下：
+
+2.1.程序主目录为src/，在这个目录下没有src这个module
+
+2.2.PYTHONPATH目录下也不会有src这个module
+
+2.3.标准链接库目录和.pth文件目录也不回搜索到src这个module
+
+3.如果启动脚本放在src同级目录下：
+
+程序主目录下即可搜索到src这个module，import便不会报错
+

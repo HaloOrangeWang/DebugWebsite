@@ -1,0 +1,82 @@
+tensorflow.python.framework.errors_impl.ResourceExhaustedError: OOM when allocating tensor with shape[1,1424,2128,64]
+
+1、开始以为是 是显卡显存不足，没有想到是gpu问题
+
+ref: https://www.cnblogs.com/heiao10duan/p/9083303.html
+
+2、开始以为是没有选中独立显卡
+
+# import os           #key: https://blog.csdn.net/littlehaes/article/details/82317220
+
+# os.environ["CUDA_VISIBLE_DEVICES"] = "2"    #ref: https://www.cnblogs.com/ying-chease/p/9473938.html
+
+#ref: https://www.cnblogs.com/darkknightzh/archive/2004/01/13/8576825.html
+
+# ref:http://www.voidcn.com/article/p-xhpiftyw-bte.html
+
+# ref:https://blog.csdn.net/weixin_43301333/article/details/108854504
+
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # ref:https://blog.csdn.net/zqx951102/article/details/88897117
+
+# ref:https://www.imooc.com/article/details/id/289425
+
+3、 后来通过list_local_devices发现是没有装TensorFlow-gpu， install TensorFlow-gpu
+
+# from tensorflow.python.client import device_lib
+
+# print(device_lib.list_local_devices())
+
+# https://blog.csdn.net/littlehaes/article/details/82317220
+
+但是注意，安装命令应该使用：conda install -c anaconda tensorflow-gpu
+
+而不是 pip3 uninstall tensorflow-gpu
+
+测试是否安装成功
+
+方法一：
+
+import tensorflow as tf
+import tensorflow.compat.v1 as tfs
+sess = tfs.Session(config=tfs.ConfigProto(log_device_placement=True))
+
+import tensorflow as tf
+
+import tensorflow.compat.v1 as tfs
+
+sess = tfs.Session(config=tfs.ConfigProto(log_device_placement=True))
+
+输出中看到：
+
+2020-12-10 08:38:41.553101: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1241] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 3001 MB memory) -> physical GPU (device: 0, name: Quadro P1000, pci bus id: 0000:01:00.0, compute capability: 6.1)
+Device mapping:
+
+方法二：
+
+from tensorflow.python.client import device_lib
+
+print(device_lib.list_local_devices())
+
+输出中看到：
+
+ncarnation: 5727256362115513404
+, name: "/device:GPU:0"
+device_type: "GPU"
+memory_limit: 3147143577
+locality {
+  bus_id: 1
+  links {
+  }
+}
+
+4、安装成功后，代码运行报错
+
+from tensorflow.python._pywrap_tensorflow_internal import *
+ImportError: DLL load failed: 找不到指定的模块。
+https://www.jb51.net/article/178940.htm
+
+from tensorflow.python._pywrap_tensorflow_internal import *
+ImportError: DLL load failed: 找不到指定的模块。
+
+https://www.jb51.net/article/178940.htm
+

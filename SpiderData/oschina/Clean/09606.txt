@@ -1,0 +1,142 @@
+背景说明
+
+最近在做一个 Elasticsearch 的分页查询，并且对查询结果按照特定字段进行排序的功能。
+
+但是执行结果却报错，报错信息如下：
+
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "illegal_argument_exception",
+        "reason": "Fielddata is disabled on text fields by default. Set fielddata=true on [state] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead."
+      }
+    ],
+    "type": "search_phase_execution_exception",
+    "reason": "all shards failed",
+    "phase": "query",
+    "grouped": true,
+    "failed_shards": [
+      {
+        "shard": 0,
+        "index": "alarm",
+        "node": "hdLJanxRTbmF52eK6-FFgg",
+        "reason": {
+          "type": "illegal_argument_exception",
+          "reason": "Fielddata is disabled on text fields by default. Set fielddata=true on [state] in order to load fielddata in memory by uninverting the inverted index. Note that this can however use significant memory. Alternatively use a keyword field instead."
+        }
+      }
+    ]
+  },
+  "status": 400
+}
+
+原因分析
+
+查询语句如下：
+
+GET alarm/_search           // index为 alarm
+{
+  "query" : {
+    "bool" : {
+      "must" : [
+        {
+          "match_phrase" : {
+            "state" : {
+              "query" : "confirmed",
+              "slop" : 0,
+              "boost" : 1.0
+            }
+          }
+        }
+      ],
+      "disable_coord" : false,
+      "adjust_pure_negative" : true,
+      "boost" : 1.0
+    }
+  },
+  "from": 1,   // 分页，第几页开始
+  "size": 5,    // 分页，每页显示多少条
+  "sort": {    // 排序，按照  state 字段降序排序
+    "state": {
+      "order": "desc"
+      
+    }
+  }
+}
+
+测试分析：
+
+1）去除排序语句，分页查询是OK的，问题出在了排序字段；
+
+2）按照 integer 类型 或者 date 类型的字段排序都是OK的，但是 string 类型排序报错（示例中的state字段为 string 类型）
+
+解决方案
+
+其实在报错信息里已经提供了解决方案：
+
+需要对 string类型的字段，单独设置加载到内存中，才能排序。
+
+Set fielddata=true on [state] in order to load fielddata in memory by uninverting the inverted index.
+
+具体设置操作如下：
+
+PUT alarm/_mapping/alarmInfoHistory/
+{
+    "properties":{
+        "state":{
+            "type":"text",
+            "fielddata":true
+        }
+    }
+}
+
+执行结果：
+
+{
+  "acknowledged": true
+}
+
+再次执行排序查询查询语句，就OK了。
+
+Good Luck~
+
+PS：
+
+如果想按照多个字段排序（按照 state 和 alarmGrade 降序排序），SQL参考如下：
+
+{
+    "query":{
+        "bool":{
+            "must":[
+                {
+                    "match_phrase":{
+                        "state":{
+                            "query":"confirmed",
+                            "slop":0,
+                            "boost":1
+                        }
+                    }
+                }
+            ],
+            "disable_coord":false,
+            "adjust_pure_negative":true,
+            "boost":1
+        }
+    },
+    "from":1,
+    "size":10,
+    "sort":[
+        {
+            "state":{
+                "order":"desc"
+            }
+        },
+        {
+            "alarmGrade":{
+                "order":"desc"
+            }
+        }
+    ]
+}
+

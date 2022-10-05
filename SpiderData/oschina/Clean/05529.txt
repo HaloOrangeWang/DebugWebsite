@@ -1,0 +1,133 @@
+👆对私有云感兴趣可以进入公众号回复“私有云”哦。
+
+前言
+
+今天我们来讲一个大家经常问到或者经常容易出错的一个问题--如何调用别的.air脚本中封装好的方法，我们将围绕以下内容来讲解：
+
+普通调用的方法；
+
+普通调用的方法；
+
+设定默认项目根目录PROJECT_ROOT来调用的方法；
+
+设定默认项目根目录PROJECT_ROOT来调用的方法；
+
+调用过程中常见的问题
+
+调用过程中常见的问题
+
+为了帮助大家更好地理解，下文都将以实际案例来介绍调用的方法和常见问题。
+
+普通调用的方法
+
+首先，我们新建1个common.air的脚本，在里面定义1个名为common_function()的方法：
+
+# common.air
+from airtest.core.api import *
+auto_setup(__file__)
+
+def common_function():
+    touch("tmp.png")
+
+然后，我们再新建1个call.air的脚本，用来调用common.air里面封装好的方法：
+
+# call.air
+from airtest.core.api import using
+auto_setup(__file__)
+
+# using("相对路径/绝对路径")
+using("common.air")
+from common import common_function
+
+common_function()
+
+common.air和call.air脚本所在目录如图所示：
+
+值得注意的是，call.air的代码示例中，using("common.air")使用的是相对路径，我们也可以使用绝对路径来找到common.air，如：
+
+using("D:/test/common.air")
+
+设定默认项目根目录PROJECT_ROOT
+
+来调用的方法
+
+如果需要调用的子脚本路径统一都放在某个目录下，可以通过设定一个默认项目根目录 PROJECT_ROOT，让使用using接口时能够在当前根目录下寻找别的子脚本，无需填写完整路径，让脚本之间相互调用使用更加方便。
+
+例如，我们建立一个名为test1.air的脚本，绝对路径为D:/test/user/project/test1.air :
+
+# test1.air
+from airtest.core.api import *
+auto_setup(__file__)
+
+def test():
+    touch("tmp.png")
+
+然后我们在"D:/test/"目录下新建main.air脚本，调用test1.air脚本里面的test方法:
+
+# main.air
+from airtest.core.api import *
+auto_setup(__file__)
+
+# PROJECT_ROOT需要填写绝对路径
+ST.PROJECT_ROOT = "D:/test/user/project"
+using("test1.air")
+from test1 import test
+test()
+
+
+调用过程中常见的问题
+
+
+路径斜杠问题
+
+填写路径的时候，需要注意使用的是/而非反斜杠\，特别是你从计算机上复制路径的时候，计算机的路径使用的都是反斜杠\，我们在代码中使用时需要手动转换过来，不然会出现以下报错：
+
+图中示例的路径中包含了很多反斜杠\（特殊字符），方法一是我们可以通过添加反斜杠\来转义，也就是说路径字符串可以写成类似这样：D:\\test\\user\\project。
+
+或者是我们可以在字符串前加一个r来定义原始字符串（忽略所有的转义字符，比如这里的反斜杠\），类似这样： r"D:\test\user\project"。
+
+
+调用的模块不存在
+
+在调用的过程中，我们经常会遇到以下报错：
+
+上述报错的意思是，程序找不到我们想要调用的名为test1的这个模块。这时候我们可以从以下几方面来思考：
+
+仔细核对调用的模块是否存在于你填写的路径里面；
+
+仔细核对调用的模块是否存在于你填写的路径里面；
+
+设定默认的项目根目录PROJECT_ROOT时是否使用了相对路径而没有使用绝对路径。
+
+设定默认的项目根目录PROJECT_ROOT时是否使用了相对路径而没有使用绝对路径。
+
+如果以上都没有问题，但程序还是找不到你想调用的模块，你还可以尝试把路径加入到sys.path里面去，Python就会在sys.path的路径下搜索对应的.py文件，以上述的main.air脚本为例:
+
+# main.air
+from airtest.core.api import *
+auto_setup(__file__)
+
+#将test1.air的路径添加到sys.path里面
+sys.path.append(r"D:\test\user\project\test1.air")
+
+using("test1.air")
+from test1 import test
+test()
+
+这种方法是在运行时修改sys.path，运行结束后失效。
+
+另外你还可以通过设置环境变量PYTHONPATH来增加模块搜索的路径，设置方式与设置Path环境变量类似。注意只需要添加你自己的搜索路径，Python自己本身的搜索路径不受影响。
+
+
+在IDE可以运行的脚本到命令行运行就报错
+
+上文中，我们介绍了俩个方法实现调用，里面的例子是在IDE中运行的；但如果我们直接在命令行中使用airtest run 脚本绝对路径来运行，有可能又会出现找不到模块的情况：
+
+这是因为，在IDE里面默认会把父路径加到sys.path里面，而使用命令行跑脚本的时候，不会默认添加父路径；为避免以上错误，我们可以在脚本里手动把路径添加到sys.path里面，避免不必要的错误。
+
+sys.path.append(r"D:\test\user\project\test1.air")
+
+本文分享自微信公众号 - AirtestProject（AirtestProject）。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

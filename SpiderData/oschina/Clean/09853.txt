@@ -1,0 +1,51 @@
+oracle11.2.0.4  impdp 导入数据库的时候报错
+
+导入命令：
+
+impdp system/Cloud#osshk directory=data_pump_dir dumpfile=20180712.dmp logfile=20180712.log  schemas=xx,ss
+
+导入报错，报错提示如下
+
+1 . . imported "WFM"."WO_SPEED_RECORD" 0 KB 0 rows
+ 2 . . imported "WFM"."WO_WIDTHBAND_SPEED_LOG" 0 KB 0 rows
+ 3 Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+ 4 Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+ 5 Processing object type SCHEMA_EXPORT/TABLE/COMMENT
+ 6 ORA-39126: Worker unexpected fatal error in KUPW$WORKER.PUT_DDLS [COMMENT]
+ 7 ORA-06502: PL/SQL: numeric or value error
+ 8 LPX-00230: invalid character 60 (U+003C) found in a Name or Nmtoken
+ 9 
+10 ORA-06512: at "SYS.DBMS_SYS_ERROR", line 95
+11 ORA-06512: at "SYS.KUPW$WORKER", line 9715
+12 
+13 ----- PL/SQL Call Stack -----
+14 object line object
+15 handle number name
+16 0x9c7b75d30 21979 package body SYS.KUPW$WORKER
+17 0x9c7b75d30 9742 package body SYS.KUPW$WORKER
+18 0x9c7b75d30 17950 package body SYS.KUPW$WORKER
+19 0x9c7b75d30 4058 package body SYS.KUPW$WORKER
+20 0x9c7b75d30 10450 package body SYS.KUPW$WORKER
+21 0x9c7b75d30 1824 package body SYS.KUPW$WORKER
+22 0x9b6d68920 2 anonymous block
+23 
+24 ORA-39097: Data Pump job encountered unexpected error -1427
+25 ORA-39065: unexpected master process exception in DISPATCH
+26 ORA-01427: single-row subquery returns more than one row
+27 
+28 Job "SYSTEM"."SYS_IMPORT_SCHEMA_04" stopped due to fatal error at Thu Jul 12 15:08:49 2018 elapsed 0 00:00:30
+
+解决方法
+
+导入的时候不导入comment。使用如下命令即可导入成功
+
+impdp system/Cloud#osshk directory=data_pump_dir dumpfile=20180712.dmp logfile=20180712.log  schemas=xx,ss  EXCLUDE=comment
+
+解决思路
+
+导入的时候报错了，一般就是看在导入什么东西的时候报的错，报错信息的第5行提示是在
+
+Processing object type SCHEMA_EXPORT/TABLE/COMMENT
+
+那么我在导入的时候直接排除comment就好了，comment在导入完成后想其他办法重新生成吧。
+

@@ -1,0 +1,43 @@
+长期维护的iOS开源项目：
+
+​​
+
+​​
+
+使用百度云OCR上传appstore  的时候报错：
+
+主要是AipBase.frameworK的问题。
+
+如图：
+
+解决版本：
+
+
+一： 进入你项目中的 AipBase.framework
+
+命令： cd AipOcrSdk/AipBase.framework
+
+
+二： 使用lifo -info 可以查看包含的架构
+
+命令：lipo -info AipBase
+
+展示的应该是：  Architectures in the fat file: AipBase are: i386 x86_64 armv7 armv7s arm64
+
+
+三： 移除x86_64, i386
+
+命令一：lipo -remove x86_64 AipBase -o AipBase
+
+命令二：lipo -remove i386 AipBase -o AipBase
+
+
+再次查看
+
+lipo -info AipBase
+
+展示应该是： Architectures in the fat file: AipBase are: armv7 armv7s arm64
+
+
+大功告成·····（亲测，发布成功）
+

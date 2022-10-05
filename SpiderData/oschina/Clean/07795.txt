@@ -1,0 +1,40 @@
+【问题1】
+
+使用Navicat连接服务器的mariadb/mysql时报错 access denied for user root@192.168.xx.xx(using password:yes)
+
+【原因1】
+
+mariadb/mysql没有提供root权限给除了localhost以外的主机进行访问
+
+【解决】
+
+#进入mariadb/mysql
+
+#此步骤设置了以root用户访问的任何IP都以'root'作为密码
+> GRANT ALL PRIVILEGES ON *.* TO'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;
+
+> flush privileges;
+
+【问题2】
+
+普通用户登入时， 报错access denied for user user01@192.168.xx.xx (using password:yes)
+
+【原因2】
+
+mariadb/mysql针对指定用户没有授予权限
+
+【解决】
+
+#进入mariadb/mysql
+
+#此步骤设置了以root用户访问的任何IP都以'root'作为密码
+> GRANT ALL PRIVILEGES ON *.* TO'user01'@'%' IDENTIFIED BY 'user01' WITH GRANT OPTION;
+
+> flush privileges;
+
+#还有另外一种可能是，配置localhost 和 %两条数据的密码不一致
+
+可以执行利用修改密码将两种host方式的密码修改为一致的
+
+　　
+

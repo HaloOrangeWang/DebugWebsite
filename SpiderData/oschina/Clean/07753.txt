@@ -1,0 +1,8 @@
+一、Spring Boot项目渲染html的时候，因默认使用是Thymeleaf模板引擎，遇到不闭合标签报错，日常在编写HTML代码时，一般标签都是闭合的，容易忽略的标签包括<meta/>, <link/>, <br/>, <hr/>等等。
+
+在HTML5中，有些标签并不要求闭合，Thymeleaf遇到这样的HTML文件会报错。可在Spring Boot的配置文件中增加一行配置：spring.thymeleaf.mode=LEGACYHTML5,配置文件通常在/resources目录下，以application.properties命名，没有创建即可。
+
+二、在配置之后，又有提示org.thymeleaf.exceptions.ConfigurationException: Cannot perform conversion to XML from legacy HTML: The nekoHTML library is not in classpath. nekoHTML 1.9.15 or newer is required for processing templates in "LEGACYHTML5" ，缺包。
+
+在maven的配置添加对应的依赖即可。
+

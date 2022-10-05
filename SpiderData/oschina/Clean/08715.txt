@@ -1,0 +1,38 @@
+1、声明报错的方法，以及相对应的页面
+
+//把数据库的调用方法配置到请求中
+server.use((req, res, next) => {
+    //把数据库存入req中
+    req.db = db;
+    //把报错方法存入res中
+    res.showError = code => {
+        switch (code) {
+            case 404:
+                res.status(code).render('404', {});
+                break;
+            case 500:
+                res.status(code).render('500', {});
+                break;
+        }
+    };
+    next();
+});
+
+2、在静态资源下面引用
+
+//配置静态文件
+server.use(express.static('./www/'));
+//配置错误页面，下面是引用错误页面
+server.use((req, res) => {
+    res.showError(404);
+});
+
+3、在代码的时候如果有报错的情况，那么就引用res.showError（code）的方法
+
+server.router.get('/test',(res,req)=>{
+    ...代码段
+    if(err){
+        res.showError(code);
+    }
+})
+

@@ -1,0 +1,47 @@
+【环境介绍】
+  系统环境：腾讯云 + 5.7.18+Navicat 11.2.7（客户端）
+
+【情况描述】
+
+早上执行update语句报错分析：
+
+使用Navicat 11.2.7版本执行报错
+UPDATE shx_xxx.user_xxx SET roxx_id='xxxxxxxxxxxxxxxxxx0001' WHERE usxx_id='xxxxxxxxxxxxxxxxxx35';
+
+报错信息：
+[Err] 1055 - Expression #1 of ORDER BY clause is not in GROUP BY clause and contains nonaggregated column 
+'information_schema.PROFILING.SEQ' which is not functionally dependent on columns in GROUP BY clause; 
+this is incompatible with sql_mode=only_full_group_by
+
+【情况分析】
+
+查看报错信息提示only_full_group_by，该报错一般是在查询时候用到，单纯的update语句且条件没有group by跟order by语句，比较奇怪
+
+查看sql_mode解释：
+ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+ONLY_FULL_GROUP_BY为MySQL 5.7.4版本的新增的参数：对于GROUP BY聚合操作，如果在SELECT中的列，没有在GROUP BY中出现，那么这个SQL是不合法的，因为列不在GROUP BY从句中；
+
+但是使用workbench工具update正常，跟踪通用日志（general_log），发现使用在更新的时候有查询information_schema.PROFILING操作，该视图为记录SQL执行的消耗信息，该查询不符合ONLY_FULL_GROUP_BY参数限制，所以才会出现报错
+
+show variables like '%gen%';
+set global general_log=1;
+update xxxxx set xxxx;
+set global general_log=0;
+show variables like '%gen%'; 》》》注意观察一定关闭该参数，否则产生大量的日志信息
+
+2020-01-08T15:20:47.934694+08:00 2605922 Query SHOW GLOBAL STATUS
+2020-01-08T15:20:48.837771+08:00 2608143 Query SET PROFILING=1
+2020-01-08T15:20:48.840037+08:00 2608143 Query SHOW STATUS
+2020-01-08T15:20:48.845610+08:00 2608143 Query SHOW STATUS
+2020-01-08T15:20:48.853304+08:00 2608143 Query UPDATE shx_xxx.user_xxx SET roxx_id='xxxxxxxxxxxxxxxxxx0001' WHERE usxx_id='xxxxxxxxxxxxxxxxxx35';
+2020-01-08T15:20:48.857803+08:00 2608143 Query SHOW STATUS
+2020-01-08T15:20:48.863344+08:00 2608143 Query SELECT QUERY_ID, SUM(DURATION) AS SUM_DURATION FROM INFORMATION_SCHEMA.PROFILING GROUP BY QUERY_ID
+2020-01-08T15:20:48.867054+08:00 2608143 Query SELECT STATE AS `状态`, ROUND(SUM(DURATION),7) AS `期间`, CONCAT(ROUND(SUM(DURATION)/0.000846*100,3), '%') AS `百分比` 
+FROM INFORMATION_SCHEMA.PROFILING WHERE QUERY_ID=39 GROUP BY STATE ORDER BY SEQ
+
+【总结】
+
+使用Navicat 11.2.7版本执行报错，使用Navicat 12.1.8正常，使用workbench工具正常，建议使用新版本Navicat，workbench，SQLyog工具。
+
+当然可以按照修改sql_mode参数进行规避，但是该only_full_group_by特性SQL写法标准化类似Oracle的SQL语句写法，没有特殊要求（业务不能修改相关SQL脚本）不建议修改该参数进行规避操作；
+

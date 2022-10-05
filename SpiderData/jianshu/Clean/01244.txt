@@ -1,0 +1,46 @@
+
+一、爬虫读取网页上table(表格)三种方法
+
+读取网页，直接解析html，读取table。
+
+读取网页，用pandas直接解析出table。
+
+有的表格是无法读取的，只能使用selenium + webdriver 来读取，所见都可得。
+
+
+二、selenium + webdriver 报错：WebDriverException: Message: unknown error: cannot find Chrome binary
+
+提示：先下载webdriver，解压后存到指定的位置。
+
+代码：
+
+from selenium import webdriver
+browser = webdriver.Chrome() #本行报错
+browser.get("http://data.eastmoney.com/bbsj/201806/lrb.html")
+
+报错后的解决方法：
+
+（1）添加chrome和webdriver的path变量
+
+（1）添加chrome和webdriver的path变量
+
+（2）直接在代码里面指定他们的位置
+
+（2）直接在代码里面指定他们的位置
+
+以下为第(2)种情况下的处置方式：
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+options = Options()
+options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+driver = webdriver.Chrome(options = options, executable_path="D:\\Program Files (x86)\\webdriver\\chromedriver_win32\\chromedriver.exe")
+driver.get('http://data.eastmoney.com/bbsj/201806/lrb.html')
+print("Chrome Browser Invoked")
+#driver.quit()
+
+运行结果：
+
+后续步骤，爬取表格......待续
+

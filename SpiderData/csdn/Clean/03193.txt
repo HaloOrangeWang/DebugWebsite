@@ -1,0 +1,49 @@
+在Ubuntu16.04系统下
+
+python3
+
+在安装时，采用sudo pip3 install matplotlib
+
+python3
+
+>>import matplotlib.pyplot as plt
+
+出现错误：
+
+Traceback (most recent call last):
+   File "/usr/lib/python3.5/tkinter/__init__.py", line 36, in <module>
+     import _tkinter
+ ImportError: No module named '_tkinter'
+ 
+ 
+ During handling of the above exception, another exception occurred:
+ 
+ 
+ Traceback (most recent call last):
+   File "<stdin>", line 1, in <module>
+   File "/usr/local/lib/python3.5/dist-packages/matplotlib/pyplot.py", line 116, in <module>
+     _backend_mod, new_figure_manager, draw_if_interactive, _show = pylab_setup()
+   File "/usr/local/lib/python3.5/dist-packages/matplotlib/backends/__init__.py", line 60, in pylab_setup
+     [backend_name], 0)
+   File "/usr/local/lib/python3.5/dist-packages/matplotlib/backends/backend_tkagg.py", line 6, in <module>
+     from six.moves import tkinter as Tk
+   File "/usr/lib/python3/dist-packages/six.py", line 92, in __get__
+     result = self._resolve()
+   File "/usr/lib/python3/dist-packages/six.py", line 115, in _resolve
+     return _import_module(self.mod)
+   File "/usr/lib/python3/dist-packages/six.py", line 82, in _import_module
+     __import__(name)
+   File "/usr/lib/python3.5/tkinter/__init__.py", line 38, in <module>
+     raise ImportError(str(msg) + ', please install the python3-tk package')
+ ImportError: No module named '_tkinter', please install the python3-tk package
+
+解决方案:
+
+由上面错误可知，缺少tkinter
+
+安装 tkinter
+
+sudo apt-get install python3-tk
+
+解决！
+

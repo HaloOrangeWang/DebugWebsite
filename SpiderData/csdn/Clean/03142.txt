@@ -1,0 +1,27 @@
+这两天在使用Python操作MySQL数据时，需要进行update操作，执行完后发现，更新并没有成功，但是进行查询操作就就可以成功。后来问了度娘后，终于找到了正确的方式：
+
+sql_usr = 'aaa'
+sql_psw = 'aaa'
+sql_host = 'aaa'
+sql_port = 'aaa'
+
+def mysql1(sql):
+    #打开数据库连接
+    connection = pymysql.connect(host = sql_host,
+                                 port = int(sql_port),
+                                 user = sql_usr,
+                                 password = sql_psw,
+                                 charset = 'utf8')
+    #使用cursor()方法创建一个游标对象cursor
+    cursor = connection.cursor()
+    cursor.execute(sql)#执行sql语句
+    connection.commit()#执行update操作时需要写这个，否则就会更新不成功
+    result = cursor.fetchone()
+    #print(result)
+    #result_cn = json.dumps(result,ensure_ascii=False)
+    #print(result_cn)
+    connection.close()
+    return result
+
+如果只是查询的话，那就不用加了。
+

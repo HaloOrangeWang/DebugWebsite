@@ -1,0 +1,23 @@
+Mac中brew upgrade php@7.2对7.2版本更新，然后控制台中输入：php -v提示报错如下：
+
+bash: /usr/local/Cellar/php@7.2/7.2.17_1/bin/php: No such file or directory
+
+因为7.2.17_1是老版本包内容在更新后自动被删除，所以我们需要替换系统配置：
+1、找到更新目录名：
+
+$ cd /usr/local/Cellar/php@7.2
+$ ls
+
+这里对更新目录是7.2.30_1
+2、找到系统配置文件
+
+$ vim ~/.bash_profile
+
+替换为更新的目录
+
+3、让配置生效
+
+$ source ~/.bash_profile
+
+4、再次执行 php -v 能看到版本号了就哦了(注意如果开了多个控制台载入原来的配置问题，关掉原来打开的其他控制台)
+

@@ -1,0 +1,200 @@
+https://zhuanlan.zhihu.com/p/69099185
+
+目录：
+
+目录：
+
+模块导入原理
+
+ModuleNotFoundError
+
+绝对路径
+
+导入相对
+
+路径导入
+
+添加路径到sys.path
+
+参考
+
+最近遇到一个python import的问题，经过是这样的：
+
+我先实现好一个功能模块，这个功能模块有多级目录和很多 .py 文件，然后把该功能模块放到其他目录下作为子模块，运行代码时，就报错ModuleNotFoundError。
+
+为了解决这个问题，就把 python 的 import 部分给研究了一下（本文不介绍import的语法）。
+
+
+模块导入原理
+
+一个module(模块)就是一个.py文件，一个package(包)就是一个包含.py文件的文件夹（对于python2，该文件夹下还需要__init__.py）。
+
+我这里只考虑python3的情况。
+
+在python脚本被执行，python导入其他包或模块时，python会根据sys.path列表里的路径寻找这些包或模块。如果没找到的话，程序就会报错ModuleNotFoundError。
+
+既然要根据sys.path列表里的路径找到这些需要导入包或模块，就需要知道这个列表里都是些什么东西。
+
+先看下如下程序：
+
+sys.path列表中的每个元素为一个搜索模块的路径，程序中要导入包或模块就需要在这些路径中进行查找，主要分为三种情况：
+
+当前执行脚本（主动执行，而不是被其他模块调用）所在路径。上面例子是在交互界面进行操作，没有执行脚本，所以为空字符串。
+
+python内置的标准库路径，PYTHONPATH。
+
+安装的第三方模块路径。
+
+在运行程序时，先在第一个路径下查找所需模块，没找到就到第二个路径下找，以此类推，按顺序在所有路径都查找后依然没找到所需模块，则抛出错误。列表的第一项是调用python解释器的脚本所在的目录，所以默认先在脚本所在路径下寻找模块。
+
+所以从这里可以知道的是，如果我们在脚本所在路径下定义和python标准库同名的模块，那么程序就会调用我们自定义的该模块而不是标准库中的模块。
+
+
+ModuleNotFoundError
+
+知道了调用模块的流程，现在来分析一下文章最开始提到的那个错误。
+
+假设功能模块的目录树为：
+
+执行命令为 python module_0.py，即通过 module_0.py 来调用python解释器，则该脚本文件所在的路径（'/home/.../package_0'）会被添加到 sys.path 中，可以通过该路径找到其他模块的，比如下面这些语句：
+
+而在 module_2.py 中加入下面这句：
+
+# module_2.py
+import module_3
+
+分为下面两种情况：
+
+执行 python module_2.py 时，不会出现错误。
+
+执行 python module_0.py 时，出现错误：ModuleNotFoundError: No module named 'module_3'。
+
+第一种情况把路径（'/home/.../package_0/package_1'）添加到 sys.path 中，可以通过package_1 找到 module_3。
+
+第二种情况把路径（'/home/.../package_0'）添加到 sys.path 中，该路径下就不能在 module_2.py 中通过这种方式找到module_3，因为module_2.py 在路径/home/.../package_0/package_1下。
+
+
+绝对路径导入
+
+在上面第二种情况中想调用module_3的话，可以使用绝对路径导入的方式：
+
+# module_2.py
+from package_1 import module_3
+
+即在路径/home/.../package_0/package_1下先找到package_1，再找到module_3。
+
+同理，想在module_21.py中调用module_22，可以使用如下方式：
+
+# module_21.py
+from package_1.package_2 import module_21
+
+绝对导入根据从项目根文件夹开始的完整路径导入各个模块。
+
+使用绝对路径的方式就可以解决这个问题，但是如果package_0这个文件夹要放到其他项目中，则这个文件夹下的所有相关导入都要修改，即在绝对导入的基础上再加一层。
+
+而且如果文件夹层级太多，调用一个模块就需要写很长一串，显得很冗余。想要简单一些的话，可以考虑相对路径导入。
+
+
+相对路径导入
+
+相对导入的形式取决于当前位置以及要导入的模块、包或对象的位置。相对导入看起来就比绝对导入简洁一些。
+
+相对导入使用点符号来指定位置。
+
+单点表示引用的模块或包与当前模块在同一目录中（同一个包中）。
+
+两点表示在当前模块所在位置的父目录中。
+
+还是执行命令为 python module_0.py，想在 module_2.py 中导入其他模块，可以使用如下方法：
+
+# module_2.py
+from . import module_3
+from .package_2 import module_21
+
+第一行表示调用和module_2 在同一路径的module_3 模块。
+
+第二行表示调用和module_2 在同一路径的package_2 包下的module_21 模块。
+
+还有两种用法：
+
+from .. import module_name：导入本模块上一级目录的模块。
+
+from ..package_name import module_name。导入本模块上一级目录下的包中的模块。
+
+不过相对导入要注意两个地方（仍然执行命令为 python module_0.py）：
+
+第一个：
+
+在 module_21 中导入 module_2：from .. import module_2
+
+在 module_2 中导入 module_4：from ..package_3 import module_4
+
+理论上这两句都没错，但是第二句会报如下错误：
+
+ValueError: attempted relative import beyond top-level package
+
+这个报错的意思是：试图在顶级包（top-level package）之外进行相对导入。也就是说相对导入只适用于顶级包之内的模块。
+
+如果将 module_0.py 当作执行模块，则和该模块同级的 package_1 和 package_3 就是顶级包（top-level package），而 module_2 在package_1中，module_0、module_1和module_4都在 package_1之外，所以调用这三个模块时，就会报这个错误。
+
+第二个：
+
+还有个注意点就是使用了相对导入的模块文件不能作为顶层执行文件，即不能通过 python 命令执行，比如执行python module_0.py，在 module_0 中添加如下语句：
+
+# module_0.py
+from .package_1 import module_2
+
+报错如下：
+
+ModuleNotFoundError: No module named '__main__.package_1'; '__main__' is not a package
+
+python 的相对导入会通过模块的 __name__ 属性来判断该模块的位置，当模块作为顶层文件被执行时，其 __name__ 这个值为 __main__，不包含任何包的名字，而当这个模块被别的模块调用时，其 __name__ 的值为这个模块和其所在包的名字，比如 module_2 的 __name__ 值为 package_1.module_2。
+
+。。。其实这个内部原理我也没弄清楚，可以查看这个stackoverflow 问题，最后结论就是使用了相对导入的模块文件不能被直接运行，只能通过其他模块调用。
+
+使用相对导入没有绝对导入那么直观，而且如果目录结构发生改变，则也要修改对应模块的导入语句。所以我最后使用的是下面这种方法。
+
+
+添加路径到sys.path
+
+前面说过程序只会在sys.path 列表的路径中搜索模块，那么就可以想到另一个解决方法，即将想调用包或模块的路径添加到sys.path 中。
+
+还是执行 python module_0.py，已经知道在 module_2.py 中直接导入module_3 模块会报错，除了使用绝对导入和相对导入，还可以将module_2.py 所在目录添加到sys.path 中。
+
+sys.path.append(os.path.dirname(__file__)) 表示的含义如下：
+
+使用 sys.path.append 将某路径添加到sys.path 中。
+
+__file__ 获得该模块文件的绝对路径
+
+os.path.dirname(__file__) 获得模块文件所在的目录
+
+所以这条语句就是把模块文件所在的目录添加到sys.path 中。
+
+通过这种方法可以比较灵活地把其他路径添加到sys.path 中，而没有什么限制。
+
+比如导入module_4.py 所在路径：
+
+# module_2.py
+sys.path.append(os.path.join(os.path.dirname(__file__), '../package_3'))
+import module_4
+
+其中的 os.path.join(os.path.dirname(__file__), '../package_3') 的值为：/home/zxd/Documents/package_0/package_1/../package_3，两点表示上一级目录。然后我们就可以直接导入module_4 了。
+
+当通过这种方法导入工程文件中的很多模块路径在sys.path 中时，如果工程文件中存在重名模块，可能会报错：ImportError: cannot import name。这个要小心一点。
+
+
+参考
+
+Absolute vs Relative Imports in Python
+
+Python Modules and Packages – An Introduction
+
+Working with Modules in Python
+
+The Definitive Guide to Python import Statements
+
+z.defying：import 问题浅谈
+
+如果觉得有用，点个赞吧(ง •̀_•́)ง。
+

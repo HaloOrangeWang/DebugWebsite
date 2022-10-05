@@ -1,0 +1,64 @@
+
+哪个字段一定要int类型，我没给他
+
+File "C:\Users\囧包子\AppData\Local\Programs\Python\Python36\lib\site-packages\django\db\models\fields_init_.py", line 966, in get_prep_value
+
+return int(value)
+
+ValueError: invalid literal for int() with base 10: ''
+
+[25/Nov/2021 19:45:02] "POST / HTTP/1.1" 500 121080
+
+
+改成不过滤写入，还是报错
+
+Vocation.objects.create(**d) # 更新数据需以字典显示
+
+return HttpResponse('提交成功')
+
+File "C:\Users\囧包子\AppData\Local\Programs\Python\Python36\lib\site-packages\django\db\models\fields\related_descriptors.py", line 211, in set
+
+self.field.remote_field.model._meta.object_name,
+
+ValueError: Cannot assign "'1'": "Vocation.person" must be a "PersonInfo" instance.
+
+[25/Nov/2021 20:03:02] "POST / HTTP/1.1" 500 91758
+
+
+这个Vocation模型有毒把，无论怎么改动
+
+只要调用它，在这个views.py中就报错
+
+
+ValueError: invalid literal for int() with base 10: ''
+
+真是个奇葩的错误
+
+
+解决了
+
+就这两种报错
+
+1.ValueError: invalid literal for int() with base 10: ''
+
+这是由于使用了filter(id=id)来过滤出指定元素然后修改，但没有改元素的话自然无法修改成功
+
+这里的id获取是通过url地址来获取的
+
+2.ValueError: Cannot assign "'1'": "Vocation.person" must be a "PersonInfo" instance.
+
+这是由于写入模型的字段不匹配，可打印出来查看
+
+v = VocationForm(data=request.POST, prefix='vv') # 参数data是在表单实例化之后，再将数据传递给实例化对象，只适用于接收http的请求
+
+获取表单post数据
+
+
+打印出数据
+
+ctitle = v.cleaned_data
+
+print(ctitle)
+
+观察少了哪些字段，多了哪些，以数据库的字段为准，django编写的字段到了数据库会有写变化
+

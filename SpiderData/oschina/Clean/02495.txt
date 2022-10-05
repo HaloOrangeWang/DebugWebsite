@@ -1,0 +1,152 @@
+
+写在之前
+
+字符编码问题几乎是会跟随我们整个编程生涯的一大魔障，一不小心各种玄学的问题就会接踵而至，防不胜防，尤其是对初学者来说，碰到编码问题简直是就是加快了踏上从入门到放弃的传送带。
+
+
+字符集问题
+
+很多时候在使用 Python 编程的时候，如果不使用 Unicode，处理中文的时候会出现一些让人头大的事情，当然这个是针对 Python2 版本来说的，因为 Python3 默认使用的是 Unicode。具体如下所示：
+
+>>> name = '李四'
+
+>>> name
+
+'æå'
+
+>>> print(name)
+
+李四
+
+>>> len(name)
+
+6
+
+>>> name[:1]
+
+'æ'
+
+>>> print(name[:1])
+
+通过上面的例子可以看到，我们在代码中使用中文以后，求字符串的长度和对其进行切片操作都没有按照我们预想的方式输出结果，当然有懂得读者知道这个问题用 Unicode 就可以轻松解决，但真的是轻松解决么？如果你对字符集编码只是半瓶子醋，新出现的问题又会让你头大如斗。具体如下所示：
+
+>>> name = u'李四'
+
+>>> name
+
+u'李四'
+
+>>> name[:1]
+
+u'李'
+
+>>> print(name[:1])
+
+李
+
+>>> with open('./Desktop/test', 'a') as f:
+
+... f.write(name)
+
+...
+
+Traceback (most recent call last):
+
+File "<stdin>", line 2, in
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128)
+
+上述的代码出现了错误，报错的原因很简单，因为我们定义了一个 Unicode 字符串 u'李四'，然后我们想把它保存到文本文件里，但是我们没有指定文件的编码，所以默认的是 ASCII 编码，显然用 Unicode 表示的汉字是无法用 ASCII 码存储的，所以就抛出了 UnicodeEncodeError 异常。
+
+Python2 & Python3 的 Unicode
+
+前面铺垫的够多，现在我们算是正式来看 Python 中的字符串与字符编码之间的调用。
+
+首先来说 Python3，Python3 里有两种表示字符序列的类型，分别是 bytes 和 str，bytes 的实例包含 8 位值，str 的则包含 Unicode 字符。Python2 中也有两种表示字符序列的类型，分别是 str 和 Unicode，它与 Python3 的不同是，str 的实例包含原始的 8 位值，而 Unicode 的实例包含 Unicode 字符。这是什么意思呢？也就是说 Python3 中字符串默认为 Unicode，但是如果在 Python2 中需要使用 Unicode，必须要在字符串的前面加一个 「u」前缀，形式参考上面例子中的写法。
+
+当然了，在 Python2 中也可以默认使用 Unicode 的字符串，执行下面的操作即可：
+
+from __future__ import unicode_literals
+
+Python 字符串有 encode 和 decode 方法，用这两个可以对字符串进行编码或解码，我们来看一个在 Python2 下运行的例子：
+
+>>> name = '李四'
+
+>>> name
+
+'æå'
+
+>>> my_name = name.decode('utf8')
+
+>>> my_name
+
+u'李四'
+
+>>> print(my_name)
+
+李四
+
+>>> my_name.encode('utf-8')
+
+'æå'
+
+既然我们知道了 encode 用于编码，decode 用于解码，那么对于之前我们抛出异常的那个例子我们可以手动解决，具体如下所示：
+
+>>> with open('./Desktop/data.txt', 'a') as f:
+
+... f.write(name.encode('utf-8'))
+
+...
+
+>>> with open('./Desktop/data.txt', 'r') as f:
+
+... data = f.read()
+
+...
+
+>>> data.decode('utf-8')
+
+u'李四'
+
+上述代码是字符串较短的情况，如果需要写入的字符串很多，每次都要手动进行编码将会变的非常低效，Python2 中有个「codecs」模块可以解决这个问题：
+
+>>> import codecs
+
+>>> name
+
+u'李四'
+
+>>> with codecs.open('./Desktop/data.txt', 'w', encoding='utf-8') as f:
+
+... f.write(name)
+
+...
+
+>>> with codecs.open('./Desktop/data.txt', 'r', encoding='utf-8') as f:
+
+... data = f.read()
+
+...
+
+>>> data
+
+u'李四'
+
+而在 Python3 中内置的 open 就已经支持指定编码风格：
+
+>>> name = '李四'
+
+>>> name
+
+'李四'
+
+>>> with open('./Desktop/data.txt', 'w', encoding='utf-8') as f:
+
+... f.write(name)
+
+...
+
+把 Unicode 字符表示为二进制的数据有很多种办法，最常见的就是 utf-8，但是这里需要我们明白的是，Unicode 是表现形式，utf-8 是存储形式，utf-8 虽然是使用最广泛的编码，但也仅仅是 Unicode 的一种存储形式罢了。
+
+当然字符编码的问题还有很多，我也不可能面面俱到，最后我还是希望你可以在一开始的时候就彻底的搞定字符编码的东西，拿出一些时间来好好研究一下，不然这个东西会成为你编码路上挥之不去的“噩梦”。
+

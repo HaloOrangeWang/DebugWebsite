@@ -1,0 +1,39 @@
+
+下面就来说说解决方案吧~
+
+import os
+import sys
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootpath=str(curPath)
+syspath=sys.path
+depth = rootpath.count("\\") - 1
+sys.path=[]
+sys.path.append(rootpath)#将工程根目录加入到python搜索路径中
+sys.path.extend([rootpath+i for i in os.listdir(rootpath) if i[depth]!="."])#将工程目录下的一级目录添加到python搜索路径中
+sys.path.extend(syspath)
+#print(sys.path)
+
+#用法
+
+在所要运行py文件，第一行导入此方法
+
+补充：python3执行.py文件的路径，与.py文件中编写中的路径问题
+
+
+出错：
+
+路径1的路径是~/Desktop/1_python实验作图，这个途径下有salt_alkali_soil_earthMap.py，因此python3.6可以执行它；
+
+但是出错了
+
+原因就是：编码程序中的路径2中，出现了“路径：./Desktop/04-00世界地图.html'，
+
+意思是：在当前路径下，先寻找Desktop文件夹，当然没有，所以就出错了。
+
+
+解决方案：
+
+路径改成：./04-00世界地图.html，即可在当前路径下创建文件04-00世界地图.html
+
+以上为个人经验，希望能给大家一个参考，也希望大家多多支持脚本之家。如有错误或未考虑完全的地方，望不吝赐教。
+

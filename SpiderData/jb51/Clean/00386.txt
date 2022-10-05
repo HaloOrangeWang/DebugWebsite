@@ -1,0 +1,42 @@
+最近将一台测试服务器操作系统升级到了Cent0S 7.5，然后顺便也将Python从2.7.5升级到Python 3.6.6，升级完成后，发现yum安装相关包时出现异常，报“File "/usr/libexec/urlgrabber-ext-down", line 28”这样的错误， 具体错误信息如下所示：
+
+# yum install openssl
+
+..........................
+
+Total download size: 1.7 M
+
+Is this ok [y/d/N]: y
+
+Downloading packages:
+
+Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
+
+File "/usr/libexec/urlgrabber-ext-down", line 28
+
+except OSError, e:
+
+^
+
+SyntaxError: invalid syntax
+
+File "/usr/libexec/urlgrabber-ext-down", line 28
+
+except OSError, e:
+
+^
+
+SyntaxError: invalid syntax
+
+测试、验证了一下，可以用下面这种方法解决这个问题：
+
+修改/usr/libexec/urlgrabber-ext-down中的Python版本信息
+
+vi /usr/libexec/urlgrabber-ext-down 将/usr/bin/python改为/usr/bin/python2.7。
+
+总结
+
+以上所述是小编给大家介绍的解决CentOS 7升级Python到3.6.6后yum出错问题总结,希望对大家有所帮助，如果大家有任何疑问请给我留言，小编会及时回复大家的。在此也非常感谢大家对脚本之家网站的支持！
+
+如果你觉得本文对你有帮助，欢迎转载，烦请注明出处，谢谢！
+

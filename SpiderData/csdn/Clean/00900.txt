@@ -1,0 +1,72 @@
+
+npm i 报错以及python安装卡住的解决方法
+
+①npm install下载报错
+
+② npm安装python环境
+
+③解决安装python卡住的方案
+
+④python环境变量配置
+
+⑤还有问题？
+
+⑥最后。
+
+
+①npm install下载报错
+
+报错信息为
+ Can’t find Python executable “python”, you can set the PYTHON env variable.
+ 就是说没有安装python环境，不是第一次报这个错了，所以在此记录一下。
+
+
+② npm安装python环境
+
+安装命令很多我用的是 npm install -g windows-build-tools
+ 请用管理员打开cmd窗口，否则会报
+ Please restart this script from an administrative PowerShell!
+
+然后就卡住了，一直卡在
+ 
+ 我还以为他安装完了呢，兴冲冲的去把环境变量配上。
+ 结果，啥也不是…😒
+
+
+③解决安装python卡住的方案
+
+看了不少，有一篇很好的解决方案
+ npm安装windows-build-tools时卡在Successfully installed Python 2.7
+
+1、确保你已经执行过了 npm install -g windows-build-tools命令。
+ 2、然后打开资源管理器（或者window+E），在路径处输入%temp%
+ 
+ 3、右击新建一个 dd_client_.log 文件，输入
+ Closing installer. Return code: 3010.
+ 我这里用的VScode编辑器，VS，就是牛！
+ 
+ 保存，好了，就是这么朴实无华。更详细的可以看上面我给的链接，里面博主讲的比较详细。
+ 还发生了一个小插曲，我发现在资源管理器中搜索了之后就新建不了了，不过这好像也正常，毕竟人家是搜索结果，不要搜索直接建就好了。
+
+
+④python环境变量配置
+
+首先在打开cmd窗口（快捷键 window+R），不要用管理员身份运行。
+ 输入 where python
+ 
+ 找到路径之后，可以简单一点直接配置，也可以先新增一个再添加到path中，下方图片红框内二写一就好。
+
+
+⑤还有问题？
+
+如果你打开cmd窗口，输入 python -V，和python，弹出一个 “Microsoft Store”，哦豁，恭喜你中奖了。没安装成功，这玩意就很烦，他非要你去商店安装，是可以关闭的。
+ 搜索 【管理应用执行别名】，把下面没安装成功的给关了，他就不会弹出来了。
+ 如果你的python没有安装成功，就得重新安装一遍。
+
+
+⑥最后。
+
+npm i 运行项目就好了，一切又回到风平浪静。以上内容都是在自己报错之后在网上搜索，成功的内容。
+
+希望能帮到自己和其他人。(●’◡’●)
+

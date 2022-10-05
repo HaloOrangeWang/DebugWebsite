@@ -1,0 +1,16 @@
+上周在进行数据分析联系时，遇到这样一个问题，先来看下看些报错原因。
+
+报错原因是“TypeError: argument of type 'float' is not iterable”意思是float型不能进行迭代。报错原因是数据中含有float型数据，需要使用astype方法进行数据类型准换成str运行即可。
+
+报错的代码：
+
+auth_capital['ex_rate'] = auth_capital[1].apply(get_ex_rate) 
+auth_capital.sample(5)
+
+修改的代码：
+
+auth_capital['ex_rate'] = auth_capital[1].astype(str).apply(get_ex_rate) 
+auth_capital.sample(5)
+
+修改后的运行结果：
+

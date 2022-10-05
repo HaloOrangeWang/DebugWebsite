@@ -1,0 +1,44 @@
+关键词：测试程序
+
+关键词：测试程序
+
+问题描述：从主程序中克隆一个程序作为测试程序，使用这个测试程序在训练之后使用测试数据集进行测试，在执行测试程序时报错，错误提示找不到fetch变量。
+
+问题描述：从主程序中克隆一个程序作为测试程序，使用这个测试程序在训练之后使用测试数据集进行测试，在执行测试程序时报错，错误提示找不到fetch变量。
+
+报错信息：
+
+报错信息：
+
+/usr/local/lib/python3.5/dist-packages/paddle/fluid/executor.py in run(self, program, feed, fetch_list, feed_var_name, fetch_var_name, scope, return_numpy, use_program_cache)
+    468 
+    469         self._feed_data(program, feed, feed_var_name, scope)
+--> 470         self.executor.run(program.desc, scope, 0, True, True)
+    471         outs = self._fetch_data(fetch_list, fetch_var_name, scope)
+    472         if return_numpy:
+
+EnforceNotMet: Cannot find fetch variable in scope, fetch_var_name is mean_0.tmp_0 at [/paddle/paddle/fluid/operators/fetch_op.cc:37]
+PaddlePaddle Call Stacks:
+
+问题复现：在定义优化方法之前就从主程序default_main_program()克隆一个测试程序，使用这个测试程序，通过执行器运行测试程序就出现错误。错误代码如下：
+
+test_program = fluid.default_main_program().clone(for_test=True)
+
+cost = fluid.layers.cross_entropy(input=model, label=label)
+avg_cost = fluid.layers.mean(cost)
+acc = fluid.layers.accuracy(input=model, label=label)
+
+问题解决：在定义损失函数和优化方法都会添加都主程序default_main_program()中，而测试不需要使用到训练时用到的一些操作，所以在克隆测试程序时，需要定义在损失函数之后，优化方法之前。正确代码如下：
+
+cost = fluid.layers.cross_entropy(input=model, label=label)
+avg_cost = fluid.layers.mean(cost)
+acc = fluid.layers.accuracy(input=model, label=label)
+
+test_program = fluid.default_main_program().clone(for_test=True)
+
+问题拓展：PaddlePaddle的Program是Fluid程序主要组成部分之一， Fluid程序中通常存在 2段Program。fluid.default_startup_program是定义了创建模型参数，输入输出，以及模型中可学习参数的初始化等各种操作。而fluid.default_main_program是定义了神经网络模型，前向反向计算，以及优化算法对网络中可学习参数的更新。
+
+本文分享 CSDN - 飞桨PaddlePaddle。
+如有侵权，请联系 support@oschina.cn 删除。
+本文参与“OSC源创计划”，欢迎正在阅读的你也加入，一起分享。
+

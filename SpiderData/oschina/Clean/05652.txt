@@ -1,0 +1,28 @@
+MYSQL MERGE引擎 报错：
+
+ERROR 1168 (HY000): Unable to open underlying table which is differently defined or of non-MyISAM type or doesn't exist
+
+MERGE引擎的表经常用来把多张相同数据结构的表的数据统一到一起，但是创建这个表时必须要保证他的字段类型及长度等属性与要统一的表保持一致，否则就会包以上的错误。
+
+例：
+
+CREATE TABLE `user1` (
+   `id` int(11) NOT NULL,
+   `name` varchar(255) DEFAULT NULL,
+   PRIMARY KEY (`id`)
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `user2` (
+   `id` int(11) NOT NULL,
+   `name` varchar(255) DEFAULT NULL,
+   PRIMARY KEY (`id`)
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `userall` (
+ id int(11) NOT NULL,
+ name varchar(255) DEFAULT NULL,
+ INDEX(id)
+ ) ENGINE=MERGE UNION = (user1,user2) INSERT_METHOD=LAST;
+
+这里id的类型必须为int，长度必须为11，其他字段也要与要统一的表的字段保持一致。
+

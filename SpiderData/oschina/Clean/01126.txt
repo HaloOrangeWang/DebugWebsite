@@ -1,0 +1,110 @@
+pyspark Python3.7环境设置 及py4j.protocol.Py4JJavaError: An error occurred while calling z:org.apache.spark.api.python.PythonRDD.collectAndServe解决!
+
+
+环境设置
+
+JDK: java version "1.8.0_66"
+
+Python 3.7
+
+spark-2.3.1-bin-hadoop2.7.tgz
+
+环境变量 
+  
+export PYSPARK_PYTHON=python3
+export PYSPARK_DRIVER_PYTHON=ipython3
+
+export PYSPARK_PYTHON=python3
+
+export PYSPARK_DRIVER_PYTHON=ipython3
+
+mac-abeen:spark-2.3.1-bin-hadoop2.7 abeen$ ./bin/pyspark 
+Python 3.7.0 (v3.7.0:1bf9cc5093, Jun 26 2018, 20:42:06) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 6.4.0 -- An enhanced Interactive Python. Type '?' for help.
+1Using Python version 3.7.0 (v3.7.0:1bf9cc5093, Jun 26 2018 20:42:06)
+SparkSession available as 'spark'.
+
+In [1]: sc
+Out[1]: <SparkContext master=local[*] appName=PySparkShell>
+
+In [2]: lines = sc.textFile("README.md")
+
+In [3]: lines.count()
+Out[3]: 103
+
+In [4]: lines.first()
+Out[4]: '# Apache Spark'
+
+
+Py4JJavaError PythonRDD.collectAndServe解决!
+
+注意: spark-2.3.1-bin-hadoop2.7 暂不支持java version "9.0.4". 报错请校正自己的JDK是否支持.
+
+./bin/pyspark
+>>> lines = sc.textFile("README.md")
+>>> lines.count()
+
+注意: spark-2.3.1-bin-hadoop2.7 暂不支持java version "9.0.4". 报错请校正自己的JDK是否支持
+Error 以下为报错
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/abeen/abeen/net_source_code/spark-2.3.1-bin-hadoop2.7/python/pyspark/rdd.py", line 1073, in count
+    return self.mapPartitions(lambda i: [sum(1 for _ in i)]).sum()
+  File "/Users/abeen/abeen/net_source_code/spark-2.3.1-bin-hadoop2.7/python/pyspark/rdd.py", line 1064, in sum
+    return self.mapPartitions(lambda x: [sum(x)]).fold(0, operator.add)
+  File "/Users/abeen/abeen/net_source_code/spark-2.3.1-bin-hadoop2.7/python/pyspark/rdd.py", line 935, in fold
+    vals = self.mapPartitions(func).collect()
+  File "/Users/abeen/abeen/net_source_code/spark-2.3.1-bin-hadoop2.7/python/pyspark/rdd.py", line 834, in collect
+    sock_info = self.ctx._jvm.PythonRDD.collectAndServe(self._jrdd.rdd())
+  File "/Users/abeen/abeen/net_source_code/spark-2.3.1-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/Users/abeen/abeen/net_source_code/spark-2.3.1-bin-hadoop2.7/python/pyspark/sql/utils.py", line 63, in deco
+    return f(*a, **kw)
+  File "/Users/abeen/abeen/net_source_code/spark-2.3.1-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/protocol.py", line 328, in get_return_value
+py4j.protocol.Py4JJavaError: An error occurred while calling z:org.apache.spark.api.python.PythonRDD.collectAndServe.
+: java.lang.IllegalArgumentException
+	at org.apache.xbean.asm5.ClassReader.<init>(Unknown Source)
+	at org.apache.xbean.asm5.ClassReader.<init>(Unknown Source)
+	at org.apache.xbean.asm5.ClassReader.<init>(Unknown Source)
+	at org.apache.spark.util.ClosureCleaner$.getClassReader(ClosureCleaner.scala:46)
+	at org.apache.spark.util.FieldAccessFinder$$anon$3$$anonfun$visitMethodInsn$2.apply(ClosureCleaner.scala:449)
+	at org.apache.spark.util.FieldAccessFinder$$anon$3$$anonfun$visitMethodInsn$2.apply(ClosureCleaner.scala:432)
+	at scala.collection.TraversableLike$WithFilter$$anonfun$foreach$1.apply(TraversableLike.scala:733)
+	at scala.collection.mutable.HashMap$$anon$1$$anonfun$foreach$2.apply(HashMap.scala:103)
+	at scala.collection.mutable.HashMap$$anon$1$$anonfun$foreach$2.apply(HashMap.scala:103)
+	at scala.collection.mutable.HashTable$class.foreachEntry(HashTable.scala:230)
+	at scala.collection.mutable.HashMap.foreachEntry(HashMap.scala:40)
+	at scala.collection.mutable.HashMap$$anon$1.foreach(HashMap.scala:103)
+	at scala.collection.TraversableLike$WithFilter.foreach(TraversableLike.scala:732)
+	at org.apache.spark.util.FieldAccessFinder$$anon$3.visitMethodInsn(ClosureCleaner.scala:432)
+	at org.apache.xbean.asm5.ClassReader.a(Unknown Source)
+	at org.apache.xbean.asm5.ClassReader.b(Unknown Source)
+	at org.apache.xbean.asm5.ClassReader.accept(Unknown Source)
+	at org.apache.xbean.asm5.ClassReader.accept(Unknown Source)
+	at org.apache.spark.util.ClosureCleaner$$anonfun$org$apache$spark$util$ClosureCleaner$$clean$14.apply(ClosureCleaner.scala:262)
+	at org.apache.spark.util.ClosureCleaner$$anonfun$org$apache$spark$util$ClosureCleaner$$clean$14.apply(ClosureCleaner.scala:261)
+	at scala.collection.immutable.List.foreach(List.scala:381)
+	at org.apache.spark.util.ClosureCleaner$.org$apache$spark$util$ClosureCleaner$$clean(ClosureCleaner.scala:261)
+	at org.apache.spark.util.ClosureCleaner$.clean(ClosureCleaner.scala:159)
+	at org.apache.spark.SparkContext.clean(SparkContext.scala:2299)
+	at org.apache.spark.SparkContext.runJob(SparkContext.scala:2073)
+	at org.apache.spark.SparkContext.runJob(SparkContext.scala:2099)
+	at org.apache.spark.rdd.RDD$$anonfun$collect$1.apply(RDD.scala:939)
+	at org.apache.spark.rdd.RDDOperationScope$.withScope(RDDOperationScope.scala:151)
+	at org.apache.spark.rdd.RDDOperationScope$.withScope(RDDOperationScope.scala:112)
+	at org.apache.spark.rdd.RDD.withScope(RDD.scala:363)
+	at org.apache.spark.rdd.RDD.collect(RDD.scala:938)
+	at org.apache.spark.api.python.PythonRDD$.collectAndServe(PythonRDD.scala:162)
+	at org.apache.spark.api.python.PythonRDD.collectAndServe(PythonRDD.scala)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+	at py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:244)
+	at py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:357)
+	at py4j.Gateway.invoke(Gateway.java:282)
+	at py4j.commands.AbstractCommand.invokeMethod(AbstractCommand.java:132)
+	at py4j.commands.CallCommand.execute(CallCommand.java:79)
+	at py4j.GatewayConnection.run(GatewayConnection.java:238)
+	at java.base/java.lang.Thread.run(Thread.java:844)
+

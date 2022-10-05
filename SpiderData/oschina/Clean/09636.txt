@@ -1,0 +1,473 @@
+一、文件的操作
+
+　　open函数
+
+　　在python中，使用open函数，打开一个已经存在的文件，或者新建一个新文件。
+
+　　函数语法 open(name[, mode[, buffering[,encoding]]])
+
+　　name : 一个包含了你要访问的文件名称的字符串值(区分绝对路径和相对路径)。
+
+　　mode : mode 决定了打开文件的模式：只读，写入，追加等。所有可取值见如下的完全列表。这个参数是非强制的，默认文件访问模式为只读(r)。
+
+　　buffering : 如果 buffering 的值被设为 0，就不会有寄存。如果 buffering 的值取 1，访问文件时会寄存行。如果将 buffering 的值设为大于 1 的整数，表明了这就是的寄存区的缓冲大小。如果取负值，寄存区的缓冲大小则为系统默认。
+
+　　对于文件的操作结束之后，使用close()来关闭文件
+
+　　语法：文件对象.close()
+
+　　read（num）：可以读取文件里面的内容。num表示要从文件中读取的数据的长度（单位是字节），如果没有传入num，那么就表示读取文件中所有的数据
+
+　　with…open
+
+　　with open与open的区别
+
+　　关键字with在不再需要访问文件后将其关闭。这可让Python去确定：你只管打开文件，并在需要时使用它，Python自会在合适的时候自动将其关闭。
+
+　　也可以调用open()和close()来打开和关闭文件,但这样做时，如果程序存在bug，导致close()语句未执行，文件将不会关闭。
+
+　　访问模式
+
+'''
+    open('文件名','打开的模式')
+    r：只读的方式打开，如果文件不存在会提示错误
+    w：只写的方法打开，如果文件存在则覆盖，不存在则创建
+    a:打开一个文件进行追加内容，如果存在则打开，不存在则创建新的文件
+
+r+:读写，会将文件的指针调到文件的头部
+    w+:读写，文件不存在直接创建，如果存在则覆盖源文件
+    a+:追加读写，会将文件的指针调到文件的尾部
+'''
+
+#打开文件
+# files = open('python.txt','r') #以只读模式打开
+# print(files)
+
+#读写操作
+
+#关闭文件
+# files.close()
+
+'''
+    文件的读写
+    read(num) :读取文件的内容，num表示读取文件的长度，如果没有则读取所有内容
+'''
+#打开文件
+# files = open('python.txt','r',encoding = 'utf-8') #指定编码encoding = 'utf-8'
+# print(files) #<_io.TextIOWrapper name='python.txt' mode='r' encoding='cp936'> 默认你编码encoding='cp936'
+#读取文件内容
+# content = files.read(10) #传入读取长度参数
+#输出文件内容
+# print(content)
+#关闭文件
+# files.close()
+
+'''
+    with open as filename：
+    关键字with不在需要访问文件后将其关闭，python会自动判断什么时间关闭
+'''
+# with open('python.txt','r',encoding = 'utf-8') as files:
+#     content = files.read()
+#     print(content)
+
+二、文件的读写
+
+　　readlines：可以按照行的方式把整个文件中的内容进行一次性读取，并且返回的是一个列表，其中每一行的数据为一个元素
+
+　　语法：readlines()
+
+　　with逐行读取
+
+　　如果想在with代码块外访问文件,怎么办?
+
+　　(readlines()从文件中读取每一行，并将其存储在一个列表中)
+
+　　注意 读取文本文件时，Python将其中的所有文本都解读为字符串。如果你读取的是数字，并要将其作为数值使用，就必须使用函数int()将其转换为整数，或使用函数float()将其转 换为浮点数。
+
+　　写入文件
+
+　　如果你要写入的文件不存在，函数open()将自动创建它。
+
+　　使用文件对象的方法write()将一个字符串写入文件.这个程序是没有终端输出
+
+　　函数write()不会在你写入的文本末尾添加换行符,需要手动添加\n
+
+　　注意 Python只能将字符串写入文本文件。要将数值数据存储到文本文件中，必须先使用函数 str()将其转换为字符串格式。
+
+　　常用函数
+
+'''
+    readlines
+    可以按照行的方式把整个文件中的内容一次性读取，
+    并且返回一个列表，其中每一行的数据为一个元素
+'''
+#打开文件
+# files = open('python.txt','r',encoding='utf-8')
+#读取文件内容
+# content = files.readlines() #['ghhfdkjihg\n', '但绯色'] \n换行
+#输出读取的内容
+# print(content)
+#关闭文件
+# files.close()
+
+#with open as
+# with open('python.txt','r',encoding = 'utf-8') as files:
+#     content = files.readlines()
+#     print(content)
+
+'''
+    逐行读取
+'''
+#用open结合for循环逐行读取
+# files = open('python.txt','r',encoding='utf-8')
+# i = 1
+# for line in files:
+#     #没有使用read
+#     print('这是第%d行内容:%s'%(i,line))
+#     i += 1
+# files.close()
+
+#用with结合for
+# with open('python.txt','r',encoding='utf-8') as files:
+#     i = 1
+#     for line in files:
+#         #没有使用read
+#         print('这是第%d行内容:%s'%(i,line))
+#         i += 1
+
+#用open结合for,readlines循环逐行读取
+# files = open('python.txt','r',encoding='utf-8')
+# content = files.readlines()#逐行读取内容
+# files.close()#关闭文件
+# i = 1
+# for line in content: #conten为列表 遍历列表
+#     #没有使用read
+#     print('这是第%d行内容:%s'%(i,line))
+#     i += 1
+# files.close()
+
+#在with代码块外
+# with open('python.txt','r',encoding='utf-8') as files:
+#     contents = files.readlines()
+# i = 1
+# for line in contents:
+#     print('这是第%d行内容:%s'%(i,line))
+#     i += 1
+
+'''
+    写入文件
+    write
+'''
+#以写的方法打开一份文件
+# files = open('python.txt','w',encoding='utf-8')
+# files = open('python.txt','a',encoding='utf-8')
+# files = open('python.txt','w',encoding='utf-8')
+# content = 'hello,爱你哦'
+# content = '元旦一起看电视，喝咖啡,可以吗'
+# files.write(content)#写入数据
+# files.close()
+
+#with open
+# with open('python.txt','a',encoding='utf-8') as files:
+#     content = '想和你一起去看海'
+#     files.write(content)  # 写入数据
+
+'''
+    tell查看文件指针
+'''
+# files = open('python.txt','r',encoding='utf-8')
+# str = files.read(5)
+# print('当前读取的数据是：' + str)
+#
+# #查看文件的指针
+# position = files.tell()
+# print('当前的位置是：',position)
+#
+# str = files.read()
+# print('当前读取的数据是：' + str)
+#
+# position = files.tell()
+# print('当前的位置是：',position)
+#
+# files.close()
+
+'''
+seek设置指针
+'''
+files = open('python.txt','r',encoding='utf-8')
+str = files.read(5)
+print('当前读取的数据是：' + str)
+
+#查看文件的指针
+position = files.tell()
+print('当前的位置是：',position)
+
+#重新设置文件的指针
+# files.seek(0)#设置到开头
+files.seek(2,0) #偏移2位
+str = files.read(2)
+print('当前读取的数据是：' + str)
+
+#查看文件的指针
+position = files.tell()
+print('当前的位置是：',position)
+
+files.close()
+
+练习：
+
+1.在文本编辑器中新建一个文件，写几句话来总结一下你至此学到的Python 知识，其中每一行都以“In Python you can”打头。将这个文件命名为learning_python.txt，并将其存储到为完成本章练习而编写的程序所在的目录中。编写一个程序，它读取这个文件，并将你所写的内容打印三次：第一次打印时读取整个文件；第二次打印时遍历文件对象；第三次打印时将各行存储在一个列表中。
+
+learning_python.txt
+
+In Python you can 安装
+In Python you can 变量
+In Python you can 流程控制
+In Python you can 函数
+In Python you can 面向对象
+
+'''
+第一次打印读取整个文件
+第二次打印遍历文件对象
+第三次打印将各行存储在一个列表中
+'''
+# for i in range(3):
+#     if i == 0:
+#         with open('leaning-python.txt','r',encoding='utf-8') as files:
+#             content = files.read()
+#             print('one')
+#             print(content)
+#     if i == 1:
+#         with open('leaning-python.txt','r',encoding='utf-8') as files:
+#             print('two')
+#             for line in files:
+#                 print(line)
+#     if i == 2:
+#         with open('leaning-python.txt','r',encoding='utf-8') as files:
+#             content = files.readlines()
+#             print('three')
+#             print(content)
+
+#读取内容
+# files1 =  open('leaning-python.txt','r',encoding='utf-8')
+# content1 = files1.read()
+# files1.close()
+
+2.下面是一个简单的示例，演示了如何将句子中的'dog'替换为'cat'：
+
+>>> message = "I really like dogs."
+
+>>> message.replace('dog', 'cat')
+
+'I really like cats.'
+
+读取你刚创建的文件learning_python.txt 中的每一行，将其中的Python 都替换为另 一门语言的名称，如C。将修改后的各行都打印到屏幕上。块外打印它们。
+
+#写入内容并且读取新的内容
+# files2 = open('leaning-python.txt','w+',encoding='utf-8')
+# files2.write(content1.replace('Python','C')) #写入的时候替换内容
+# files2.seek(0)#重新设置指针到开头
+# content2 = files2.read()#读取所有的内容
+# print(content2)
+# files2.close()
+
+3.访客：编写一个程序，提示用户输入其名字；用户作出响应后，将其名字写 入到文件guest.txt 中。
+
+'''
+访客：编写一个程序，提示用户输入其名字：用户做出响应后，将其名字写入到
+guest.txt中
+'''
+
+while True:
+    name = input('请输入您的姓名:')
+    if name == 'n':
+        break;
+    with open('guest.txt','a+',encoding='utf-8') as files:
+        files.write(name)
+        files.write('\n')
+        files.seek(0)
+        content = files.read()
+    print(content)
+
+三、异常
+
+　　Python遇到错误后，会引发异常。如果异常对象并未被处理或捕捉，则程序就会用所谓的回溯（Traceback，一种错误信息）来终止执行。
+
+　　异常处理
+
+　　异常是指在程序执行过程中发生的一个事件，会影响程序的正常运行，所以一般需要进行捕获异常并处理。
+
+　　异常的捕获使用try/except/finally语句进行捕获操作,并告诉python发生异常时怎么办.
+
+　　try:
+
+　　　　<语句>
+
+　　except <异常类型1>[, 异常参数名1]:
+
+　　　　<异常处理代码1>
+
+　　except <异常类型2>[, 异常参数名2]:
+
+　　　　<异常处理代码2>
+
+　　else:
+
+　　　　<没有异常时候的处理代码>
+
+　　finally:
+
+　　　　<不管是否有异常，最终执行的代码块>
+
+　　简单处理异常
+
+　　将导致错误的代码行open放在了一个try代码块中。
+
+　　如果try代码块中的代码运行起来没有问题,python将跳except代码块；
+
+　　如果try代码块中的代码导致了错误，python将查找这样的except代码块，并运行其中的代码，即其中指定的错误与引发的错误相同。
+
+　　异常处理
+
+　　小结：
+
+　　try语句按照如下方式工作:
+
+　　1.首先，执行try子句（在关键字try和关键字except之间的语句）
+
+　　2.如果没有异常发生，忽略except子句，try子句执行后结束。
+
+　　3.如果在执行try子句的过程中发生了异常，那么try子句余下的部分将被忽略。如果异常的类型和 except 之后的名称相符，那么对应的except子句将被执行。最后执行 try 语句之后的代码。
+
+　　4.如果一个异常没有与任何的except匹配，那么这个异常将会传递给上层的try中。
+
+　　5.一个 try 语句可能包含多个except子句，分别来处理不同的特定的异常。
+
+　　6.多只有一个分支会被执行。 处理程序将只针对对应的try子句中的异常进行处理，而不是其他的 try 的处理程序中的异常。
+
+　　7.一个except子句可以同时处理多个异常，这些异常将被放在一个括号里成为一个元组.
+
+'''
+    异常
+    try:
+    except:
+    else:
+    finally
+'''
+# try:
+#     print(aaa) #如果这句话有错 就会捕获异常
+# except ValueError: #NnameError 异常
+#     print('变量未定义') #对NnameError 异常处理
+# except NameError:
+#     print('变量未定义')
+
+#捕获异常的具体信息
+# try:
+#     print(aaa) #如果这句话有错 就会捕获异常
+# except NameError as e:
+#     print(e)#打印具体的异常信息
+
+#包含多个异常
+# try:
+#     print(aaa)
+#     files = open('aaa.txt','r',encoding='utf-8') #如果这句话有错 就会捕获异常
+# except (NameError,FileNotFoundError) as e:
+#     print(e)
+
+#在不知道的时候 获取所有异常
+# try:
+#     # print(aaa) #如果这句话有错 就会捕获异常
+#     files = open('aaa.txt', 'r', encoding='utf-8')
+# except Exception as e :
+#     print(e)
+
+#或者用
+# try:
+#     # print(aaa) #如果这句话有错 就会捕获异常
+#     files = open('aaa.txt', 'r', encoding='utf-8')
+# except:
+#     print('出错了')
+
+'''
+    else:没有异常时候要执行的语句
+'''
+# try:
+#     # print(aaa) #如果这句话有错 就会捕获异常
+#     files = open('aaa.txt', 'r', encoding='utf-8')
+# except Exception as e :#有异常时执行
+#     print(e)
+# else:#没有异常时执行
+#     print('没有问题')
+
+'''
+    finally :有没有异常都要执行的代码块
+'''
+# try:
+#     print('打开文件！')
+#     files = open('aaa.txt', 'w', encoding='utf-8')
+#     try:
+#         files.write('测试一下行不行')
+#     except:
+#         print('写入失败')
+#     else:
+#         print('写入成功')
+#     finally:#不管是否写成功都需要关闭文件
+#         print('关闭文件')
+#         files.close()
+# except Exception as e:
+#     print(e)
+
+'''
+    练习
+'''
+# try:
+#     num1 = int(input('请输入第一个数字：'))
+#     num2 = int(input('请输入第二个数字：'))
+# except ValueError:
+#     print('请输入整数')
+# else:
+#     print(num1 + num2)
+
+四、文件夹操作
+
+　　python编程时，经常和文件、目录打交道，这是就离不了os模块。os模块包含普遍的操作系统功能，与具体的平台无关。
+
+附：DOS命令
+
+'''
+    文件与文件夹的操作
+'''
+import os
+#获取当前路径
+# print(os.getcwd())#F:\Python\python01\第十七课\文件与文件夹的操作
+
+#列出当前或者指定目录下的文件或者文件夹
+# print(os.listdir())
+# print(os.listdir('F:/Python/python01/第十七课/文件与文件夹的操作/'))
+# print(os.listdir('F:\Python\\'))
+#D:\Software\Anaconda3\python.exe F:/Python/python01/第十七课/文件与文件夹的操作/ospy.py
+# ['ospy.py']
+
+#判断是否是一个文件
+# print(os.path.isfile('.\\demo.txt')) #True
+
+#判断文件是否存在
+# print(os.path.exists('.\\demo.txt'))
+
+#重命名文件
+# os.rename('demo.txt','demo1.txt')
+
+#删除文件
+# os.remove('demo1.txt')
+
+# print(os.path.split('F:\Python\python01\第十七课\文件与文件夹的操作\ospy.py'))
+#('F:\\Python\\python01\\第十七课\\文件与文件夹的操作', 'ospy.py')
+
+#创建文件夹
+# os.mkdir('study')
+
+#删除文件夹
+# os.rmdir('study')
+
+　　
+

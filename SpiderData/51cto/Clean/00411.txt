@@ -1,0 +1,27 @@
+
+一、 错误原因
+
+Mysql 5.7.5之后，ONLY_FULL_GROUP_BY 变成 sql_mode 的默认选项之一，然而导致一些sql语句查询失败，比如：group by 进行分组查询等
+
+
+二、解决办法
+
+临时修改 sql_mode
+
+- 查询
+select @@global.sql_mode
+- 修改
+set @@sql_mode ='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+永久修改
+
+# mysql 配置文件中添加如下内容，重启mysql即可；
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+
+
+阿里云RDS
+
+修改配置
+
+提交配置
+

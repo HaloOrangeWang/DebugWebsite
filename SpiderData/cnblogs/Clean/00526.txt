@@ -1,0 +1,22 @@
+今天在编译一个Python程序的时候，一直出现“Non-ASCII character 'xe5' in file”报错问题
+
+[python] view plain copy
+
+[python] view plain copy
+
+SyntaxError: Non-ASCII character '\xe5' in file kNN.py on line 24, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+
+出现问题的原因：
+
+Python默认是以ASCII作为编码方式的，如果在自己的Python源码中包含了中文（或者其他非英语系的语言），此时即使你把自己编写的Python源文件以UTF-8格式保存了，但实际上，这依然是不行的。
+
+解决办法很简单，只要在文件开头加入下面代码就行了
+
+[python] view plain copy
+
+[python] view plain copy
+
+# -*- coding: UTF-8 -*-
+
+默认的python文件是采用ascii编码的，在头部加入# -*- coding: utf-8 -*-   则指定文件的编码格式是utf-8，那么就是说文件内你可以用中文或其他的文字了。
+

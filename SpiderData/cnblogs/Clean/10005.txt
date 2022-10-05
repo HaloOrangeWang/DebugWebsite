@@ -1,0 +1,14 @@
+一、问题描述及解决方案
+
+配置了uswgi.ini文件之后启动项目，项目启动没有报错，但是访问的时候一直是:Internet server error，看启动日志提示：
+
+*** no app loaded. going in full dynamic mode ***
+
+no python application found, check your startup logs for errors
+
+如下图：
+
+这个问题在网上找了好多方案都没解决，网上说uwsgi.ini文件配置的有问题，但是对比了好久觉得也没问题啊，就是一直报错，之前打开uwsgi.ini文件都是用Windows文本文件打开，没发现wsgi-file = TestManageSystem/wsgi.py   后面还有多余的字符，后面在linux下编辑发现wsgi-file = TestManageSystem/wsgi.py   后面有许多！！！！！符号,将！！！！删除掉之后，再次启动，发现页面可以访问了，并且不报错了；这里我还将module改为了wsgi-file.后面问题成功解决。
+
+配置文件如下图：
+

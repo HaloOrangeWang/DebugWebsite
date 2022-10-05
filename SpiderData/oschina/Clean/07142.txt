@@ -1,0 +1,25 @@
+git clone 报错 SSL connect error
+ author: yafeishi
+ tags: git
+
+执行git clone 报错：
+
+[shboss@localhost1 tools]$ git clone https://github.com/ADBSQL/adb-ora2pg
+Cloning into 'adb-ora2pg'...
+fatal: unable to access 'https://github.com/ADBSQL/adb-ora2pg/': SSL connect error
+
+网上搜到的解决办法为：
+
+sudo yum update nss
+
+问题解决：
+
+[shboss@localhost1 tools]$ git clone https://github.com/ADBSQL/adb-ora2pg
+Cloning into 'adb-ora2pg'...
+remote: Counting objects: 181, done.
+remote: Total 181 (delta 0), reused 0 (delta 0), pack-reused 180
+Receiving objects: 100% (181/181), 381.11 KiB | 143.00 KiB/s, done.
+Resolving deltas: 100% (75/75), done.
+Checking connectivity... done.
+[shboss@localhost1 tools]$
+

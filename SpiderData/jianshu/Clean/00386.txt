@@ -1,0 +1,26 @@
+报错信息
+
+rpmdb: Program version 4.7 doesn't match environment version 720896.20447232
+
+error:db3error(-30971)from dbenv->open: DB_VERSION_MISMATCH: Database environment version mismatch
+
+error: cannot open Packages index using db3 - (-30971)
+
+error: cannot open Packages database in /var/1ib/rpm
+
+CRITICAL :yum main:
+
+Error: rpmdb open failed
+
+解决
+
+[root@localhost tmp]# rm -f __db.*     # 清除原rpmdb文件
+ [root@localhost tmp]# rpm --rebuilddb     # 重建rpm数据库
+ [root@localhost tmp]# yum clean all     # 清除所有yum的缓存
+
+注：报以上错误，有时会因为 rpm数据库坏了，可能磁盘问题，
+
+遇过很多设备磁盘挂了才报
+
+此时，只能重装系统
+

@@ -1,0 +1,62 @@
+pip install numpy  时  报错：
+
+Traceback (most recent call last):
+  File "d:\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 437, in _error_catcher
+    yield
+  File "d:\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 519, in read
+    data = self._fp.read(amt) if not fp_closed else b""
+  File "d:\python\lib\site-packages\pip\_vendor\cachecontrol\filewrapper.py", line 62, in read
+    data = self.__fp.read(amt)
+  File "d:\python\lib\http\client.py", line 458, in read
+    n = self.readinto(b)
+  File "d:\python\lib\http\client.py", line 502, in readinto
+    n = self.fp.readinto(b)
+  File "d:\python\lib\socket.py", line 669, in readinto
+    return self._sock.recv_into(b)
+  File "d:\python\lib\ssl.py", line 1241, in recv_into
+    return self.read(nbytes, buffer)
+  File "d:\python\lib\ssl.py", line 1099, in read
+    return self._sslobj.read(len, buffer)
+socket.timeout: The read operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\python\lib\site-packages\pip\_internal\cli\base_command.py", line 228, in _main
+    status = self.run(options, args)
+  File "d:\python\lib\site-packages\pip\_internal\cli\req_command.py", line 182, in wrapper
+    return func(self, options, args)
+  File "d:\python\lib\site-packages\pip\_internal\commands\install.py", line 323, in run
+    requirement_set = resolver.resolve(
+  File "d:\python\lib\site-packages\pip\_internal\resolution\legacy\resolver.py", line 183, in resolve
+    discovered_reqs.extend(self._resolve_one(requirement_set, req))
+  File "d:\python\lib\site-packages\pip\_internal\resolution\legacy\resolver.py", line 388, in _resolve_one
+    abstract_dist = self._get_abstract_dist_for(req_to_install)
+  File "d:\python\lib\site-packages\pip\_internal\resolution\legacy\resolver.py", line 340, in _get_abstract_dist_for
+    abstract_dist = self.preparer.prepare_linked_requirement(req)
+  File "d:\python\lib\site-packages\pip\_internal\operations\prepare.py", line 467, in prepare_linked_requirement
+    local_file = unpack_url(
+  File "d:\python\lib\site-packages\pip\_internal\operations\prepare.py", line 255, in unpack_url
+    file = get_http_url(
+  File "d:\python\lib\site-packages\pip\_internal\operations\prepare.py", line 129, in get_http_url
+    from_path, content_type = _download_http_url(
+  File "d:\python\lib\site-packages\pip\_internal\operations\prepare.py", line 282, in _download_http_url
+    for chunk in download.chunks:
+  File "d:\python\lib\site-packages\pip\_internal\cli\progress_bars.py", line 168, in iter
+    for x in it:
+  File "d:\python\lib\site-packages\pip\_internal\network\utils.py", line 64, in response_chunks
+    for chunk in response.raw.stream(
+  File "d:\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 576, in stream
+    data = self.read(amt=amt, decode_content=decode_content)
+  File "d:\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 541, in read
+    raise IncompleteRead(self._fp_bytes_read, self.length_remaining)
+  File "d:\python\lib\contextlib.py", line 131, in __exit__
+    self.gen.throw(type, value, traceback)
+  File "d:\python\lib\site-packages\pip\_vendor\urllib3\response.py", line 442, in _error_catcher
+    raise ReadTimeoutError(self._pool, None, "Read timed out.")
+pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+
+解决：使用镜像安装
+
+pip install numpy -i https://pypi.doubanio.com/simple
+

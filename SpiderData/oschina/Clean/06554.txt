@@ -1,0 +1,7 @@
+查看多线程复制报错详情
+从5.6版本开始支持基于库级别的并行复制，在 MySQL 5.7版本中支持基于事务的并行复制，在启用了并行复制之 后，一旦发生复制报错，通常通过show slave status语句无法查看到具 体的报错详情（通过show slave status语句只能查看到SQL线程的报错 信息，而在多线程复制下，SQL线程的报错信息是根据Worker线程的 报错信息汇总的信息）
+show slave status
+
+根据报错提示查看 performance_schema.replication_applier_status_by_worker表，在该表中 详细记录了每一个Worker线程的详细信息，在这里我们就可以找到发 生报错的Worker线程具体的报错原因
+performance_schema.replication_applier_status_by_worke：
+

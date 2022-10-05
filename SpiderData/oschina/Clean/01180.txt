@@ -1,0 +1,29 @@
+今天写爬虫的时候又被各种编码问题恶心了一把，‘#coding:utf-8’都失效了。
+
+报错总是提示 UnicodeEncodeError: 'ascii' codec can't encode characters in position
+
+貌似是因为编码问题：Unicode编码与ASCII编码的不兼容，其实这个Python脚本文件是由utf-8编码的，Python默认环境编码通过下面的方法可以获取：
+
+import sys
+print sys.getdefaultencoding()
+#输出结果 'ascii'
+
+基本上是ascii编码方式，由此Python自然调用ascii编码解码程序去处理字符流，当字符流不属于ascii范围内，就会抛出异常（ordinal not in range(128)）。
+
+解决的方案很简单，修改默认的编码模式，很多朋友会想到setdefaultencoding，是的，我们可以通过sys.setdefaultencoding(‘utf-8′)来将当前的字符处理模式修改为utf-8编码模式，值得注意的是，如果单纯这么调用的话，Python会抛出一个AttributeError异常：AttributeError: 'module' object has no attribute 'setdefaultencoding'
+
+其实sys是有这个方法的，竟然说sys没有setdefaultencoding的方法。网上给出的方法是需要调用一次reload(sys)，原因不明。。。
+
+解决方法如下：
+
+# -*- coding: UTF-8 -*- 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+这个问题貌似是Python 2.X的问题，听说3.X不会有这个问题。
+
+但是，我在Eclipse+PyDev下编辑环境竟然还是提示错误，但是运行却可以运行，我猜测可能是解释语言的IDE环境的通病吧。修正方法目前没有，不过不影响运行使用。
+
+同样的方式也可以应用到UnicodeDecodeError上。
+

@@ -1,0 +1,28 @@
+在python写脚本过程中需要将带有中文的字符串内容写入文件，出现了报错的现象。
+
+----------------------------
+
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128)
+
+----------------------------
+
+经过网上搜索出错原因得到结果：
+
+python中如果使用系统默认的open方法打开的文件只能写入ascii吗，如果要写入中文需要用到codecs模块 （使用了该方法，问题解决）
+
+# -*- coding: utf-8 -*-
+ 
+import codecs
+content = u'你好，北京欢迎你'
+f = codecs.open('aaa.txt','w','utf-8')
+f.write(content)
+
+还有第二种方法（没试）
+
+字符集的问题，在文件前加两句话：
+
+reload(sys)
+sys.setdefaultencoding( "utf-8" )
+
+以上这篇解决python写入带有中文的字符到文件错误的问题就是小编分享给大家的全部内容了，希望能给大家一个参考，也希望大家多多支持脚本之家。
+

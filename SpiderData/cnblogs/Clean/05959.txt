@@ -1,0 +1,18 @@
+报错内容：
+
+ConnectionRefusedError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000224F3CB57B8>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+
+数据库中一部分表可以修改，一部分表无法修改，刚开始以为是模型的问题，后来【仔细】读了报错内容，发现是因为elasticsearch没启动！！！
+
+之所以一部分表可以修改，一部分表无法修改，因为有些表没在检索范围，而有的表在检索范围，无法新建索引。
+
+解决**：
+
+开启ES：
+windows: elasticsearch\bin\elasticsearch.bat
+Linux: sudo docker container start elasticsearch
+
+开启ES：
+

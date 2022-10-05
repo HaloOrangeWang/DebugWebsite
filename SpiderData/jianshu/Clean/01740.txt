@@ -1,0 +1,47 @@
+今天在写Python代码的时候遇到了一个小问题，觉得很值得记录下来。
+
+假设这份python代码的文件结构如下：
+
+Project/
+   |- main.py
+   |- Package1/
+        |-- A.py
+        |-- B.py
+
+通常，在main.py中，我们的引用可以写成：
+
+from Package1.A import '__func_name'
+from Package1.B import '__func_name'
+
+假如A.py中引用了B.py中的函数，通常做法是在A.py中写
+
+from B import '__func_name'           ————————————————————（1）
+
+在单独对A.py中的方法进行测试时，IDE是不会报错。但是当测试main.py时，会报错说找不到A.py中引用的B模块。这时候将上一段代码改成
+
+from Package1.B import '__func_name'  ————————————————————（2）
+
+此时，main.py测试正常。
+
+蛋蛋蛋蛋蛋！此时再单独测试A.py会报错找不到Package1。
+
+废话，此时同级别并不存在模块Package1。
+
+可是，我想兼顾单独测试和统一测试，怎么搞呢？
+
+目前解决方案是采用标记（2）的引用方式，但是会再代码最上端加入以下代码：
+
+import sys
+from os import path
+d = path.dirname(__file__)  # 获取当前路径
+parent_path = path.dirname(d)  # 获取上一级路径
+sys.path.append(parent_path)    # 如果要导入到包在上一级
+
+思想应该就是将上一级目录的路径加入到系统库的路径中，这时上一级Package的名字也是可以被访问的。
+
+目前没发现更优解。
+
+另补上知识点的学习链接
+
+http://c.biancheng.net/view/2397.html
+

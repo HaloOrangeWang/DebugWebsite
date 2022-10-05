@@ -1,0 +1,66 @@
+try:
+
+1/0
+
+except Exception as e:
+
+print(e)
+
+输出结果是integer division or modulo by zero，只知道是报了这个错，但是却不知道在哪个文件哪个函数哪一行报的错。
+
+下面使用traceback模块
+
+import traceback
+
+try:
+
+1/0
+
+except Exception as e:
+
+traceback.print_exc()
+
+输出结果是
+
+Traceback (most recent call last):
+
+File "test_traceback.py", line 3, in
+
+这样非常直观有利于调试。
+
+except Exception as e: 中的e只用来获取异常值，
+
+print(e)打印出异常值，这样不会打断程序运行；
+
+而traceback.print_exc()语句与不进行异常处理的运行效果是一致的，都会打印出异常类型，异常值，出错位置，并且打断程序运行。
+
+如果想要获取异常完整信息而不打断程序，最好使用sys.exc_info()
+
+try:
+
+1/0
+
+except Exception,e:
+
+print(sys.exc_info())
+
+简单的用法是
+
+except Exception: print(sys.exc_info()[0:2]) # 打印错误类型，错误值
+
+print(traceback.extract_tb(sys.exc_info()[2])) #出错位置
+
+注：
+
+traceback.print_exc()跟traceback.format_exc()有什么区别呢？
+
+format_exc()返回字符串，print_exc()则直接给打印出来。
+
+即traceback.print_exc()与print traceback.format_exc()效果是一样的。
+
+print_exc()还可以接受file参数直接写入到一个文件。比如
+
+traceback.print_exc(file=open('tb.txt','w+'))
+
+写入到tb.txt文件去。
+

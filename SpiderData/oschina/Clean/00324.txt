@@ -1,0 +1,285 @@
+以下是在学习《Python For Graph And Network Analys》（《用于图和网络分析的python》）一书，运行代码时遇到的一些问题和总结
+
+
+1.Python安装igraph包加载出错问题
+
+报错：
+ Python中加载igraph包(from igraph import *)出现igraph包重复，请升级jgraph的错误信息。
+
+报错信息如下：
+ “DeprecationWarning: To avoid name collision with the igraph project, this visualization library has been renamed to ‘jgraph’. Please upgrade when convenient.”
+
+报错原因：
+
+Python安装的igraph包有两个：igraph和python-igraph，导致加载igraph包时候系统无法判断加载哪一个。实际上，我们需要的包只有python-igraph。
+
+解决办法：
+
+第一步：卸载包 igraph
+
+pip uninstall igraph
+
+第二步：重新安装包 python-igraph
+
+pip install python_igraph
+
+完成以上操作，验证Python中能否成功加载 igraph 包
+
+from igraph import *
+
+
+2.下载python包的方法
+
+
+pip
+
+pip是 Python 包管理工具，该工具提供了对Python 包的查找、下载、安装、卸载的功能。
+
+安装包
+
+pip install SomePackag              # 最新版本
+pip install SomePackage==1.0.4       # 指定版本
+pip install 'SomePackage>=1.0.4'     # 最小版本
+
+例如：安装 Django包，使用代码：
+
+pip install Django==1.7
+
+
+pip 清华大学开源软件镜像站
+
+若由于一些局域网的原因，使用 pip 出现 “connection timeout”，连接超时可以使用清华大学开源软件镜像站下载：
+
+安装包：
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+
+例如：安装 Django包，使用代码：
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple Django
+
+例如：安装pyspider包，使用代码
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyspider
+
+
+3.name ‘nx’ is not defined
+
+报错：
+ name ‘nx’ is not defined
+
+需先运行代码
+
+import networkx as nx
+
+
+4.name ‘plt’ is not defined
+
+报错：
+ name ‘plt’ is not defined
+
+需先运行代码
+
+import matplotlib.pyplot as plt
+
+
+5.绘制具有20个节点的Watts-Strogatz图
+
+代码：
+
+g =nx.random_graphs.watts_strogatz_graph (0.5,2,20)
+
+报错：
+ NetworkXError: k>=n, choose smaller k or larger n
+
+修改后的代码：
+
+g =nx.random_graphs.watts_strogatz_graph (20,2,0.5)
+
+
+6.用G.degree.values()获取所有节点的度数
+
+报错：
+ ‘DegreeView’ object has no attribute ‘values’
+
+报错原因：
+ pyhton NetworkX 1.X迁移到NetworkX 2.0版本问题
+ 迁移指南网址：
+ https://networkx.github.io/documentation/stable/release/migration_guide_from_1.x_to_2.0.html
+
+解决代码：
+
+import networkx as nx
+import matplotlib.pyplot as plt
+
+G = nx.read_adjlist("107.edges") 
+pos = nx.spring_layout(G)
+de = dict(G.degree)
+
+#print ("nodes:", G.nodes())
+#print ("edges:", G.edges())
+print ("number of edges:", G.number_of_edges())  
+#print("de",de.values())
+# de2下面赋给节点大小
+de2 = [de[v] for v in de.keys()]
+#print("de2",de2)
+nx.draw_networkx(G, pos, node_size=de2, with_labels = False, node_color='#A52A2A', linewidths=None, width=1.0, edge_color ='#858585')
+
+plt.savefig("ha.png")
+plt.show()
+
+原文链接：
+ https://blog.csdn.net/weixin_40422360/article/details/90711490
+
+
+7.name ‘itemgetter’ is not defined
+
+报错：
+ NameError: name ‘itemgetter’ is not defined.
+
+报错原因：
+ 未导入 operator 模块
+
+需先运行代码：
+
+import operator
+from operator import itemgetter
+
+
+8.在matplotlib p中使用多种颜色绘制图像
+
+代码：
+
+colors = ['r ', 'g ', 'g', 'g', 'g ', 'm ', 'g ', 'r', 'c', 'c']
+sizes =[800,300,300,300,300,600,300,800,400,400]
+labels = {
+   
+    0: 'O',1:'1',2: '2',3: '3',4: '4',5: '5',6:'6',7:'7',8 : '8', 9: '9'}
+nx.draw_networkx(g, node_color=colors,node_shape='D' , with_labels=True,labels=labels, node_size=sizes)
+plt.show ( )
+
+报错：
+ ‘c’ argument must either be valid as mpl color(s) or as numbers to be mapped to colors. Here c = ['r ', 'g ', ‘g’, ‘g’, 'g ', 'm ', 'g ', ‘r’, ‘b’, ‘b’].
+
+修改后的代码：
+ node_color=colors 修改为 color=colors
+
+colors = ['r ', 'g ', 'g', 'g', 'g ', 'm ', 'g ', 'r', 'c', 'c']
+sizes =[800,300,300,300,300,600,300,800,400,400]
+labels = {
+   
+    0: 'O',1:'1',2: '2',3: '3',4: '4',5: '5',6:'6',7:'7',8 : '8', 9: '9'}
+nx.draw_networkx(g, color=colors,node_shape='D' , with_labels=True,labels=labels, node_size=sizes)
+plt.show ( )
+
+
+9.注意区分networkx中的函数add_node与add_nodes_from
+
+G.add_node(12,13)#TypeError: add_node() takes 2 positional arguments but 3 were given；
+G.add_node([12, 13])#TypeError: unhashable type: 'list'
+G.add_node((12,13))#成功加入一个编号为(12,13)的节点
+G.add_nodes_from([12,13])#成功加入两个编号为12、13的节点
+G.add_edge([(1,2),(3,4)])#TypeError: add_edge() missing 1 required positional argument: 'v'
+G.add_edges_from([(1,2),(3,4)])#成功加入边
+
+
+10.研究网络常用的数据集
+
+社交网络
+
+GML文件。《悲惨世界》：小说《悲惨世界》中角色的共同出现加权网络。DE Knuth，《斯坦福GraphBase：组合计算平台》，Addison-Wesley，马萨诸塞州雷丁（1993）。
+ GEXF文件。Hypertext 2009动态联系网络：Hypertext 2009会议期间的联系网络。资料来源：Sociopatterns.org。
+ GEXF文件。1880/81年级：1880/1881年德国男校的友谊网络。它基于可能是第一个主要收集的社交网络数据集，该数据集由小学老师Johannes Delitsch组装而成。重新分析并整理了以下文章的数据：Heidler，R.，Gamper，M.，Herz，A.，Eßer，F.（2014）：19世纪的关系模式：德国男校的友谊网络从1880年到1881年重新开始。社交网络13：1-1-3。。
+ GML文件。扎卡里（Zachary）的空手道俱乐部：1970年代美国大学的一个空手道俱乐部的34名成员之间的社交网络。WW Zachary，《小组冲突与分裂的信息流模型》，《人类学杂志》 33，452-473（1977）。
+ GML文件。网络科学的共同作者：M。Newman在2006年5月编辑的从事网络理论和实验的科学家的共同作者网络。在此可以找到描述该网络最大组成部分的图。MEJ Newman，物理 E 74，036104（2006）。
+ GEXF文件。CPAN作者：CPAN Explorer是一个可视化项目，旨在分析开发人员与Perl语言的软件包（称为CPAN社区）之间的关系。该快照是由Linkfluence在2009年7月创建的。该文件包含开发人员网络，当他们使用相同的Perl模块时，这些链接在一起。原始数据可以在这里找到。
+ GEXF文件。CPAN发行版：CPAN Explorer是一个可视化项目，旨在分析开发人员与Perl语言的软件包（称为CPAN社区）之间的关系。该快照由Linkfluence在2009年7月创建。该文件包含Perl模块依赖关系网络。原始数据可以在这里找到。
+ NET文件。爵士音乐家网络：爵士音乐家网络的边缘列表。P.Gleiser和L.Danon，高级 Complex Syst.6，565（2003）。
+ TGZ文件。Github开源开发人员：请参阅https://github.com/franckcuny/blog/blob/master/posts/2010-03-25-github-explorer.md/
+ DL文件。在线社交网络1899节点-Opsahl，T.，Panzarasa，P.，2009。加权网络中的聚类。社交网络31（2），155-163
+ GEPHI文件。超级英雄的Marvel社交网络，由巴利阿里群岛大学的CescRosselló，Ricardo Alberich和Joe Miro构建。由Infochimps收集，并由Kai Chang进行了转换和增强。
+ GDF文件。漫画和英雄网络与上面相同的数据，但这包括英雄出现在其中的漫画。
+ DOT文件。Twitter提及并转发了Twitter网络的某些部分。该文件会不时更新。
+ GEXF文件。小学中的联络网络，SocioPatterns团队，2011年。
+
+生物网络
+
+GEXF。Diseasome：由已知的疾病基因关联所组成的疾病和疾病基因网络，表明许多疾病的共同遗传起源。与相似疾病相关的基因在其产物之间表现出较高的物理相互作用可能性，并且其转录物具有较高的表达谱相似性，从而支持不同疾病特异性功能模块的存在。原始数据集可在此处找到：The Human Disease Network，Goh KI，Cusick ME，Valle D，Childs B，Vidal M，BarabásiAL（2007），Proc Natl Acad Sci USA 104：8685-8690
+ GEXF。C. Elegans神经网络：表示C. Elegans神经网络的有向加权网络。数据由D.Watts和S.Strogatz汇编并在此处提供。请引用DJ Watts和SH Strogatz，《自然》（Nature）393，440-442（1998）。原始实验数据取自JG White，E.Southgate，JN Thompson和S.Brenner，Phil。反式 R. Soc。伦敦314，1-340（1986）。
+ GEXF。酵母：酵母中的蛋白质-蛋白质相互作用网络。原始数据可以在这里找到。
+
+基础设施网络
+
+GML。电网：代表美国西方国家电网拓扑的无方向，无权网络。数据由D.Watts和S.Strogatz汇编并在此处提供。请引用DJ Watts和SH Strogatz，《自然》（Nature）393，440-442（1998）。
+ GRAPHML。航空公司：来源不明。
+ NET。US Air97：北美运输地图集数据（NORTAD）。原始数据可以在这里找到。
+
+其他网络
+
+GEXF。Java代码：S.Heymann和J.Palmier，2008年，Java程序的源代码结构。
+ GEXF。动态Java代码：S.Heymann＆J.Bilcke，2008年，通过在SVN上提交的演变而实现的Java程序的动态源代码结构。
+ GML。单词邻接：查尔斯·狄更斯（Charles Dickens）的小说《大卫·科波菲尔》（David Copperfield）中常见形容词和名词的邻接网络。请引述MEJ Newman，Phys。E 74，036104（2006）。
+ NET。Wordnet英语词典：来源不明。
+ DOT。抽象网格：331个节点。
+
+原文链接：https://github.com/gephi/gephi/wiki/Datasets
+
+
+11.Module ‘networkx’ has no attribute ‘blockmodel’
+
+代码：
+
+partition = [[0,1],[2,3],[4,5], [6, 7], [8, 9]]
+M = nx.blockmodel(G,partition)
+
+报错：
+ Module ‘networkx’ has no attribute ‘blockmodel’
+
+报错原因：
+ 最新版本的networkx中，blockmodel功能已替换为quotient_graph
+
+修改后的代码：
+
+partition = [[0,1],[2,3],[4,5], [6, 7], [8, 9]]
+M = nx.quotient_graph(G,partition)
+
+
+12.<generator object all_pairs_shortest_path at 0x0000021B4F4FC390>
+
+代码：
+
+print(nx.all_pairs_shortest_path(g))
+
+修改后的代码：
+
+print(list(nx.all_pairs_shortest_path(g)))
+
+
+13.‘generator’ object is not subscriptable
+
+代码：
+
+print((nx.all_pairs_shortest_path(g))[1])
+
+报错：
+ ‘generator’ object is not subscriptable
+
+报错原因：
+ 新版本的openpyxl使用rows或者columns返回一个生成器所以可以使用List来解决报错问题
+
+修改后的代码：
+
+print(list(nx.all_pairs_shortest_path(g))[1])
+
+
+14.name ‘xrange’ is not defined
+
+报错：
+ NameError:name ‘xrange’ is not defined
+
+报错原因：
+ 在Python 3中，range()与xrange()合并为range( )
+
+解决办法：
+ 将xrange( )函数全部换为range( )。
+

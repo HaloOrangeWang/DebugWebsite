@@ -1,0 +1,27 @@
+今天Python编译中文时， 编译报错如下：
+[Decode error - output not utf-8]
+
+网上查了下，新建python源码如下：
+
+import sys
+print(sys.stdin.encoding)
+print(sys.stdout.encoding)
+
+编译后发现是print不支持中文字符的输出。
+
+【具体原因】python在编译运行源码后，默认将输出结果以cp936编码，发送给Sublime Text。而Sublime Text 中python build的默认接收编码是UTF-8。Sublime Text在接收到python输出后，试图以utf-8解码cp936编码的流。当cp936编码的流中没有汉字时，因为英文字符集在cp936和utf-8中的编码兼容，所以用utf-8解码不会出错；当cp936编码的流中有汉字时，因为汉字字符集在cp936与utf-8的编码不兼容，所以用utf-8解码就会错误。 最终Sublime Text就会报[Decode error - output not utf-8]错误。
+
+方法1（未能彻底解决）
+
+修改python的build的setting， 打开Python.sublime-build（sublime3需要解压sublime package文件夹下Python.sublime-package，修改文件拓展名为zip解压就能看到Python.sublime-build，修改后再打包改回来。。。）
+修改为：
+
+修改后用REPL可以正常输出， 但是Ctrl + B编译有问题， 空白没反映，可以按ctrl+‘来显示错误。
+
+方法2（可行）
+计算机右键选属性，选高级系统设置，选高级标签，选环境变量
+
+在系统变量新建变量，变量名为PYTHONIOENCODING，变量值为utf-8，确定。
+
+重启sublime，问题完美解决。
+

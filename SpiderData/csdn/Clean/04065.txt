@@ -1,0 +1,20 @@
+当我尝试用如下代码打开一个word文档时，出现了如下错误：
+
+from docx import Document
+doc = Document('new.docx')
+
+Traceback (most recent call last):
+  File "test.py", line 3, in <module>
+    doc = Document('new.docx')
+  File "C:\Users\Reborn\AppData\Local\Programs\Python\Python36-32\lib\site-packages\docx\api.py", line 25, in Document
+    document_part = Package.open(docx).main_document_part
+  File "C:\Users\Reborn\AppData\Local\Programs\Python\Python36-32\lib\site-packages\docx\opc\package.py", line 116, in open
+    pkg_reader = PackageReader.from_file(pkg_file)
+  File "C:\Users\Reborn\AppData\Local\Programs\Python\Python36-32\lib\site-packages\docx\opc\pkgreader.py", line 32, in from_file
+    phys_reader = PhysPkgReader(pkg_file)
+  File "C:\Users\Reborn\AppData\Local\Programs\Python\Python36-32\lib\site-packages\docx\opc\phys_pkg.py", line 31, in __new__
+    "Package not found at '%s'" % pkg_file
+docx.opc.exceptions.PackageNotFoundError: Package not found at 'new.docx'
+
+虽然错误看起来极为复杂，但解决办法非常的简单。出现这个错误的原因是你新建的word文档里面没有任何内容，只需要你在docx文档中随意输出几个空格就能解决此问题。
+

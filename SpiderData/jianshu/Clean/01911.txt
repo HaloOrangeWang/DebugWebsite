@@ -1,0 +1,60 @@
+1.输入“mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)”
+
+报错：大概就是网页找不到云云
+
+Extracting MNIST_data/train-images-idx3-ubyte.gz
+
+Traceback (most recent call last):
+
+File "<ipython-input-4-6f78a56b35f2>", line 1, in <module>
+
+mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/site-packages/tensorflow/contrib/learn/python/learn/datasets/mnist.py", line 240, in read_data_sets
+
+SOURCE_URL + TRAIN_LABELS)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/site-packages/tensorflow/contrib/learn/python/learn/datasets/base.py", line 208, in maybe_download
+
+temp_file_name, _ = urlretrieve_with_retry(source_url)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/site-packages/tensorflow/contrib/learn/python/learn/datasets/base.py", line 165, in wrapped_fn
+
+return fn(*args, **kwargs)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/site-packages/tensorflow/contrib/learn/python/learn/datasets/base.py", line 190, in urlretrieve_with_retry
+
+return urllib.request.urlretrieve(url, filename)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/urllib/request.py", line 248, in urlretrieve
+
+with contextlib.closing(urlopen(url, data)) as fp:
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/urllib/request.py", line 223, in urlopen
+
+return opener.open(url, data, timeout)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/urllib/request.py", line 526, in open
+
+response = self._open(req, data)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/urllib/request.py", line 544, in _open
+
+'_open', req)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/urllib/request.py", line 504, in _call_chain
+
+result = func(*args)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/urllib/request.py", line 1361, in https_open
+
+context=self._context, check_hostname=self._check_hostname)
+
+File "/Users/xuyizhou/anaconda3/lib/python3.6/urllib/request.py", line 1320, in do_open
+
+raise URLError(err)
+
+URLError: <urlopen error [Errno 60] Operation timed out>
+
+解决方法：科学上网（如此神奇的错还是第一次见，1024程序猿节吐血中）
+

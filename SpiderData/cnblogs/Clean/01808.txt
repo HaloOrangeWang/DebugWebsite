@@ -1,0 +1,33 @@
+Error：
+
+urllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:749)>
+
+原因，python安装时，并未自动运行certifi程序，这样导致需要加载ssl模块时，会报错
+
+尝试过：
+
+1）
+
+pip3 install certifi
+
+pip3 install certifi
+
+2）进入python 3.6安装文件夹，运行
+
+Install Certificates.command
+
+但再次报错
+
+Could not install packages due to an EnvironmentError: [Errno 13] Permission denied: '/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/certifi-2018.4.16.dist-info/DESCRIPTION.rst'
+Consider using the `--user` option or check the permissions.
+
+继续查询错误，得出原因可能最初Py36是通过brew install 安装的，导致信任证书可能会与默认根证书包产生冲突。
+
+解决方案：
+
+1）重新到官网下载最新版Py3.6安装，https://www.python.org/downloads/
+
+安装后能自动更新设置
+
+2）并自行运行Install Certificates.command
+

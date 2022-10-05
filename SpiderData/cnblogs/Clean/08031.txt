@@ -1,0 +1,28 @@
+在UI自动化测试的脚本学习中，判断页面元素是否存在：
+
+def test_case_001(self):
+
+....
+
+#ele_exist = EC.presence_of_element_located(*self.location_djbh) #执行报错，传递三个参数
+
+ele_exist = EC.presence_of_element_located(self.location_djbh)
+
+time.sleep(3)
+
+#print(ele_exist)
+
+if ele_exist:
+
+print("【导航】导航菜单存在，页面返回正确！")
+
+解决办法：
+
+loc 代表的是有三个参数：self，xpath和路径地址，ele_exist=EC.presence_of_element_located(self.location_djbh)
+
+只有2个参数未知，传递的三个参数，self,xpath，路径地址
+
+更改代码为：
+
+ele_exist = EC.presence_of_element_located(self.location_djbh)
+

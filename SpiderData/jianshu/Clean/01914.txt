@@ -1,0 +1,49 @@
+
+安装环境：
+
+OS：Ubuntu 18.04.2 LTS
+
+Python：Python 3.6.7
+
+
+安装 pyspider 过程及错误：
+
+-通过pip 直接安装
+
+sudo pip3 install pyspider
+
+出现错误如下：
+
+ERROR: Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-install-iqok36i5/pycurl/
+
+-安装pyspider依赖的pycurl
+
+sudo pip3 install pycurl
+
+错误如下：
+
+ERROR: Failed building wheel for pycurl
+
+ERROR: Using curl-config (libcurl 7.58.0)
+
+-直接安装pycurl报错，先安装其它依赖包
+
+sudo apt-get install libcurl4
+sudo apt-get install libcurl4-openssl-dev
+sudo apt-get install python3 python-dev python3-dev
+sudo apt-get install openssl
+sudo apt-get install libssl-dev
+sudo pip3 install paramiko
+
+第一步先运行 sudo apt-get install libcurl3 ，如果提示，说明安装mongodb时已经安装，不放心可以再安装libcurl4：
+
+mongodb-org-server : 依赖: libcurl4 (>= 7.16.2) 但是它将不会被安装
+
+-经过以上安装，安装pycurl就不会报错了
+
+sudo pip3 install pycurl
+
+-解决了pycurl的问题，安装pyspider就正常
+
+sudo pip3 install pyspider
+

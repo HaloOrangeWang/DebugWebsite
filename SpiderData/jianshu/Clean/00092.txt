@@ -1,0 +1,225 @@
+
+一、
+
+1、文件的打开
+
+格式：f = open(‘file’,mode='r',encoding='utf-8')
+
+file：文件  mode：打开文件的方式 默认是读(r)
+
+encoding：文件的编码
+
+2、文件的关闭
+
+f.close()
+
+
+二、
+
+写数据(write)
+
+格式：
+
+对象=open("文件",w)
+
+对象.write("写入数据")
+
+对象.close
+
+总结：如果文件不存在那么创建，如果存在那么就先清空，然后写入数据
+
+
+三、
+
+读数据(read)
+
+格式：
+
+对象 = open("文件",r)
+
+变量 = 对象.read()  # 括号里可以传num类型,表示读取几个数据,不传,默认读取全部
+
+print(变量)
+
+总结：
+
+如果用open打开文件时，如果使用的"r"，那么可以省略，即只写open('test.txt')如果没有文件，打开报错，存在该文件才能操作如果文件中存在中文显示，会出现乱码需要添加encoding='utf-8'    open(‘test.txt’,”r”,encoding='utf-8')
+
+
+四、
+
+读数据(readlines)
+
+readlines把整个文件中的内容进行一次性读取，并且返回的是一个列表，其中每一行的数据为一个元素
+
+格式：
+
+对象 = open("文件",'r')
+
+变量 = 对象.readlines()
+
+print(变量)
+
+
+五、
+
+读数据(readline)
+
+readline可以按照行的方式把整个文件中的内容进行一行一行的读取
+
+格式：
+
+对象 = open("文件",'r')
+
+变量 = 对象.readline()
+
+print(变量)
+
+如：
+
+f = open('a.txt','r',encoding='utf-8')
+
+whileTrue:
+
+buf = f.readline()
+
+if buf:
+
+print(buf)
+
+else:
+
+break
+
+
+六、 追加(a)
+
+格式：
+
+对象 = open("",a)
+
+对象.write("写入数据")
+
+对象.close()
+
+总结：（追加）形式打开文件，如果文件不存在则创建并从头添加写入的内容，存在则原有数据后追加数据
+
+
+七、
+
+读数据(rb)
+
+格式：
+
+with open("二进制文件","rb") as 对象:
+
+变量 = 对象.read()
+
+print(变量)
+
+注：这种格式不需要手动关闭文件
+
+总结：如果没有文件，打开报错，存在该文件才能操作
+
+
+文件和文件夹的操作
+
+
+文件的相关操作
+
+
+1、文件重命名
+
+格式：
+
+import os
+
+os.rename("需要修改的文件名","新文件名")
+
+
+2、删除文件
+
+格式：
+
+import os
+
+os.remove("文件名")
+
+
+文件夹的相关操作
+
+
+1、
+
+创建文件夹
+
+格式：
+
+import os
+
+os.mkdir('文件夹名称')
+
+
+2、
+
+获取当前目录
+
+格式：
+
+import os
+
+os.getcwd()
+
+
+二、异常
+
+格式：
+
+try:
+
+可能发生异常的代码
+
+except 异常对象 as 变量名:
+
+print(e)  # 获取异常信息
+
+else:
+
+不发生异常执行的代码
+
+finally:
+
+无论是否发生异常都会执行的代码
+
+
+模块
+
+Python 模块(Module)，是一个Python文件，以.py 结尾，包含了Python 对象定义和Python语句
+
+
+模块的引入
+
+1、使用 import 关键字
+
+例：
+
+import random
+
+调用：
+
+random.randint(a,b)
+
+2、from 模块 import 方法
+
+例：
+
+from random import randint
+
+调用：
+
+randint(a,b)
+
+3、from 模块 import * 【了解】
+
+总结：次方法会导入这个模块全部方法，不方便使用
+

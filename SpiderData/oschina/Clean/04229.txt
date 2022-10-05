@@ -1,0 +1,42 @@
+
+问题发生
+
+原先代码如下：
+
+//认证授权码
+private static volatile String AUTHORIZATION_CODE = "init";
+
+git push 之后，sonar认为这是个bug检测报告截图如下：
+
+
+分析排查
+
+解释说明：
+
+Marking an array volatile means that the array itself will always be read fresh and never thread cached, but the items in the array will not be. Similarly, marking a mutable object field volatile means the object reference is volatile but the object itself is not, and other threads may not see updates to the object state.
+
+This can be salvaged with arrays by using the relevant AtomicArray class, such as AtomicIntegerArray, instead. For mutable objects, the volatile should be removed, and some other method should be used to ensure thread-safety, such as synchronization, or ThreadLocal storage.
+
+中文翻译如下：
+
+标记数组volatile意味着数组本身将始终被新鲜读取并且永远不会被线程缓存，但数组中的项目将不会。 类似地，标记可变对象字段volatile表示对象引用是易失性但对象本身不是，并且其他线程可能看不到对象状态的更新。
+
+这可以通过使用相关的AtomicArray类（例如AtomicIntegerArray）来修复数组。 对于可变对象，应该删除volatile，并且应该使用其他一些方法来确保线程安全，例如同步或ThreadLocal存储。
+
+从搜索引擎上寻找答案，得到部分解释说明如下：
+
+volatile关键字对于基本类型的修改可以在随后对多个线程的读保持一致， 但是对于引用类型如数组，实体bean，仅仅保证引用的可见性，但并不保证引用内容的可见性。
+
+即使使用volatile关键字修饰string，也不能保证修改后的数据会立即对其他的多个线程保持一致
+
+
+解决问题
+
+//认证授权码
+private static AtomicReference<String> ATOMIC_AUTHORIZATION_CODE = 
+	new AtomicReference<>();
+
+其赋值与取值，则采用set()、get() 方法来完成。
+
+改动后重新git push 之后，sonar中的bug消除。问题解决
+

@@ -1,0 +1,29 @@
+用cocoapods 时经常遇见这种问题
+
+1：更改pods -》project -》architectures -》build active architecture only都为NO，
+
+2：Target->BuildSetting->Library Search Path添加以$(PROJECT_DIR)/开始的相对路径
+
+3：Other Linker Flag发现多余的头文件并删除
+
+4：在product-》edit scheme中-》build里面添加pods的所有的库
+
+5：删除pod的四个文件，重新创建
+
+search paths - 》library search paths是空的，前几天创建的是有路径的，然后在里面增加$(inherited)，clean项目
+
+这几种方法都试了，还是不行，最后搜到的这个方法解决了我的问题：
+
+targates--》build Setting  然后在右边的输入框中输入“USER_HEADER_SEARCH_PATHS”  ，然后搜索到了这个路径以后 ,在这路径中添加 “$(inherited)”
+
+然后我们再次运行项目 ，项目就不会报错了。
+
+有时候会遇到其他问题：
+
+
+1.Failed to save xx.xcodeproj
+
+Xcode 会弹出一个报错框，点击 ##Read From Disk##即可，同步文件夹和文件
+
+折腾了几个小时，真的要吐血了，特意记录下
+

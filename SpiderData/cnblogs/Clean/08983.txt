@@ -1,0 +1,45 @@
+
+win10快速解决警告：libpng warning: iCCP: known incorrect sRGB profile
+
+1.我安装了Anaconda，QT等也都安装在了这里。
+
+2.运行python程序总是报警告：：libpng warning: iCCP: known incorrect sRGB profile。特别烦。
+
+3.网上有的方法是安装ImageMagick，但是我觉得并非一劳永逸且麻烦。
+
+4.于是自己尝试，发现只需要将libpng版本替换就可以了，也是无语。。。
+
+步骤如下：
+1.找到Anaconda安装该路路径：.\Anaconda3\pkgs\libpng-1.6.34-h79bbb47_0（这是我原来的安装版本libpng-1.6.34…，总是报警告。）
+
+2.将libpng-1.6.34-h79bbb47_0（看看你自己是哪个版本）这个文件夹剪切出去。把准备好的不报警告的版本替换进来（我找的是libpng-1.6.36-h2a8f88b_0这个）：
+
+3.完美解决警告libpng warning: iCCP: known incorrect sRGB profile问题。
+
+其实，Anaconda安装后自带有的这个libpng，重新安装一个Anaconda版本同样不会出现这个问题。
+
+文中版本下载链接：[网盘](https://pan.baidu.com/s/1MsNC_k35RikSCZYZZHyepA)提取码:92km
+
+转载于
+
+https://blog.csdn.net/banyueju/article/details/91553248?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-2.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-2.control
+
+
+解决使用png图片时，报错libpng warning: iCCP: known incorrect sRGB profile的问题
+
+在Qt中，如果使用某些格式png图片，可能会报错libpng warning: iCCP: known incorrect sRGB profile，虽然没什么影响，但是看到这个警告非常的烦。
+
+网上搜索了一下，这个警告貌似是和png图片的格式有关。是在png中嵌入了什么导致的。
+
+而解决方法其实非常简单。
+
+就是用QImage读取一下，然后直接保存回去就可以了。
+
+这相当于是给png做了一个Qt的适配。
+
+我也写了一个转换程序，可以到这里下载。
+
+https://github.com/188080501/JQTools
+
+转载于https://blog.csdn.net/wsj18808050/article/details/47858539
+

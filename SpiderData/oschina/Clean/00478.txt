@@ -1,0 +1,21 @@
+启动一个环境命令行后，执行python报错
+
+Python 3.8.5 (default, Sep  3 2020, 21:29:08) [MSC v.1916 64 bit (AMD64)] :: Anaconda, Inc. on win32
+Type "help", "copyright", "credits" or "license" for more information.
+Failed calling sys.__interactivehook__
+Traceback (most recent call last):
+  File "D:\ProgramData\Anaconda3\envs\floods\lib\site.py", line 440, in register_readline
+    readline.read_history_file(history)
+  File "D:\ProgramData\Anaconda3\envs\floods\lib\site-packages\pyreadline\rlmain.py", line 165, in read_history_file
+    self.mode._history.read_history_file(filename)
+  File "D:\ProgramData\Anaconda3\envs\floods\lib\site-packages\pyreadline\lineeditor\history.py", line 82, in read_history_file
+    for line in open(filename, 'r'):
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x9a in position 2786: illegal multibyte sequence
+>>> quit()
+
+直接修改D:\ProgramData\Anaconda3\envs\floods\lib\site-packages\pyreadline\lineeditor\history.py文件中的82行
+
+for line in open(filename, 'r'):修改为：
+
+for line in open(filename, 'r',encoding='utf-8'):
+

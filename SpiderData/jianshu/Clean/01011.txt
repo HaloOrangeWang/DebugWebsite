@@ -1,0 +1,28 @@
+问题描述，我将tensorflow1.14的代码转成 tensorflow2.0.2代码是报错出现了上述报错。
+
+原因，引入tensorflow库时不一致出现的问题：
+
+1.  tensorflow1.14的代码导入库如下:
+
+2.   tensorflow2.0.0的代码导入库如下:
+
+3.  当我们只有部分代码转成 TF2.0.0的型式时，就会报错。
+
+如果是以上情况就会报错如下：tensorflow.python.framework.errors_impl.FailedPreconditionError: 2 root error(s) found.
+
+(0) Failed precondition: Error while reading resource variable BertLayer_module/bert/encoder/layer_8/attention/self/key/kernel from Container: localhost. This could mean that the variable was uninitialized. Not found: Resource localhost/BertLayer_module/bert/encoder/layer_8/attention/self/key/kernel/N10tensorflow3VarE does not exist.
+
+[[{{node BertLayer/BertLayer_module_apply_tokens/bert/encoder/layer_8/attention/self/key/MatMul/ReadVariableOp}}]]
+
+[[loss/Identity/_319]]
+
+(1) Failed precondition: Error while reading resource variable BertLayer_module/bert/encoder/layer_8/attention/self/key/kernel from Container: localhost. This could mean that the variable was uninitialized. Not found: Resource localhost/BertLayer_module/bert/encoder/layer_8/attention/self/key/kernel/N10tensorflow3VarE does not exist.
+
+[[{{node BertLayer/BertLayer_module_apply_tokens/bert/encoder/layer_8/attention/self/key/MatMul/ReadVariableOp}}]]
+
+0 successful operations.
+
+0 derived errors ignored.
+
+要解决该问题就应用将全部程序转换成TF2.0的型式。
+

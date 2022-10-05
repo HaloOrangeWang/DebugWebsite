@@ -1,0 +1,15 @@
+代码：
+
+print np.sort(zip(etr.feature_importances_, boston.feature_names), axis=0)  # Python2.X 不报错
+print(np.sort(zip(etr.feature_importances_, boston.feature_names), axis=0))  # Python3.X 报错
+
+原因：
+
+Python3.X中为了减少内存，zip()方法返回的类型为对象
+
+修改：
+
+print(np.sort(list(zip(etr.feature_importances_, boston.feature_names)), axis=0))
+
+　　
+

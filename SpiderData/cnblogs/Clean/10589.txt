@@ -1,0 +1,91 @@
+先写一些前言吧，自己感觉python已经有一定的基础了，但是在安装这个过程居然用了一下午，感觉有些收货，特地写下来与大家分享一下。
+
+PySpider是一个强大的网络爬虫系统，GitHub地址：https://github.com/binux/pyspider；官方文档地址：http://docs.pyspider.org/en/latest。
+
+PySpider，提供WEBUI系统，支持PhantomJS进行JS的渲染采集，内置pyquery作为选择器，可拓展程度不高。
+
+Scrapy，原生是代码和命令操作，对接Portia实现可视化，使用parse命令调试，对接Scrapy-Splash组件进行JS渲染采集，对接XPath/CSS选择器和正则匹配，可对接Middleware、Pipeline、Extension等组件拓展。
+
+PySpider，架构分为Scheduler调度器（发起任务调度），Fetcher抓取器（抓取网页内容），Processer处理器（解析网页内容）。
+
+话不多说，上安装过程（PS，本机环境windows10，Python3.9.0）：
+
+1、首先需要安装PhantomJS，这个比较简单，就直接按照网上流程安装对应版本就行。
+
+2、安装PyCurl，这个是安装PySpider的先决条件，直接pip安装会报错，可以下载.whl文件安装，网址https://www.lfd.uci.edu/~gohlke/pythonlibs/#pycurl，
+
+3、安装PySpider，直接pip安装就行。
+
+4、安装调试：
+
+（1）、安装完Pyspider，命令行运行pyspider，会报错：SyntaxError: invalid syntax：
+
+这个是因为python以及相关依赖版本过高。可以使用Pycharm （亦可直接用文档更改代码），点击File-Open打开python\lib\sit-packages\pyspider，将文件夹pyspider 加载进去，按Ctrl+Shift+F快捷键调出全局搜索，输入async，即可在“In Project”下找到所有含有关键字的.py 文件，逐一打开，按Ctrl+R调出替换栏，将async 替换为shark 即可。就是分别在run.py、tornado_fetcher.py、webui>app.py,ctrl+f查找async替换掉就可以了。（注意大写的Async不要替换）
+
+（2）、再次运行发现报错：AttributeError: module 'fractions' has no attribute 'gcd'，
+
+这个函数在Python3.5之后就废弃了，官方建议使用math.gcd()。所以在libs/base_handler文件中上方加入 import math下面fractions.gcd()改为math.gcd(…)就可以了
+
+（3）、再次运行发现报错：Deprecated option 'domaincontroller': use 'http_authenticator.domain_controller' instead.
+
+webui文件里面的webdav.py文件打开，修改第209行即可。把
+
+'domaincontroller': NeedAuthController(app),
+
+修改为：
+
+'http_authenticator':{
+    'HTTPAuthenticator':NeedAuthController(app),
+},
+
+（4）、再次运行发现报错：cannot import name 'DispatcherMiddleware' from 'werkzeug.wsgi' (d:\python39\lib\site-packages\werkzeug\wsgi.py)
+
+这个是werkzeug的版本太高问题，需要进行修改
+
+python -m pip  uninstall werkzeug # 卸载
+
+python -m pip install werkzeug==0.16.1  
+#安装0.16.1版本
+
+（5）、同样也需要更换wsgidav
+版本
+
+pip uninstall wsgidav
+
+pip install wsgidav==2.4.1
+
+（6）、再次运行pyspider，发现卡死在result_worker starting，运行pyspider all卡死在， fetcher starting…
+
+百度，① 有说需要打开一个命令行端口运行pyspider，卡住后运行第二个并关掉第一个端口；② 有说需要关闭防火墙；③ 有说需要先安装redis
+
+但是，我都尝试一遍还是卡在那里。
+
+（7）最后选择重新安装一遍，
+
+① 把之前安装的包卸载，具有有：wsgidav，werkzeug，pycurl，pyspider（已经安装的redis没有卸载，防火墙中python权限打开没关）
+
+② 按照上述（1）~（5）步骤安装，过程中发现Flask与相关包冲突，并最Flask的版本进行了更新。具体描述如下：
+
+a）发现在安装 werkzeug 时报错：
+
+ERROR: pip's dependency resolver does not currently take
+into account all the packages that are installed. This behaviour is the source
+of the following dependency conflicts.
+
+flask 2.0.1 requires Werkzeug>=2.0, but you have werkzeug
+0.16.1 which is incompatible.
+
+b）卸载flask，继续安装
+wsgidav 时报错：
+
+ERROR: pip's dependency resolver does not currently take
+into account all the packages that are installed. This behaviour is the source
+of the following dependency conflicts.
+
+pyspider 0.3.10 requires Flask>=0.10, which is not
+installed.
+
+c）安装 flask==1.0.2 ，如果安装0.10版本，发现pyspider的网页UI部分内容渲染失败。1.0.2版本刚好合适
+
+d）安装成功截图：
+

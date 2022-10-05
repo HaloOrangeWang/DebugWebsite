@@ -1,0 +1,93 @@
+原文地址：https://www.jianshu.com/p/b8110d578155
+1、文件路径选择
+
+mac不存在地址栏，有时候你去获取文件路径粘贴过来打开会报错
+
+File b'***.csv' does not exist
+
+而你不想每次要去找数据文件路径，最简单的办法是先获取你在编辑的Ipython notebook的路径，然后把数据文件放在该路径下，到时候直接输入文件名就能打开文件了。
+
+#获取默认路径
+import os
+print (os.path.abspath('.'))
+
+比如我的路径是
+
+/Volumes/LXQ/inotebooks/data
+
+接下来把数据文件比如rawdata.csv拖到data文件夹下，再打开
+
+data_file = pd.read_csv('rawdata.csv')
+
+就行了，不用输入路径。
+
+2、编码问题
+
+当提示
+
+'utf-8' codec can't decode byte 0xd0 in position 0: invalid continuation byte
+
+的时候，意味着编码错误。
+
+这个问题爬网页的时候也会遇到。原因是python的编码与爬下来的网页编码不一样，python读不懂，只能返回乱码。
+
+解决办法是：
+
+原文地址：https://www.jianshu.com/p/b8110d578155
+
+1、文件路径选择
+
+mac不存在地址栏，有时候你去获取文件路径粘贴过来打开会报错
+
+File b'***.csv' does not exist
+
+而你不想每次要去找数据文件路径，最简单的办法是先获取你在编辑的Ipython notebook的路径，然后把数据文件放在该路径下，到时候直接输入文件名就能打开文件了。
+
+#获取默认路径
+import os
+print (os.path.abspath('.'))
+
+比如我的路径是
+
+/Volumes/LXQ/inotebooks/data
+
+接下来把数据文件比如rawdata.csv拖到data文件夹下，再打开
+
+data_file = pd.read_csv('rawdata.csv')
+
+就行了，不用输入路径。
+
+2、编码问题
+
+当提示
+
+'utf-8' codec can't decode byte 0xd0 in position 0: invalid continuation byte
+
+的时候，意味着编码错误。
+
+这个问题爬网页的时候也会遇到。原因是python的编码与爬下来的网页编码不一样，python读不懂，只能返回乱码。
+
+解决办法是：
+
+2、编码问题
+
+当提示
+
+'utf-8' codec can't decode byte 0xd0 in position 0: invalid continuation byte
+
+的时候，意味着编码错误。
+
+这个问题爬网页的时候也会遇到。原因是python的编码与爬下来的网页编码不一样，python读不懂，只能返回乱码。
+
+解决办法是：
+
+首先搞清楚python的默认编码
+
+返回
+
+utf-8
+
+OK如果你爬取的网页的编码是utf-8，爬下来的结果就能正常显示。但把爬下来的数据存到csv文档，让python再次读取又是另一回事，因为csv文档用的未必是utf-8编码，这时候需要解码
+
+encoding后面的内容，取决于csv文件的编码。
+

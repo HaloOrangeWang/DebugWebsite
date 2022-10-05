@@ -1,0 +1,20 @@
+Cannot get Jedis connection; nested exception is redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool | org.springframework.data.redis.RedisConnectionFailureException: Cannot get Jedis connection; nested exception is redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the poolorg.springframework.data.redis.RedisConnectionFailureException: Cannot get Jedis connection; nested exception is redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool
+org.springframework.data.redis.connection.jedis.JedisConnectionFactory.fetchJedisConnector(JedisConnectionFactory.java:198)
+org.springframework.data.redis.connection.jedis.JedisConnectionFactory.getConnection(JedisConnectionFactory.java:345)
+org.springframework.data.redis.core.RedisConnectionUtils.doGetConnection(RedisConnectionUtils.java:129)
+org.springframework.data.redis.core.RedisConnectionUtils.getConnection(RedisConnectionUtils.java:92)
+org.springframework.data.redis.core.RedisConnectionUtils.getConnection(RedisConnectionUtils.java:79)
+org.springframework.data.redis.core.Redistemplate.execute(Redistemplate.java:191)
+org.springframework.data.redis.core.Redistemplate.execute(Redistemplate.java:166)
+org.springframework.data.redis.core.AbstractOperations.execute(AbstractOperations.java:88)
+org.springframework.data.redis.core.DefaultHashOperations.get(DefaultHashOperations.java:49)
+
+解决方法：
+
+//默认就是fasle
+redistemplate.setEnableTransactionSupport(false)
+
+或者是
+
+RedisConnnectionUtils.unbindConnection(redisTemplate.getConnnectionFactory)
+

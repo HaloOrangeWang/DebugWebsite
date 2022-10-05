@@ -1,0 +1,76 @@
+报错信息：fetch of http://szs.mof.gov.cn/zhengwuxinxi/zhengcefabu/201402/t20140224_1046354.html failed with: java.io.IOException: unzipBestEffort returned null
+
+完整的报错信息为：
+
+2014-03-12 16:48:38,031 ERROR http.Http - Failed to get protocol output
+java.io.IOException: unzipBestEffort returned null
+at org.apache.nutch.protocol.http.api.HttpBase.processGzipEncoded(HttpBase.java:317)
+at org.apache.nutch.protocol.http.HttpResponse.<init>(HttpResponse.java:164)
+at org.apache.nutch.protocol.http.Http.getResponse(Http.java:64)
+at org.apache.nutch.protocol.http.api.HttpBase.getProtocolOutput(HttpBase.java:140)
+at org.apache.nutch.fetcher.Fetcher$FetcherThread.run(Fetcher.java:703)
+2014-03-12 16:48:38,031 INFO  fetcher.Fetcher - fetch of http://szs.mof.gov.cn/zhengwuxinxi/zhengcefabu/201402/t20140224_1046354.html failed with: java.io.IOException: unzipBestEffort returned null
+2014-03-12 16:48:38,031 INFO  fetcher.Fetcher - -finishing thread FetcherThread, activeThreads=0
+
+由此可知抛出异常的代码位于src/plugin/lib-http/src/java/org/apache/nutch/protocol/http/api/HttpBase.java（lib-http插件）类的processGzipEncoded方法的317行：
+
+byte[] content;
+if (getMaxContent() >= 0) {
+  content = GZIPUtils.unzipBestEffort(compressed, getMaxContent());
+} else {
+  content = GZIPUtils.unzipBestEffort(compressed);
+}
+
+if (content == null)
+  throw new IOException("unzipBestEffort returned null");
+
+nutch1.7\src\plugin\protocol-http\src\java\org\apache\nutch\protocol\http\HttpResponse.java（protocol-http插件）的164行调用了processGzipEncoded方法：
+
+readPlainContent(in);
+
+String contentEncoding = getHeader(Response.CONTENT_ENCODING);
+if ("gzip".equals(contentEncoding) || "x-gzip".equals(contentEncoding)) {
+	content = http.processGzipEncoded(content, url);
+} else if ("deflate".equals(contentEncoding)) {
+	content = http.processDeflateEncoded(content, url);
+} else {
+	if (Http.LOG.isTraceEnabled()) {
+		Http.LOG.trace("fetched " + content.length + " bytes from " + url);
+	}
+}
+
+通过Firefox的Firebug工具可查看该URL的响应头为Content-Encoding：gzip，Transfer-Encoding：chunked。
+
+解决方法如下：
+
+1、修改文件nutch1.7\src\java\org\apache\nutch\metadata\HttpHeaders.java，增加一个field：
+
+public final static String TRANSFER_ENCODING = "Transfer-Encoding";
+
+2、修改文件nutch1.7\src\plugin\protocol-http\src\java\org\apache\nutch\protocol\http\HttpResponse.java，替换第160行代码readPlainContent(in);为如下代码
+
+String transferEncoding = getHeader(Response.TRANSFER_ENCODING); 
+if(transferEncoding != null && "chunked".equalsIgnoreCase(transferEncoding.trim())){    	  
+  readChunkedContent(in, line);  
+}else{
+  readPlainContent(in);  
+}
+
+3、http内容长度限制不能使用负值，只能使用一个大整数：
+
+<property>
+	<name>http.content.limit</name>
+	<value>655360000</value>
+</property>
+
+4、因为修改了核心代码和插件代码，所以需要重新编译打包发布，执行nutch1.7\build.xml的默认target：runtime
+
+cd nutch1.7
+ant
+
+提交BUG：
+
+1、https://issues.apache.org/jira/browse/NUTCH-1736
+
+2、https://github.com/apache/nutch/pull/3
+

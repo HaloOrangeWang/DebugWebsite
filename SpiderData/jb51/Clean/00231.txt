@@ -1,0 +1,29 @@
+python 出现SyntaxError: non-keyword arg after keyword arg错误解决办法
+
+前言：
+
+在Python中，这两个是python中的可变参数，*arg表示任意多个无名参数，类型为tuple，**kwargs表示关键字参数，为dict，使用时需将*arg放在**kwargs之前，否则会有“SyntaxError: non-keyword arg after keyword arg”的语法错误
+
+def test(*arg,**kwargs):  
+  print arg   
+  print kwargs  
+  print "-------------------"   
+  
+if __name__=='__main__':  
+  test(1,2,3,4,5)  
+  test(a=1,b=2,c=3)  
+  test(1,2,3,a=1,b=3,c=5)  
+  
+output:  
+(1, 2, 3, 4, 5)  
+{}  
+-------------------  
+()  
+{'a': 1, 'c': 3, 'b': 2}  
+-------------------  
+(1, 2, 3)  
+{'a': 1, 'c': 5, 'b': 3}  
+-------------------
+
+感谢阅读，希望能帮助到大家，谢谢大家对本站的支持！
+

@@ -1,0 +1,18 @@
+上一篇我们解决了通过Python3来开发行人分析运行ridership.exe时，出现报错index out of range的问题优化，本文我们来分享开发过程中遇到的另一个问题：Python3 分析行人检查，程序直接运行后mysql拒绝访问的问题。
+
+程序直接运行，连接mysql数据库错误：
+
+“pymysql.err.OperationalError: (2003, “Cant’t connect to mysql server on ‘localhost’ ([WinError 10061] 由于目标积极拒绝，无法进行连接)”)”
+
+首先我们来看一段代码：
+
+此代码是进行mysql数据库连接代码。一般这个问题，最多的是mysql后台服务没有启动，可是我们mysql程序不仅在运行，而且还能用HeidiSQL进行连接，所以此故障可以排除。
+
+于是我们尝试通过修改dbhost值的方法解决，在代码中把dbhost值改为’127.0.0.1’，但是修改后还是不起作用。此时就只能在电脑文件修改hosts文件尝试。添加一行：127.0.0.1 localhost。修改完成，重启电脑，再次运行还是没有反应。于是启动cmd，ping一下localhost：
+
+可以看到上图出现了[::1]的标志。通过这个标志我们可以分析，win10解析localhost时候，会把localhost解析成ipv6，而不是本地的127.0.0.1，所以要想办法改回127.0.0.1.。
+
+打开注册表，找到键HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\tcpip6\Parameters；添加一个类型DWORD名字为DisabledComponents 的项（如果存在就不需要添加）；然后修改里面的值为20，该设置的值是16进制的。
+
+修改完成保存注册表并重启电脑，显示这个连接mysql可以重新连接，该问题就成功解决。
+

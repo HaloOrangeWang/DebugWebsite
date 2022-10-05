@@ -1,0 +1,32 @@
+源码
+
+def exec_sql(self, sql):
+        conn = self._get_conn()
+        try:
+            with conn as cur:
+                cur.execute(sql)
+                return cur.fetchall()
+        except MySQLdb.ProgrammingError as e:
+            LOG.error("execute sql ({0}) error {1}".format(sql, e))
+            raise e
+        except MySQLdb.OperationalError as e:
+            conn = self._create_new_conn()
+            raise e
+        finally:
+            self._put_conn(conn)
+
+报错：AttributeError: 'Connection' object has no attribute 'execute'
+
+类缺少方法fetchall，需要创建一个游标的实例，
+
+from contextlib import closing
+with closing(self.connectio.cursor()) as cur:
+
+更简单的解决方法：删掉with
+
+try:
+            cur.execute(sql)
+            return cur.fetchall()
+
+参考：https://stackoverflow.com/questions/16668623/sqlite-cursor-in-python-with-statement
+

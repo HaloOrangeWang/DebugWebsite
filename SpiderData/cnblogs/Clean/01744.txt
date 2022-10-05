@@ -1,0 +1,44 @@
+安装PyUserInput失败。
+
+经查看发现是pyHook（pyHook是一个用来进行键盘、鼠标等层面事件监控的库。这个库的正常工作需要pythoncom等操作系统的API的支持。）无法安装，不知道是不是因为这个库可以被用于一些比较邪恶的目的。经搜索发现直接pip install pyHook是找不到相关包的，但可以下源码编译安装，可以在 https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyhook 这里可以直接下载到.whl文件，这个文件可以作为pip install 的参数来进行安装。
+
+直接输入pip install pyHook-1.5.1-cp36-cp36m-win_amd64.whl好像还是不行，经提示使用 G:\Py_opencv\venv\Scripts\python.exe -m pip install pyHook-1.5.1-cp36-cp36m-win_amd64.whl第一个参数是python解释器，-m选项可以让python以脚本的方式运行一个模块，pip install后面就是要安装的包名。
+
+pyHook-1.5.1-cp36-cp36m-win_amd64.whl
+
+pyHook:库名
+
+1.5.1：版本号
+
+cp3.6m：Cpython3.6版本,编码是ucs2,UCS2认为每个字符占用2个字节，UCS4认为每个字节占用4个字符，都是UNICODE的编码形式。
+
+win_amd64:windows64位环境
+
+whl:压缩包，在其中包含了py文件，以及经过编译的pyd文件。可以使用pip安装
+
+电脑系统环境查看，可以右键“我的电脑”->“属性”查看
+
+然后再直接在命令行里输入pip install pyuserinput或是在pycharm下载安装都可以了。（需要先安装pywin32）
+
+上述下载的pyHook是基于Python2的,在python3下会报错:
+
+TypeError: MouseSwitch() missing 8 required positional arguments: 'msg', 'x', 'y', 'data', 'flags', 'time', 'hwnd', and 'window_name'
+
+或者AttributeError: 'HookManager' object has no attribute 'keyboard_hook'
+
+感谢:python3.5安装pyHook,解决【TypeError: MouseSwitch() missing 8 required positional arguments: 'msg', 'x', 'y', 'data', 'time', 'hwnd', and 'window_name'】这个错误！、[使用Python 3.5/3.6监听本机任意窗口中的按键操作](使用Python 3.5/3.6监听本机任意窗口中的按键操作)提供的解决方法
+
+需要的模块：扩展库pyhook_py3k（注意，不要使用pyhook），pywin32。
+
+第一步，安装pywin32，地址：http://www.lfd.uci.edu/~gohlke/pythonlibs/#pywin32
+
+第二步，下载pyhook_py3k，地址：https://github.com/Answeror/pyhook_py3k
+
+第三步，下载swig.exe，地址：http://www.swig.org/download.html ==>.zip格式解压
+
+第四步，解压缩pyhook_py3k，并进行编译，命令：python setup.py build_ext --swig=..\swigwin-3.0.12\swig.exe，可以根据实际情况修改swig.exe的路径，另外本机最好已安装VC2008
+
+第五步，安装编译好的pyhook_py3k，命令：pip install .
+
+然后就可以正常操作了!!~
+

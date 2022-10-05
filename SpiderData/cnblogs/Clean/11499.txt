@@ -1,0 +1,54 @@
+1.File "manage.py", line 14 ) from exc ^ SyntaxError: invalid syntax出错的原因及解决方法
+
+在linux上安装django，并将项目上传后，执行python manage.py runserver 时，报错了，报错如下：
+
+解决：
+
+python3 manage.py runserver 0.0.0.0:8000
+
+2.ModuleNotFoundError: No module named '_sqlite3'
+
+运行python3.6 manage.py runserver 0.0.0.0:8080，启动显示
+
+解决方法一：
+
+1、重新安装 sqlite
+
+yum -y install sqlite-devel
+
+2、重新编译安装Python
+
+wget https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tgz
+
+tar xf Python-3.6.6.tgz
+
+cd Python-3.6.6
+
+./configure
+
+make
+
+make install
+
+完成：
+
+方法二：
+
+系统有安装 sqlite,却还是报错，重装sqlite 也不行；根据网友们得提示，可能是少了个文件:
+
+/data/tools/python_3.6.0/lib/python3.6/lib-dynload/_sqlite3.cpython-36m-x86_64-linux-gnu.so
+
+所以如果有找到该文件，可以拷贝一份到 lib-dynload/目录下，要对应python版本，否则可能报错
+
+https://download.csdn.net/download/qq_39996858/11632720   .so 文件
+
+也可以拿一个新机器按照方法一来操作，将编译出来的.so放到原有的python目录下
+
+3.更新了sqlite3之后仍然报错SQLite 3.8.3 or later is required (found 3.7.17)
+
+解决方法如下：
+
+根据下面这条报错信息找到双引号里的这个路径
+
+打开这个文件，下翻找到 check_sqlite_version 这个函数，把 if Database.sqlite_version_info < (3, 8, 3): 注掉，改成if Database.sqlite_version_info < (3, 6, 3):
+

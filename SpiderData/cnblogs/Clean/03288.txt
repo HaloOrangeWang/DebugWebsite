@@ -1,0 +1,16 @@
+celery -A yourappname worker --loglevel=info
+时候报错
+
+File "/usr/local/lib/python3.7/site-packages/celery/backends/redis.py", line 22
+    from . import async, base
+                      ^
+SyntaxError: invalid syntax
+
+python（3.7）syntax成了关键字 redis 3.*不支持，需要升级redis包至4.*
+
+升级命令如下
+
+pip install --upgrade https://github.com/celery/celery/tarball/master
+
+外网有时候下载安装失败，多试几次
+

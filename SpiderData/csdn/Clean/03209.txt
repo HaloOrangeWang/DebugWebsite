@@ -1,0 +1,19 @@
+
+问题
+
+引用父文件夹中的模块/文件，需要添加父文件夹路径，如下代码所示。在IDLE中正常运行，但在VScode中运行出错。
+
+import sys, os
+sys.path.append(os.pardir)
+
+错误：
+
+ModuleNotFoundError: No module named 'xxx'
+# 或
+FileNotFoundError: [Errno 2] No such file or directory: 'xxx'
+
+
+原因和解决办法
+
+VScode中的相对路径是相对于工作空间或工作文件夹的。所以当添加进路径相对路径’. .'时，添加进的是工作文件夹路径的父路径，而不是.py文件的父路径。所以把添加的路径改为相对工作空间的即可在VScode中正常工作。（感觉怪怪的，下次如果不用VScode运行的，还要一个个改回来吗→_→）
+

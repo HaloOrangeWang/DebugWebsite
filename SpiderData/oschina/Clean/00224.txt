@@ -1,0 +1,41 @@
+报错截图
+
+ImportError while loading conftest 'E:\python\HuaFansApi\test_case\conftest.py'.
+test_case\conftest.py:8: in <module>
+    from Tools.my_sql import data_sql
+E   ImportError: No module named 'Tools.my_sql'
+
+　　
+
+
+模块搜索路径
+
+当我们试图加载一个模块时，Python会在指定的路径下搜索对应的.py文件，如果找不到，就会报错：
+
+默认情况下，Python解释器会搜索当前目录、所有已安装的内置模块和第三方模块，搜索路径存放在sys模块的path变量中：
+
+[ 'E:\\python', 'D:\\Python34\\python34.zip', 'D:\\Python34\\DLLs', 'D:\\Python34\\lib', 'D:\\Python34', 'C:\\Users\\10690\\AppData\\Roaming\\Python\\Python34\\site-packages', 
+'D:\\Python34\\lib\\site-packages', 'D:\\Python34\\lib\\site-packages\\suds_jurko-0.4.1.jurko.4-py3.4.egg', 'D:\\Python34\\lib\\site-packages\\pip-18.1-py3.4.egg',
+ 'D:\\Python34\\lib\\site-packages\\jsonpath_rw-1.2.2-py3.4.egg', 'D:\\Python34\\lib\\site-packages\\appium_python_client-0.9-py3.4.egg', 'D:\\Python34\\lib\\site-packages\\win32', 
+'D:\\Python34\\lib\\site-packages\\win32\\lib', 'D:\\Python34\\lib\\site-packages\\Pythonwin']
+
+如果我们要添加自己的搜索目录，有两种方法：
+
+一是直接修改sys.path，添加要搜索的目录：
+
+>>> import sys
+>>> sys.path.append('/Users/michael/my_py_scripts')
+
+这种方法是在运行时修改，运行结束后失效。
+
+第二种方法是设置环境变量PYTHONPATH，该环境变量的内容会被自动添加到模块搜索路径中。设置方式与设置Path环境变量类似。注意只需要添加你自己的搜索路径，Python自己本身的搜索路径不受影响。
+
+解决放法：
+
+在conftest.py文件导入前添加以下代码
+
+import sys, os
+sys.path.append((os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))))
+
+　　
+

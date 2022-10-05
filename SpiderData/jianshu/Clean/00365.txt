@@ -1,0 +1,20 @@
+rac expdp导出时报错：
+
+ORA-31693: Table data object "testuser"."test" failed to load/unload and is being skipped due to error:
+
+ORA-31617: unable to open dump file "/home/oracle/exp_dir/full05.dmp" for write
+
+ORA-19505: failed to identify file "/home/oracle/exp_dir/full05.dmp"
+
+ORA-27037: unable to obtain file status
+
+错误原因：
+
+在RAC环境下如果PARALLEL参数设置大于1，进程会在RAC的各个节点上进行导出。如果导出目录不共享的话就会报错
+
+解决方法：
+
+1、设置为共享的directory；
+
+2、导出语句添加cluster=n选项，指定只在本地导出；
+

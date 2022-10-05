@@ -1,0 +1,38 @@
+想要引入DateTimePicker组件，不想全部引入，官网有按需加载的教程
+
+按照官网按需引入的教程，一步步操作，会报两个错。（当然如果全部引入是不报错的，可以正常使用的！！）
+
+【1】运行项目时会报错 , 找不到es2015模块  报错 Error: Cannot find module 'babel-preset-es2015
+
+npm i babel-preset-es2015 -S
+
+之后运行不报错了
+
+【2】引入DateTimePicker   组件会报错，提示找不到这个包
+
+import { DateTimePicker } from 'element-ui';
+
+Vue.use(DateTimePicker)
+
+【3】 解决方法：经过我的仔细观察，才发现官网中按需引入的组件中，确实不包括datetimepicker。
+
+我又发现，datetimepicker组件的文档中，显示datetimepicker 由datepicker 和timepicker 派生
+
+所以，我试了一下，果然效果出来了，但是按钮样式错误
+
+import { DatePicker, TimePicker}from 'element-ui';
+
+Vue.use(DatePicker)
+
+Vue.use(TimePicker)
+
+最终：终于正确了，为机智的自己点赞！！！
+
+import { DatePicker, TimePicker,Button  }from 'element-ui';
+
+Vue.use(DatePicker)
+
+Vue.use(TimePicker)
+
+Vue.use(Button)
+

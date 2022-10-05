@@ -1,0 +1,11 @@
+今天使用$.parseJSON(str)发现报错：
+ Uncaught SyntaxError: Unexpected token  in JSON at position 1849
+ 同样的语句，部分报错，最后发现是str字符串中包含"换行符"，去除str字符串中的"换行符"，问题解决。
+ str在我的程序中是，PHP服务器传过来的json字符串。在PHP程序中，对字符串去除"换行符"操作。
+ $str = str_replace(array("\r\n", "\r", "\n"), "", $str);
+ 
+ 不同系统中，换行符不同：
+ linux 与unix中用 /n 
+ MAC 用 /r 
+ window 为了体现与linux不同 则是 /r/n
+

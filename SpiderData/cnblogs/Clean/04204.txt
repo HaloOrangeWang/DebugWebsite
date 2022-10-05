@@ -1,0 +1,6 @@
+准备将 Django 连接到 MySQL，在命令行输入命令 python manage.py makemigrations 后报错： AttributeError: 'str' object has no attribute 'decode'
+
+出现这个错误之后可以根据错误提示找到文件位置，打开 operations.py 文件，找到以下代码：
+
+根据错误信息提示，说明 if 语句执行时出错， query 是 str 类型，而 decode() 是用来将 bytes 转换成 string 类型用的，（关于Python编码点这里），由于 query 不需要解码，所以直接将 if 语句注释掉就可以了
+

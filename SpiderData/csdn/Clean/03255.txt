@@ -1,0 +1,78 @@
+python常见的错误有
+
+1.NameError变量名错误
+
+2.IndentationError代码缩进错误
+
+3.AttributeError对象属性错误
+
+详细讲解
+
+1.NameError变量名错误
+
+报错：
+
+解决方案：
+
+先要给a赋值。才能使用它。在实际编写代码过程中，报NameError错误时，查看该变量是否赋值，或者是否有大小写不一致错误，或者说不小心将变量名写错了。
+
+注：在Python中，无需显示变量声明语句，变量在第一次被赋值时自动声明。
+
+2.IndentationError代码缩进错误
+
+代码
+
+报错：
+
+原因：
+
+缩进有误，python的缩进非常严格，行首多个空格，少个空格都会报错。这是新手常犯的一个错误，由于不熟悉python编码规则。像def，class，if，for，while等代码块都需要缩进。
+
+缩进为四个空格宽度，需要说明一点，不同的文本编辑器中制表符(tab键)代表的空格宽度不一，如果代码需要跨平台或跨编辑器读写，建议不要使用制表符。
+
+解决方案
+
+3.AttributeError对象属性错误
+
+报错：
+
+原因：
+
+sys模块没有Path属性。
+
+python对大小写敏感，Path和path代表不同的变量。将Path改为path即可。
+
+初学者遇到的错误实例：
+
+使用错误的缩进
+
+Python用缩进区分代码块，常见的错误用法：
+
+导致：IndentationError: unexpected indent。同一个代码块中的每行代码都必须保持一致的缩进量
+
+导致：IndentationError: unindent does not match any outer indentation level。代码块结束之后缩进恢复到原来的位置
+
+导致：IndentationError: expected an indented block，“:” 后面要使用缩进
+
+变量没有定义
+
+导致：NameError: name 'spam' is not defined
+
+获取列表元素索引位置忘记调用 len 方法
+
+通过索引位置获取元素的时候，忘记使用 len 函数获取列表的长度。
+
+导致：TypeError: range() integer end argument expected, got list. 正确的做法是：
+
+当然，更 Pythonic 的写法是用 enumerate
+
+函数中局部变量赋值前被使用
+
+导致：UnboundLocalError: local variable 'someVar' referenced before assignment
+
+当函数中有一个与全局作用域中同名的变量时，它会按照 LEGB 的顺序查找该变量，如果在函数内部的局部作用域中也定义了一个同名的变量，那么就不再到外部作用域查找了。因此，在 myFunction 函数中 someVar 被定义了，所以 print(someVar) 就不再外面查找了，但是 print 的时候该变量还没赋值，所以出现了 UnboundLocalError
+
+以上就是python中常见错误及解决方法的详细内容，更多关于python常见错误有哪些的资料请关注服务器之家其它相关文章！
+
+原文链接：https://www.py.cn/faq/python/12638.html
+

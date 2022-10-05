@@ -1,0 +1,51 @@
+
+出现Import Error: No module named 'exceptions'的解决方法
+
+
+安装库
+
+找到pip3.exe的位置，在当前路径下打开powershell，输入 pip3 install python-docx
+
+若版本不兼容，可在http://www.lfd.uci.edu/~gohlke/pythonlibs/下载python_docx-0.8.10-py2.py3-none-any.whl后进行安装库
+
+需要注意安装路径（不然cmd加载不出来，因为有些浏览器下载路径与cmd路径不在同个地方）
+
+from docx import Document 导入库
+
+
+实例化一个对象（打开文件）
+
+from docx import Document 
+data = Document(r'C:\Users\‘\Desktop\python\python-docx\练习.docx')
+#读取某一段
+for par in data.paragraphs:
+    print(par.text)
+# 如果只想看其中一段
+print(data.paragraphs[0].text)
+# 操作某一块
+data1 = data.paragraphs[0]
+piece = data1.runs
+for pe in piece:  
+    print(pe.text)
+
+
+在word里搜索文本
+
+#表格外
+a = 0
+for par in data.paragraphs:
+    if '孙兴华' in par.text:
+        a += 1
+print(a)
+
+#表格内  行row  列col
+from docx import Document 
+data = Document(r'C:\Users\‘\Desktop\python\python-docx\练习2.docx')
+i = 0 
+for tab in data.tables:
+    for r in tab.rows:
+        for c in r.cells:
+            if '孙兴华' in c.text :
+                i += 1
+print(i)
+

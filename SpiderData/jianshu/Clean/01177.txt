@@ -1,0 +1,42 @@
+
+大致的报错类型如下：
+
+configure: error: C compiler cannot create executables
+
+貌似是需要一个组件zlib组件
+
+报错内容如下：
+
+$pyenv install 3.6.4
+python-build: use openssl from homebrew
+python-build: use readline from homebrew
+Downloading Python-3.6.4.tar.xz...
+-> https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tar.xz
+Installing Python-3.6.4...
+python-build: use readline from homebrew
+BUILD FAILED (OS X 10.13.4 using python-build 20160602)
+Inspect or clean up the working tree at /var/folders/1_/7ctdn3wx7bj_6212hbdq8csh0000gn/T/python-build.20180604105334.6831
+Results logged to /var/folders/1_/7ctdn3wx7bj_6212hbdq8csh0000gn/T/python-build.20180604105334.6831.log
+Last 10 log lines:
+  File "/private/var/folders/1_/7ctdn3wx7bj_6212hbdq8csh0000gn/T/python-build.20180604105334.6831/Python-3.6.4/Lib/ensurepip/__main__.py", line 5, in <module>
+    sys.exit(ensurepip._main())
+  File "/private/var/folders/1_/7ctdn3wx7bj_6212hbdq8csh0000gn/T/python-build.20180604105334.6831/Python-3.6.4/Lib/ensurepip/__init__.py", line 204, in _main
+    default_pip=args.default_pip,
+  File "/private/var/folders/1_/7ctdn3wx7bj_6212hbdq8csh0000gn/T/python-build.20180604105334.6831/Python-3.6.4/Lib/ensurepip/__init__.py", line 117, in _bootstrap
+    return _run_pip(args + [p[0] for p in _PROJECTS], additional_paths)
+  File "/private/var/folders/1_/7ctdn3wx7bj_6212hbdq8csh0000gn/T/python-build.20180604105334.6831/Python-3.6.4/Lib/ensurepip/__init__.py", line 27, in _run_pip
+    import pip
+zipimport.ZipImportError: can't decompress data; zlib not available
+make: *** [install] Error 1
+
+
+解决办法
+
+在终端执行下面命令
+
+$ xcode-select --install
+
+重新执行一次安装
+
+再次安装，成功！～
+

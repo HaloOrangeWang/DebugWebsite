@@ -1,0 +1,36 @@
+
+1、can't assign to function call
+
+在输入以下代码后运行，提示语法错误
+
+logging.basicConfig(filename= os.path.join(os.getcwd(),'./log.txt')),\
+level= logging.DEBUG,format('%(asctime)s %(filename)s[line:%(lineno)d] % (levelname)s %(message)s')
+
+
+解决办法：
+
+函数的括号提前结束了，filename 中多了个右括号，format 中多了个左括号
+
+logging.basicConfig(filename= os.path.join(os.getcwd(),'./log.txt'),
+                    level= logging.DEBUG,
+                    format = '%(asctime)s %(filename)s[line:%(lineno)d] % (levelname)s %(message)s')
+
+
+2、执行错误SQL语句，编译框有logging信息，log文件有生成但没有写入内容
+
+根据报错信息，因 httprequest 文件调用了 mysql 模块中的 selectone()，异常信息抛出是在55行，检查上下代码，发现format 参数中的%与 levelname参数中间有空格
+
+（刚开始还一直以为是2和3的语法区别导致的，后来还是小崔同学告诉我的，谢谢）
+
+修改代码，将format 参数中的%与参数中间的空格去除后运行，日志文件有内容输出了
+
+logging.basicConfig(filename=os.path.join(os.getcwd(),'./log.txt'),
+                    level=logging.WARNING,
+                    filemode="w",
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
+
+
+总结
+
+关于logging模块的深入学习可参考   python3 logging模块
+

@@ -1,0 +1,49 @@
+
+此篇博客内容为短暂存留记录（项目使用过程还未记录），后续将会更新完整学习流程。。
+
+
+1.根据官网上的链接安装有两种方式：
+
+
+（1）pip直接安装
+
+pip install transformers  # 安装时间长，出现Timeout Error的可能性大，个人不建议
+
+
+（2）GIthub下载源包
+
+git clone https://github.com/huggingface/transformers  # 下载时间长一点（网盘自取）
+cd transformers
+pip install .
+
+transformers下载：
+
+链接：https://pan.baidu.com/s/1Z9Pwdzwa671JNmQPzYNlUQ 
+提取码：dsei
+
+
+2.安装之后需要进行测试
+
+python -c "from transformers import pipeline; print(pipeline('sentiment-analysis')('I hate you'))"  # 官网给的测试代码，运行出来结果就是安装成功了
+
+安装成功：
+
+
+报错
+
+一开始，测试代码运行后出现了报错，如下：
+
+报错内容如下：
+
+AttributeError: 'Tensor' object has no attribute 'ndim'
+
+ValueError: Unable to create tensor, you should probably activate truncation and/or padding with 'padding=True' 'truncation=True' to have batched tensors with the same length.
+
+明明操作都按照官网上的来，最后百思不得其解自己改了从官网下载下来的源码，这里报错的文件是指向了D:\Anaconda3\Lib\site-packages\transformers下的tokenization_utils_base.py文件，找到具体报错那一行的代码，如下：
+
+获取tensor的维度信息dims，正确代码应该是len(list(tensor.size()))。
+
+再次执行测试代码，成功出来结果！
+
+transformers加载后缓存文件是：
+

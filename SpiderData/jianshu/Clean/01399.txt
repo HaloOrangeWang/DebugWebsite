@@ -1,0 +1,105 @@
+
+报错总结
+
+学习Python，掌握读取错误信息、排除错误的能力是非常重要的：
+
+我们在编写代码的时候，最初会遇到很多次报错，只要我们遵循两个点，就不用再担心报错问题。一是确定报错的行数，二是根据错误类型，锁定几种可能的错误，逐步排查，最终找到问题所在。
+
+几种常见的几种报错类型：
+
+一、TypeError：类型错误，对象用来表示值的类型非预期类型时发生的错误。
+
+错误例子：
+
+age=18
+
+print(‘我的年龄是’+age)
+
+报错信息：TypeError: can only concatenate（连接） str (not "int") to str
+
+这是类型错误，提示必须是一个字符串，不能是数字。
+
+解决方法：在使用“+”做拼接的时候，必须使用字符串，或者把数字转化成字符串。
+
+正确代码：
+
+age=18
+
+print(‘我的年龄是’+str(age))
+
+二、AttributeError：属性错误，特性引用和赋值失败时会引发属性错误
+
+tp=('1','3','5')
+
+tp.append('7')
+
+print(tp)
+
+报错信息：AttributeError: 'tuple' object has no attribute 'append'
+
+提示：属性错误：元组对象没有“append”的属性，简单来说元组是不可变对象，解决方法：把元组换成列表。
+
+三、NameError：试图访问的变量名不存在。
+
+举个简单的例子，只运行一行print(a)，会报错：NameError: name 'a' is not defined。简单来说，就是变量a没有定义，解决方法是在前面给a赋值，比如加上一行a=''。
+
+还有一种需要小心处理的是：变量或者函数名拼写错误。如：
+
+name= '卡西'
+
+print('My name is ' + nane)
+
+四、SyntaxError：语法错误
+
+报错信息为：SyntaxError: invalid syntax
+
+提示是：语法错误，非法的语法。
+
+当报错的时候，要注意回到错误信息的那一行，然后从下往上，慢慢查找，此处这个程序就是因为if语法忘了在判断语句后面加“：”，所以导致的错误。
+
+另外，初学者写代码时注意：一定要使用英文符号
+
+五、KeyError：在读取字典中的key和value时，如果key不存在，就会触发KeyError错误。
+
+举个小例子：
+
+dict={'a':1,'b':2,'c':3}
+
+print(dict['d'])
+
+报错信息为：KeyError: 'd'。
+
+第一种解决方法，首先测试key是否存在，然后才进行下一步操作，如：
+
+第二种，利用dict内置的get(key[,default])方法，如：print(dict['d'])改为print(dict.get('d'))
+
+如果key存在，则返回其value，否则返回None;使用这个方法永远不会触发KeyError。
+
+六、IndexError：索引错误，使用的索引不存在，常索引超出序列范围，序列中没有此索引(index)
+
+报错信息：IndexError: list index out of range
+
+提示：索引错误，列表索引超出了范围。
+
+解决办法：回头看列表的长度，索引是要小于列表的长度的。上面的列表长度是5，而索引却要打印第七个，所以是超出了列表的长度。
+
+七、IndentationError: 缩进有误
+
+报错：IndentationError: expected an indented block
+
+原因：缩进有误，Python的缩进非常严格，行首多个空格，少个空格都会报错。
+
+由于不熟悉python编码规则，不易查找，所以会成为新手常犯的一个错误。像def，class，if，for，while等代码块都需要缩进。
+
+八、TabError: Tab 和空格混用
+
+相邻的两句的缩进需要统一使用tab或统一使用空格，不能混用。否则就会出现以下报错：TabError: inconsistent use of tabs and spaces in indentation。
+
+tab键本质上是制表符，而不是缩进符，不同的文本编辑器中制表符代表的空格宽度不一，如果代码需要跨平台或跨编辑器读写，建议不要使用制表符
+
+下面这些网站查阅可以更多报错类型：
+
+https://www.runoob.com/python/python-exceptions.html。
+
+Python标准异常总结：https://shimo.im/docs/mNpr9UMgRt4qrhIy/
+

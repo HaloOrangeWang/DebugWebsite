@@ -1,0 +1,24 @@
+引起这个报错，有两种可能
+
+一、oracle客户端配置不对
+
+cx_Oracle.DatabaseError: DPI-1047: Cannot locate a 64-bit Oracle Client错误解决方法。
+
+1、没有配置环境变量，将instantclient客户端解压后，添加到path中
+
+2、instantclient客户端不是64位，可以参考下面的链接下载
+
+（instantclient如果需要其他版本的参考如下链接
+
+https://blog.csdn.net/dianxiang0791/article/details/101604592）
+
+二、VC++缺失对应安装
+
+python 连接oracle数据库时，需要先安装正确的instantclient-basic，你电脑64位的，就下64位的，然后配置环境变量。
+但有时候你这些都做了但仍然报64-bit Oracle Client library cannot be loaded: "The specified module could not be found"的错，可能是你没有安装正确的VC++ 库。此时你运行instantclient-basic目录下的genezi.exe文件时，会提示“缺少msvcr120.dll ”。
+
+解决方法就是下载合适的VC++库，进行安装。按上图要求，比如Oracle 12.2就下VS2013的，不要想着下最新的（比如VS2017的）没用。
+下载地址如下（亲测VS2013对应oracle12.2）：
+
+https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads#bookmark-vs2013
+

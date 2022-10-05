@@ -1,0 +1,220 @@
+Python是一门简单易学的编程语言，语法简洁而清晰，并且拥有丰富和强大的类库。与其它大多数程序设计语言使用大括号不一样 ，它使用缩进来定义语句块。
+
+　　在平时的工作中，Python开发者很容易犯一些小错误，这些错误都很容易避免，本文总结了Python开发者最常犯的10个错误，一起来看下，不知你中枪了没有。
+
+1.滥用表达式作为函数参数默认值
+
+　　Python允许开发者指定一个默认值给函数参数，虽然这是该语言的一个特征，但当参数可变时，很容易导致混乱，例如，下面这段函数定义：
+
+复制代码 代码如下:
+
+>>> def foo(bar=[]):        # bar is optional and defaults to [] if not specified
+
+...    bar.append("baz")    # but this line could be problematic, as we'll see...
+
+...    return bar
+
+　　在上面这段代码里，一旦重复调用foo()函数（没有指定一个bar参数），那么将一直返回'bar'，因为没有指定参数，那么foo()每次被调用的时候，都会赋予[]。下面来看看，这样做的结果：
+
+复制代码 代码如下:
+
+>>> foo()
+
+["baz"]
+
+>>> foo()
+
+["baz", "baz"]
+
+>>> foo()
+
+["baz", "baz", "baz"]
+
+解决方案：
+
+复制代码 代码如下:
+
+>>> def foo(bar=None):
+
+...    if bar is None:  # or if not bar:
+
+...        bar = []
+
+...    bar.append("baz")
+
+...    return bar
+
+...
+
+>>> foo()
+
+["baz"]
+
+>>> foo()
+
+["baz"]
+
+>>> foo()
+
+["baz"]
+
+2.错误地使用类变量
+
+先看下面这个例子：
+
+复制代码 代码如下:
+
+>>> class A(object):
+
+...     x = 1
+
+...
+
+>>> class B(A):
+
+...     pass
+
+...
+
+>>> class C(A):
+
+...     pass
+
+...
+
+>>> print A.x, B.x, C.x
+
+1 1 1
+
+这样是有意义的：
+
+复制代码 代码如下:
+
+>>> B.x = 2
+
+>>> print A.x, B.x, C.x
+
+1 2 1
+
+再来一遍：
+
+复制代码 代码如下:
+
+>>> A.x = 3
+
+>>> print A.x, B.x, C.x
+
+3 2 3
+
+　　仅仅是改变了A.x，为什么C.x也跟着改变了。
+
+　　在Python中，类变量都是作为字典进行内部处理的，并且遵循方法解析顺序（MRO）。在上面这段代码中，因为属性x没有在类C中发现，它会查找它的基类（在上面例子中只有A，尽管Python支持多继承）。换句话说，就是C自己没有x属性，独立于A，因此，引用 C.x其实就是引用A.x。
+
+3.为异常指定不正确的参数
+
+　　假设代码中有如下代码：
+
+复制代码 代码如下:
+
+>>> try:
+
+...     l = ["a", "b"]
+
+...     int(l[2])
+
+... except ValueError, IndexError:  # To catch both exceptions, right?
+
+...     pass
+
+...
+
+Traceback (most recent call last):
+
+File "<stdin>", line 3, in <module>
+
+IndexError: list index out of range
+
+　　问题在这里，except语句并不需要这种方式来指定异常列表。然而，在Python 2.x中，except Exception,e通常是用来绑定异常里的 第二参数，好让其进行更进一步的检查。因此，在上面这段代码里，IndexError异常并没有被except语句捕获，异常最后被绑定 到了一个名叫IndexError的参数上。
+
+　　在一个异常语句里捕获多个异常的正确方法是指定第一个参数作为一个元组，该元组包含所有被捕获的异常。与此同时，使用as关键字来保证最大的可移植性，Python 2和Python 3都支持该语法。
+
+复制代码 代码如下:
+
+>>> try:
+
+...     l = ["a", "b"]
+
+...     int(l[2])
+
+... except (ValueError, IndexError) as e:
+
+...     pass
+
+...
+
+>>>
+
+4.误解Python规则范围
+
+　　Python的作用域解析是基于LEGB规则，分别是Local、Enclosing、Global、Built-in。实际上，这种解析方法也有一些玄机，看下面这个例子：
+
+复制代码 代码如下:
+
+>>> x = 10
+
+>>> def foo():
+
+...     x += 1
+
+...     print x
+
+...
+
+>>> foo()
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "<stdin>", line 2, in foo
+
+UnboundLocalError: local variable 'x' referenced before assignment
+
+许多人会感动惊讶，当他们在工作的函数体里添加一个参数语句，会在先前工作的代码里报UnboundLocalError错误（ 点击这里查看更详细描述）。
+
+在使用列表时，开发者是很容易犯这种错误的，看看下面这个例子：
+
+复制代码 代码如下:
+
+>>> lst = [1, 2, 3]
+
+>>> def foo1():
+
+...     lst.append(5)   # This works ok...
+
+...
+
+>>> foo1()
+
+>>> lst
+
+[1, 2, 3, 5]
+
+>>> lst = [1, 2, 3]
+
+>>> def foo2():
+
+...     lst += [5]      # ... but this bombs!
+
+...
+
+>>> foo2()
+
+Traceback (most recent call last):
+
+File "<stdin>", line 1, in <module>
+
+File "<stdin>", line 2, in foo
+
+UnboundLocalError: local variable 'lst' referenced before assignment
+

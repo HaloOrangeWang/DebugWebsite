@@ -1,0 +1,47 @@
+使用Python UDP实现Socket通信时，发送广播，客户端在接收数据时弹出错误提示：
+
+问题代码：
+
+from socket import *
+
+HOST = '172.28.40.185'
+PORT = 9090
+ADDR = (HOST,PORT)
+
+#创建套接字
+udp_socket = socket(AF_INET,SOCK_DGRAM)
+#消息收发
+while True:
+   try:
+       data,addr = udp_socket.recvfrom(1024)
+       print('接收到广播信息：',data.decode("GBK"))
+   except (KeyboardInterrupt, SyntaxError):
+       raise
+   except Exception as e:
+       print(e)
+udp_socket.close()
+
+解决方法：
+
+在创建好socket之后，为该socket绑定端口即可，因为udp是全双工的，绑定了端口后面发送和接收都会走这个端口。每个socket只需要绑定一次！
+
+from socket import *
+
+HOST = '172.28.40.185'
+PORT = 9090
+ADDR = (HOST,PORT)
+
+#创建套接字
+udp_socket = socket(AF_INET,SOCK_DGRAM)
+udp_socket.bind(ADDR)
+#消息收发
+while True:
+   try:
+       data,addr = udp_socket.recvfrom(1024)
+       print('接收到：',data.decode("GBK"))
+   except (KeyboardInterrupt, SyntaxError):
+       raise
+   except Exception as e:
+       print(e)
+udp_socket.close()
+

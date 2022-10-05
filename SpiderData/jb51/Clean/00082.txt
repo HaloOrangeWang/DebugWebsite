@@ -1,0 +1,49 @@
+本文研究的主要是Python使用pickle模块存储数据报错解决方法，以代码的形式展示，具体如下。
+
+首先来了解下pickle模块
+
+pickle提供了一个简单的持久化功能。可以将对象以文件的形式存放在磁盘上。
+
+pickle模块只能在python中使用，python中几乎所有的数据类型（列表，字典，集合，类等）都可以用pickle来序列化，
+
+pickle序列化后的数据，可读性差，人一般无法识别。
+
+接下来我们看下Python使用pickle模块存储数据报错解决方法。
+
+代码：
+
+# 写入错误
+TypeError: write() argument must be str, not bytes
+
+# 读取错误
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 0: illegal multibyte sequence
+
+解决方案：
+
+def storeTree(inputTree, fielname):
+  import pickle
+  # 写文件时，注明 'wb'
+  fw = open(fielname, 'wb')
+  pickle.dump(inputTree, fw)
+  fw.close()
+
+def grabTree(filename):
+  import pickle
+   # 读文件时，注明 'rb'
+  fr = open(filename, 'rb')
+  fr = open(filename)
+  return pickle.load(fr)
+
+storeTree(myTree, 'classifierStorage.txt')
+print(grabTree('classifierStorage.txt'))
+
+输出：
+
+{'no surfacing': {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}}
+
+Process finished with exit code 0
+
+总结
+
+以上就是本文关于Python使用pickle模块存储数据报错解决示例代码的全部内容，希望对大家有所帮助。感兴趣的朋友可以继续参阅本站其他相关专题，如有不足之处，欢迎留言指出。感谢朋友们对本站的支持！
+

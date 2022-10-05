@@ -1,0 +1,66 @@
+运行一个简单的python脚本如下：
+
+
+--encoding:utf-8--
+
+import unittest,sys,paramiko 
+ sys.path.append(“/data/CFDautotest”)
+
+from project.hongbao.testcase import TestBase
+
+from lib import Mysql 
+ from lib import Paramiko 
+ from lib import SSH
+
+class Test(TestBase.Test):
+
+def testName(self):
+    print("just a test!")
+    self.stopOrRestartLSvr("10.235.13.78", 36000, "root", "2014@cfd", opt=0)
+
+def setUp(self):
+    pass
+
+if name == “main“: 
+ unittest.main()
+
+linux上运行报错：
+
+解决思路如下： 
+ 1.报错内容为：‘No module named cryptography.hazmat.backends’ 
+ cryptography 意为：密码系统，密码术。应该为第三方库
+
+第三方库的安装： 
+ 原因是craptography并没有安装。如果直接安装cryptography时又会出现找不到libffi和cffi文件的错误。表示如果还需要先配置libffi和cffi，需要先配置libffi然后配置cffi。
+
+配置libffi的步骤：
+
+　　ubuntu下通过源码安装的方法：
+
+　　　　1.wget ftp://sourceware.org/pub/libffi/libffi-3.0.11.tar.gz 
+ 　　　　2.tar zxvf libffi-3.0.11.tar.gz 
+ 　　　　3.cd libffi-3.0.11/　　　　 
+ 　　　　4../configure 
+ 　　　　5.make　　 
+ 　　　　6.sudo make install （这里需要注意一定要在sudo下进行安装，如果直接make install的话不会安装好）
+
+配置完libffi之后就可以直接利用pip安装cffi了，安装完cffi之后再去安装发现还是不能安装cryptography，这个时候通过在官网文档上找到了解决办法（还是官方的好用啊）。
+
+安装cryptography前需要安装 build-essential libssl-dev libffi-dev python-dev 这四个包
+
+　　ubuntu下安装以上四个包的方法： sudo apt-get install build-essential libssl-dev libffi-dev python-dev
+
+　安装好以上的四个包之后就可以安装cryptography了 pip install crpytography
+
+以上都安装好了之后再运行scrapy程序就不会出问题了。
+
+可参考：http://www.cnblogs.com/xiaoli2018/p/4661604.html
+
+2.安装好 cryptography 后，运行脚本，继而报错‘No module named project.hongbao.testcase’
+
+报错内容为：‘project.hongbao.testcase’ 是内部库
+
+找不到内部库，首先怀疑的可能是没有 安装init.py 
+ 到CFDautotest的目录下，tree查看 project：tree project，发现project没装 init.py 
+ 装好init.py，再次运行脚本，正常。
+

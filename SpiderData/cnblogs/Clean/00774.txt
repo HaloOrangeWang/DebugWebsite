@@ -1,0 +1,32 @@
+调研爬虫框架pyspider有一段时间了，感觉已经比较成熟，跟老板申请了一台机器，打算搭一套正式环境。然而在熟悉的安装步骤过后，启动画面却是这样的：
+
+虽然心中有疑惑，但还是熟练的百度起来。一番搜索之后，大概有了方向，可能是schedule的数据链接的问题，解决方案是把pyspider的默认消息队列改为redis，即启动指定message_queue
+
+但是试了一番之后并未解决。
+
+网上关于这个问题的介绍篇幅有限，咨询群友也未果，感觉走不下去了。眼下还有2个办法，重新找个机器再装一遍，可能是安装的哪个包版本问题所致；再者去github上提个issue，作者才是最权威的。
+
+当我打开github的时候不禁眼前一亮，正好有人也遇到这个问题了，而且还有回复：
+
+果然，很快就找到了有用信息
+
+这位外国大神自己提的问题，自己解决了，只需要把Tornado版本降到4.5即可。我看了一下自己的版本，果然也是5.0
+
+https://pypi.python.org/pypi/tornado/4.5
+
+在上面网站下载4.5版本
+
+tar -zxvf tornado-4.5.tar.gz
+
+cd tornado-4.5
+
+python setup.py build
+
+python setup.py install
+
+再次启动pyspider，还是报错
+
+进入pip编译安装的目录（我的是/usr/local/lib/python2.7/site-packages），发现有多个tornado的编译文件夹，仅留4.5的，其余都删掉
+
+再次启动，终于正常了
+

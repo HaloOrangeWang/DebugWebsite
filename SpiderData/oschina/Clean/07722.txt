@@ -1,0 +1,8 @@
+mongodb非正常退出，下次启动时会报错。有的说法是将mongod.lock文件删除就可以了。 
+如果将mongod.lock文件删除解决不了问题，可以尝试删除lock文件后，先执行
+
+./bin/mongod --repair --dbpath /…/data/--repairpath /home/test/bakdata
+
+/home/test/bakdata是自己建立的存放备份数据的目录, /…/data/是mongodb存放数据文件的目录。 
+这个指令执行成功后，再正常启动mongodb，就可以成功了。
+
