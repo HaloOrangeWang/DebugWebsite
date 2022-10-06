@@ -5,7 +5,7 @@ from train_simple import get_err_msg, get_solve_msg
 from train_ml.word_vec import add_words, WvNormal, WvCode
 from train_ml.funcs import get_all_line_no
 from train_ml.err_msg import ErrMsgPipe
-from validations.basic import ErrMsgValidation, SolveValidation, valid_scene
+from validations.basic import ErrMsgValidation, SolveValidation # , valid_scene
 
 
 def train_no_ml():

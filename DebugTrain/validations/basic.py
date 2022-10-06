@@ -1,5 +1,4 @@
 from train_simple.funcs import get_split_str
-from train_simple.scene import handle_pre_scene_msg
 import jieba.posseg as pseg
 import re
 
@@ -234,68 +233,3 @@ class SolveValidation:
                     msg_score += len((solve_msg_set & c_solve_msg_set) - half_c_solve_msg_set) / len((solve_msg_set | c_solve_msg_set) - half_c_solve_msg_set)
         return msg_score, total_score
 
-
-def valid_scene(all_scene, all_mark_data):
-    """
-    对比通过算法推算的场景信息，与通过标注确认的场景信息。
-    :param all_scene: 通过算法推算的错误信息
-    :param all_mark_data: 通过标注确认的错误、场景、解决方案的信息
-    :return: 分数、总分
-    """
-    def clean_str_func(s):
-        return s.lower().replace('python2', '').replace('python3', '').replace('python', '').replace('的时候', '').replace('时候', '').replace('时', '')
-
-    score = 0  # 程序得分
-    total_score = 0  # 总分
-    for aid in all_scene:
-        if all_mark_data[aid].err_msg != str():
-            total_score += 1
-            # 先对标注后的场景信息做一些简单处理。按照句子进行拆分
-            correct_scene_list = list()
-            half_correct_scene_list = list()  # 后面这个变量表示“半解决方案”。对于“半解决方案”，程序生成的结果无论如何都不算错
-            for t in range(len(all_mark_data[aid].scenes)):
-                sentences = get_split_str(all_mark_data[aid].scenes[t], ['，', ',', '。', '；', ';', '：', ':', '\n'])
-                if len(sentences) == 1:
-                    if all_mark_data[aid].scene_weight[t] == 1:
-                        correct_scene_list.append(sentences[0])
-                    elif all_mark_data[aid].scene_weight[t] == 0.5:
-                        half_correct_scene_list.append(sentences[0])
-                else:
-                    for t0 in range(len(sentences)):
-                        words = list(pseg.cut(sentences[t0]))
-                        is_scene_msg, scene_msg = handle_pre_scene_msg(words)
-                        if is_scene_msg:
-                            if all_mark_data[aid].scene_weight[t] == 1:
-                                correct_scene_list.append(scene_msg)
-                            elif all_mark_data[aid].scene_weight[t] == 0.5:
-                                half_correct_scene_list.append(scene_msg)
-            # 对比标注好的场景信息，与程序判定的场景信息
-            in_mark_scene_dx_list = set()  # 对于程序判定的场景列表中，有哪些出现在了正确或半正确的场景判定列表中
-            in_prog_scene_dx_list = set()  # 对于正确的场景列表，有哪些出现在了程序判定的场景列表中
-            for t in range(len(all_scene[aid])):
-                for t0 in range(len(correct_scene_list)):
-                    # todo: 这里可能会因为标点符号、python关键词等原因而导致误判
-                    correct_scene = trim_n(clean_str_func(correct_scene_list[t0]))
-                    origin_scene = trim_n(clean_str_func(all_scene[aid][t]))
-                    if correct_scene == origin_scene:
-                        # score += 1 / len(correct_scene_list)
-                        in_mark_scene_dx_list.add(t)
-                        in_prog_scene_dx_list.add(t0)
-                for t0 in range(len(half_correct_scene_list)):
-                    correct_scene = trim_n(clean_str_func(half_correct_scene_list[t0]))
-                    origin_scene = trim_n(clean_str_func(all_scene[aid][t]))
-                    if correct_scene == origin_scene:
-                        in_mark_scene_dx_list.add(t)
-            # 计算得分。
-            # 如果标注好的场景信息为空，那么程序判定的场景信息必须全部在正确信息或半正确信息中
-            if len(correct_scene_list) == 0:
-                if len(in_mark_scene_dx_list) == len(all_scene[aid]):
-                    score += 1
-                else:
-                    score -= 1
-            else:
-                score += len(in_prog_scene_dx_list) / len(correct_scene_list)
-                if len(all_scene[aid]) != 0:
-                    score -= (len(all_scene[aid]) - len(in_mark_scene_dx_list)) / len(all_scene[aid])
-            # print("%d, %.2f" % (aid, score))
-    return score, total_score
