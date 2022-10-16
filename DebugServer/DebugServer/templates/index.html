@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <title>Debug工具</title>
     <link rel="stylesheet" href="{% static 'bootstrap-3.4.1-dist/css/bootstrap.css'%}" />
-    <script src="{% static 'bootstrap-3.4.1-dist/js/bootstrap.js'%}"></script>
     <script src="{% static 'jquery-3.6.0.js'%}"></script>
+    <script src="{% static 'bootstrap-3.4.1-dist/js/bootstrap.js'%}"></script>
 </head>
 
 <body>
@@ -26,38 +26,154 @@
         </div>
     </form>
 
-    {% if has_cluster %}
-    <h2>解决方法的共性</h2>
-    <br>
-    {% for solve in cluster %}
-    <div>
-        <label>{{solve.text}} （根据{{solve.num}}篇文章的分析）</label>
-        <br>
-        {% for aid in solve.article %}
-        <a href="{{aid.link}}">{{aid.title}}</a>
-        <br>
-        {% endfor %}
-    </div>
-    <br>
-    <br>
-    <br>
-    {% endfor %}
-    {% endif %}
+    <ul id="myTab" class="nav nav-tabs" style="margin-left: 5%; width: 90%; margin-top: 16px">
+        {% if has_cluster %}
+        <li class="active">
+            <a href="#CommonSolve" data-toggle="tab">解决方案的共性</a>
+        </li>
+        <li>
+            <a href="#AllSolve" data-toggle="tab">全部解决方案（共{{ article_num }}篇）</a>
+        </li>
+        {% else %}
+        <li class="active">
+            <a href="#AllSolve" data-toggle="tab">全部解决方案（共{{ article_num }}篇）</a>
+        </li>
+        {% endif %}
+    </ul>
 
-    {% if has_article %}
-    <h2>{{article_num_msg}}条搜索结果</h2>
-    <br>
-    {% for aid in all_articles %}
-    <div>
-        <a href="{{aid.link}}">{{aid.title}}</a>
-        <br>
-        <label>{{aid.solve_msg}}</label>
-        <br>
-        <br>
-    </div>
-    {% endfor %}
-    {% endif %}
+    <div id="myTabContent" class="tab-content">
+        {% if has_cluster %}
+        <div class="tab-pane fade in active" id="CommonSolve" style="margin-left: 5%; width: 90%;">
+            <div class="panel-group" id="accordion">
+                {% for solve in cluster %}
+                <div class="panel panel-default" style="margin-top: 32px;">
+                    <div class="panel-heading" style="background-color: #bbffcc;">
+                        <div class="panel-title h4">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ solve.idx }}">{{solve.text}} （根据{{solve.num}}篇文章的分析）</a>
+                        </div>
+                    </div>
+                    <div id="collapse{{ solve.idx }}" class="panel-collapse collapse">
+                        <ul class="list-group">
+                            {% for aid in solve.article %}
+                            <li class="list-group-item"><a href="{{aid.link}}"  style="width: 65%;">{{aid.title}}</a><p style="margin-top: 6px; width: 65%;">{{aid.text}}</p></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
+        <div class="tab-pane fade" id="AllSolve">
+            {% if has_article %}
+            <div align="center">
+                <ul id="data-pagination" class="pagination pagination-lg">
+                    <li id="PageLiPrev"><a id="PagePrev">&laquo;</a></li>
+                    <li id="PageLi1" class="active"><a id="Page1">1</a></li>
+                    <li id="PageLi2"><a id="Page2">2</a></li>
+                    <li id="PageLi3"><a id="Page3">3</a></li>
+                    <li id="PageLi4"><a id="Page4">4</a></li>
+                    <li id="PageLi5"><a id="Page5">5</a></li>
+                    <li id="PageLiNext"><a id="PageNext">&raquo;</a></li>
+                </ul>
+            </div>
+            <br>
+            <div id="SolveContent" style="margin-left: 5%; width: 65%;"></div>
+            {% endif %}
+        </div>
+    </div>
 </body>
+
+<style>
+    .SolveBody:hover{
+        background-color: #f3f3f3;
+    }
+</style>
+
+{% if has_article %}
+<script type="text/javascript">
+
+const article_data = [
+    {% for aid in all_articles %}
+    {"title": "{{aid.title}}", "href": "{{aid.link}}", "text": "{{aid.text}}", "solve_msg": "{{aid.solve_msg}}"},
+    {% endfor %}
+];
+
+const data_per_page = 10;
+var curr_page = 0;
+var start_page = 0;
+var total_page = Math.ceil(article_data.length / data_per_page);
+
+function OnPaginator(page){
+    $('#SolveContent').empty();
+    for (var t = page * data_per_page; t < Math.min(article_data.length, (page + 1) * data_per_page); t++){
+        $('#SolveContent').append("<div class=\"SolveBody\" style=\"margin-top: 32px\"><a style=\"font-size: 18px; font-weight:bold\" href=\"" + article_data[t]["href"] + "\">" + article_data[t]["title"] + "</a><p style=\"font-size: 14px; margin-top: 6px;\"><b>可能的解决方案：</b>" + article_data[t]["solve_msg"] + "</p><p style=\"font-size: 14px\"><b>正文：</b>" + article_data[t]["text"] + "</p><div class=\"divider\"><hr class=\"simple\"></div></div>");
+    }
+    curr_page = page;
+    if (total_page >= 6){
+        if (page <= 1){
+            start_page = 0;
+        }
+        else if (page <= total_page - 3){
+            start_page = page - 2;
+        }else{
+            start_page = total_page - 5;
+        }
+        $('#Page1').text(start_page + 1);
+        $('#Page2').text(start_page + 2);
+        $('#Page3').text(start_page + 3);
+        $('#Page4').text(start_page + 4);
+        $('#Page5').text(start_page + 5);
+    }
+    var btn_idx = page - start_page + 1;
+    for (var t = 1; t <= 5; t++){
+        if (t == btn_idx){
+            $('#PageLi' + t).addClass("active");
+        }else{
+            $('#PageLi' + t).removeClass("active");
+        }
+    }
+    if (page == 0){
+        $('#PageLiPrev').addClass("disabled");
+    }else{
+        $('#PageLiPrev').removeClass("disabled");
+    }
+    if (page == total_page - 1){
+        $('#PageLiNext').addClass("disabled");
+    }else{
+        $('#PageLiNext').removeClass("disabled");
+    }
+}
+
+function OnPaginatorIdx(btn_idx){
+    if (btn_idx == -1){
+        if (curr_page > 0){
+            OnPaginator(curr_page - 1);
+        }
+    }else if (btn_idx == -2){
+        if (curr_page < total_page - 1){
+            OnPaginator(curr_page + 1);
+        }
+    }else{
+        OnPaginator(btn_idx + start_page);
+    }
+}
+
+$(function(){
+    for (var t = total_page; t <= 4; t++){
+        $('#Page' + (t + 1)).hide();
+    }
+    $('#Page1').on("click",function(){OnPaginatorIdx(0);});
+    $('#Page2').on("click",function(){OnPaginatorIdx(1);});
+    $('#Page3').on("click",function(){OnPaginatorIdx(2);});
+    $('#Page4').on("click",function(){OnPaginatorIdx(3);});
+    $('#Page5').on("click",function(){OnPaginatorIdx(4);});
+    $('#PageLiPrev').on("click",function(){OnPaginatorIdx(-1);});
+    $('#PageLiNext').on("click",function(){OnPaginatorIdx(-2);});
+    OnPaginator(0);
+})
+</script>
+{% endif %}
 
 </html>
