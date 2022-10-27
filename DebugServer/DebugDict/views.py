@@ -1,7 +1,10 @@
+from .models import ViewCount
 from SearchEngine import SearchEng
 from django.shortcuts import render
 from django.views import generic
 from django import forms
+import datetime
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class SubmitForm(forms.Form):
@@ -11,6 +14,7 @@ class SubmitForm(forms.Form):
 
 class SearchView(generic.View):
     form_class = SubmitForm
+    model = ViewCount
     template_name = 'index.html'
 
     @staticmethod
@@ -18,6 +22,14 @@ class SearchView(generic.View):
         return s.replace('\n', ' ').replace('\\', '\\\\')
 
     def get(self, request):
+        date = int(datetime.datetime.now().strftime("%Y%m%d"))
+        try:
+            view_count = self.model.objects.get(date2=date)
+        except ObjectDoesNotExist:
+            view_count = self.model(date2=date, view_count=0)
+        view_count.view_count += 1
+        view_count.save()
+
         return render(request, self.template_name, {'has_cluster': False, 'has_article': False, "article_num": 0, 'err_msg_placeholder': "", 'scene_placeholder': ""})
 
     def post(self, request):
