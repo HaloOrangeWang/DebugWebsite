@@ -24,6 +24,7 @@ class MarkData:
         self.solves = []
         self.solve_lines = []
         self.solve_weight = []
+        self.solve_secs = []
 
 
 def load_articles():
@@ -93,6 +94,9 @@ def load_mark_data():
                         all_marked_data[aid].solve_weight.extend(t['weight'])
                 else:
                     raise ValueError
+            # 获取标注好的解决方案区段信息
+            if 'solve_secs' in doc and doc['solve_secs']:
+                all_marked_data[aid].solve_secs = doc['solve_secs']
     return all_marked_data
 
 
@@ -105,3 +109,8 @@ def load_stopwords():
     for word in words:
         stopwords.add(word.replace('\n', ''))
     return stopwords
+
+
+def init_folder():
+    if not os.path.exists(WV_DIR):
+        os.makedirs(WV_DIR)

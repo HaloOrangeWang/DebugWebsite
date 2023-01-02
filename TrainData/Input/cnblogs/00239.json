@@ -23,14 +23,18 @@
     ],
     "solve": [
         {
-            "text": "修改rabbitmq.config",
-            "lines": [27],
-            "weight": [1]
+            "text": "修改rabbitmq.config\n\n1  文件路径：\n\nfile is %APPDATA%\\RabbitMQ\\rabbitmq.config.\n\n%APPDATA% usually expands to C:\\Users\\%USERNAME%\\AppData\\Roaming or similar.\n\n见rabbit安装文件夹下的readme.txt   ~~\\rabbitmq_server-3.7.2\\etc\\README.txt\n\n2 修改 C:\\Users\\%USERNAME%\\AppData\\Roaming\\RabbitMQ\\rabbitmq.config文件（将rabbitmq.config.example重命名为rabbitmq.config）\n\n将 %% {heartbeat, 60}, 修改为 {heartbeat, 600}\n\n去掉%% 和末尾的逗号','  60秒修改为600秒，或自己定义的更长时间。\n\n3  使配置生效：\n\ncmd进入安装目录的sbin文件夹下\n\n******\\rabbitmq_server-3.7.2\\sbin>\n\n执行：rabbitmq-service.bat stop  停止服务\n\nrabbitmq-service.bat  install  重新安装服务，这时才会重新加载config文件\n\nrabbitmq-service.bat start  开启服务",
+            "lines": [27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53],
+            "weight": [1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
         },
         {
             "text": "在建立连接的时候就禁止心跳检测\n\nproducer端和consumer端连接初始化的时候：\n\nconnection = pika.BlockingConnection(pika.ConnectionParameters('localhost', heartbeat_interval=0))",
             "lines": [60, 62, 64],
             "weight": [1, 0.5, 0.5]
         }
+    ],
+    "solve_secs": [
+        [27, 55],
+        [58, "eof"]
     ]
 }

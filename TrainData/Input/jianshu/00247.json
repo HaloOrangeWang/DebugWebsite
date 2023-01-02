@@ -16,9 +16,19 @@
             "weight": [1]
         }
     ],
-    "solve": {
-        "text": "重新启动下startRecord()",
-        "lines": [3],
-        "weight": [1]
-    }
+    "solve": [
+        {
+            "text": "重新启动下startRecord()",
+            "lines": [3],
+            "weight": [1]
+        },
+        {
+            "text": "onLoad() {\n  this.ctx = uni.createCameraContext();\n}\nmethods: {\n   startRecord() {\n      let ctx = this.ctx;\n      setTimeout(() => {\n    ctx.startRecord({\n      timeoutCallback : (res) => { // 录像超30S或onHide时结束录像\n         that.videoSrc = res.tempVideoPath\n         console.log(`startRecord timeoutCallback 30s videoInfo:${JSON.stringify(res)}`)\n       },\n       success: (res) => {\n        console.log('startRecord success')\n        },\n        fail: (err) => {\n        console.log(`startRecord fail:${JSON.stringify(err)}`)\n            that.startRecord() // 启动失败，重新\n         }\n      })\n      }, 100)\n   },\n   stopRecord () {\n    var that = this\n    let ctx = this.ctx\n    setTimeout(() => {\n        ctx.stopRecord({\n        compressed: true, // 是否启动视频压缩\n        success: (res) => {\n            that.videoSrc = res.tempVideoPath\n            console.log(`stopRecord1 success videoInfo:${JSON.stringify(res)}`)\n        },\n        fail: (err) => {\n            console.log(`stopRecord fail videoInfo:${JSON.stringify(err)}`)\n        }\n        })\n        }, 200)\n    },\n}",
+            "lines": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43],
+            "weight": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        }
+    ],
+    "solve_secs": [
+        [3, "eof"]
+    ]
 }

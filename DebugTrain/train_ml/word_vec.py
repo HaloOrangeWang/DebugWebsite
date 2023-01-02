@@ -6,6 +6,7 @@ from gensim.models import word2vec
 from typing import List, Dict
 import numpy as np
 import re
+import os
 
 
 NegativeWords = ['error', 'warning', 'errno', 'except', 'traceback', 'fail', 'failed']
@@ -70,23 +71,28 @@ class WvNormal:
     # noinspection PyAttributeOutsideInit
     def word_to_vec(self, articles, stopwords):
         """训练词向量"""
-        # 1.对原始文章进行分词
-        __cnt = 0
-        corpus = []
-        for aid in articles:
-            title = articles[aid].title
-            text = articles[aid].text
-            tokenized_title = self.handle_text_before_2vec(title, stopwords)
-            tokenized_text = self.handle_text_before_2vec(text, stopwords)
-            corpus.extend(tokenized_title)
-            corpus.extend(tokenized_text)
-            __cnt += 1
-            if __cnt % 100 == 0:
-                print('__cnt = %d, aid = %d\n' % (__cnt, aid))
-        # 2.训练词向量
-        model = word2vec.Word2Vec(corpus, vector_size=64, min_count=3, window=5, workers=4)
-        # 词向量生成之后，先不做归一化操作。尽管里面有数值是超过1的。
-        self.wv = model.wv
+        if WV_LOAD:
+            model = word2vec.Word2Vec.load(os.path.join(WV_DIR, "wv_n.model"))
+            self.wv = model.wv
+        else:
+            # 1.对原始文章进行分词
+            __cnt = 0
+            corpus = []
+            for aid in articles:
+                title = articles[aid].title
+                text = articles[aid].text
+                tokenized_title = self.handle_text_before_2vec(title, stopwords)
+                tokenized_text = self.handle_text_before_2vec(text, stopwords)
+                corpus.extend(tokenized_title)
+                corpus.extend(tokenized_text)
+                __cnt += 1
+                if __cnt % 100 == 0:
+                    print('__cnt = %d, aid = %d\n' % (__cnt, aid))
+            # 2.训练词向量
+            model = word2vec.Word2Vec(corpus, vector_size=64, min_count=3, window=5, workers=4)
+            model.save(os.path.join(WV_DIR, "wv_n.model"))
+            # 词向量生成之后，先不做归一化操作。尽管里面有数值是超过1的。
+            self.wv = model.wv
 
     def text_to_vec(self, text_input, stopwords: list) -> List[WordVec1Para]:
         """
@@ -274,23 +280,28 @@ class WvCode:
     # noinspection PyAttributeOutsideInit
     def word_to_vec(self, articles, stopwords):
         """训练词向量"""
-        # 1.对原始文章进行分词
-        __cnt = 0
-        corpus = []
-        for aid in articles:
-            title = articles[aid].title
-            text = articles[aid].text
-            tokenized_title = self.handle_text_before_2vec(title, stopwords)
-            tokenized_text = self.handle_text_before_2vec(text, stopwords)
-            corpus.extend(tokenized_title)
-            corpus.extend(tokenized_text)
-            __cnt += 1
-            if __cnt % 100 == 0:
-                print('__cnt = %d, aid = %d\n' % (__cnt, aid))
-        # 2.训练词向量
-        model = word2vec.Word2Vec(corpus, vector_size=64, min_count=3, window=5, workers=4)
-        # 词向量生成之后，先不做归一化操作。尽管里面有数值是超过1的。
-        self.wv = model.wv
+        if WV_LOAD:
+            model = word2vec.Word2Vec.load(os.path.join(WV_DIR, "wv_c.model"))
+            self.wv = model.wv
+        else:
+            # 1.对原始文章进行分词
+            __cnt = 0
+            corpus = []
+            for aid in articles:
+                title = articles[aid].title
+                text = articles[aid].text
+                tokenized_title = self.handle_text_before_2vec(title, stopwords)
+                tokenized_text = self.handle_text_before_2vec(text, stopwords)
+                corpus.extend(tokenized_title)
+                corpus.extend(tokenized_text)
+                __cnt += 1
+                if __cnt % 100 == 0:
+                    print('__cnt = %d, aid = %d\n' % (__cnt, aid))
+            # 2.训练词向量
+            model = word2vec.Word2Vec(corpus, vector_size=64, min_count=3, window=5, workers=4)
+            model.save(os.path.join(WV_DIR, "wv_c.model"))
+            # 词向量生成之后，先不做归一化操作。尽管里面有数值是超过1的。
+            self.wv = model.wv
 
     # noinspection PyMethodMayBeStatic
     def classify_eng_words(self, text, word_list):
