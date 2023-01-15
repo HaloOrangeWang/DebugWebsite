@@ -674,6 +674,7 @@ class SolvePipe:
                 continue
             for word_it in range(0, len(wcode_1article.text_c[wcode_dx].vec)):
                 input_data.append(wcode_1article.text_c[wcode_dx].vec[word_it] + OUTPUT_DIC_SIZE)  # 如果使用事先准备好的词向量列表，则输入数据需要加上OUTPUT_DIC_SIZE，以避免使用O_IDX等特殊字符
+            input_data.append(EOS_IDX)
             # model的输入数据，除了段落内容以外，还包括段落在文章中的位置，文章中是否包含解决区段的起止信号等
             para_ratio = (para_it + 1) / (len(paragraphs) + 1)
             para_ratio = (para_ratio - 0.5) * 4
