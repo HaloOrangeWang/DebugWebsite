@@ -1,7 +1,7 @@
 from data_io.load_data import MarkData
 from train_simple.funcs import get_split_str
 import jieba.posseg as pseg
-from typing import Dict
+from typing import Dict, List
 import re
 
 
@@ -186,76 +186,57 @@ class SolveValidation:
         return line_score, total_score
 
     @staticmethod
-    def whole_secs(all_solve_secs, all_mark_data: Dict[int, MarkData], line_no_by_para_all):
+    def whole_secs(all_solve_secs, all_mark_data: Dict[int, MarkData], handled_data, sec_mark_list_real: Dict[int, List[List[int]]]):
         """
-        对比通过算法推算的解决问题的开始/结束信号，与通过标注确认的解决问题行标。需要在段落层面全部匹配，才能认定为准确
+        对比通过算法推算的解决问题的开始/结束信号，与通过标注确认的解决问题行标。需要在句子层面全部匹配，才能认定为准确
         :param all_solve_secs: 通过算法确认的解决问题的所在的段落ID
         :param all_mark_data: 通过标注确认的错误、场景、解决方案的信息
-        :param line_no_by_para_all: 每篇文章中，每一段对应的尾行的行标
+        :param handled_data: 经过一些初步处理后的各篇文章的内容，包括段落、句子，以及一些对应关系
+        :param sec_mark_list_real: 标注好的（或程序生成的）区段信息
         :return: 分数、总分
         """
         f = open("res_secs.txt", "a")
         sec_score = 0  # 程序在行标判断中的得分
-        sec_score_beg = 0  # 判断解决方案开始信号的得分
-        sec_score_end = 0  # 判断解决方案结束信号的得分
+        ratio_score = 0
         total_score = 0  # 总分
-        total_score_beg = 0  # 判断解决方案开始信号的总分
-        total_score_end = 0  # 判断解决方案开始信号的总分
 
         for aid in all_solve_secs:
             if all_mark_data[aid].err_msg != str():
                 total_score += 1
-                # 将标注数据中的行标转化为段落标记
-                mark_data_by_para = []
-                for t0 in range(len(all_mark_data[aid].solve_secs)):
-                    start_para_dx_marked = line_no_by_para_all[aid][all_mark_data[aid].solve_secs[t0][0]]
-                    if all_mark_data[aid].solve_secs[t0][1] == "eof":
-                        end_para_dx_marked = "eof"
-                    else:
-                        end_para_dx_marked = line_no_by_para_all[aid][all_mark_data[aid].solve_secs[t0][1]]
-                    mark_data_by_para.append([start_para_dx_marked, end_para_dx_marked])
-                # 判断算法推算和标注的结果，在段落层面是否准确
-                if len(all_solve_secs[aid]) == len(all_mark_data[aid].solve_secs):
-                    is_sec_correct = True
-                    for t in range(len(all_mark_data[aid].solve_secs)):
-                        start_dx_correct = bool(all_solve_secs[aid][t][0] == mark_data_by_para[t][0])
-                        end_dx_correct = bool(all_solve_secs[aid][t][1] == mark_data_by_para[t][1])
-                        if not (start_dx_correct and end_dx_correct):
-                            is_sec_correct = False
-                            break
-                    if is_sec_correct is True:
-                        sec_score += 1
-                # 再分别确定起始信号和终止信号的分数
-                solve_beg_secs = set([t[0] for t in all_solve_secs[aid]])
-                c_solve_beg_secs = set([t[0] for t in mark_data_by_para])
-                solve_end_secs = set()
-                c_solve_end_secs = set()
-                if len(all_solve_secs[aid]) != 0 and len(mark_data_by_para) != 0:
-                    for t in range(len(all_solve_secs[aid])):
-                        for t0 in range(len(mark_data_by_para)):
-                            if all_solve_secs[aid][t][0] == mark_data_by_para[t0][0]:
-                                solve_end_secs.add(all_solve_secs[aid][t][1])
-                                c_solve_end_secs.add(mark_data_by_para[t0][1])
-                if len(c_solve_beg_secs) == 0:
-                    if len(solve_beg_secs) == 0:
-                        sec_score_beg += 1
-                else:
-                    sec_score_beg += len(solve_beg_secs & c_solve_beg_secs) / len(solve_beg_secs | c_solve_beg_secs)
-                total_score_beg += 1
-                if len(c_solve_end_secs) != 0:
-                    sec_score_end += len(solve_end_secs & c_solve_end_secs) / len(solve_end_secs | c_solve_end_secs)
-                    total_score_end += 1
+                # 判断算法推算和标注的结果，在句子层面是否准确
+                trained_sec = []
+                is_correct = True
+                correct_count = 0
+                wrong_count = 0
+                for para_it in range(handled_data[aid].num_para):
+                    for sentence_it in range(len(handled_data[aid].sentences[para_it])):
+                        if all_solve_secs[aid][para_it][sentence_it] != sec_mark_list_real[aid][para_it][sentence_it]:
+                            is_correct = False
+                            if all_solve_secs[aid][para_it][sentence_it] in [1, 3, 4] or sec_mark_list_real[aid][para_it][sentence_it] in [1, 3, 4]:
+                                wrong_count += 1
+                        if all_solve_secs[aid][para_it][sentence_it] == sec_mark_list_real[aid][para_it][sentence_it] and all_solve_secs[aid][para_it][sentence_it] in [1, 3, 4]:
+                            correct_count += 1
+                        if all_solve_secs[aid][para_it][sentence_it] == 1:
+                            trained_sec.append("BEG: %d-%d\n" % (para_it, sentence_it))
+                        elif all_solve_secs[aid][para_it][sentence_it] == 3:
+                            trained_sec.append("END: %d-%d\n" % (para_it, sentence_it))
+                        elif all_solve_secs[aid][para_it][sentence_it] == 4:
+                            trained_sec.append("RV: %d-%d\n" % (para_it, sentence_it))
+                if is_correct:
+                    sec_score += 1
+                ratio_score_1a = 1 if correct_count + wrong_count == 0 else correct_count / (correct_count + wrong_count)
+                ratio_score += ratio_score_1a
                 f.write("aid: %d\n" % aid)
-                f.write("correct secs: ")
-                f.write(str(mark_data_by_para))
                 f.write("\ntrained secs: ")
                 try:
-                    f.write(str(all_solve_secs[aid]))
+                    for t in trained_sec:
+                        f.write(t)
+                    f.write("is correct: %d, correct_ratio: %.2f\n" % (is_correct, ratio_score_1a))
                 except:
                     f.write("<Exception>")
                 f.write("\n\n")
         f.close()
-        return sec_score, total_score, sec_score_beg, total_score_beg, sec_score_end, total_score_end
+        return sec_score, ratio_score, total_score
 
     @staticmethod
     def sentence_ratio(all_solve_msgs, all_mark_data):

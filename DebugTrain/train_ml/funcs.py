@@ -56,6 +56,13 @@ def is_eng_number(ch):
     return False
 
 
+def is_chn_chr(ch):
+    """判断一个字符是否为中文"""
+    if u'\u4e00' <= ch <= u'\u9fff':
+        return True
+    return False
+
+
 def get_last_line_by_para(text):
     """
     获取一段文字中，每个段落最后一行的行标

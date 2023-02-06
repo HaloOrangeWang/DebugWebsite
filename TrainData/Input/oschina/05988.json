@@ -21,10 +21,29 @@
             "weight": [1]
         }
     ],
-    "solve": {
-        "text": "set password='新密码';    //5.8之前的版本使用set password=password('新密码');5.8后改为set password='新密码';",
-        "lines": [7],
-        "weight": [1]
-    },
-    "solve_secs": []
+    "solve": [
+        {
+            "text": "将目录改成反斜杠",
+            "lines": [3],
+            "weight": [1]
+        },
+        {
+            "text": "set password='新密码';    //5.8之前的版本使用set password=password('新密码');5.8后改为set password='新密码';",
+            "lines": [7],
+            "weight": [1]
+        },
+        {
+            "text": "用管理员身份运行cmd",
+            "lines": [11],
+            "weight": [1]
+        },
+        {
+            "text": "ALTER USER 'root'@'localhost' IDENTIFIED BY 'password' PASSWORD EXPIRE NEVER; #修改加密规则 \nALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password'; #更新一下用户的密码 \nFLUSH PRIVILEGES; #刷新权限",
+            "lines": [19, 20, 21],
+            "weight": [1, 1, 1]
+        }
+    ],
+    "solve_secs": [
+        [[7, "解决方法"], [9, "3 net start mysql  启动MySQL 服务报错"]]
+    ]
 }

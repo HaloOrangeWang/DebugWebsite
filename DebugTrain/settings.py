@@ -24,7 +24,7 @@ E_IDX = 5  # 判断为“报错/解决问题信息结束”的标志位
 O_IDX = 6  # 判断为“不是报错/解决问题信息”的标志位
 OUTPUT_DIC_SIZE = (O_IDX + 1)
 # 哪些数据用于训练，哪些数据用于测试（例如，如果start=0，ratio=0.2，那么代表样本中aid最小的20%用于测试，其余的用于训练）
-TEST_DATA_START = 0.8
+TEST_DATA_START = 0.2
 TEST_DATA_RATIO = 0.2
 # # 训练时，每次输入长度为多少的向量
 # TRAIN_TEXT_LEN = 50
