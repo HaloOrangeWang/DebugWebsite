@@ -5,6 +5,7 @@ from train_simple import get_err_msg, get_solve_msg
 from train_ml.word_vec import add_words, WvNormal, WvCode
 from train_ml.funcs import get_all_line_no
 from train_ml.err_msg import ErrMsgPipe
+from train_ml.solve2 import SolvePipe
 from validations.basic import ErrMsgValidation, SolveValidation # , valid_scene
 
 
@@ -84,11 +85,16 @@ def train_ml():
     wv_c.get_word_vec_marked(article_dict_marked, mark_data, stopwords)
     wv_c.construct_wv()
     # 错误信息的模型构建和训练
-    pipe = ErrMsgPipe(wv_n, wv_c)
-    pipe.setup(article_dict_marked, mark_data, line_no_by_para, [])
-    pipe.train()
-    # 测试错误信息的训练结果
-    pipe.test(article_dict_marked, mark_data)
+    err_pipe = ErrMsgPipe(wv_n, wv_c)
+    err_pipe.setup(article_dict_marked, mark_data, line_no_by_para, [])
+    err_pipe.train()
+    # 解决方案信息的模型构建和训练
+    solve_pipe = SolvePipe(wv_n, wv_c)
+    solve_pipe.setup(article_dict_marked, mark_data, line_no_by_para, [])
+    solve_pipe.train()
+    # 测试错误信息和解决方案信息的训练结果
+    err_pipe.test(article_dict_marked, mark_data)
+    solve_pipe.test(mark_data)
 
 
 def generate_ml():
@@ -115,22 +121,16 @@ def generate_ml():
     wv_c.construct_wv()
     err_aid_set = wv_n.err_aid_set | wv_c.err_aid_set
     # 错误信息的模型构建和训练
-    pipe = ErrMsgPipe(wv_n, wv_c)
-    pipe.setup(article_dict_marked, mark_data, line_no_by_para, [])
-    pipe.train()
-    # 测试错误信息的训练结果
-    all_err_msgs = pipe.generate(article_dict_all, err_aid_set)
-    # 先使用非ML的方法生成解决问题的信息
-    __cnt = 0
-    all_solve_lines = dict()
-    all_solve_msgs = dict()
-    for aid in article_dict_all:
-        if all_err_msgs[aid] != str() and aid not in err_aid_set:
-            # all_scenes[aid] = get_scene_msg(article_dict[aid].title, article_dict[aid].text, all_err_msgs[aid])
-            all_solve_lines[aid], all_solve_msgs[aid] = get_solve_msg(article_dict_all[aid].text)
-        __cnt += 1
-        if __cnt % 100 == 0:
-            print('__cnt = %d, aid = %d' % (__cnt, aid))
+    err_pipe = ErrMsgPipe(wv_n, wv_c)
+    err_pipe.setup(article_dict_marked, mark_data, line_no_by_para, [])
+    err_pipe.train()
+    # 解决方案信息的模型构建和训练
+    solve_pipe = SolvePipe(wv_n, wv_c)
+    solve_pipe.setup(article_dict_all, mark_data, line_no_by_para, [])  # 解决方案的模型，第一个参数选择article_dict_all，因为要生成全部文章的handled_data
+    solve_pipe.train()
+    # 生成全部文章错误信息和解决方案信息的结果
+    all_err_msgs = err_pipe.generate(article_dict_all, err_aid_set)
+    all_solve_msgs = solve_pipe.generate(article_dict_all, err_aid_set, all_err_msgs)
     # 将生成好的数据存放进数据库中
     db_col = db_connect()
     insert_data(db_col, all_err_msgs, all_solve_msgs)

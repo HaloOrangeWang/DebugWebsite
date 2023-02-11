@@ -4,6 +4,7 @@ import torch.nn as nn
 from torch.nn.utils.rnn import pad_packed_sequence, pack_padded_sequence
 from torch.nn.functional import cross_entropy
 import numpy as np
+import math
 
 
 class BilstmCRFModel(nn.Module):
@@ -209,3 +210,59 @@ class BilstmCRFExpandModel(nn.Module):
         for step in range(max_len - 2, -1, -1):
             reversed_states.append(state_seq[step, reversed_states[-1]].item())
         return list(reversed(reversed_states))
+
+
+class PositionalEncoding(nn.Module):
+
+    def __init__(self, d_model, dropout=0.1, max_len=5000):
+        super(PositionalEncoding, self).__init__()
+        self.dropout = nn.Dropout(p=dropout)
+
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        pe = pe.unsqueeze(0).transpose(0, 1)
+        self.register_buffer('pe', pe)
+
+    def forward(self, x):
+        x = x + self.pe[:x.size(0), :]
+        return self.dropout(x)
+
+
+class TransformerClassifyModel(nn.Module):
+
+    def __init__(self, config, emb_mat: np.array, freeze: bool, seq_len: int):
+        super(TransformerClassifyModel, self).__init__()
+        self.config = config
+        emb_matrix = torch.FloatTensor(emb_mat)
+        self.embedding = nn.Embedding.from_pretrained(emb_matrix, freeze=freeze)  # 词向量编码
+        self.pos_encoder = PositionalEncoding(config.embedding_size)  # Transformer的位置编码
+        encoder_layers = nn.TransformerEncoderLayer(config.embedding_size, config.nhead, config.hidden_size, config.dropout, batch_first=True, activation="relu")
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layers, config.nlayers)
+        self.fc_out = nn.Linear(config.embedding_size * seq_len, OUTPUT_DIC_SIZE)
+        self.tgt_mask = None
+
+    def forward(self, src):
+        src_padding_mask = (src == PAD_IDX)
+        src = self.embedding(src)
+        src = self.pos_encoder(src)
+        output = self.transformer_encoder(src, src_key_padding_mask=src_padding_mask)
+        output = output.view(self.config.batch_size, -1)
+        output = self.fc_out(output)
+        return output
+
+    # noinspection PyMethodMayBeStatic
+    def calc_loss(self, scores: torch.FloatTensor, target: torch.LongTensor):
+        """计算损失函数。其中score是[数据量 * 输出可能值数量]的训练结果tensor，target是[数据量]的标注结果tensor"""
+        return cross_entropy(scores, target, ignore_index=PAD_IDX)
+
+    def predict(self, src) -> int:
+        src_padding_mask = (src == PAD_IDX)
+        src = self.embedding(src)
+        src = self.pos_encoder(src)
+        output = self.transformer_encoder(src, src_key_padding_mask=src_padding_mask)
+        output = output.view(-1)
+        output = self.fc_out(output)
+        return int(output.argmax(0).item())

@@ -366,7 +366,7 @@ class ErrMsgPipe:
         print("test score = %.2f / %d" % (score, len(self.test_aid_list)))
 
     def generate(self, articles, err_aid_set) -> Dict[int, str]:
-        """生成全部七千多篇文章对应的错误信息"""
+        """生成全部文章对应的错误信息"""
         all_err_msgs = dict()
         self.model_n.eval()
         self.model_c.eval()

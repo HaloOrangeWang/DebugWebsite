@@ -2,7 +2,7 @@ from settings import *
 from data_io.load_data import MarkData
 from .funcs import WordVec1Para, WordVec1Article, has_chn_chr, is_chn_chr, is_chn_eng_number, is_eng_number, has_chn_or_eng_chr
 from .word_vec import WvNormal, WvCode
-from .model import BilstmClassifyModel, BilstmCRFModel, BilstmCRFExpandModel
+from .model import BilstmClassifyModel, BilstmCRFModel, BilstmCRFExpandModel, TransformerClassifyModel
 from validations.basic import SolveValidation
 from typing import List, Dict, Tuple, Optional
 import numpy as np
@@ -42,6 +42,19 @@ class SolveMsgConfigN:
     nepoch = 20  # 一共训练多少轮
     batch_size = 30  # 每一个批次将多少组数据提交给BILSTM-CRF模型
     lr = 0.005
+    lr_decay = 0.85  # 学习速率衰减
+
+
+class SolveClassifyConfigTransC:
+    """使用Transformer模型，将英文当做<code>时，模型的配置"""
+    embedding_size = 70  # 词向量维度
+    hidden_size = 64  # Transformer Encoder的每一层有多少个隐藏单元
+    nhead = 2  # MultiHeadAttension的Head数量
+    nlayers = 2  # Transformer Encoder有多少层
+    dropout = 0.1
+    nepoch = 12  # 一共训练多少轮
+    batch_size = 30  # 每一个批次将多少组数据提交给Transformer模型
+    lr = 0.0025
     lr_decay = 0.85  # 学习速率衰减
 
 
@@ -226,6 +239,7 @@ class SolveSecsInput:
         self.rv_train_output = []  # 训练“哪些段落是解决方案的反起始信号”的模型输出数据
         self.rv_train_lens = []  # 训练“哪些段落是解决方案的反起始信号”的输入数据长度
         self.rv_train_sentence_ratio = []  # 训练“哪些段落是解决方案的反起始信号”时，所挑选的段落在整个文章中的百分比
+        self.max_seq_len: Optional[int] = None  # beg_train_input、end_train_input和rv_train_input的最大序列长度
 
     # noinspection PyMethodMayBeStatic
     def get_marked_sec_loc(self, data_1a: HandledData.A1, marked_secs: list) -> List[List[Optional[Tuple[int, int]]]]:
@@ -383,6 +397,18 @@ class SolveSecsInput:
             if aid in test_aid_list:
                 continue
             self.get_data_1article(handled_articles[aid], wcode_list[aid].text_c, self.all_sec_marks[aid])
+        # 获取beg_train_input、end_train_input和rv_train_input的序列最大长度
+        self.max_seq_len = -1
+        for t in self.beg_train_input:
+            if len(t) > self.max_seq_len:
+                self.max_seq_len = len(t)
+        for t in self.end_train_input:
+            if len(t) > self.max_seq_len:
+                self.max_seq_len = len(t)
+        for t in self.rv_train_input:
+            if len(t) > self.max_seq_len:
+                self.max_seq_len = len(t)
+        print(len(self.beg_train_output))
 
 
 class SolveInSecInput:
@@ -718,6 +744,7 @@ class SolvePipe:
         self.msg_out_data_c = SolveNotInSecInput(self.wv_c.wv.key_to_index, self.wv_c.wv.index_to_key)  # 判断起止信号之外的内容是否为解决方案的信息时，用的数据
         # self.msg_data_n = SolveInParaInput(self.wv_n.wv.key_to_index, self.wv_n.wv.index_to_key)  # 训练段落内解决问题的信息（英文不编码为<code>）时，用的数据
         self.config_c = SolveClassifyConfigC()
+        self.config_trans_c = SolveClassifyConfigTransC()
         self.msg_config_c = SolveMsgConfigC()
         # self.msg_config_n = SolveMsgConfigN()
         self.model_sec_beg = BilstmClassifyModel(self.config_c, self.wv_c.emb_mat, freeze=True)  # 训练解决方案起始信号的模型
@@ -730,12 +757,14 @@ class SolvePipe:
         self.handled_data = HandledData()  # 经过分段等处理之后的内容
         self.all_solve_dx_list = dict()  # 解决方案在各篇文章中的位置
 
+    # noinspection PyAttributeOutsideInit
     def setup(self, articles, mark_data, line_no_by_para, punc_code_set):
         """准备模型的输入数据，以及相关配置等"""
         # 设置哪些数据用于训练，而哪些数据用于测试
-        aid_list = [t for t in mark_data]
-        aid_list = sorted(aid_list)
-        self.test_aid_list = aid_list[int(TEST_DATA_START * len(aid_list)): int((TEST_DATA_START + TEST_DATA_RATIO) * len(aid_list))]
+        if MODE != 'Generate':
+            aid_list = [t for t in mark_data]
+            aid_list = sorted(aid_list)
+            self.test_aid_list = aid_list[int(TEST_DATA_START * len(aid_list)): int((TEST_DATA_START + TEST_DATA_RATIO) * len(aid_list))]
         # 对各篇文章的内容进行预处理
         self.handled_data.preprocess(articles, self.wv_c.wcode_list, line_no_by_para)
         self.all_solve_dx_list = get_solve_dx_list(self.handled_data, mark_data)
@@ -744,6 +773,9 @@ class SolvePipe:
         self.msg_in_data_c.get_model_data(self.handled_data, self.wv_c.wcode_list, mark_data, self.sec_data_c.all_sec_marks, self.all_solve_dx_list, self.test_aid_list)
         self.msg_out_data_c.get_model_data(self.handled_data, self.wv_c.wcode_list, mark_data, self.sec_data_c.all_sec_marks, self.all_solve_dx_list, self.test_aid_list)
         # self.msg_data_n.get_model_data(articles, self.wv_n.wcode_list, mark_data, line_no_by_para, self.sec_data_c.all_sec_marks, punc_code_set, self.test_aid_list)
+        self.model_sec_beg_trans = TransformerClassifyModel(self.config_trans_c, self.wv_c.emb_mat, freeze=False, seq_len=self.sec_data_c.max_seq_len)  # 使用Transformer训练解决方案起始信号的模型
+        self.model_sec_end_trans = TransformerClassifyModel(self.config_trans_c, self.wv_c.emb_mat, freeze=False, seq_len=self.sec_data_c.max_seq_len)  # 使用Transformer训练解决方案终止信号的模型
+        self.model_sec_rv_trans = TransformerClassifyModel(self.config_trans_c, self.wv_c.emb_mat, freeze=False, seq_len=self.sec_data_c.max_seq_len)  # 使用Transformer训练解决方案反起始信号的模型
 
     # noinspection PyMethodMayBeStatic
     def sec_batch_preprocess(self, train_input: List, train_output: List, train_lens: List, train_sentence_ratios: List, indexs, start_dx, end_dx):
@@ -777,6 +809,33 @@ class SolvePipe:
             lens.append(train_lens[indexs[start_dx + sorted_index[dx]]])
             sentence_ratios.append(train_sentence_ratios[indexs[start_dx + sorted_index[dx]]])
         return torch.LongTensor(input_data), torch.LongTensor(output_data), torch.LongTensor(lens), torch.FloatTensor(sentence_ratios)
+
+    # noinspection PyMethodMayBeStatic
+    def sec_batch_preprocess_trans(self, max_len: int, train_input: List, train_output: List, train_lens: List, train_para_ratios: List, indexs, start_dx, end_dx):
+        """
+        对batch数据进行预处理（针对Transformer模型）：获取长度排名在start_dx~end_dx之间的数据，并通过填充PAD_IDX的方式，将数组中各项的长度一致
+        :param max_len: 训练集中序列长度的最大值
+        :param train_input: 模型的训练输入数据列表
+        :param train_output: 模型的训练输出数据列表
+        :param train_lens: 模型的每组训练数据的长度的列表
+        :param train_para_ratios: 每组训练数据的段落，在整篇文章中的位置
+        :param indexs: 将训练数据根据长度从大到小排序后的索引值
+        :param start_dx: 这个batch的起始位置
+        :param end_dx: 这个batch的终止位置
+        :return: 处理好的训练数据、训练预期输出、各组数据的长度
+        """
+        input_data = []
+        output_data = []
+        para_ratios = []
+        # 1.对报错信息按照长短重新排序
+        sorted_index = np.argsort(np.array(train_lens)[indexs[start_dx: (end_dx + 1)]] * (-1))
+        for dx in range(len(sorted_index)):
+            pad_num = max_len - train_lens[indexs[start_dx + sorted_index[dx]]]
+            pad_list = [PAD_IDX for t in range(pad_num)]
+            input_data.append(train_input[indexs[start_dx + sorted_index[dx]]] + pad_list)
+            output_data.append(train_output[indexs[start_dx + sorted_index[dx]]])
+            para_ratios.append(train_para_ratios[indexs[start_dx + sorted_index[dx]]])
+        return torch.LongTensor(input_data), torch.LongTensor(output_data), torch.FloatTensor(para_ratios)
 
     # noinspection PyMethodMayBeStatic
     def msg_batch_preprocess(self, train_data: SolveNotInSecInput, indexs, start_dx, end_dx):
@@ -842,6 +901,35 @@ class SolvePipe:
             end_time = time.time()
             print("epoch %d, time = %.2f, loss = %.6f" % (epoch, (end_time - start_time), total_loss))
 
+    def train_sec_model_trans(self, model: TransformerClassifyModel, config, max_len: int, train_input: List[List[int]], train_output: List[int], train_lens: List[int], train_para_ratios: List[int]):
+        # 预处理：对训练数据进行均衡，使得一半数据拥有解决方案的信息。
+        # train_input, train_output, train_lens = self.data_balance(train_input2, train_output2, train_lens2)
+        optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.lr_decay)  # 每执行一次optimizer之后，学习速率衰减一定比例
+        for epoch in range(config.nepoch):
+            model.train()
+            total_loss = 0.
+            start_time = time.time()
+            # 1.将训练数据打乱顺序（待定）
+            indexs = np.random.permutation(len(train_lens))
+            # 2.进行训练
+            num_batch = len(train_input) // config.batch_size
+            for batch in range(num_batch):
+                # 2.1 以填充PAD_IDX的方式，使各个数组的长度一致
+                input_data, output_data, para_ratios = self.sec_batch_preprocess_trans(max_len, train_input, train_output, train_lens, train_para_ratios, indexs, batch * config.batch_size, (batch + 1) * config.batch_size - 1)
+                # 2.2 前向传输：根据参数计算损失函数
+                optimizer.zero_grad()
+                modeloutput = model(input_data)
+                modeloutput = modeloutput.view(-1, OUTPUT_DIC_SIZE)
+                loss = model.calc_loss(modeloutput, output_data)
+                # 2.3 反向传播：根据损失函数优化参数
+                loss.backward()
+                optimizer.step()
+                total_loss += loss.item()
+            scheduler.step()
+            end_time = time.time()
+            print("epoch %d, time = %.2f, loss = %.6f" % (epoch, (end_time - start_time), total_loss))
+
     def train_msg_model(self, model: BilstmCRFExpandModel, config, train_data: SolveNotInSecInput):
         optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
         scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.lr_decay)  # 每执行一次optimizer之后，学习速率衰减一定比例
@@ -870,14 +958,17 @@ class SolvePipe:
 
     def train(self):
         """训练解决方案的起始信号、解决方案的终止信号"""
-        self.train_sec_model(self.model_sec_beg, self.config_c, self.sec_data_c.beg_train_input, self.sec_data_c.beg_train_output, self.sec_data_c.beg_train_lens, self.sec_data_c.beg_train_sentence_ratio)
-        self.train_sec_model(self.model_sec_end, self.config_c, self.sec_data_c.end_train_input, self.sec_data_c.end_train_output, self.sec_data_c.end_train_lens, self.sec_data_c.end_train_sentence_ratio)
-        self.train_sec_model(self.model_sec_rv, self.config_c, self.sec_data_c.rv_train_input, self.sec_data_c.rv_train_output, self.sec_data_c.rv_train_lens, self.sec_data_c.rv_train_sentence_ratio)
+        # self.train_sec_model(self.model_sec_beg, self.config_c, self.sec_data_c.beg_train_input, self.sec_data_c.beg_train_output, self.sec_data_c.beg_train_lens, self.sec_data_c.beg_train_sentence_ratio)
+        # self.train_sec_model(self.model_sec_end, self.config_c, self.sec_data_c.end_train_input, self.sec_data_c.end_train_output, self.sec_data_c.end_train_lens, self.sec_data_c.end_train_sentence_ratio)
+        # self.train_sec_model(self.model_sec_rv, self.config_c, self.sec_data_c.rv_train_input, self.sec_data_c.rv_train_output, self.sec_data_c.rv_train_lens, self.sec_data_c.rv_train_sentence_ratio)
+        self.train_sec_model_trans(self.model_sec_beg_trans, self.config_c, self.sec_data_c.max_seq_len, self.sec_data_c.beg_train_input, self.sec_data_c.beg_train_output, self.sec_data_c.beg_train_lens, self.sec_data_c.beg_train_sentence_ratio)
+        self.train_sec_model_trans(self.model_sec_end_trans, self.config_c, self.sec_data_c.max_seq_len, self.sec_data_c.end_train_input, self.sec_data_c.end_train_output, self.sec_data_c.end_train_lens, self.sec_data_c.end_train_sentence_ratio)
+        self.train_sec_model_trans(self.model_sec_rv_trans, self.config_c, self.sec_data_c.max_seq_len, self.sec_data_c.rv_train_input, self.sec_data_c.rv_train_output, self.sec_data_c.rv_train_lens, self.sec_data_c.rv_train_sentence_ratio)
         self.train_sec_model(self.model_msg_in_c, self.config_c, self.msg_in_data_c.train_input, self.msg_in_data_c.train_output, self.msg_in_data_c.train_lens, self.msg_in_data_c.sentence_ratio)
         self.train_msg_model(self.model_msg_out_c, self.msg_config_c, self.msg_out_data_c)
         # self.train_msg_model(self.model_msg_n, self.msg_config_n, self.msg_data_n)
 
-    def test_1article_only_sec(self, aid, data_1a: HandledData.A1, wcode_list: List[WordVec1Para]) -> List[List[int]]:
+    def test_1article_only_sec_trans(self, aid, data_1a: HandledData.A1, wcode_list: List[WordVec1Para]) -> List[List[int]]:
         """
         测试一篇文章的解决方案的起始信号终止信号和反起始信号的识别结果
         :param aid: 文章ID
@@ -907,32 +998,36 @@ class SolvePipe:
                 # 将句子在文章中的比例，扩展到（-2~2）区间段内
                 sentence_ratio = (data_1a.sentence_ratio[para_it][sentence_it] - 0.5) * 4
                 # 针对这句话生成训练样本
-                input_data = []
+                raw_input_data = []
                 for word_it in range(0, len(wcode_list[wcode_dx].vec)):
                     if wcode_list[wcode_dx].vec_to_text_dx_list[word_it] + wcode_list[wcode_dx].vec_len_list[word_it] - 1 < data_1a.sentence_start_dx[para_it][sentence_it]:
                         continue
-                    input_data.append(wcode_list[wcode_dx].vec[word_it] + OUTPUT_DIC_SIZE)  # 输入数据需要加上OUTPUT_DIC_SIZE，以避免使用O_IDX等特殊字符
+                    raw_input_data.append(wcode_list[wcode_dx].vec[word_it] + OUTPUT_DIC_SIZE)  # 输入数据需要加上OUTPUT_DIC_SIZE，以避免使用O_IDX等特殊字符
                     if word_it == len(wcode_list[wcode_dx].vec) - 1 or wcode_list[wcode_dx].vec_to_text_dx_list[word_it + 1] > data_1a.sentence_end_dx[para_it][sentence_it]:
                         break
-                if len(input_data) == 0 or min(input_data) >= len(self.wv_c.wv.index_to_key) + OUTPUT_DIC_SIZE:  # 完全由标点符号、英文内容组成的句子，不作为信号的判断依据。它将会沿用上一句话的判断结果
+                if len(raw_input_data) == 0 or min(raw_input_data) >= len(self.wv_c.wv.index_to_key) + OUTPUT_DIC_SIZE:  # 完全由标点符号、英文内容组成的句子，不作为信号的判断依据。它将会沿用上一句话的判断结果
                     if status:
                         sec_mark_list[para_it].append(SolveSecsInput.S_IN)
                     else:
                         sec_mark_list[para_it].append(SolveSecsInput.S_NO)
                     continue
+                input_data = copy.copy(raw_input_data)
+                if len(input_data) > self.sec_data_c.max_seq_len:
+                    input_data = input_data[:self.sec_data_c.max_seq_len]
+                else:
+                    input_data.extend([PAD_IDX for t in range(self.sec_data_c.max_seq_len - len(raw_input_data))])
+                input_data = torch.LongTensor(input_data).unsqueeze(dim=0)
                 # 使用model进行预测。如果已经进入解决方案的区段，则判断解决方案的结束信号，否则判断解决方案的起始信号
                 sentence_ratio = torch.FloatTensor([sentence_ratio])
-                length = torch.LongTensor([len(input_data)])
-                input_data = torch.LongTensor(input_data).unsqueeze(dim=0)
                 if status:
-                    output_data = self.model_sec_end.predict(input_data, length, sentence_ratio)[0]
+                    output_data = self.model_sec_end_trans.predict(input_data)
                     if output_data == TRUE_IDX:
                         sec_mark_list[para_it].append(SolveSecsInput.S_END)
                         status = False
                     else:
                         sec_mark_list[para_it].append(SolveSecsInput.S_IN)
                 else:
-                    output_data = self.model_sec_beg.predict(input_data, length, sentence_ratio)[0]
+                    output_data = self.model_sec_beg_trans.predict(input_data)
                     if output_data == TRUE_IDX:
                         sec_mark_list[para_it].append(SolveSecsInput.S_BEG)
                         status = True
@@ -954,20 +1049,24 @@ class SolvePipe:
                 # 将句子在文章中的比例，扩展到（-2~2）区间段内
                 sentence_ratio = (data_1a.sentence_ratio[para_it][sentence_it] - 0.5) * 4
                 # 针对这句话生成训练样本
-                input_data = []
+                raw_input_data = []
                 for word_it in range(0, len(wcode_list[wcode_dx].vec)):
                     if wcode_list[wcode_dx].vec_to_text_dx_list[word_it] + wcode_list[wcode_dx].vec_len_list[word_it] - 1 < data_1a.sentence_start_dx[para_it][sentence_it]:
                         continue
-                    input_data.append(wcode_list[wcode_dx].vec[word_it] + OUTPUT_DIC_SIZE)  # 输入数据需要加上OUTPUT_DIC_SIZE，以避免使用O_IDX等特殊字符
+                    raw_input_data.append(wcode_list[wcode_dx].vec[word_it] + OUTPUT_DIC_SIZE)  # 输入数据需要加上OUTPUT_DIC_SIZE，以避免使用O_IDX等特殊字符
                     if word_it == len(wcode_list[wcode_dx].vec) - 1 or wcode_list[wcode_dx].vec_to_text_dx_list[word_it + 1] > data_1a.sentence_end_dx[para_it][sentence_it]:
                         break
-                if len(input_data) == 0 or min(input_data) >= len(self.wv_c.wv.index_to_key) + OUTPUT_DIC_SIZE:  # 完全由标点符号、英文内容组成的句子，不能作为反起始信号
+                if len(raw_input_data) == 0 or min(raw_input_data) >= len(self.wv_c.wv.index_to_key) + OUTPUT_DIC_SIZE:  # 完全由标点符号、英文内容组成的句子，不能作为反起始信号
                     continue
+                input_data = copy.copy(raw_input_data)
+                if len(input_data) > self.sec_data_c.max_seq_len:
+                    input_data = input_data[:self.sec_data_c.max_seq_len]
+                else:
+                    input_data.extend([PAD_IDX for t in range(self.sec_data_c.max_seq_len - len(raw_input_data))])
+                input_data = torch.LongTensor(input_data).unsqueeze(dim=0)
                 # 使用model进行预测。如果已经进入解决方案的区段，则判断解决方案的结束信号，否则判断解决方案的起始信号
                 sentence_ratio = torch.FloatTensor([sentence_ratio])
-                length = torch.LongTensor([len(input_data)])
-                input_data = torch.LongTensor(input_data).unsqueeze(dim=0)
-                output_data = self.model_sec_rv.predict(input_data, length, sentence_ratio)[0]
+                output_data = self.model_sec_rv_trans.predict(input_data)
                 if output_data == TRUE_IDX:
                     sec_mark_list[para_it][sentence_it] = SolveSecsInput.S_RV_BEG
         return sec_mark_list
@@ -1359,7 +1458,7 @@ class SolvePipe:
         :param sec_mark_list_real: 标注好的（或程序生成的）区段信息
         """
         # 1.生成由程序判断的这篇文章的起止段落标记
-        sec_mark_list = self.test_1article_only_sec(aid, data_1a, wcode_list)
+        sec_mark_list = self.test_1article_only_sec_trans(aid, data_1a, wcode_list)
         # 2.根据程序判断的起止段落的标记，来决定解决问题的信息的位置
         solve_msg, solve_lines = self.test_1article_only_msg(aid, data_1a, wcode_list, sec_mark_list)
         solve_msg_realsec, solve_lines_realsec = self.test_1article_only_msg(aid, data_1a, wcode_list, sec_mark_list_real)
@@ -1373,7 +1472,7 @@ class SolvePipe:
         with torch.no_grad():
             for aid in mark_data:
                 if aid in self.test_aid_list and mark_data[aid].err_msg != str():
-                    sec_mark_list = self.test_1article_only_sec(aid, self.handled_data[aid], self.wv_c.wcode_list[aid].text_c)
+                    sec_mark_list = self.test_1article_only_sec_trans(aid, self.handled_data[aid], self.wv_c.wcode_list[aid].text_c)
                     all_solve_secs[aid] = sec_mark_list
         solve_sec_score, sec_ratio_score, total_solve_score = SolveValidation.whole_secs(all_solve_secs, mark_data, self.handled_data, self.sec_data_c.all_sec_marks)
         print('solve_sec_score = %.2f / %d' % (solve_sec_score, total_solve_score))
@@ -1406,12 +1505,16 @@ class SolvePipe:
         self.model_sec_beg.eval()
         self.model_sec_end.eval()
         self.model_sec_rv.eval()
+        self.model_sec_beg_trans.eval()
+        self.model_sec_end_trans.eval()
+        self.model_sec_rv_trans.eval()
         self.model_msg_in_c.eval()
         self.model_msg_out_c.eval()
         with torch.no_grad():
             for aid in mark_data:
                 if aid in self.test_aid_list and mark_data[aid].err_msg != str():
                     solve_sec, solve_msg, solve_lines, solve_msg_realsec, solve_lines_realsec = self.test_1article(aid, self.handled_data[aid], self.wv_c.wcode_list[aid].text_c, self.sec_data_c.all_sec_marks[aid])
+                    # solve_sec = self.test_1article_only_sec_trans(aid, self.handled_data[aid], self.wv_c.wcode_list[aid].text_c)
                     all_solve_secs[aid] = solve_sec
                     all_solve_msgs[aid] = solve_msg
                     all_solve_lines[aid] = solve_lines
@@ -1421,10 +1524,45 @@ class SolvePipe:
         solve_sec_score, sec_ratio_score, total_solve_score = SolveValidation.whole_secs(all_solve_secs, mark_data, self.handled_data, self.sec_data_c.all_sec_marks)
         print('solve_sec_score = %.2f / %d' % (solve_sec_score, total_solve_score))
         print('sec_ratio_score = %.2f / %d' % (sec_ratio_score, total_solve_score))
-        # print('sec_begin_score = %.2f / %d' % (sec_score_beg, total_score_beg))
-        # print('sec_end_score = %.2f / %d' % (sec_score_end, total_score_end))
         # 4.验证解决问题的行标和内容的判断结果
         solve_line_score, total_solve_score = SolveValidation.line_ratio(all_solve_lines, mark_data)
         solve_msg_score, total_solve_msg_score = SolveValidation.sentence_ratio(all_solve_msgs, mark_data)
         print('solve_line_score = %.2f / %d' % (solve_line_score, total_solve_score))
         print('solve_msg_score = %.2f / %d' % (solve_msg_score, total_solve_msg_score))
+
+    def generate_1article(self, aid, data_1a: HandledData.A1, wcode_list: List[WordVec1Para]) -> Tuple[List[List[int]], List[str], List[int]]:
+        """
+        生成一片文章对应的解决方案的行标和具体内容
+        :param aid: 文章ID
+        :param data_1a: 这篇文章标注好的信息，包括段落、句子，以及一些对应关系
+        :param wcode_list: 将文本编码之后的内容
+        """
+        # 1.生成由程序判断的这篇文章的起止段落标记
+        sec_mark_list = self.test_1article_only_sec_trans(aid, data_1a, wcode_list)
+        # 2.根据程序判断的起止段落的标记，来决定解决问题的信息的位置
+        solve_msg, solve_lines = self.test_1article_only_msg(aid, data_1a, wcode_list, sec_mark_list)
+        return sec_mark_list, solve_msg, solve_lines
+
+    def generate(self, articles, err_aid_set, all_err_msgs) -> Dict[int, str]:
+        """生成全部文章对应的解决方案的信息"""
+        all_solve_msgs = dict()
+        self.model_sec_beg.eval()
+        self.model_sec_end.eval()
+        self.model_sec_rv.eval()
+        self.model_sec_beg_trans.eval()
+        self.model_sec_end_trans.eval()
+        self.model_sec_rv_trans.eval()
+        self.model_msg_in_c.eval()
+        self.model_msg_out_c.eval()
+        with torch.no_grad():
+            __cnt = 0
+            for aid in articles:
+                if aid not in err_aid_set and all_err_msgs[aid] != str():
+                    solve_sec, solve_msg, solve_lines = self.generate_1article(aid, self.handled_data[aid], self.wv_c.wcode_list[aid].text_c)
+                    all_solve_msgs[aid] = solve_msg
+                else:
+                    all_solve_msgs[aid] = str()
+                __cnt += 1
+                if __cnt % 100 == 0:
+                    print('__cnt = %d, aid = %d' % (__cnt, aid))
+        return all_solve_msgs
